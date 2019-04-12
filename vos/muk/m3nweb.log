@@ -1,0 +1,63 @@
+t_start=1552221300.51 t_stop=1552221300.52 t_total=0.01
+total_bytes = -1261448408
+Throuhput = -146936739154.299927 [bytes/s]
+t_start=1552221300.52 t_stop=1552221300.70 t_total=0.19
+total_bytes = -1261448408
+Throuhput = -6809874706.019129 [bytes/s]
+t_start=1552221315.66 t_stop=1552221315.66 t_total=0.00
+total_bytes = -1261448408
+Throuhput = -964260634858.398438 [bytes/s]
+t_start=1552221315.67 t_stop=1552221319.49 t_total=3.82
+total_bytes = -1261448408
+Throuhput = -330158655.394590 [bytes/s]
+t_start=1552225133.42 t_stop=1552225133.43 t_total=0.00
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552230173.25 t_stop=1552230173.26 t_total=0.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552230192.90 t_stop=1552230374.74 t_total=181.83
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552230770.28 t_stop=1552230770.30 t_total=0.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552231697.00 t_stop=1552231697.01 t_total=0.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552232992.38 t_stop=1552232992.39 t_total=0.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552237121.40 t_stop=1552237121.42 t_total=0.02
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552237602.71 t_stop=1552237602.72 t_total=0.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552237602.74 t_stop=1552237638.54 t_total=35.80
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552237747.75 t_stop=1552237747.75 t_total=0.00
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552238255.40 t_stop=1552238255.46 t_total=0.06
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552238255.49 t_stop=1552238268.60 t_total=13.11
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552239981.06 t_stop=1552239981.11 t_total=0.05
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552239981.13 t_stop=1552240085.53 t_total=104.40
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552270528.07 t_stop=1552270588.13 t_total=60.06  <<<<<< ULTIMA 
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552345507.65 t_stop=1552345628.66 t_total=121.01
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+t_start=1552579735.07 t_stop=1552579747.02 t_total=11.94
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]

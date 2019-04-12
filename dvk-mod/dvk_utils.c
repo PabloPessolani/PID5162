@@ -443,7 +443,7 @@ DVKDEBUG(INTERNAL,"SPROXY wakeup with error all process trying to send a CMD to 
 		}
 		WLOCK_PROC(sproxy_ptr);
 
-		LIST_DEL_INIT(&src_ptr->p_link); /* remove from queue */
+		LIST_DEL(&src_ptr->p_link); /* remove from queue */
 		src_ptr->p_usr.p_proxy = NONE;
 		clear_bit(BIT_RMTOPER, &src_ptr->p_usr.p_rts_flags);
 

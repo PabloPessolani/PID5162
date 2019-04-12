@@ -14,7 +14,9 @@
 #define MIS_BIT_REPLICATED 	7
 
 #define MIS_BIT_KILLED	 	8
-#define MIS_BIT_WOKENUP	9
+#define MIS_BIT_WOKENUP		9
+
+#define MIS_BIT_UNIKERNEL	10
 
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/
@@ -27,6 +29,7 @@ enum mis_status {
 		MIS_REPLICATED	= (1<<MIS_BIT_REPLICATED), 	/* The ep is LOCAL but it is replicated on other nodes */	
 		MIS_KILLED		= (1<<MIS_BIT_KILLED), 		/* The process has been killed 		*/
 		MIS_WOKENUP 	= (1<<MIS_BIT_WOKENUP), 	/* The process has been signaled 	*/
+		MIS_UNIKERNEL 	= (1<<MIS_BIT_UNIKERNEL), 	/* The process is running inside a local UNIKERNEL */
 };
 
 #define PX_BIT_INUSE		0

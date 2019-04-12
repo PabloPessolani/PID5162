@@ -129,7 +129,7 @@ int search_ident(config_t *cfg)
 							USRDEBUG("replica=%s\n", cfg->word);
 							rcode = search_replica(cfg);
 							if( rcode < 0) return(rcode);
-							rad_ptr[svc_nr]->rad_replication = rcode;
+							rad_ptr[nr_control]->rad_replication = rcode;
 							break;
 						case TKN_DCID:
 							if (!config_isatom(cfg)) {
@@ -143,7 +143,7 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "DCID:%d, must be > 0 and < NR_DCS(%d)\n", dcid,NR_DCS);
 								dcid = -1;
 							}
-							rad_ptr[svc_nr]->rad_dcid = dcid;
+							rad_ptr[nr_control]->rad_dcid = dcid;
 							break;
 						case TKN_ENDPOINT:
 							if (!config_isatom(cfg)) {
@@ -151,7 +151,7 @@ int search_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("endpoint=%d\n", atoi(cfg->word));
-							rad_ptr[svc_nr]->rad_ep=atoi(cfg->word);
+							rad_ptr[nr_control]->rad_ep=atoi(cfg->word);
 							break;	
 						case TKN_GROUP:
 							if (!config_isatom(cfg)) {
@@ -159,7 +159,7 @@ int search_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("group=%s\n", cfg->word);
-							strncpy(rad_ptr[svc_nr]->rad_sp_group,cfg->word,MAXNODENAME);
+							strncpy(rad_ptr[nr_control]->rad_group,cfg->word,MAXNODENAME);
 							break;
 						case TKN_NODES:
 							if (!config_isstring(cfg)) {
@@ -167,7 +167,7 @@ int search_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("nodes=%X\n", -1);
-							rad_ptr[svc_nr]->rad_bm_valid = -1;
+							rad_ptr[nr_control]->rad_bm_valid = -1;
 						default:
 							fprintf(stderr, "Programming Error\n");
 							exit(1);
@@ -210,11 +210,12 @@ int search_service_tkn(config_t *cfg)
 			USRDEBUG("word=%s\n", cfg->word);
 			if( !strcmp(cfg->word, "service")) {
 				cfg = cfg->next;
-				rad_ptr[svc_nr]->rad_index = svc_nr;
+				rad_ptr[nr_control]->rad_index = nr_control;
 				USRDEBUG("service: ");
 				if (cfg != nil) {
 					if (config_isatom(cfg)) {
-						strncpy(rad_ptr[svc_nr]->rad_svrname,cfg->word,MAXPROCNAME-1); 
+						strncpy(rad_ptr[nr_control]->rad_svrname,cfg->word,MAXPROCNAME-1); 
+						rad_ptr[nr_control]->rad_len = strlen(rad_ptr[nr_control]->rad_svrname);
 						name_cfg = cfg;
 						cfg = cfg->next;
 						if (!config_issub(cfg)) {
@@ -240,7 +241,6 @@ int search_radar_cfg(config_t *cfg)
 {
 	int rcode;
 	int i;	
-	svc_nr = 0;
 	
 	USRDEBUG("\n");
     for( i=0; cfg != nil; i++) {
@@ -250,10 +250,10 @@ int search_radar_cfg(config_t *cfg)
 		}
 		USRDEBUG("search_radar_cfg[%d] line=%d\n",i,cfg->line);
 		rcode = search_service_tkn(cfg->list);
-		USRDEBUG(RAD1_FORMAT, RAD1_FIELDS(rad_ptr[svc_nr]));
+		USRDEBUG(RAD1_FORMAT, RAD1_FIELDS(rad_ptr[nr_control]));
 		if( rcode == EXIT_CODE)
 			return(rcode);
-		svc_nr++;
+		nr_control++;
 		cfg= cfg->next;
 	}
 	return(OK);

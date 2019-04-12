@@ -6,7 +6,7 @@
 #define _MULTI_THREADED
 #define _GNU_SOURCE     
 #define  MOL_USERSPACE	1
-// #define TASKDBG		1
+#define TASKDBG		1
 
 #include "rdisk.h"
 #include "const.h"
@@ -285,6 +285,7 @@ int replica_loop(int *mtype, char *source)
 				Is_caused_disconnect_mess( service_type ) ){
 				sp_nr_mbrs = num_groups;
 				memcpy((void*) sp_members, (void *) target_groups, sp_nr_mbrs*MAX_GROUP_NAME);
+				nr_nodes = 0;
 				for( i=0; i < sp_nr_mbrs; i++ ){
 					TASKDEBUG("\t%s\n", &sp_members[i][0]);
 //					TASKDEBUG("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
@@ -293,7 +294,7 @@ int replica_loop(int *mtype, char *source)
 						nr_nodes++;
 					} 
 				}
-				TASKDEBUG("bm_nodes=%X\n", bm_nodes);
+				TASKDEBUG("bm_nodes=%X nr_nodes=%d\n", bm_nodes, nr_nodes);
 			}
 		}
 

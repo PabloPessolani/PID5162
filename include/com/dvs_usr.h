@@ -18,6 +18,7 @@ struct dvs_usr {
 	int	d_version;
 	int	d_subver;
 	int d_size_proc;
+	
 };
 typedef struct dvs_usr dvs_usr_t;
 
@@ -28,8 +29,7 @@ typedef struct dvs_usr dvs_usr_t;
 #define DVS_MAX_FIELDS(p) p->d_max_copybuf,p->d_max_copylen  
 
 #define DVS_VER_FORMAT "d_dbglvl=%lX version=%d.%d sizeof(proc)=%d\n"
-#define DVS_VER_FIELDS(p) p->d_dbglvl, p->d_version, p->d_subver, p->d_size_proc  
-
+#define DVS_VER_FIELDS(p) p->d_dbglvl, p->d_version, p->d_subver, p->d_size_proc
 
 
 #endif /* COM_DVS_USR_H */

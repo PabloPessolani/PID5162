@@ -1,0 +1,1795 @@
+[ 5987.060720] DEBUG 1010:new_bind:1454: SELF_BIND param_pid=-1 lpid=1010 vpid=15 tid=1010
+[ 5987.060721] DEBUG 1010:new_bind:1476: WUNLOCK_PROC ep=2 count=0
+[ 5987.060723] DEBUG 1010:new_bind:1479: WLOCK_TASK pid=1010 count=0
+[ 5987.060724] DEBUG 1010:new_bind:1480: WLOCK_PROC ep=2 count=0
+[ 5987.060725] DEBUG 1010:new_bind:1516: increment the reference count of the task struct=1010 count=2
+[ 5987.060727] DEBUG 1010:new_bind:1527: process p_name=copy_client *p_name_ptr=copy_client
+[ 5987.060730] DEBUG 1010:new_bind:1583: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.060732] DEBUG 1010:new_bind:1584: nr=2 endp=2 dcid=0 lpid=1010 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 5987.060733] DEBUG 1010:new_bind:1598: WUNLOCK_TASK pid=1010 count=0
+[ 5987.060734] DEBUG 1010:new_bind:1604: WUNLOCK_PROC ep=2 count=0
+[ 5987.060736] DEBUG 1010:new_bind:1606: DC_INCREF counter=2
+[ 5987.060737] DEBUG 1010:new_bind:1607: RUNLOCK_DC dc=0 count=0
+[ 5987.060738] ERROR: 1010:dvk_ioctl:228: rcode=2
+[ 5987.061054] DEBUG 1010:dvk_ioctl:204: cmd=8004E30F arg=BFBBDD10
+[ 5987.061056] DEBUG 1010:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 5987.061057] DEBUG 1010:io_getprocinfo:164: 
+[ 5987.061058] DEBUG 1010:new_getprocinfo:1884: dcid=0 p_nr=2
+[ 5987.061061] DEBUG 1010:check_caller:536: caller_pid=1010 caller_tgid=1010
+[ 5987.061062] DEBUG 1010:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 5987.061063] DEBUG 1010:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 5987.061065] DEBUG 1010:check_caller:604: dcid=0
+[ 5987.061066] DEBUG 1010:check_caller:608: RLOCK_DC dc=0 count=0
+[ 5987.061067] DEBUG 1010:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 5987.061069] DEBUG 1010:check_caller:618: caller_pid=1010 
+[ 5987.061070] DEBUG 1010:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 5987.061071] DEBUG 1010:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 5987.061073] DEBUG 1010:new_getprocinfo:1908: RLOCK_PROC ep=2 count=0
+[ 5987.061074] DEBUG 1010:new_getprocinfo:1909: lpid=1010 name=copy_client
+[ 5987.061076] DEBUG 1010:new_getprocinfo:1911: RUNLOCK_PROC ep=2 count=0
+[ 5987.061110] DEBUG 1010:dvk_ioctl:204: cmd=8004E30F arg=BFBBDD10
+[ 5987.061111] DEBUG 1010:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 5987.061112] DEBUG 1010:io_getprocinfo:164: 
+[ 5987.061113] DEBUG 1010:new_getprocinfo:1884: dcid=0 p_nr=1
+[ 5987.061115] DEBUG 1010:check_caller:536: caller_pid=1010 caller_tgid=1010
+[ 5987.061116] DEBUG 1010:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 5987.061118] DEBUG 1010:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 5987.061119] DEBUG 1010:check_caller:604: dcid=0
+[ 5987.061120] DEBUG 1010:check_caller:608: RLOCK_DC dc=0 count=0
+[ 5987.061121] DEBUG 1010:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 5987.061122] DEBUG 1010:check_caller:618: caller_pid=1010 
+[ 5987.061123] DEBUG 1010:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 5987.061125] DEBUG 1010:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 5987.061126] DEBUG 1010:new_getprocinfo:1908: RLOCK_PROC ep=1 count=0
+[ 5987.061127] DEBUG 1010:new_getprocinfo:1909: lpid=1007 name=copy_server
+[ 5987.061129] DEBUG 1010:new_getprocinfo:1911: RUNLOCK_PROC ep=1 count=0
+[ 5987.061261] DEBUG 1010:dvk_ioctl:204: cmd=4004E305 arg=BFBBDD10
+[ 5987.061263] DEBUG 1010:dvk_ioctl:224: DVK_CALL=5 (mini_sendrec) 
+[ 5987.061264] DEBUG 1010:io_mini_sendrec:56: 
+[ 5987.061266] DEBUG 1010:new_mini_sendrec:507: srcdst_ep=1
+[ 5987.061267] DEBUG 1010:check_caller:536: caller_pid=1010 caller_tgid=1010
+[ 5987.061269] DEBUG 1010:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 5987.061270] DEBUG 1010:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 5987.061271] DEBUG 1010:check_caller:604: dcid=0
+[ 5987.061272] DEBUG 1010:check_caller:608: RLOCK_DC dc=0 count=0
+[ 5987.061273] DEBUG 1010:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 5987.061274] DEBUG 1010:check_caller:618: caller_pid=1010 
+[ 5987.061276] DEBUG 1010:new_mini_sendrec:518: RLOCK_PROC ep=2 count=0
+[ 5987.061277] DEBUG 1010:new_mini_sendrec:523: caller_nr=2 caller_ep=2 srcdst_ep=1 
+[ 5987.061279] DEBUG 1010:new_mini_sendrec:526: RUNLOCK_PROC ep=2 count=0
+[ 5987.061280] DEBUG 1010:new_mini_sendrec:528: dcid=0
+[ 5987.061281] DEBUG 1010:new_mini_sendrec:532: RLOCK_DC dc=0 count=0
+[ 5987.061282] DEBUG 1010:new_mini_sendrec:535: RUNLOCK_DC dc=0 count=0
+[ 5987.061284] DEBUG 1010:new_mini_sendrec:550: WLOCK_PROC ep=2 count=0
+[ 5987.061285] DEBUG 1010:new_mini_sendrec:557: WUNLOCK_PROC ep=2 count=0
+[ 5987.061287] DEBUG 1010:new_mini_sendrec:557: WLOCK_PROC ep=1 count=0
+[ 5987.061288] DEBUG 1010:new_mini_sendrec:557: WLOCK_PROC ep=2 count=0
+[ 5987.061289] DEBUG 1010:new_mini_sendrec:558: srcdst_nr=1 srcdst_ep=1
+[ 5987.061290] DEBUG 1010:new_mini_sendrec:578: srcdst_ptr->p_usr.p_nodeid=0
+[ 5987.061292] DEBUG 1010:new_mini_sendrec:582: RLOCK_DC dc=0 count=0
+[ 5987.061293] DEBUG 1010:new_mini_sendrec:586: RUNLOCK_DC dc=0 count=0
+[ 5987.061295] DEBUG 1010:new_mini_sendrec:601: dcid=0 caller_pid=1010 caller_nr=2 srcdst_ep=1 
+[ 5987.061296] DEBUG 1010:new_mini_sendrec:606: SENDING HALF
+[ 5987.061297] DEBUG 1010:new_mini_sendrec:687: destination is waiting. Copy the message and wakeup destination
+[ 5987.061300] DEBUG 1010:copy_usr2usr:886: rqtr_ep=2 src_ep=2 src_lpid=1010 src_vpid=15 src_addr=00926000
+[ 5987.061302] DEBUG 1010:copy_usr2usr:889: dst_ep=1 dst_lpid=1007 dst_vpid=14 dst_addr=0140a000 bytes=76
+[ 5987.061303] DEBUG 1010:copy_usr2usr:893: task_pid_nr(current)=1010
+[ 5987.061304] DEBUG 1010:copy_usr2usr:896: WRITE
+[ 5987.061305] DEBUG 1010:copy_usr2usr:901: task_pid_nr(dst_ptr->p_task)=1007
+[ 5987.061308] DEBUG 1010:dvk_vm_rw:441: pid=1007 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+[ 5987.061309] DEBUG 1010:dvk_check_iovect:1280: type=1 nr_segs=1
+[ 5987.061311] DEBUG 1010:dvk_rw_check_kvector:862: type=1 nr_segs=1
+[ 5987.061312] DEBUG 1010:dvk_rw_check_kvector:862: type=-1 nr_segs=1
+[ 5987.061314] DEBUG 1010:dvk_vm_rw_core:277: pid=1007 riovcnt=1 flags=0 vm_write=1
+[ 5987.061319] DEBUG 1010:dvk_vm_rw_core:331: i=0 rc=0
+[ 5987.061327] DEBUG 1010:dvk_vm_rw_core:349: rc=76
+[ 5987.061328] DEBUG 1010:dvk_vm_rw_core:356: rc=76
+[ 5987.061329] DEBUG 1010:copy_usr2usr:954: len=76
+[ 5987.061331] DEBUG 1010:inherit_cpu:288: cpuid=0 vpid=ld
+[ 5987.061336] DEBUG 1010:inherit_cpu:296: nr=1 endp=1 dcid=0 lpid=1007 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 5987.061337] DEBUG 1010:new_mini_sendrec:693: BEFORE UP lpid=1007 p_sem=-1 rcode=76
+[ 5987.061343] DEBUG 1010:new_mini_sendrec:701: WUNLOCK_PROC ep=1 count=0
+[ 5987.061344] DEBUG 1010:sleep_proc:344: timeout=-1
+[ 5987.061346] DEBUG 1010:sleep_proc:355: BEFORE DOWN lpid=1010 p_sem=0 timeout=-1
+[ 5987.061347] DEBUG 1010:sleep_proc:357: endpoint=2 flags=8
+[ 5987.061348] DEBUG 1010:sleep_proc:361: WUNLOCK_PROC ep=2 count=0
+[ 5987.061352] DEBUG 1007:sleep_proc:368: endpoint=1 ret=0 p_rcode=76
+[ 5987.061353] DEBUG 1007:sleep_proc:369: endpoint=1 flags=0 cpuid=0
+[ 5987.061355] DEBUG 1007:sleep_proc:370: WLOCK_PROC ep=1 count=0
+[ 5987.061357] DEBUG 1007:sleep_proc:417: nr=1 endp=1 dcid=0 lpid=1007 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 5987.061358] DEBUG 1007:sleep_proc:419: someone wakeups me: sem=0 p_rcode=0
+[ 5987.061360] DEBUG 1007:new_mini_receive:488: WUNLOCK_PROC ep=1 count=0
+[ 5987.061412] DEBUG 1007:dvk_ioctl:204: cmd=8004E30F arg=BFD619A0
+[ 5987.061414] DEBUG 1007:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 5987.061415] DEBUG 1007:io_getprocinfo:164: 
+[ 5987.061416] DEBUG 1007:new_getprocinfo:1884: dcid=0 p_nr=-1218170880
+[ 5987.061418] DEBUG 1007:check_caller:536: caller_pid=1007 caller_tgid=1007
+[ 5987.061419] DEBUG 1007:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 5987.061421] DEBUG 1007:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 5987.061422] DEBUG 1007:check_caller:604: dcid=0
+[ 5987.061423] DEBUG 1007:check_caller:608: RLOCK_DC dc=0 count=0
+[ 5987.061424] DEBUG 1007:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 5987.061425] DEBUG 1007:check_caller:618: caller_pid=1007 
+[ 5987.061427] DEBUG 1007:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 5987.061428] DEBUG 1007:new_getprocinfo:1904: RUNLOCK_DC dc=0 count=0
+[ 5987.061430] ERROR: 1007:new_getprocinfo:1904: rcode=-304
+[ 5987.061431] ERROR: 1007:dvk_ioctl:228: rcode=-304
+[ 5987.061507] DVK: exit_unbind local_nodeid:0
+[ 5987.061893] DEBUG 1007:new_exit_unbind:206: code=-797571012
+[ 5987.061894] DEBUG 1007:new_exit_unbind:210: WLOCK_TASK pid=1007 count=0
+[ 5987.061896] DEBUG 1007:new_exit_unbind:216: RLOCK_PROC ep=1 count=0
+[ 5987.061898] DEBUG 1007:new_exit_unbind:217: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1007 vpid=14 nodeid=0 name=copy_server 
+[ 5987.061900] DEBUG 1007:new_exit_unbind:250:  Exiting endpoint=1 lpid=1007
+[ 5987.061901] DEBUG 1007:new_exit_unbind:252: RUNLOCK_PROC ep=1 count=0
+[ 5987.061903] DEBUG 1007:new_exit_unbind:253: WLOCK_DC dc=0 count=0
+[ 5987.061904] DEBUG 1007:new_exit_unbind:254: WLOCK_PROC ep=1 count=0
+[ 5987.061905] DEBUG 1007:new_exit_unbind:261:  endpoint=1 lpid=1007
+[ 5987.061908] DEBUG 1007:do_unbind:637: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1007 vpid=14 nodeid=0 name=copy_server 
+[ 5987.061911] DEBUG 1007:do_unbind:666: Caller nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1007 vpid=14 nodeid=0 name=copy_server 
+[ 5987.061912] DEBUG 1007:do_unbind:705: wakeup with error those processes trying to send a message to the proc
+[ 5987.061913] DEBUG 1007:do_unbind:732: delete notify messages bits sent by the proc
+[ 5987.061918] DEBUG 1007:do_unbind:737: Skip, self process
+[ 5987.061920] DEBUG 1007:do_unbind:769: Process 2 is no more waiting a message from the unbinded process 1
+[ 5987.061921] DEBUG 1007:do_unbind:772: Wakeup RECEIVER with error ep=2  pid=1010
+[ 5987.061922] DEBUG 1007:inherit_cpu:288: cpuid=0 vpid=ld
+[ 5987.061926] DEBUG 1007:inherit_cpu:296: nr=2 endp=2 dcid=0 lpid=1010 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 5987.061928] DEBUG 1007:do_unbind:773: BEFORE UP lpid=1010 p_sem=-1 rcode=-108
+[ 5987.061929] DEBUG 1007:do_unbind:780: WUNLOCK_PROC ep=2 count=0
+[ 5987.061945] DEBUG 1007:do_unbind:784: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1007 vpid=14 nodeid=0 name=copy_server 
+[ 5987.061946] DEBUG 1007:do_unbind:840: wakeup with error those processes waiting this process MIGRATION
+[ 5987.061947] DEBUG 1007:do_unbind:889: wakeup those processes waiting this process UNBINDING
+[ 5987.061950] DEBUG 1007:do_unbind:924: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1007 vpid=14 nodeid=0 name=copy_server 
+[ 5987.061951] DEBUG 1007:init_proc_desc:16: p_name=copy_server dcid=0
+[ 5987.061953] DEBUG 1007:do_unbind:926: initialized 
+[ 5987.061954] DEBUG 1007:do_unbind:927: DC_DECREF counter=2
+[ 5987.061956] DEBUG 1007:new_exit_unbind:325: WUNLOCK_PROC ep=1 count=0
+[ 5987.061957] DEBUG 1007:new_exit_unbind:326: WUNLOCK_TASK pid=1007 count=0
+[ 5987.061958] DEBUG 1007:new_exit_unbind:327: WUNLOCK_DC dc=0 count=0
+[ 5987.068023] DVK: exit_unbind local_nodeid:0
+[ 5987.068433] DEBUG 1006:new_exit_unbind:206: code=-797571012
+[ 5987.068435] DEBUG 1006:new_exit_unbind:210: WLOCK_TASK pid=1006 count=0
+[ 5987.068437] DEBUG 1006:new_exit_unbind:341: Process not bound pid=1006 nsenter
+[ 5987.068438] DEBUG 1006:new_exit_unbind:343: WUNLOCK_TASK pid=1006 count=0
+[ 5987.073074] DEBUG 1010:sleep_proc:368: endpoint=2 ret=0 p_rcode=-108
+[ 5987.073078] DEBUG 1010:sleep_proc:369: endpoint=2 flags=8 cpuid=0
+[ 5987.073080] DEBUG 1010:sleep_proc:370: WLOCK_PROC ep=2 count=0
+[ 5987.073081] DEBUG 1010:sleep_proc:392: pid=1010 ret=-108
+[ 5987.073084] DEBUG 1010:sleep_proc:417: nr=2 endp=2 dcid=0 lpid=1010 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 5987.073086] DEBUG 1010:sleep_proc:419: someone wakeups me: sem=0 p_rcode=-108
+[ 5987.073088] DEBUG 1010:new_mini_sendrec:748: WUNLOCK_PROC ep=2 count=0
+[ 5987.073089] ERROR: 1010:new_mini_sendrec:749: rcode=-108
+[ 5987.073091] ERROR: 1010:dvk_ioctl:228: rcode=-108
+[ 5987.075455] DVK: exit_unbind local_nodeid:0
+[ 5987.075825] DEBUG 1010:new_exit_unbind:206: code=-797571012
+[ 5987.075827] DEBUG 1010:new_exit_unbind:210: WLOCK_TASK pid=1010 count=0
+[ 5987.075829] DEBUG 1010:new_exit_unbind:216: RLOCK_PROC ep=2 count=0
+[ 5987.075832] DEBUG 1010:new_exit_unbind:217: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.075833] DEBUG 1010:new_exit_unbind:250:  Exiting endpoint=2 lpid=1010
+[ 5987.075835] DEBUG 1010:new_exit_unbind:252: RUNLOCK_PROC ep=2 count=0
+[ 5987.075837] DEBUG 1010:new_exit_unbind:253: WLOCK_DC dc=0 count=0
+[ 5987.075838] DEBUG 1010:new_exit_unbind:254: WLOCK_PROC ep=2 count=0
+[ 5987.075839] DEBUG 1010:new_exit_unbind:261:  endpoint=2 lpid=1010
+[ 5987.075842] DEBUG 1010:do_unbind:637: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.075845] DEBUG 1010:do_unbind:666: Caller nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.075846] DEBUG 1010:do_unbind:705: wakeup with error those processes trying to send a message to the proc
+[ 5987.075847] DEBUG 1010:do_unbind:732: delete notify messages bits sent by the proc
+[ 5987.075852] DEBUG 1010:do_unbind:737: Skip, self process
+[ 5987.075866] DEBUG 1010:do_unbind:784: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.075868] DEBUG 1010:do_unbind:840: wakeup with error those processes waiting this process MIGRATION
+[ 5987.075869] DEBUG 1010:do_unbind:889: wakeup those processes waiting this process UNBINDING
+[ 5987.075871] DEBUG 1010:do_unbind:924: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1010 vpid=15 nodeid=0 name=copy_client 
+[ 5987.075873] DEBUG 1010:init_proc_desc:16: p_name=copy_client dcid=0
+[ 5987.075874] DEBUG 1010:do_unbind:926: initialized 
+[ 5987.075876] DEBUG 1010:do_unbind:927: DC_DECREF counter=1
+[ 5987.075877] DEBUG 1010:new_exit_unbind:325: WUNLOCK_PROC ep=2 count=0
+[ 5987.075879] DEBUG 1010:new_exit_unbind:326: WUNLOCK_TASK pid=1010 count=0
+[ 5987.075880] DEBUG 1010:new_exit_unbind:327: WUNLOCK_DC dc=0 count=0
+[ 5987.076119] DVK: exit_unbind local_nodeid:0
+[ 5987.076475] DEBUG 1009:new_exit_unbind:206: code=-797571012
+[ 5987.076477] DEBUG 1009:new_exit_unbind:210: WLOCK_TASK pid=1009 count=0
+[ 5987.076478] DEBUG 1009:new_exit_unbind:341: Process not bound pid=1009 nsenter
+[ 5987.076480] DEBUG 1009:new_exit_unbind:343: WUNLOCK_TASK pid=1009 count=0
+[ 6007.704316] DVK: exit_unbind local_nodeid:0
+[ 6007.704923] DEBUG 1011:new_exit_unbind:206: code=-797571012
+[ 6007.704926] DEBUG 1011:new_exit_unbind:210: WLOCK_TASK pid=1011 count=0
+[ 6007.704929] DEBUG 1011:new_exit_unbind:341: Process not bound pid=1011 bash
+[ 6007.704932] DEBUG 1011:new_exit_unbind:343: WUNLOCK_TASK pid=1011 count=0
+[ 6007.710239] DVK: exit_unbind local_nodeid:0
+[ 6007.710845] DEBUG 1012:new_exit_unbind:206: code=-797571012
+[ 6007.710849] DEBUG 1012:new_exit_unbind:210: WLOCK_TASK pid=1012 count=0
+[ 6007.710852] DEBUG 1012:new_exit_unbind:341: Process not bound pid=1012 bash
+[ 6007.710854] DEBUG 1012:new_exit_unbind:343: WUNLOCK_TASK pid=1012 count=0
+[ 6008.355330] DVK: exit_unbind local_nodeid:0
+[ 6008.355953] DEBUG 1013:new_exit_unbind:206: code=-797571012
+[ 6008.355956] DEBUG 1013:new_exit_unbind:210: WLOCK_TASK pid=1013 count=0
+[ 6008.355959] DEBUG 1013:new_exit_unbind:341: Process not bound pid=1013 bash
+[ 6008.355962] DEBUG 1013:new_exit_unbind:343: WUNLOCK_TASK pid=1013 count=0
+[ 6008.361065] DVK: exit_unbind local_nodeid:0
+[ 6008.361788] DEBUG 1014:new_exit_unbind:206: code=-797571012
+[ 6008.361860] DEBUG 1014:new_exit_unbind:210: WLOCK_TASK pid=1014 count=0
+[ 6008.361863] DEBUG 1014:new_exit_unbind:341: Process not bound pid=1014 bash
+[ 6008.361866] DEBUG 1014:new_exit_unbind:343: WUNLOCK_TASK pid=1014 count=0
+[ 6008.802856] DVK: exit_unbind local_nodeid:0
+[ 6008.803503] DEBUG 1015:new_exit_unbind:206: code=-797571012
+[ 6008.803507] DEBUG 1015:new_exit_unbind:210: WLOCK_TASK pid=1015 count=0
+[ 6008.803510] DEBUG 1015:new_exit_unbind:341: Process not bound pid=1015 bash
+[ 6008.803512] DEBUG 1015:new_exit_unbind:343: WUNLOCK_TASK pid=1015 count=0
+[ 6008.808749] DVK: exit_unbind local_nodeid:0
+[ 6008.809453] DEBUG 1016:new_exit_unbind:206: code=-797571012
+[ 6008.809473] DEBUG 1016:new_exit_unbind:210: WLOCK_TASK pid=1016 count=0
+[ 6008.809476] DEBUG 1016:new_exit_unbind:341: Process not bound pid=1016 bash
+[ 6008.809478] DEBUG 1016:new_exit_unbind:343: WUNLOCK_TASK pid=1016 count=0
+[ 6009.099285] DVK: exit_unbind local_nodeid:0
+[ 6009.099894] DEBUG 1017:new_exit_unbind:206: code=-797571012
+[ 6009.099898] DEBUG 1017:new_exit_unbind:210: WLOCK_TASK pid=1017 count=0
+[ 6009.099901] DEBUG 1017:new_exit_unbind:341: Process not bound pid=1017 bash
+[ 6009.099903] DEBUG 1017:new_exit_unbind:343: WUNLOCK_TASK pid=1017 count=0
+[ 6009.104665] DVK: exit_unbind local_nodeid:0
+[ 6009.105301] DEBUG 1018:new_exit_unbind:206: code=-797571012
+[ 6009.105305] DEBUG 1018:new_exit_unbind:210: WLOCK_TASK pid=1018 count=0
+[ 6009.105308] DEBUG 1018:new_exit_unbind:341: Process not bound pid=1018 bash
+[ 6009.105311] DEBUG 1018:new_exit_unbind:343: WUNLOCK_TASK pid=1018 count=0
+[ 6009.268153] DEBUG 1019:dc_procs_read:335: last_proc=0 count=131072 ppos=0
+[ 6009.268157] DEBUG 1019:dc_procs_read:350: dcid=0
+[ 6009.268159] DEBUG 1019:dc_procs_read:359: RLOCK_DC dc=0 count=0
+[ 6009.268161] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-34 count=0
+[ 6009.268163] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-34 count=0
+[ 6009.268164] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-33 count=0
+[ 6009.268166] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-33 count=0
+[ 6009.268167] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-32 count=0
+[ 6009.268168] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-32 count=0
+[ 6009.268170] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-31 count=0
+[ 6009.268171] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-31 count=0
+[ 6009.268172] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-30 count=0
+[ 6009.268173] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-30 count=0
+[ 6009.268175] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-29 count=0
+[ 6009.268176] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-29 count=0
+[ 6009.268177] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-28 count=0
+[ 6009.268178] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-28 count=0
+[ 6009.268180] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-27 count=0
+[ 6009.268181] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-27 count=0
+[ 6009.268182] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-26 count=0
+[ 6009.268183] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-26 count=0
+[ 6009.268185] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-25 count=0
+[ 6009.268186] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-25 count=0
+[ 6009.268187] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-24 count=0
+[ 6009.268188] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-24 count=0
+[ 6009.268190] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-23 count=0
+[ 6009.268191] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-23 count=0
+[ 6009.268192] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-22 count=0
+[ 6009.268193] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-22 count=0
+[ 6009.268195] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-21 count=0
+[ 6009.268196] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-21 count=0
+[ 6009.268197] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-20 count=0
+[ 6009.268198] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-20 count=0
+[ 6009.268200] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-19 count=0
+[ 6009.268201] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-19 count=0
+[ 6009.268202] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-18 count=0
+[ 6009.268203] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-18 count=0
+[ 6009.268204] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-17 count=0
+[ 6009.268206] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-17 count=0
+[ 6009.268207] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-16 count=0
+[ 6009.268208] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-16 count=0
+[ 6009.268209] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-15 count=0
+[ 6009.268210] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-15 count=0
+[ 6009.268212] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-14 count=0
+[ 6009.268213] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-14 count=0
+[ 6009.268214] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-13 count=0
+[ 6009.268215] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-13 count=0
+[ 6009.268217] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-12 count=0
+[ 6009.268218] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-12 count=0
+[ 6009.268219] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-11 count=0
+[ 6009.268220] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-11 count=0
+[ 6009.268222] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-10 count=0
+[ 6009.268223] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-10 count=0
+[ 6009.268224] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-9 count=0
+[ 6009.268225] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-9 count=0
+[ 6009.268227] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-8 count=0
+[ 6009.268228] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-8 count=0
+[ 6009.268229] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-7 count=0
+[ 6009.268230] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-7 count=0
+[ 6009.268232] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-6 count=0
+[ 6009.268233] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-6 count=0
+[ 6009.268234] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-5 count=0
+[ 6009.268235] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-5 count=0
+[ 6009.268236] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-4 count=0
+[ 6009.268238] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-4 count=0
+[ 6009.268239] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-3 count=0
+[ 6009.268240] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-3 count=0
+[ 6009.268241] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-2 count=0
+[ 6009.268242] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-2 count=0
+[ 6009.268244] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=-1 count=0
+[ 6009.268245] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=-1 count=0
+[ 6009.268246] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=0 count=0
+[ 6009.268247] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=0 count=0
+[ 6009.268249] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=1 count=0
+[ 6009.268250] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=1 count=0
+[ 6009.268251] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=2 count=0
+[ 6009.268252] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=2 count=0
+[ 6009.268253] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=3 count=0
+[ 6009.268255] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=3 count=0
+[ 6009.268256] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=4 count=0
+[ 6009.268257] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=4 count=0
+[ 6009.268258] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=5 count=0
+[ 6009.268260] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=5 count=0
+[ 6009.268261] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=6 count=0
+[ 6009.268262] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=6 count=0
+[ 6009.268263] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=7 count=0
+[ 6009.268264] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=7 count=0
+[ 6009.268266] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=8 count=0
+[ 6009.268267] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=8 count=0
+[ 6009.268268] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=9 count=0
+[ 6009.268269] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=9 count=0
+[ 6009.268271] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=10 count=0
+[ 6009.268272] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=10 count=0
+[ 6009.268273] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=11 count=0
+[ 6009.268274] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=11 count=0
+[ 6009.268276] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=12 count=0
+[ 6009.268277] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=12 count=0
+[ 6009.268278] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=13 count=0
+[ 6009.268279] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=13 count=0
+[ 6009.268280] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=14 count=0
+[ 6009.268282] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=14 count=0
+[ 6009.268283] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=15 count=0
+[ 6009.268284] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=15 count=0
+[ 6009.268285] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=16 count=0
+[ 6009.268286] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=16 count=0
+[ 6009.268288] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=17 count=0
+[ 6009.268289] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=17 count=0
+[ 6009.268290] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=18 count=0
+[ 6009.268291] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=18 count=0
+[ 6009.268292] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=19 count=0
+[ 6009.268293] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=19 count=0
+[ 6009.268295] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=20 count=0
+[ 6009.268296] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=20 count=0
+[ 6009.268297] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=21 count=0
+[ 6009.268298] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=21 count=0
+[ 6009.268300] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=22 count=0
+[ 6009.268301] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=22 count=0
+[ 6009.268302] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=23 count=0
+[ 6009.268303] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=23 count=0
+[ 6009.268304] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=24 count=0
+[ 6009.268305] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=24 count=0
+[ 6009.268307] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=25 count=0
+[ 6009.268308] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=25 count=0
+[ 6009.268309] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=26 count=0
+[ 6009.268310] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=26 count=0
+[ 6009.268311] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=27 count=0
+[ 6009.268313] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=27 count=0
+[ 6009.268314] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=28 count=0
+[ 6009.268315] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=28 count=0
+[ 6009.268316] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=29 count=0
+[ 6009.268317] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=29 count=0
+[ 6009.268319] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=30 count=0
+[ 6009.268320] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=30 count=0
+[ 6009.268321] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=31 count=0
+[ 6009.268323] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=31 count=0
+[ 6009.268324] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=32 count=0
+[ 6009.268325] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=32 count=0
+[ 6009.268326] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=33 count=0
+[ 6009.268327] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=33 count=0
+[ 6009.268329] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=34 count=0
+[ 6009.268330] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=34 count=0
+[ 6009.268331] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=35 count=0
+[ 6009.268332] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=35 count=0
+[ 6009.268333] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=36 count=0
+[ 6009.268334] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=36 count=0
+[ 6009.268336] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=37 count=0
+[ 6009.268337] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=37 count=0
+[ 6009.268338] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=38 count=0
+[ 6009.268339] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=38 count=0
+[ 6009.268340] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=39 count=0
+[ 6009.268342] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=39 count=0
+[ 6009.268343] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=40 count=0
+[ 6009.268344] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=40 count=0
+[ 6009.268345] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=41 count=0
+[ 6009.268346] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=41 count=0
+[ 6009.268348] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=42 count=0
+[ 6009.268349] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=42 count=0
+[ 6009.268350] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=43 count=0
+[ 6009.268351] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=43 count=0
+[ 6009.268352] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=44 count=0
+[ 6009.268354] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=44 count=0
+[ 6009.268355] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=45 count=0
+[ 6009.268356] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=45 count=0
+[ 6009.268357] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=46 count=0
+[ 6009.268358] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=46 count=0
+[ 6009.268360] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=47 count=0
+[ 6009.268361] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=47 count=0
+[ 6009.268362] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=48 count=0
+[ 6009.268363] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=48 count=0
+[ 6009.268364] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=49 count=0
+[ 6009.268366] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=49 count=0
+[ 6009.268367] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=50 count=0
+[ 6009.268368] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=50 count=0
+[ 6009.268369] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=51 count=0
+[ 6009.268370] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=51 count=0
+[ 6009.268371] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=52 count=0
+[ 6009.268373] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=52 count=0
+[ 6009.268374] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=53 count=0
+[ 6009.268375] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=53 count=0
+[ 6009.268376] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=54 count=0
+[ 6009.268404] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=54 count=0
+[ 6009.272807] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=55 count=0
+[ 6009.272810] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=55 count=0
+[ 6009.272812] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=56 count=0
+[ 6009.272813] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=56 count=0
+[ 6009.272815] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=57 count=0
+[ 6009.272816] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=57 count=0
+[ 6009.272817] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=58 count=0
+[ 6009.272819] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=58 count=0
+[ 6009.272820] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=59 count=0
+[ 6009.272821] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=59 count=0
+[ 6009.272823] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=60 count=0
+[ 6009.272824] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=60 count=0
+[ 6009.272825] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=61 count=0
+[ 6009.272826] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=61 count=0
+[ 6009.272828] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=62 count=0
+[ 6009.272829] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=62 count=0
+[ 6009.272830] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=63 count=0
+[ 6009.272832] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=63 count=0
+[ 6009.272833] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=64 count=0
+[ 6009.272834] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=64 count=0
+[ 6009.272835] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=65 count=0
+[ 6009.272836] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=65 count=0
+[ 6009.272838] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=66 count=0
+[ 6009.272839] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=66 count=0
+[ 6009.272840] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=67 count=0
+[ 6009.272841] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=67 count=0
+[ 6009.272843] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=68 count=0
+[ 6009.272844] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=68 count=0
+[ 6009.272845] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=69 count=0
+[ 6009.272846] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=69 count=0
+[ 6009.272848] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=70 count=0
+[ 6009.272849] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=70 count=0
+[ 6009.272851] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=71 count=0
+[ 6009.272852] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=71 count=0
+[ 6009.272853] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=72 count=0
+[ 6009.272854] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=72 count=0
+[ 6009.272856] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=73 count=0
+[ 6009.272857] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=73 count=0
+[ 6009.272858] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=74 count=0
+[ 6009.272859] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=74 count=0
+[ 6009.272861] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=75 count=0
+[ 6009.272862] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=75 count=0
+[ 6009.272863] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=76 count=0
+[ 6009.272864] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=76 count=0
+[ 6009.272866] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=77 count=0
+[ 6009.272867] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=77 count=0
+[ 6009.272868] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=78 count=0
+[ 6009.272869] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=78 count=0
+[ 6009.272871] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=79 count=0
+[ 6009.272872] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=79 count=0
+[ 6009.272873] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=80 count=0
+[ 6009.272874] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=80 count=0
+[ 6009.272876] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=81 count=0
+[ 6009.272877] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=81 count=0
+[ 6009.272878] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=82 count=0
+[ 6009.272880] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=82 count=0
+[ 6009.272881] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=83 count=0
+[ 6009.272882] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=83 count=0
+[ 6009.272883] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=84 count=0
+[ 6009.272885] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=84 count=0
+[ 6009.272886] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=85 count=0
+[ 6009.272887] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=85 count=0
+[ 6009.272888] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=86 count=0
+[ 6009.272890] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=86 count=0
+[ 6009.272891] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=87 count=0
+[ 6009.272892] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=87 count=0
+[ 6009.272893] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=88 count=0
+[ 6009.272895] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=88 count=0
+[ 6009.272896] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=89 count=0
+[ 6009.272897] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=89 count=0
+[ 6009.272898] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=90 count=0
+[ 6009.272900] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=90 count=0
+[ 6009.272901] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=91 count=0
+[ 6009.272902] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=91 count=0
+[ 6009.272903] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=92 count=0
+[ 6009.272905] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=92 count=0
+[ 6009.272906] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=93 count=0
+[ 6009.272907] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=93 count=0
+[ 6009.272909] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=94 count=0
+[ 6009.272910] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=94 count=0
+[ 6009.272911] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=95 count=0
+[ 6009.272912] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=95 count=0
+[ 6009.272914] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=96 count=0
+[ 6009.272915] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=96 count=0
+[ 6009.272916] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=97 count=0
+[ 6009.272917] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=97 count=0
+[ 6009.272918] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=98 count=0
+[ 6009.272920] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=98 count=0
+[ 6009.272921] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=99 count=0
+[ 6009.272922] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=99 count=0
+[ 6009.272923] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=100 count=0
+[ 6009.272925] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=100 count=0
+[ 6009.272926] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=101 count=0
+[ 6009.272927] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=101 count=0
+[ 6009.272928] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=102 count=0
+[ 6009.272930] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=102 count=0
+[ 6009.272931] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=103 count=0
+[ 6009.272932] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=103 count=0
+[ 6009.272933] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=104 count=0
+[ 6009.272935] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=104 count=0
+[ 6009.272936] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=105 count=0
+[ 6009.272937] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=105 count=0
+[ 6009.272938] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=106 count=0
+[ 6009.272940] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=106 count=0
+[ 6009.272941] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=107 count=0
+[ 6009.272942] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=107 count=0
+[ 6009.272943] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=108 count=0
+[ 6009.272944] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=108 count=0
+[ 6009.272946] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=109 count=0
+[ 6009.272947] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=109 count=0
+[ 6009.272948] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=110 count=0
+[ 6009.272949] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=110 count=0
+[ 6009.272951] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=111 count=0
+[ 6009.272952] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=111 count=0
+[ 6009.272953] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=112 count=0
+[ 6009.272955] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=112 count=0
+[ 6009.272956] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=113 count=0
+[ 6009.272957] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=113 count=0
+[ 6009.272958] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=114 count=0
+[ 6009.272959] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=114 count=0
+[ 6009.272961] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=115 count=0
+[ 6009.272962] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=115 count=0
+[ 6009.272963] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=116 count=0
+[ 6009.272964] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=116 count=0
+[ 6009.272966] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=117 count=0
+[ 6009.272967] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=117 count=0
+[ 6009.272968] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=118 count=0
+[ 6009.272969] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=118 count=0
+[ 6009.272971] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=119 count=0
+[ 6009.272972] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=119 count=0
+[ 6009.272973] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=120 count=0
+[ 6009.272974] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=120 count=0
+[ 6009.272976] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=121 count=0
+[ 6009.272977] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=121 count=0
+[ 6009.272978] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=122 count=0
+[ 6009.272979] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=122 count=0
+[ 6009.272980] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=123 count=0
+[ 6009.272982] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=123 count=0
+[ 6009.272983] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=124 count=0
+[ 6009.272984] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=124 count=0
+[ 6009.272985] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=125 count=0
+[ 6009.272986] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=125 count=0
+[ 6009.272988] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=126 count=0
+[ 6009.272989] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=126 count=0
+[ 6009.272990] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=127 count=0
+[ 6009.272991] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=127 count=0
+[ 6009.272993] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=128 count=0
+[ 6009.272994] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=128 count=0
+[ 6009.272995] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=129 count=0
+[ 6009.272996] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=129 count=0
+[ 6009.272998] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=130 count=0
+[ 6009.272999] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=130 count=0
+[ 6009.273000] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=131 count=0
+[ 6009.273001] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=131 count=0
+[ 6009.273003] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=132 count=0
+[ 6009.273004] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=132 count=0
+[ 6009.273005] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=133 count=0
+[ 6009.273006] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=133 count=0
+[ 6009.273007] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=134 count=0
+[ 6009.273009] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=134 count=0
+[ 6009.273010] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=135 count=0
+[ 6009.273011] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=135 count=0
+[ 6009.273012] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=136 count=0
+[ 6009.273014] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=136 count=0
+[ 6009.273015] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=137 count=0
+[ 6009.273016] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=137 count=0
+[ 6009.273017] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=138 count=0
+[ 6009.273019] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=138 count=0
+[ 6009.273020] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=139 count=0
+[ 6009.273021] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=139 count=0
+[ 6009.273022] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=140 count=0
+[ 6009.273023] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=140 count=0
+[ 6009.273025] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=141 count=0
+[ 6009.273026] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=141 count=0
+[ 6009.273027] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=142 count=0
+[ 6009.273028] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=142 count=0
+[ 6009.273030] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=143 count=0
+[ 6009.273031] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=143 count=0
+[ 6009.273032] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=144 count=0
+[ 6009.273034] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=144 count=0
+[ 6009.273035] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=145 count=0
+[ 6009.273036] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=145 count=0
+[ 6009.273037] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=146 count=0
+[ 6009.273038] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=146 count=0
+[ 6009.273040] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=147 count=0
+[ 6009.273041] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=147 count=0
+[ 6009.273042] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=148 count=0
+[ 6009.273043] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=148 count=0
+[ 6009.273044] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=149 count=0
+[ 6009.273046] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=149 count=0
+[ 6009.273047] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=150 count=0
+[ 6009.273048] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=150 count=0
+[ 6009.273049] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=151 count=0
+[ 6009.273051] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=151 count=0
+[ 6009.273052] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=152 count=0
+[ 6009.273053] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=152 count=0
+[ 6009.273054] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=153 count=0
+[ 6009.273056] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=153 count=0
+[ 6009.273057] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=154 count=0
+[ 6009.273058] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=154 count=0
+[ 6009.273059] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=155 count=0
+[ 6009.273061] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=155 count=0
+[ 6009.273062] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=156 count=0
+[ 6009.273063] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=156 count=0
+[ 6009.273064] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=157 count=0
+[ 6009.273066] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=157 count=0
+[ 6009.273067] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=158 count=0
+[ 6009.273069] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=158 count=0
+[ 6009.273070] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=159 count=0
+[ 6009.273071] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=159 count=0
+[ 6009.273073] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=160 count=0
+[ 6009.273074] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=160 count=0
+[ 6009.273076] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=161 count=0
+[ 6009.273077] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=161 count=0
+[ 6009.273078] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=162 count=0
+[ 6009.273079] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=162 count=0
+[ 6009.273080] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=163 count=0
+[ 6009.273082] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=163 count=0
+[ 6009.273083] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=164 count=0
+[ 6009.273084] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=164 count=0
+[ 6009.273085] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=165 count=0
+[ 6009.273086] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=165 count=0
+[ 6009.273088] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=166 count=0
+[ 6009.273089] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=166 count=0
+[ 6009.273090] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=167 count=0
+[ 6009.273092] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=167 count=0
+[ 6009.273093] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=168 count=0
+[ 6009.273094] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=168 count=0
+[ 6009.273095] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=169 count=0
+[ 6009.273096] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=169 count=0
+[ 6009.273098] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=170 count=0
+[ 6009.273099] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=170 count=0
+[ 6009.273100] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=171 count=0
+[ 6009.273102] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=171 count=0
+[ 6009.273103] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=172 count=0
+[ 6009.273104] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=172 count=0
+[ 6009.273105] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=173 count=0
+[ 6009.273107] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=173 count=0
+[ 6009.273108] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=174 count=0
+[ 6009.273109] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=174 count=0
+[ 6009.273110] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=175 count=0
+[ 6009.273112] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=175 count=0
+[ 6009.273113] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=176 count=0
+[ 6009.273114] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=176 count=0
+[ 6009.273115] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=177 count=0
+[ 6009.273116] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=177 count=0
+[ 6009.273118] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=178 count=0
+[ 6009.273119] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=178 count=0
+[ 6009.273120] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=179 count=0
+[ 6009.273121] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=179 count=0
+[ 6009.273123] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=180 count=0
+[ 6009.273124] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=180 count=0
+[ 6009.273125] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=181 count=0
+[ 6009.273126] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=181 count=0
+[ 6009.273128] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=182 count=0
+[ 6009.273129] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=182 count=0
+[ 6009.273130] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=183 count=0
+[ 6009.273131] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=183 count=0
+[ 6009.273133] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=184 count=0
+[ 6009.273134] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=184 count=0
+[ 6009.273135] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=185 count=0
+[ 6009.273136] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=185 count=0
+[ 6009.273138] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=186 count=0
+[ 6009.273139] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=186 count=0
+[ 6009.273140] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=187 count=0
+[ 6009.273141] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=187 count=0
+[ 6009.273142] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=188 count=0
+[ 6009.273144] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=188 count=0
+[ 6009.273145] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=189 count=0
+[ 6009.273146] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=189 count=0
+[ 6009.273147] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=190 count=0
+[ 6009.273148] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=190 count=0
+[ 6009.273150] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=191 count=0
+[ 6009.273151] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=191 count=0
+[ 6009.273152] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=192 count=0
+[ 6009.273153] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=192 count=0
+[ 6009.273155] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=193 count=0
+[ 6009.273156] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=193 count=0
+[ 6009.273157] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=194 count=0
+[ 6009.273158] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=194 count=0
+[ 6009.273159] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=195 count=0
+[ 6009.273161] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=195 count=0
+[ 6009.273162] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=196 count=0
+[ 6009.273163] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=196 count=0
+[ 6009.273164] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=197 count=0
+[ 6009.273166] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=197 count=0
+[ 6009.273167] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=198 count=0
+[ 6009.273168] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=198 count=0
+[ 6009.273169] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=199 count=0
+[ 6009.273171] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=199 count=0
+[ 6009.273172] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=200 count=0
+[ 6009.273173] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=200 count=0
+[ 6009.273175] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=201 count=0
+[ 6009.273176] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=201 count=0
+[ 6009.273177] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=202 count=0
+[ 6009.273178] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=202 count=0
+[ 6009.273180] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=203 count=0
+[ 6009.273181] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=203 count=0
+[ 6009.273182] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=204 count=0
+[ 6009.273183] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=204 count=0
+[ 6009.273185] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=205 count=0
+[ 6009.273186] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=205 count=0
+[ 6009.273187] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=206 count=0
+[ 6009.273188] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=206 count=0
+[ 6009.273190] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=207 count=0
+[ 6009.273191] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=207 count=0
+[ 6009.273192] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=208 count=0
+[ 6009.273193] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=208 count=0
+[ 6009.273195] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=209 count=0
+[ 6009.273196] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=209 count=0
+[ 6009.273197] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=210 count=0
+[ 6009.273198] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=210 count=0
+[ 6009.273199] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=211 count=0
+[ 6009.273201] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=211 count=0
+[ 6009.273202] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=212 count=0
+[ 6009.273203] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=212 count=0
+[ 6009.273204] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=213 count=0
+[ 6009.273205] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=213 count=0
+[ 6009.273207] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=214 count=0
+[ 6009.273208] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=214 count=0
+[ 6009.273209] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=215 count=0
+[ 6009.273210] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=215 count=0
+[ 6009.273212] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=216 count=0
+[ 6009.273213] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=216 count=0
+[ 6009.273214] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=217 count=0
+[ 6009.273215] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=217 count=0
+[ 6009.273217] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=218 count=0
+[ 6009.273218] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=218 count=0
+[ 6009.273219] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=219 count=0
+[ 6009.273220] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=219 count=0
+[ 6009.273221] DEBUG 1019:dc_procs_read:363: RLOCK_PROC ep=220 count=0
+[ 6009.273223] DEBUG 1019:dc_procs_read:365: RUNLOCK_PROC ep=220 count=0
+[ 6009.273224] DEBUG 1019:dc_procs_read:395: RUNLOCK_DC dc=0 count=0
+[ 6009.274050] DEBUG 1019:dc_procs_read:335: last_proc=-1 count=131072 ppos=0
+[ 6009.280945] DVK: exit_unbind local_nodeid:0
+[ 6009.281337] DEBUG 1019:new_exit_unbind:206: code=-797571012
+[ 6009.281339] DEBUG 1019:new_exit_unbind:210: WLOCK_TASK pid=1019 count=0
+[ 6009.281341] DEBUG 1019:new_exit_unbind:341: Process not bound pid=1019 cat
+[ 6009.281342] DEBUG 1019:new_exit_unbind:343: WUNLOCK_TASK pid=1019 count=0
+[ 6009.317967] DVK: exit_unbind local_nodeid:0
+[ 6009.318343] DEBUG 1020:new_exit_unbind:206: code=-797571012
+[ 6009.318345] DEBUG 1020:new_exit_unbind:210: WLOCK_TASK pid=179 count=0
+[ 6009.318346] DEBUG 1020:new_exit_unbind:341: Process not bound pid=1020 systemd-journal
+[ 6009.318348] DEBUG 1020:new_exit_unbind:343: WUNLOCK_TASK pid=179 count=0
+[ 6011.730876] DEBUG 1021:dc_procs_read:335: last_proc=0 count=131072 ppos=0
+[ 6011.730880] DEBUG 1021:dc_procs_read:350: dcid=0
+[ 6011.730883] DEBUG 1021:dc_procs_read:359: RLOCK_DC dc=0 count=0
+[ 6011.730886] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-34 count=0
+[ 6011.730887] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-34 count=0
+[ 6011.730889] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-33 count=0
+[ 6011.730890] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-33 count=0
+[ 6011.730891] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-32 count=0
+[ 6011.730892] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-32 count=0
+[ 6011.730894] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-31 count=0
+[ 6011.730895] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-31 count=0
+[ 6011.730896] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-30 count=0
+[ 6011.730897] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-30 count=0
+[ 6011.730899] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-29 count=0
+[ 6011.730900] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-29 count=0
+[ 6011.730901] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-28 count=0
+[ 6011.730902] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-28 count=0
+[ 6011.730903] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-27 count=0
+[ 6011.730905] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-27 count=0
+[ 6011.730906] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-26 count=0
+[ 6011.730907] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-26 count=0
+[ 6011.730908] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-25 count=0
+[ 6011.730909] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-25 count=0
+[ 6011.730911] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-24 count=0
+[ 6011.730912] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-24 count=0
+[ 6011.730913] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-23 count=0
+[ 6011.730914] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-23 count=0
+[ 6011.730916] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-22 count=0
+[ 6011.730917] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-22 count=0
+[ 6011.730918] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-21 count=0
+[ 6011.730919] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-21 count=0
+[ 6011.730921] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-20 count=0
+[ 6011.730922] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-20 count=0
+[ 6011.730923] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-19 count=0
+[ 6011.730924] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-19 count=0
+[ 6011.730926] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-18 count=0
+[ 6011.730927] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-18 count=0
+[ 6011.730928] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-17 count=0
+[ 6011.730929] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-17 count=0
+[ 6011.730931] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-16 count=0
+[ 6011.730932] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-16 count=0
+[ 6011.730933] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-15 count=0
+[ 6011.730934] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-15 count=0
+[ 6011.730935] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-14 count=0
+[ 6011.730937] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-14 count=0
+[ 6011.730938] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-13 count=0
+[ 6011.730939] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-13 count=0
+[ 6011.730940] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-12 count=0
+[ 6011.730958] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-12 count=0
+[ 6011.730961] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-11 count=0
+[ 6011.730962] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-11 count=0
+[ 6011.730963] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-10 count=0
+[ 6011.730964] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-10 count=0
+[ 6011.730966] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-9 count=0
+[ 6011.730967] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-9 count=0
+[ 6011.730968] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-8 count=0
+[ 6011.730970] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-8 count=0
+[ 6011.730971] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-7 count=0
+[ 6011.730972] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-7 count=0
+[ 6011.730974] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-6 count=0
+[ 6011.730975] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-6 count=0
+[ 6011.730976] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-5 count=0
+[ 6011.730977] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-5 count=0
+[ 6011.730978] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-4 count=0
+[ 6011.730980] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-4 count=0
+[ 6011.730981] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-3 count=0
+[ 6011.730982] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-3 count=0
+[ 6011.730983] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-2 count=0
+[ 6011.730984] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-2 count=0
+[ 6011.730986] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=-1 count=0
+[ 6011.730987] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=-1 count=0
+[ 6011.730988] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=0 count=0
+[ 6011.730989] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=0 count=0
+[ 6011.730991] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=1 count=0
+[ 6011.730992] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=1 count=0
+[ 6011.730993] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=2 count=0
+[ 6011.730994] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=2 count=0
+[ 6011.730995] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=3 count=0
+[ 6011.730997] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=3 count=0
+[ 6011.730998] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=4 count=0
+[ 6011.730999] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=4 count=0
+[ 6011.731000] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=5 count=0
+[ 6011.731001] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=5 count=0
+[ 6011.731003] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=6 count=0
+[ 6011.731004] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=6 count=0
+[ 6011.731005] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=7 count=0
+[ 6011.731006] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=7 count=0
+[ 6011.731008] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=8 count=0
+[ 6011.731009] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=8 count=0
+[ 6011.731010] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=9 count=0
+[ 6011.731011] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=9 count=0
+[ 6011.731013] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=10 count=0
+[ 6011.731014] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=10 count=0
+[ 6011.731015] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=11 count=0
+[ 6011.731016] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=11 count=0
+[ 6011.731018] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=12 count=0
+[ 6011.731019] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=12 count=0
+[ 6011.731020] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=13 count=0
+[ 6011.731021] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=13 count=0
+[ 6011.731022] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=14 count=0
+[ 6011.731023] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=14 count=0
+[ 6011.731025] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=15 count=0
+[ 6011.731026] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=15 count=0
+[ 6011.731027] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=16 count=0
+[ 6011.731028] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=16 count=0
+[ 6011.731029] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=17 count=0
+[ 6011.731031] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=17 count=0
+[ 6011.731032] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=18 count=0
+[ 6011.731033] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=18 count=0
+[ 6011.731034] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=19 count=0
+[ 6011.731035] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=19 count=0
+[ 6011.731036] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=20 count=0
+[ 6011.731038] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=20 count=0
+[ 6011.731039] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=21 count=0
+[ 6011.731040] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=21 count=0
+[ 6011.731042] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=22 count=0
+[ 6011.731043] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=22 count=0
+[ 6011.731044] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=23 count=0
+[ 6011.731045] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=23 count=0
+[ 6011.731046] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=24 count=0
+[ 6011.731047] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=24 count=0
+[ 6011.731049] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=25 count=0
+[ 6011.731050] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=25 count=0
+[ 6011.731051] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=26 count=0
+[ 6011.731052] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=26 count=0
+[ 6011.731053] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=27 count=0
+[ 6011.731055] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=27 count=0
+[ 6011.731056] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=28 count=0
+[ 6011.731057] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=28 count=0
+[ 6011.731058] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=29 count=0
+[ 6011.731059] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=29 count=0
+[ 6011.731061] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=30 count=0
+[ 6011.731062] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=30 count=0
+[ 6011.731063] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=31 count=0
+[ 6011.731064] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=31 count=0
+[ 6011.731065] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=32 count=0
+[ 6011.731067] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=32 count=0
+[ 6011.731068] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=33 count=0
+[ 6011.731069] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=33 count=0
+[ 6011.731070] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=34 count=0
+[ 6011.731071] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=34 count=0
+[ 6011.731073] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=35 count=0
+[ 6011.731074] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=35 count=0
+[ 6011.731075] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=36 count=0
+[ 6011.731076] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=36 count=0
+[ 6011.731077] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=37 count=0
+[ 6011.731079] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=37 count=0
+[ 6011.731080] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=38 count=0
+[ 6011.731081] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=38 count=0
+[ 6011.731082] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=39 count=0
+[ 6011.731083] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=39 count=0
+[ 6011.731085] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=40 count=0
+[ 6011.731086] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=40 count=0
+[ 6011.731087] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=41 count=0
+[ 6011.731088] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=41 count=0
+[ 6011.731089] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=42 count=0
+[ 6011.731091] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=42 count=0
+[ 6011.731092] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=43 count=0
+[ 6011.731093] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=43 count=0
+[ 6011.731094] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=44 count=0
+[ 6011.731095] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=44 count=0
+[ 6011.731096] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=45 count=0
+[ 6011.731098] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=45 count=0
+[ 6011.731099] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=46 count=0
+[ 6011.731100] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=46 count=0
+[ 6011.731101] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=47 count=0
+[ 6011.731103] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=47 count=0
+[ 6011.731104] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=48 count=0
+[ 6011.731105] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=48 count=0
+[ 6011.731106] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=49 count=0
+[ 6011.731108] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=49 count=0
+[ 6011.731109] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=50 count=0
+[ 6011.731110] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=50 count=0
+[ 6011.731111] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=51 count=0
+[ 6011.731112] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=51 count=0
+[ 6011.731114] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=52 count=0
+[ 6011.731115] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=52 count=0
+[ 6011.731116] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=53 count=0
+[ 6011.731117] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=53 count=0
+[ 6011.731119] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=54 count=0
+[ 6011.731120] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=54 count=0
+[ 6011.731121] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=55 count=0
+[ 6011.731122] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=55 count=0
+[ 6011.731123] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=56 count=0
+[ 6011.731124] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=56 count=0
+[ 6011.731126] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=57 count=0
+[ 6011.731127] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=57 count=0
+[ 6011.731128] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=58 count=0
+[ 6011.731129] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=58 count=0
+[ 6011.731130] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=59 count=0
+[ 6011.731132] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=59 count=0
+[ 6011.731133] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=60 count=0
+[ 6011.731134] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=60 count=0
+[ 6011.731135] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=61 count=0
+[ 6011.731136] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=61 count=0
+[ 6011.731137] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=62 count=0
+[ 6011.731139] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=62 count=0
+[ 6011.731140] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=63 count=0
+[ 6011.731141] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=63 count=0
+[ 6011.731142] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=64 count=0
+[ 6011.731143] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=64 count=0
+[ 6011.731145] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=65 count=0
+[ 6011.731146] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=65 count=0
+[ 6011.731147] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=66 count=0
+[ 6011.731148] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=66 count=0
+[ 6011.731149] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=67 count=0
+[ 6011.731150] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=67 count=0
+[ 6011.731152] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=68 count=0
+[ 6011.731153] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=68 count=0
+[ 6011.731154] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=69 count=0
+[ 6011.731155] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=69 count=0
+[ 6011.731156] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=70 count=0
+[ 6011.731158] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=70 count=0
+[ 6011.731159] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=71 count=0
+[ 6011.731160] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=71 count=0
+[ 6011.731161] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=72 count=0
+[ 6011.731162] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=72 count=0
+[ 6011.731164] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=73 count=0
+[ 6011.731165] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=73 count=0
+[ 6011.731166] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=74 count=0
+[ 6011.731167] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=74 count=0
+[ 6011.731168] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=75 count=0
+[ 6011.731170] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=75 count=0
+[ 6011.731171] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=76 count=0
+[ 6011.731172] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=76 count=0
+[ 6011.731173] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=77 count=0
+[ 6011.731174] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=77 count=0
+[ 6011.731176] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=78 count=0
+[ 6011.731177] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=78 count=0
+[ 6011.731178] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=79 count=0
+[ 6011.731179] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=79 count=0
+[ 6011.731181] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=80 count=0
+[ 6011.731182] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=80 count=0
+[ 6011.731183] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=81 count=0
+[ 6011.731184] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=81 count=0
+[ 6011.731185] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=82 count=0
+[ 6011.731186] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=82 count=0
+[ 6011.731188] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=83 count=0
+[ 6011.731189] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=83 count=0
+[ 6011.731190] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=84 count=0
+[ 6011.731191] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=84 count=0
+[ 6011.731192] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=85 count=0
+[ 6011.731193] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=85 count=0
+[ 6011.731195] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=86 count=0
+[ 6011.731196] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=86 count=0
+[ 6011.731197] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=87 count=0
+[ 6011.731198] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=87 count=0
+[ 6011.731200] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=88 count=0
+[ 6011.731201] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=88 count=0
+[ 6011.731202] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=89 count=0
+[ 6011.731203] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=89 count=0
+[ 6011.731204] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=90 count=0
+[ 6011.731205] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=90 count=0
+[ 6011.731207] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=91 count=0
+[ 6011.731208] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=91 count=0
+[ 6011.731209] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=92 count=0
+[ 6011.731210] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=92 count=0
+[ 6011.731211] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=93 count=0
+[ 6011.731212] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=93 count=0
+[ 6011.731214] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=94 count=0
+[ 6011.731215] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=94 count=0
+[ 6011.731216] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=95 count=0
+[ 6011.731217] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=95 count=0
+[ 6011.731219] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=96 count=0
+[ 6011.731220] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=96 count=0
+[ 6011.731221] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=97 count=0
+[ 6011.731222] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=97 count=0
+[ 6011.731223] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=98 count=0
+[ 6011.731225] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=98 count=0
+[ 6011.731226] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=99 count=0
+[ 6011.731227] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=99 count=0
+[ 6011.731228] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=100 count=0
+[ 6011.731229] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=100 count=0
+[ 6011.731231] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=101 count=0
+[ 6011.731232] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=101 count=0
+[ 6011.731233] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=102 count=0
+[ 6011.731234] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=102 count=0
+[ 6011.731236] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=103 count=0
+[ 6011.731237] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=103 count=0
+[ 6011.731238] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=104 count=0
+[ 6011.731239] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=104 count=0
+[ 6011.731241] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=105 count=0
+[ 6011.731242] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=105 count=0
+[ 6011.731243] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=106 count=0
+[ 6011.731244] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=106 count=0
+[ 6011.731246] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=107 count=0
+[ 6011.731247] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=107 count=0
+[ 6011.731248] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=108 count=0
+[ 6011.731249] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=108 count=0
+[ 6011.731250] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=109 count=0
+[ 6011.731251] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=109 count=0
+[ 6011.731253] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=110 count=0
+[ 6011.731254] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=110 count=0
+[ 6011.731255] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=111 count=0
+[ 6011.731256] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=111 count=0
+[ 6011.731258] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=112 count=0
+[ 6011.731259] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=112 count=0
+[ 6011.731260] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=113 count=0
+[ 6011.731261] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=113 count=0
+[ 6011.731262] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=114 count=0
+[ 6011.731264] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=114 count=0
+[ 6011.731265] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=115 count=0
+[ 6011.731266] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=115 count=0
+[ 6011.731267] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=116 count=0
+[ 6011.731268] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=116 count=0
+[ 6011.731269] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=117 count=0
+[ 6011.731271] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=117 count=0
+[ 6011.731272] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=118 count=0
+[ 6011.731273] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=118 count=0
+[ 6011.731275] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=119 count=0
+[ 6011.731276] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=119 count=0
+[ 6011.731277] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=120 count=0
+[ 6011.731278] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=120 count=0
+[ 6011.731279] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=121 count=0
+[ 6011.731281] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=121 count=0
+[ 6011.731282] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=122 count=0
+[ 6011.731283] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=122 count=0
+[ 6011.731284] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=123 count=0
+[ 6011.731285] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=123 count=0
+[ 6011.731287] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=124 count=0
+[ 6011.731288] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=124 count=0
+[ 6011.731289] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=125 count=0
+[ 6011.731290] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=125 count=0
+[ 6011.731292] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=126 count=0
+[ 6011.731293] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=126 count=0
+[ 6011.731294] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=127 count=0
+[ 6011.731295] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=127 count=0
+[ 6011.731296] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=128 count=0
+[ 6011.731298] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=128 count=0
+[ 6011.731299] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=129 count=0
+[ 6011.731300] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=129 count=0
+[ 6011.731301] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=130 count=0
+[ 6011.731302] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=130 count=0
+[ 6011.731304] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=131 count=0
+[ 6011.731305] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=131 count=0
+[ 6011.731306] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=132 count=0
+[ 6011.731307] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=132 count=0
+[ 6011.731308] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=133 count=0
+[ 6011.731310] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=133 count=0
+[ 6011.731311] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=134 count=0
+[ 6011.731312] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=134 count=0
+[ 6011.731313] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=135 count=0
+[ 6011.731315] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=135 count=0
+[ 6011.731316] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=136 count=0
+[ 6011.731317] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=136 count=0
+[ 6011.731318] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=137 count=0
+[ 6011.731319] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=137 count=0
+[ 6011.731321] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=138 count=0
+[ 6011.731322] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=138 count=0
+[ 6011.731323] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=139 count=0
+[ 6011.731324] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=139 count=0
+[ 6011.731325] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=140 count=0
+[ 6011.731327] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=140 count=0
+[ 6011.731328] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=141 count=0
+[ 6011.731329] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=141 count=0
+[ 6011.731330] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=142 count=0
+[ 6011.731332] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=142 count=0
+[ 6011.731333] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=143 count=0
+[ 6011.731334] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=143 count=0
+[ 6011.731335] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=144 count=0
+[ 6011.731336] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=144 count=0
+[ 6011.731338] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=145 count=0
+[ 6011.731339] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=145 count=0
+[ 6011.731340] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=146 count=0
+[ 6011.731341] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=146 count=0
+[ 6011.731342] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=147 count=0
+[ 6011.731344] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=147 count=0
+[ 6011.731345] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=148 count=0
+[ 6011.731346] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=148 count=0
+[ 6011.731347] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=149 count=0
+[ 6011.731348] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=149 count=0
+[ 6011.731350] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=150 count=0
+[ 6011.731351] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=150 count=0
+[ 6011.731352] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=151 count=0
+[ 6011.731353] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=151 count=0
+[ 6011.731355] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=152 count=0
+[ 6011.731356] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=152 count=0
+[ 6011.731357] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=153 count=0
+[ 6011.731358] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=153 count=0
+[ 6011.731359] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=154 count=0
+[ 6011.731361] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=154 count=0
+[ 6011.731362] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=155 count=0
+[ 6011.731363] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=155 count=0
+[ 6011.731364] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=156 count=0
+[ 6011.731365] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=156 count=0
+[ 6011.731366] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=157 count=0
+[ 6011.731368] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=157 count=0
+[ 6011.731369] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=158 count=0
+[ 6011.731370] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=158 count=0
+[ 6011.731372] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=159 count=0
+[ 6011.731373] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=159 count=0
+[ 6011.731374] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=160 count=0
+[ 6011.731375] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=160 count=0
+[ 6011.731376] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=161 count=0
+[ 6011.731378] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=161 count=0
+[ 6011.731379] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=162 count=0
+[ 6011.731380] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=162 count=0
+[ 6011.731381] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=163 count=0
+[ 6011.731382] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=163 count=0
+[ 6011.731384] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=164 count=0
+[ 6011.731385] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=164 count=0
+[ 6011.731386] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=165 count=0
+[ 6011.731387] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=165 count=0
+[ 6011.731389] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=166 count=0
+[ 6011.731390] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=166 count=0
+[ 6011.731391] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=167 count=0
+[ 6011.731392] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=167 count=0
+[ 6011.731393] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=168 count=0
+[ 6011.731395] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=168 count=0
+[ 6011.731396] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=169 count=0
+[ 6011.731397] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=169 count=0
+[ 6011.731398] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=170 count=0
+[ 6011.731399] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=170 count=0
+[ 6011.731401] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=171 count=0
+[ 6011.731402] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=171 count=0
+[ 6011.731403] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=172 count=0
+[ 6011.731404] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=172 count=0
+[ 6011.731406] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=173 count=0
+[ 6011.731407] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=173 count=0
+[ 6011.731408] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=174 count=0
+[ 6011.731409] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=174 count=0
+[ 6011.731410] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=175 count=0
+[ 6011.731412] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=175 count=0
+[ 6011.731413] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=176 count=0
+[ 6011.731414] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=176 count=0
+[ 6011.731415] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=177 count=0
+[ 6011.731416] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=177 count=0
+[ 6011.731418] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=178 count=0
+[ 6011.731419] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=178 count=0
+[ 6011.731420] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=179 count=0
+[ 6011.731421] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=179 count=0
+[ 6011.731422] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=180 count=0
+[ 6011.731424] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=180 count=0
+[ 6011.731425] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=181 count=0
+[ 6011.731426] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=181 count=0
+[ 6011.731427] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=182 count=0
+[ 6011.731428] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=182 count=0
+[ 6011.731430] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=183 count=0
+[ 6011.731431] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=183 count=0
+[ 6011.731432] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=184 count=0
+[ 6011.731433] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=184 count=0
+[ 6011.731435] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=185 count=0
+[ 6011.731436] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=185 count=0
+[ 6011.731437] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=186 count=0
+[ 6011.731438] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=186 count=0
+[ 6011.731439] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=187 count=0
+[ 6011.731441] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=187 count=0
+[ 6011.731442] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=188 count=0
+[ 6011.731443] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=188 count=0
+[ 6011.731444] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=189 count=0
+[ 6011.731446] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=189 count=0
+[ 6011.731447] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=190 count=0
+[ 6011.731448] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=190 count=0
+[ 6011.731449] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=191 count=0
+[ 6011.731451] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=191 count=0
+[ 6011.731452] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=192 count=0
+[ 6011.731453] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=192 count=0
+[ 6011.731454] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=193 count=0
+[ 6011.731455] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=193 count=0
+[ 6011.731457] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=194 count=0
+[ 6011.731458] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=194 count=0
+[ 6011.731459] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=195 count=0
+[ 6011.731460] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=195 count=0
+[ 6011.731461] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=196 count=0
+[ 6011.731463] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=196 count=0
+[ 6011.731464] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=197 count=0
+[ 6011.731465] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=197 count=0
+[ 6011.731466] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=198 count=0
+[ 6011.731468] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=198 count=0
+[ 6011.731469] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=199 count=0
+[ 6011.731470] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=199 count=0
+[ 6011.731471] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=200 count=0
+[ 6011.731472] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=200 count=0
+[ 6011.731474] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=201 count=0
+[ 6011.731475] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=201 count=0
+[ 6011.731476] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=202 count=0
+[ 6011.731477] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=202 count=0
+[ 6011.731478] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=203 count=0
+[ 6011.731480] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=203 count=0
+[ 6011.731481] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=204 count=0
+[ 6011.731482] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=204 count=0
+[ 6011.731483] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=205 count=0
+[ 6011.731484] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=205 count=0
+[ 6011.731486] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=206 count=0
+[ 6011.731487] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=206 count=0
+[ 6011.731488] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=207 count=0
+[ 6011.731489] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=207 count=0
+[ 6011.731490] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=208 count=0
+[ 6011.731492] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=208 count=0
+[ 6011.731493] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=209 count=0
+[ 6011.731494] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=209 count=0
+[ 6011.731495] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=210 count=0
+[ 6011.731496] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=210 count=0
+[ 6011.731498] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=211 count=0
+[ 6011.731499] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=211 count=0
+[ 6011.731500] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=212 count=0
+[ 6011.731501] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=212 count=0
+[ 6011.731502] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=213 count=0
+[ 6011.731503] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=213 count=0
+[ 6011.731505] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=214 count=0
+[ 6011.731506] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=214 count=0
+[ 6011.731507] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=215 count=0
+[ 6011.731508] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=215 count=0
+[ 6011.731510] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=216 count=0
+[ 6011.731511] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=216 count=0
+[ 6011.731512] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=217 count=0
+[ 6011.731513] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=217 count=0
+[ 6011.731515] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=218 count=0
+[ 6011.731516] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=218 count=0
+[ 6011.731517] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=219 count=0
+[ 6011.731518] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=219 count=0
+[ 6011.731520] DEBUG 1021:dc_procs_read:363: RLOCK_PROC ep=220 count=0
+[ 6011.731521] DEBUG 1021:dc_procs_read:365: RUNLOCK_PROC ep=220 count=0
+[ 6011.731522] DEBUG 1021:dc_procs_read:395: RUNLOCK_DC dc=0 count=0
+[ 6011.732407] DEBUG 1021:dc_procs_read:335: last_proc=-1 count=131072 ppos=0
+[ 6011.732494] DVK: exit_unbind local_nodeid:0
+[ 6011.733478] DEBUG 1021:new_exit_unbind:206: code=-797571012
+[ 6011.741003] DEBUG 1021:new_exit_unbind:210: WLOCK_TASK pid=1021 count=0
+[ 6011.741006] DEBUG 1021:new_exit_unbind:341: Process not bound pid=1021 cat
+[ 6011.741008] DEBUG 1021:new_exit_unbind:343: WUNLOCK_TASK pid=1021 count=0
+[ 6024.436267] DVK: exit_unbind local_nodeid:0
+[ 6024.436683] DEBUG 1022:new_exit_unbind:206: code=-797571012
+[ 6024.436685] DEBUG 1022:new_exit_unbind:210: WLOCK_TASK pid=1022 count=0
+[ 6024.436687] DEBUG 1022:new_exit_unbind:341: Process not bound pid=1022 clear
+[ 6024.436689] DEBUG 1022:new_exit_unbind:343: WUNLOCK_TASK pid=1022 count=0
+[ 6027.394859] DEBUG 1024:dvk_open:167: 
+[ 6027.395524] DEBUG 1024:dvk_ioctl:204: cmd=8004E31B arg=BF8FA7D4
+[ 6027.395527] DEBUG 1024:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+[ 6027.395529] DEBUG 1024:io_getdvsinfo:288: 
+[ 6027.395531] DEBUG 1024:new_getdvsinfo:1777: local_nodeid=0 
+
+[ 6027.398712] DEBUG 1024:dvk_ioctl:204: cmd=8004E30E arg=BF8FA794
+[ 6027.398716] DEBUG 1024:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+[ 6027.398718] DEBUG 1024:io_getdcinfo:153: 
+[ 6027.398720] DEBUG 1024:new_getdcinfo:1806: dcid=0 
+[ 6027.398723] DEBUG 1024:check_caller:536: caller_pid=1024 caller_tgid=1024
+[ 6027.398724] ERROR: 1024:check_caller:570: rcode=-310
+[ 6027.398726] DEBUG 1024:new_getdcinfo:1824: RLOCK_DC dc=0 count=0
+[ 6027.398728] DEBUG 1024:new_getdcinfo:1826: RUNLOCK_DC dc=0 count=0
+[ 6027.398810] DEBUG 1024:dvk_ioctl:204: cmd=4004E309 arg=BF8FA778
+[ 6027.398811] DEBUG 1024:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 6027.398813] DEBUG 1024:io_bind:97: 
+[ 6027.398816] DEBUG 1024:new_bind:1361: oper=0 dcid=0 param_pid=-1 endpoint=1 nodeid=-1
+[ 6027.398817] DEBUG 1024:new_bind:1383: RLOCK_DC dc=0 count=0
+[ 6027.398819] DEBUG 1024:new_bind:1396: WLOCK_PROC ep=1 count=0
+[ 6027.398821] DEBUG 1024:init_proc_desc:16: p_name=$noname dcid=0
+[ 6027.398824] DEBUG 1024:new_bind:1430: param_pid=-1 lpid=1024 vpid=16 tid=1024
+[ 6027.398826] DEBUG 1024:new_bind:1454: SELF_BIND param_pid=-1 lpid=1024 vpid=16 tid=1024
+[ 6027.398827] DEBUG 1024:new_bind:1476: WUNLOCK_PROC ep=1 count=0
+[ 6027.398829] DEBUG 1024:new_bind:1479: WLOCK_TASK pid=1024 count=0
+[ 6027.398830] DEBUG 1024:new_bind:1480: WLOCK_PROC ep=1 count=0
+[ 6027.398831] DEBUG 1024:new_bind:1516: increment the reference count of the task struct=1024 count=2
+[ 6027.398833] DEBUG 1024:new_bind:1527: process p_name=copy_server *p_name_ptr=copy_server
+[ 6027.398836] DEBUG 1024:new_bind:1583: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6027.398838] DEBUG 1024:new_bind:1584: nr=1 endp=1 dcid=0 lpid=1024 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 6027.398839] DEBUG 1024:new_bind:1598: WUNLOCK_TASK pid=1024 count=0
+[ 6027.398841] DEBUG 1024:new_bind:1604: WUNLOCK_PROC ep=1 count=0
+[ 6027.398842] DEBUG 1024:new_bind:1606: DC_INCREF counter=1
+[ 6027.398843] DEBUG 1024:new_bind:1607: RUNLOCK_DC dc=0 count=0
+[ 6027.398844] ERROR: 1024:dvk_ioctl:228: rcode=1
+[ 6027.399570] DEBUG 1024:dvk_ioctl:204: cmd=8004E30F arg=BF8FA790
+[ 6027.399573] DEBUG 1024:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 6027.399575] DEBUG 1024:io_getprocinfo:164: 
+[ 6027.399577] DEBUG 1024:new_getprocinfo:1884: dcid=0 p_nr=1
+[ 6027.399581] DEBUG 1024:check_caller:536: caller_pid=1024 caller_tgid=1024
+[ 6027.399583] DEBUG 1024:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 6027.399585] DEBUG 1024:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 6027.399586] DEBUG 1024:check_caller:604: dcid=0
+[ 6027.399588] DEBUG 1024:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6027.399589] DEBUG 1024:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6027.399590] DEBUG 1024:check_caller:618: caller_pid=1024 
+[ 6027.399592] DEBUG 1024:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 6027.399594] DEBUG 1024:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 6027.399595] DEBUG 1024:new_getprocinfo:1908: RLOCK_PROC ep=1 count=0
+[ 6027.399596] DEBUG 1024:new_getprocinfo:1909: lpid=1024 name=copy_server
+[ 6027.399598] DEBUG 1024:new_getprocinfo:1911: RUNLOCK_PROC ep=1 count=0
+[ 6027.399748] DEBUG 1024:dvk_ioctl:204: cmd=4004E303 arg=BF8FA790
+[ 6027.399749] DEBUG 1024:dvk_ioctl:224: DVK_CALL=3 (mini_receive) 
+[ 6027.399750] DEBUG 1024:io_mini_receive:35: 
+[ 6027.399752] DEBUG 1024:new_mini_receive:288: src_ep=31438
+[ 6027.399754] DEBUG 1024:check_caller:536: caller_pid=1024 caller_tgid=1024
+[ 6027.399755] DEBUG 1024:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 6027.399756] DEBUG 1024:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 6027.399757] DEBUG 1024:check_caller:604: dcid=0
+[ 6027.399759] DEBUG 1024:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6027.399760] DEBUG 1024:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6027.399761] DEBUG 1024:check_caller:618: caller_pid=1024 
+[ 6027.399762] DEBUG 1024:new_mini_receive:299: RLOCK_PROC ep=1 count=0
+[ 6027.399764] DEBUG 1024:new_mini_receive:303: caller_nr=1 caller_ep=1 src_ep=31438 
+[ 6027.399765] DEBUG 1024:new_mini_receive:307: dcid=0
+[ 6027.399766] DEBUG 1024:new_mini_receive:311: RUNLOCK_PROC ep=1 count=0
+[ 6027.399768] DEBUG 1024:new_mini_receive:313: RLOCK_DC dc=0 count=0
+[ 6027.399769] DEBUG 1024:new_mini_receive:316: RUNLOCK_DC dc=0 count=0
+[ 6027.399770] DEBUG 1024:new_mini_receive:366: WLOCK_PROC ep=1 count=0
+[ 6027.399772] DEBUG 1024:new_mini_receive:471: Any suitable message from 31438 was not found.
+[ 6027.399773] DEBUG 1024:sleep_proc:344: timeout=-1
+[ 6027.399775] DEBUG 1024:sleep_proc:355: BEFORE DOWN lpid=1024 p_sem=0 timeout=-1
+[ 6027.399777] DEBUG 1024:sleep_proc:357: endpoint=1 flags=8
+[ 6027.399778] DEBUG 1024:sleep_proc:361: WUNLOCK_PROC ep=1 count=0
+[ 6033.685602] DEBUG 1026:dvk_open:167: 
+[ 6033.686641] DEBUG 1026:dvk_ioctl:204: cmd=8004E31B arg=BFA73C24
+[ 6033.686644] DEBUG 1026:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+[ 6033.686646] DEBUG 1026:io_getdvsinfo:288: 
+[ 6033.686648] DEBUG 1026:new_getdvsinfo:1777: local_nodeid=0 
+[ 6033.688317] DEBUG 1026:dvk_ioctl:204: cmd=8004E30E arg=BFA73BE4
+[ 6033.688319] DEBUG 1026:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+[ 6033.688321] DEBUG 1026:io_getdcinfo:153: 
+[ 6033.688323] DEBUG 1026:new_getdcinfo:1806: dcid=0 
+[ 6033.688326] DEBUG 1026:check_caller:536: caller_pid=1026 caller_tgid=1026
+[ 6033.688327] ERROR: 1026:check_caller:570: rcode=-310
+[ 6033.688329] DEBUG 1026:new_getdcinfo:1824: RLOCK_DC dc=0 count=0
+[ 6033.688331] DEBUG 1026:new_getdcinfo:1826: RUNLOCK_DC dc=0 count=0
+[ 6033.688889] DEBUG 1026:dvk_ioctl:204: cmd=4004E309 arg=BFA73BC8
+[ 6033.688891] DEBUG 1026:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 6033.688892] DEBUG 1026:io_bind:97: 
+[ 6033.688895] DEBUG 1026:new_bind:1361: oper=0 dcid=0 param_pid=-1 endpoint=2 nodeid=-1
+[ 6033.688896] DEBUG 1026:new_bind:1383: RLOCK_DC dc=0 count=0
+[ 6033.688898] DEBUG 1026:new_bind:1396: WLOCK_PROC ep=2 count=0
+[ 6033.688900] DEBUG 1026:init_proc_desc:16: p_name=$noname dcid=0
+[ 6033.688904] DEBUG 1026:new_bind:1430: param_pid=-1 lpid=1026 vpid=17 tid=1026
+[ 6033.688905] DEBUG 1026:new_bind:1454: SELF_BIND param_pid=-1 lpid=1026 vpid=17 tid=1026
+[ 6033.688907] DEBUG 1026:new_bind:1476: WUNLOCK_PROC ep=2 count=0
+[ 6033.688908] DEBUG 1026:new_bind:1479: WLOCK_TASK pid=1026 count=0
+[ 6033.688909] DEBUG 1026:new_bind:1480: WLOCK_PROC ep=2 count=0
+[ 6033.688911] DEBUG 1026:new_bind:1516: increment the reference count of the task struct=1026 count=2
+[ 6033.688913] DEBUG 1026:new_bind:1527: process p_name=copy_client *p_name_ptr=copy_client
+[ 6033.688916] DEBUG 1026:new_bind:1583: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.688918] DEBUG 1026:new_bind:1584: nr=2 endp=2 dcid=0 lpid=1026 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 6033.688919] DEBUG 1026:new_bind:1598: WUNLOCK_TASK pid=1026 count=0
+[ 6033.688920] DEBUG 1026:new_bind:1604: WUNLOCK_PROC ep=2 count=0
+[ 6033.688922] DEBUG 1026:new_bind:1606: DC_INCREF counter=2
+[ 6033.688923] DEBUG 1026:new_bind:1607: RUNLOCK_DC dc=0 count=0
+[ 6033.688924] ERROR: 1026:dvk_ioctl:228: rcode=2
+[ 6033.689230] DEBUG 1026:dvk_ioctl:204: cmd=8004E30F arg=BFA73BE0
+[ 6033.689231] DEBUG 1026:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 6033.689233] DEBUG 1026:io_getprocinfo:164: 
+[ 6033.689235] DEBUG 1026:new_getprocinfo:1884: dcid=0 p_nr=2
+[ 6033.689236] DEBUG 1026:check_caller:536: caller_pid=1026 caller_tgid=1026
+[ 6033.689238] DEBUG 1026:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 6033.689239] DEBUG 1026:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 6033.689241] DEBUG 1026:check_caller:604: dcid=0
+[ 6033.689242] DEBUG 1026:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6033.689244] DEBUG 1026:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6033.689245] DEBUG 1026:check_caller:618: caller_pid=1026 
+[ 6033.689246] DEBUG 1026:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 6033.689248] DEBUG 1026:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 6033.689249] DEBUG 1026:new_getprocinfo:1908: RLOCK_PROC ep=2 count=0
+[ 6033.689250] DEBUG 1026:new_getprocinfo:1909: lpid=1026 name=copy_client
+[ 6033.689252] DEBUG 1026:new_getprocinfo:1911: RUNLOCK_PROC ep=2 count=0
+[ 6033.689286] DEBUG 1026:dvk_ioctl:204: cmd=8004E30F arg=BFA73BE0
+[ 6033.689288] DEBUG 1026:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 6033.689289] DEBUG 1026:io_getprocinfo:164: 
+[ 6033.689290] DEBUG 1026:new_getprocinfo:1884: dcid=0 p_nr=1
+[ 6033.689292] DEBUG 1026:check_caller:536: caller_pid=1026 caller_tgid=1026
+[ 6033.689293] DEBUG 1026:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 6033.689294] DEBUG 1026:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 6033.689295] DEBUG 1026:check_caller:604: dcid=0
+[ 6033.689296] DEBUG 1026:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6033.689298] DEBUG 1026:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6033.689299] DEBUG 1026:check_caller:618: caller_pid=1026 
+[ 6033.689300] DEBUG 1026:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 6033.689301] DEBUG 1026:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 6033.689303] DEBUG 1026:new_getprocinfo:1908: RLOCK_PROC ep=1 count=0
+[ 6033.689304] DEBUG 1026:new_getprocinfo:1909: lpid=1024 name=copy_server
+[ 6033.689305] DEBUG 1026:new_getprocinfo:1911: RUNLOCK_PROC ep=1 count=0
+[ 6033.694827] DEBUG 1026:dvk_ioctl:204: cmd=4004E305 arg=BFA73BE0
+[ 6033.694829] DEBUG 1026:dvk_ioctl:224: DVK_CALL=5 (mini_sendrec) 
+[ 6033.694830] DEBUG 1026:io_mini_sendrec:56: 
+[ 6033.694833] DEBUG 1026:new_mini_sendrec:507: srcdst_ep=1
+[ 6033.694834] DEBUG 1026:check_caller:536: caller_pid=1026 caller_tgid=1026
+[ 6033.694836] DEBUG 1026:check_caller:572: WLOCK_PROC ep=2 count=0
+[ 6033.694837] DEBUG 1026:check_caller:601: WUNLOCK_PROC ep=2 count=0
+[ 6033.694838] DEBUG 1026:check_caller:604: dcid=0
+[ 6033.694840] DEBUG 1026:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6033.694841] DEBUG 1026:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6033.694842] DEBUG 1026:check_caller:618: caller_pid=1026 
+[ 6033.694844] DEBUG 1026:new_mini_sendrec:518: RLOCK_PROC ep=2 count=0
+[ 6033.694846] DEBUG 1026:new_mini_sendrec:523: caller_nr=2 caller_ep=2 srcdst_ep=1 
+[ 6033.694848] DEBUG 1026:new_mini_sendrec:526: RUNLOCK_PROC ep=2 count=0
+[ 6033.694849] DEBUG 1026:new_mini_sendrec:528: dcid=0
+[ 6033.694850] DEBUG 1026:new_mini_sendrec:532: RLOCK_DC dc=0 count=0
+[ 6033.694851] DEBUG 1026:new_mini_sendrec:535: RUNLOCK_DC dc=0 count=0
+[ 6033.694853] DEBUG 1026:new_mini_sendrec:550: WLOCK_PROC ep=2 count=0
+[ 6033.694854] DEBUG 1026:new_mini_sendrec:557: WUNLOCK_PROC ep=2 count=0
+[ 6033.694856] DEBUG 1026:new_mini_sendrec:557: WLOCK_PROC ep=1 count=0
+[ 6033.694857] DEBUG 1026:new_mini_sendrec:557: WLOCK_PROC ep=2 count=0
+[ 6033.694858] DEBUG 1026:new_mini_sendrec:558: srcdst_nr=1 srcdst_ep=1
+[ 6033.694859] DEBUG 1026:new_mini_sendrec:578: srcdst_ptr->p_usr.p_nodeid=0
+[ 6033.694861] DEBUG 1026:new_mini_sendrec:582: RLOCK_DC dc=0 count=0
+[ 6033.694862] DEBUG 1026:new_mini_sendrec:586: RUNLOCK_DC dc=0 count=0
+[ 6033.694864] DEBUG 1026:new_mini_sendrec:601: dcid=0 caller_pid=1026 caller_nr=2 srcdst_ep=1 
+[ 6033.694865] DEBUG 1026:new_mini_sendrec:606: SENDING HALF
+[ 6033.694866] DEBUG 1026:new_mini_sendrec:687: destination is waiting. Copy the message and wakeup destination
+[ 6033.694870] DEBUG 1026:copy_usr2usr:886: rqtr_ep=2 src_ep=2 src_lpid=1026 src_vpid=17 src_addr=012e2000
+[ 6033.694872] DEBUG 1026:copy_usr2usr:889: dst_ep=1 dst_lpid=1024 dst_vpid=16 dst_addr=02058000 bytes=76
+[ 6033.694873] DEBUG 1026:copy_usr2usr:893: task_pid_nr(current)=1026
+[ 6033.694874] DEBUG 1026:copy_usr2usr:896: WRITE
+[ 6033.694876] DEBUG 1026:copy_usr2usr:901: task_pid_nr(dst_ptr->p_task)=1024
+[ 6033.694878] DEBUG 1026:dvk_vm_rw:441: pid=1024 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+[ 6033.694880] DEBUG 1026:dvk_check_iovect:1280: type=1 nr_segs=1
+[ 6033.694881] DEBUG 1026:dvk_rw_check_kvector:862: type=1 nr_segs=1
+[ 6033.694883] DEBUG 1026:dvk_rw_check_kvector:862: type=-1 nr_segs=1
+[ 6033.694884] DEBUG 1026:dvk_vm_rw_core:277: pid=1024 riovcnt=1 flags=0 vm_write=1
+[ 6033.694890] DEBUG 1026:dvk_vm_rw_core:331: i=0 rc=0
+[ 6033.694904] DEBUG 1026:dvk_vm_rw_core:349: rc=76
+[ 6033.694905] DEBUG 1026:dvk_vm_rw_core:356: rc=76
+[ 6033.694906] DEBUG 1026:copy_usr2usr:954: len=76
+[ 6033.694908] DEBUG 1026:inherit_cpu:288: cpuid=0 vpid=ld
+[ 6033.694913] DEBUG 1026:inherit_cpu:296: nr=1 endp=1 dcid=0 lpid=1024 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 6033.694915] DEBUG 1026:new_mini_sendrec:693: BEFORE UP lpid=1024 p_sem=-1 rcode=76
+[ 6033.694922] DEBUG 1026:new_mini_sendrec:701: WUNLOCK_PROC ep=1 count=0
+[ 6033.694923] DEBUG 1026:sleep_proc:344: timeout=-1
+[ 6033.694925] DEBUG 1026:sleep_proc:355: BEFORE DOWN lpid=1026 p_sem=0 timeout=-1
+[ 6033.694926] DEBUG 1026:sleep_proc:357: endpoint=2 flags=8
+[ 6033.694928] DEBUG 1026:sleep_proc:361: WUNLOCK_PROC ep=2 count=0
+[ 6033.694934] DEBUG 1024:sleep_proc:368: endpoint=1 ret=0 p_rcode=76
+[ 6033.694935] DEBUG 1024:sleep_proc:369: endpoint=1 flags=0 cpuid=0
+[ 6033.694937] DEBUG 1024:sleep_proc:370: WLOCK_PROC ep=1 count=0
+[ 6033.694940] DEBUG 1024:sleep_proc:417: nr=1 endp=1 dcid=0 lpid=1024 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 6033.694941] DEBUG 1024:sleep_proc:419: someone wakeups me: sem=0 p_rcode=0
+[ 6033.694942] DEBUG 1024:new_mini_receive:488: WUNLOCK_PROC ep=1 count=0
+[ 6033.694998] DEBUG 1024:dvk_ioctl:204: cmd=8004E30F arg=BF8FA790
+[ 6033.694999] DEBUG 1024:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 6033.695000] DEBUG 1024:io_getprocinfo:164: 
+[ 6033.695002] DEBUG 1024:new_getprocinfo:1884: dcid=0 p_nr=-1217744896
+[ 6033.695004] DEBUG 1024:check_caller:536: caller_pid=1024 caller_tgid=1024
+[ 6033.695006] DEBUG 1024:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 6033.695007] DEBUG 1024:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 6033.695008] DEBUG 1024:check_caller:604: dcid=0
+[ 6033.695009] DEBUG 1024:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6033.695011] DEBUG 1024:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6033.695012] DEBUG 1024:check_caller:618: caller_pid=1024 
+[ 6033.695013] DEBUG 1024:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 6033.695015] DEBUG 1024:new_getprocinfo:1904: RUNLOCK_DC dc=0 count=0
+[ 6033.695016] ERROR: 1024:new_getprocinfo:1904: rcode=-304
+[ 6033.695017] ERROR: 1024:dvk_ioctl:228: rcode=-304
+[ 6033.695232] DVK: exit_unbind local_nodeid:0
+[ 6033.695686] DEBUG 1024:new_exit_unbind:206: code=-797571012
+[ 6033.695688] DEBUG 1024:new_exit_unbind:210: WLOCK_TASK pid=1024 count=0
+[ 6033.695690] DEBUG 1024:new_exit_unbind:216: RLOCK_PROC ep=1 count=0
+[ 6033.695692] DEBUG 1024:new_exit_unbind:217: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6033.695694] DEBUG 1024:new_exit_unbind:250:  Exiting endpoint=1 lpid=1024
+[ 6033.695735] DEBUG 1024:new_exit_unbind:252: RUNLOCK_PROC ep=1 count=0
+[ 6033.695738] DEBUG 1024:new_exit_unbind:253: WLOCK_DC dc=0 count=0
+[ 6033.695740] DEBUG 1024:new_exit_unbind:254: WLOCK_PROC ep=1 count=0
+[ 6033.695741] DEBUG 1024:new_exit_unbind:261:  endpoint=1 lpid=1024
+[ 6033.695744] DEBUG 1024:do_unbind:637: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6033.695746] DEBUG 1024:do_unbind:666: Caller nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6033.695748] DEBUG 1024:do_unbind:705: wakeup with error those processes trying to send a message to the proc
+[ 6033.695749] DEBUG 1024:do_unbind:732: delete notify messages bits sent by the proc
+[ 6033.695753] DEBUG 1024:do_unbind:737: Skip, self process
+[ 6033.695755] DEBUG 1024:do_unbind:769: Process 2 is no more waiting a message from the unbinded process 1
+[ 6033.695756] DEBUG 1024:do_unbind:772: Wakeup RECEIVER with error ep=2  pid=1026
+[ 6033.695757] DEBUG 1024:inherit_cpu:288: cpuid=0 vpid=ld
+[ 6033.695762] DEBUG 1024:inherit_cpu:296: nr=2 endp=2 dcid=0 lpid=1026 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 6033.695763] DEBUG 1024:do_unbind:773: BEFORE UP lpid=1026 p_sem=-1 rcode=-108
+[ 6033.695765] DEBUG 1024:do_unbind:780: WUNLOCK_PROC ep=2 count=0
+[ 6033.695781] DEBUG 1024:do_unbind:784: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6033.695782] DEBUG 1024:do_unbind:840: wakeup with error those processes waiting this process MIGRATION
+[ 6033.695783] DEBUG 1024:do_unbind:889: wakeup those processes waiting this process UNBINDING
+[ 6033.695785] DEBUG 1024:do_unbind:924: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1024 vpid=16 nodeid=0 name=copy_server 
+[ 6033.695787] DEBUG 1024:init_proc_desc:16: p_name=copy_server dcid=0
+[ 6033.695789] DEBUG 1024:do_unbind:926: initialized 
+[ 6033.695790] DEBUG 1024:do_unbind:927: DC_DECREF counter=2
+[ 6033.695791] DEBUG 1024:new_exit_unbind:325: WUNLOCK_PROC ep=1 count=0
+[ 6033.695793] DEBUG 1024:new_exit_unbind:326: WUNLOCK_TASK pid=1024 count=0
+[ 6033.695794] DEBUG 1024:new_exit_unbind:327: WUNLOCK_DC dc=0 count=0
+[ 6033.696174] DVK: exit_unbind local_nodeid:0
+[ 6033.696495] DEBUG 1023:new_exit_unbind:206: code=-797571012
+[ 6033.696496] DEBUG 1023:new_exit_unbind:210: WLOCK_TASK pid=1023 count=0
+[ 6033.696497] DEBUG 1023:new_exit_unbind:341: Process not bound pid=1023 nsenter
+[ 6033.696499] DEBUG 1023:new_exit_unbind:343: WUNLOCK_TASK pid=1023 count=0
+[ 6033.703338] DEBUG 1026:sleep_proc:368: endpoint=2 ret=0 p_rcode=-108
+[ 6033.703343] DEBUG 1026:sleep_proc:369: endpoint=2 flags=8 cpuid=0
+[ 6033.703345] DEBUG 1026:sleep_proc:370: WLOCK_PROC ep=2 count=0
+[ 6033.703346] DEBUG 1026:sleep_proc:392: pid=1026 ret=-108
+[ 6033.703349] DEBUG 1026:sleep_proc:417: nr=2 endp=2 dcid=0 lpid=1026 p_cpumask=FFFFFFFF nodemap=1 name=copy_client 
+[ 6033.703351] DEBUG 1026:sleep_proc:419: someone wakeups me: sem=0 p_rcode=-108
+[ 6033.703353] DEBUG 1026:new_mini_sendrec:748: WUNLOCK_PROC ep=2 count=0
+[ 6033.703355] ERROR: 1026:new_mini_sendrec:749: rcode=-108
+[ 6033.703357] ERROR: 1026:dvk_ioctl:228: rcode=-108
+[ 6033.703538] DVK: exit_unbind local_nodeid:0
+[ 6033.703992] DEBUG 1026:new_exit_unbind:206: code=-797571012
+[ 6033.703994] DEBUG 1026:new_exit_unbind:210: WLOCK_TASK pid=1026 count=0
+[ 6033.703996] DEBUG 1026:new_exit_unbind:216: RLOCK_PROC ep=2 count=0
+[ 6033.703999] DEBUG 1026:new_exit_unbind:217: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.704001] DEBUG 1026:new_exit_unbind:250:  Exiting endpoint=2 lpid=1026
+[ 6033.704003] DEBUG 1026:new_exit_unbind:252: RUNLOCK_PROC ep=2 count=0
+[ 6033.704005] DEBUG 1026:new_exit_unbind:253: WLOCK_DC dc=0 count=0
+[ 6033.704006] DEBUG 1026:new_exit_unbind:254: WLOCK_PROC ep=2 count=0
+[ 6033.704008] DEBUG 1026:new_exit_unbind:261:  endpoint=2 lpid=1026
+[ 6033.704011] DEBUG 1026:do_unbind:637: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.704014] DEBUG 1026:do_unbind:666: Caller nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.704015] DEBUG 1026:do_unbind:705: wakeup with error those processes trying to send a message to the proc
+[ 6033.704016] DEBUG 1026:do_unbind:732: delete notify messages bits sent by the proc
+[ 6033.704021] DEBUG 1026:do_unbind:737: Skip, self process
+[ 6033.704036] DEBUG 1026:do_unbind:784: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.704037] DEBUG 1026:do_unbind:840: wakeup with error those processes waiting this process MIGRATION
+[ 6033.704039] DEBUG 1026:do_unbind:889: wakeup those processes waiting this process UNBINDING
+[ 6033.704041] DEBUG 1026:do_unbind:924: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=1026 vpid=17 nodeid=0 name=copy_client 
+[ 6033.704043] DEBUG 1026:init_proc_desc:16: p_name=copy_client dcid=0
+[ 6033.704044] DEBUG 1026:do_unbind:926: initialized 
+[ 6033.704046] DEBUG 1026:do_unbind:927: DC_DECREF counter=1
+[ 6033.704047] DEBUG 1026:new_exit_unbind:325: WUNLOCK_PROC ep=2 count=0
+[ 6033.704048] DEBUG 1026:new_exit_unbind:326: WUNLOCK_TASK pid=1026 count=0
+[ 6033.704050] DEBUG 1026:new_exit_unbind:327: WUNLOCK_DC dc=0 count=0
+[ 6033.704425] DVK: exit_unbind local_nodeid:0
+[ 6033.704763] DEBUG 1025:new_exit_unbind:206: code=-797571012
+[ 6033.704764] DEBUG 1025:new_exit_unbind:210: WLOCK_TASK pid=1025 count=0
+[ 6033.704766] DEBUG 1025:new_exit_unbind:341: Process not bound pid=1025 nsenter
+[ 6033.704767] DEBUG 1025:new_exit_unbind:343: WUNLOCK_TASK pid=1025 count=0
+[ 6033.715967] DVK: exit_unbind local_nodeid:0
+[ 6033.716348] DEBUG 1027:new_exit_unbind:206: code=-797571012
+[ 6033.716350] DEBUG 1027:new_exit_unbind:210: WLOCK_TASK pid=179 count=0
+[ 6033.716352] DEBUG 1027:new_exit_unbind:341: Process not bound pid=1027 systemd-journal
+[ 6033.716354] DEBUG 1027:new_exit_unbind:343: WUNLOCK_TASK pid=179 count=0
+[ 6212.735846] DVK: exit_unbind local_nodeid:0
+[ 6212.736255] DEBUG 1028:new_exit_unbind:206: code=-797571012
+[ 6212.736257] DEBUG 1028:new_exit_unbind:210: WLOCK_TASK pid=1028 count=0
+[ 6212.736259] DEBUG 1028:new_exit_unbind:341: Process not bound pid=1028 ls
+[ 6212.736260] DEBUG 1028:new_exit_unbind:343: WUNLOCK_TASK pid=1028 count=0
+[ 6216.883202] DVK: exit_unbind local_nodeid:0
+[ 6216.883587] DEBUG 1029:new_exit_unbind:206: code=-797571012
+[ 6216.883590] DEBUG 1029:new_exit_unbind:210: WLOCK_TASK pid=1029 count=0
+[ 6216.883591] DEBUG 1029:new_exit_unbind:341: Process not bound pid=1029 scp
+[ 6216.883593] DEBUG 1029:new_exit_unbind:343: WUNLOCK_TASK pid=1029 count=0
+[ 6216.891935] DVK: exit_unbind local_nodeid:0
+[ 6216.892357] DEBUG 1030:new_exit_unbind:206: code=-797571012
+[ 6216.892359] DEBUG 1030:new_exit_unbind:210: WLOCK_TASK pid=1030 count=0
+[ 6216.892361] DEBUG 1030:new_exit_unbind:341: Process not bound pid=1030 ls
+[ 6216.892363] DEBUG 1030:new_exit_unbind:343: WUNLOCK_TASK pid=1030 count=0
+[ 6221.884283] DVK: exit_unbind local_nodeid:0
+[ 6221.884696] DEBUG 1033:new_exit_unbind:206: code=-797571012
+[ 6221.884699] DEBUG 1033:new_exit_unbind:210: WLOCK_TASK pid=1033 count=0
+[ 6221.884700] DEBUG 1033:new_exit_unbind:341: Process not bound pid=1033 cc1
+[ 6221.884702] DEBUG 1033:new_exit_unbind:343: WUNLOCK_TASK pid=1033 count=0
+[ 6221.885797] DVK: exit_unbind local_nodeid:0
+[ 6221.886165] DEBUG 1032:new_exit_unbind:206: code=-797571012
+[ 6221.886167] DEBUG 1032:new_exit_unbind:210: WLOCK_TASK pid=1032 count=0
+[ 6221.886168] DEBUG 1032:new_exit_unbind:341: Process not bound pid=1032 gcc
+[ 6221.886170] DEBUG 1032:new_exit_unbind:343: WUNLOCK_TASK pid=1032 count=0
+[ 6221.887306] DVK: exit_unbind local_nodeid:0
+[ 6221.887701] DEBUG 1031:new_exit_unbind:206: code=-797571012
+[ 6221.887703] DEBUG 1031:new_exit_unbind:210: WLOCK_TASK pid=1031 count=0
+[ 6221.887705] DEBUG 1031:new_exit_unbind:341: Process not bound pid=1031 make
+[ 6221.887706] DEBUG 1031:new_exit_unbind:343: WUNLOCK_TASK pid=1031 count=0
+[ 6225.522437] DVK: exit_unbind local_nodeid:0
+[ 6225.523054] DEBUG 1034:new_exit_unbind:206: code=-797571012
+[ 6225.523058] DEBUG 1034:new_exit_unbind:210: WLOCK_TASK pid=1034 count=0
+[ 6225.523061] DEBUG 1034:new_exit_unbind:341: Process not bound pid=1034 bash
+[ 6225.523063] DEBUG 1034:new_exit_unbind:343: WUNLOCK_TASK pid=1034 count=0
+[ 6225.530015] DVK: exit_unbind local_nodeid:0
+[ 6225.530672] DEBUG 1035:new_exit_unbind:206: code=-797571012
+[ 6225.530675] DEBUG 1035:new_exit_unbind:210: WLOCK_TASK pid=1035 count=0
+[ 6225.530679] DEBUG 1035:new_exit_unbind:341: Process not bound pid=1035 bash
+[ 6225.530681] DEBUG 1035:new_exit_unbind:343: WUNLOCK_TASK pid=1035 count=0
+[ 6226.116651] DVK: exit_unbind local_nodeid:0
+[ 6226.117065] DEBUG 1038:new_exit_unbind:206: code=-797571012
+[ 6226.117068] DEBUG 1038:new_exit_unbind:210: WLOCK_TASK pid=1038 count=0
+[ 6226.117070] DEBUG 1038:new_exit_unbind:341: Process not bound pid=1038 cc1
+[ 6226.117071] DEBUG 1038:new_exit_unbind:343: WUNLOCK_TASK pid=1038 count=0
+[ 6226.118153] DVK: exit_unbind local_nodeid:0
+[ 6226.118508] DEBUG 1037:new_exit_unbind:206: code=-797571012
+[ 6226.118510] DEBUG 1037:new_exit_unbind:210: WLOCK_TASK pid=1037 count=0
+[ 6226.118511] DEBUG 1037:new_exit_unbind:341: Process not bound pid=1037 gcc
+[ 6226.118513] DEBUG 1037:new_exit_unbind:343: WUNLOCK_TASK pid=1037 count=0
+[ 6226.119706] DVK: exit_unbind local_nodeid:0
+[ 6226.120169] DEBUG 1036:new_exit_unbind:206: code=-797571012
+[ 6226.120171] DEBUG 1036:new_exit_unbind:210: WLOCK_TASK pid=1036 count=0
+[ 6226.120173] DEBUG 1036:new_exit_unbind:341: Process not bound pid=1036 make
+[ 6226.120174] DEBUG 1036:new_exit_unbind:343: WUNLOCK_TASK pid=1036 count=0
+[ 6229.093874] DVK: exit_unbind local_nodeid:0
+[ 6229.094270] DEBUG 1039:new_exit_unbind:206: code=-797571012
+[ 6229.094273] DEBUG 1039:new_exit_unbind:210: WLOCK_TASK pid=1039 count=0
+[ 6229.094274] DEBUG 1039:new_exit_unbind:341: Process not bound pid=1039 scp
+[ 6229.094276] DEBUG 1039:new_exit_unbind:343: WUNLOCK_TASK pid=1039 count=0
+[ 6231.472808] DVK: exit_unbind local_nodeid:0
+[ 6231.473426] DEBUG 978:new_exit_unbind:206: code=-797571012
+[ 6231.473430] DEBUG 978:new_exit_unbind:210: WLOCK_TASK pid=978 count=0
+[ 6231.473433] DEBUG 978:new_exit_unbind:341: Process not bound pid=978 kworker/dying
+[ 6231.473435] DEBUG 978:new_exit_unbind:343: WUNLOCK_TASK pid=978 count=0
+[ 6282.268698] DVK: exit_unbind local_nodeid:0
+[ 6282.269101] DEBUG 1041:new_exit_unbind:206: code=-797571012
+[ 6282.269103] DEBUG 1041:new_exit_unbind:210: WLOCK_TASK pid=1041 count=0
+[ 6282.269105] DEBUG 1041:new_exit_unbind:341: Process not bound pid=1041 nm
+[ 6282.269107] DEBUG 1041:new_exit_unbind:343: WUNLOCK_TASK pid=1041 count=0
+[ 6297.014495] DVK: exit_unbind local_nodeid:0
+[ 6297.015123] DEBUG 858:new_exit_unbind:206: code=-797571012
+[ 6297.015126] DEBUG 858:new_exit_unbind:210: WLOCK_TASK pid=858 count=0
+[ 6297.015129] DEBUG 858:new_exit_unbind:341: Process not bound pid=858 kworker/dying
+[ 6297.015132] DEBUG 858:new_exit_unbind:343: WUNLOCK_TASK pid=858 count=0
+[ 6299.036429] DVK: exit_unbind local_nodeid:0
+[ 6299.036916] DEBUG 1042:new_exit_unbind:206: code=-797571012
+[ 6299.036919] DEBUG 1042:new_exit_unbind:210: WLOCK_TASK pid=1042 count=0
+[ 6299.036920] DEBUG 1042:new_exit_unbind:341: Process not bound pid=1042 nm
+[ 6299.036922] DEBUG 1042:new_exit_unbind:343: WUNLOCK_TASK pid=1042 count=0
+[ 6299.037203] DVK: exit_unbind local_nodeid:0
+[ 6299.037544] DEBUG 1043:new_exit_unbind:206: code=-797571012
+[ 6299.037545] DEBUG 1043:new_exit_unbind:210: WLOCK_TASK pid=1043 count=0
+[ 6299.037546] DEBUG 1043:new_exit_unbind:341: Process not bound pid=1043 grep
+[ 6299.037548] DEBUG 1043:new_exit_unbind:343: WUNLOCK_TASK pid=1043 count=0
+[ 6354.347798] DVK: exit_unbind local_nodeid:0
+[ 6354.348205] DEBUG 1044:new_exit_unbind:206: code=-797571012
+[ 6354.348207] DEBUG 1044:new_exit_unbind:210: WLOCK_TASK pid=1044 count=0
+[ 6354.348208] DEBUG 1044:new_exit_unbind:341: Process not bound pid=1044 scp
+[ 6354.348210] DEBUG 1044:new_exit_unbind:343: WUNLOCK_TASK pid=1044 count=0
+[ 6354.355748] DVK: exit_unbind local_nodeid:0
+[ 6354.356148] DEBUG 1045:new_exit_unbind:206: code=-797571012
+[ 6354.356150] DEBUG 1045:new_exit_unbind:210: WLOCK_TASK pid=1045 count=0
+[ 6354.356152] DEBUG 1045:new_exit_unbind:341: Process not bound pid=1045 ls
+[ 6354.356153] DEBUG 1045:new_exit_unbind:343: WUNLOCK_TASK pid=1045 count=0
+[ 6358.578019] DVK: exit_unbind local_nodeid:0
+[ 6358.579141] DEBUG 1048:new_exit_unbind:206: code=-797571012
+[ 6358.579197] DEBUG 1048:new_exit_unbind:210: WLOCK_TASK pid=1048 count=0
+[ 6358.579199] DEBUG 1048:new_exit_unbind:341: Process not bound pid=1048 cc1
+[ 6358.579200] DEBUG 1048:new_exit_unbind:343: WUNLOCK_TASK pid=1048 count=0
+[ 6358.597884] DVK: exit_unbind local_nodeid:0
+[ 6358.598518] DEBUG 1049:new_exit_unbind:206: code=-797571012
+[ 6358.598581] DEBUG 1049:new_exit_unbind:210: WLOCK_TASK pid=1049 count=0
+[ 6358.598583] DEBUG 1049:new_exit_unbind:341: Process not bound pid=1049 as
+[ 6358.598584] DEBUG 1049:new_exit_unbind:343: WUNLOCK_TASK pid=1049 count=0
+[ 6358.672776] DVK: exit_unbind local_nodeid:0
+[ 6358.673204] DEBUG 1051:new_exit_unbind:206: code=-797571012
+[ 6358.673207] DEBUG 1051:new_exit_unbind:210: WLOCK_TASK pid=1051 count=0
+[ 6358.673208] DEBUG 1051:new_exit_unbind:341: Process not bound pid=1051 ld
+[ 6358.673210] DEBUG 1051:new_exit_unbind:343: WUNLOCK_TASK pid=1051 count=0
+[ 6358.674066] DVK: exit_unbind local_nodeid:0
+[ 6358.674603] DEBUG 1050:new_exit_unbind:206: code=-797571012
+[ 6358.675565] DEBUG 1050:new_exit_unbind:210: WLOCK_TASK pid=1050 count=0
+[ 6358.675567] DEBUG 1050:new_exit_unbind:341: Process not bound pid=1050 collect2
+[ 6358.675569] DEBUG 1050:new_exit_unbind:343: WUNLOCK_TASK pid=1050 count=0
+[ 6358.676060] DVK: exit_unbind local_nodeid:0
+[ 6358.676456] DEBUG 1047:new_exit_unbind:206: code=-797571012
+[ 6358.676458] DEBUG 1047:new_exit_unbind:210: WLOCK_TASK pid=1047 count=0
+[ 6358.676460] DEBUG 1047:new_exit_unbind:341: Process not bound pid=1047 gcc
+[ 6358.676461] DEBUG 1047:new_exit_unbind:343: WUNLOCK_TASK pid=1047 count=0
+[ 6358.798822] DVK: exit_unbind local_nodeid:0
+[ 6358.799287] DEBUG 1053:new_exit_unbind:206: code=-797571012
+[ 6358.799289] DEBUG 1053:new_exit_unbind:210: WLOCK_TASK pid=1053 count=0
+[ 6358.799291] DEBUG 1053:new_exit_unbind:341: Process not bound pid=1053 cc1
+[ 6358.799293] DEBUG 1053:new_exit_unbind:343: WUNLOCK_TASK pid=1053 count=0
+[ 6358.814616] DVK: exit_unbind local_nodeid:0
+[ 6358.815009] DEBUG 1054:new_exit_unbind:206: code=-797571012
+[ 6358.815011] DEBUG 1054:new_exit_unbind:210: WLOCK_TASK pid=1054 count=0
+[ 6358.815013] DEBUG 1054:new_exit_unbind:341: Process not bound pid=1054 as
+[ 6358.815015] DEBUG 1054:new_exit_unbind:343: WUNLOCK_TASK pid=1054 count=0
+[ 6358.886381] DVK: exit_unbind local_nodeid:0
+[ 6358.886772] DEBUG 1056:new_exit_unbind:206: code=-797571012
+[ 6358.886774] DEBUG 1056:new_exit_unbind:210: WLOCK_TASK pid=1056 count=0
+[ 6358.886776] DEBUG 1056:new_exit_unbind:341: Process not bound pid=1056 ld
+[ 6358.886778] DEBUG 1056:new_exit_unbind:343: WUNLOCK_TASK pid=1056 count=0
+[ 6358.887759] DVK: exit_unbind local_nodeid:0
+[ 6358.888139] DEBUG 1055:new_exit_unbind:206: code=-797571012
+[ 6358.888141] DEBUG 1055:new_exit_unbind:210: WLOCK_TASK pid=1055 count=0
+[ 6358.888142] DEBUG 1055:new_exit_unbind:341: Process not bound pid=1055 collect2
+[ 6358.888143] DEBUG 1055:new_exit_unbind:343: WUNLOCK_TASK pid=1055 count=0
+[ 6358.888509] DVK: exit_unbind local_nodeid:0
+[ 6358.888840] DEBUG 1052:new_exit_unbind:206: code=-797571012
+[ 6358.888841] DEBUG 1052:new_exit_unbind:210: WLOCK_TASK pid=1052 count=0
+[ 6358.888843] DEBUG 1052:new_exit_unbind:341: Process not bound pid=1052 gcc
+[ 6358.888844] DEBUG 1052:new_exit_unbind:343: WUNLOCK_TASK pid=1052 count=0
+[ 6358.889210] DVK: exit_unbind local_nodeid:0
+[ 6358.889533] DEBUG 1046:new_exit_unbind:206: code=-797571012
+[ 6358.889535] DEBUG 1046:new_exit_unbind:210: WLOCK_TASK pid=1046 count=0
+[ 6358.889536] DEBUG 1046:new_exit_unbind:341: Process not bound pid=1046 make
+[ 6358.889537] DEBUG 1046:new_exit_unbind:343: WUNLOCK_TASK pid=1046 count=0
+[ 6362.690180] DEBUG 1058:dvk_open:167: 
+[ 6362.691454] DEBUG 1058:dvk_ioctl:204: cmd=8004E31B arg=BFA90048
+[ 6362.691457] DEBUG 1058:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+[ 6362.691459] DEBUG 1058:io_getdvsinfo:288: 
+[ 6362.691461] DEBUG 1058:new_getdvsinfo:1777: local_nodeid=0 
+[ 6362.693289] DEBUG 1058:dvk_ioctl:204: cmd=8004E30E arg=BFA90004
+[ 6362.693291] DEBUG 1058:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+[ 6362.693293] DEBUG 1058:io_getdcinfo:153: 
+[ 6362.693295] DEBUG 1058:new_getdcinfo:1806: dcid=0 
+[ 6362.693297] DEBUG 1058:check_caller:536: caller_pid=1058 caller_tgid=1058
+[ 6362.693299] ERROR: 1058:check_caller:570: rcode=-310
+[ 6362.693301] DEBUG 1058:new_getdcinfo:1824: RLOCK_DC dc=0 count=0
+[ 6362.693302] DEBUG 1058:new_getdcinfo:1826: RUNLOCK_DC dc=0 count=0
+[ 6362.693358] DEBUG 1058:dvk_ioctl:204: cmd=4004E309 arg=BFA8FFE8
+[ 6362.693360] DEBUG 1058:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 6362.693361] DEBUG 1058:io_bind:97: 
+[ 6362.693363] DEBUG 1058:new_bind:1361: oper=0 dcid=0 param_pid=-1 endpoint=1 nodeid=-1
+[ 6362.693365] DEBUG 1058:new_bind:1383: RLOCK_DC dc=0 count=0
+[ 6362.693367] DEBUG 1058:new_bind:1396: WLOCK_PROC ep=1 count=0
+[ 6362.693369] DEBUG 1058:init_proc_desc:16: p_name=$noname dcid=0
+[ 6362.693372] DEBUG 1058:new_bind:1430: param_pid=-1 lpid=1058 vpid=18 tid=1058
+[ 6362.693374] DEBUG 1058:new_bind:1454: SELF_BIND param_pid=-1 lpid=1058 vpid=18 tid=1058
+[ 6362.693375] DEBUG 1058:new_bind:1476: WUNLOCK_PROC ep=1 count=0
+[ 6362.693376] DEBUG 1058:new_bind:1479: WLOCK_TASK pid=1058 count=0
+[ 6362.693378] DEBUG 1058:new_bind:1480: WLOCK_PROC ep=1 count=0
+[ 6362.693379] DEBUG 1058:new_bind:1516: increment the reference count of the task struct=1058 count=2
+[ 6362.693380] DEBUG 1058:new_bind:1527: process p_name=copy_server *p_name_ptr=copy_server
+[ 6362.693383] DEBUG 1058:new_bind:1583: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1058 vpid=18 nodeid=0 name=copy_server 
+[ 6362.693386] DEBUG 1058:new_bind:1584: nr=1 endp=1 dcid=0 lpid=1058 p_cpumask=FFFFFFFF nodemap=1 name=copy_server 
+[ 6362.693387] DEBUG 1058:new_bind:1598: WUNLOCK_TASK pid=1058 count=0
+[ 6362.693388] DEBUG 1058:new_bind:1604: WUNLOCK_PROC ep=1 count=0
+[ 6362.693389] DEBUG 1058:new_bind:1606: DC_INCREF counter=1
+[ 6362.693391] DEBUG 1058:new_bind:1607: RUNLOCK_DC dc=0 count=0
+[ 6362.693392] ERROR: 1058:dvk_ioctl:228: rcode=1
+[ 6362.693425] DEBUG 1058:dvk_ioctl:204: cmd=8004E30F arg=BFA90000
+[ 6362.693427] DEBUG 1058:dvk_ioctl:224: DVK_CALL=15 (getprocinfo) 
+[ 6362.693428] DEBUG 1058:io_getprocinfo:164: 
+[ 6362.693430] DEBUG 1058:new_getprocinfo:1884: dcid=0 p_nr=1
+[ 6362.693431] DEBUG 1058:check_caller:536: caller_pid=1058 caller_tgid=1058
+[ 6362.693432] DEBUG 1058:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 6362.693434] DEBUG 1058:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 6362.693435] DEBUG 1058:check_caller:604: dcid=0
+[ 6362.693437] DEBUG 1058:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6362.693438] DEBUG 1058:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6362.693439] DEBUG 1058:check_caller:618: caller_pid=1058 
+[ 6362.693440] DEBUG 1058:new_getprocinfo:1901: RLOCK_DC dc=0 count=0
+[ 6362.693442] DEBUG 1058:new_getprocinfo:1906: RUNLOCK_DC dc=0 count=0
+[ 6362.693443] DEBUG 1058:new_getprocinfo:1908: RLOCK_PROC ep=1 count=0
+[ 6362.693445] DEBUG 1058:new_getprocinfo:1909: lpid=1058 name=copy_server
+[ 6362.693446] DEBUG 1058:new_getprocinfo:1911: RUNLOCK_PROC ep=1 count=0
+[ 6362.694103] DEBUG 1058:dvk_ioctl:204: cmd=4004E303 arg=BFA90000
+[ 6362.694104] DEBUG 1058:dvk_ioctl:224: DVK_CALL=3 (mini_receive) 
+[ 6362.694106] DEBUG 1058:io_mini_receive:35: 
+[ 6362.694107] DEBUG 1058:new_mini_receive:288: src_ep=31438
+[ 6362.694109] DEBUG 1058:check_caller:536: caller_pid=1058 caller_tgid=1058
+[ 6362.694110] DEBUG 1058:check_caller:572: WLOCK_PROC ep=1 count=0
+[ 6362.694112] DEBUG 1058:check_caller:601: WUNLOCK_PROC ep=1 count=0
+[ 6362.694113] DEBUG 1058:check_caller:604: dcid=0
+[ 6362.694114] DEBUG 1058:check_caller:608: RLOCK_DC dc=0 count=0
+[ 6362.694115] DEBUG 1058:check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 6362.694116] DEBUG 1058:check_caller:618: caller_pid=1058 
+[ 6362.694118] DEBUG 1058:new_mini_receive:299: RLOCK_PROC ep=1 count=0
+[ 6362.694119] DEBUG 1058:new_mini_receive:303: caller_nr=1 caller_ep=1 src_ep=31438 
+[ 6362.694121] DEBUG 1058:new_mini_receive:307: dcid=0
+[ 6362.694122] DEBUG 1058:new_mini_receive:311: RUNLOCK_PROC ep=1 count=0
+[ 6362.694123] DEBUG 1058:new_mini_receive:313: RLOCK_DC dc=0 count=0
+[ 6362.694125] DEBUG 1058:new_mini_receive:316: RUNLOCK_DC dc=0 count=0
+[ 6362.694126] DEBUG 1058:new_mini_receive:366: WLOCK_PROC ep=1 count=0
+[ 6362.694128] DEBUG 1058:new_mini_receive:471: Any suitable message from 31438 was not found.
+[ 6362.694129] DEBUG 1058:sleep_proc:344: timeout=-1
+[ 6362.694131] DEBUG 1058:sleep_proc:355: BEFORE DOWN lpid=1058 p_sem=0 timeout=-1
+[ 6362.694132] DEBUG 1058:sleep_proc:357: endpoint=1 flags=8
+[ 6362.694133] DEBUG 1058:sleep_proc:361: WUNLOCK_PROC ep=1 count=0

@@ -139,7 +139,7 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			DVKDEBUG(GENERIC,"Found a message. p_endpoint=%d c_cmd=%d\n",
 				xpp->p_usr.p_endpoint,xpp->p_rmtcmd.c_cmd);
 			
-			LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
+			LIST_DEL(&xpp->p_link); /* remove from queue */
 			
 			/* A LOCAL process descriptor must have	(SENDING | ONCOPY) set	*/
 			/* A REMOTE process descriptor must have (RMTOPER | ONCOPY) set	*/

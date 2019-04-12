@@ -190,7 +190,7 @@ send_replay: /* Return point for a migrated destination process */
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;
@@ -244,7 +244,7 @@ send_replay: /* Return point for a migrated destination process */
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", 
 						caller_ptr->p_usr.p_endpoint, dst_ep);
 					/* remove from queue ATENCION: HAY Q PROTEGER DESTINATION ?? */
-					LIST_DEL_INIT(&caller_ptr->p_link); 
+					LIST_DEL(&caller_ptr->p_link); 
 				}
 				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_sendto 	= NONE;
@@ -409,13 +409,19 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	/*-----------------------------------------*/
 
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &caller_ptr->p_list, p_link) {
-		WLOCK_ORDERED2(caller_ptr,xpp);
+		if( caller_ptr->p_usr.p_nr < xpp->p_usr.p_nr) {
+			WLOCK_PROC(xpp);
+		}else{
+			WUNLOCK_PROC(caller_ptr);
+			WLOCK_PROC(xpp);
+			WLOCK_PROC(caller_ptr);
+		}
 		if (src_ep == xpp->p_usr.p_endpoint || src_ep == ANY ) {
 			DVKDEBUG(GENERIC,"Found acceptable message from %d. Copy it and update status.\n"
 				,xpp->p_usr.p_endpoint );
 			/* Here is a message from xpp process, therefore xpp  must be sleeping in SENDING state */
 
-			LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
+			LIST_DEL(&xpp->p_link); /* remove from queue */
 
 			/* test the sender status */
 			do	{
@@ -660,7 +666,7 @@ sendrec_replay:
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n",
 					 caller_ptr->p_usr.p_endpoint);
-				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
@@ -723,7 +729,7 @@ sendrec_replay:
 			if( ret) {
 				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
-					LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue */
+					LIST_DEL(&caller_ptr->p_link); /* remove from queue */
 				} else {
 					caller_ptr->p_usr.p_lclsent++;
 				}
@@ -941,7 +947,7 @@ notify_replay:
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
@@ -1236,7 +1242,11 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		src_tgid = src_ptr->p_task->tgid;
 		dst_pid  = task_pid_nr(dst_ptr->p_task);
 		dst_tgid = dst_ptr->p_task->tgid;
-		if( dst_tgid == src_tgid){ 
+		DVKDEBUG(DBGPARAMS,"src_pid=%d src_tgid=%d dst_pid=%d dst_tgid=%d\n", 
+			src_pid, src_tgid, dst_pid, dst_tgid);
+		
+//		if( dst_tgid == src_tgid){ 
+		if( src_pid == dst_pid){ 
 			ret = EDVSPERM;
 		}else{
 			while( bytes > 0) {
@@ -1571,13 +1581,20 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 	/* MESSAGE RECEIVE 		*/
 	/*-----------------------------------------*/
 	caller_ptr->p_umsg 	= m_ptr;
+	
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &caller_ptr->p_list, p_link) {
-		WLOCK_ORDERED2(caller_ptr,xpp);
+		if( caller_ptr->p_usr.p_nr < xpp->p_usr.p_nr) {
+			WLOCK_PROC(xpp);
+		}else{
+			WUNLOCK_PROC(caller_ptr);
+			WLOCK_PROC(xpp);
+			WLOCK_PROC(caller_ptr);
+		}
 		DVKDEBUG(GENERIC,"Found acceptable message from %d. Copy it and update status.\n"
 				,xpp->p_usr.p_endpoint );
 		/* Here is a message from xpp process, therefore xpp  must be sleeping in SENDING state */
 
-		LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
+		LIST_DEL(&xpp->p_link); /* remove from queue */
 
 		/* test the sender status */
 		do	{
@@ -1797,7 +1814,7 @@ reply_replay: /* Return point for a migrated destination process */
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;

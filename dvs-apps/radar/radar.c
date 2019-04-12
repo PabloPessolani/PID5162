@@ -36,8 +36,8 @@ int main (int argc, char *argv[] )
 	int rcode, dcid, svrep, i;
 	proc_usr_t svr_usr, *svr_ptr;
 
-	if ( argc != 4) {
- 	    fprintf( stderr,"Usage: %s <dcid> <svr_ep> <svr_name> \n", argv[0] );
+	if ( argc != 2) {
+ 	    fprintf( stderr,"Usage: %s <config_file> \n", argv[0] );
  	    exit(1);
     }
 	
@@ -45,9 +45,14 @@ int main (int argc, char *argv[] )
 		posix_memalign( (void**) &rad_ptr[nr_control], getpagesize(), sizeof(radar_t));
 		if( rad_ptr[nr_control] == NULL) return (EDVSNOMEM);
 	}
-	radar_config("radar.cfg");
-
+	
 	nr_control = 0;
+	radar_config(argv[1]);
+	if( nr_control > NR_MAX_CONTROL){
+ 	    fprintf( stderr,"The count of pair {dc,enpoint} to control (%d) >= NR_MAX_CONTROL(%d)\n", 
+			nr_control,NR_MAX_CONTROL);
+ 	    exit(1);		
+	}
 	
 	rcode = dvk_open();
 	if (rcode < 0)  ERROR_EXIT(rcode);	
@@ -59,85 +64,69 @@ int main (int argc, char *argv[] )
 		ERROR_EXIT(EDVSDVSINIT);
 	dvs_ptr = &dvs;
 	USRDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
-	USRDEBUG("local_nodeid=%d\n", local_nodeid);
+	USRDEBUG("PID=%d, local_nodeid=%d nr_control=%d\n", getpid(), local_nodeid, nr_control);
 	
 	/* get the DC info from kernel */
-	dcid = atoi(argv[1]);
-	if( dcid < 0 || dcid >= NR_DCS) ERROR_EXIT(EDVSRANGE);
-	rcode = dvk_getdcinfo(dcid, &dcu[dcid]);
-	if(rcode <0) ERROR_EXIT(rcode);
-	dc_ptr[dcid] = &dcu[dcid];
-	USRDEBUG(DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr[dcid]));
-	USRDEBUG(DC_USR2_FORMAT, DC_USR2_FIELDS(dc_ptr[dcid]));
+	for ( i = 0;  i < nr_control; i++){
+		dcid = rad_ptr[i]->rad_dcid;
+		rcode = dvk_getdcinfo(dcid, &dcu[dcid]);
+		if(rcode <0) ERROR_EXIT(rcode);
+		dc_ptr[dcid] = &dcu[dcid];
+		USRDEBUG(DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr[dcid]));
+		USRDEBUG(DC_USR2_FORMAT, DC_USR2_FIELDS(dc_ptr[dcid]));
 	
-	svrep = atoi(argv[2]);
-	if( svrep >  (dc_ptr[dcid]->dc_nr_sysprocs - dc_ptr[dcid]->dc_nr_tasks)
-		|| 	(svrep < (-dc_ptr[dcid]->dc_nr_tasks))){
- 	    fprintf( stderr,"Usage:  be lower than %d >= svr_ep=%d >= %d \n", svrep,
-			(dc_ptr[dcid]->dc_nr_sysprocs - dc_ptr[dcid]->dc_nr_tasks), 
-			(-dc_ptr[dcid]->dc_nr_tasks));
- 	    exit(1);		
-	}
-
-	// checks if server is running in local_node 
-	systask_flag = 0;
-	rcode = dvk_getprocinfo(dcid, svrep, &svr_usr);
-	if(rcode != 0) {
-		USRDEBUG("dvk_getprocinfo rcode=%d\n", rcode);
-		exit(1);
-	}
-	svr_ptr = &svr_usr;
-	if( svr_ptr->p_rts_flags != SLOT_FREE ) {
-		USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(svr_ptr));
-		if( local_nodeid == svr_ptr->p_nodeid) {
-	 	    fprintf( stderr,"Server %s on endpoint %d is RUNNING in this NODE!!!\n", argv[3], svrep);
-			systask_flag = 1;
-		// exit temporal - removerlo cuando hay multiples servicios a controlar
+	
+		rad_ptr[i]->rad_ep;
+		if( svrep >  (dc_ptr[dcid]->dc_nr_sysprocs - dc_ptr[dcid]->dc_nr_tasks)
+			|| 	(svrep < (-dc_ptr[dcid]->dc_nr_tasks))){
+			fprintf( stderr,"Usage:  be lower than %d >= svr_ep=%d >= %d \n", svrep,
+				(dc_ptr[dcid]->dc_nr_sysprocs - dc_ptr[dcid]->dc_nr_tasks), 
+				(-dc_ptr[dcid]->dc_nr_tasks));
+			exit(1);		
+		}
+     
+		// checks if server is running in local_node 
+		systask_flag = 0;
+		rcode = dvk_getprocinfo(dcid, svrep, &svr_usr);
+		if(rcode != 0) {
+			USRDEBUG("dvk_getprocinfo rcode=%d\n", rcode);
 			exit(1);
-		} 
-	}
-	
-	
-	if( nr_control > NR_MAX_CONTROL){
- 	    fprintf( stderr,"The count of pair {dc,enpoint} to control (%d) >= NR_MAX_CONTROL(%d)\n", 
-			nr_control,NR_MAX_CONTROL);
- 	    exit(1);		
-	}
-
-	
-	init_control_vars(rad_ptr[nr_control]);
-
-	srandom( getpid());
-
-	rad_ptr[nr_control]->rad_index	= nr_control;
-	rad_ptr[nr_control]->rad_dcid 	= dcid;
-	rad_ptr[nr_control]->rad_ep   	= svrep;	
-	rad_ptr[nr_control]->rad_replication = REPLICA_RPB;	
-	rad_ptr[nr_control]->rad_bm_valid = REPL_ANY_NODES;	
-
-	if( strlen(argv[3]) > (MAXPROCNAME-1)){
- 	    fprintf( stderr,"Usage: svr_name must have less than %d chars\n", MAXPROCNAME-1);
- 	    exit(1);
-    }
-	strncpy(rad_ptr[nr_control]->rad_svrname, argv[3], MAXPROCNAME-1);
-	rad_ptr[nr_control]->rad_len = strlen(rad_ptr[nr_control]->rad_svrname);
-	
-	if( svr_ptr->p_rts_flags != SLOT_FREE ) {
-		// the server endpoint already bound in local_node, then its like it was dead 
-		rad_ptr[nr_control]->rad_primary_mbr = svr_ptr->p_nodeid;
-		no_primary_dead(&rad_ptr[nr_control]);	
-	}
-	
-	USRDEBUG("Starting CONTROL thread[%d] \n", nr_control)
-	USRDEBUG(RAD1_FORMAT, RAD1_FIELDS(rad_ptr[nr_control]));
-	USRDEBUG(RAD2_FORMAT, RAD2_FIELDS(rad_ptr[nr_control]));
-	USRDEBUG(RAD3_FORMAT, RAD3_FIELDS(rad_ptr[nr_control]));
+		}
 		
-	rcode = pthread_create( &rad_ptr[nr_control]->rad_thread, NULL, radar_thread, (void *) rad_ptr[nr_control]);
-	if( rcode)ERROR_EXIT(rcode);
+		svr_ptr = &svr_usr;
+		if( svr_ptr->p_rts_flags != SLOT_FREE ) {
+			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(svr_ptr));
+			if( local_nodeid == svr_ptr->p_nodeid) {
+				fprintf( stderr,"Server %s on endpoint %d is RUNNING in this NODE!!!\n", argv[3], svrep);
+				systask_flag = 1;
+			// exit temporal - removerlo cuando hay multiples servicios a controlar
+				exit(1);
+			} 
+		}
+	
+		init_control_vars(rad_ptr[i]);
+
+		srandom( getpid());
+		rad_ptr[i]->rad_bm_valid = REPL_ANY_NODES;	
+
+		if( svr_ptr->p_rts_flags != SLOT_FREE ) {
+			// the server endpoint already bound in local_node, then its like it was dead 
+			rad_ptr[i]->rad_primary_mbr = svr_ptr->p_nodeid;
+			no_primary_dead(&rad_ptr[i]);	
+		}
+	
+		USRDEBUG("Starting CONTROL thread[%d] \n", i)
+		USRDEBUG(RAD1_FORMAT, RAD1_FIELDS(rad_ptr[i]));
+		USRDEBUG(RAD2_FORMAT, RAD2_FIELDS(rad_ptr[i]));
+		USRDEBUG(RAD3_FORMAT, RAD3_FIELDS(rad_ptr[i]));
 		
+		rcode = pthread_create( &rad_ptr[i]->rad_thread, NULL, radar_thread, (void *) rad_ptr[i]);
+		if( rcode) ERROR_EXIT(rcode);
+	}
+
+	
 	for ( i = 0; i < nr_control; i++)	{
-		rcode = pthread_join(rad_ptr[nr_control]->rad_thread, NULL);
+		rcode = pthread_join(rad_ptr[i]->rad_thread, NULL);
 	}
 	return(OK);				
 }
@@ -151,11 +140,17 @@ void *radar_thread(void *arg)
 	int rcode;
 	
 	r_ptr = (int *) arg;
-	connect_to_spread(r_ptr);
 
+		
+	connect_to_spread(r_ptr);
 	while(TRUE){
+		USRDEBUG(RAD1_FORMAT, RAD1_FIELDS(r_ptr));
+		USRDEBUG(RAD2_FORMAT, RAD2_FIELDS(r_ptr));
+		USRDEBUG(RAD3_FORMAT, RAD3_FIELDS(r_ptr));
 		rcode = radar_loop(r_ptr);
-		if(rcode) {
+		USRDEBUG("rcode=%d\n", rcode);
+		if(rcode < 0 ) {
+			ERROR_PRINT(rcode);
 			sleep(RADAR_ERROR_SPEEP);
 			if( rcode == EDVSNOTCONN) {
 				connect_to_spread(r_ptr);
@@ -202,7 +197,7 @@ void connect_to_spread(radar_t *r_ptr)
 	* rad_mbr_name:  it must be unique in the spread node.
 	*  RADARlocal_nodeid.dcid
 	*--------------------------------------------------------------------------------------*/
-	sprintf(r_ptr->rad_sp_group, "%s%02d", r_ptr->rad_svrname, r_ptr->rad_dcid);
+	sprintf(r_ptr->rad_sp_group, "%s%02d", r_ptr->rad_group, r_ptr->rad_dcid);
 	USRDEBUG("spread_group=%s\n", r_ptr->rad_sp_group);
 	sprintf( Spread_name, "4803");
 	sprintf( r_ptr->rad_mbr_name, "RADAR%02d.%02d", r_ptr->rad_dcid,local_nodeid);
@@ -264,10 +259,15 @@ int radar_loop(radar_t	*r_ptr)
 	service_type = 0;
 	num_groups = -1;
 
+	USRDEBUG("SP_receive: %s of DCID=%d\n", r_ptr->rad_svrname, r_ptr->rad_dcid);
+	
+	assert(r_ptr->rad_mbox != NULL);
+	assert(r_ptr->rad_mess_in != NULL);
+		
 	ret = SP_receive( r_ptr->rad_mbox, &service_type, sender, 100, &num_groups, target_groups,
 			&mess_type, &endian_mismatch, MAX_MESSLEN, r_ptr->rad_mess_in );
-	
-	
+	USRDEBUG("ret=%d\n", ret);
+		
 	if( ret < 0 ){
        	if ( (ret == GROUPS_TOO_SHORT) || (ret == BUFFER_TOO_SHORT) ) {
 			service_type = DROP_RECV;
@@ -284,7 +284,6 @@ int radar_loop(radar_t	*r_ptr)
 		pthread_exit(NULL);
 	}
 	
-
 	USRDEBUG(" sender=%s Private_group=%s service_type=%d\n", r_ptr->rad_svrname,
 			sender, r_ptr->rad_priv_group, service_type);
 
@@ -470,9 +469,13 @@ int get_radar_info(radar_t	*r_ptr,	SP_message  *sp_ptr)
 	int primary_new;
 	node_usr_t *n_ptr, n_usr;
 	proc_usr_t p_usr, *p_ptr;
+	message *m_ptr;
+
+	USRDEBUG("\n");
 
 	p_ptr = &p_usr;
 	n_ptr = &n_usr;
+	m_ptr = &sp_ptr->msg;
 	assert( sp_ptr->msg.m_type == MC_RADAR_INFO);
 	
 	// checks if remote node is DVK configured for local node  
@@ -500,7 +503,6 @@ int get_radar_info(radar_t	*r_ptr,	SP_message  *sp_ptr)
 		ERROR_RETURN(EDVSNONODE);
 		
 	primary_new = sp_ptr->msg.m_source;
-	
 	USRDEBUG("%s: primary_mbr=%d primary_old=%d primary_new=%d\n",
 		r_ptr->rad_svrname, r_ptr->rad_primary_mbr, r_ptr->rad_primary_old, primary_new);
 
@@ -516,8 +518,12 @@ int get_radar_info(radar_t	*r_ptr,	SP_message  *sp_ptr)
 			if( ret == OK){
 				if( primary_new != p_ptr->p_nodeid) {
 					USRDEBUG("%s: old primary differs from new primary\n", r_ptr->rad_svrname);
-					ret = dvk_unbind(r_ptr->rad_dcid,r_ptr->rad_ep);
+					if(!TEST_BIT(p_ptr->p_rts_flags, BIT_SLOT_FREE)){
+						ret = dvk_unbind(r_ptr->rad_dcid,r_ptr->rad_ep);
+					}
 					ret = dvk_rmtbind(r_ptr->rad_dcid, r_ptr->rad_svrname, r_ptr->rad_ep, primary_new);	
+				} else {
+					USRDEBUG("%s: old primary it is the same as new primary\n", r_ptr->rad_svrname);				
 				}
 			} else{
 				USRDEBUG("%s: binding new primary\n", r_ptr->rad_svrname);

@@ -409,8 +409,8 @@ unsigned nr_req;		/* length of request vector */
 				TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
 				TASKDEBUG("user_vir: %X (in proc_nr %d)\n", user_vir, proc_nr);			
 			
-				if (rcode != 0 ) {
-					fprintf( stderr,"VCOPY rcode=%d\n",rcode);
+				if (rcode < 0 ) {
+					fprintf( stderr,"dvk_vcopy rcode=%d\n",rcode);
 					fflush(stderr);
 					break;
 				}
@@ -470,7 +470,7 @@ unsigned nr_req;		/* length of request vector */
 						TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
 						TASKDEBUG("user_vir: %X (in proc_nr %d)\n", user_vir, proc_nr);			
 									
-						if (rcode != 0 ){
+						if (rcode < 0 ){
 							fprintf(stderr, "VCOPY rcode=%d\n", rcode);
 							fflush(stderr);
 							break;
@@ -563,7 +563,7 @@ unsigned nr_req;		/* length of request vector */
 						
 						TASKDEBUG("SP_multicast mensaje enviado\n");
 						
-						if(rcode <0) {
+						if(rcode) {
 							// pthread_mutex_unlock(&rd_mutex);	
 							MTX_UNLOCK(rd_mutex);
 							ERROR_RETURN(rcode);
@@ -610,7 +610,7 @@ unsigned nr_req;		/* length of request vector */
 						rcode = SP_multicast (sysmbox, SAFE_MESS, (char *) rdisk_group,  
 								MOLTASK_REPLY, sizeof(message), (char *) &msg); 
 			
-						if(rcode <0) ERROR_RETURN(rcode);
+						if(rcode) ERROR_RETURN(rcode);
 						CLR_BIT(bm_acks, primary_mbr);
 					}
 				}
@@ -641,7 +641,7 @@ unsigned nr_req;		/* length of request vector */
 					TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
 					TASKDEBUG("user_vir: %X (in proc_nr %d)\n", user_vir, proc_nr);			
 									
-					if (rcode != 0 ){
+					if (rcode < 0 ){
 						fprintf(stderr, "VCOPY rcode=%d\n", rcode);
 						fflush(stderr);
 						break;
@@ -751,7 +751,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 		/* local buffer to the minor device */
 		rcode = posix_memalign( (void**) &localbuff, getpagesize(), devvec[m_ptr->DEVICE].buff_size);
 		devvec[m_ptr->DEVICE].localbuff = localbuff;
-		if( rcode ) {
+		if( rcode) {
 			fprintf(stderr,"posix_memalign rcode=%d, device=%d\n", rcode, m_ptr->DEVICE);
 			fflush(stderr);
 			exit(1);
@@ -768,7 +768,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 		if (m_prepare(m_ptr->DEVICE) == NIL_DEV) {
 			TASKDEBUG("'m_prepare()' %d - NIL_DEV:%d\n", m_prepare(m_ptr->DEVICE), NIL_DEV);
 			rcode = ENXIO;
-			return(rcode);
+			ERROR_RETURN(rcode);
 		}
  	
 	}while(0);
@@ -778,7 +778,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 		if(primary_mbr == local_nodeid) {
 			TASKDEBUG("PRIMARY multicast DEV_OPEN dev=%d\n", m_ptr->DEVICE);
 			
-			if(rcode) return(rcode);
+			if(rcode< 0) ERROR_RETURN(rcode);
 			msg.m_source= local_nodeid;			/* this is the primary */
 			msg.m_type 	= DEV_OPEN;
 			msg.m2_i1	= m_ptr->DEVICE;
@@ -789,8 +789,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 			rcode = SP_multicast (sysmbox, SAFE_MESS, (char *) rdisk_group,  
 						DEV_OPEN, sizeof(message), (char *) &msg); 
 						
-			TASKDEBUG("PASA POR ACÁ\n");			
-			if(rcode <0) {
+			if(rcode) {
 				// pthread_mutex_unlock(&rd_mutex);	
 				MTX_UNLOCK(rd_mutex);
 				ERROR_RETURN(rcode);
@@ -816,7 +815,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 			rcode = SP_multicast (sysmbox, SAFE_MESS, (char *) rdisk_group,  
 						MOLTASK_REPLY, sizeof(message), (char *) &msg); 
 						
-			if(rcode <0) ERROR_RETURN(rcode);
+			if(rcode) ERROR_RETURN(rcode);
 			TASKDEBUG("bm_acks=%d\n", bm_acks); 
 			CLR_BIT(bm_acks, primary_mbr);
 			TASKDEBUG("bm_acks=%d\n", bm_acks);
@@ -858,15 +857,14 @@ int rd_init(void )
 	
 	TASKDEBUG("Get the DC info\n");
 	rcode = dvk_getdcinfo(DCID, &dcu);
-	if(rcode) ERROR_EXIT(rcode);
+	if(rcode < 0) ERROR_EXIT(rcode);
 	dc_ptr = &dcu;
 	TASKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	TASKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
 	TASKDEBUG("Get RDISK info\n");
 	rcode = dvk_getprocinfo(DCID, rd_ep, &proc_rd);
-	
-	if(rcode ) ERROR_EXIT(rcode);
+	if(rcode < 0 ) ERROR_EXIT(rcode);
 	rd_ptr = &proc_rd;
 	TASKDEBUG("BEFORE " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));
 	
@@ -901,7 +899,7 @@ int rd_init(void )
 		}
 	}
 	rcode = dvk_getprocinfo(DCID, rd_ep, &proc_rd);
-	if(rcode) ERROR_EXIT(rcode);
+	if(rcode < 0) ERROR_EXIT(rcode);
 	TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));	
 	
 	for( i = 0; i < NR_DEVS; i++){
@@ -925,7 +923,7 @@ int rd_init(void )
 		
 		TASKDEBUG("Starting REPLICATE thread\n");
 		rcode = pthread_create( &replicate_thread, NULL, replicate_main, 0 );
-		if( rcode)ERROR_EXIT(rcode);
+		if( rcode )ERROR_EXIT(rcode);
 
 		// pthread_mutex_lock(&rd_mutex);
 		MTX_LOCK(rd_mutex);
@@ -993,7 +991,7 @@ int rcode;
 	else{	
 		TASKDEBUG("devvec[m_ptr->DEVICE].img_p=%d\n",devvec[m_ptr->DEVICE].img_p);
 		rcode = close(devvec[m_ptr->DEVICE].img_p);
-		if(rcode < 0) ERROR_EXIT(errno); 
+		if(rcode) ERROR_EXIT(errno); 
 		
 		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
 		devvec[m_ptr->DEVICE].img_ptr = NULL;

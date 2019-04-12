@@ -1,0 +1,89 @@
+COMO CREAR Y EJECUTAR NODE0 EN UN USB 
+
+
+EN LA MAQUINA VIRTUAL NODE0
+/dev/sda : disco root de la VM
+/dev/sdb : disco de las particiones de los Containers
+/dev/sdc : disco de donde dejar la imagen bootcd.iso
+/dev/sdd : USB Pendrive
+
+Para ver que directorios utilizan mas espacio 
+du -h --max-depth=1
+
+CREACION DE LA IMAGEN 
+1- Editar /etc/bootcd/bootcdwrite.conf 
+2- montar /sdc1 /image 
+3- ejecutar bootcdwrite 
+4- ejecutar el procedimiento siguiente 
+
+=====================================================
+USB=/dev/sdd
+dd if=/dev/zero of=$USB bs=1k count=2 conv=notrunc                   
+sgdisk --zap-all $USB || sgdisk --zap-all $USB                      
+sgdisk -n 1:43008:0 -c 1:\"ntfs2\" -t 1:0700 $USB                   
+sgdisk -n 2:2048:43007 -c 2:\"BIOSboot\" -t 2:EF02 $USB          
+mkntfs --fast ${USB}1                                     
+mkdir -p /mnt/usbstick                                    
+mount ${USB}1 /mnt/usbstick                                      
+mkdir -p /mnt/usbstick/boot/grub
+###### ATENCION en este archivo hay que copiar lo que dice abajo.
+joe /mnt/usbstick/boot/grub/grub.cfg  
+cp /image/bootcd.iso /mnt/usbstick
+grub-install --root-directory=/mnt/usbstick $USB                
+umount /mnt/usbstick     
+
+---------------------- /mnt/usbstick/boot/grub/grub.cfg -------------------
+set default=0                                                                                             
+set timeout=3                                                                                                                                                                                                
+menuentry 'bootcd' {   
+        insmod part_gpt 
+        insmod ntfs  
+        echo "dvs-node" 
+        search --file --set=root --no-floppy /bootcd.iso  
+        loopback loop /bootcd.iso 
+        linux (loop)/isolinux/vmlinuz root=iso:auto:/bootcd.iso bootcd=standard                                    
+        initrd (loop)/isolinux/initrd                                                                    
+}    
+
+============================ BOOTEO DESDE USB =====================================
+MULTIBOOT-USB: Permite bootear, bootea, pero luego se cuelga 
+PC PAP:	Funciono perfectamente
+
+========================== TRAMPA PARA VIRTUAL BOX ==================================
+VIRTUAL-BOX: No tiene soporte de booteo USB directo 
+BAJAR  Virtual.Machine.USB.Boot.1.72.Portable.x64.zip
+Arrancar VB como ADMINISTRADOR- En SISTEMA habilitar PAE
+darle 2 GB de RAM 
+PERO NO FUNCIONA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
+=========================================================================================
+  
+========================== TRAMPA PARA VMWARE ==================================
+VMWARE:  Crear una VM que NO TENGA SOPORTE USB !!!
+Crear un DISCO SCSI e ir a opciones avanzadas y seleccionar un disco fisico 
+Ahi elegir el disco fisico que corresponde al USB PENDRIVE o sus particiones 
+PERO NO FUNCIONA, SE CUELGA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
+
+========================== TRAMPA PARA QEMU  ==================================
+QEMU: 	No tiene soporte de booteo USB 
+BAJAR  Virtual.Machine.USB.Boot.1.72.Portable.x64.zip
+darle 2 GB de RAM 
+FUNCIONA PERO ES MUY LENTO.<<<<<<<<<<<<<<<<<<<<<<<<
+NO VE LA INTERFACE ETHERNET 
+Para que vea la interface ethernet en Virtual.Machine.USB.Boot puse 
+OPTIONS -> QEMU -> command line parameters 
+-name "NODE0" -boot c -m 2048 
+para evitar tantos mensajes en pantalla/consola 
+     dmesg  -n 1
+	 
+	 
+PARA COPIAR PENDRIVE IDENTICOS 
+dd if=/dev/sdh of=/dev/sdd bs=1024k status=progress 
+
+	 
+
+
+
+
+
+
+    

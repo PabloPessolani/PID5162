@@ -1,0 +1,8 @@
+total 964
+-rw------- 1 root root    793 oct 15 10:48 debug.h
+-rw------- 1 root root 103630 oct 15 10:48 index.html
+-rw-r--r-- 1 root root 281404 abr 10 09:41 index.mht
+-rw------- 1 root root    984 oct 15 10:48 macros.h
+-rw-r--r-- 1 root root 100000 mar 16 16:27 muk.txt
+-rw-r--r-- 1 root root 320742 mar 16 16:03 test.tar.gz
+-rw-r--r-- 1 root root 142097 mar 16 16:04 test.zip

@@ -103,7 +103,7 @@ asmlinkage long mm_wakeup_ep(int dcid, int proc_ep, int signo)
 					WLOCK_PROC(rp);
 					WLOCK_PROC(proc_ptr);
 				}
-				LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
+				LIST_DEL(&proc_ptr->p_link); /* remove from queue */
 				WUNLOCK_PROC(rp);	
 			}
 			proc_ptr->p_usr.p_sendto	= NONE;
@@ -114,7 +114,7 @@ asmlinkage long mm_wakeup_ep(int dcid, int proc_ep, int signo)
 			if(proc_ptr->p_usr.p_proxy != NONE) {
 				sproxy_ptr = &proxies[proc_ptr->p_usr.p_proxy].px_sproxy;
 				WLOCK_PROC(sproxy_ptr);
-				LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
+				LIST_DEL(&proc_ptr->p_link); /* remove from queue */
 				WUNLOCK_PROC(sproxy_ptr);
 			}else{
 				ERROR_WUNLOCK_PROC(proc_ptr,EDVSPROCSTS);

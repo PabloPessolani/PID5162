@@ -5340,8 +5340,47 @@ ATENCION:
 			LAS PRUEBAS DABAN ERROR DADO QUE EL DC ESTABA CONFIGURADO PARA MOL
 			echo "warn2proc 0;"     			>> DC$dcid.cfg
 			echo "warnmsg 1;"     				>> DC$dcid.cfg
+		
+ ------------------------------------------------------------------------------------------------------------
+20190310:
+				MODIFIQUE dvk_ipc.c dvk_vcopy()
+			
+			DVKDEBUG(DBGPARAMS,"src_pid=%d src_tgid=%d dst_pid=%d dst_tgid=%d\n", 
+			src_pid, src_tgid, dst_pid, dst_tgid);
+		
+//		if( dst_tgid == src_tgid){  <<<<<<<<<<<<<<< Antes 
+		if( src_pid == dst_pid){    copia entre hilos de un mismo proceso 
+			ret = EDVSPERM;
+			
+			[  121.596307] DEBUG 595:new_vcopy:1221: CALLER dcid=0 caller_pid=595 caller_nr=3 caller_ep=3 
+			[  121.596309] DEBUG 595:new_vcopy:1227: CALLER p_endpoint=3 
+			[  121.596310] DEBUG 595:new_vcopy:1228: SOURCE p_endpoint=3 
+			[  121.596311] DEBUG 595:new_vcopy:1229: DESTIN p_endpoint=1 
+			[  121.596312] DEBUG 595:new_vcopy:1230: BYTES  bytes	=1024 
+			[  121.596365] DEBUG 595:new_vcopy:1240: src_pid=595 src_tgid=590 dst_pid=598 dst_tgid=590 <<<< 
+			[  121.596367] DEBUG 595:new_vcopy:1248: COPY_USR2USR_PROC copylen=1024
 			
 			
+=======================================================================================
+20190311: 
+		Hice varias modificaciones el el DVK ----- OJO POR SI NO FUNCIONA !!! ----------------
+
+			Particularmente lo relacionado a LIST_DEL_INIT reemplace por LIST_DEL 
+			Ademas modifique en el FOR_EACH_........ de la busqueda de mensajes 
+			el LOCK de los procesos 
+			Tambien agruegue las macros de LOCK_PROC sin debug cuando hay DEBUG para
+			que no contamine el dmesg cuando se hace unbind .
+					LOCK_PROC se reemplaza por lock_proc 
+					
+			Tambien agregue DEBUG a LIST_DEL y LIST_DEL_INIT	
+		
+=======================================================================================
+20190410:	En dias previos Trabaje en modificaciones a RADAR y MUK 
+
+TODO:		PROXY TIPC con:
+				- soporte de compresion
+				- soporte de batch 
+				- soporte de REMOTE CLIENT BINDING 
  =========================================================================================
 ULTIMO_LOG
 

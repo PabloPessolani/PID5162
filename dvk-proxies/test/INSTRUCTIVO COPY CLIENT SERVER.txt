@@ -1,0 +1,265 @@
+
+EL ARCHIVO test.zip contiene los siguientes archivos.
+-rw-r--r-- 1 Admin 197121   1133 Mar 17 10:01 Makefile
+-rw-r--r-- 1 Admin 197121   4146 Mar 17 11:07 copy_client.c
+-rw-r--r-- 1 Admin 197121   4580 Mar 17 11:07 copy_server.c
+-rw-r--r-- 1 Admin 197121    267 Aug 10  2018 debug.h
+-rw-r--r-- 1 Admin 197121 129925 Mar 17 11:16 dmesg.txt
+-rw-r--r-- 1 Admin 197121  30655 Mar 23 11:05 error.txt
+-rw-r--r-- 1 Admin 197121   7299 Sep 15  2018 loop_copy_client.c
+-rw-r--r-- 1 Admin 197121   8581 Sep 15  2018 loop_copy_server.c
+-rw-r--r-- 1 Admin 197121   8086 Feb 17 09:57 loop_r-s_server.c
+-rw-r--r-- 1 Admin 197121   6722 Feb 17 09:37 loop_sr_client.c
+-rw-r--r-- 1 Admin 197121   1353 Aug 26  2018 loops.h
+-rw-r--r-- 1 Admin 197121    537 Aug 10  2018 macros.h
+
+Bajarlos al directorio:
+root@node0:/usr/src/dvs/dvk-proxies/test# 
+
+
+****************************************************************************
+					SERVER 
+****************************************************************************
+EN UNA TERMINAL LOGGEARSE COMO ROOT
+
+---------------- ARRANCAR EL SCRIPT QUE INICIAL EL DVS, DC0 Y PROXIES 
+	root@node0:~# cd /usr/src/dvs/dvk-tests/
+	root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+	lcl_nodeid=0 dcid=0
+	Enter para continuar... 
+	Spread Enter para continuar... 
+	partition 5
+	mount Enter para continuar... 
+	local_nodeid=0 Enter para continuar... 
+	DEBUG 653:dvk_open:40: Open dvk device file /dev/dvk
+	Initializing DVS. Local node ID 0... 
+	DEBUG 653:dvk_dvs_init:261: nodeid=0
+	DEBUG 653:dvk_dvs_init:265: ioctl ret=0 errno=0
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+	Get DVS info
+	DEBUG 653:dvk_getdvsinfo:113: 
+	DEBUG 653:dvk_getdvsinfo:115: ioctl ret=0
+	local node ID 0... 
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFFFF version=2.1 sizeof(proc)=512
+	DC0 Enter para continuar... 
+	 configfile.c:config_read:459:file=DC0.cfg flags=400
+	 configfile.c:read_file:412:file=DC0.cfg
+	 configfile.c:allocate:65:size=16
+     .......
+	 ........
+	 configfile.c:allocate:65:size=32
+	 dc_read_config.c:search_dc_config:282:search_dc_config[0] line=2
+	 dc_read_config.c:search_dc_tkn:246:token dc dc_read_config.c:search_dc_tkn:249:DC0
+	 dc_read_config.c:read_lines:228:read_lines type=200
+	 dc_read_config.c:search_ident:205:c_mount=/usr/src/dvs/vos/rootfs/DC0
+	 dc_init.c:main:103:nr_containers=1
+     .......
+	 ........
+	 dc_init.c:main:125:PARENT flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+	 dc_init.c:main:126:PARENT dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+	DEBUG 655:dvk_open:40: Open dvk device file /dev/dvk
+	 dc_init.c:main:151:PARENT c_mount=/usr/src/dvs/vos/rootfs/DC0
+	PARENT Sysname:  Linux
+	PARENT Nodename: node0
+	PARENT Release:  4.9.88
+	PARENT Version:  #12 SMP Sat Sep 15 13:28:24 -03 2018
+	PARENT Machine:  i686
+	PARENT link_name:/proc/655/ns/pid root_dir=pid:[4026531836]
+	CHILD link_name:/proc/656/ns/pid root_dir=pid:[4026532515]
+	PARENT link_name:/proc/655/ns/uts root_dir=uts:[4026531838]
+	CHILD link_name:/proc/656/ns/uts root_dir=uts:[4026532513]
+	DEBUG 655:dvk_open:40: Open dvk device file /dev/dvk
+	DEBUG 655:dvk_getdvsinfo:113: 
+	DEBUG 655:dvk_getdvsinfo:115: ioctl ret=0
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	local_nodeid=0
+	 dc_init.c:init_dc:247:Waiting for parent to finish setup
+	 dc_init.c:cgroup_setup:518:Setting up cgroups with memory limit 512 MB (536870912)
+	 dc_init.c:cgroup_setup:521:cgroup_dir /sys/fs/cgroup/memory/656
+	 dc_init.c:cgroup_setup:527:cgroup_file /sys/fs/cgroup/memory/656/memory.limit_in_bytes
+	 dc_init.c:cgroup_setup:545:cgroup_file /sys/fs/cgroup/memory/656/cgroup.procs
+	PARENT exiting - child_pid=656
+	PARENT exiting - child_pid=656
+	 dc_init.c:init_dc:253:CHILD  PID=1 PPID=0
+	 dc_init.c:init_dc:256:CHILD before dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 dc_init.c:init_dc:257:CHILD before flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+	 dc_init.c:init_dc:258:CHILD before dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+	 dc_init.c:init_dc:270:CHILD I am a daemon
+	DEBUG 1:dvk_dc_init:80: 
+	DEBUG 1:dvk_dc_init:82: ioctl ret=0 errno=0
+	DC0 has been initialized on node 0
+	DEBUG 1:dvk_getnodeinfo:177: nodeid=0
+	DEBUG 1:dvk_getnodeinfo:181: ioctl ret=0 errno=0
+	 dc_init.c:init_dc:279:CHILD n_nodeid=0 n_proxies=-1 n_flags=6 n_dcs=1 n_name=node0
+	DEBUG 1:dvk_getdcinfo:163: dcid=0
+	DEBUG 1:dvk_getdcinfo:167: ioctl ret=0 errno=0
+	 dc_init.c:init_dc:283:CHILD after  dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 dc_init.c:init_dc:284:CHILD after  flags=0 dc_nodes=1 dc_pid=656 dc_name=DC0
+	 dc_init.c:init_dc:285:CHILD after  dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+	CHILD Sysname:  Linux
+	CHILD Nodename: DC0
+	CHILD Release:  4.9.88
+	CHILD Version:  #12 SMP Sat Sep 15 13:28:24 -03 2018
+	CHILD Machine:  i686
+	CHILD chroot to:  /usr/src/dvs/vos/rootfs/DC0
+	TCP PROXY Enter para continuar...  dc_init.c:init_dc:360:/proc mounted
+	 dc_init.c:init_dc:372:/dev mounted
+	 dc_init.c:init_dc:379:Setting env variables
+	 dc_init.c:init_dc:381:unsetenv LC_ALL
+	 dc_init.c:init_dc:409:sleep looping
+	Enter para continuar... ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     6      -1        0        0 -------------------------------X node0           
+	 1     2       1        0        0 -------------------------------- node1           
+	Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+		  1     1    660      661           node1 ------------------------------X-
+	ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+	 1 send    660      0      1        0        0  27342  27342  27342 tcp_proxy_bat  
+	 1 recv    661      0      1        0        0  27342  27342  27342 tcp_proxy_bat  
+	ADDNODE Enter para continuar... 
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=1
+	dc_pid=656
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  -------------------------------X
+	cpumask=1 
+	DEBUG 666:dvk_open:40: Open dvk device file /dev/dvk
+	Adding node 1 to DC 0... 
+	DEBUG 666:dvk_add_node:233: dcid=0 nodeid=1
+	DEBUG 666:dvk_add_node:237: ioctl ret=0 errno=0
+
+	ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     6      -1        0        0 -------------------------------X node0           
+	 1     2       1        0        0 -------------------------------X node1           
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=3
+	dc_pid=656
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  ------------------------------XX
+	cpumask=1 
+	
+---------------- EJECUTAR EL SCRIPT QUE CREA LA VARIABLE DE ENTORNO DC0 
+	root@node0:/usr/src/dvs/dvk-tests# cd ../dvs-apps/dc_init/
+	root@node0:/usr/src/dvs/dvs-apps/dc_init# . ./DC0.sh 
+
+----------------IR AL DIRECTORIO DONDE ESTAN LOS PROGRAMAS Y COMPILARLOS 
+	root@node0:/usr/src/dvs/dvs-apps/dc_init# cd ../../dvk-proxies/test/
+	root@node0:/usr/src/dvs/dvk-proxies/test# make clean
+	rm -f loop_r-s_server loop_sr_client loop_copy_server loop_copy_client copy_client copy_server
+	root@node0:/usr/src/dvs/dvk-proxies/test# make 2> error.txt 
+	gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic  -o loop_r-s_server loop_r-s_server.c ../../dvk-lib/stub_dvkcall.o -I..
+	gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic  -o loop_sr_client loop_sr_client.c ../../dvk-lib/stub_dvkcall.o -I..
+	gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic  -o loop_copy_server loop_copy_server.c ../../dvk-lib/stub_dvkcall.o -I..
+	gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic  -o loop_copy_client loop_copy_client.c ../../dvk-lib/stub_dvkcall.o -I..
+	gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic  -o copy_client copy_client.c ../../dvk-lib/stub_dvkcall.o -I..
+	gcc  -MMD -MP -
+	
+---------------- EJECUTAR EL SERVER cuyo formato es usage: ./copy_server <dcid> <svr_ep>
+DCID: 0
+ENDPOINT SERVER: 10
+
+	root@node0:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_server 0 10
+	DEBUG 2:dvk_open:40: Open dvk device file /dev/dvk
+	DEBUG 2:dvk_getdvsinfo:113: 
+	DEBUG 2:dvk_getdvsinfo:115: ioctl ret=0
+	 copy_server.c:main:47:local_nodeid=0
+	 copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	DEBUG 2:dvk_getdcinfo:163: dcid=0
+	DEBUG 2:dvk_getdcinfo:167: ioctl ret=0 errno=0
+	 copy_server.c:main:58:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 copy_server.c:main:59:flags=0 dc_nodes=3 dc_pid=656 dc_name=DC0
+	DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+	DEBUG 2:dvk_bind_X:544: ioctl ret=10 errno=0
+	 copy_server.c:main:76:BIND SERVER dcid=0 svr_pid=2 svr_ep=10
+	DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=10 
+	DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+	 copy_server.c:main:85:nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=739 vpid=2 nodeid=0 name=copy_server 
+	 copy_server.c:main:93:SERVER m_ptr=0x1dc0000
+	 copy_server.c:main:115:SERVER: buffer before=0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+	DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+	DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+	
+!!!!!!!!!!!!!!!   AQUI SE DETIENE HASTA QUE SE CONECTE EL CLIENT	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
+	
+	copy_server.c:main:119:SERVER: source=11 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x2286000 m1p2=(nil) m1p3=(nil) 
+	DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=11 
+	DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+	 copy_server.c:main:137:nr=11 endp=11 dcid=0 flags=8 misc=20 lpid=758 vpid=4 nodeid=0 name=copy_client 
+	DEBUG 2:dvk_vcopy:52: src_ep=11 dst_ep=35534 bytes=1024
+	DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+	 copy_server.c:main:144:SERVER: buffer received=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstu
+	DEBUG 2:dvk_vcopy:52: src_ep=35534 dst_ep=11 bytes=1024
+	DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+	 copy_server.c:main:154:SERVER: buffer sent=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTU
+	DEBUG 2:dvk_send_T:345: endpoint=11 timeout=-1
+	DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+	 copy_server.c:main:163:SERVER END
+root@node0:/usr/src/dvs/dvk-proxies/test# 
+
+****************************************************************************
+					CLIENT  
+****************************************************************************
+EN OTRA  TERMINAL LOGGEARSE COMO ROOT
+
+----------------EJECUTAR EL SCRIPT QUE CREA LA VARIABLE DE ENTORNO DC0 
+	root@node0:~# cd /usr/src/dvs/dvs-apps/dc_init/
+	root@node0:/usr/src/dvs/dvs-apps/dc_init# . ./DC0.sh 
+
+---------------- EJECUTAR EL CLIENT cuyo formato es usage: ./copy_client <dcid> <svr_ep> <clt_ep>
+DCID: 0
+ENDPOINT SERVER: 10
+ENDPOINT CLIENT: 11
+
+root@node0:/usr/src/dvs/dvs-apps/dc_init# cd ../../dvk-proxies/test/
+root@node0:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_client 0 10 11
+	DEBUG 4:dvk_open:40: Open dvk device file /dev/dvk
+	DEBUG 4:dvk_getdvsinfo:113: 
+	DEBUG 4:dvk_getdvsinfo:115: ioctl ret=0
+	 copy_client.c:main:37:local_nodeid=0
+	 copy_client.c:main:38:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	DEBUG 4:dvk_getdcinfo:163: dcid=0
+	DEBUG 4:dvk_getdcinfo:167: ioctl ret=0 errno=0
+	 copy_client.c:main:48:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 copy_client.c:main:49:flags=0 dc_nodes=3 dc_pid=656 dc_name=DC0
+	DEBUG 4:dvk_bind_X:535: cmd=0 dcid=0 pid=-1 endpoint=11 nodeid=-1
+	DEBUG 4:dvk_bind_X:544: ioctl ret=11 errno=0
+	 copy_client.c:main:78:BIND CLIENT dcid=0 clt_pid=4 clt_ep=11
+	DEBUG 4:dvk_getprocinfo:512: dcid=0 p_nr=11 
+	DEBUG 4:dvk_getprocinfo:517: ioctl ret=0 errno=0
+	 copy_client.c:main:87:nr=11 endp=11 dcid=0 flags=0 misc=20 lpid=758 vpid=4 nodeid=0 name=copy_client 
+	DEBUG 4:dvk_getprocinfo:512: dcid=0 p_nr=10 
+	DEBUG 4:dvk_getprocinfo:517: ioctl ret=0 errno=0
+	 copy_client.c:main:96:nr=10 endp=10 dcid=0 flags=8 misc=20 lpid=739 vpid=2 nodeid=0 name=copy_server 
+	 copy_client.c:main:104:CLIENT m_ptr=0x2285000
+	 copy_client.c:main:126:CLIENT: buffer before=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstu
+	 copy_client.c:main:130:CLIENT SENT: source=0 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x2286000 m1p2=(nil) m1p3=(nil) 
+	DEBUG 4:dvk_sendrec_T:379: endpoint=10 timeout=-1
+	DEBUG 4:dvk_sendrec_T:384: ioctl ret=0 errno=0
+	 copy_client.c:main:138:CLIENT RECIEVED: source=10 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x2286000 m1p2=(nil) m1p3=(nil) 
+	 copy_client.c:main:140:CLIENT: buffer after=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTU
+	 copy_client.c:main:142:CLIENT END
+root@node0:/usr/src/dvs/dvk-proxies/test# 
+
+
+

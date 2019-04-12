@@ -1,0 +1,47 @@
+			BITACORA TAP TASK (MoL)
+
+Actualmente esta 
+	Usage: eth <dcid>
+
+Pero a futuro deberá haber un archivo de configuracion
+
+1- Hace el open del dvk para poder usar IOCTL
+2- main_init()
+	- malloc de buffers de entrada y salida
+	- inicializa mutexes y variables de condicion 
+	- crea el thread eth_thread()
+	- init_cards: inicializa las estructuras de la  cards. 
+		- crea un hilo receptor por cada card
+		- crea un hilo emisor por cada card 
+		- inicializa mutexes y variables de condicion 
+
+3- Empieza el loop de main()
+	- Pueden venir peticiones de TAP_REQUEST o INET_REQUEST
+	- TAP IFACE THREAD HAS RECEIVED OR SENT A FRAME
+		- notifica al owner
+	- A REQUEST WAS RECEIVED FROM INET
+		- da atencion a los diferentes pedidos de peticiones.
+		
+		
+4- THREAD eth_thread() - THREAD inet receiving requests
+		- Este THREAD es el que tiene los  privilegios para usar M3IPC
+		- eth_init() espera el binding (o sea, trabaja con demonize)!!!!
+		- ATENCION, modificar ya que el MAIN THREAD debe ser el que hace el BIND
+		- Comienza el LOOP
+			-ATENCION: Hace un dvk_receive_T();
+			
+5-  THREAD  receive_thread ()
+		- Hace select()
+		- tapif_input()
+			- low_level_input(): lee el frame 
+			
+6-  THREAD send_thread()	
+		- Lee el frame
+		- notifica a main  
+		
+
+			
+			
+
+		
+		

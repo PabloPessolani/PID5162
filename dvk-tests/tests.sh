@@ -66,6 +66,9 @@ cat /proc/dvs/DC$dcid/info
 sleep 1
 cat /proc/dvs/nodes
 cat /proc/dvs/DC$dcid/info
-exit
+cd /usr/src/dvs/dvs-apps/dc_init
+exit 
+
+
 
   

@@ -51,7 +51,7 @@ enum proc_status {
 		
 		REMOTE	    = (1<<BIT_REMOTE),		/* the process is running on a remote host	*/
 		RMTOPER		= (1<<BIT_RMTOPER),		/* a process descriptor is just used for a 	*/
-											/* remote operation until the Sender PROXY  */
+											/* until the Sender PROXY  */
 											/* completes the request 					*/
 		WAITMIGR	= (1<<BIT_WAITMIGR),	/* a destination process is MIGRATING, the 	*/
 											/* sender must be blocked and enqueued into */

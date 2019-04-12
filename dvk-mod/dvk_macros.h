@@ -234,24 +234,24 @@ do {\
 #define RLOCK_TASK(task) 	\
 do {\
 		read_lock(&task->task_rwlock);\
-	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 
 #define RUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task->tgid);\
 		read_unlock(&task->task_rwlock);\
 }while(0);
 
 #define WLOCK_TASK(task) 	\
 do {\
 	write_lock(&task->task_rwlock);\
-	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 
 #define WUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task->tgid);\
 	write_unlock(&task->task_rwlock);\
 }while(0);
 
@@ -263,24 +263,24 @@ do {\
 #define RLOCK_TASK(task) 	\
 do {\
 	mutex_lock(&task->task_mutex);\
-	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d count=%d\n",task_pid_nr(task),atomic_read(&task->task_mutex.count));\
+	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d count=%d\n",task->tgid,atomic_read(&task->task_mutex.count));\
 }while(0);
 
 #define RUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d count=%d\n",task_pid_nr(task),atomic_read(&task->task_mutex.count));\
+	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d count=%d\n",task->tgid,atomic_read(&task->task_mutex.count));\
 	mutex_unlock(&task->task_mutex);\
 }while(0);
 
 #define WLOCK_TASK(task) 	\
 do {\
 	mutex_lock(&task->task_mutex);\
-	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d count=%d\n",task_pid_nr(task),atomic_read(&task->task_mutex.count));\
+	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d count=%d\n",task->tgid,atomic_read(&task->task_mutex.count));\
 }while(0);
 
 #define WUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d count=%d\n",task_pid_nr(task),atomic_read(&task->task_mutex.count));\
+	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d count=%d\n",task->tgid,atomic_read(&task->task_mutex.count));\
 	mutex_unlock(&task->task_mutex);\
 }while(0);
 
@@ -292,24 +292,24 @@ do {\
 #define RLOCK_TASK(task) 	\
 do {\
 	spin_lock(&task->task_spinlock);\
-	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 
 #define RUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task->tgid);\
 	spin_unlock(&task->task_spinlock);\
 }while(0);
 
 #define WLOCK_TASK(task) 	\
 do {\
 	spin_lock(&task->task_spinlock);\
-	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 
 #define WUNLOCK_TASK(task) 	\
 do {\
-DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task->tgid);\
 	spin_unlock(&task->task_spinlock);\
 }while(0)
 	
@@ -321,24 +321,24 @@ DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
 #define RLOCK_TASK(task) 	\
 do {\
 	down_read(&task->task_rwsem);\
-	DVKDEBUG(DBGPROCLOCK,"RLOCK_TASK pid=%d count=%ld\n",task_pid_nr(task), task->task_rwsem.count);\
+	DVKDEBUG(DBGPROCLOCK,"RLOCK_TASK pid=%d count=%ld\n",task->tgid, task->task_rwsem.count);\
 }while(0);
 
 #define RUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGPROCLOCK,"RUNLOCK_TASK  pid=%d  count=%ld\n",task_pid_nr(task), task->task_rwsem.count);\
+	DVKDEBUG(DBGPROCLOCK,"RUNLOCK_TASK  pid=%d  count=%ld\n",task->tgid, task->task_rwsem.count);\
 	up_read(&task->task_rwsem);\
 }while(0);
 
 #define WLOCK_TASK(task) 	\
 do {\
 	down_write(&task->task_rwsem);\
-	DVKDEBUG(DBGPROCLOCK,"WLOCK_TASK  pid=%d  count=%ld\n",task_pid_nr(task), task->task_rwsem.count);\
+	DVKDEBUG(DBGPROCLOCK,"WLOCK_TASK  pid=%d  count=%ld\n",task->tgid, task->task_rwsem.count);\
 }while(0);
 
 #define WUNLOCK_TASK(task) 	\
 do {\
-	DVKDEBUG(DBGPROCLOCK,"WUNLOCK_TASK  pid=%d  count=%ld\n",task_pid_nr(task), task->task_rwsem.count);\
+	DVKDEBUG(DBGPROCLOCK,"WUNLOCK_TASK  pid=%d  count=%ld\n",task->tgid, task->task_rwsem.count);\
 	up_write(&task->task_rwsem);\
 }while(0)
 	
@@ -349,7 +349,7 @@ do {\
 
 #define WUNLOCK_TASK(task)	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"WUNLOCK_TASK pid=%d\n",task->tgid);\
 	spin_unlock(&task->task_spinlock);\
 	rcu_read_unlock();\
 	synchronize_rcu();\
@@ -357,7 +357,7 @@ do {\
 
 #define RUNLOCK_TASK(task)	\
 do {\
-	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RUNLOCK_TASK pid=%d\n",task->tgid);\
 	rcu_read_unlock();\
 }while(0); 
 	
@@ -365,13 +365,13 @@ do {\
 do {\
 	rcu_read_lock();\
 	spin_lock(&task->task_spinlock);\
-	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"WLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 
 #define RLOCK_DC(task)		\
 do {\
 	rcu_read_lock();\
-	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task_pid_nr(task));\
+	DVKDEBUG(DBGTASKLOCK ,"RLOCK_TASK pid=%d\n",task->tgid);\
 }while(0);
 	
 #endif
@@ -427,6 +427,13 @@ do {\
 
 /*--------------------------------------------------------- USE_PROC_MUTEX  ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_MUTEX
+
+#define RLOCK_PROC(p)		\
+do {\
+	mutex_lock(&p->p_mutex);\
+	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d count=%d\n",p->p_usr.p_endpoint,atomic_read(&p->p_mutex.count));\
+}while(0);
+
 #define RUNLOCK_PROC(p)	\
 	do {\
 		DVKDEBUG(DBGPROCLOCK,"RUNLOCK_PROC ep=%d count=%d\n",p->p_usr.p_endpoint, atomic_read(&p->p_mutex.count));\
@@ -445,11 +452,16 @@ do {\
 	DVKDEBUG(DBGPROCLOCK,"WLOCK_PROC ep=%d count=%d\n",p->p_usr.p_endpoint,atomic_read(&p->p_mutex.count));\
 }while(0);
 
-#define RLOCK_PROC(p)		\
+#define wunlock_proc(p)	\
+do {\
+	mutex_unlock(&p->p_mutex);\
+}while(0); 
+
+#define wlock_proc(p)		\
 do {\
 	mutex_lock(&p->p_mutex);\
-	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d count=%d\n",p->p_usr.p_endpoint,atomic_read(&p->p_mutex.count));\
 }while(0);
+
 
 #define COPY_TO_USER_PROC(ret, kaddr, uaddr, len )		\
 do {\
@@ -471,6 +483,12 @@ do {\
 /*--------------------------------------------------------- USE_PROC_SPINLOCK ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_SPINLOCK
 
+#define RLOCK_PROC(p)		\
+do {\
+	spin_lock(&p->p_spinlock);\
+	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
+}while(0);
+
 #define RUNLOCK_PROC(p)	\
 do {\
 	DVKDEBUG(DBGPROCLOCK,"RUNLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
@@ -489,11 +507,16 @@ do {\
 	DVKDEBUG(DBGPROCLOCK,"WLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 }while(0);
 
-#define RLOCK_PROC(p)		\
+#define wunlock_proc(p)	\
+do {\
+	spin_unlock(&p->p_spinlock);\
+}while(0); 
+
+#define wlock_proc(p)		\
 do {\
 	spin_lock(&p->p_spinlock);\
-	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 }while(0);
+
 
 #define COPY_TO_USER_PROC(ret, kaddr, uaddr, len )		\
 do {\
@@ -514,6 +537,13 @@ do {\
 
 /*--------------------------------------------------------- USE_PROC_RWSEM  ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_RWSEM
+
+#define RLOCK_PROC(p)		\
+do {\
+	down_read(&p->p_rwsem);\
+	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint,p->p_rwsem.count);\
+}while(0);
+
 #define RUNLOCK_PROC(p)	\
 	do {\
 		DVKDEBUG(DBGPROCLOCK,"RUNLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint, p->p_rwsem.count);\
@@ -532,10 +562,14 @@ do {\
 	DVKDEBUG(DBGPROCLOCK,"WLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint,p->p_rwsem.count);\
 }while(0);
 
-#define RLOCK_PROC(p)		\
+#define wunlock_proc(p)	\
 do {\
-	down_read(&p->p_rwsem);\
-	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint,p->p_rwsem.count);\
+	up_write(&p->p_rwsem);\
+}while(0); 
+
+#define wlock_proc(p)		\
+do {\
+	down_write(&p->p_rwsem);\
 }while(0);
 
 #define COPY_TO_USER_PROC(ret, kaddr, uaddr, len )		\
@@ -1070,10 +1104,15 @@ do {\
 
 #define LIST_ADD(x,y) 						list_add(x, y)
 #define LIST_ADD_TAIL(x,y) 					list_add_tail(x, y)
-#define LIST_DEL(x) 						list_del(x)
-#define LIST_DEL_INIT(x) 					list_del_init(x)
+#define LIST_DEL(x) 						do {\
+		DVKDEBUG(DBGPROCSEM,"LIST_DEL\n"); \
+		list_del(x);\
+}while(0);
+#define LIST_DEL_INIT(x) 			\
+do {\
+		DVKDEBUG(DBGPROCSEM,"LIST_DEL_INIT\n"); \
+		list_del_init(x);\
+}while(0);
 #define LIST_FOR_EACH_ENTRY_SAFE(x,y,z,t) 	list_for_each_entry_safe(x,y,z,t)
 #endif
-
-
 

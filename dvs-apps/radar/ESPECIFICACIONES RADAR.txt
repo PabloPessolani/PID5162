@@ -171,19 +171,19 @@ y se recibe el MC_RADAR_INFO, en el caso de RSM se puede hacer lo siguiente:
 Arrancar en NODE0 RDISK el script 
 	root@node0:/usr/src/dvs/scripts# ./rdisk.sh 0 0
 	root@node0:/usr/src/dvs/scripts# . /usr/src/dvs/dvs-apps/dc_init/DC0.sh 
-	root@node0:/usr/src/dvs/scripts# cd /usr/src/dvs/vos/mol/tasks/rdisk
-	root@node0:/usr/src/dvs/vos/mol/tasks/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh $DC0
+	root@node0:/usr/src/dvs/scripts# cd /usr/src/dvs/vos/mol/drivers/rdisk
+	root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh 0
 
 Arrancar en NODE1 RDISK el script 
 	root@node1:/usr/src/dvs/scripts# ./rdisk.sh 1 0
 	root@node1:/usr/src/dvs/scripts# . /usr/src/dvs/dvs-apps/dc_init/DC0.sh 
-	root@node1:/usr/src/dvs/scripts# cd /usr/src/dvs/vos/mol/tasks/rdisk
-	root@node1:/usr/src/dvs/vos/mol/tasks/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh $DC0	
+	root@node1:/usr/src/dvs/scripts# cd /usr/src/dvs/vos/mol/drivers/rdisk
+	root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh 0	
 
 Arrancar en NODE2 RADAR 
 	root@node2:/usr/src/dvs/scripts# ./rdisk.sh 2 0
 	root@node2:/usr/src/dvs/scripts# cd ../dvs-apps/radar/
-	root@node2:/usr/src/dvs/dvs-apps/radar/# ./radar 0 3 RDISK
+	root@node2:/usr/src/dvs/dvs-apps/radar/# ./radar radar.cfg
 
 
 PRUEBA 1

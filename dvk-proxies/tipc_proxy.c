@@ -607,7 +607,7 @@ void  ps_init(void)
 	
     // Create server socket.
     if ( (sproxy_sd = socket(AF_TIPC, SOCK_STREAM, 0)) < 0){
-       	ERROR_EXIT(errno)
+       	ERROR_EXIT(errno);
     }
 
     /* try to connect many times */

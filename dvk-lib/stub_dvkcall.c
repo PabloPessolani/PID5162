@@ -350,7 +350,7 @@ long dvk_send_T(int endpoint , message *mptr, long timeout)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 #define dvk_receive(src_ep,m)   	dvk_receive_T(src_ep, (int) m, TIMEOUT_FOREVER)
@@ -367,7 +367,7 @@ long dvk_receive_T(int endpoint , message *mptr, long timeout)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 #define dvk_sendrec(srcdst_ep,m) 	dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
@@ -384,7 +384,7 @@ long dvk_sendrec_T(int endpoint , message *mptr, long timeout)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 #define dvk_reply(dst_ep,m)			dvk_reply_T(dst_ep, (int) m, TIMEOUT_FOREVER)
@@ -401,7 +401,7 @@ long dvk_reply_T(int endpoint , message *mptr, long timeout)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 #define dvk_notify(dst_ep)						dvk_notify_X(SELF, dst_ep, HARDWARE)
@@ -421,7 +421,7 @@ long dvk_notify_X(int nr , int endpoint, int value)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 long dvk_setpriv(int dcid , int endpoint, priv_usr_t *priv)
@@ -436,7 +436,7 @@ long dvk_setpriv(int dcid , int endpoint, priv_usr_t *priv)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 long dvk_getpriv(int dcid , int endpoint, priv_usr_t *priv)
@@ -452,7 +452,7 @@ long dvk_getpriv(int dcid , int endpoint, priv_usr_t *priv)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
 	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
-	return(ret);
+	return(OK);
 }
 
 #define dvk_get2rmt(header, payload)   	stub_dvkcall3(GET2RMT, (int)header, (int)payload, HELLO_PERIOD)
@@ -539,18 +539,19 @@ long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	parm.parm_pid	= pid;	
 	parm.parm_ep	= endpoint;	
 	parm.parm_nodeid= nodeid;	
+	errno = 0;
 	ret = ioctl(dvk_fd,DVK_IOCSDVKBIND, (int) &parm);
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
-
-	if( ret == endpoint ){
-		errno = 0;
-		return(endpoint);
+ 
+	if( ret == (-1)){
+		if( -errno == endpoint){
+			errno = 0;
+			return(endpoint);
+		} 
+		if (  -errno < EDVSERRCODE) ERROR_RETURN(-errno); 
 	}
-	
-	if (ret < 0) ERROR_RETURN(-errno); 
 	errno = 0;
 	return(ret);
-
 }
 
 long dvk_proxies_bind(char *name, int pxid, int spid, int rpid, int maxcopybuf)

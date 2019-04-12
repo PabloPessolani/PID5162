@@ -33,7 +33,7 @@ void flush_migr_list( struct proc *proc_ptr)
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &proc_ptr->p_mlist, p_mlink) {
 	
 		WLOCK_ORDERED2(proc_ptr, xpp);
-		LIST_DEL_INIT(&xpp->p_mlink); /* remove from queue */	
+		LIST_DEL(&xpp->p_mlink); /* remove from queue */	
 		if( xpp->p_usr.p_waitmigr == proc_ptr->p_usr.p_endpoint) {
 			DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
 			clear_bit(BIT_WAITMIGR, &xpp->p_usr.p_rts_flags);
@@ -63,7 +63,7 @@ void flush_sending_list(struct proc *proc_ptr)
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &proc_ptr->p_list, p_link) {
 		WLOCK_ORDERED2(proc_ptr, xpp);
 		DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
-		LIST_DEL_INIT(&xpp->p_link); /* remove from queue */	
+		LIST_DEL(&xpp->p_link); /* remove from queue */	
 		if( IT_IS_LOCAL(xpp)) {
 			DVKDEBUG(GENERIC,"Replay IPC from endpoint=%d\n", xpp->p_usr.p_endpoint);
 			clear_bit(BIT_SENDING,&xpp->p_usr.p_rts_flags);

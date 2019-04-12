@@ -1,0 +1,217 @@
+/* This file contains the table used to map system call numbers onto the
+ * routines that perform them.
+ */
+#include "pm.h"
+
+#undef EXTERN
+#define EXTERN	extern
+#include "../../glo.h"
+
+/* Miscellaneous */
+char core_name[] = "core";	/* file name where core images are produced */
+
+int (*pm_call_vec[NCALLS])(void) = {
+no_sys,	/* 0  = nosys */
+pm_pm_exit,	/*  1 = pm_exit */
+pm_fork,	/*  2 = fork*/
+no_sys,	/*  3 = read*/
+no_sys,	/*  4 = write*/
+no_sys,	/*  5 = open*/
+no_sys,	/*  6 = close*/
+pm_waitpid,	/*  7 = wait*/
+no_sys,	/*  8 = creat*/
+no_sys,	/*  9 = link*/
+no_sys,	/* 10 = unlink*/
+pm_waitpid,	/* 11 = waitpid*/
+no_sys,	/* 12 = chdir*/
+pm_time,/* 13 = time*/
+no_sys,	/* 14 = mknod*/
+no_sys,	/* 15 = chmod*/
+no_sys,	/* 16 = chown*/
+no_sys,	/* 17 = break*/
+no_sys,	/* 18 = stat*/
+no_sys,	/* 19 = lseek*/
+pm_getset,	/* 20 = getpid	*/
+no_sys,	/* 21 = mount*/
+no_sys,	/* 22 = umount*/
+pm_getset,	/* 23 = setuid	*/
+pm_getset,	/* 24 = getuid	*/
+pm_stime,	/* 25 = stime*/
+no_sys,	/* 26 = ptrace*/
+pm_alarm,	/* 27 = alarm*/
+no_sys,	/* 28 = fstat*/
+no_sys,	/* 29 = pause*/
+no_sys,	/* 30 = utime*/
+no_sys,	/* 31 = (stty)*/
+no_sys,	/* 32 = (gtty)*/
+no_sys,	/* 33 = access*/
+no_sys,	/* 34 = (nice)*/
+no_sys,	/* 35 = (ftime)*/
+no_sys,	/* 36 = sync*/
+no_sys,	/* 37 = kill*/
+no_sys,	/* 38 = rename*/
+no_sys,	/* 39 = mkdir*/
+no_sys,	/* 40 = rmdir*/
+no_sys,	/* 41 = dup*/
+no_sys,	/* 42 = pipe*/
+pm_times,	/* 43 = times*/
+no_sys,	/* 44 = (prof)*/
+no_sys,	/* 45 = unused*/
+pm_getset,	/* 46 = setgid	*/
+pm_getset,	/* 47 = getgid	*/
+no_sys,	/* 48 = (signal)*/
+no_sys,	/* 49 = unused*/
+no_sys,	/* 50 = unused*/
+no_sys,	/* 51 = (acct)*/
+no_sys,	/* 52 = (phys)*/
+no_sys,	/* 53 = (lock)*/
+no_sys,	/* 54 = ioctl*/
+no_sys,	/* 55 = fcntl*/
+no_sys,	/* 56 = (mpx)*/
+pm_dump,	/* 57 = unused > pm_dump */
+no_sys,	/* 58 = unused*/
+no_sys,	/* 59 = execve*/
+no_sys,	/* 60 = umask*/
+no_sys,	/* 61 = chroot*/
+pm_getset,	/* 62 = setsid	*/
+pm_getset,	/* 63 = getpgrp	*/
+no_sys,	/* 64 = unused */
+no_sys,	/* 65 = UNPAUSE*/
+no_sys,	/* 66 = unused  */
+no_sys,	/* 67 = REVIVE*/
+no_sys,	/* 68 = TASK_REPLY  */
+no_sys,	/* 69 = unused*/
+no_sys,	/* 70 = unused*/
+no_sys,	/* 71 = sigaction   */
+no_sys,	/* 72 = sigsuspend  */
+no_sys,	/* 73 = sigpending  */
+no_sys,	/* 74 = sigprocmask */
+no_sys,	/* 75 = sigreturn   */
+no_sys,	/* 76 = reboot*/
+no_sys,	/* 77 = svrctl*/
+pm_procstat,	/* 78 = procstat */
+pm_getsysinfo,	/* 79 = getsysinfo */
+pm_getprocnr,	/* 80 = getprocnr */
+no_sys,	/* 81 = unused */
+no_sys,	/* 82 = fstatfs */
+no_sys,	/* 83 = memalloc */
+no_sys,	/* 84 = memfree */
+no_sys,	/* 85 = select */
+no_sys,	/* 86 = fchdir */
+no_sys,	/* 87 = fsync */
+no_sys,	/* 88 = getpriority */
+no_sys,	/* 89 = setpriority */
+pm_time,	/* 90 = gettimeofday */
+pm_getset,	/* 91 = seteuid	*/
+pm_getset,	/* 92 = setegid	*/
+no_sys,	/* 93 = truncate */
+no_sys,	/* 94 = ftruncate */
+pm_freeproc,	/* 95 = freeproc*/
+pm_bindproc,	/* 96 = bindproc*/
+no_sys,	/* 97= migrproc*/
+no_sys,		/* 98= rexec */		
+pm_getset,		/* 99= setpname */	
+pm_wait4fork,	/* 100= wait4fork */		
+};
+
+#ifdef TEMPORAL
+	pm_pm_exit,	/*  1 = exit	*/
+	pm_fork,	/*  2 = fork	*/
+	no_sys,		/*  3 = read	*/
+	no_sys,		/*  4 = write	*/
+	no_sys,		/*  5 = open	*/
+	no_sys,		/*  6 = close	*/
+	pm_waitpid,	/*  7 = wait	*/
+	no_sys,		/*  8 = creat	*/
+	no_sys,		/*  9 = link	*/
+	no_sys,		/* 10 = unlink	*/
+	pm_waitpid,	/* 11 = waitpid	*/
+	no_sys,		/* 12 = chdir	*/
+	pm_time,	/* 13 = time	*/
+	no_sys,		/* 14 = mknod	*/
+	no_sys,		/* 15 = chmod	*/
+	no_sys,		/* 16 = chown	*/
+	pm_brk,		/* 17 = break	*/
+	no_sys,		/* 18 = stat	*/
+	no_sys,		/* 19 = lseek	*/
+	pm_getset,	/* 20 = getpid	*/
+	no_sys,		/* 21 = mount	*/
+	no_sys,		/* 22 = umount	*/
+	pm_getset,	/* 23 = setuid	*/
+	pm_getset,	/* 24 = getuid	*/
+	pm_stime,	/* 25 = stime	*/
+	pm_trace,	/* 26 = ptrace	*/
+	pm_alarm,	/* 27 = alarm	*/
+	no_sys,		/* 28 = fstat	*/
+	pm_pause,	/* 29 = pause	*/
+	no_sys,		/* 30 = utime	*/
+	no_sys,		/* 31 = (stty)	*/
+	no_sys,		/* 32 = (gtty)	*/
+	no_sys,		/* 33 = access	*/
+	no_sys,		/* 34 = (nice)	*/
+	no_sys,		/* 35 = (ftime)	*/
+	no_sys,		/* 36 = sync	*/
+	pm_kill,	/* 37 = kill	*/
+	no_sys,		/* 38 = rename	*/
+	no_sys,		/* 39 = mkdir	*/
+	no_sys,		/* 40 = rmdir	*/
+	no_sys,		/* 41 = dup	*/
+	no_sys,		/* 42 = pipe	*/
+	pm_times,	/* 43 = times	*/
+	no_sys,		/* 44 = (prof)	*/
+	no_sys,		/* 45 = unused	*/
+	pm_getset,	/* 46 = setgid	*/
+	pm_getset,	/* 47 = getgid	*/
+	no_sys,		/* 48 = (signal)*/
+	no_sys,		/* 49 = unused	*/
+	no_sys,		/* 50 = unused	*/
+	no_sys,		/* 51 = (acct)	*/
+	no_sys,		/* 52 = (phys)	*/
+	no_sys,		/* 53 = (lock)	*/
+	no_sys,		/* 54 = ioctl	*/
+	no_sys,		/* 55 = fcntl	*/
+	no_sys,		/* 56 = (mpx)	*/
+	no_sys,		/* 57 = unused	*/
+	no_sys,		/* 58 = unused	*/
+	pm_exec,	/* 59 = execve	*/
+	no_sys,		/* 60 = umask	*/
+	no_sys,		/* 61 = chroot	*/
+	pm_getset,	/* 62 = setsid	*/
+	pm_getset,	/* 63 = getpgrp	*/
+
+	no_sys,		/* 64 = unused */
+	no_sys,		/* 65 = UNPAUSE	*/
+	no_sys, 	/* 66 = unused  */
+	no_sys,		/* 67 = REVIVE	*/
+	no_sys,		/* 68 = TASK_REPLY  */
+	no_sys,		/* 69 = unused	*/
+	no_sys,		/* 70 = unused	*/
+	pm_sigaction,	/* 71 = sigaction   */
+	pm_sigsuspend,	/* 72 = sigsuspend  */
+	pm_sigpending,	/* 73 = sigpending  */
+	pm_sigprocmask,	/* 74 = sigprocmask */
+	pm_sigreturn,	/* 75 = sigreturn   */
+	pm_reboot,	/* 76 = reboot	*/
+	pm_svrctl,	/* 77 = svrctl	*/
+	pm_procstat,	/* 78 = procstat */
+	pm_getsysinfo,	/* 79 = getsysinfo */
+	pm_getprocnr,	/* 80 = getprocnr */
+	no_sys, 	/* 81 = unused */
+	no_sys, 	/* 82 = fstatfs */
+	pm_allocmem, 	/* 83 = memalloc */
+	pm_freemem, 	/* 84 = memfree */
+	no_sys,		/* 85 = select */
+	no_sys,		/* 86 = fchdir */
+	no_sys,		/* 87 = fsync */
+	pm_getsetpriority,	/* 88 = getpriority */
+	pm_getsetpriority,	/* 89 = setpriority */
+	pm_time,	/* 90 = gettimeofday */
+	pm_getset,	/* 91 = seteuid	*/
+	pm_getset,	/* 92 = setegid	*/
+	no_sys,		/* 93 = truncate */
+	no_sys,		/* 94 = ftruncate */
+		
+};
+/* This should not fail with "array size is negative": */
+extern int dummy[sizeof(pm_call_vec) == NCALLS * sizeof(pm_call_vec[0]) ? 1 : -1];
+#endif /* TEMPORAL */

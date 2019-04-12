@@ -1,0 +1,2500 @@
+DEBUG 2:dvk_open:40: Open dvk device file /dev/dvk
+ muk.c:get_dvs_params:13:
+DEBUG 2:dvk_getdvsinfo:113: 
+DEBUG 2:dvk_getdvsinfo:115: ioctl ret=0
+ muk.c:get_dvs_params:15:local_nodeid=0
+ muk.c:get_dvs_params:18:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ muk.c:main:339:dcid=0
+ muk.c:get_dc_params:29:dcid=0
+DEBUG 2:dvk_getdcinfo:163: dcid=0
+DEBUG 2:dvk_getdcinfo:167: ioctl ret=0 errno=0
+ muk.c:get_dc_params:37:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ muk.c:get_dc_params:38:flags=0 dc_nodes=3 dc_pid=559 dc_name=DC0
+ muk.c:main:344:Starting SYSTASK thread -----------------------------------
+ muk.c:main:349:sys_pth=3070139200
+ muk.c:main:350:MTX_LOCK muk_mutex 
+ muk.c:main:351:COND_WAIT muk_cond muk_mutex
+ muk.c:pth_systask:126:str_arg=systask
+
+ muk.c:pth_systask:128:len=9 argc=1
+ muk.c:pth_systask:130:argv[0]=systask
+ muk.c:pth_systask:134:my_pth=3070139200
+ muk.c:pth_systask:137:sys_pid=3
+DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=3 endpoint=-2 nodeid=-1
+DEBUG 2:dvk_bind_X:544: ioctl ret=-1 errno=2
+ muk.c:pth_systask:140:sys_ep=-2
+ system.c:init_systask:158:Initialize the call vector to a safe default handler.
+ system.c:init_systask:232:Map kernel process table on /sys/kernel/debug/dvs/DC0/procs
+ system.c:init_systask:238:open debug_fd=4
+ system.c:init_systask:247:mmap debug_fd OK
+ system.c:init_systask:251:proc_ptr=b67c9000 nr=-34 endp=-34 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9200 nr=-33 endp=-33 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9400 nr=-32 endp=-32 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9600 nr=-31 endp=-31 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9800 nr=-30 endp=-30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9a00 nr=-29 endp=-29 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9c00 nr=-28 endp=-28 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67c9e00 nr=-27 endp=-27 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ca000 nr=-26 endp=-26 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ca200 nr=-25 endp=-25 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ca400 nr=-24 endp=-24 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ca600 nr=-23 endp=-23 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ca800 nr=-22 endp=-22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67caa00 nr=-21 endp=-21 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cac00 nr=-20 endp=-20 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cae00 nr=-19 endp=-19 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cb000 nr=-18 endp=-18 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cb200 nr=-17 endp=-17 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cb400 nr=-16 endp=-16 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cb600 nr=-15 endp=-15 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cb800 nr=-14 endp=-14 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cba00 nr=-13 endp=-13 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cbc00 nr=-12 endp=-12 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cbe00 nr=-11 endp=-11 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cc000 nr=-10 endp=-10 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cc200 nr=-9 endp=-9 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cc400 nr=-8 endp=-8 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cc600 nr=-7 endp=-7 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cc800 nr=-6 endp=-6 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cca00 nr=-5 endp=-5 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ccc00 nr=-4 endp=-4 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cce00 nr=-3 endp=-3 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cd000 nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=785 vpid=3 nodeid=0 name=muk 
+ system.c:init_systask:251:proc_ptr=b67cd200 nr=-1 endp=-1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cd400 nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cd600 nr=1 endp=1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cd800 nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cda00 nr=3 endp=3 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cdc00 nr=4 endp=4 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cde00 nr=5 endp=5 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ce000 nr=6 endp=6 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ce200 nr=7 endp=7 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ce400 nr=8 endp=8 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ce600 nr=9 endp=9 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ce800 nr=10 endp=10 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cea00 nr=11 endp=11 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cec00 nr=12 endp=12 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cee00 nr=13 endp=13 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cf000 nr=14 endp=14 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cf200 nr=15 endp=15 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cf400 nr=16 endp=16 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cf600 nr=17 endp=17 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cf800 nr=18 endp=18 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cfa00 nr=19 endp=19 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cfc00 nr=20 endp=20 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67cfe00 nr=21 endp=21 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0000 nr=22 endp=22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0200 nr=23 endp=23 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0400 nr=24 endp=24 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0600 nr=25 endp=25 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0800 nr=26 endp=26 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0a00 nr=27 endp=27 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0c00 nr=28 endp=28 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d0e00 nr=29 endp=29 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1000 nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1200 nr=31 endp=31 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1400 nr=32 endp=32 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1600 nr=33 endp=33 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1800 nr=34 endp=34 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1a00 nr=35 endp=35 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1c00 nr=36 endp=36 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d1e00 nr=37 endp=37 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2000 nr=38 endp=38 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2200 nr=39 endp=39 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2400 nr=40 endp=40 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2600 nr=41 endp=41 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2800 nr=42 endp=42 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2a00 nr=43 endp=43 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2c00 nr=44 endp=44 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d2e00 nr=45 endp=45 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3000 nr=46 endp=46 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3200 nr=47 endp=47 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3400 nr=48 endp=48 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3600 nr=49 endp=49 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3800 nr=50 endp=50 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3a00 nr=51 endp=51 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3c00 nr=52 endp=52 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d3e00 nr=53 endp=53 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4000 nr=54 endp=54 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4200 nr=55 endp=55 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4400 nr=56 endp=56 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4600 nr=57 endp=57 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4800 nr=58 endp=58 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4a00 nr=59 endp=59 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4c00 nr=60 endp=60 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d4e00 nr=61 endp=61 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5000 nr=62 endp=62 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5200 nr=63 endp=63 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5400 nr=64 endp=64 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5600 nr=65 endp=65 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5800 nr=66 endp=66 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5a00 nr=67 endp=67 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5c00 nr=68 endp=68 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d5e00 nr=69 endp=69 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6000 nr=70 endp=70 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6200 nr=71 endp=71 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6400 nr=72 endp=72 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6600 nr=73 endp=73 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6800 nr=74 endp=74 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6a00 nr=75 endp=75 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6c00 nr=76 endp=76 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d6e00 nr=77 endp=77 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7000 nr=78 endp=78 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7200 nr=79 endp=79 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7400 nr=80 endp=80 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7600 nr=81 endp=81 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7800 nr=82 endp=82 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7a00 nr=83 endp=83 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7c00 nr=84 endp=84 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d7e00 nr=85 endp=85 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8000 nr=86 endp=86 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8200 nr=87 endp=87 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8400 nr=88 endp=88 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8600 nr=89 endp=89 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8800 nr=90 endp=90 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8a00 nr=91 endp=91 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8c00 nr=92 endp=92 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d8e00 nr=93 endp=93 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9000 nr=94 endp=94 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9200 nr=95 endp=95 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9400 nr=96 endp=96 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9600 nr=97 endp=97 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9800 nr=98 endp=98 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9a00 nr=99 endp=99 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9c00 nr=100 endp=100 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67d9e00 nr=101 endp=101 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67da000 nr=102 endp=102 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67da200 nr=103 endp=103 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67da400 nr=104 endp=104 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67da600 nr=105 endp=105 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67da800 nr=106 endp=106 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67daa00 nr=107 endp=107 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dac00 nr=108 endp=108 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dae00 nr=109 endp=109 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67db000 nr=110 endp=110 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67db200 nr=111 endp=111 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67db400 nr=112 endp=112 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67db600 nr=113 endp=113 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67db800 nr=114 endp=114 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dba00 nr=115 endp=115 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dbc00 nr=116 endp=116 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dbe00 nr=117 endp=117 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dc000 nr=118 endp=118 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dc200 nr=119 endp=119 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dc400 nr=120 endp=120 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dc600 nr=121 endp=121 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dc800 nr=122 endp=122 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dca00 nr=123 endp=123 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dcc00 nr=124 endp=124 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dce00 nr=125 endp=125 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dd000 nr=126 endp=126 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dd200 nr=127 endp=127 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dd400 nr=128 endp=128 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dd600 nr=129 endp=129 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dd800 nr=130 endp=130 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dda00 nr=131 endp=131 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67ddc00 nr=132 endp=132 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dde00 nr=133 endp=133 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67de000 nr=134 endp=134 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67de200 nr=135 endp=135 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67de400 nr=136 endp=136 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67de600 nr=137 endp=137 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67de800 nr=138 endp=138 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dea00 nr=139 endp=139 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dec00 nr=140 endp=140 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dee00 nr=141 endp=141 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67df000 nr=142 endp=142 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67df200 nr=143 endp=143 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67df400 nr=144 endp=144 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67df600 nr=145 endp=145 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67df800 nr=146 endp=146 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dfa00 nr=147 endp=147 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dfc00 nr=148 endp=148 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67dfe00 nr=149 endp=149 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0000 nr=150 endp=150 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0200 nr=151 endp=151 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0400 nr=152 endp=152 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0600 nr=153 endp=153 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0800 nr=154 endp=154 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0a00 nr=155 endp=155 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0c00 nr=156 endp=156 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e0e00 nr=157 endp=157 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1000 nr=158 endp=158 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1200 nr=159 endp=159 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1400 nr=160 endp=160 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1600 nr=161 endp=161 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1800 nr=162 endp=162 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1a00 nr=163 endp=163 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1c00 nr=164 endp=164 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e1e00 nr=165 endp=165 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2000 nr=166 endp=166 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2200 nr=167 endp=167 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2400 nr=168 endp=168 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2600 nr=169 endp=169 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2800 nr=170 endp=170 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2a00 nr=171 endp=171 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2c00 nr=172 endp=172 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e2e00 nr=173 endp=173 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3000 nr=174 endp=174 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3200 nr=175 endp=175 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3400 nr=176 endp=176 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3600 nr=177 endp=177 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3800 nr=178 endp=178 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3a00 nr=179 endp=179 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3c00 nr=180 endp=180 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e3e00 nr=181 endp=181 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4000 nr=182 endp=182 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4200 nr=183 endp=183 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4400 nr=184 endp=184 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4600 nr=185 endp=185 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4800 nr=186 endp=186 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4a00 nr=187 endp=187 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4c00 nr=188 endp=188 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e4e00 nr=189 endp=189 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5000 nr=190 endp=190 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5200 nr=191 endp=191 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5400 nr=192 endp=192 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5600 nr=193 endp=193 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5800 nr=194 endp=194 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5a00 nr=195 endp=195 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5c00 nr=196 endp=196 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e5e00 nr=197 endp=197 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6000 nr=198 endp=198 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6200 nr=199 endp=199 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6400 nr=200 endp=200 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6600 nr=201 endp=201 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6800 nr=202 endp=202 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6a00 nr=203 endp=203 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6c00 nr=204 endp=204 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e6e00 nr=205 endp=205 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7000 nr=206 endp=206 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7200 nr=207 endp=207 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7400 nr=208 endp=208 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7600 nr=209 endp=209 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7800 nr=210 endp=210 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7a00 nr=211 endp=211 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7c00 nr=212 endp=212 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e7e00 nr=213 endp=213 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8000 nr=214 endp=214 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8200 nr=215 endp=215 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8400 nr=216 endp=216 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8600 nr=217 endp=217 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8800 nr=218 endp=218 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8a00 nr=219 endp=219 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:251:proc_ptr=b67e8c00 nr=220 endp=220 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:262:Allocated space for nr_procs=221 + nr_tasks=34 ptrivileges
+ system.c:init_systask:267:Initialize priv_table table
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-34 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-33 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-32 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-31 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-30 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-29 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-28 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-27 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-26 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-25 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-24 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-23 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-22 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-21 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-20 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-19 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-18 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-17 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-16 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-15 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-14 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-13 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-12 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-11 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-10 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-9 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-8 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-7 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-6 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-5 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-4 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-3 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-2 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=-1 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=1 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=2 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=3 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=4 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=5 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=6 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=7 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=8 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=9 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=10 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=11 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=12 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=13 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=14 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=15 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=16 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=17 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=18 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=19 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=20 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=21 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=22 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=23 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=24 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=25 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=26 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=27 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=28 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=29 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=30 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=31 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=32 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=33 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=34 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=35 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=36 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=37 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=38 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=39 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=40 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=41 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=42 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=43 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=44 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=45 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=46 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=47 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=48 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=49 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=50 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=51 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=52 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=53 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=54 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=55 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=56 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=57 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=58 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=59 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=60 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=61 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=62 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=63 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=64 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=65 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=66 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=67 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=68 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=69 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=70 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=71 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=72 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=73 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=74 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=75 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=76 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=77 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=78 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=79 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=80 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=81 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=82 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=83 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=84 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=85 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=86 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=87 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=88 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=89 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=90 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=91 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=92 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=93 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=94 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=95 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=96 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=97 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=98 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=99 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=100 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=101 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=102 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=103 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=104 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=105 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=106 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=107 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=108 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=109 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=110 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=111 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=112 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=113 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=114 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=115 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=116 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=117 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=118 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=119 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=120 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=121 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=122 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=123 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=124 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=125 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=126 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=127 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=128 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=129 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=130 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=131 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=132 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=133 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=134 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=135 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=136 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=137 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=138 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=139 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=140 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=141 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=142 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=143 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=144 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=145 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=146 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=147 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=148 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=149 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=150 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=151 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=152 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=153 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=154 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=155 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=156 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=157 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=158 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=159 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=160 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=161 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=162 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=163 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=164 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=165 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=166 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=167 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=168 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=169 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=170 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=171 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=172 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=173 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=174 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=175 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=176 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=177 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=178 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=179 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=180 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=181 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=182 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=183 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=184 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=185 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=186 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=187 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=188 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=189 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=190 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=191 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=192 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=193 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=194 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=195 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=196 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=197 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=198 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=199 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=200 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=201 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=202 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=203 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=204 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=205 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=206 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=207 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=208 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=209 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=210 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=211 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=212 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=213 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=214 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=215 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=216 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=217 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=218 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=219 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=220 
+DEBUG 2:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 2:dvk_setpriv:431: dcid=0 endpoint=-2 
+DEBUG 2:dvk_setpriv:436: ioctl ret=0 errno=109
+ clock.c:init_clock:75:clockTicks =100
+ clock.c:set_clock_handler:156:
+ clock.c:set_interval:46:
+ clock.c:set_interval:53:new_sec=1 new_usec=0
+ system.c:main_systask:51:MTX_LOCK muk_mutex 
+ system.c:main_systask:52:COND_SIGNAL muk_cond
+ system.c:main_systask:53:COND_WAIT sys_cond muk_mutex
+ muk.c:main:352:COND_SIGNAL sys_cond
+ muk.c:main:353:MTX_UNLOCK muk_mutex 
+ system.c:main_systask:54:MTX_UNLOCK muk_mutex 
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:main:359:Starting PM thread ---------------------------------------
+ muk.c:main:364:pm_pth=3059743552
+ muk.c:main:365:MTX_LOCK muk_mutex 
+ muk.c:main:366:COND_WAIT muk_cond muk_mutex
+ muk.c:pth_pm:168:str_arg=pm
+
+ muk.c:pth_pm:170:len=4 argc=1
+ muk.c:pth_pm:172:argv[0]=pm
+ muk.c:pth_pm:176:my_pth=3059743552
+ muk.c:pth_pm:179:pm_pid=4
+DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=4 endpoint=0 nodeid=-1
+DEBUG 2:dvk_bind_X:544: ioctl ret=0 errno=0
+ muk.c:pth_pm:182:pm_ep=0
+ pm.c:pm_init:167:dcid=4001536
+ pm.c:pm_init:172:Register PM into SYSTASK pm_lpid=0
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1568 m4l1=0 m4l2=0 m4l3=4 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=0
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=0 m3i2=0 m3p1=0x4 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=0, sysproc_ep=0 sysproc_nr=0 sysproc_oper=4 
+ st_bindproc.c:st_bindproc:74:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=788 vpid=4 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=788 vpid=4 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=788 vpid=4 nodeid=0 name=cmdline 
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=34 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=4 m1i3=4 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=2
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1571 m4l1=0 m4l2=0 m4l3=4 m4l4=28016 m4l5=0
+ system.c:main_systask:85:call_nr=35 sys_who_e=0
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=0 type=1571 m3i1=0 m3i2=0 m3p1=0x4 m3ca1=[pm]
+ st_bindproc.c:st_setpname:193:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=788 vpid=4 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=0 m1i3=4 m1p1=0x6d70 m1p2=(nil) m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1571 m4l1=0 m4l2=-2 m4l3=4 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=35 sys_who_e=0
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=0 type=1571 m3i1=0 m3i2=-2 m3p1=0x4 m3ca1=[systask]
+ st_bindproc.c:st_setpname:193:nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=785 vpid=3 nodeid=0 name=muk 
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=-2 m1i3=4 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:184:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ pm.c:pm_init:189:Alloc dynamic memory for the Kernel process table nr_procs+nr_tasks=255
+ pm.c:pm_init:195:Alloc dynamic memory for the PM process table nr_procs=221
+ pm.c:pm_init:201:Alloc dynamic memory for the Kernel priviledge table nr_procs+nr_tasks=255
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ utility.c:mproc_init:148:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ pm.c:pm_init:211:Initialize PM entry in the PM's process table
+ pm.c:pm_init:228:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=3001 mp_nice=-10 
+ pm.c:pm_init:234:change PRIVILEGES of PM
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1540 m4l1=0 m4l2=1 m4l3=4 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=4 sys_who_e=0
+ system.c:main_systask:90:Calling vector 4
+ st_privctl.c:st_privctl:32:caller_ep=0 proc_ep=0 priv_table=1
+ st_privctl.c:st_privctl:42:proc_ep=0 proc_nr=0
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_privctl.c:st_privctl:56:OLD priv_id=34 priv_warn=27342 priv_level=0 trap=0 call=0
+DEBUG 2:dvk_setpriv:431: dcid=0 endpoint=0 
+DEBUG 2:dvk_setpriv:436: ioctl ret=0 errno=0
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_privctl.c:st_privctl:72:NEW priv_id=34 priv_warn=27342 priv_level=1 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=1 m1i3=4 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:252:clockTicks =100
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1561 m4l1=27342 m4l2=1 m4l3=4 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=25 sys_who_e=0
+ system.c:main_systask:90:Calling vector 25
+ system.c:main_systask:101:REPLY msg:source=0 type=2 m1i1=27342 m1i2=1 m1i3=4 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:257:boottime =70418
+ pm.c:main_pm:39:MTX_LOCK muk_mutex 
+ pm.c:main_pm:40:COND_SIGNAL muk_cond
+ pm.c:main_pm:41:COND_WAIT pm_cond muk_mutex
+ muk.c:main:367:COND_SIGNAL pm_cond
+ muk.c:main:368:MTX_UNLOCK muk_mutex 
+ pm.c:main_pm:42:MTX_UNLOCK muk_mutex 
+ pm.c:main_pm:44:This is PM's main loop-  get work and do it, forever and forever.
+ main.c:get_work:158: LISTENING . 
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=2
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:main:374:Starting RDISK thread--------------------------------------
+ muk.c:main:379:rd_pth=3049257792
+ muk.c:main:380:MTX_LOCK muk_mutex 
+ muk.c:main:381:COND_WAIT muk_cond muk_mutex
+ muk.c:pth_rd:207:str_arg=rdisk -c rdisk.cfg
+
+ muk.c:pth_rd:209:len=20 argc=3
+ muk.c:pth_rd:211:argv[0]=rdisk
+ muk.c:pth_rd:211:argv[1]=-c
+ muk.c:pth_rd:211:argv[2]=rdisk.cfg
+ muk.c:pth_rd:215:my_pth=3049257792
+ muk.c:pth_rd:218:rd_pid=5
+DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=5 endpoint=3 nodeid=-1
+DEBUG 2:dvk_bind_X:544: ioctl ret=3 errno=0
+ muk.c:pth_rd:221:rd_ep=3
+ rdisk.c:main_rdisk:108:Option c: rdisk.cfg
+ parse_config.c:parse_config:387:BEFORE rdisk.cfg
+ configfile.c:config_read:459:file=rdisk.cfg flags=400
+ configfile.c:read_file:412:file=rdisk.cfg
+ configfile.c:allocate:65:size=18
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=85
+ configfile.c:allocate:65:size=61
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=32
+ parse_config.c:parse_config:389:AFTER rdisk.cfg
+ parse_config.c:rd_search_dev:363:rd_search_dev[0] line=1
+ parse_config.c:search_device_tkn:328:TKN_DEVICE   parse_config.c:search_device_tkn:331:MY_FILE_IMG
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=2 word=major
+ parse_config.c:rd_search_ident:213:line[2] MATCH identifier major
+ parse_config.c:rd_search_ident:223:major=3
+ parse_config.c:rd_search_ident:225:mayor_dev=3
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=3 word=minor
+ parse_config.c:rd_search_ident:213:line[3] MATCH identifier minor
+ parse_config.c:rd_search_ident:237:minor=0
+ parse_config.c:rd_search_ident:239:minor_dev=0
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=4 word=type
+ parse_config.c:rd_search_ident:213:line[4] MATCH identifier type
+ parse_config.c:rd_search_type:119:type=FILE_IMAGE
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=5 word=image_file
+ parse_config.c:rd_search_ident:213:line[5] MATCH identifier image_file
+ parse_config.c:rd_search_ident:260:image_file=/usr/src/dvs/vos/mol/images/minixweb.img
+ parse_config.c:rd_search_ident:268:devvec[0].img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img
+ parse_config.c:rd_search_ident:269:devvec[0].available=1
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=6 word=buffer
+ parse_config.c:rd_search_ident:213:line[6] MATCH identifier buffer
+ parse_config.c:rd_search_ident:296:buffer=65536
+ parse_config.c:rd_search_ident:299:devvec[0].buff_size=65536
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=7 word=volatile
+ parse_config.c:rd_search_ident:213:line[7] MATCH identifier volatile
+ parse_config.c:rd_search_bit:162:Bit=NO
+ parse_config.c:rd_search_bit:196:rd_dev_bit[0].f_name=YES, rd_bit_flag=0
+ parse_config.c:rd_read_lines:401:rd_read_lines type=200
+ parse_config.c:rd_search_ident:210:rd_search_ident[0] line=8 word=replicated
+ parse_config.c:rd_search_ident:213:line[8] MATCH identifier replicated
+ parse_config.c:rd_search_bit:162:Bit=NO
+ parse_config.c:rd_search_bit:196:rd_dev_bit[0].f_name=YES, rd_bit_flag=0
+ parse_config.c:rd_search_ident:287:rd_bit_flag=0
+ parse_config.c:parse_config:392:AFTER2 rcode=0
+ rdisk.c:main_rdisk:125:rd_dev_nr=1
+ rdisk.c:main_rdisk:138:stat0 /usr/src/dvs/vos/mol/images/minixweb.img rcode=0
+ rdisk.c:main_rdisk:179:devvec[0].img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img
+ rdisk.c:main_rdisk:185:image size=1474560[bytes] 1474560
+ rdisk.c:main_rdisk:187:block size=4096[bytes] 4096
+ rdisk.c:main_rdisk:177:Minor device 1 is not available
+ rdisk.c:rd_init:497:rd_ep=3
+ rdisk.c:rd_init:499:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rdisk.c:rd_init:500:local_nodeid=0
+ rdisk.c:rd_init:502:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rdisk.c:rd_init:503:flags=0 dc_nodes=3 dc_pid=559 dc_name=DC0
+ rdisk.c:rd_init:505:Get RDISK info
+ rdisk.c:rd_init:507:nr=3 endp=3 dcid=0 flags=0 misc=0 lpid=790 vpid=5 nodeid=0 name=muk 
+ rdisk.c:rd_init:510:Register RDISK into SYSTASK rd_lpid=0
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=3 type=1568 m4l1=0 m4l2=3 m4l3=4 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=3
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=3 type=1568 m3i1=0 m3i2=3 m3p1=0x4 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=0, sysproc_ep=3 sysproc_nr=3 sysproc_oper=4 
+ st_bindproc.c:st_bindproc:74:nr=3 endp=3 dcid=0 flags=8 misc=0 lpid=790 vpid=5 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=3 endp=3 dcid=0 flags=8 misc=0 lpid=790 vpid=5 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=3 endp=3 dcid=0 flags=8 misc=0 lpid=790 vpid=5 nodeid=0 name=cmdline 
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=3 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=37 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=3 type=0 m1i1=3 m1i2=4 m1i3=4 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=3 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=2
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=3 type=1571 m4l1=3 m4l2=3 m4l3=4 m4l4=1936286834 m4l5=107
+ system.c:main_systask:85:call_nr=35 sys_who_e=3
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=3 type=1571 m3i1=3 m3i2=3 m3p1=0x4 m3ca1=[rdisk]
+ st_bindproc.c:st_setpname:193:nr=3 endp=3 dcid=0 flags=8 misc=0 lpid=790 vpid=5 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=3 type=0 m1i1=3 m1i2=3 m1i3=4 m1p1=0x73696472 m1p2=0x6b m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=3 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ rdisk.c:rd_init:520:Byte offset to the partition start (Device = 0 - img_ptr): 208E5C4
+ utility.c:cvul64:19:f_cvul64: 34137540:0 34137540
+Byte offset to the partition start (rd_geom[DEV=0].dv_base): 208E5C4
+ rdisk.c:rd_init:525:Number of bytes in the partition (Device = 0 - img_size): 1474560
+ utility.c:cvul64:19:f_cvul64: 1474560:0 1474560
+Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
+ rdisk.c:rd_init:531:END rd_init
+ driver.c:init_buffer:265:
+---Init_buffer---
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=3 type=1571 m4l1=3 m4l2=3 m4l3=4 m4l4=1936286834 m4l5=107
+ system.c:main_systask:85:call_nr=35 sys_who_e=3
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=3 type=1571 m3i1=3 m3i2=3 m3p1=0x4 m3ca1=[rdisk]
+ st_bindproc.c:st_setpname:193:nr=3 endp=3 dcid=0 flags=8 misc=0 lpid=790 vpid=5 nodeid=0 name=rdisk 
+ system.c:main_systask:101:REPLY msg:source=3 type=0 m1i1=3 m1i2=3 m1i3=4 m1p1=0x73696472 m1p2=0x6b m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=3 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ driver.c:driver_task:111:MTX_LOCK muk_mutex 
+ driver.c:driver_task:112:COND_SIGNAL muk_cond
+ driver.c:driver_task:113:COND_WAIT rd_cond muk_mutex
+ muk.c:main:382:COND_SIGNAL rd_cond
+ muk.c:main:383:MTX_UNLOCK muk_mutex 
+ driver.c:driver_task:114:MTX_UNLOCK muk_mutex 
+ driver.c:driver_task:116:This is RDISK's main loop-  get work and do it, forever and forever.
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:main:389:Starting FS thread--------------------------------------
+ muk.c:main:394:fs_pth=3040865088
+ muk.c:main:395:MTX_LOCK muk_mutex 
+ muk.c:main:396:COND_WAIT muk_cond muk_mutex
+ muk.c:pth_fs:246:str_arg=fs molfs.cfg
+
+ muk.c:pth_fs:248:len=14 argc=2
+ muk.c:pth_fs:250:argv[0]=fs
+ muk.c:pth_fs:250:argv[1]=molfs.cfg
+ muk.c:pth_fs:254:my_pth=3040865088
+ muk.c:pth_fs:257:fs_pid=6
+DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=6 endpoint=1 nodeid=-1
+DEBUG 2:dvk_bind_X:544: ioctl ret=1 errno=0
+ muk.c:pth_fs:260:fs_ep=1
+ main.c:fs_init:202:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ main.c:fs_init:203:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ main.c:fs_init:204:flags=0 dc_nodes=3 dc_pid=559 dc_name=DC0
+ main.c:fs_init:206:Get fs_ep info
+ main.c:fs_init:208:nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=791 vpid=6 nodeid=0 name=muk 
+ main.c:fs_init:211:Register FS into SYSTASK fs_pid=6
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=1 type=1568 m4l1=6 m4l2=1 m4l3=4 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=1
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=1 type=1568 m3i1=6 m3i2=1 m3p1=0x4 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=6, sysproc_ep=1 sysproc_nr=1 sysproc_oper=4 
+ st_bindproc.c:st_bindproc:74:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=791 vpid=6 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=791 vpid=6 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=791 vpid=6 nodeid=0 name=cmdline 
+DEBUG 2:dvk_getpriv:447: dcid=0 endpoint=1 
+DEBUG 2:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=35 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=1 type=0 m1i1=1 m1i2=4 m1i3=4 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=1 type=1571 m4l1=1 m4l2=1 m4l3=4 m4l4=29542 m4l5=0
+ system.c:main_systask:85:call_nr=35 sys_who_e=1
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=1 type=1571 m3i1=1 m3i2=1 m3p1=0x4 m3ca1=[fs]
+ st_bindproc.c:st_setpname:193:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=791 vpid=6 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=1 type=0 m1i1=1 m1i2=1 m1i3=4 m1p1=0x7366 m1p2=(nil) m1p3=(nil) 
+DEBUG 2:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ main.c:fs_init:220:Alloc dynamic memory for the FS process table nr_procs=221
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=3001 mp_nice=-10 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ utility.c:fproc_init:110:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ main.c:fs_init:244:Alloc dynamic memory for user_path
+ dmap.c:init_dmap:155:
+ configfile.c:config_read:459:file=molfs.cfg flags=400
+ configfile.c:read_file:412:file=molfs.cfg
+ configfile.c:allocate:65:size=18
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=33
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=30
+ moldevcfg.c:fs_search_dev_cfg:366:
+ moldevcfg.c:fs_search_device:321:
+ moldevcfg.c:fs_search_device:335:DEVICE: MY_RDISK_IMG
+ moldevcfg.c:fs_read_lines:440:
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=7 cfg=0xb5c23be0
+ moldevcfg.c:fs_search_ident:123:cfg->line=3
+ moldevcfg.c:fs_search_ident:125:line=3 word=major
+ moldevcfg.c:fs_search_ident:138:	major=3
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=6 cfg=0xb5c23c78
+ moldevcfg.c:fs_search_ident:123:cfg->line=4
+ moldevcfg.c:fs_search_ident:125:line=4 word=minor
+ moldevcfg.c:fs_search_ident:151:	minor=0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0xb5c23d10
+ moldevcfg.c:fs_search_ident:123:cfg->line=5
+ moldevcfg.c:fs_search_ident:125:line=5 word=type
+ moldevcfg.c:fs_search_ident:172:	TYPE=RDISK_IMG, VALUE(hex)=0x0300, VALUE(int)=768
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0xb5c23d90
+ moldevcfg.c:fs_search_ident:123:cfg->line=6
+ moldevcfg.c:fs_search_ident:125:line=6 word=volatile
+ moldevcfg.c:fs_search_ident:224:	VOLATILE=NO, VALUE=0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0xb5c23e10
+ moldevcfg.c:fs_search_ident:123:cfg->line=7
+ moldevcfg.c:fs_search_ident:125:line=7 word=root_dev
+ moldevcfg.c:fs_search_ident:238:	ROOT_DEV=YES, VALUE=1
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0xb5c23e90
+ moldevcfg.c:fs_search_ident:123:cfg->line=8
+ moldevcfg.c:fs_search_ident:125:line=8 word=buffer_size
+ moldevcfg.c:fs_search_ident:246:	minor=65536
+ main.c:fs_init:273:fs_cfg_dev_nr=2
+ utility.c:count_root_devs:35:	map_driver=3 	dmap_flags=0
+ utility.c:count_root_devs:37:	name=MY_RDISK_IMG 	major=3 
+	minor=0 
+	type=768 
+	image_file=(null) 
+	root_dev=1 
+	buffer_size=65536 
+	volatile=0 
+	server=(null) 
+	port=-1 
+	compression=-1
+ utility.c:count_root_devs:42:	CountRoot[1]=1
+ utility.c:count_root_devs:47:fs_dmap_rev[3]=1
+ main.c:init_root:316:--BEGIN FS--
+ utility.c:get_root_major:59:major=3
+ main.c:init_root:323:	name=MY_RDISK_IMG 	major=3 
+	minor=0 
+	type=768 
+	image_file=(null) 
+	root_dev=1 
+	buffer_size=65536 
+	volatile=0 
+	server=(null) 
+	port=-1 
+	compression=-1
+ main.c:init_root:327: dev_open -> root_dev=768, PROC_NR=1, R_BIT|W_BIT=6
+ device.c:dev_open:49:dev=768 major=3 minor=0 proc=1 flags=6
+ device.c:dev_open:61:CONFIGURED buffer_size =65536
+ device.c:dev_open:62:_MAX_BLOCK_SIZE=4096
+ device.c:dev_open:65:REAL buffer_size=4096
+ device.c:r_gen_opcl:228:op=406 dev=768 major=3 minor=0 proc_e=1 flags=6
+ device.c:r_gen_io:435:task_nr=3 source=-1223029408 type=1030 m2i1=0 m2i2=1 m2i3=6 m2l1=909717556 m2l2=0 m2p1=0x300
+ device.c:r_gen_io:474: m_type=1030, COUNT/FLAGS=6
+DEBUG 2:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+ driver.c:driver_task:143:
+RECEIVE: m_source=1, m_type=1030, DEVICE=0, IO_ENDPT=1, POSITION=36393034, COUNT=6, ADDRESS:300, compress(m2_l2):0
+ driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
+ driver.c:driver_task:161:m_type: 1030 - DEV_OPEN
+ rdisk.c:rd_do_open:437:rd_do_open - device number: 0 - OK to open
+ rdisk.c:rd_do_open:440:rcode 0
+ rdisk.c:rd_do_open:450:Open imagen FD=5
+ rdisk.c:rd_do_open:468:Aligned Buffer size=65536 on address 208F000, device=0
+ rdisk.c:rd_do_open:469:Local Buffer 208F000
+ rdisk.c:rd_do_open:470:Buffer size 65536
+ rdisk.c:rd_do_open:473:Device 0 is active 1
+ rdisk.c:rd_prepare:227:device = 0 (rd_device = 0)
+ rdisk.c:rd_prepare:229:Prepare for I/O on a given minor device: (208E5C4;0), (1474560;0)
+ rdisk.c:rd_do_open:485:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ driver.c:driver_task:243:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=0
+DEBUG 2:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 2:dvk_send_T:350: ioctl ret=76 errno=0
+DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ device.c:dev_open:71:r=0
+ super.c:read_super:203:Read the Superblock 
+ super.c:read_super:209: dev_io -> op=1027, dev=768, POS=-1254104408, BYTES=1024
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=1024 bytes=1024 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=1024, IO_ENDPT=1, COUNT=1024
+ device.c:dev_io:175:dmap_driver=3 source=-1217355870 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb7216840
+ device.c:r_gen_io:435:task_nr=3 source=-1217355870 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb7216840
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=1024
+DEBUG 2:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+ driver.c:driver_task:143:
+RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024, ADDRESS:B7216840, compress(m2_l2):0
+ driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
+ driver.c:driver_task:177:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:281:mp->COUNT=1024
+ driver.c:do_rdwt:291:mp->IO_ENDPT=1 - mp->ADDRESS:B7216840 - mp->COUNT=1024
+ rdisk.c:rd_prepare:227:device = 0 (rd_device = 0)
+ rdisk.c:rd_prepare:229:Prepare for I/O on a given minor device: (208E5C4;0), (1474560;0)
+ driver.c:do_rdwt:297:mp->m_type: 1027
+ driver.c:do_rdwt:317:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:rd_transfer:258:rd_device: 0
+ rdisk.c:rd_transfer:259:proc_nr=1 opcode=1033 nr_req=1
+ utility.c:cv64ul:31:f_cv64ul: 1474560
+ rdisk.c:rd_transfer:271:posit: 400
+ rdisk.c:rd_transfer:272:nr_req: 1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024
+ rdisk.c:rd_transfer:317:MUK_vcopy 3->1 bytes=1024 
+DEBUG 2:dvk_vcopy:52: src_ep=3 dst_ep=1 bytes=1024
+DEBUG 2:dvk_vcopy:60: ioctl ret=1024 errno=0
+ rdisk.c:rd_transfer:321:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=1024
+ rdisk.c:rd_transfer:322:bytes= 1024
+ rdisk.c:rd_transfer:323:DRIVER - Offset (read) 208F000
+ rdisk.c:rd_transfer:324:mem_phys: 208F000 (in DRIVER)
+ rdisk.c:rd_transfer:325:user_vir: B7216840 (in proc_nr 1)
+ rdisk.c:rd_transfer:420:subtotal de bytes
+ rdisk.c:rd_transfer:422:subtotal de bytes tbytes=0 nr_req=1
+ rdisk.c:rd_transfer:278:count: 1024
+ rdisk.c:rd_transfer:282:user_vir B7216840
+ utility.c:cv64ul:31:f_cv64ul: 34137540
+ rdisk.c:rd_transfer:295:DRIVER - position I/O(mem_phys) 208E9C4
+ rdisk.c:rd_transfer:299:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:305:bytes: 1024
+ rdisk.c:rd_transfer:308:img_ptr=/usr/src/dvs/vos/mol/images/minixweb.img img_p=5 st_size=1474560 st_blksize=4096 localbuff=208F000 buff_size=65536 active=1 available=1
+ rdisk.c:rd_transfer:312:pread: bytes=1024

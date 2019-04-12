@@ -103,6 +103,7 @@ typedef struct {
 	int				rad_nr_nodes;
 	int 			rad_nr_init;
 	int				rad_nr_radar;
+	char 			rad_group[MAXPROCNAME];
 	
 	unsigned int	rad_bm_nodes;		// Connected nodes 
 	unsigned int	rad_bm_init;		// nodes which can be primary (PB) or active nodes (FSM)

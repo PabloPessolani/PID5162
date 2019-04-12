@@ -1,0 +1,3817 @@
+DEBUG 9:dvk_open:40: Open dvk device file /dev/dvk
+ muk.c:get_dvs_params:27:
+DEBUG 9:dvk_getdvsinfo:113: 
+DEBUG 9:dvk_getdvsinfo:115: ioctl ret=0
+ muk.c:get_dvs_params:29:local_nodeid=0
+ muk.c:get_dvs_params:32:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ muk.c:main:382:cfg_file=muk.cfg
+ configfile.c:config_read:459:file=muk.cfg flags=400
+ configfile.c:read_file:412:file=muk.cfg
+ configfile.c:allocate:65:size=16
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=32
+ muk.c:main:385:before muk_search_config
+ mukcfg.c:muk_search_config:293:
+ mukcfg.c:muk_search_token:254:
+ mukcfg.c:muk_search_token:262:muk: SERVER1
+ mukcfg.c:muk_read_lines:239:
+ mukcfg.c:muk_search_ident:82:muk_mandatory=1 cfg=0x244a228
+ mukcfg.c:muk_search_ident:85:cfg->line=3
+ mukcfg.c:muk_search_ident:87:line=3 word=dcid
+ mukcfg.c:muk_search_ident:104:	 TKN_DCID=0
+ mukcfg.c:muk_search_ident:109:dcid=0
+ muk.c:get_dc_params:43:dcid=0
+DEBUG 9:dvk_getdcinfo:163: dcid=0
+DEBUG 9:dvk_getdcinfo:167: ioctl ret=0 errno=0
+ muk.c:get_dc_params:51:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ muk.c:get_dc_params:52:flags=0 dc_nodes=3 dc_pid=556 dc_name=DC0
+ mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x244a2c0
+ mukcfg.c:muk_search_ident:85:cfg->line=4
+ mukcfg.c:muk_search_ident:87:line=4 word=pm_ep
+ mukcfg.c:muk_search_ident:117:	 TKN_PM_EP=0
+ mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x244a358
+ mukcfg.c:muk_search_ident:85:cfg->line=5
+ mukcfg.c:muk_search_ident:87:line=5 word=fs_ep
+ mukcfg.c:muk_search_ident:128:	 TKN_FS_EP=1
+ mukcfg.c:muk_search_ident:82:muk_mandatory=1000 cfg=0x244a3f0
+ mukcfg.c:muk_search_ident:85:cfg->line=8
+ mukcfg.c:muk_search_ident:87:line=8 word=nweb_ep
+ mukcfg.c:muk_search_ident:163:	 TKN_NWEB_EP=22
+ mukcfg.c:muk_search_ident:82:muk_mandatory=5000 cfg=0x244a488
+ mukcfg.c:muk_search_ident:85:cfg->line=9
+ mukcfg.c:muk_search_ident:87:line=9 word=ftp_ep
+ mukcfg.c:muk_search_ident:175:	 TKN_FTP_EP=14
+ mukcfg.c:muk_search_ident:82:muk_mandatory=D000 cfg=0x244a520
+ mukcfg.c:muk_search_ident:85:cfg->line=10
+ mukcfg.c:muk_search_ident:87:line=10 word=fs_cfg
+ mukcfg.c:muk_search_ident:188:fs_cfg=molfs.cfg
+ mukcfg.c:muk_search_ident:82:muk_mandatory=C000 cfg=0x244a5a0
+ mukcfg.c:muk_search_ident:85:cfg->line=12
+ mukcfg.c:muk_search_ident:87:line=12 word=web_cfg
+ mukcfg.c:muk_search_ident:206:web_cfg=m3nweb.cfg
+ mukcfg.c:muk_search_ident:82:muk_mandatory=8000 cfg=0x244a620
+ mukcfg.c:muk_search_ident:85:cfg->line=13
+ mukcfg.c:muk_search_ident:87:line=13 word=ftp_cfg
+ mukcfg.c:muk_search_ident:215:ftp_cfg=m3ftp.cfg
+ muk.c:main:393:Starting SYSTASK thread -----------------------------------
+ muk.c:main:399:sys_pth=3069999936
+ muk.c:main:400:MTX_LOCK muk_mutex 
+ muk.c:main:401:COND_WAIT muk_cond muk_mutex
+ muk.c:pth_systask:140:str_arg=systask
+
+ muk.c:pth_systask:142:len=9 argc=1
+ muk.c:pth_systask:144:argv[0]=systask
+ muk.c:pth_systask:148:my_pth=3069999936
+ system.c:init_systask:152:sys_pid=10
+DEBUG 9:dvk_bind_X:535: cmd=0 dcid=0 pid=10 endpoint=-2 nodeid=-1
+DEBUG 9:dvk_bind_X:544: ioctl ret=-1 errno=2
+ system.c:init_systask:155:sys_ep=-2
+ system.c:init_systask:168:Initialize the call vector to a safe default handler.
+ system.c:init_systask:243:Map kernel process table on /sys/kernel/debug/dvs/DC0/procs
+ system.c:init_systask:249:open debug_fd=4
+ system.c:init_systask:261:proc_ptr=b67a7000 nr=-34 endp=-34 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7200 nr=-33 endp=-33 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7400 nr=-32 endp=-32 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7600 nr=-31 endp=-31 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7800 nr=-30 endp=-30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7a00 nr=-29 endp=-29 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7c00 nr=-28 endp=-28 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a7e00 nr=-27 endp=-27 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8000 nr=-26 endp=-26 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8200 nr=-25 endp=-25 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8400 nr=-24 endp=-24 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8600 nr=-23 endp=-23 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8800 nr=-22 endp=-22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8a00 nr=-21 endp=-21 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8c00 nr=-20 endp=-20 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a8e00 nr=-19 endp=-19 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9000 nr=-18 endp=-18 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9200 nr=-17 endp=-17 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9400 nr=-16 endp=-16 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9600 nr=-15 endp=-15 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9800 nr=-14 endp=-14 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9a00 nr=-13 endp=-13 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9c00 nr=-12 endp=-12 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67a9e00 nr=-11 endp=-11 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aa000 nr=-10 endp=-10 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aa200 nr=-9 endp=-9 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aa400 nr=-8 endp=-8 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aa600 nr=-7 endp=-7 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aa800 nr=-6 endp=-6 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aaa00 nr=-5 endp=-5 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aac00 nr=-4 endp=-4 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aae00 nr=-3 endp=-3 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ab000 nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=586 vpid=10 nodeid=0 name=muk 
+ system.c:init_systask:261:proc_ptr=b67ab200 nr=-1 endp=-1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ab400 nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ab600 nr=1 endp=1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ab800 nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aba00 nr=3 endp=3 dcid=0 flags=8 misc=20 lpid=575 vpid=4 nodeid=0 name=rdisk 
+ system.c:init_systask:261:proc_ptr=b67abc00 nr=4 endp=4 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67abe00 nr=5 endp=5 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ac000 nr=6 endp=6 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ac200 nr=7 endp=7 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ac400 nr=8 endp=8 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ac600 nr=9 endp=9 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ac800 nr=10 endp=10 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aca00 nr=11 endp=11 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67acc00 nr=12 endp=12 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ace00 nr=13 endp=13 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ad000 nr=14 endp=14 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ad200 nr=15 endp=15 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ad400 nr=16 endp=16 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ad600 nr=17 endp=17 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ad800 nr=18 endp=18 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ada00 nr=19 endp=19 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67adc00 nr=20 endp=20 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ade00 nr=21 endp=21 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ae000 nr=22 endp=22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ae200 nr=23 endp=23 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ae400 nr=24 endp=24 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ae600 nr=25 endp=25 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ae800 nr=26 endp=26 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aea00 nr=27 endp=27 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aec00 nr=28 endp=28 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67aee00 nr=29 endp=29 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67af000 nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67af200 nr=31 endp=31 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67af400 nr=32 endp=32 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67af600 nr=33 endp=33 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67af800 nr=34 endp=34 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67afa00 nr=35 endp=35 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67afc00 nr=36 endp=36 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67afe00 nr=37 endp=37 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0000 nr=38 endp=38 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0200 nr=39 endp=39 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0400 nr=40 endp=40 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0600 nr=41 endp=41 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0800 nr=42 endp=42 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0a00 nr=43 endp=43 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0c00 nr=44 endp=44 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b0e00 nr=45 endp=45 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1000 nr=46 endp=46 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1200 nr=47 endp=47 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1400 nr=48 endp=48 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1600 nr=49 endp=49 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1800 nr=50 endp=50 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1a00 nr=51 endp=51 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1c00 nr=52 endp=52 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b1e00 nr=53 endp=53 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2000 nr=54 endp=54 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2200 nr=55 endp=55 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2400 nr=56 endp=56 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2600 nr=57 endp=57 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2800 nr=58 endp=58 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2a00 nr=59 endp=59 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2c00 nr=60 endp=60 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b2e00 nr=61 endp=61 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3000 nr=62 endp=62 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3200 nr=63 endp=63 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3400 nr=64 endp=64 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3600 nr=65 endp=65 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3800 nr=66 endp=66 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3a00 nr=67 endp=67 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3c00 nr=68 endp=68 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b3e00 nr=69 endp=69 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4000 nr=70 endp=70 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4200 nr=71 endp=71 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4400 nr=72 endp=72 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4600 nr=73 endp=73 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4800 nr=74 endp=74 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4a00 nr=75 endp=75 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4c00 nr=76 endp=76 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b4e00 nr=77 endp=77 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5000 nr=78 endp=78 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5200 nr=79 endp=79 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5400 nr=80 endp=80 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5600 nr=81 endp=81 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5800 nr=82 endp=82 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5a00 nr=83 endp=83 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5c00 nr=84 endp=84 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b5e00 nr=85 endp=85 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6000 nr=86 endp=86 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6200 nr=87 endp=87 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6400 nr=88 endp=88 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6600 nr=89 endp=89 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6800 nr=90 endp=90 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6a00 nr=91 endp=91 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6c00 nr=92 endp=92 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b6e00 nr=93 endp=93 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7000 nr=94 endp=94 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7200 nr=95 endp=95 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7400 nr=96 endp=96 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7600 nr=97 endp=97 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7800 nr=98 endp=98 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7a00 nr=99 endp=99 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7c00 nr=100 endp=100 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b7e00 nr=101 endp=101 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8000 nr=102 endp=102 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8200 nr=103 endp=103 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8400 nr=104 endp=104 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8600 nr=105 endp=105 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8800 nr=106 endp=106 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8a00 nr=107 endp=107 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8c00 nr=108 endp=108 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b8e00 nr=109 endp=109 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9000 nr=110 endp=110 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9200 nr=111 endp=111 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9400 nr=112 endp=112 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9600 nr=113 endp=113 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9800 nr=114 endp=114 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9a00 nr=115 endp=115 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9c00 nr=116 endp=116 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67b9e00 nr=117 endp=117 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ba000 nr=118 endp=118 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ba200 nr=119 endp=119 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ba400 nr=120 endp=120 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ba600 nr=121 endp=121 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67ba800 nr=122 endp=122 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67baa00 nr=123 endp=123 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bac00 nr=124 endp=124 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bae00 nr=125 endp=125 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bb000 nr=126 endp=126 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bb200 nr=127 endp=127 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bb400 nr=128 endp=128 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bb600 nr=129 endp=129 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bb800 nr=130 endp=130 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bba00 nr=131 endp=131 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bbc00 nr=132 endp=132 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bbe00 nr=133 endp=133 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bc000 nr=134 endp=134 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bc200 nr=135 endp=135 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bc400 nr=136 endp=136 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bc600 nr=137 endp=137 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bc800 nr=138 endp=138 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bca00 nr=139 endp=139 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bcc00 nr=140 endp=140 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bce00 nr=141 endp=141 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bd000 nr=142 endp=142 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bd200 nr=143 endp=143 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bd400 nr=144 endp=144 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bd600 nr=145 endp=145 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bd800 nr=146 endp=146 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bda00 nr=147 endp=147 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bdc00 nr=148 endp=148 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bde00 nr=149 endp=149 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67be000 nr=150 endp=150 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67be200 nr=151 endp=151 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67be400 nr=152 endp=152 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67be600 nr=153 endp=153 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67be800 nr=154 endp=154 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bea00 nr=155 endp=155 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bec00 nr=156 endp=156 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bee00 nr=157 endp=157 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bf000 nr=158 endp=158 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bf200 nr=159 endp=159 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bf400 nr=160 endp=160 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bf600 nr=161 endp=161 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bf800 nr=162 endp=162 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bfa00 nr=163 endp=163 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bfc00 nr=164 endp=164 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67bfe00 nr=165 endp=165 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0000 nr=166 endp=166 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0200 nr=167 endp=167 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0400 nr=168 endp=168 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0600 nr=169 endp=169 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0800 nr=170 endp=170 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0a00 nr=171 endp=171 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0c00 nr=172 endp=172 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c0e00 nr=173 endp=173 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1000 nr=174 endp=174 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1200 nr=175 endp=175 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1400 nr=176 endp=176 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1600 nr=177 endp=177 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1800 nr=178 endp=178 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1a00 nr=179 endp=179 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1c00 nr=180 endp=180 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c1e00 nr=181 endp=181 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2000 nr=182 endp=182 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2200 nr=183 endp=183 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2400 nr=184 endp=184 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2600 nr=185 endp=185 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2800 nr=186 endp=186 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2a00 nr=187 endp=187 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2c00 nr=188 endp=188 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c2e00 nr=189 endp=189 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3000 nr=190 endp=190 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3200 nr=191 endp=191 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3400 nr=192 endp=192 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3600 nr=193 endp=193 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3800 nr=194 endp=194 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3a00 nr=195 endp=195 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3c00 nr=196 endp=196 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c3e00 nr=197 endp=197 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4000 nr=198 endp=198 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4200 nr=199 endp=199 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4400 nr=200 endp=200 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4600 nr=201 endp=201 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4800 nr=202 endp=202 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4a00 nr=203 endp=203 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4c00 nr=204 endp=204 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c4e00 nr=205 endp=205 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5000 nr=206 endp=206 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5200 nr=207 endp=207 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5400 nr=208 endp=208 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5600 nr=209 endp=209 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5800 nr=210 endp=210 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5a00 nr=211 endp=211 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5c00 nr=212 endp=212 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c5e00 nr=213 endp=213 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6000 nr=214 endp=214 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6200 nr=215 endp=215 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6400 nr=216 endp=216 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6600 nr=217 endp=217 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6800 nr=218 endp=218 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6a00 nr=219 endp=219 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:261:proc_ptr=b67c6c00 nr=220 endp=220 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ system.c:init_systask:272:Allocated space for nr_procs=221 + nr_tasks=34 ptrivileges
+ system.c:init_systask:277:Initialize priv_table table
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-34 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-33 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-32 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-31 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-30 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-29 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-28 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-27 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-26 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-25 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-24 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-23 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-22 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-21 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-20 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-19 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-18 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-17 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-16 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-15 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-14 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-13 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-12 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-11 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-10 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-9 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-8 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-7 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-6 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-5 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-4 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-3 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-2 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=-1 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=1 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=2 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=3 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=4 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=5 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=6 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=7 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=8 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=9 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=10 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=11 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=12 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=13 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=14 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=15 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=16 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=17 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=18 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=19 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=20 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=21 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=22 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=23 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=24 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=25 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=26 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=27 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=28 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=29 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=30 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=31 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=32 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=33 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=34 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=35 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=36 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=37 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=38 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=39 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=40 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=41 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=42 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=43 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=44 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=45 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=46 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=47 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=48 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=49 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=50 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=51 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=52 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=53 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=54 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=55 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=56 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=57 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=58 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=59 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=60 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=61 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=62 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=63 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=64 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=65 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=66 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=67 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=68 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=69 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=70 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=71 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=72 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=73 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=74 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=75 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=76 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=77 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=78 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=79 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=80 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=81 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=82 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=83 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=84 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=85 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=86 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=87 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=88 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=89 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=90 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=91 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=92 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=93 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=94 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=95 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=96 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=97 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=98 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=99 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=100 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=101 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=102 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=103 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=104 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=105 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=106 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=107 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=108 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=109 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=110 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=111 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=112 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=113 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=114 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=115 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=116 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=117 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=118 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=119 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=120 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=121 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=122 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=123 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=124 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=125 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=126 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=127 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=128 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=129 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=130 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=131 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=132 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=133 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=134 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=135 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=136 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=137 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=138 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=139 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=140 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=141 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=142 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=143 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=144 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=145 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=146 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=147 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=148 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=149 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=150 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=151 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=152 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=153 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=154 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=155 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=156 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=157 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=158 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=159 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=160 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=161 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=162 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=163 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=164 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=165 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=166 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=167 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=168 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=169 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=170 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=171 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=172 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=173 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=174 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=175 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=176 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=177 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=178 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=179 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=180 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=181 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=182 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=183 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=184 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=185 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=186 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=187 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=188 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=189 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=190 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=191 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=192 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=193 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=194 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=195 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=196 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=197 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=198 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=199 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=200 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=201 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=202 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=203 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=204 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=205 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=206 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=207 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=208 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=209 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=210 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=211 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=212 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=213 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=214 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=215 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=216 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=217 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=218 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=219 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=220 
+DEBUG 9:dvk_getpriv:452: ioctl ret=-1 errno=109
+DEBUG 9:dvk_setpriv:431: dcid=0 endpoint=-2 
+DEBUG 9:dvk_setpriv:436: ioctl ret=0 errno=109
+ clock.c:init_clock:75:clockTicks =100
+ clock.c:set_clock_handler:156:
+ clock.c:set_interval:46:
+ clock.c:set_interval:53:new_sec=1 new_usec=0
+ system.c:main_systask:51:MTX_LOCK muk_mutex 
+ system.c:main_systask:52:COND_SIGNAL muk_cond
+ system.c:main_systask:53:COND_WAIT sys_cond muk_mutex
+ muk.c:main:402:COND_SIGNAL sys_cond
+ muk.c:main:403:MTX_UNLOCK muk_mutex 
+ muk.c:main:431:Starting PM thread ---------------------------------------
+ muk.c:main:437:pm_pth=3059743552
+ muk.c:main:438:MTX_LOCK muk_mutex 
+ muk.c:main:439:COND_WAIT muk_cond muk_mutex
+ system.c:main_systask:54:MTX_UNLOCK muk_mutex 
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:pth_pm:172:str_arg=pm
+
+ muk.c:pth_pm:174:len=4 argc=1
+ muk.c:pth_pm:176:argv[0]=pm
+ muk.c:pth_pm:180:my_pth=3059743552
+ pm.c:pm_init:175:dcid=0 pm_ep=0
+ pm.c:pm_init:177:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ pm.c:pm_init:178:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ pm.c:pm_init:179:flags=0 dc_nodes=3 dc_pid=556 dc_name=DC0
+ pm.c:pm_init:182:pm_pid=11
+DEBUG 9:dvk_bind_X:535: cmd=0 dcid=0 pid=11 endpoint=0 nodeid=-1
+DEBUG 9:dvk_bind_X:544: ioctl ret=0 errno=0
+ pm.c:pm_init:185:rcode=0
+ pm.c:pm_init:194:Register PM into SYSTASK pm_lpid=0
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=0 lpid=0 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/0/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1568 m4l1=0 m4l2=0 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=0
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=0 m3i2=0 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=0, sysproc_ep=0 sysproc_nr=0 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=587 vpid=11 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=587 vpid=11 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=587 vpid=11 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=34 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=2
+ sys_bindproc.c:sys_rbindproc:39:endpoint=0
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=0 p_name=pm
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1571 m4l1=0 m4l2=0 m4l3=1 m4l4=28016 m4l5=0
+ system.c:main_systask:85:call_nr=35 sys_who_e=0
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=0 type=1571 m3i1=0 m3i2=0 m3p1=0x1 m3ca1=[pm]
+ st_bindproc.c:st_setpname:193:nr=0 endp=0 dcid=0 flags=8 misc=0 lpid=587 vpid=11 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=0 m1i3=1 m1p1=0x6d70 m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=-2 p_name=systask
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1571 m4l1=0 m4l2=-2 m4l3=1 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=35 sys_who_e=0
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=0 type=1571 m3i1=0 m3i2=-2 m3p1=0x1 m3ca1=[systask]
+ st_bindproc.c:st_setpname:193:nr=-2 endp=-2 dcid=0 flags=0 misc=420 lpid=586 vpid=10 nodeid=0 name=muk 
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=-2 m1i3=1 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:206:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ pm.c:pm_init:221:Alloc dynamic memory for the PM process table nr_procs=221
+ pm.c:pm_init:227:Alloc dynamic memory for the Kernel priviledge table nr_procs+nr_tasks=255
+ pm.c:pm_init:240:Initialize the PM's process table
+ utility.c:mproc_init:131:p_nr=0
+ utility.c:mproc_init:158:nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=587 vpid=11 nodeid=0 name=pm 
+ utility.c:mproc_init:131:p_nr=1
+ utility.c:mproc_init:131:p_nr=2
+ utility.c:mproc_init:131:p_nr=3
+ utility.c:mproc_init:158:nr=3 endp=3 dcid=0 flags=8 misc=20 lpid=575 vpid=4 nodeid=0 name=rdisk 
+ utility.c:mproc_init:131:p_nr=4
+ utility.c:mproc_init:131:p_nr=5
+ utility.c:mproc_init:131:p_nr=6
+ utility.c:mproc_init:131:p_nr=7
+ utility.c:mproc_init:131:p_nr=8
+ utility.c:mproc_init:131:p_nr=9
+ utility.c:mproc_init:131:p_nr=10
+ utility.c:mproc_init:131:p_nr=11
+ utility.c:mproc_init:131:p_nr=12
+ utility.c:mproc_init:131:p_nr=13
+ utility.c:mproc_init:131:p_nr=14
+ utility.c:mproc_init:131:p_nr=15
+ utility.c:mproc_init:131:p_nr=16
+ utility.c:mproc_init:131:p_nr=17
+ utility.c:mproc_init:131:p_nr=18
+ utility.c:mproc_init:131:p_nr=19
+ utility.c:mproc_init:131:p_nr=20
+ utility.c:mproc_init:131:p_nr=21
+ utility.c:mproc_init:131:p_nr=22
+ utility.c:mproc_init:131:p_nr=23
+ utility.c:mproc_init:131:p_nr=24
+ utility.c:mproc_init:131:p_nr=25
+ utility.c:mproc_init:131:p_nr=26
+ utility.c:mproc_init:131:p_nr=27
+ utility.c:mproc_init:131:p_nr=28
+ utility.c:mproc_init:131:p_nr=29
+ utility.c:mproc_init:131:p_nr=30
+ utility.c:mproc_init:131:p_nr=31
+ utility.c:mproc_init:131:p_nr=32
+ utility.c:mproc_init:131:p_nr=33
+ utility.c:mproc_init:131:p_nr=34
+ utility.c:mproc_init:131:p_nr=35
+ utility.c:mproc_init:131:p_nr=36
+ utility.c:mproc_init:131:p_nr=37
+ utility.c:mproc_init:131:p_nr=38
+ utility.c:mproc_init:131:p_nr=39
+ utility.c:mproc_init:131:p_nr=40
+ utility.c:mproc_init:131:p_nr=41
+ utility.c:mproc_init:131:p_nr=42
+ utility.c:mproc_init:131:p_nr=43
+ utility.c:mproc_init:131:p_nr=44
+ utility.c:mproc_init:131:p_nr=45
+ utility.c:mproc_init:131:p_nr=46
+ utility.c:mproc_init:131:p_nr=47
+ utility.c:mproc_init:131:p_nr=48
+ utility.c:mproc_init:131:p_nr=49
+ utility.c:mproc_init:131:p_nr=50
+ utility.c:mproc_init:131:p_nr=51
+ utility.c:mproc_init:131:p_nr=52
+ utility.c:mproc_init:131:p_nr=53
+ utility.c:mproc_init:131:p_nr=54
+ utility.c:mproc_init:131:p_nr=55
+ utility.c:mproc_init:131:p_nr=56
+ utility.c:mproc_init:131:p_nr=57
+ utility.c:mproc_init:131:p_nr=58
+ utility.c:mproc_init:131:p_nr=59
+ utility.c:mproc_init:131:p_nr=60
+ utility.c:mproc_init:131:p_nr=61
+ utility.c:mproc_init:131:p_nr=62
+ utility.c:mproc_init:131:p_nr=63
+ utility.c:mproc_init:131:p_nr=64
+ utility.c:mproc_init:131:p_nr=65
+ utility.c:mproc_init:131:p_nr=66
+ utility.c:mproc_init:131:p_nr=67
+ utility.c:mproc_init:131:p_nr=68
+ utility.c:mproc_init:131:p_nr=69
+ utility.c:mproc_init:131:p_nr=70
+ utility.c:mproc_init:131:p_nr=71
+ utility.c:mproc_init:131:p_nr=72
+ utility.c:mproc_init:131:p_nr=73
+ utility.c:mproc_init:131:p_nr=74
+ utility.c:mproc_init:131:p_nr=75
+ utility.c:mproc_init:131:p_nr=76
+ utility.c:mproc_init:131:p_nr=77
+ utility.c:mproc_init:131:p_nr=78
+ utility.c:mproc_init:131:p_nr=79
+ utility.c:mproc_init:131:p_nr=80
+ utility.c:mproc_init:131:p_nr=81
+ utility.c:mproc_init:131:p_nr=82
+ utility.c:mproc_init:131:p_nr=83
+ utility.c:mproc_init:131:p_nr=84
+ utility.c:mproc_init:131:p_nr=85
+ utility.c:mproc_init:131:p_nr=86
+ utility.c:mproc_init:131:p_nr=87
+ utility.c:mproc_init:131:p_nr=88
+ utility.c:mproc_init:131:p_nr=89
+ utility.c:mproc_init:131:p_nr=90
+ utility.c:mproc_init:131:p_nr=91
+ utility.c:mproc_init:131:p_nr=92
+ utility.c:mproc_init:131:p_nr=93
+ utility.c:mproc_init:131:p_nr=94
+ utility.c:mproc_init:131:p_nr=95
+ utility.c:mproc_init:131:p_nr=96
+ utility.c:mproc_init:131:p_nr=97
+ utility.c:mproc_init:131:p_nr=98
+ utility.c:mproc_init:131:p_nr=99
+ utility.c:mproc_init:131:p_nr=100
+ utility.c:mproc_init:131:p_nr=101
+ utility.c:mproc_init:131:p_nr=102
+ utility.c:mproc_init:131:p_nr=103
+ utility.c:mproc_init:131:p_nr=104
+ utility.c:mproc_init:131:p_nr=105
+ utility.c:mproc_init:131:p_nr=106
+ utility.c:mproc_init:131:p_nr=107
+ utility.c:mproc_init:131:p_nr=108
+ utility.c:mproc_init:131:p_nr=109
+ utility.c:mproc_init:131:p_nr=110
+ utility.c:mproc_init:131:p_nr=111
+ utility.c:mproc_init:131:p_nr=112
+ utility.c:mproc_init:131:p_nr=113
+ utility.c:mproc_init:131:p_nr=114
+ utility.c:mproc_init:131:p_nr=115
+ utility.c:mproc_init:131:p_nr=116
+ utility.c:mproc_init:131:p_nr=117
+ utility.c:mproc_init:131:p_nr=118
+ utility.c:mproc_init:131:p_nr=119
+ utility.c:mproc_init:131:p_nr=120
+ utility.c:mproc_init:131:p_nr=121
+ utility.c:mproc_init:131:p_nr=122
+ utility.c:mproc_init:131:p_nr=123
+ utility.c:mproc_init:131:p_nr=124
+ utility.c:mproc_init:131:p_nr=125
+ utility.c:mproc_init:131:p_nr=126
+ utility.c:mproc_init:131:p_nr=127
+ utility.c:mproc_init:131:p_nr=128
+ utility.c:mproc_init:131:p_nr=129
+ utility.c:mproc_init:131:p_nr=130
+ utility.c:mproc_init:131:p_nr=131
+ utility.c:mproc_init:131:p_nr=132
+ utility.c:mproc_init:131:p_nr=133
+ utility.c:mproc_init:131:p_nr=134
+ utility.c:mproc_init:131:p_nr=135
+ utility.c:mproc_init:131:p_nr=136
+ utility.c:mproc_init:131:p_nr=137
+ utility.c:mproc_init:131:p_nr=138
+ utility.c:mproc_init:131:p_nr=139
+ utility.c:mproc_init:131:p_nr=140
+ utility.c:mproc_init:131:p_nr=141
+ utility.c:mproc_init:131:p_nr=142
+ utility.c:mproc_init:131:p_nr=143
+ utility.c:mproc_init:131:p_nr=144
+ utility.c:mproc_init:131:p_nr=145
+ utility.c:mproc_init:131:p_nr=146
+ utility.c:mproc_init:131:p_nr=147
+ utility.c:mproc_init:131:p_nr=148
+ utility.c:mproc_init:131:p_nr=149
+ utility.c:mproc_init:131:p_nr=150
+ utility.c:mproc_init:131:p_nr=151
+ utility.c:mproc_init:131:p_nr=152
+ utility.c:mproc_init:131:p_nr=153
+ utility.c:mproc_init:131:p_nr=154
+ utility.c:mproc_init:131:p_nr=155
+ utility.c:mproc_init:131:p_nr=156
+ utility.c:mproc_init:131:p_nr=157
+ utility.c:mproc_init:131:p_nr=158
+ utility.c:mproc_init:131:p_nr=159
+ utility.c:mproc_init:131:p_nr=160
+ utility.c:mproc_init:131:p_nr=161
+ utility.c:mproc_init:131:p_nr=162
+ utility.c:mproc_init:131:p_nr=163
+ utility.c:mproc_init:131:p_nr=164
+ utility.c:mproc_init:131:p_nr=165
+ utility.c:mproc_init:131:p_nr=166
+ utility.c:mproc_init:131:p_nr=167
+ utility.c:mproc_init:131:p_nr=168
+ utility.c:mproc_init:131:p_nr=169
+ utility.c:mproc_init:131:p_nr=170
+ utility.c:mproc_init:131:p_nr=171
+ utility.c:mproc_init:131:p_nr=172
+ utility.c:mproc_init:131:p_nr=173
+ utility.c:mproc_init:131:p_nr=174
+ utility.c:mproc_init:131:p_nr=175
+ utility.c:mproc_init:131:p_nr=176
+ utility.c:mproc_init:131:p_nr=177
+ utility.c:mproc_init:131:p_nr=178
+ utility.c:mproc_init:131:p_nr=179
+ utility.c:mproc_init:131:p_nr=180
+ utility.c:mproc_init:131:p_nr=181
+ utility.c:mproc_init:131:p_nr=182
+ utility.c:mproc_init:131:p_nr=183
+ utility.c:mproc_init:131:p_nr=184
+ utility.c:mproc_init:131:p_nr=185
+ utility.c:mproc_init:131:p_nr=186
+ utility.c:mproc_init:131:p_nr=187
+ utility.c:mproc_init:131:p_nr=188
+ utility.c:mproc_init:131:p_nr=189
+ utility.c:mproc_init:131:p_nr=190
+ utility.c:mproc_init:131:p_nr=191
+ utility.c:mproc_init:131:p_nr=192
+ utility.c:mproc_init:131:p_nr=193
+ utility.c:mproc_init:131:p_nr=194
+ utility.c:mproc_init:131:p_nr=195
+ utility.c:mproc_init:131:p_nr=196
+ utility.c:mproc_init:131:p_nr=197
+ utility.c:mproc_init:131:p_nr=198
+ utility.c:mproc_init:131:p_nr=199
+ utility.c:mproc_init:131:p_nr=200
+ utility.c:mproc_init:131:p_nr=201
+ utility.c:mproc_init:131:p_nr=202
+ utility.c:mproc_init:131:p_nr=203
+ utility.c:mproc_init:131:p_nr=204
+ utility.c:mproc_init:131:p_nr=205
+ utility.c:mproc_init:131:p_nr=206
+ utility.c:mproc_init:131:p_nr=207
+ utility.c:mproc_init:131:p_nr=208
+ utility.c:mproc_init:131:p_nr=209
+ utility.c:mproc_init:131:p_nr=210
+ utility.c:mproc_init:131:p_nr=211
+ utility.c:mproc_init:131:p_nr=212
+ utility.c:mproc_init:131:p_nr=213
+ utility.c:mproc_init:131:p_nr=214
+ utility.c:mproc_init:131:p_nr=215
+ utility.c:mproc_init:131:p_nr=216
+ utility.c:mproc_init:131:p_nr=217
+ utility.c:mproc_init:131:p_nr=218
+ utility.c:mproc_init:131:p_nr=219
+ utility.c:mproc_init:131:p_nr=220
+ pm.c:pm_init:244:Initialize PM entry in the PM's process table
+ pm.c:pm_init:262:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=3001 mp_nice=-10 
+ pm.c:pm_init:268:change PRIVILEGES of PM
+ sys_privctl.c:sys_privctl:12:Sending SYSPRIVCTL request to SYSTEM endpoint=0 priv_type=1
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1540 m4l1=0 m4l2=1 m4l3=1 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=4 sys_who_e=0
+ system.c:main_systask:90:Calling vector 4
+ st_privctl.c:st_privctl:32:caller_ep=0 proc_ep=0 priv_table=1
+ st_privctl.c:st_privctl:42:proc_ep=0 proc_nr=0
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_privctl.c:st_privctl:56:OLD priv_id=34 priv_warn=27342 priv_level=0 trap=0 call=0
+DEBUG 9:dvk_setpriv:431: dcid=0 endpoint=0 
+DEBUG 9:dvk_setpriv:436: ioctl ret=0 errno=0
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=0 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_privctl.c:st_privctl:72:NEW priv_id=34 priv_warn=27342 priv_level=1 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=0 m1i2=1 m1i3=1 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:278:clockTicks =100
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1561 m4l1=27342 m4l2=1 m4l3=1 m4l4=1953724787 m4l5=7041889
+ system.c:main_systask:85:call_nr=25 sys_who_e=0
+ system.c:main_systask:90:Calling vector 25
+ system.c:main_systask:101:REPLY msg:source=0 type=2 m1i1=27342 m1i2=1 m1i3=1 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:pm_init:283:boottime =70418
+ pm.c:main_pm:44:MTX_LOCK muk_mutex 
+ pm.c:main_pm:45:COND_SIGNAL muk_cond
+ pm.c:main_pm:46:COND_WAIT pm_cond muk_mutex
+ muk.c:main:442:COND_SIGNAL pm_cond
+ muk.c:main:443:MTX_UNLOCK muk_mutex 
+ muk.c:main:450:Starting FS thread--------------------------------------
+ muk.c:main:456:fs_pth=3049257792
+ muk.c:main:457:MTX_LOCK muk_mutex 
+ muk.c:main:458:COND_WAIT muk_cond muk_mutex
+ pm.c:main_pm:47:MTX_UNLOCK muk_mutex 
+ pm.c:main_pm:49:This is PM's main loop-  get work and do it, forever and forever.
+ pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=2
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:pth_fs:230:str_arg=fs molfs.cfg
+
+ muk.c:pth_fs:232:len=14 argc=2
+ muk.c:pth_fs:234:argv[0]=fs
+ muk.c:pth_fs:234:argv[1]=molfs.cfg
+ muk.c:pth_fs:238:my_pth=3049257792
+ fs.c:fs_init:199:dcid=0 fs_ep=1
+ fs.c:fs_init:202:fs_pid=12
+DEBUG 9:dvk_bind_X:535: cmd=0 dcid=0 pid=12 endpoint=1 nodeid=-1
+DEBUG 9:dvk_bind_X:544: ioctl ret=1 errno=0
+ fs.c:fs_init:205:fs_ep=1
+ fs.c:fs_init:211:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ fs.c:fs_init:212:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ fs.c:fs_init:213:flags=0 dc_nodes=3 dc_pid=556 dc_name=DC0
+ fs.c:fs_init:215:Get fs_ep info
+ fs.c:fs_init:217:nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=588 vpid=12 nodeid=0 name=muk 
+ fs.c:fs_init:220:Register FS into SYSTASK fs_pid=12
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=1 lpid=12 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/12/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=1 type=1568 m4l1=12 m4l2=1 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=1
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=1 type=1568 m3i1=12 m3i2=1 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=12, sysproc_ep=1 sysproc_nr=1 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=1 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=35 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=1 type=0 m1i1=1 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_bindproc.c:sys_rbindproc:39:endpoint=1
+ mol_bindproc.c:mol_bindproc:19:p_endpoint=1 pid=1 lpid=12 oper=1
+DEBUG 9:dvk_sendrec_T:379: endpoint=0 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ pm.c:pm_get_work:137:Request received from pm_who_e=1, pm_call_nr=96
+ utility.c:pm_isokendpt:45:endpoint=1 
+ utility.c:pm_isokendpt:47:*proc=1
+ utility.c:pm_isokendpt:49:rkp->p_endpoint=1
+ pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ forkexit.c:pm_bindproc:474:
+ forkexit.c:pm_bindproc:481:source=1 type=96 m7i1=1 m7i2=12 m7i3=1 m7i4=1 m7p1=0x656e69 m7p2=(nil)
+ utility.c:sys_procinfo:119:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:496:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:497:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=1 lpid=12 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/12/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1568 m4l1=12 m4l2=1 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=0
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=12 m3i2=1 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=12, sysproc_ep=1 sysproc_nr=1 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ st_bindproc.c:st_bindproc:144:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ st_bindproc.c:st_bindproc:152:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=1 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=35 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=1 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_bindproc.c:sys_rbindproc:39:endpoint=1
+ forkexit.c:pm_bindproc:512:sysproc_nr=1 sysproc_ep=1 new_pid=1
+ utility.c:sys_procinfo:119:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:519:sysproc_nr=1
+ forkexit.c:pm_bindproc:543:mp_endpoint=1 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
+ pm.c:main_pm:74:pm_call_nr=96 result=1
+ pm.c:setreply:302:proc_nr=1 result=1
+ pm.c:main_pm:84:Send out all pending reply messages
+ pm.c:main_pm:97:Replying to 1
+DEBUG 9:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ fs.c:fs_init:225:rcode=1
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=1 p_name=fs
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=1 type=1571 m4l1=1 m4l2=1 m4l3=0 m4l4=29542 m4l5=0
+ system.c:main_systask:85:call_nr=35 sys_who_e=1
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=1 type=1571 m3i1=1 m3i2=1 m3p1=(nil) m3ca1=[fs]
+ st_bindproc.c:st_setpname:193:nr=1 endp=1 dcid=0 flags=8 misc=0 lpid=588 vpid=12 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=1 type=0 m1i1=1 m1i2=1 m1i3=0 m1p1=0x7366 m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=1 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ fs.c:fs_init:236:Alloc dynamic memory for the FS process table nr_procs=221
+ utility.c:fproc_init:112:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=3001 mp_nice=-10 
+ utility.c:fproc_init:112:mp_endpoint=1 mp_pid=1 mp_parent=0 mp_flags=2001 mp_nice=-10 
+ utility.c:fproc_init:112:mp_endpoint=3 mp_pid=0 mp_parent=0 mp_flags=1 mp_nice=0 
+ fs.c:fs_init:258:Alloc dynamic memory for user_path
+ dmap.c:init_dmap:159:
+ configfile.c:config_read:459:file=molfs.cfg flags=400
+ configfile.c:read_file:412:file=molfs.cfg
+ configfile.c:allocate:65:size=18
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=33
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=30
+ moldevcfg.c:fs_search_dev_cfg:366:
+ moldevcfg.c:fs_search_device:321:
+ moldevcfg.c:fs_search_device:335:DEVICE: MY_RDISK_IMG
+ moldevcfg.c:fs_read_lines:440:
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=7 cfg=0x245bbc8
+ moldevcfg.c:fs_search_ident:123:cfg->line=3
+ moldevcfg.c:fs_search_ident:125:line=3 word=major
+ moldevcfg.c:fs_search_ident:138:	major=3
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=6 cfg=0x245bc60
+ moldevcfg.c:fs_search_ident:123:cfg->line=4
+ moldevcfg.c:fs_search_ident:125:line=4 word=minor
+ moldevcfg.c:fs_search_ident:151:	minor=0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x245bcf8
+ moldevcfg.c:fs_search_ident:123:cfg->line=5
+ moldevcfg.c:fs_search_ident:125:line=5 word=type
+ moldevcfg.c:fs_search_ident:172:	TYPE=RDISK_IMG, VALUE(hex)=0x0300, VALUE(int)=768
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x245bd78
+ moldevcfg.c:fs_search_ident:123:cfg->line=6
+ moldevcfg.c:fs_search_ident:125:line=6 word=volatile
+ moldevcfg.c:fs_search_ident:224:	VOLATILE=NO, VALUE=0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x245bdf8
+ moldevcfg.c:fs_search_ident:123:cfg->line=7
+ moldevcfg.c:fs_search_ident:125:line=7 word=root_dev
+ moldevcfg.c:fs_search_ident:238:	ROOT_DEV=YES, VALUE=1
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x245be78
+ moldevcfg.c:fs_search_ident:123:cfg->line=8
+ moldevcfg.c:fs_search_ident:125:line=8 word=buffer_size
+ moldevcfg.c:fs_search_ident:246:	minor=4096
+ fs.c:fs_init:287:fs_cfg_dev_nr=2
+ utility.c:count_root_devs:37:	map_driver=3 	dmap_flags=0
+ utility.c:count_root_devs:39:	name=MY_RDISK_IMG 	major=3 
+	minor=0 
+	type=768 
+	image_file=(null) 
+	root_dev=1 
+	buffer_size=4096 
+	volatile=0 
+	server=(null) 
+	port=-1 
+	compression=-1
+ utility.c:count_root_devs:44:	CountRoot[1]=1
+ utility.c:count_root_devs:49:fs_dmap_rev[3]=1
+ fs.c:init_root:330:--BEGIN FS--
+ utility.c:get_root_major:61:major=3
+ fs.c:init_root:337:	name=MY_RDISK_IMG 	major=3 
+	minor=0 
+	type=768 
+	image_file=(null) 
+	root_dev=1 
+	buffer_size=4096 
+	volatile=0 
+	server=(null) 
+	port=-1 
+	compression=-1
+ fs.c:init_root:341: dev_open -> root_dev=768, PROC_NR=1, R_BIT|W_BIT=6
+ device.c:dev_open:49:dev=768 major=3 minor=0 proc=1 flags=6
+ device.c:dev_open:61:CONFIGURED buffer_size =4096
+ device.c:dev_open:62:_MAX_BLOCK_SIZE=4096
+ device.c:dev_open:65:REAL buffer_size=4096
+ device.c:r_gen_opcl:228:op=406 dev=768 major=3 minor=0 proc_e=1 flags=6
+ device.c:r_gen_io:435:task_nr=3 source=-1223168672 type=1030 m2i1=0 m2i2=1 m2i3=6 m2l1=909717556 m2l2=0 m2p1=0x300
+ device.c:r_gen_io:474: m_type=1030, COUNT/FLAGS=6
+DEBUG 9:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ device.c:dev_open:71:r=0
+ super.c:read_super:207:Read the Superblock 
+ super.c:read_super:213: dev_io -> op=1027, dev=768, POS=-1245711704, BYTES=1024
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=1024 bytes=1024 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=1024, IO_ENDPT=1, COUNT=1024
+ device.c:dev_io:175:dmap_driver=3 source=-1217265758 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb7200860
+ device.c:r_gen_io:435:task_nr=3 source=-1217265758 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb7200860
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=1024
+DEBUG 9:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=1024 
+ super.c:read_super:215:output dev_io r=1024, 
+ super.c:read_super:226:_MIN_BLOCK_SIZE r=1024, 
+ inode.c:get_inode:41:dev=768 numb=1
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 4 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=16384, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=16384 bytes=4096 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=16384, IO_ENDPT=1, COUNT=4096
+ device.c:dev_io:175:dmap_driver=3 source=-1222762936 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0xb720cfa0
+ device.c:r_gen_io:435:task_nr=3 source=-1222762936 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0xb720cfa0
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=4096
+DEBUG 9:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=4096 
+ cache.c:rw_block:119:dev_io r=4096, 
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=1
+i_mode=41FF
+i_nlinks=2
+i_uid=2
+i_gid=2
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ inode.c:dup_inode:380:
+ fs.c:init_root:374:s_ninodes=768
+s_nzones=0
+s_imap_blocks=1
+s_zmap_blocks=1
+s_magic=4D5A
+s_firstdatazone=16
+s_log_zone_size=0
+s_max_size=4294967295
+s_zones=360
+s_ndzones=7
+s_nindirs=1024
+s_inodes_per_block=64
+s_block_size=4096
+s_version=3
+
+ fs.c:fs_init:298:i_num=1
+i_mode=41FF
+i_nlinks=2
+i_uid=2
+i_gid=2
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ fs.c:main_fs:61:MTX_LOCK muk_mutex 
+ fs.c:main_fs:62:COND_SIGNAL muk_cond
+ fs.c:main_fs:63:COND_WAIT fs_cond muk_mutex
+ muk.c:main:461:COND_SIGNAL fs_cond
+ muk.c:main:462:MTX_UNLOCK muk_mutex 
+ muk.c:main:488:Starting NW thread--------------------------------------
+ muk.c:main:494:web_pth=3040865088
+ muk.c:main:495:MTX_LOCK muk_mutex 
+ muk.c:main:496:COND_WAIT muk_cond muk_mutex
+ fs.c:main_fs:64:MTX_UNLOCK muk_mutex 
+ fs.c:main_fs:66:FS(0) main loop that gets work
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:pth_web:291:str_arg=nw m3nweb.cfg
+
+ muk.c:pth_web:293:len=15 argc=2
+ muk.c:pth_web:295:argv[0]=nw
+ muk.c:pth_web:295:argv[1]=m3nweb.cfg
+ muk.c:pth_web:299:my_pth=3040865088
+ m3nweb.c:nweb_init:56:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ m3nweb.c:nweb_init:57:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ m3nweb.c:nweb_init:58:flags=0 dc_nodes=3 dc_pid=556 dc_name=DC0
+ m3nweb.c:nweb_init:88:cfg_file=m3nweb.cfg
+ configfile.c:config_read:459:file=m3nweb.cfg flags=400
+ configfile.c:read_file:412:file=m3nweb.cfg
+ configfile.c:allocate:65:size=19
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=31
+ m3nweb.c:nweb_init:91:before nw_search_config
+ m3nwebcfg.c:nw_search_config:162:
+ m3nwebcfg.c:nw_search_token:120:
+ m3nwebcfg.c:nw_search_token:131:websrv: SERVER1
+ m3nwebcfg.c:nw_read_lines:105:
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=7 cfg=0xb5c00680
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=3
+ m3nwebcfg.c:nw_search_ident:42:line=3 word=port
+ m3nwebcfg.c:nw_search_ident:77:	PORT=8081 htons(PORT)=37151
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=6 cfg=0xb5c00718
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=4
+ m3nwebcfg.c:nw_search_ident:42:line=4 word=endpoint
+ m3nwebcfg.c:nw_search_ident:64:	ENDPOINT=22
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=4 cfg=0xb5c00798
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=5
+ m3nwebcfg.c:nw_search_ident:42:line=5 word=rootdir
+ m3nwebcfg.c:nw_search_ident:55:	ROOTDIR=/
+ m3nweb.c:nweb_init:96:web_pid=13
+DEBUG 9:dvk_bind_X:535: cmd=0 dcid=0 pid=13 endpoint=22 nodeid=-1
+DEBUG 9:dvk_bind_X:544: ioctl ret=22 errno=0
+ m3nweb.c:nweb_init:99:web_ep=22
+ m3nweb.c:nweb_init:105:Get web_ep info
+ m3nweb.c:nweb_init:107:nr=22 endp=22 dcid=0 flags=0 misc=0 lpid=589 vpid=13 nodeid=0 name=muk 
+ m3nweb.c:nweb_init:110:Register NWEB into SYSTASK web_pid=13
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=12 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/12/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=22 type=1568 m4l1=12 m4l2=22 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=22
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=22 type=1568 m3i1=12 m3i2=22 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=12, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=22 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=56 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=22 type=0 m1i1=22 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_bindproc.c:sys_rbindproc:39:endpoint=22
+ mol_bindproc.c:mol_bindproc:19:p_endpoint=22 pid=22 lpid=13 oper=1
+DEBUG 9:dvk_sendrec_T:379: endpoint=0 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ pm.c:pm_get_work:137:Request received from pm_who_e=22, pm_call_nr=96
+ utility.c:pm_isokendpt:45:endpoint=22 
+ utility.c:pm_isokendpt:47:*proc=22
+ utility.c:pm_isokendpt:49:rkp->p_endpoint=22
+ pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ forkexit.c:pm_bindproc:474:
+ forkexit.c:pm_bindproc:481:source=22 type=96 m7i1=22 m7i2=13 m7i3=22 m7i4=1 m7p1=0x656e69 m7p2=(nil)
+ utility.c:sys_procinfo:119:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:496:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:497:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=13 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/13/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1568 m4l1=13 m4l2=22 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=0
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=13 m3i2=22 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=13, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ st_bindproc.c:st_bindproc:144:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ st_bindproc.c:st_bindproc:152:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=22 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=56 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=22 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_bindproc.c:sys_rbindproc:39:endpoint=22
+ forkexit.c:pm_bindproc:512:sysproc_nr=22 sysproc_ep=22 new_pid=22
+ utility.c:sys_procinfo:119:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:519:sysproc_nr=22
+ forkexit.c:pm_bindproc:543:mp_endpoint=22 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
+ utility.c:tell_fs:191:what=2 p1=0 p2=22 p3=22
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=22 m1i3=22 m1p1=0xb71bec40 m1p2=0xb70322f9 m1p3=0xb717c960 
+ fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=22 m3p1=0x16 m3ca1=[@ì·ù"·`É·`í·àè·hò_¶Dz·ëþq·]
+ fs.c:fs_get_work:182:fs_call_nr = 2 
+ misc.c:fs_fork:373:parent_endpt=0 parent_endpt=22 pid=22
+ utility.c:isokendpt_f:241:endpoint 0
+ utility.c:isokendpt_f:242:*proc 0
+ misc.c:fs_fork:387:fs_proc_table[22].fp_pid=0
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:main_pm:74:pm_call_nr=96 result=22
+ pm.c:setreply:302:proc_nr=22 result=22
+ pm.c:main_pm:84:Send out all pending reply messages
+ pm.c:main_pm:97:Replying to 22
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ m3nweb.c:nweb_init:115:rcode=22
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=22 p_name=nweb
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=22 type=1571 m4l1=22 m4l2=22 m4l3=0 m4l4=1650816878 m4l5=0
+ system.c:main_systask:85:call_nr=35 sys_who_e=22
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=22 type=1571 m3i1=22 m3i2=22 m3p1=(nil) m3ca1=[nweb]
+ st_bindproc.c:st_setpname:193:nr=22 endp=22 dcid=0 flags=8 misc=0 lpid=589 vpid=13 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=22 type=0 m1i1=22 m1i2=22 m1i3=0 m1p1=0x6265776e m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ m3nweb.c:main_nweb:361:SYNCHRONIZE WITH MUK 
+ m3nweb.c:main_nweb:363:MTX_LOCK muk_mutex 
+ m3nweb.c:main_nweb:364:COND_SIGNAL muk_cond
+ m3nweb.c:main_nweb:365:COND_WAIT nw_cond muk_mutex
+ muk.c:main:499:COND_SIGNAL nw_cond
+ muk.c:main:500:MTX_UNLOCK muk_mutex 
+ muk.c:main:507:Starting FTP thread--------------------------------------
+ muk.c:main:513:ftp_pth=3032472384
+ muk.c:main:514:MTX_LOCK muk_mutex 
+ muk.c:main:515:COND_WAIT muk_cond muk_mutex
+ m3nweb.c:main_nweb:366:MTX_UNLOCK muk_mutex 
+ m3nweb.c:main_nweb:368:Starting Web server main loop
+ m3nweb.c:main_nweb:371:Conection accept
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ muk.c:pth_ftp:320:str_arg=m3ftp
+
+ muk.c:pth_ftp:322:len=7 argc=1
+ muk.c:pth_ftp:324:argv[0]=m3ftp
+ muk.c:pth_ftp:328:my_pth=3032472384
+ m3ftpd.c:ftpd_init:44:dcid=0 ftp_ep=14
+ m3ftpd.c:ftpd_init:46:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ m3ftpd.c:ftpd_init:47:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ m3ftpd.c:ftpd_init:48:flags=0 dc_nodes=3 dc_pid=556 dc_name=DC0
+ m3ftpd.c:ftpd_init:51:ftp_pid=14
+DEBUG 9:dvk_bind_X:535: cmd=0 dcid=0 pid=14 endpoint=14 nodeid=-1
+DEBUG 9:dvk_bind_X:544: ioctl ret=14 errno=0
+ m3ftpd.c:ftpd_init:54:rcode=14
+ mol_bindproc.c:mol_bindproc:19:p_endpoint=14 pid=14 lpid=14 oper=1
+DEBUG 9:dvk_sendrec_T:379: endpoint=0 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ pm.c:pm_get_work:137:Request received from pm_who_e=14, pm_call_nr=96
+ utility.c:pm_isokendpt:45:endpoint=14 
+ utility.c:pm_isokendpt:47:*proc=14
+ utility.c:pm_isokendpt:49:rkp->p_endpoint=14
+ pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ forkexit.c:pm_bindproc:474:
+ forkexit.c:pm_bindproc:481:source=14 type=96 m7i1=14 m7i2=14 m7i3=14 m7i4=1 m7p1=(nil) m7p2=(nil)
+ utility.c:sys_procinfo:119:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=muk 
+ forkexit.c:pm_bindproc:496:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=muk 
+ forkexit.c:pm_bindproc:497:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=14 lpid=14 oper=1
+ sys_bindproc.c:get_process_name_by_pid:56:name=[/proc/14/cmdline]
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=0 type=1568 m4l1=14 m4l2=14 m4l3=1 m4l4=1818520931 m4l5=6647401
+ system.c:main_systask:85:call_nr=32 sys_who_e=0
+ system.c:main_systask:90:Calling vector 32
+ st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=14 m3i2=14 m3p1=0x1 m3ca1=[cmdline]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=14, sysproc_ep=14 sysproc_nr=14 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:74:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:144:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=muk 
+ st_bindproc.c:st_bindproc:152:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=cmdline 
+DEBUG 9:dvk_getpriv:447: dcid=0 endpoint=14 
+DEBUG 9:dvk_getpriv:452: ioctl ret=0 errno=0
+ st_bindproc.c:st_bindproc:159:priv_id=48 priv_warn=27342 priv_level=0 trap=0 call=0
+ system.c:main_systask:101:REPLY msg:source=0 type=0 m1i1=14 m1i2=1 m1i3=1 m1p1=0x6c646d63 m1p2=0x656e69 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ sys_bindproc.c:sys_rbindproc:39:endpoint=14
+ forkexit.c:pm_bindproc:512:sysproc_nr=14 sysproc_ep=14 new_pid=14
+ utility.c:sys_procinfo:119:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=cmdline 
+ forkexit.c:pm_bindproc:519:sysproc_nr=14
+ forkexit.c:pm_bindproc:543:mp_endpoint=14 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
+ utility.c:tell_fs:191:what=2 p1=0 p2=14 p3=14
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=14 m1i3=14 m1p1=0xfffffff6 m1p2=0xb70322f9 m1p3=0xb717c960 
+ fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=14 m3p1=0xe m3ca1=[öÿÿÿù"·`É·`í·]
+ fs.c:fs_get_work:182:fs_call_nr = 2 
+ misc.c:fs_fork:373:parent_endpt=0 parent_endpt=14 pid=14
+ utility.c:isokendpt_f:241:endpoint 0
+ utility.c:isokendpt_f:242:*proc 0
+ misc.c:fs_fork:387:fs_proc_table[14].fp_pid=0
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=0 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ pm.c:main_pm:74:pm_call_nr=96 result=14
+ pm.c:setreply:302:proc_nr=14 result=14
+ pm.c:main_pm:84:Send out all pending reply messages
+ pm.c:main_pm:97:Replying to 14
+DEBUG 9:dvk_send_T:345: endpoint=14 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ m3ftpd.c:ftpd_init:61:rcode=14
+ m3ftpd.c:ftpd_init:74:M3FTPD ftp_path_ptr=0xb6605000
+ m3ftpd.c:ftpd_init:81:M3FTPD ftp_data_ptr=0xb6606000
+ m3ftpd.c:ftpd_init:84:ftp_pid=14
+ m3ftpd.c:ftpd_init:86:Get ftp_ep info
+ m3ftpd.c:ftpd_init:88:nr=14 endp=14 dcid=0 flags=0 misc=0 lpid=590 vpid=14 nodeid=0 name=cmdline 
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=14 p_name=m3ftp
+DEBUG 9:dvk_sendrec_T:379: endpoint=-2 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ system.c:main_systask:68:dvk_receive rcode=0
+ system.c:main_systask:76:RECEIVE msg:source=14 type=1571 m4l1=14 m4l2=14 m4l3=0 m4l4=1952854893 m4l5=112
+ system.c:main_systask:85:call_nr=35 sys_who_e=14
+ system.c:main_systask:90:Calling vector 35
+ st_bindproc.c:st_setpname:179:source=14 type=1571 m3i1=14 m3i2=14 m3p1=(nil) m3ca1=[m3ftp]
+ st_bindproc.c:st_setpname:193:nr=14 endp=14 dcid=0 flags=8 misc=0 lpid=590 vpid=14 nodeid=0 name=cmdline 
+ system.c:main_systask:101:REPLY msg:source=14 type=0 m1i1=14 m1i2=14 m1i3=0 m1p1=0x7466336d m1p2=0x70 m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=14 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ m3ftpd.c:main_ftpd:123:MTX_LOCK muk_mutex 
+ m3ftpd.c:main_ftpd:124:COND_SIGNAL muk_cond
+ m3ftpd.c:main_ftpd:125:COND_WAIT ftp_cond muk_mutex
+ muk.c:main:518:COND_SIGNAL ftp_cond
+ muk.c:main:519:MTX_UNLOCK muk_mutex 
+ muk.c:main:523:JOINING ALL THREADS -------------------------------------
+ m3ftpd.c:main_ftpd:126:MTX_UNLOCK muk_mutex 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ system.c:main_systask:64:SYSTASK is waiting for requests
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+
+
+ m3nweb.c:nweb_server:172:request socket_fd=6
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 16 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=65536, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=65536 bytes=4096 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=65536, IO_ENDPT=1, COUNT=4096
+ device.c:dev_io:175:dmap_driver=3 source=38043656 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=65536 m2l2=0 m2p1=0xb720dfb4
+ device.c:r_gen_io:435:task_nr=3 source=38043656 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=65536 m2l2=0 m2p1=0xb720dfb4
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=4096
+DEBUG 9:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=4096 
+ cache.c:rw_block:119:dev_io r=4096, 
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ device.c:dev_io:151: DEV_GATHER -> m_type=1033, dev=768, POS=69632, IO_ENDPT=1, COUNT=27
+ device.c:dev_io:175:dmap_driver=3 source=-1245712028 type=1033 m2i1=0 m2i2=1 m2i3=27 m2l1=69632 m2l2=0 m2p1=0xb7200c60
+ device.c:r_gen_io:435:task_nr=3 source=-1245712028 type=1033 m2i1=0 m2i2=1 m2i3=27 m2l1=69632 m2l2=0 m2p1=0xb7200c60
+
+ device.c:r_gen_io:474: m_type=1033, COUNT/FLAGS=27
+DEBUG 9:dvk_sendrec_T:379: endpoint=3 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=-1 errno=108 <<<<< EDVSSRCDIED ????
+fs: dead driver 3
+ cache.c:rw_scattered:297:RESULT of dev_io r=-5, 
+fs: I/O error on device 3/0, block 17
+
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=108
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html HTTP/1.1**Host: 192.168.1.100:8081**Connection: keep-alive**Cache-Control: max-age=0**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+ m3nweb.c:nweb_server:172:request socket_fd=6
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+ m3nweb.c:nweb_server:189:HTTP request:GET /index.html
+ m3nweb.c:nweb_server:241:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=0 errno=0
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=-1245614075 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0xb5c17005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=B5C17005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:394:position=0
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_fstat.c:mol_fstat:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0xb5c05000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=36
+DEBUG 9:dvk_vcopy:60: ioctl ret=36 errno=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0xb5c06000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:171:fs_m_in.nbytes=65536
+ read.c:read_map:394:position=0
+ read.c:rahead:541:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ cache.c:rw_scattered:297:RESULT of dev_io r=-6, 
+fs: I/O error on device 3/0, block 17
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:put_block:168:
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 17 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=69632, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=4096 flags=0
+ cache.c:rw_block:119:dev_io r=-6, 
+Unrecoverable disk error on device 3/0, block 17
+ read.c:rw_chunk:346:MUK_vcopy 1->22 bytes=4096 
+DEBUG 9:dvk_vcopy:52: src_ep=1 dst_ep=22 bytes=4096
+DEBUG 9:dvk_vcopy:60: ioctl ret=4096 errno=0
+ read.c:rw_chunk:347:Resultado dvk_vcopy SERVIDOR -> CLIENTE 4096
+ read.c:rw_chunk:348:chunk 4096
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) -6
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=-6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=0
+ mol_read.c:mol_read:16:return -1
+ m3nweb.c:nweb_server:272:total_bytes=100
+ mol_close.c:mol_close:7:fd=0
+DEBUG 9:dvk_sendrec_T:379: endpoint=1 timeout=-1
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=76 errno=0
+ fs.c:fs_get_work:159:source=22 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:402:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=1 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 9:dvk_send_T:345: endpoint=22 timeout=-1
+DEBUG 9:dvk_sendrec_T:384: ioctl ret=0 errno=6
+ m3nweb.c:main_nweb:371:Conection accept
+DEBUG 9:dvk_send_T:350: ioctl ret=76 errno=0
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=-1
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT
+DEBUG 9:dvk_receive_T:362: endpoint=31438 timeout=10000
+DEBUG 9:dvk_receive_T:367: ioctl ret=-1 errno=61
+ m3ftpd.c:main_ftpd:132:M3FTPD: dvk_receive_T  rcode=-61
+ m3ftpd.c:main_ftpd:134:M3FTPD: dvk_receive_T TIMEOUT

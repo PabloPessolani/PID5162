@@ -348,7 +348,7 @@ int r, ret;
 	TASKDEBUG("proc_nr: %d - driver_ep: %d\n", mp->IO_ENDPT, rd_ptr->p_endpoint);
 	ret = dvk_vcopy(mp->IO_ENDPT, mp->ADDRESS, SELF, iovec, iovec_size);
 	//dvk_copy proc_nr -> server	
-	if( ret != 0 ){
+	if( ret < 0 ){
 		fprintf( stderr,"VCOPY (vector) ret=%d\n",ret);	
 		exit(1);
 	}	
@@ -379,7 +379,7 @@ int r, ret;
 		
 	ret = dvk_vcopy(SELF, iovec, mp->IO_ENDPT, mp->ADDRESS, iovec_size);
 	//dvk_copy server -> proc_nr	
-	if( ret != 0 ) {
+	if( ret < 0 ) {
 		fprintf( stderr,"VCOPY (vector) ret=%d\n",ret);		
 		exit(1);
 	}	

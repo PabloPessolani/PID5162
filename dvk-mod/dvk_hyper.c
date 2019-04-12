@@ -713,7 +713,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL_INIT(&src_ptr->p_link); /* remove from queue */
+		LIST_DEL(&src_ptr->p_link); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d trying to send a message to %d\n",
 			src_ptr->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
@@ -738,16 +738,17 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			continue;
 		}
 		/* locking order compliance  */
+		
 		if( proc_ptr->p_usr.p_nr < (i - dc_ptr->dc_usr.dc_nr_tasks)) {
-			WLOCK_PROC(rp); /* Caller LOCK is just locked */
+			wlock_proc(rp); /* Caller LOCK is just locked */
 		}else{	
 			/* free the callers lock and then lock both ordered */
-			WUNLOCK_PROC(proc_ptr);
-			WLOCK_PROC(rp);
-			WLOCK_PROC(proc_ptr);
+			wunlock_proc(proc_ptr);
+			wlock_proc(rp);
+			wlock_proc(proc_ptr);
 		}
 		if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
-			WUNLOCK_PROC(rp); 
+			wunlock_proc(rp); 
 			continue;
 		}
 		
@@ -787,7 +788,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		if(proc_ptr->p_usr.p_proxy != NONE) {
 			sproxy_ptr = &proxies[proc_ptr->p_usr.p_proxy].px_sproxy;
 			WLOCK_PROC(sproxy_ptr);
-			LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
+			LIST_DEL(&proc_ptr->p_link); /* remove from queue */
 			WUNLOCK_PROC(sproxy_ptr);
 		}else{
 			ERROR_PRINT(EDVSPROCSTS);
@@ -810,7 +811,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 		if( IT_IS_LOCAL(rp)) { 
-			LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
+			LIST_DEL(&proc_ptr->p_link); /* remove from queue */
 			WUNLOCK_PROC(rp);
 		}
 		clear_bit(BIT_SENDING, &proc_ptr->p_usr.p_rts_flags);
@@ -830,7 +831,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(rp);
 			WLOCK_PROC(proc_ptr);
 		}
-		LIST_DEL_INIT(&proc_ptr->p_mlink); /* remove from queue */
+		LIST_DEL(&proc_ptr->p_mlink); /* remove from queue */
 		WUNLOCK_PROC(rp);	
 		clear_bit(BIT_WAITMIGR, &proc_ptr->p_usr.p_rts_flags);
 		proc_ptr->p_usr.p_waitmigr = NONE;
@@ -847,7 +848,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL_INIT(&rp->p_mlink); /* remove from queue */
+		LIST_DEL(&rp->p_mlink); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d waiting %d MIGRATION\n",
 			rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
@@ -878,7 +879,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(rp);
 			WLOCK_PROC(proc_ptr);
 		}
-		LIST_DEL_INIT(&proc_ptr->p_ulink); /* remove from queue */
+		LIST_DEL(&proc_ptr->p_ulink); /* remove from queue */
 		WUNLOCK_PROC(rp);	
 		clear_bit(BIT_WAITUNBIND, &proc_ptr->p_usr.p_rts_flags);
 		proc_ptr->p_usr.p_waitunbind = NONE;
@@ -896,7 +897,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL_INIT(&rp->p_ulink); /* remove from queue */
+		LIST_DEL(&rp->p_ulink); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d waiting this process %d UNBINDING\n",
 			rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
@@ -1138,7 +1139,7 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;
@@ -1769,7 +1770,7 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 /* if ret == -1, the DVS has not been initialized		*/
 /* if ret < -1, a copy_to_user error has ocurred		*/
 /*--------------------------------------------------------------*/
-asmlinkage long new_getdvsinfo(dvs_usr_t *dvpriv_usr_ptr)
+asmlinkage long new_getdvsinfo(dvs_usr_t *dvs_usr_ptr)
 {
 	int rcode;
 	int nodeid; 
@@ -1782,7 +1783,7 @@ asmlinkage long new_getdvsinfo(dvs_usr_t *dvpriv_usr_ptr)
 #endif 
 
 	RLOCK_DVS;
-	COPY_TO_USER_PROC(rcode, &dvs, dvpriv_usr_ptr, sizeof(dvs_usr_t));
+	COPY_TO_USER_PROC(rcode, &dvs, dvs_usr_ptr, sizeof(dvs_usr_t));
 	nodeid =atomic_read(&local_nodeid);
 	RUNLOCK_DVS;
 	if(rcode < 0) ERROR_RETURN(rcode);
@@ -2200,7 +2201,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 	
 	DVKDEBUG(INTERNAL,"TIMEOUT Waiting for the unbinding of endpoint=%d\n", 
 		other_ptr->p_usr.p_endpoint);
-	LIST_DEL_INIT(&caller_ptr->p_ulink);
+	LIST_DEL(&caller_ptr->p_ulink);
 	clear_bit(BIT_WAITUNBIND, &caller_ptr->p_usr.p_rts_flags);
 	caller_ptr->p_usr.p_waitunbind = NONE;
 	WUNLOCK_PROC2(caller_ptr, other_ptr);
