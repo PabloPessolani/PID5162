@@ -1,6 +1,6 @@
 /********************************************************/
 /* 		TIPC PROXIES	WITH:					*/
-/*   BATCHING MESSAGES							*/
+/*   BATCHING MESSAGES		:  IMPLEMENTED/NOT TESTED	*/
 /*   DATA BLOCKS COMPRESSION 					*/
 /*   AUTOMATIC CLIENT BINDING  					*/
 /********************************************************/
