@@ -5334,7 +5334,10 @@ PROBLEMA:  SSH se me cae la sesion despues de que inittap.sh se ejecuta.
  ------------------------------------------------------------------------------------------------------------
 20190217:	Preparando la documentacion para el uso del DVS veo que fallan las pruebas remotas en el lado server.
 			
-			nsenter -p -t$DC0 ./loop_r-s_server 1 10 0
+			NODE0:
+				nsenter -p -t$DC0 ./loop_r-s_server 1 10 0
+			NODE1:
+				nsenter -p -t$DC0 ./loop_sr_client 1 10 0
 
 ATENCION:
 			LAS PRUEBAS DABAN ERROR DADO QUE EL DC ESTABA CONFIGURADO PARA MOL
@@ -5377,10 +5380,204 @@ ATENCION:
 =======================================================================================
 20190410:	En dias previos Trabaje en modificaciones a RADAR y MUK 
 
-TODO:		PROXY TIPC con:
-				- soporte de compresion
-				- soporte de batch 
-				- soporte de REMOTE CLIENT BINDING 
+
+
+=======================================================================================
+20190412:
+			tipc-config NO EXISTE MAS, ahora se hace todo con "tipc"
+			    tipc node set addr 1.1.10$lcl_nodeid 
+				tipc node set netid 4711
+				tipc bearer enable media eth dev eth0 
+	
+			EL KERNEL ACTUAL tiene soporte de TIPC pero en modulo, y no se porque no se cargo.
+			COMPILE el kernel con soporte sin modulo TIPC 
+		
+		
+		root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/proxies/procs 
+		ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+		 1 send    616      8      3       12        0  31438  27342  27342 tipc_proxy_bat 
+		 1 recv    617      0      3        0       10  27342  27342  27342 tipc_proxy_bat 
+		root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     E       1       12       10 -------------------------------X node1 
+ 
+ 
+		EN NODE1:
+			tipc link statistics reset link 1.1.101:eth0-1.1.100:eth0
+			root@node1:~# tipc link statistics show link 1.1.101:eth0-1.1.100:eth0
+				Link <1.1.101:eth0-1.1.100:eth0>
+				  ACTIVE  MTU:1500  Priority:10  Tolerance:1500 ms  Window:50 packets
+				  RX packets:2 fragments:0/0 bundles:0/0
+				  TX packets:2 fragments:0/0 bundles:0/0
+				  TX profile sample:0 packets  average:0 octets
+				  0-64:0% -256:0% -1024:0% -4096:0% -16384:0% -32768:0% -66000:0%
+				  RX states:320 probes:160 naks:0 defs:0 dups:0
+				  TX states:320 probes:160 naks:0 acks:0 dups:0
+				  Congestion link:0  Send queue max:0 avg:0
+				  
+			DESPUES DE HACER UNA TRANSFERENCIA EN NODE0: nsenter -p -t$DC0 ./loop_copy_server 1 1000 4096
+		  root@node1:~# tipc link statistics show link 1.1.101:eth0-1.1.100:eth0
+			Link <1.1.101:eth0-1.1.100:eth0>
+			  ACTIVE  MTU:1500  Priority:10  Tolerance:1500 ms  Window:50 packets
+			  RX packets:4014 fragments:3000/1000 bundles:0/0
+			  TX packets:1054 fragments:0/0 bundles:0/0
+			  TX profile sample:7 packets  average:152 octets
+			  0-64:0% -256:100% -1024:0% -4096:0% -16384:0% -32768:0% -66000:0%
+			  RX states:526 probes:263 naks:0 defs:0 dups:5
+			  TX states:528 probes:263 naks:3 acks:0 dups:0
+			  Congestion link:0  Send queue max:0 avg:0
+
+	CUANDO SE PRUEBA LA TRANSFERENCIA BATCH 
+		NODE0:
+			nsenter -p -t$DC0 ./loop_r-s_server 10 100 0
+		NODE1:
+			nsenter -p -t$DC0 ./loop_sr_client 10 100 0
+ EN NODE0
+	PROXY SENDER 
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=4
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=3
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=9
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=5
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=9
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=2
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=9
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=2
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=5
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 
+	PROXY RECEIVER 
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=3
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=15
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=8
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=8
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=3
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=3
+	tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+
+
+ EN NODE1
+	PROXY SENDER 
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=19
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=11
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=3
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=19
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=5
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=7
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=5
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=18
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=7
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=1
+	 tipc_proxy_bat.c:ps_start_serving:492:SPROXY: sending BATCHED COMMANDS batch_nr=3
+	PROXY RECEIVER 
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=5
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=9
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=2
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=9
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=2
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=5
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+	 tipc_proxy_bat.c:pr_process_message:194:RPROXY: batch_nr=1
+ 
+ 
+ -------------------------------------
+ PRUEBAS DE AUTOBIND
+ -------------------------------------
+ 
+ 
+	 root@node0:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_server 0 10
+		DEBUG 2:dvk_open:40: Open dvk device file /dev/dvk
+		DEBUG 2:dvk_getdvsinfo:113: 
+		DEBUG 2:dvk_getdvsinfo:115: ioctl ret=0
+		 copy_server.c:main:47:local_nodeid=0
+		 copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		DEBUG 2:dvk_getdcinfo:163: dcid=0
+		DEBUG 2:dvk_getdcinfo:167: ioctl ret=0 errno=0
+		 copy_server.c:main:58:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		 copy_server.c:main:59:flags=0 dc_nodes=3 dc_pid=572 dc_name=DC0
+		DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+		DEBUG 2:dvk_bind_X:544: ioctl ret=10 errno=0
+		 copy_server.c:main:76:BIND SERVER dcid=0 svr_pid=2 svr_ep=10
+		DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=10 
+		DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+		 copy_server.c:main:85:nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=597 vpid=2 nodeid=0 name=copy_server 
+		 copy_server.c:main:93:SERVER m_ptr=0xd9d000
+		 copy_server.c:main:115:SERVER: buffer before=012345678901234567890123456789012345678901234567890123456789
+		DEBUG 2:dvk_receive_T:362: endpoint=31438 timeout=-1
+		DEBUG 2:dvk_receive_T:367: ioctl ret=0 errno=0
+		 copy_server.c:main:119:SERVER: source=88 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x108c000 m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=88 
+		DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+		 copy_server.c:main:137:nr=88 endp=88 dcid=0 flags=1008 misc=0 lpid=-1 vpid=-1 nodeid=1 name=rclient 
+		DEBUG 2:dvk_vcopy:52: src_ep=88 dst_ep=35534 bytes=1024
+		DEBUG 2:dvk_vcopy:60: ioctl ret=0 errno=0
+		 copy_server.c:main:144:SERVER: buffer received=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghi
+		DEBUG 2:dvk_vcopy:52: src_ep=35534 dst_ep=88 bytes=1024
+		DEBUG 2:dvk_vcopy:60: ioctl ret=0 errno=0
+		 copy_server.c:main:154:SERVER: buffer sent=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLM
+		DEBUG 2:dvk_send_T:345: endpoint=88 timeout=-1
+		DEBUG 2:dvk_send_T:350: ioctl ret=0 errno=0
+		 copy_server.c:main:163:SERVER END
+	root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  88    88    -1/-1     1 1000    0 27342 27342 27342 27342 rclient  <<<<<<<<<< LO BINDEO AUTOMATICAMENTE !!! 
+ 
+ NODE1
+ ======
+	root@node1:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 10 0 copy_server
+		DEBUG 544:dvk_open:40: Open dvk device file /dev/dvk
+		 dvk_rmtbind copy_server with p_nr=10 to DC0 on node=0
+		DEBUG 544:dvk_bind_X:535: cmd=2 dcid=0 pid=-1074340288 endpoint=10 nodeid=0
+		DEBUG 544:dvk_bind_X:544: ioctl ret=10 errno=0
+	root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10    -1/-1     0 1000    0 27342 27342 27342 27342 copy_server 
+	root@node1:/usr/src/dvs/dvk-tests# cd /usr/src/dvs/dvk-proxies/test/
+	root@node1:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_client 0 10 88
+		DEBUG 2:dvk_open:40: Open dvk device file /dev/dvk
+		DEBUG 2:dvk_getdvsinfo:113: 
+		DEBUG 2:dvk_getdvsinfo:115: ioctl ret=1
+		 copy_client.c:main:37:local_nodeid=1
+		 copy_client.c:main:38:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		DEBUG 2:dvk_getdcinfo:163: dcid=0
+		DEBUG 2:dvk_getdcinfo:167: ioctl ret=0 errno=0
+		 copy_client.c:main:48:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		 copy_client.c:main:49:flags=0 dc_nodes=3 dc_pid=517 dc_name=DC0
+		DEBUG 2:dvk_bind_X:535: cmd=0 dcid=0 pid=-1 endpoint=88 nodeid=-1
+		DEBUG 2:dvk_bind_X:544: ioctl ret=88 errno=0
+		 copy_client.c:main:78:BIND CLIENT dcid=0 clt_pid=2 clt_ep=88
+		DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=88 
+		DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+		 copy_client.c:main:87:nr=88 endp=88 dcid=0 flags=0 misc=20 lpid=564 vpid=2 nodeid=1 name=copy_client 
+		DEBUG 2:dvk_getprocinfo:512: dcid=0 p_nr=10 
+		DEBUG 2:dvk_getprocinfo:517: ioctl ret=0 errno=0
+		 copy_client.c:main:96:nr=10 endp=10 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=copy_server 
+		 copy_client.c:main:104:CLIENT m_ptr=0x108b000
+		 copy_client.c:main:126:CLIENT: buffer before=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghi
+		 copy_client.c:main:130:CLIENT SENT: source=0 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x108c000 m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_sendrec_T:379: endpoint=10 timeout=-1
+		DEBUG 2:dvk_sendrec_T:384: ioctl ret=0 errno=0
+		 copy_client.c:main:138:CLIENT RECIEVED: source=10 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x108c000 m1p2=(nil) m1p3=(nil) 
+		 copy_client.c:main:140:CLIENT: buffer after=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHI
+		 copy_client.c:main:142:CLIENT END		 
+		 
+ 			
+TODO:	PROXY TIPC con:
+			- soporte de compresion
+			
  =========================================================================================
 ULTIMO_LOG
 

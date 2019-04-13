@@ -2,10 +2,11 @@
    
 void  main ( int argc, char *argv[] )
 {
-	int dcid, pid, p_nr, ret, ep;
+	int dcid, pid, p_nr, ret, ep; 
+	int nodeid;
 
 	if ( argc != 3) {
-		fprintf(stderr,  "Usage: %s <dcid> <p_nr> \n", argv[0] );
+		fprintf(stderr,  "Usage: %s <dcid> <p_nr>\n", argv[0] );
 		exit(EXIT_FAILURE);
 	}
 
@@ -16,20 +17,18 @@ void  main ( int argc, char *argv[] )
 	}
 
 	p_nr = atoi(argv[2]);
-	pid = getpid();
+	if ( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS)) {
+		fprintf(stderr,  "Invalid p_nr [(%d)-(%d)]\n", -NR_TASKS, NR_PROCS-1);
+		exit(EXIT_FAILURE);
+	}
 	
 	ret = dvk_open();
-	if (ret < 0)  ERROR_PRINT(ret);
+	if (ret < 0)  ERROR_EXIT(ret);
 
-    printf("Binding process %d to DC%d with p_nr=%d\n",pid,dcid,p_nr);
-    ep = dvk_bind(dcid, p_nr);
-	if( ep < EDVSERRCODE) ERROR_PRINT(ep);
-
-	printf("waiting to end ep=%d errno=%d\n",ep, errno);
-	sleep(10);
-	ret = dvk_unbind(dcid,ep);
-	printf("dvk_unbind ret=%d\n",ret);
+    printf(" dvk_unbind p_nr=%d to DC%d\n",p_nr,dcid);
+	ep = dvk_unbind(dcid,p_nr);
+	if( ep < EDVSERRCODE) ERROR_EXIT(ep);
+	
  }
-
 
 

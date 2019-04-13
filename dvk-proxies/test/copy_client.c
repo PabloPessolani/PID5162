@@ -57,9 +57,9 @@ int  main ( int argc, char *argv[] )
   	}
 	
 	clt_ep = atoi(argv[3]);
-	if( clt_ep < 0 || clt_ep > (dc_usr_ptr->dc_nr_sysprocs - dc_usr_ptr->dc_nr_tasks) ){
+	if( clt_ep < 0 || clt_ep > (dc_usr_ptr->dc_nr_procs) ){
    		fprintf(stderr, "clt_ep must be > 0 and < %d\n", 
-			(dc_usr_ptr->dc_nr_sysprocs - dc_usr_ptr->dc_nr_tasks));
+			dc_usr_ptr->dc_nr_procs);
    		exit(1);
   	}
 		

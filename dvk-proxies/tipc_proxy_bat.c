@@ -13,7 +13,11 @@
 #define SERVER_TYPE  18888
 #define SERVER_INST  17
 #define BASE_TYPE      3000
-
+// makes remotes clients automatic bind when they send a message to local receiver proxy 
+// if local  SYSTASK is running, it does not work 
+#define RMT_CLIENT_BIND	1
+// it enables automating binding through SYSTASK 
+// define SYSTASK_BIND 1
 
 #define RETRY_US		2000 /* Microseconds */
 #define BIND_RETRIES	3
@@ -31,11 +35,11 @@ proxy_payload_t *p_payload2;
 proxy_payload_t *p_batch;
 
 #define  c_batch_nr		c_snd_seq
-int	batch_nr = 0;		// number of batching commands
-int	cmd_flag = 0;		// signals a command to be sent 
-int rmsg_ok = 0;
+int	batch_nr  = 0;		// number of batching commands
+int	cmd_flag  = 0;		// signals a command to be sent 
+int rmsg_ok   = 0;
 int rmsg_fail = 0;
-int smsg_ok = 0;
+int smsg_ok   = 0;
 int smsg_fail = 0; 
 
 dvs_usr_t dvs;   
@@ -73,12 +77,12 @@ int pr_setup_connection(void)
         	ERROR_EXIT(errno); */
 
     // Bind (attach) this process to the server socket.
-	server_addr.family = AF_TIPC;
-	server_addr.addrtype = TIPC_ADDR_NAMESEQ;
-	server_addr.addr.nameseq.type = server_type;
+	server_addr.family             = AF_TIPC;
+	server_addr.addrtype           = TIPC_ADDR_NAMESEQ;
+	server_addr.addr.nameseq.type  = server_type;
 	server_addr.addr.nameseq.lower = SERVER_INST;
 	server_addr.addr.nameseq.upper = SERVER_INST;
-	server_addr.scope = TIPC_ZONE_SCOPE;
+	server_addr.scope              = TIPC_ZONE_SCOPE;
 
 	if (0 != bind(rlisten_sd, (struct sockaddr *)&server_addr, sizeof(server_addr))) {
 		ERROR_EXIT(errno);
@@ -105,6 +109,7 @@ int pr_receive_payload(int payload_size)
    	p_ptr = (char*) p_payload;
    	len = sizeof(struct sockaddr_in);
    	while ((n = recv(rconn_sd, p_ptr, (payload_size-received), 0 )) > 0) {
+	   	PXYDEBUG("recv=%d\n",n);
         received = received + n;
 		PXYDEBUG("RPROXY: n:%d | received:%d\n", n,received);
         if (received >= payload_size) return(OK);
@@ -146,7 +151,7 @@ int pr_receive_header(void)
 /* pr_process_message: receives header and payload if any. Then deliver the 
  * message to local */
 int pr_process_message(void) {
-    int rcode, payload_size, i;
+    int rcode, payload_size, i, ret;
  	message *m_ptr;
 	proxy_hdr_t *bat_cmd, *bat_ptr;
 
@@ -187,7 +192,83 @@ int pr_process_message(void) {
 
 	PXYDEBUG("RPROXY: put2lcl\n");
 	rcode = dvk_put2lcl(p_header, p_payload);
-	if( rcode < 0) ERROR_RETURN(rcode);	
+
+#ifdef RMT_CLIENT_BIND	
+	if( rcode < 0) {
+		/******************** REMOTE CLIENT BINDING ************************************/
+		/* rcode: the result of the las dvk_put2lcl 	*/
+		/* ret: the result of the following operations	*/
+		PXYDEBUG("RPROXY: REMOTE CLIENT BINDING rcode=%d\n", rcode);
+		
+		switch(rcode){
+			case EDVSENDPOINT:	/* local node registers other endpoint using the slot */
+			case EDVSNONODE:	/* local node register other node for this endpoint   */
+			case EDVSNOTBIND:	/* the slot is free */	
+				break;
+			default:
+				ERROR_RETURN(rcode);
+		} 
+
+#ifdef SYSTASK_BIND
+		/*Build a pseudo header */
+		p_pseudo->c_cmd 	            = CMD_SNDREC_MSG;
+		p_pseudo->c_dcid	            = p_header->c_dcid;
+		p_pseudo->c_src	 	            = PM_PROC_NR;
+		p_pseudo->c_dst 	            = SYSTASK(localnodeid);
+		p_pseudo->c_snode 	            = p_header->c_snode;
+		p_pseudo->c_dnode 	            = local_nodeid;
+		p_pseudo->c_rcode	            = 0;
+		p_pseudo->c_len		            = 0;
+		p_pseudo->c_flags	            = 0;
+		p_pseudo->c_snd_seq             = 0;
+		p_pseudo->c_ack_seq             = 0;
+		p_pseudo->c_timestamp           =  p_header->c_timestamp;
+		p_pseudo->c_u.cu_msg.m_source 	= PM_PROC_NR;
+		p_pseudo->c_u.cu_msg.m_type 	= SYS_BINDPROC;
+		p_pseudo->c_u.cu_msg.M3_ENDPT 	= p_header->c_src;
+		p_pseudo->c_u.cu_msg.M3_NODEID 	= p_header->c_snode;
+		p_pseudo->c_u.cu_msg.M3_OPER 	= RMT_BIND;
+		sprintf(&p_pseudo->c_u.cu_msg.m3_ca1,"RClient%d", p_header->c_snode);
+		
+		/* send PSEUDO message to local SYSTASK */	
+		ret = dvk_put2lcl(p_pseudo, p_payload);
+		if( ret) {
+			ERROR_PRINT(ret);
+			ERROR_RETURN(rcode);
+		}
+
+#else // SYSTASK_BIND
+
+		if( p_header->c_src <= NR_SYS_PROCS) {
+			PXYDEBUG("RPROXY: src=%d <= NR_SYS_PROCS\n", p_header->c_src);
+			return(rcode);
+		}
+		
+		if( (rcode == EDVSENDPOINT) || (rcode == EDVSNONODE) ){
+			ret = dvk_unbind(p_header->c_dcid,p_header->c_src);
+			if(ret != 0) return(rcode);
+		}
+
+		ret = dvk_rmtbind(p_header->c_dcid,"rclient",p_header->c_src,p_header->c_snode);
+		if( ret != p_header->c_src) return(rcode);
+		
+#endif // SYSTASK_BIND
+
+		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
+		PXYDEBUG("RPROXY: put2lcl (autobind)\n");
+		if( rcode < 0 ){
+			ret = dvk_put2lcl(p_header, p_payload);
+			if( ret) {
+				ERROR_PRINT(ret);
+				ERROR_RETURN(rcode);
+			}
+			rcode = 0;
+		}
+	}
+#else /* RMT_CLIENT_BIND	*/
+	if( rcode < 0 ) ERROR_RETURN(rcode);
+
+#endif /* RMT_CLIENT_BIND	*/
 		
 	if(  p_header->c_flags == FLAG_BATCHCMDS) {
 		batch_nr = p_header->c_batch_nr;
@@ -360,6 +441,7 @@ int  ps_send_payload(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay )
     p_ptr = (char *) ptr_pay;
     while(sent < total) {
         n = send(sproxy_sd, p_ptr, bytesleft, 0);
+		PXYDEBUG("SPROXY: sent=%d \n", n);
         if (n < 0) {
 			if(errno == EALREADY) {
 				ERROR_PRINT(errno);
@@ -425,8 +507,8 @@ int  ps_start_serving(void)
 				break;
 			case EDVSTIMEDOUT:
 				PXYDEBUG("SPROXY: Sending HELLO \n");
-				p_header->c_cmd = CMD_NONE;
-				p_header->c_len = 0;
+				p_header->c_cmd   = CMD_NONE;
+				p_header->c_len   = 0;
 				p_header->c_rcode = 0;
 				rcode =  ps_send_remote(p_header, p_payload);
 				cmd_flag = 0;
@@ -446,7 +528,7 @@ int  ps_start_serving(void)
 		if(  (p_header->c_cmd != CMD_COPYIN_DATA )     // is a batcheable command ??
 		  && (p_header->c_cmd != CMD_COPYOUT_DATA)){	// YESSSSS
 
-			if ( (p_header->c_cmd == CMD_SEND_MSG) 
+			if ( (p_header->c_cmd  == CMD_SEND_MSG) 
 				||(p_header->c_cmd == CMD_SNDREC_MSG)
 				||(p_header->c_cmd == CMD_REPLY_MSG)){
 				m_ptr = &p_header->c_u.cu_msg;
@@ -490,9 +572,9 @@ int  ps_start_serving(void)
 		
 		if( batch_nr > 0) { 			// is batching in course??	
 			PXYDEBUG("SPROXY: sending BATCHED COMMANDS batch_nr=%d\n", batch_nr);
-			p_header3->c_flags = (batch_nr)?FLAG_BATCHCMDS:0;
+			p_header3->c_flags    = (batch_nr)?FLAG_BATCHCMDS:0;
 			p_header3->c_batch_nr = batch_nr;
-			p_header3->c_len = batch_nr * sizeof(proxy_hdr_t);
+			p_header3->c_len      = batch_nr * sizeof(proxy_hdr_t);
 			rcode =  ps_send_remote(p_header3, p_batch);
 			if (rcode == 0) smsg_ok++;
 			else smsg_fail++;
@@ -525,9 +607,9 @@ void wait_for_server(__u32 name_type, __u32 name_instance, int wait)
 	int sd = socket(AF_TIPC, SOCK_SEQPACKET, 0);
 
 	memset(&topsrv, 0, sizeof(topsrv));
-	topsrv.family = AF_TIPC;
-	topsrv.addrtype = TIPC_ADDR_NAME;
-	topsrv.addr.name.name.type = TIPC_TOP_SRV;
+	topsrv.family                  = AF_TIPC;
+	topsrv.addrtype                = TIPC_ADDR_NAME;
+	topsrv.addr.name.name.type     = TIPC_TOP_SRV;
 	topsrv.addr.name.name.instance = TIPC_TOP_SRV;
 
 	/* Connect to topology server */
@@ -537,11 +619,11 @@ void wait_for_server(__u32 name_type, __u32 name_instance, int wait)
 		exit(1);
 	}
 
-	subscr.seq.type = htonl(name_type);
+	subscr.seq.type  = htonl(name_type);
 	subscr.seq.lower = htonl(name_instance);
 	subscr.seq.upper = htonl(name_instance);
-	subscr.timeout = htonl(wait);
-	subscr.filter = htonl(TIPC_SUB_SERVICE);
+	subscr.timeout   = htonl(wait);
+	subscr.filter    = htonl(TIPC_SUB_SERVICE);
 
 	do {
 		if (send(sd, &subscr, sizeof(subscr), 0) != sizeof(subscr)) {
@@ -574,11 +656,11 @@ int ps_connect_to_remote(void)
 
 	sproxy_sd = socket(AF_TIPC, SOCK_STREAM, 0);
 
-	rmtserver_addr.family = AF_TIPC;
-	rmtserver_addr.addrtype = TIPC_ADDR_NAME;
-	rmtserver_addr.addr.name.name.type = server_type;
+	rmtserver_addr.family                  = AF_TIPC;
+	rmtserver_addr.addrtype                = TIPC_ADDR_NAME;
+	rmtserver_addr.addr.name.name.type     = server_type;
 	rmtserver_addr.addr.name.name.instance = SERVER_INST;
-	rmtserver_addr.addr.name.domain = 0;
+	rmtserver_addr.addr.name.domain        = 0;
 
  	rcode = connect(sproxy_sd, (struct sockaddr *) &rmtserver_addr, sizeof(rmtserver_addr));
     if (rcode != 0) ERROR_RETURN(errno);

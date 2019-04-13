@@ -107,7 +107,11 @@ int child_function(int child) {
 	}	
 	
 	USRDEBUG("CHILD child_nr %d: unbinding %d\n", child_nr,client_nr);
-	dvk_unbind(dcid,client_nr);
+	dvk_unbind(dcid,child_nr);
+
+	USRDEBUG("CHILD child_nr %d: remote unbinding %d\n", child_nr,client_nr);
+	dvk_unbind(dcid, client_nr);
+
 	USRDEBUG("CHILD child_nr %d:: exiting\n", child_nr);
 	exit(0);
 }

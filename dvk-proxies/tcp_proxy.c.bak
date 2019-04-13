@@ -232,6 +232,8 @@ int pr_process_message(void) {
 		
 #endif // SYSTASK_BIND
 
+#endif /* RMT_CLIENT_BIND	*/
+
 	/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
 	PXYDEBUG("RPROXY: put2lcl (autobind)\n");
 	if( rcode < 0 ){
@@ -241,7 +243,7 @@ int pr_process_message(void) {
 			ERROR_RETURN(rcode);
 		}
 	}
-#endif /* RMT_CLIENT_BIND	*/	
+	
     return(OK);    
 }
 

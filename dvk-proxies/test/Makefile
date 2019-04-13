@@ -1,6 +1,6 @@
 CC=gcc
 BINS= 	loop_r-s_server loop_sr_client loop_copy_server loop_copy_client \
-		copy_client copy_server
+		copy_client copy_server 
 
 # loop_clt_vcopy3 \
 #		loop_clt_vcopy3a loop_clt_vcopy3b loop_clt_vcopy4 \
@@ -31,6 +31,11 @@ copy_server: copy_server.c
 copy_client: copy_client.c 
 	$(CC)  $(CFLAGS)  -o copy_client copy_client.c $(LIBS) -I$(INCLUDE)
 
+copy_server: copy_server.c 
+	$(CC)  $(CFLAGS)  -o copy_server copy_server.c $(LIBS) -I$(INCLUDE)
+
+copy_client: copy_client.c 
+	$(CC)  $(CFLAGS)  -o copy_client copy_client.c $(LIBS) -I$(INCLUDE)
 	
 clean:
 	rm -f $(BINS)

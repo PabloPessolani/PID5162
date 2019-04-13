@@ -11,7 +11,7 @@ then
 	echo "S: Server TCP proxy"
 	echo "C: Client TCP proxy"
 	echo "z: tcp threaded proxies with LZ4 data compression"
-	echo "Z: TIPC proxies with LZ4 data compression"
+	echo "B: TIPC proxies with batch"
 	echo "s: Socat proxies"
 	echo "l: LWIP proxies"
 	echo "R: RAW proxies"
@@ -49,9 +49,9 @@ then
 elif  [ $1 == "z" ]
 then
 	echo "tcp threaded proxies with LZ4 data compression selected"
-elif  [ $1 == "Z" ]
+elif  [ $1 == "B" ]
 then
-	echo "TIPC proxies with LZ4 data compression selected"
+	echo "TIPC proxies with batch selected"
 elif  [ $1 == "T" ]
 then
 	echo "TIPC proxies selected"
@@ -81,14 +81,15 @@ else
 	echo "S: Server TCP proxy"
 	echo "C: Client TCP proxy"
 	echo "z: tcp threaded proxies with LZ4 data compression"
-	echo "Z: TIPC proxies with LZ4 data compression"
+	echo "B: TIPC proxies with batch"
 	echo "s: Socat proxies"
 	echo "l: LWIP proxies"
 	echo "R: RAW proxies"
 	echo "lcl_nodeid of this node"
 	exit 1
 fi
-/usr/local/sbin/spread  > spread.txt &			
+mkdir /var/run/spread
+/usr/local/sbin/spread -c /etc/spread.conf > spread.txt &
 # cd /home/MoL_Module/mol-module
 mknod /dev/dvk c 33 0
 echo 0 > /proc/sys/kernel/hung_task_timeout_secs
@@ -203,11 +204,14 @@ then
 read  -p "ARRANCANDO raw_proxy Enter para continuar... "
 	./raw_proxy node$rmt_nodeid $rmt_nodeid eth0 > /lib/init/rw/raw_proxyout$rmt_nodeid.txt 2> /lib/init/rw/raw_proxyerr$rmt_nodeid.txt &	
 read  -p "DETENER AQUI Enter para continuar... "
-elif  [ $1 == "Z" ]
+elif  [ $1 == "B" ]
 then 
-	tipc-config -net=4711 -a=1.1.10$lcl_nodeid -be=eth:eth0
+    tipc node set addr 1.1.10$lcl_nodeid 
+    tipc node set netid 4711
+	tipc bearer enable media eth dev eth0 
+# 	tipc-config -net=4711 -a=1.1.10$lcl_nodeid -be=eth:eth0
 #	cd /usr/src/dvs/dvk-proxies/
-	/usr/src/dvs/dvk-proxies/lz4tipc_proxy node$rmt_nodeid $rmt_nodeid >node$rmt_nodeid.txt 2>error$rmt_nodeid.txt &	
+	/usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt_nodeid $rmt_nodeid >node$rmt_nodeid.txt 2>error$rmt_nodeid.txt &	
 else 
 #  TIPC PROXIES
 	tipc-config -net=4711 -a=1.1.10$lcl_nodeid -be=eth:eth0

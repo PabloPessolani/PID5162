@@ -1038,7 +1038,118 @@ EN NODE0: MUK
 	 0  14    14   654/9      0    8  400 31438 27342 27342 27342 m3ftp          
 	 0  22    22   653/8      0    0  400 27342 27342 27342 27342 nweb           
 			
-		
+
+=======================================================================================
+20190413:	CONSUMO DE MEMORIA DE MUK 		
+
+  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                
+  561 spread    20   0    5288   3276   2128 S  0,3  0,3   0:01.07 spread                 
+  628 root       1 -19   76188   6084   1160 S  0,3  0,6   0:00.12 muk  <<<<<<<<<  
+  
+   Memory Usage
+    RES -  A task's currently resident share of available physical memory
+	SHR  - subset of RES
+	VIRT - everything in-use and/or reserved
+	
+  Linux Memory Types
+       For our purposes there are three types of memory, and one is
+       optional.  First is physical memory, a limited resource where code
+       and data must reside when executed or referenced.  Next is the
+       optional swap file, where modified (dirty) memory can be saved and
+       later retrieved if too many demands are made on physical memory.
+       Lastly we have virtual memory, a nearly unlimited resource serving
+       the following goals
+	
+  root@node0:/usr/src/dvs/vos# pmap 628
+628:   ./muk muk.cfg
+0040c000     28K r-x-- muk
+00413000      4K r---- muk
+00414000      4K rw--- muk
+00415000    196K rw---   [ anon ]
+00ab5000    296K rw---   [ anon ]
+b2cfa000      4K -----   [ anon ]
+b2cfb000   8192K rw---   [ anon ]
+b34fb000      4K -----   [ anon ]
+b34fc000   8192K rw---   [ anon ]
+b3cfc000      4K -----   [ anon ]
+b3cfd000   8192K rw---   [ anon ]
+b44fd000      4K -----   [ anon ]
+b44fe000   8192K rw---   [ anon ]
+b4cfe000      4K -----   [ anon ]
+b4cff000   8192K rw---   [ anon ]
+b54ff000      4K -----   [ anon ]
+b5500000   8192K rw---   [ anon ]
+b5d00000    156K rw---   [ anon ]
+b5d27000    868K -----   [ anon ]
+b5ecc000    204K rw---   [ anon ]
+b5eff000      4K -----   [ anon ]
+b5f00000   8192K rw---   [ anon ]
+b6700000    148K rw---   [ anon ]
+b6725000    876K -----   [ anon ]
+b682b000    128K rw-s- procs
+b684b000      4K -----   [ anon ]
+b684c000   8200K rw---   [ anon ]
+b704e000   1732K r-x-- libc-2.24.so
+b71ff000      4K ----- libc-2.24.so
+b7200000      8K r---- libc-2.24.so
+b7202000      4K rw--- libc-2.24.so
+b7203000     12K rw---   [ anon ]
+b7206000    100K r-x-- libpthread-2.24.so
+b721f000      4K r---- libpthread-2.24.so
+b7220000      4K rw--- libpthread-2.24.so
+b7221000      8K rw---   [ anon ]
+b7223000     56K r-x-- libsystask.so
+b7231000      4K r---- libsystask.so
+b7232000      4K rw--- libsystask.so
+b7233000     24K r-x-- libmollib.so
+b7239000      4K r---- libmollib.so
+b723a000      4K rw--- libmollib.so
+b723b000     12K r-x-- libsyslib.so
+b723e000      4K r---- libsyslib.so
+b723f000      4K rw--- libsyslib.so
+b7240000      8K rw---   [ anon ]
+b7242000     44K r-x-- libpm.so
+b724d000      4K r---- libpm.so
+b724e000      4K rw--- libpm.so
+b724f000     16K rw---   [ anon ]
+b7253000     12K r-x-- libconfig.so
+b7256000      4K r---- libconfig.so
+b7257000      4K rw--- libconfig.so
+b7258000     40K r-x-- librdisk.so
+b7262000      4K r---- librdisk.so
+b7263000      4K rw--- librdisk.so
+b7264000      4K rw---   [ anon ]
+b7265000    116K r-x-- libfs.so
+b7282000      4K r---- libfs.so
+b7283000      4K rw--- libfs.so
+b7284000   4876K rw---   [ anon ]
+b7747000     20K r-x-- libis.so
+b774c000      4K r---- libis.so
+b774d000      4K rw--- libis.so
+b774e000    128K rw---   [ anon ]
+b776e000     12K r-x-- libftp.so
+b7771000      4K r---- libftp.so
+b7772000      4K rw--- libftp.so
+b7773000     20K r-x-- libnw.so
+b7778000      4K r---- libnw.so
+b7779000      4K rw--- libnw.so
+b777a000      4K r-x-- libtimers.so
+b777b000      4K r---- libtimers.so
+b777c000      4K rw--- libtimers.so
+b777d000     16K r-x-- stub_dvkcall.o
+b7781000      4K r---- stub_dvkcall.o
+b7782000      4K rw--- stub_dvkcall.o
+b7783000     12K r-x-- libdl-2.24.so
+b7786000      4K r---- libdl-2.24.so
+b7787000      4K rw--- libdl-2.24.so
+b778f000      8K rw---   [ anon ]
+b7791000      8K r----   [ anon ]
+b7793000      8K r-x--   [ anon ]
+b7795000    140K r-x-- ld-2.24.so
+b77b8000      4K r---- ld-2.24.so
+b77b9000      4K rw--- ld-2.24.so
+bfec7000    132K rw---   [ stack ]
+ total    76188K <<<<<<<<<<<<<<<<<<<<<<<<<<< 76 MBYTES !!!! 
 		        		
 =======================================================================================
 =======================================================================================

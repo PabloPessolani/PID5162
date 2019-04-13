@@ -51,10 +51,18 @@ dmesg -c >> /usr/src/dvs/dvk-tests/dmesg.txt
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency
 echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 cd /usr/src/dvs/dvk-proxies
-read  -p "TCP PROXY Enter para continuar... "
+# read  -p "TCP PROXY Enter para continuar... "
 #./sp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
-./tcp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
+# ./tcp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
+read  -p "TIPC BAT PROXY Enter para continuar... "
+tipc node set addr 1.1.10$lcl 
+tipc node set netid 4711
+tipc bearer enable media eth dev eth0 
+/usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &	
 sleep 5
+tipc bearer list
+tipc nametable show
+tipc link list
 read  -p "Enter para continuar... "
 cat /proc/dvs/nodes
 cat /proc/dvs/proxies/info
