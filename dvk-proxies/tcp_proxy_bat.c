@@ -85,18 +85,16 @@ int pr_setup_connection(void)
 /* pr_receive_payloadr: receives the header from remote sender */
 int pr_receive_payload(int payload_size) 
 {
-    int n, len, total,  received = 0;
+    int n, received = 0;
     char *p_ptr;
 
    	PXYDEBUG("payload_size=%d\n",payload_size);
    	p_ptr = (char*) p_payload;
-   	len = sizeof(struct sockaddr_in);
    	while ((n = recv(rconn_sd, p_ptr, (payload_size-received), 0 )) > 0) {
         received = received + n;
 		PXYDEBUG("RPROXY: n:%d | received:%d\n", n,received);
         if (received >= payload_size) return(OK);
        	p_ptr += n;
-		len = sizeof(struct sockaddr_in);
    	}
     
     if(n < 0) ERROR_RETURN(errno);
@@ -106,13 +104,12 @@ int pr_receive_payload(int payload_size)
 /* pr_receive_header: receives the header from remote sender */
 int pr_receive_header(void) 
 {
-    int n, len, total,  received = 0;
+    int n, total,  received = 0;
     char *p_ptr;
 
    	PXYDEBUG("socket=%d\n", rconn_sd);
    	p_ptr = (char*) p_header;
 	total = sizeof(proxy_hdr_t);
-   	len = sizeof(struct sockaddr_in);
    	while ((n = recv(rconn_sd, p_ptr, (total-received), 0 )) > 0) {
         received = received + n;
 		PXYDEBUG("RPROXY: n:%d | received:%d | HEADER_SIZE:%d\n", n,received,sizeof(proxy_hdr_t));
@@ -124,7 +121,6 @@ int pr_receive_header(void)
                   	sizeof(proxy_hdr_t) - received);
         	p_ptr += n;
         }
-		len = sizeof(struct sockaddr_in);
    	}
     
     ERROR_RETURN(errno);
@@ -176,7 +172,7 @@ int pr_process_message(void) {
 	rcode = dvk_put2lcl(p_header, p_payload);
 	if( rcode < 0) ERROR_RETURN(rcode);	
 		
-	if(  p_header->c_flags == FLAG_BATCHCMDS) {
+	if( TEST_BIT( p_header->c_flags,  FLAG_BATCH_BIT)) {
 		batch_nr = p_header->c_batch_nr;
 		PXYDEBUG("RPROXY: batch_nr=%d\n", batch_nr);
 		// check payload len
@@ -244,7 +240,7 @@ void pr_start_serving(void)
 /* pr_init: creates socket */
 void pr_init(void) 
 {
-    int receiver_sd, rcode;
+    int rcode;
 
 	PXYDEBUG("RPROXY: Initializing proxy receiver. PID: %d\n", getpid());
     
@@ -394,10 +390,9 @@ int  ps_send_remote(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay )
 int  ps_start_serving(void)
 {
 	proxy_hdr_t *bat_vect;
-    int rcode, i;
+    int rcode;
     message *m_ptr;
     int pid, ret;
-   	char *ptr; 
 
     pid = getpid();
 	
@@ -477,7 +472,8 @@ int  ps_start_serving(void)
 		
 		if( batch_nr > 0) { 			// is batching in course??	
 			PXYDEBUG("SPROXY: sending BATCHED COMMANDS batch_nr=%d\n", batch_nr);
-			p_header3->c_flags = (batch_nr)?FLAG_BATCHCMDS:0;
+			p_header3->c_flags = 0;
+			SET_BIT(p_header3->c_flags, FLAG_BATCH_BIT);
 			p_header3->c_batch_nr = batch_nr;
 			p_header3->c_len = batch_nr * sizeof(proxy_hdr_t);
 			rcode =  ps_send_remote(p_header3, p_batch);
@@ -541,7 +537,6 @@ int ps_connect_to_remote(void)
 void  ps_init(void) 
 {
     int rcode = 0;
-	char *p_buffer;
 
 	PXYDEBUG("SPROXY: Initializing on PID:%d\n", getpid());
     

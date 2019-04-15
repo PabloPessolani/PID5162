@@ -9,6 +9,20 @@
 #include "debug.h"
 #include "macros.h"
 
+#include <lz4frame.h>
+extern int errno;
+
+#define LZ4_HEADER_SIZE 19
+#define LZ4_FOOTER_SIZE 4
+#define BLOCK_16K	(16 * 1024)
+
+static const LZ4F_preferences_t lz4_preferences = {
+	{ LZ4F_max1MB, LZ4F_blockLinked, LZ4F_noContentChecksum, LZ4F_frame, 0, { 0, 0 } },
+	0,   /* compression level */
+	0,   /* autoflush */
+	{ 0, 0, 0, 0 },  /* reserved, must be set to 0 */
+};
+
 #define HEADER_SIZE sizeof(proxy_hdr_t)
 #define SERVER_TYPE  18888
 #define SERVER_INST  17
@@ -33,6 +47,16 @@ proxy_hdr_t 	*p_pseudo;
 proxy_payload_t *p_payload;
 proxy_payload_t *p_payload2;
 proxy_payload_t *p_batch;
+char 			*p_comp_pl;
+char 			*p_decomp_pl;
+
+LZ4F_errorCode_t p_lz4err;
+size_t			p_offset;
+size_t			p_maxCsize;		/* Maximum Compressed size */
+size_t			p_maxRsize;		/* Maximum Raw size		 */
+__attribute__((packed, aligned(4)))
+LZ4F_compressionContext_t 	p_lz4Cctx __attribute__((aligned(8))); /* Compression context */
+LZ4F_decompressionContext_t p_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
 
 #define  c_batch_nr		c_snd_seq
 int	batch_nr  = 0;		// number of batching commands
@@ -53,16 +77,79 @@ int    sproxy_sd;
 /*----------------------------------------------*/
 /*      PROXY RECEIVER FUNCTIONS               */
 /*----------------------------------------------*/
-                
+        
+
+int decompress_payload( proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr)
+{
+	LZ4F_errorCode_t lz4_rcode;
+	size_t comp_len, raw_len;
+	
+	PXYDEBUG("RPROXY: INPUT p_maxRsize=%d p_maxCsize=%d \n", 
+		p_maxRsize, p_maxCsize );
+
+	comp_len = hd_ptr->c_len;
+	raw_len  = p_maxRsize;
+	PXYDEBUG("RPROXY: INPUT comp_len=%d raw_len=%d \n", 
+		comp_len, raw_len );
+
+	lz4_rcode = LZ4F_decompress(p_lz4Dctx,
+                          p_decomp_pl, &raw_len,
+                          pl_ptr, &comp_len,
+                          NULL);
+		
+	if (LZ4F_isError(lz4_rcode)) {
+		fprintf(stderr ,"LZ4F_decompress failed: error %zu", lz4_rcode);
+		ERROR_EXIT(lz4_rcode);
+	}
+	
+	PXYDEBUG("RPROXY: OUTPUT raw_len=%d comp_len=%d\n",	raw_len, comp_len);
+	return(raw_len);					  
+						  
+}
+        
+void init_decompression( void) 
+{
+	LZ4F_errorCode_t lz4_rcode;
+
+	PXYDEBUG("RPROXY\n");
+
+	p_maxRsize = sizeof(proxy_payload_t);
+	
+	p_maxCsize =  p_maxRsize + LZ4_HEADER_SIZE + LZ4_FOOTER_SIZE;
+	posix_memalign( (void**) &p_decomp_pl, getpagesize(), p_maxCsize );
+	if (p_decomp_pl== NULL) {
+    		fprintf(stderr, "p_decomp_pl posix_memalign");
+			ERROR_EXIT(errno);
+  	}
+	
+	lz4_rcode =  LZ4F_createDecompressionContext(&p_lz4Dctx, LZ4F_VERSION);
+	if (LZ4F_isError(lz4_rcode)) {
+		fprintf(stderr ,"LZ4F_createDecompressionContext: error %zu", lz4_rcode);
+		ERROR_EXIT(lz4_rcode);
+	}
+}
+
+void stop_decompression( void) 
+{
+	LZ4F_errorCode_t lz4_rcode;
+
+	PXYDEBUG("RPROXY\n");
+
+	lz4_rcode = LZ4F_freeDecompressionContext(p_lz4Dctx);
+	if (LZ4F_isError(lz4_rcode)) {
+		fprintf(stderr ,"LZ4F_freeDecompressionContext: error %zu", lz4_rcode);
+		ERROR_EXIT(lz4_rcode);
+	}
+}
+		
+		
 /* pr_setup_connection: bind and setup a listening socket 
    This socket is not accepting connections yet after
    end of this call.
  */                
 int pr_setup_connection(void) 
 {
-    int ret;
     int server_type;
-    int optval = 1;
 	
 	struct sockaddr_tipc server_addr;
 	
@@ -100,21 +187,19 @@ int pr_setup_connection(void)
 }
 
 /* pr_receive_payloadr: receives the header from remote sender */
-int pr_receive_payload(int payload_size) 
+int pr_receive_payload(proxy_payload_t *pl_ptr, int pl_size) 
 {
-    int n, len, total,  received = 0;
+    int n, received = 0;
     char *p_ptr;
 
-   	PXYDEBUG("payload_size=%d\n",payload_size);
-   	p_ptr = (char*) p_payload;
-   	len = sizeof(struct sockaddr_in);
-   	while ((n = recv(rconn_sd, p_ptr, (payload_size-received), 0 )) > 0) {
+   	PXYDEBUG("pl_size=%d\n",pl_size);
+   	p_ptr = (char*) pl_ptr;
+   	while ((n = recv(rconn_sd, p_ptr, (pl_size-received), 0 )) > 0) {
 	   	PXYDEBUG("recv=%d\n",n);
         received = received + n;
 		PXYDEBUG("RPROXY: n:%d | received:%d\n", n,received);
-        if (received >= payload_size) return(OK);
+        if (received >= pl_size) return(OK);
        	p_ptr += n;
-		len = sizeof(struct sockaddr_in);
    	}
     
     if(n < 0) ERROR_RETURN(errno);
@@ -124,25 +209,24 @@ int pr_receive_payload(int payload_size)
 /* pr_receive_header: receives the header from remote sender */
 int pr_receive_header(void) 
 {
-    int n, len, total,  received = 0;
+    int n, total,  received = 0;
     char *p_ptr;
 
    	PXYDEBUG("socket=%d\n", rconn_sd);
    	p_ptr = (char*) p_header;
 	total = sizeof(proxy_hdr_t);
-   	len = sizeof(struct sockaddr_in);
    	while ((n = recv(rconn_sd, p_ptr, (total-received), 0 )) > 0) {
         received = received + n;
 		PXYDEBUG("RPROXY: n:%d | received:%d | HEADER_SIZE:%d\n", n,received,sizeof(proxy_hdr_t));
         if (received >= sizeof(proxy_hdr_t)) {  
 			PXYDEBUG("RPROXY: " CMD_FORMAT,CMD_FIELDS(p_header));
+			PXYDEBUG("RPROXY:" CMD_XFORMAT, CMD_XFIELDS(p_header));
         	return(OK);
         } else {
 			PXYDEBUG("RPROXY: Header partially received. There are %d bytes still to get\n", 
                   	sizeof(proxy_hdr_t) - received);
         	p_ptr += n;
         }
-		len = sizeof(struct sockaddr_in);
    	}
     
     ERROR_RETURN(errno);
@@ -151,7 +235,7 @@ int pr_receive_header(void)
 /* pr_process_message: receives header and payload if any. Then deliver the 
  * message to local */
 int pr_process_message(void) {
-    int rcode, payload_size, i, ret;
+    int rcode, payload_size, i, ret, raw_len;
  	message *m_ptr;
 	proxy_hdr_t *bat_cmd, *bat_ptr;
 
@@ -161,19 +245,7 @@ int pr_process_message(void) {
     	rcode = pr_receive_header();
     	if (rcode != 0) ERROR_RETURN(rcode);
 		PXYDEBUG("RPROXY:" CMD_FORMAT,CMD_FIELDS(p_header));
-   	}while(p_header->c_cmd == CMD_NONE);
-    
-	/* now we have a proxy header in the buffer. Cast it.*/
-    payload_size = p_header->c_len;
-    
-    /* payload could be zero */
-    if(payload_size != 0) {
-        bzero(p_payload, payload_size);
-        rcode = pr_receive_payload(payload_size);
-        if (rcode != 0){
-			PXYDEBUG("RPROXY: No payload to receive.\n");
-		}
-    }else{
+		PXYDEBUG("RPROXY:" CMD_XFORMAT,CMD_XFIELDS(p_header));
 		switch(p_header->c_cmd){
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
@@ -185,14 +257,35 @@ int pr_process_message(void) {
 			case CMD_COPYOUT_DATA:
 				PXYDEBUG("RPROXY: "VCOPY_FORMAT, VCOPY_FIELDS(p_header)); 
 				break;
-			default:
-				break;
+		}
+   	}while(p_header->c_cmd == CMD_NONE);
+    
+	/* now we have a proxy header in the buffer. Cast it.*/
+    payload_size = p_header->c_len;
+    
+    /* payload could be zero */
+    if(payload_size > 0) {
+        bzero(p_payload, payload_size);
+        rcode = pr_receive_payload(p_payload, payload_size);
+        if (rcode != 0) ERROR_RETURN(rcode);
+		
+		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+				raw_len = decompress_payload(p_header, p_payload); 
+				if(raw_len < 0)	ERROR_RETURN(raw_len);
+				if( raw_len != p_header->c_u.cu_vcopy.v_bytes){
+						fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(p_header));
+						ERROR_RETURN(EDVSBADVALUE);
+				}
+				p_header->c_len = raw_len;
 		}
 	}
 
 	PXYDEBUG("RPROXY: put2lcl\n");
-	rcode = dvk_put2lcl(p_header, p_payload);
-
+	if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+		rcode = dvk_put2lcl(p_header, p_decomp_pl);
+	} else{
+		rcode = dvk_put2lcl(p_header, p_payload);
+	}
 #ifdef RMT_CLIENT_BIND	
 	if( rcode < 0) {
 		/******************** REMOTE CLIENT BINDING ************************************/
@@ -257,7 +350,11 @@ int pr_process_message(void) {
 		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
 		PXYDEBUG("RPROXY: put2lcl (autobind)\n");
 		if( rcode < 0 ){
-			ret = dvk_put2lcl(p_header, p_payload);
+			if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+				rcode = dvk_put2lcl(p_header, p_decomp_pl);
+			} else{
+				rcode = dvk_put2lcl(p_header, p_payload);
+			}
 			if( ret) {
 				ERROR_PRINT(ret);
 				ERROR_RETURN(rcode);
@@ -270,7 +367,7 @@ int pr_process_message(void) {
 
 #endif /* RMT_CLIENT_BIND	*/
 		
-	if(  p_header->c_flags == FLAG_BATCHCMDS) {
+	if( TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) {
 		batch_nr = p_header->c_batch_nr;
 		PXYDEBUG("RPROXY: batch_nr=%d\n", batch_nr);
 		// check payload len
@@ -279,7 +376,11 @@ int pr_process_message(void) {
 			ERROR_RETURN(EDVSBADVALUE);
 		}
 		// put the batched commands
-		bat_cmd = &p_payload->pay_cmd;
+		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
+			bat_cmd = (proxy_hdr_t *) p_decomp_pl;
+		else 
+			bat_cmd = (proxy_hdr_t *) p_payload;
+			
 		for( i = 0; i < batch_nr; i++){
 			bat_ptr = &bat_cmd[i];
 			PXYDEBUG("RPROXY: bat_cmd[%d]:" CMD_FORMAT, i, CMD_FIELDS(bat_ptr));
@@ -301,6 +402,8 @@ void pr_start_serving(void)
     struct sockaddr_in sa;
     int rcode;
 
+	init_decompression();
+	
     while (1){
 		do {
 			sender_addrlen = sizeof(sa);
@@ -331,14 +434,14 @@ void pr_start_serving(void)
 		rcode = dvk_proxy_conn(px.px_id, DISCONNECT_RPROXY);
 		close(rconn_sd);
    	}
-    
+    stop_decompression();
     /* never reached */
 }
 
 /* pr_init: creates socket */
 void pr_init(void) 
 {
-    int receiver_sd, rcode;
+    int rcode;
 
 	PXYDEBUG("RPROXY: Initializing proxy receiver. PID: %d\n", getpid());
     
@@ -392,8 +495,51 @@ void pr_init(void)
 /*      PROXY SENDER FUNCTIONS                  */
 /*----------------------------------------------*/
 
+int compress_payload( proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
+{
+	size_t comp_len;
+
+	/* size_t LZ4F_compressFrame(void* dstBuffer, size_t dstMaxSize, const void* srcBuffer, 
+				size_t srcSize, const LZ4F_preferences_t* preferencesPtr);
+	*/	
+	comp_len = LZ4F_compressFrame(
+				p_comp_pl,	p_maxCsize,
+				pl_ptr,	hd_ptr->c_len, 
+				NULL);
+				
+	if (LZ4F_isError(comp_len)) {
+		fprintf(stderr ,"LZ4F_compressFrame failed: error %zu", comp_len);
+		ERROR_RETURN(comp_len);
+	}
+
+	PXYDEBUG("SPROXY: raw_len=%d comp_len=%d\n", hd_ptr->c_len, comp_len);
+		
+	return(comp_len);
+}
+
+void init_compression( void) 
+{
+	size_t frame_size;
+
+	PXYDEBUG("SPROXY\n");
+
+	p_maxRsize = sizeof(proxy_payload_t);
+	frame_size = LZ4F_compressBound(sizeof(proxy_payload_t), &lz4_preferences);
+	p_maxCsize =  frame_size + LZ4_HEADER_SIZE + LZ4_FOOTER_SIZE;
+	posix_memalign( (void**) &p_comp_pl, getpagesize(), p_maxCsize );
+	if (p_comp_pl == NULL) {
+    		fprintf(stderr, "p_comp_pl posix_memalign");
+			ERROR_EXIT(errno);
+  	}
+}
+
+void stop_compression( void) 
+{
+	PXYDEBUG("SPROXY\n");
+}
+
 /* ps_send_header: send  header to remote receiver */
-int  ps_send_header(proxy_hdr_t *ptr_hdr ) 
+int  ps_send_header(proxy_hdr_t *hd_ptr ) 
 {
     int sent = 0;        // how many bytes we've sent
     int bytesleft;
@@ -404,7 +550,12 @@ int  ps_send_header(proxy_hdr_t *ptr_hdr )
 	total = bytesleft;
 	PXYDEBUG("SPROXY: send header=%d \n", bytesleft);
 
-    p_ptr = (char *) ptr_hdr;
+    p_ptr = (char *) hd_ptr;
+	hd_ptr->c_snd_seq = 0;
+	hd_ptr->c_ack_seq = 0;
+	PXYDEBUG("SPROXY:" HDR_FORMAT, HDR_FIELDS(hd_ptr));
+	PXYDEBUG("SPROXY:" CMD_XFORMAT, CMD_XFIELDS(hd_ptr));
+
     while(sent < total) {
         n = send(sproxy_sd, p_ptr, bytesleft, 0);
         if (n < 0) {
@@ -425,20 +576,20 @@ int  ps_send_header(proxy_hdr_t *ptr_hdr )
 }
 
 /* ps_send_payload: send payload to remote receiver */
-int  ps_send_payload(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay ) 
+int  ps_send_payload(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr ) 
 {
     int sent = 0;        // how many bytes we've sent
     int bytesleft;
     int n, total;
 	char *p_ptr;
 
-	if( ptr_hdr->c_len <= 0) ERROR_EXIT(EDVSINVAL);
+	assert( hd_ptr->c_len > 0);
 	
-	bytesleft =  ptr_hdr->c_len; // how many bytes we have left to send
+	bytesleft =  hd_ptr->c_len; // how many bytes we have left to send
 	total = bytesleft;
-	PXYDEBUG("SPROXY: send header=%d \n", bytesleft);
+	PXYDEBUG("SPROXY: ps_send_payload bytesleft=%d \n", bytesleft);
 
-    p_ptr = (char *) ptr_pay;
+    p_ptr = (char *) pl_ptr;
     while(sent < total) {
         n = send(sproxy_sd, p_ptr, bytesleft, 0);
 		PXYDEBUG("SPROXY: sent=%d \n", n);
@@ -463,19 +614,41 @@ int  ps_send_payload(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay )
  * ps_send_remote: send a message (header + payload if existing) 
  * to remote receiver
  */
-int  ps_send_remote(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay ) 
+int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr ) 
 {
-	int rcode;
+	int rcode, comp_len;
 
-	PXYDEBUG("SPROXY:" CMD_FORMAT,CMD_FIELDS(ptr_hdr));
+	PXYDEBUG("SPROXY:" CMD_FORMAT,CMD_FIELDS(hd_ptr));
+	
+	if( (hd_ptr->c_cmd == CMD_COPYIN_DATA) || 
+		(hd_ptr->c_cmd == CMD_COPYOUT_DATA) || 
+		TEST_BIT(hd_ptr->c_flags, FLAG_BATCH_BIT) ){
 
+		assert( hd_ptr->c_len > 0);	
+
+		/* compress here */
+		comp_len = compress_payload(hd_ptr, pl_ptr);
+		PXYDEBUG("SPROXY: c_len=%d comp_len=%d\n", hd_ptr->c_len, comp_len);
+		if(comp_len < hd_ptr->c_len){
+			/* change command header  */
+			hd_ptr->c_len = comp_len; 
+			SET_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT); 
+		}
+		PXYDEBUG(CMD_XFORMAT, CMD_XFIELDS(hd_ptr));		
+	}else {
+		assert( hd_ptr->c_len == 0);
+	}
+	
 	/* send the header */
-	rcode =  ps_send_header(ptr_hdr);
+	rcode =  ps_send_header(hd_ptr);
 	if ( rcode != OK)  ERROR_RETURN(rcode);
 
-	if( ptr_hdr->c_len > 0) {
-		PXYDEBUG("SPROXY: send payload len=%d\n", ptr_hdr->c_len );
-		rcode =  ps_send_payload( ptr_hdr, ptr_pay);
+	if( hd_ptr->c_len > 0) {
+		PXYDEBUG("SPROXY: send payload len=%d\n", hd_ptr->c_len );
+		if( TEST_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT) )
+			rcode =  ps_send_payload(hd_ptr, p_comp_pl);
+		else
+			rcode =  ps_send_payload(hd_ptr, p_payload);
 		if ( rcode != OK)  ERROR_RETURN(rcode);
 	}
 	
@@ -489,11 +662,11 @@ int  ps_send_remote(proxy_hdr_t *ptr_hdr, proxy_payload_t *ptr_pay )
 int  ps_start_serving(void)
 {
 	proxy_hdr_t *bat_vect;
-    int rcode, i;
+    int rcode;
     message *m_ptr;
     int pid, ret;
-   	char *ptr; 
 
+	init_compression();
     pid = getpid();
 	
     while(1) {
@@ -566,13 +739,13 @@ int  ps_start_serving(void)
 				memcpy( (char*) &bat_vect[batch_nr], (char*) p_header2, sizeof(proxy_hdr_t));
 				batch_nr++;		
 				PXYDEBUG("SPROXY: new BATCHED COMMAND batch_nr=%d\n", batch_nr);		
-
 			}while ( batch_nr < MAXBATCMD);
 		}
 		
 		if( batch_nr > 0) { 			// is batching in course??	
 			PXYDEBUG("SPROXY: sending BATCHED COMMANDS batch_nr=%d\n", batch_nr);
-			p_header3->c_flags    = (batch_nr)?FLAG_BATCHCMDS:0;
+			p_header3->c_flags 	  = 0;
+			SET_BIT(p_header3->c_flags,FLAG_BATCH_BIT);
 			p_header3->c_batch_nr = batch_nr;
 			p_header3->c_len      = batch_nr * sizeof(proxy_hdr_t);
 			rcode =  ps_send_remote(p_header3, p_batch);
@@ -595,6 +768,7 @@ int  ps_start_serving(void)
 	}
 
     /* never reached */
+	stop_compression();
     exit(1);
 }
 
@@ -674,7 +848,6 @@ int ps_connect_to_remote(void)
 void  ps_init(void) 
 {
     int rcode = 0;
-	char *p_buffer;
 
 	PXYDEBUG("SPROXY: Initializing on PID:%d\n", getpid());
     
@@ -704,7 +877,7 @@ void  ps_init(void)
 
 	posix_memalign( (void**) &p_header3, getpagesize(), (sizeof(proxy_hdr_t)));
 	if (p_header== NULL) {
-    		perror("p_header2 posix_memalign");
+    		perror("p_header3 posix_memalign");
     		exit(1);
   	}
 	
@@ -760,7 +933,6 @@ void  ps_init(void)
     /* code never reaches here */
 }
 
-extern int errno;
 
 /*----------------------------------------------*/
 /*		MAIN: 			*/
@@ -776,6 +948,13 @@ void  main ( int argc, char *argv[] )
     	exit(0);
     }
 
+	if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
+		fprintf(stderr, "MAXCOPYBUF(%d) must be greater than (BLOCK_16K <<"
+			"lz4_preferences.frameInfo.blockSizeID)(%d)\n",MAXCOPYBUF,
+			(BLOCK_16K << lz4_preferences.frameInfo.blockSizeID));
+		exit(1);
+	}
+		
     strncpy(px.px_name,argv[1], MAXPROXYNAME);
 	px.px_name[MAXPROCNAME-1]= '\0';
     printf("TCP Proxy Pair name: %s\n",px.px_name);

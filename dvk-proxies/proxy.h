@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <netdb.h>
+#include <assert.h>
  
 #include <sys/types.h>
 #include <sys/time.h>

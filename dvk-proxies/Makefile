@@ -1,5 +1,5 @@
-BINS= tcp_proxy_bat tcp_proxy tipc_proxy tipc_proxy_bat sp_proxy_bat
-#      lz4tcp_th_proxy lz4tipc_proxy
+BINS= tcp_proxy_bat tcp_proxy tipc_proxy tipc_proxy_bat
+#      lz4tcp_th_proxy lz4tipc_proxy  sp_proxy_bat
 		
 # Which compiler
 CC = gcc
@@ -32,7 +32,7 @@ tcp_proxy_bat: tcp_proxy_bat.c
 	$(CC)  $(CFLAGS)  -o tcp_proxy_bat tcp_proxy_bat.c $(LIBS) 	-I$(INCLUDE)	
 
 tipc_proxy_bat: tipc_proxy_bat.c 
-	$(CC)  $(CFLAGS)  -o tipc_proxy_bat tipc_proxy_bat.c $(LIBS) 	-I$(INCLUDE)	
+	$(CC)  $(CFLAGS)  -o tipc_proxy_bat tipc_proxy_bat.c $(LZ4LIBS) -I$(INCLUDE)	
 	
 tcp_proxy: tcp_proxy.c 
 	$(CC)  $(CFLAGS)  -o tcp_proxy tcp_proxy.c $(LIBS) 	-I$(INCLUDE)	

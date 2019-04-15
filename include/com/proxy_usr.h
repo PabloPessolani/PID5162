@@ -29,7 +29,8 @@
 #define BIT_ACKNOWLEDGE		13
 #define MASK_ACKNOWLEDGE 	(1<<BIT_ACKNOWLEDGE)
 
-#define FLAG_BATCHCMDS		0x000F
+#define FLAG_BATCH_BIT		0
+#define FLAG_LZ4_BIT		1
 
 #define HELLO_PERIOD		(30*1000)	/* 30 Seconds */
 
