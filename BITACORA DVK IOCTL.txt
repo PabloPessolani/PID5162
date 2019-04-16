@@ -5574,10 +5574,30 @@ ATENCION:
 		 copy_client.c:main:140:CLIENT: buffer after=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHI
 		 copy_client.c:main:142:CLIENT END		 
 		 
- 			
-TODO:	PROXY TIPC con:
-			- soporte de compresion
+ =======================================================================================
+20190412: PROXY TIPC con soporte de compresion
 			
+			
+NODE0:
+ tipc_proxy_bat.c:pr_start_serving:425:RPROXY: Message succesfully processed.
+ tipc_proxy_bat.c:pr_process_message:244:RPROXY: About to receive header
+ tipc_proxy_bat.c:pr_receive_header:215:socket=5
+ tipc_proxy_bat.c:pr_receive_header:220:RPROXY: n:128 | received:128 | HEADER_SIZE:128
+ tipc_proxy_bat.c:pr_receive_header:222:RPROXY: cmd=0x3 dcid=0 src=3 dst=2 snode=1 dnode=0 rcode=0 len=329
+ tipc_proxy_bat.c:pr_receive_header:223:RPROXY:c_flags=0x3 c_snd_seq=0 c_ack_seq=0
+ tipc_proxy_bat.c:pr_process_message:247:RPROXY:cmd=0x3 dcid=0 src=3 dst=2 snode=1 dnode=0 rcode=0 len=329
+ tipc_proxy_bat.c:pr_process_message:248:RPROXY:c_flags=0x3 c_snd_seq=0 c_ack_seq=0 <<<<<<<<<<<<<<<< c_flags=0x3 => BATCH+LZ4 
+ tipc_proxy_bat.c:pr_process_message:254:RPROXY: source=3 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ tipc_proxy_bat.c:pr_receive_payload:195:pl_size=329
+ tipc_proxy_bat.c:pr_receive_payload:198:recv=329
+ tipc_proxy_bat.c:pr_receive_payload:200:RPROXY: n:329 | received:329
+ tipc_proxy_bat.c:decompress_payload:88:RPROXY: INPUT p_maxRsize=65536 p_maxCsize=65559 
+ tipc_proxy_bat.c:decompress_payload:93:RPROXY: INPUT comp_len=329 raw_len=65536 
+ tipc_proxy_bat.c:decompress_payload:105:RPROXY: OUTPUT raw_len=1152 comp_len=329
+ tipc_proxy_bat.c:pr_start_serving:428:RPROXY: Message processing failure [-339]
+ tipc_proxy_bat.c:pr_process_message:244:RPROXY: About to receive header
+
+ 
  =========================================================================================
 ULTIMO_LOG
 

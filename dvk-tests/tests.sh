@@ -55,9 +55,11 @@ cd /usr/src/dvs/dvk-proxies
 #./sp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
 # ./tcp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
 read  -p "TIPC BAT PROXY Enter para continuar... "
-tipc node set addr 1.1.10$lcl 
 tipc node set netid 4711
+tipc_addr="1.1.10$lcl"
+tipc node set addr $tipc_addr
 tipc bearer enable media eth dev eth0 
+read  -p "Enter para continuar... "
 /usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &	
 sleep 5
 tipc bearer list

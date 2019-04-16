@@ -505,7 +505,11 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 
 			}
 
+			h_ptr->c_flags   = 0;
+			h_ptr->c_snd_seq = 0;
+			h_ptr->c_ack_seq = 0;
 			DVKDEBUG(DBGCMD,HDR_FORMAT,HDR_FIELDS(h_ptr));
+			DVKDEBUG(DBGCMD,CMD_XFORMAT,CMD_XFIELDS(h_ptr));
 			/*  Copy the header to proxy */
 			WLOCK_PROC(sproxy_ptr);
 			if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags))	{
