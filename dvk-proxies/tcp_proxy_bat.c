@@ -24,7 +24,6 @@ proxy_payload_t *p_payload;
 proxy_payload_t *p_payload2;
 proxy_payload_t *p_batch;
 
-#define  c_batch_nr		c_snd_seq
 int	batch_nr = 0;		// number of batching commands
 int	cmd_flag = 0;		// signals a command to be sent 
 int rmsg_ok = 0;

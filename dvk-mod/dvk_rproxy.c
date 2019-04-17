@@ -679,15 +679,15 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 		
 		if(IT_IS_LOCAL(rmt_ptr) && 
 			!TEST_BIT(rmt_ptr->p_usr.p_misc_flags, MIS_BIT_REPLICATED))	{ret = EDVSLCLPROC; break;}
-		if( test_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags)) {ret = EDVSENQUEUED; break;}
-		if( test_bit(BIT_SENDING, &rmt_ptr->p_usr.p_rts_flags)) {ret = EDVSENQUEUED; break;}
+		if( test_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags)) 		{ret = EDVSENQUEUED; break;}
+		if( test_bit(BIT_SENDING, &rmt_ptr->p_usr.p_rts_flags)) 		{ret = EDVSENQUEUED; break;}
 		DVKDEBUG(INTERNAL,"REMOTE source OK endpoint=%d\n", rmt_ptr->p_usr.p_endpoint);		
 
-		if( IT_IS_REMOTE(lcl_ptr) ) 							{ret = EDVSRMTPROC; break;}
-		if( test_bit(BIT_SLOT_FREE, &lcl_ptr->p_usr.p_rts_flags))	{ret = EDVSNOTBIND; break;}
-		if( lcl_ptr->p_usr.p_endpoint != h_ptr->c_dst) 		{ret = EDVSENDPOINT; break;}
-		if( test_bit(BIT_MIGRATE, &lcl_ptr->p_usr.p_rts_flags)) {ret = EDVSMIGRATE; break;}
-		if( lcl_ptr->p_usr.p_nodeid != atomic_read(&local_nodeid)) {ret = EDVSMIGRATE; break;}
+		if( IT_IS_REMOTE(lcl_ptr) ) 									{ret = EDVSRMTPROC; break;}
+		if( test_bit(BIT_SLOT_FREE, &lcl_ptr->p_usr.p_rts_flags))		{ret = EDVSDSTDIED; break;}
+		if( lcl_ptr->p_usr.p_endpoint != h_ptr->c_dst) 					{ret = EDVSENDPOINT; break;}
+		if( test_bit(BIT_MIGRATE, &lcl_ptr->p_usr.p_rts_flags)) 		{ret = EDVSMIGRATE; break;}
+		if( lcl_ptr->p_usr.p_nodeid != atomic_read(&local_nodeid)) 		{ret = EDVSMIGRATE; break;}
 
 		DVKDEBUG(INTERNAL,"LOCAL destination OK endpoint=%d\n", lcl_ptr->p_usr.p_endpoint);
 
@@ -696,10 +696,11 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	if (ret < 0) {
 		switch(ret){
 			/* Acknoledge with ERROR to the REMOTE is not necessary */
-			case EDVSNOTBIND:
-			case EDVSNONODE: 
-			case EDVSLCLPROC:
-			case EDVSENQUEUED:
+			case EDVSNONODE: 			//   The source (remote) process is on another node
+			case EDVSLCLPROC:			//   The source (remote) process is really a local one
+			case EDVSENQUEUED:			//   The source process descriptor is in use.
+			case EDVSNOTBIND:			//   The source (remote) process is not bound.
+			case EDVSENDPOINT:			//   The source endpoint do not match the local bind 
 				WUNLOCK_DC(dc_ptr);
 				WUNLOCK_PROC2(lcl_ptr, rmt_ptr);
 				ERROR_RETURN(ret);

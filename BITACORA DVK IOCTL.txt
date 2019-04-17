@@ -5597,7 +5597,17 @@ NODE0:
  tipc_proxy_bat.c:pr_start_serving:428:RPROXY: Message processing failure [-339]
  tipc_proxy_bat.c:pr_process_message:244:RPROXY: About to receive header
 
- 
+=======================================================================================
+20190415: PROXY TIPC con soporte de compresion
+			FUNCIONO OK 
+	
+=======================================================================================
+20190416: PROXY TIPC con soporte de compresion/autobinding/batching 
+
+		Se incorporo c_batch_nr como nuevo campo al cmd_t 
+		para ello se cambio el DVK y los proxies. 
+		
+		
  =========================================================================================
 ULTIMO_LOG
 

@@ -58,7 +58,6 @@ __attribute__((packed, aligned(4)))
 LZ4F_compressionContext_t 	p_lz4Cctx __attribute__((aligned(8))); /* Compression context */
 LZ4F_decompressionContext_t p_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
 
-#define  c_batch_nr		c_snd_seq
 int	batch_nr  = 0;		// number of batching commands
 int	cmd_flag  = 0;		// signals a command to be sent 
 int rmsg_ok   = 0;
@@ -296,10 +295,20 @@ int pr_process_message(void) {
 		/* ret: the result of the following operations	*/
 		PXYDEBUG("RPROXY: REMOTE CLIENT BINDING rcode=%d\n", rcode);
 		
+		if( p_header->c_src <= NR_SYS_PROCS) {
+			PXYDEBUG("RPROXY: src=%d <= NR_SYS_PROCS\n", p_header->c_src);
+			ERROR_RETURN(rcode);
+		}
+		
 		switch(rcode){
-			case EDVSENDPOINT:	/* local node registers other endpoint using the slot */
 			case EDVSNONODE:	/* local node register other node for this endpoint   */
-			case EDVSNOTBIND:	/* the slot is free */	
+			case EDVSENDPOINT:	/* local node registers other endpoint using the slot */
+				ret = dvk_unbind(p_header->c_dcid,p_header->c_src);
+				if(ret != 0) ERROR_RETURN(rcode);
+				// fall down 
+			case EDVSNOTBIND:	/* the slot is free */
+				ret = dvk_rmtbind(p_header->c_dcid,"rclient",p_header->c_src,p_header->c_snode);
+				if( ret != p_header->c_src) ERROR_RETURN(rcode);
 				break;
 			default:
 				ERROR_RETURN(rcode);
@@ -316,6 +325,7 @@ int pr_process_message(void) {
 		p_pseudo->c_rcode	            = 0;
 		p_pseudo->c_len		            = 0;
 		p_pseudo->c_flags	            = 0;
+		p_pseudo->c_batch_nr            = 0;
 		p_pseudo->c_snd_seq             = 0;
 		p_pseudo->c_ack_seq             = 0;
 		p_pseudo->c_timestamp           =  p_header->c_timestamp;
@@ -332,22 +342,7 @@ int pr_process_message(void) {
 			ERROR_PRINT(ret);
 			ERROR_RETURN(rcode);
 		}
-
-#else // SYSTASK_BIND
-
-		if( p_header->c_src <= NR_SYS_PROCS) {
-			PXYDEBUG("RPROXY: src=%d <= NR_SYS_PROCS\n", p_header->c_src);
-			ERROR_RETURN(rcode);
-		}
-		
-		if( (rcode == EDVSENDPOINT) || (rcode == EDVSNONODE) ){
-			ret = dvk_unbind(p_header->c_dcid,p_header->c_src);
-			if(ret != 0) ERROR_RETURN(rcode);
-		}
-
-		ret = dvk_rmtbind(p_header->c_dcid,"rclient",p_header->c_src,p_header->c_snode);
-		if( ret != p_header->c_src) ERROR_RETURN(rcode);
-		
+	
 #endif // SYSTASK_BIND
 
 		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */

@@ -197,6 +197,7 @@ int pr_process_message(void) {
 	p_pseudo->c_dnode 	= local_nodeid;
 	p_pseudo->c_rcode	= 0;
   	p_pseudo->c_len		= 0;
+	p_pseudo->c_batch_nr= 0;
   	p_pseudo->c_flags	= 0;
   	p_pseudo->c_snd_seq = 0;
   	p_pseudo->c_ack_seq = 0;

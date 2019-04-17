@@ -135,8 +135,6 @@ int replica_loop(int *mtype, char *source)
 
 	service_type = 0;
 	num_groups = -1;
-
-	
 	
 	ret = SP_receive( sysmbox, &service_type, sender, 100, &num_groups, target_groups,
 			&mess_type, &endian_mismatch, sizeof(mess_in), mess_in );
@@ -1442,8 +1440,8 @@ int get_primary_mbr(void)
 	int i, first_mbr;
 	
 	first_mbr = NO_PRIMARY;  /* to test for errors */
-	for( i=0; i < nr_nodes; i++ ) {
-		if ( TEST_BIT(bm_nodes, i) ){
+	for( i=0; i < nr_sync; i++ ) {
+		if ( TEST_BIT(bm_sync, i) ){
 			first_mbr = i;
 			break;
 		}
