@@ -28,7 +28,7 @@
 #include "tests.h"
 
 dvs_usr_t dvs, *dvs_ptr;
-int local_nodeid;
+extern int local_nodeid;
 
 dc_usr_t dcu = {
 	.dc_dcid = 0,

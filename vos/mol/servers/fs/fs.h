@@ -123,5 +123,6 @@
 #define 	DEV2MINOR(dev)			((dev >> MNX_MINOR) & BYTE)
 
 extern int	dvk_fd;
+extern int local_nodeid;
 extern char *program_invocation_name;
 extern char *program_invocation_short_name;

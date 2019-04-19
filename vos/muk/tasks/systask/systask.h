@@ -79,6 +79,7 @@
 
 
 extern int	dvk_fd;
+extern int local_nodeid;
 
 
 

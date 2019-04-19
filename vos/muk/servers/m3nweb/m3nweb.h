@@ -80,6 +80,7 @@
 #include "../../macros.h"
 
 extern int	dvk_fd;
+extern int local_nodeid;
 
 #include "../../debug.h"
 #include "../../macros.h"

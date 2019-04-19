@@ -73,9 +73,6 @@
 #include "servers/rs/rs_udp.h"
 #include "../../include/generic/configfile.h"
 
-
-extern int	dvk_fd;
-
 #include "debug.h"
 #include "macros.h"
 

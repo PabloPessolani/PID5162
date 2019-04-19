@@ -19,3 +19,24 @@
 	return(rcode);\
  }while(0)
    
+#define MTX_LOCK(x) do{ \
+		USRDEBUG("MTX_LOCK %s \n", #x);\
+		pthread_mutex_lock(&x);\
+		}while(0)
+			
+#define MTX_UNLOCK(x) do{ \
+		pthread_mutex_unlock(&x);\
+		USRDEBUG("MTX_UNLOCK %s \n", #x);\
+		}while(0)	
+			
+#define COND_WAIT(x,y) do{ \
+		USRDEBUG("COND_WAIT %s %s\n", #x,#y );\
+		pthread_cond_wait(&x, &y);\
+		}while(0)	
+ 
+#define COND_SIGNAL(x) do{ \
+		pthread_cond_signal(&x);\
+		USRDEBUG("COND_SIGNAL %s\n", #x);\
+		}while(0)
+			
+		

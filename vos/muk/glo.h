@@ -19,7 +19,6 @@ EXTERN proc_usr_t *proc_table;		/* SYSTASK LOCAL process table 	*/
 EXTERN char     *kproc_map;		/* KERNEL memory mapped process table	*/
 #endif /* ALLOC_LOCAL_TABLE */
 
-EXTERN int local_nodeid;
 EXTERN int dcid;
 
 EXTERN int dump_fd;
@@ -69,6 +68,8 @@ EXTERN proc_usr_t *ftp_ptr;
 EXTERN int ftp_nr, ftp_ep, ftp_pid;
 EXTERN char *ftp_cfg;
 
+extern int	dvk_fd;
+extern int local_nodeid;
 
 #ifdef DVK_GLOBAL_HERE
 pthread_mutex_t muk_mutex = PTHREAD_MUTEX_INITIALIZER;

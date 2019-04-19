@@ -10,6 +10,7 @@
 
 #include "rdisk.h"
 #include "const.h"
+#include "glo.h"
 
 #define TRUE 1
 extern struct driver *m_dtab;

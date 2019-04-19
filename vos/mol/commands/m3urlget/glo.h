@@ -11,7 +11,7 @@ EXTERN int who_e, who_p;
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN VM_usr_t  vmu, *dc_ptr;
 EXTERN proc_usr_t proc_web, *web_ptr;	
-EXTERN int local_nodeid;
+// EXTERN int local_nodeid;
 EXTERN int cfg_web_nr;
 EXTERN unsigned int mandatory;
 EXTERN message web_rqst, *rqst_ptr;

@@ -82,7 +82,9 @@
 #include "../debug.h"
 #include "../macros.h"
 
-extern int	dvk_fd;// #include "limits.h"
+extern int	dvk_fd;
+extern int local_nodeid;
+
 #include "./nwebcommon.h"
 
 #include <getopt.h>

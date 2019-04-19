@@ -41,7 +41,7 @@ EXTERN int fs_nr;
 
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN dc_usr_t  dcu, *dc_ptr;
-EXTERN int local_nodeid;
+// EXTERN int local_nodeid;
 EXTERN proc_usr_t proc_fs, *fs_ptr;	
 EXTERN int err_code;		/* temporary storage for error number */
 //EXTERN char user_path[MNX_PATH_MAX];/* storage for user path name */

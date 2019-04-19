@@ -36,8 +36,9 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	/* get DVS parameters from Userspace */
 	if( du_addr != NULL) {  /* NULL => already loaded DVS parameters */ 
 		do {
-			ret = copy_from_user(&lcldvs, du_addr, sizeof(dvs_usr_t));
-			if(ret) break;
+//			ret = copy_from_user(&lcldvs, du_addr, sizeof(dvs_usr_t));
+			COPY_FROM_USER_PROC(ret, &lcldvs, du_addr, sizeof(dvs_usr_t)); 
+			if(ret < 0) break;
 			d_ptr = &lcldvs;
 			DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(d_ptr));
 			DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(d_ptr));
@@ -57,7 +58,7 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 			if(d_ptr->d_max_copylen < d_ptr->d_max_copybuf) {ret = EDVSBADVALUE; break;}
 
 		}while(0);
-		if (ret) 	{ 
+		if (ret < 0) { 
 			WUNLOCK_DVS;
 			ERROR_RETURN(ret);
 		}
@@ -380,19 +381,24 @@ asmlinkage long new_dc_init(dc_usr_t *dcu_addr)
 	DVKDEBUG(INTERNAL,"This process is running on cpu_id=%d \n", cpu_id);
 
 	/* get DC parameters from Userspace */
-	ret = copy_from_user(&dcu, dcu_addr, sizeof(dc_usr_t));
-	if (ret) 	ERROR_RETURN(ret);
+//	ret = copy_from_user(&dcu, dcu_addr, sizeof(dc_usr_t));
+	COPY_FROM_USER_PROC(ret, &dcu, dcu_addr, sizeof(dc_usr_t));
+	DVKDEBUG(INTERNAL,DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr) );
+	DVKDEBUG(INTERNAL,DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr) );
+	if (ret<0) 	ERROR_RETURN(ret);
 	do {
+		ret = EDVSERRCODE; 
 		if((dcu_ptr->dc_dcid        < 0) || (dcu_ptr->dc_dcid 	>= dvs.d_nr_dcs)) break;
 		if((dcu_ptr->dc_nr_procs   <= 0) || (dcu_ptr->dc_nr_procs 	> dvs.d_nr_procs)) break;
 		if((dcu_ptr->dc_nr_tasks   <  0) || (dcu_ptr->dc_nr_tasks 	> dvs.d_nr_tasks)) break;
 		if((dcu_ptr->dc_nr_sysprocs < 0) || (dcu_ptr->dc_nr_sysprocs > dvs.d_nr_sysprocs)) break;
 		if((dcu_ptr->dc_nr_nodes   <= 0) || (dcu_ptr->dc_nr_nodes 	> dvs.d_nr_nodes)) break;
-		if(dcu_ptr->dc_nr_tasks < ((dcu_ptr->dc_nr_nodes*2)+NR_FIXED_TASKS)) 		break;
+//		if(dcu_ptr->dc_nr_tasks < ((dcu_ptr->dc_nr_nodes)+NR_FIXED_TASKS)) 		break; 
 		if(dcu_ptr->dc_nr_sysprocs >= (dcu_ptr->dc_nr_procs+ dcu_ptr->dc_nr_tasks)) break;
 		if(dcu_ptr->dc_nr_sysprocs <= dcu_ptr->dc_nr_tasks) 					break;
+		ret = OK;
 	}while(0);
-	if(ret) ERROR_RETURN(EDVSBADRANGE);
+	if(ret < 0) ERROR_RETURN(EDVSBADRANGE);
 
 	if( strlen(dcu_ptr->dc_name) >= MAXDCNAME ) ERROR_RETURN(EDVSNAMESIZE);
 	
@@ -1574,7 +1580,8 @@ setaffinity_ptr(param_pid, &pap_mask);
 			proc_ptr->p_priv.priv_usr.priv_id = dc_ptr->dc_usr.dc_nr_sysprocs;
 		}
 		uname_ptr = (char *) param_pid; /* if LOCAL => pid=PID, if REMOTE => pid= name[] */ 
-		rcode = copy_from_user(proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
+//		rcode = copy_from_user(proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
+		COPY_FROM_USER_PROC(rcode, proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
 	}
 
 	set_bit(proc_ptr->p_usr.p_nodeid, &proc_ptr->p_usr.p_nodemap);
@@ -1824,6 +1831,7 @@ asmlinkage long new_getdcinfo(int dcid, dc_usr_t *dc_usr_ptr)
 	RLOCK_DC(dc_ptr);
 	COPY_TO_USER_PROC(rcode, &dc_ptr->dc_usr, dc_usr_ptr, sizeof(dc_usr_t));
 	RUNLOCK_DC(dc_ptr);	
+	if( rcode < 0) ERROR_RETURN(rcode);
 	return(rcode);
 }
 
@@ -1863,6 +1871,7 @@ asmlinkage long new_getnodeinfo(int nodeid, node_usr_t *node_usr_ptr)
 	RLOCK_NODE(n_ptr);
 	COPY_TO_USER_PROC(rcode, &n_ptr->n_usr, node_usr_ptr, sizeof(node_usr_t));
 	RUNLOCK_NODE(n_ptr);
+	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(rcode);
 }
@@ -1909,6 +1918,7 @@ asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_pt
 	DVKDEBUG(INTERNAL,"lpid=%d name=%s\n", proc_ptr->p_usr.p_lpid, (char*)proc_ptr->p_usr.p_name);
 	COPY_TO_USER_PROC(rcode, &proc_ptr->p_usr, proc_usr_ptr, sizeof(struct proc_usr));
 	RUNLOCK_PROC(proc_ptr);
+	if( rcode < 0) ERROR_RETURN(rcode);
 	return(rcode);
 }
 
@@ -1934,9 +1944,8 @@ asmlinkage long new_getproxyinfo(int px_nr,  struct proc_usr *sproc_usr_ptr, str
 
 	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_sproxy, sproc_usr_ptr, sizeof(struct proc_usr));
 	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_rproxy, rproc_usr_ptr, sizeof(struct proc_usr));
-
 	rcode = unlock_sr_proxies(px_nr);
-	if(rcode != OK) ERROR_RETURN(rcode);
+	if(rcode < OK) ERROR_RETURN(rcode);
 
 	return(rcode);
 }
@@ -2029,7 +2038,7 @@ asmlinkage long new_getep(int pid)
 /* IT waits for self process binding or other process unbining 	*/
 /*  WAIT4BIND block until bind. It returns process endpoint */
 /*  WAIT4BIND_T block until bind. It returns process endpoint */
-/*			or (-1) on timed out 				*/
+/*			or (EDVSTIMEDOUT) on timed out		*/
 /*  WAIT4UNBIND block until a process unbind. ret =0  */
 /*  WAIT4UNBIND_T block until a process unbind	   */
 /*		returning =0 or (-1) on timed out 		*/
@@ -2263,7 +2272,7 @@ asmlinkage long new_add_node(int dcid, int nodeid)
 	}while(0);
 	WUNLOCK_NODE(n_ptr);
 	WUNLOCK_DC(dc_ptr);
-	if(ret) ERROR_RETURN(ret);
+	if(ret < 0) ERROR_RETURN(ret);
 	return(OK);
 }
 
@@ -2314,7 +2323,7 @@ asmlinkage long new_del_node(int dcid, int nodeid)
 	}while(0);
 	WUNLOCK_NODE(n_ptr);
 	WUNLOCK_DC(dc_ptr);
-	if(ret) ERROR_RETURN(ret);
+	if(ret < 0) ERROR_RETURN(ret);
 	return(OK);
 }
 
@@ -2356,11 +2365,13 @@ asmlinkage long new_getpriv(int dcid, int proc_ep, priv_usr_t *u_priv)
 
 	RLOCK_PROC(proc_ptr);
 	kp_ptr = &proc_ptr->p_priv.priv_usr;
-	ret = copy_to_user( u_priv, kp_ptr,  sizeof(priv_usr_t));
+//	ret = copy_to_user( u_priv, kp_ptr,  sizeof(priv_usr_t));
+	COPY_TO_USER_PROC(ret, u_priv, kp_ptr,  sizeof(priv_usr_t));
 	DVKDEBUG(DBGPRIV,PRIV_USR_FORMAT,PRIV_USR_FIELDS(kp_ptr));
-
 	RUNLOCK_PROC(proc_ptr);
 	RUNLOCK_DC(dc_ptr);
+
+	if( ret < 0) ERROR_RETURN(ret);
 	return(ret);
 }
 
@@ -2402,11 +2413,13 @@ asmlinkage long new_setpriv(int dcid, int proc_ep, priv_usr_t *u_priv)
 
 	WLOCK_PROC(proc_ptr);
 	kp_ptr = &proc_ptr->p_priv.priv_usr;
-	ret = copy_from_user( kp_ptr, u_priv, sizeof(priv_usr_t));
+//	ret = copy_from_user( kp_ptr, u_priv, sizeof(priv_usr_t));
+	COPY_FROM_USER_PROC(ret, kp_ptr, u_priv, sizeof(priv_usr_t));
 	DVKDEBUG(DBGPRIV,PRIV_USR_FORMAT,PRIV_USR_FIELDS(kp_ptr));
-
 	WUNLOCK_PROC(proc_ptr);
 	RUNLOCK_DC(dc_ptr);
+	
+	if( ret < 0) ERROR_RETURN(ret);
 	return(ret);
 }
 
@@ -2628,8 +2641,8 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	DVKDEBUG(DBGPARAMS,"sproxy_pid=%d, rproxy_pid=%d\n", 
 		sproxy_ptr->p_usr.p_lpid, rproxy_ptr->p_usr.p_lpid);
 
-	ret = copy_from_user(px_ptr->px_usr.px_name, px_name, MAXPROXYNAME);
-
+//	ret = copy_from_user(px_ptr->px_usr.px_name, px_name, MAXPROXYNAME);
+	COPY_FROM_USER_PROC(ret, px_ptr->px_usr.px_name, px_name, MAXPROXYNAME);
 	RCU_READ_LOCK;
 	px_ptr->px_pid_ns 	= task_active_pid_ns(current);
 	rproxy_ptr->p_pid_ns= task_active_pid_ns(current);
@@ -2663,12 +2676,12 @@ asmlinkage long new_proxies_unbind(int px_nr)
 #endif 
 	
 	ret = lock_sr_proxies(px_nr,  &sproxy_ptr, &rproxy_ptr);
-	if( ret != OK) ERROR_RETURN(ret);
+	if( ret < OK) ERROR_RETURN(ret);
 
 	ret = do_proxies_unbind(sproxy_ptr,  sproxy_ptr, rproxy_ptr);
 
 	ret = unlock_sr_proxies(px_nr);
-	if( ret != OK) ERROR_RETURN(ret);
+	if( ret < OK) ERROR_RETURN(ret);
 
 	return(OK);
 }
@@ -2772,7 +2785,7 @@ asmlinkage long new_proxy_conn(int px_nr, int status)
 	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(s_ptr));
 	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(r_ptr));
 
-	if(rcode) ERROR_RETURN(rcode);
+	if(rcode < 0) ERROR_RETURN(rcode);
 	return(OK);
 }
 
@@ -2834,11 +2847,13 @@ asmlinkage long new_node_up(char *node_name, int nodeid, int px_nr)
 	if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags)){
 		memcpy((void *)n_ptr->n_usr.n_name, (void *) node_name, (MAXNODENAME-1));		
 	}else{
-		ret = copy_from_user(n_ptr->n_usr.n_name, node_name, (MAXNODENAME-1));
+//		ret = copy_from_user(n_ptr->n_usr.n_name, node_name, (MAXNODENAME-1));
+		COPY_FROM_USER_PROC(ret, n_ptr->n_usr.n_name, node_name, (MAXNODENAME-1));
 	}
 	WUNLOCK_NODE(n_ptr);
 	RUNLOCK_PROXY(px_ptr);
 
+	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);
 }
 

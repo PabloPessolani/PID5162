@@ -87,6 +87,9 @@ int  main ( int argc, char *argv[] )
 	USRDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_usr_ptr));
 	
 	/*---------------- Get SERVER PROC info ---------------*/
+	ret = dvk_wait4bindep_T(svr_ep, TIMEOUT_MOLCALL); 
+	USRDEBUG("dvk_wait4bindep_T ret=%d\n", ret);
+		
 	proc_usr_ptr = &proc;
 	ret = dvk_getprocinfo(dcid, svr_ep, proc_usr_ptr);
 	if(ret < 0) {

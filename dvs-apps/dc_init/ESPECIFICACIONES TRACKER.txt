@@ -1,0 +1,53 @@
+ENDPOINT ETRACKER. (Similar a RADAR)
+Es un servicio SOLO para los procesos LOCALES.
+Se debe verificar que cuando le llega un pedido de resolucion de endpoint,
+el emisor este registrado como LOCAL/REPLICA.
+
+Funcionaría de forma equivalete a un DNS Server.
+	nodeid = etrack(endpoint)
+Dado un endpoint no local,  resuelve el nodo donde esta registrado.
+Si tiene MUK o MOL, no es necesario. 
+ETRACKER entonces usará el endpoint de SYSTASK y el endpoint de SLOT.
+
+Se conforma un grupo spread por cada DC.
+
+Antes de usar un endpoint, una aplicacion deberia verificar que el 
+endpoint esta bindeado. (Wait4bind)
+ 
+* wait4bind(endpoint): La libreria de DVK verifica el resultado, 
+	y si este es alguno de los errores mencionado, le envia un sendrec_T a TRACKER.
+	TRACKER hace un multicast (group:TRACKER.<dcid>, msg:endpoint)
+	Todos devuelven info sobre el proceso (p_rts_flags, p_misc_flags)
+	Si NADIE tiene registrado el endpoint, TRACKER le responde a la libreria 
+	con el codigo de error original
+	Si lo tiene registrado el NODEx != local_nodeid entonces hace dvk_rmtbind()
+	y vuelve a ejecutar el wait4bind.
+
+group_tracker()
+
+si recibe un mensaje TRACKER_REQUEST
+	responde con todos los datos del endpoint requerido.
+	puede responder con un mensaje concatenado al pedido que indique el nombre del proceso
+	para que cuando se haga el rmtbind, figure el nombre 
+	
+si recibe un mensaje TRACKER_REPLY
+
+	Si el emisor es local_nodeid => IGNORARLO 
+
+	Si el endpoint buscado recide en el emisor como LOCAL/REPLICA,  entonces 
+		se hace el rmtbind del endpoint buscado en el nodo correspondiente.
+		se debe controlar a ver si ya lo tiene dado de alta
+			si ya esta de alta:
+				controlar el nodeid que coincida
+					si no coincide se puede hacer migrstar, migcommit
+				controlar que el endpoint coincida
+					unbind/bind
+					
+	Si el destinatario del mensaje es local_nodeid 
+			group_tracker() le responde a TRACKER 
+			TRACKER le responde al endpoint solicitante (libreria wait4bind)
+
+			
+			
+		
+	

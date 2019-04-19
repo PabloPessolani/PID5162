@@ -16,7 +16,7 @@ OBJS = m3nweb.o m3nwebcfg.o
 LIBS = 	/usr/src/dvs/vos/mol/lib/syslib/libsyslib.so \
 		/usr/src/dvs/vos/mol/lib/timers/libtimers.so \
 		/usr/src/dvs/vos/mol/lib/mollib/libmollib.so \
-		/usr/src/dvs/vos/mol/lib/config/libconfig.so \
+		/usr/src/dvs/lib/config/libconfig.so \
 		/usr/src/dvs/dvk-lib/stub_dvkcall.o 
 	
 m3nweb: $(OBJS) 

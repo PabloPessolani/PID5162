@@ -5,11 +5,12 @@
 dc DCNAME {
 	dcid			0;
 	nr_procs		256;
-	nr_tasks		32;
+	nr_tasks		34;
 	nr_sysprocs		64;
 	nr_nodes		32;
 	warn2proc		0;
-	warnmsg		1;
+	warnmsg			1;
+	tracker			YES;
 	ip_addr		"192.168.10.100";
 	memory		512;
 	image		"/usr/src/dvs/vos/images/debian0.img";
@@ -22,6 +23,9 @@ dc DCNAME {
 
 #include "dc_init.h"
 #include "../../include/generic/configfile.h"
+#undef EXTERN
+#define EXTERN	extern
+#include "glo.h"
  
 #define MAXTOKENSIZE	20
 #define OK				0
@@ -42,7 +46,8 @@ dc DCNAME {
 #define TKN_MEMORY 		8
 #define TKN_IMAGE 		9
 #define TKN_MOUNT 		10
-#define NR_IDENT 		11
+#define TKN_TRACKER 	11
+#define NR_IDENT 		12
 
 #define nil ((void*)0)
 
@@ -58,6 +63,7 @@ char *cfg_ident[] = {
 	"memory",
 	"image",
 	"mount",
+	"tracker",
 };
 
 #define MAX_FLAG_LEN 30
@@ -67,7 +73,7 @@ struct flag_s {
 };
 typedef struct flag_s flag_t;	
 
-extern 	dc_usr_t *dcu_ptr;
+extern 	dc_usr_t *dc_ptr;
 extern  container_t ctnr, *c_ptr;
 extern  int nr_containers;
 
@@ -90,10 +96,10 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}		
-							dcu_ptr->dc_dcid = atoi(cfg->word); 
-							USRDEBUG("dc_dcid=%d\n", dcu_ptr->dc_dcid);
-							if( dcu_ptr->dc_dcid < 0 || dcu_ptr->dc_dcid >= NR_DCS) {
-								fprintf (stderr, "Invalid dcid [0-%d]\n", NR_DCS-1 );
+							dc_ptr->dc_dcid = atoi(cfg->word); 
+							USRDEBUG("dc_dcid=%d\n", dc_ptr->dc_dcid);
+							if( dc_ptr->dc_dcid < 0 || dc_ptr->dc_dcid >= dvs_ptr->d_nr_dcs) {
+								fprintf (stderr, "Invalid dcid [0-%d]\n", dvs_ptr->d_nr_dcs-1 );
 								exit(EXIT_FAILURE);
 							}
 							break;
@@ -102,10 +108,11 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_nr_procs = atoi(cfg->word); 
-							USRDEBUG("dc_nr_procs=%d\n", dcu_ptr->dc_nr_procs);
-							if( dcu_ptr->dc_nr_procs <= 0 || dcu_ptr->dc_nr_procs  > NR_PROCS) {
-								fprintf (stderr, "Invalid nr_procs [1-%d]\n", NR_PROCS);
+							dc_ptr->dc_nr_procs = atoi(cfg->word); 
+							USRDEBUG("dc_nr_procs=%d\n", dc_ptr->dc_nr_procs);
+							if( dc_ptr->dc_nr_procs <= 0 
+							|| dc_ptr->dc_nr_procs  > dvs_ptr->d_nr_procs) {
+								fprintf (stderr, "Invalid nr_procs [1-%d]\n", dvs_ptr->d_nr_procs);
 								exit(EXIT_FAILURE);
 							}
 							break;
@@ -114,10 +121,11 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_nr_tasks = atoi(cfg->word); 
-							USRDEBUG("dc_nr_tasks=%d\n", dcu_ptr->dc_nr_tasks);
-							if( dcu_ptr->dc_nr_tasks <= 0 || dcu_ptr->dc_nr_tasks  > NR_TASKS ) {
-								fprintf (stderr, "Invalid nr_tasks [1-%d]\n", NR_TASKS);
+							dc_ptr->dc_nr_tasks = atoi(cfg->word); 
+							USRDEBUG("dc_nr_tasks=%d\n", dc_ptr->dc_nr_tasks);
+							if( dc_ptr->dc_nr_tasks <= 0 
+							|| dc_ptr->dc_nr_tasks  > dvs_ptr->d_nr_tasks ) {
+								fprintf (stderr, "Invalid nr_tasks [1-%d]\n", dvs_ptr->d_nr_tasks);
 								exit(EXIT_FAILURE);
 							}
 							break;
@@ -126,10 +134,11 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_nr_sysprocs = atoi(cfg->word); 
-							USRDEBUG("dc_nr_sysprocs=%d\n", dcu_ptr->dc_nr_sysprocs);
-							if( dcu_ptr->dc_nr_sysprocs <= 0 || dcu_ptr->dc_nr_sysprocs > NR_SYS_PROCS ) {
-								fprintf (stderr, "Invalid nr_sysprocs [1-%d]\n", NR_SYS_PROCS);
+							dc_ptr->dc_nr_sysprocs = atoi(cfg->word); 
+							USRDEBUG("dc_nr_sysprocs=%d\n", dc_ptr->dc_nr_sysprocs);
+							if( dc_ptr->dc_nr_sysprocs <= 0 
+							|| dc_ptr->dc_nr_sysprocs > dvs_ptr->d_nr_sysprocs ) {
+								fprintf (stderr, "Invalid nr_sysprocs [1-%d]\n", dvs_ptr->d_nr_sysprocs );
 								exit(EXIT_FAILURE);
 							}
 							break;
@@ -138,10 +147,11 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_nr_nodes = atoi(cfg->word); 
-							USRDEBUG("dc_nr_nodes=%d\n", dcu_ptr->dc_nr_nodes);
-							if( dcu_ptr->dc_nr_nodes <= 0 || dcu_ptr->dc_nr_nodes > NR_NODES ) {
-								fprintf (stderr, "Invalid nr_nodes [1-%d]\n", NR_NODES);
+							dc_ptr->dc_nr_nodes = atoi(cfg->word); 
+							USRDEBUG("dc_nr_nodes=%d\n", dc_ptr->dc_nr_nodes);
+							if( dc_ptr->dc_nr_nodes <= 0 
+							|| dc_ptr->dc_nr_nodes > dvs_ptr->d_nr_nodes ) {
+								fprintf (stderr, "Invalid nr_nodes [1-%d]\n", dvs_ptr->d_nr_nodes);
 								exit(EXIT_FAILURE);
 							}
 							break;							
@@ -150,12 +160,13 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_warn2proc = atoi(cfg->word);
-							USRDEBUG("dc_warn2proc=%d\n", dcu_ptr->dc_warn2proc);
-							if( dcu_ptr->dc_warn2proc < (-NR_TASKS) || dcu_ptr->dc_warn2proc > (NR_SYS_PROCS-NR_TASKS) ) {
+							dc_ptr->dc_warn2proc = atoi(cfg->word);
+							USRDEBUG("dc_warn2proc=%d\n", dc_ptr->dc_warn2proc);
+							if( dc_ptr->dc_warn2proc < (-dvs_ptr->d_nr_tasks) 
+							|| dc_ptr->dc_warn2proc > (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks) ) {
 								fprintf (stderr, "Invalid dc_warn2proc [%d-%d]\n"
-									,-NR_TASKS
-									,(NR_SYS_PROCS-NR_TASKS));
+									,-dvs_ptr->d_nr_tasks
+									,(dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks));
 								exit(EXIT_FAILURE);
 							}
 							break;							
@@ -164,8 +175,8 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							dcu_ptr->dc_warnmsg = atoi(cfg->word);
-							USRDEBUG("dc_warnmsg=%d\n", dcu_ptr->dc_warnmsg);
+							dc_ptr->dc_warnmsg = atoi(cfg->word);
+							USRDEBUG("dc_warnmsg=%d=0x%X\n", dc_ptr->dc_warnmsg, dc_ptr->dc_warnmsg);
 							break;
 						case TKN_IP_ADDR:
 							if (!config_isatom(cfg)) {
@@ -203,6 +214,15 @@ int search_ident(config_t *cfg)
 							}
 							strncpy(ctnr.c_mount, cfg->word, IMAGELEN);
 							USRDEBUG("c_mount=%s\n", ctnr.c_mount);
+							break;
+						case TKN_TRACKER:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							if( strncmp(cfg->word, "YES", 3) == 0) 
+								tracker_flag = 1;								
+							USRDEBUG("tracker_flag=%d\n", tracker_flag);
 							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -247,7 +267,7 @@ int search_dc_tkn(config_t *cfg)
 				if (cfg != nil) {
 					if (config_isatom(cfg)) {
 						USRDEBUG("%s\n", cfg->word);
-						strncpy(dcu_ptr->dc_name, cfg->word, (MAXDCNAME-1));
+						strncpy(dc_ptr->dc_name, cfg->word, (MAXDCNAME-1));
 						name_cfg = cfg;
 						cfg = cfg->next;
 						if (!config_issub(cfg)) {

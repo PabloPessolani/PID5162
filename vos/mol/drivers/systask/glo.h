@@ -8,7 +8,7 @@
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN dc_usr_t dcu, dcu_primary, *dc_ptr, *dcf_ptr;
 EXTERN node_usr_t node, *node_ptr;
-EXTERN int local_nodeid;
+// EXTERN int local_nodeid;
 
 EXTERN molclock_t realtime;               	/* Minix real time clock */
 EXTERN long clockTicks;

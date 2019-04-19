@@ -88,6 +88,7 @@
 #define	MNX_MAX_ARGS		10	/* # of arguments (argc) of rexec */ 
 
 extern int	dvk_fd;
+extern int local_nodeid;
 
 extern char *program_invocation_name;
 extern char *program_invocation_short_name;

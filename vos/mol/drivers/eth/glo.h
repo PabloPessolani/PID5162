@@ -11,7 +11,7 @@
 	#endif		
 #endif
 
-EXTERN int local_nodeid;
+//EXTERN int local_nodeid;
 EXTERN int dcid;
 EXTERN unsigned int bm_irq;			// virtual IRQ bitmap.
 EXTERN fd_set fdset;

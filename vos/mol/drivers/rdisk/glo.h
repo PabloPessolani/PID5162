@@ -60,7 +60,7 @@ que es un int y aca lo estoy definiendo con minusculas que es un short
 EXTERN mnx_dev_t root_dev;		/* device number of the root device */ 
 
 EXTERN char *img_name;		/* name of the ram disk image file*/
-EXTERN int local_nodeid;
+extern int local_nodeid;
 
 // EXTERN int d_minor;		/* minor number of device*/
 

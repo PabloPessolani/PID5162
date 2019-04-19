@@ -37,6 +37,7 @@ echo "nr_procs 221;"    			>> DC$dcid.cfg
 echo "nr_tasks 34;"    				>> DC$dcid.cfg
 echo "nr_sysprocs 64;"  			>> DC$dcid.cfg
 echo "nr_nodes 32;"    				>> DC$dcid.cfg
+echo "tracker \"YES\";"    			>> DC$dcid.cfg
 #echo "warn2proc 0;"     			>> DC$dcid.cfg
 #echo "warnmsg 1;"     				>> DC$dcid.cfg
 #echo "ip_addr \"192.168.10.10$dcid\";"	>> DC$dcid.cfg
@@ -44,7 +45,7 @@ echo "memory 512;"    				>> DC$dcid.cfg
 echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> DC$dcid.cfg
 echo "mount \"/usr/src/dvs/vos/rootfs/DC$dcid\";"  			>> DC$dcid.cfg
 echo "};"          					>> DC$dcid.cfg
-./dc_init DC$dcid.cfg 
+./dc_init DC$dcid.cfg > dc_init$dcid.out 2>dc_init$dcid.err
 dmesg -c >> /usr/src/dvs/dvk-tests/dmesg.txt
 #read  -p "TCP PROXY Enter para continuar... "
 #     PARA DESHABILITAR EL ALGORITMO DE NAGLE!! 
@@ -76,6 +77,7 @@ cat /proc/dvs/DC$dcid/info
 sleep 1
 cat /proc/dvs/nodes
 cat /proc/dvs/DC$dcid/info
+cat /proc/dvs/DC$dcid/procs 
 cd /usr/src/dvs/dvs-apps/dc_init
 exit 
 

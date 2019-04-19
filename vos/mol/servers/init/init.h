@@ -84,6 +84,7 @@
 #include "../macros.h"
 
 extern int	dvk_fd;
+extern int local_nodeid;
 
 #include "../pm/timers.h"
 #include "const.h"

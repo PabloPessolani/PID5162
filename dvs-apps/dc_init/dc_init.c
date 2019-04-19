@@ -5,11 +5,12 @@
 //dc DCNAME {
 //	dcid			0;
 //	nr_procs		256;
-//	nr_tasks		32;
+//	nr_tasks		34;
 //	nr_sysprocs		64;
 //	nr_nodes		32;
 //	warn2proc		0;
 //	warnmsg			1;
+//	tracker			-2;
 //	ip_addr			"192.168.10.100";
 //	memory			512;
 //	image			"DC0.img";
@@ -30,11 +31,11 @@
 #define  USRDBG		1
 #define  DVS_USERSPACE	1
 
+#define DVK_GLOBAL_HERE
 #include "dc_init.h"
-/* Container representation */
+#include "glo.h"
 
-dvs_usr_t dvs, *dvs_ptr;
-int local_nodeid;
+/* Container representation */
 
 #define STACK_SIZE  65536
 
@@ -58,7 +59,6 @@ dc_usr_t dcu = {
 #define DC_NAMESPACES (CLONE_NEWUTS|CLONE_NEWPID|CLONE_NEWIPC|CLONE_NEWNS|CLONE_NEWNET)
 #define DC_CLONE_FLAGS (CLONE_FILES|CLONE_SIGHAND|CLONE_VM)
 
-dc_usr_t *dcu_ptr;
 container_t ctnr, *c_ptr;
 int nr_containers;
 
@@ -70,7 +70,7 @@ char root_dir[128];
 void  main ( int argc, char *argv[] )
 {
 	int c, nodeid, child_pid , status, pid, len ,rcode, ret;
-	dc_usr_t *dc_ptr;
+	dc_usr_t *dcu_ptr;
     char *stack;                        /* Start of stack buffer area */
     char *stack_top;                     /* End of stack buffer area */
     const mode_t START_UMASK = S_IWOTH; /* Initial umask setting */
@@ -81,9 +81,9 @@ void  main ( int argc, char *argv[] )
 extern char *optarg;
 extern int optind, optopt, opterr;
 
-	dc_ptr = &dcu;
-	dcu_ptr=&ctnr.c_dcu;
-	*dcu_ptr = *dc_ptr;
+	dcu_ptr = &dcu;
+	dc_ptr=&ctnr.c_dcu;
+	*dc_ptr = *dcu_ptr;
 	c_ptr = &ctnr;
 	
 	if( argc != 2){
@@ -91,6 +91,15 @@ extern int optind, optopt, opterr;
 		fflush(stderr);
 		exit(1);
 	}
+	
+	rcode = dvk_open();
+	if (rcode < 0)  ERROR_EXIT(rcode);
+	local_nodeid = dvk_getdvsinfo(&dvs);
+	if(local_nodeid < 0 )
+		ERROR_EXIT(local_nodeid);
+	dvs_ptr = &dvs;
+	printf(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
+	printf("local_nodeid=%d\n", local_nodeid);
 	
 	nr_containers = 0;		
 	dc_read_config(argv[1]);
@@ -107,27 +116,24 @@ extern int optind, optopt, opterr;
 		exit(1);
 	}
 		
-	if( dcu_ptr->dc_nr_tasks  > dcu_ptr->dc_nr_procs )  {
-		fprintf (stderr, "Invalid nr_tasks: must be <= nr_procs(%d)\n", dcu_ptr->dc_nr_procs);
+	if( dc_ptr->dc_nr_tasks  > dc_ptr->dc_nr_procs )  {
+		fprintf (stderr, "Invalid nr_tasks: must be <= nr_procs(%d)\n", dc_ptr->dc_nr_procs);
 		exit(EXIT_FAILURE);
 	}
 
-	if( dcu_ptr->dc_nr_sysprocs  > dcu_ptr->dc_nr_procs )  {
-		fprintf (stderr, "Invalid nr_sys_tasks: must be <= nr_procs(%d)\n", dcu_ptr->dc_nr_procs);
+	if( dc_ptr->dc_nr_sysprocs  > dc_ptr->dc_nr_procs )  {
+		fprintf (stderr, "Invalid nr_sys_tasks: must be <= nr_procs(%d)\n", dc_ptr->dc_nr_procs);
 		exit(EXIT_FAILURE);
 	}
 	
-	if( ( strcmp( dcu_ptr->dc_name, "DC0") == 0 ) 
-		&& dcu_ptr->dc_dcid != 0)
-		sprintf(dcu_ptr->dc_name,"DC%d", dcu_ptr->dc_dcid);
+	if( ( strcmp( dc_ptr->dc_name, "DC0") == 0 ) 
+		&& dc_ptr->dc_dcid != 0)
+		sprintf(dc_ptr->dc_name,"DC%d", dc_ptr->dc_dcid);
 
-	USRDEBUG("PARENT " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	USRDEBUG("PARENT " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	USRDEBUG("PARENT " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	USRDEBUG("PARENT " DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr));
+	USRDEBUG("PARENT " DC_USR2_FORMAT, DC_USR2_FIELDS(dc_ptr));
+	USRDEBUG("PARENT " DC_WARN_FORMAT, DC_WARN_FIELDS(dc_ptr));
 	
-	ret = dvk_open();
-	if (ret < 0)  ERROR_EXIT(ret);
-
     /* Allocate stack for child */
     stack = malloc(STACK_SIZE);
     if (stack == NULL) ERROR_EXIT(-errno);
@@ -155,9 +161,14 @@ extern int optind, optopt, opterr;
     if (ctnr.c_ip_addr[0] != '\0')  {
         create_peer(ctnr.c_dcu.dc_dcid);
     }
-		
+
+	if ( tracker_flag ) {
+		init_spread( );
+		connect_to_spread();
+	}
+	
     child_pid = clone(init_dc, stack_top, 
-					DC_CLONE_FLAGS|DC_NAMESPACES|SIGCHLD, dcu_ptr);
+					DC_CLONE_FLAGS|DC_NAMESPACES|SIGCHLD, dc_ptr);
 	if(child_pid < 0) ERROR_EXIT(-errno);
 
 	   /* Retrieve and display hostname */
@@ -188,26 +199,18 @@ extern int optind, optopt, opterr;
 		root_dir[len] = '\0';
     printf("CHILD link_name:%s root_dir=%s\n", link_name, root_dir);
 	
-	rcode = dvk_open();
-	if (rcode < 0)  ERROR_EXIT(rcode);
-	local_nodeid = dvk_getdvsinfo(&dvs);
-	if(local_nodeid < 0 )
-		ERROR_EXIT(local_nodeid);
-	dvs_ptr = &dvs;
-	printf(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
-	printf("local_nodeid=%d\n", local_nodeid);
-	
+
 #define  sh_filename 	link_name
 #define  dc_filename 	root_dir
 	
-	sprintf(sh_filename,"%s.sh", dcu_ptr->dc_name);
+	sprintf(sh_filename,"%s.sh", dc_ptr->dc_name);
 	fp = fopen(sh_filename,"w");
 	if(fp == NULL ) ERROR_EXIT(-errno);
 	fputs("#!/bin/bash\n",fp);
 	fprintf(fp,"NODEID=%d\n", local_nodeid); 
-	fprintf(fp,"%s=%d\n",dcu_ptr->dc_name,child_pid); 
+	fprintf(fp,"%s=%d\n",dc_ptr->dc_name,child_pid); 
 	fprintf(fp,"export NODEID\n"); 
-	fprintf(fp,"export %s\n",dcu_ptr->dc_name); 
+	fprintf(fp,"export %s\n",dc_ptr->dc_name); 
 //	fprintf(fp,"exit 0\n"); 
 	fclose(fp);
 	
@@ -225,14 +228,25 @@ extern int optind, optopt, opterr;
 
     /* Close the write end of the pipe, to signal to the child that we   are ready. */
     close(ctnr.c_pipe_fd[1]);
-	
+		
+	if ( tracker_flag == 1) {
+		MTX_LOCK(trk_mutex);
+		COND_WAIT(trk_cond, trk_mutex);
+//		COND_SIGNAL(sys_cond);
+		MTX_UNLOCK(trk_mutex);
+		if( fork() == 0){
+			ret = tracker_main();
+			if(ret < 0) ERROR_EXIT(ret);
+			exit(0);
+		}
+	}
     printf("PARENT exiting - child_pid=%ld\n", (long) child_pid);
 	exit(0);
  }
 
 static int init_dc(void *arg)
 {
-	dc_usr_t *dcu_ptr;
+	dc_usr_t *dc_ptr;
     struct utsname uts;
 	int nodeid;
 	long rcode;
@@ -252,10 +266,10 @@ static int init_dc(void *arg)
 	
 	USRDEBUG("CHILD  PID=%d PPID=%d\n", getpid(), getppid());
 	
-	dcu_ptr = (dc_usr_t *) arg;
-	USRDEBUG("CHILD before " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	USRDEBUG("CHILD before " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	USRDEBUG("CHILD before " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	dc_ptr = (dc_usr_t *) arg;
+	USRDEBUG("CHILD before " DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr));
+	USRDEBUG("CHILD before " DC_USR2_FORMAT, DC_USR2_FIELDS(dc_ptr));
+	USRDEBUG("CHILD before " DC_WARN_FORMAT, DC_WARN_FIELDS(dc_ptr));
 	
     /* Become leader of new session */
 	if (setsid() == -1)  ERROR_EXIT(-errno);
@@ -269,23 +283,23 @@ static int init_dc(void *arg)
 		
 	USRDEBUG("CHILD I am a daemon\n");
 	// init DC 
-	nodeid = dvk_dc_init(dcu_ptr);
+	nodeid = dvk_dc_init(dc_ptr);
 	if( nodeid < 0) ERROR_EXIT(nodeid);
-	printf("DC%d has been initialized on node %d\n", dcu_ptr->dc_dcid, nodeid);
+	printf("DC%d has been initialized on node %d\n", dc_ptr->dc_dcid, nodeid);
 	
 	node_usr_ptr = &node_usr;
 	rcode = dvk_getnodeinfo(nodeid, node_usr_ptr);
 	if( rcode < 0) ERROR_EXIT(rcode);
 	USRDEBUG("CHILD " NODE_USR_FORMAT, NODE_USR_FIELDS(node_usr_ptr));
 	
-	rcode = dvk_getdcinfo(dcu_ptr->dc_dcid, dcu_ptr);
+	rcode = dvk_getdcinfo(dc_ptr->dc_dcid, dc_ptr);
 	if( rcode < 0) ERROR_EXIT(rcode);
-	USRDEBUG("CHILD after  " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	USRDEBUG("CHILD after  " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	USRDEBUG("CHILD after  " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	USRDEBUG("CHILD after  " DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr));
+	USRDEBUG("CHILD after  " DC_USR2_FORMAT, DC_USR2_FIELDS(dc_ptr));
+	USRDEBUG("CHILD after  " DC_WARN_FORMAT, DC_WARN_FIELDS(dc_ptr));
 
 	/* Change hostname in UTS namespace of child */
-    if (sethostname(dcu_ptr->dc_name, strlen(dcu_ptr->dc_name)) == -1)
+    if (sethostname(dc_ptr->dc_name, strlen(dc_ptr->dc_name)) == -1)
 		ERROR_EXIT(-errno);
 	
     /* Retrieve and display hostname */
@@ -406,11 +420,19 @@ static int init_dc(void *arg)
     }
 #endif // ACCESS_RIGHTS
 
-    USRDEBUG("sleep looping\n");
+	if( tracker_flag ){
+		MTX_LOCK(trk_mutex);
+		COND_SIGNAL(trk_cond);
+//		COND_WAIT(is_cond, muk_mutex);
+		MTX_UNLOCK(trk_mutex);
+	}
+
+	USRDEBUG("sleep looping\n");
 	while(1) {
 //		printf("CHILD pid:%d\n", getpid());
 		sleep(60);
 	}
+
     exit(EXIT_SUCCESS);      /* Child terminates now */
 }
 

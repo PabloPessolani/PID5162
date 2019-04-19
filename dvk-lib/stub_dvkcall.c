@@ -5,12 +5,14 @@
 
 #define DVS_USERSPACE	1
 
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <sys/syscall.h>    /* For SYS_xxx definitions */
 
 #include "../include/com/dvs_config.h"
 #include "../include/com/config.h"
@@ -30,10 +32,15 @@
 #include "../include/com/dvs_errno.h"
 #include "../include/com/ipc.h"
 #include "../include/dvk/dvk_ioparm.h"
+#include "../include/generic/tracker.h"
 
 #include "stub_debug.h"
 
 int dvk_fd;
+int local_nodeid;
+
+long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+
 
 long dvk_open(void)
 {
@@ -290,8 +297,12 @@ long dvk_proxy_conn(int pxid, int status)
 #define dvk_wait4unbind_T(endpoint, to_ms)	dvk_wait4bindep_X(WAIT_UNBIND, endpoint, to_ms)
 long dvk_wait4bindep_X(int cmd, int endpoint, unsigned long timeout)
 {
-    long ret;
+    long ret, rcode, caller_ep, old_errno;
 	parm_wait4bind_t parm;
+	dc_usr_t dcu, *dcu_ptr;
+	proc_usr_t proc, *proc_ptr;
+	message msg, *msg_ptr;
+	
     LIBDEBUG(DBGPARAMS, "cmd=%d endpoint=%d timeout=%ld\n", cmd, endpoint, timeout);
 	parm.parm_cmd  	= cmd;
 	parm.parm_ep  	= endpoint;
@@ -305,7 +316,68 @@ long dvk_wait4bindep_X(int cmd, int endpoint, unsigned long timeout)
 				errno = 0;
 				return(endpoint);
 			}else{
-				ERROR_RETURN(-errno);
+				old_errno = errno;
+
+				caller_ep = dvk_getep((pid_t) syscall (SYS_gettid));
+				if( (endpoint == SELF) 
+				||  (endpoint == caller_ep)) 
+					ERROR_RETURN(-old_errno);	
+				
+				// get DC INFO 
+				dcu_ptr = &dcu;
+				rcode = dvk_getdcinfo(PROC_NO_PID, dcu_ptr);
+				if( rcode < 0) 
+					ERROR_RETURN(-old_errno);	
+								
+				// Request TRACKER for the NODEID of an endpoint 	
+				msg_ptr                 = &msg;
+				msg_ptr->m_type   	    = TRACKER_REQUEST;
+				msg_ptr->rqtr_ep  	    = caller_ep;
+				msg_ptr->rqtr_nodeid    = local_nodeid;
+				msg_ptr->sch_ep   	    = endpoint;
+				msg_ptr->rply_nodeid    = (-1);
+				msg_ptr->sch_rts_flags  = 0;
+				msg_ptr->sch_misc_flags = 0;
+				LIBDEBUG(DBGPARAMS,TRK_FORMAT,TRK_FIELDS(msg_ptr));		
+				rcode = dvk_sendrec_T(TRACKER_EP(local_nodeid), msg_ptr, TIMEOUT_MOLCALL);
+				if( rcode < EDVSERRCODE || rcode == EDVSTIMEDOUT )
+					ERROR_RETURN(-old_errno);
+					
+				// TRACKER reply with an error. It must reply with NODEID
+				if( msg_ptr->m_type !=  TRACKER_REPLY )
+					ERROR_RETURN(-old_errno);
+
+				// nodeid must be different  PROC_NO_PID (-1)
+				if( msg_ptr->rply_nodeid == PROC_NO_PID)
+					ERROR_RETURN(-old_errno);
+				
+				// nodeid must be different from local_nodeid
+				if( msg_ptr->rply_nodeid == local_nodeid)
+					ERROR_RETURN(-old_errno);
+				
+				// nodeid must be a valid node number in the DC 
+				if( msg_ptr->rply_nodeid < 0 
+				||  msg_ptr->rply_nodeid >= dcu_ptr->dc_nr_nodes)
+					ERROR_RETURN(-old_errno);
+				
+				// the nodeid must be one of the valid nodes of the DC 
+				if( ! TEST_BIT(dcu_ptr->dc_nodes, msg_ptr->rply_nodeid))
+					ERROR_RETURN(-old_errno);			
+							
+				// retry the WAIT4BIND 
+				parm.parm_cmd  	= WAIT_BIND;
+				parm.parm_ep  	= endpoint;
+				parm.parm_tout	= TIMEOUT_NOWAIT;
+				ret = ioctl(dvk_fd,DVK_IOCSWAIT4BIND, (int) &parm);
+				LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);
+				if ( ret < 0) {
+					if( errno == (-endpoint) ){
+						errno = 0;
+						return(endpoint);
+					}
+				}
+				errno = 0;
+				return(ret); 
 			}
 		}else{ 
 			errno = 0;

@@ -37,7 +37,7 @@ EXTERN dc_usr_t  dcu, *dc_ptr;
 EXTERN proc_usr_t *proc_ptr;
 EXTERN priv_usr_t *priv_ptr;
 
-EXTERN int local_nodeid;
+// EXTERN int local_nodeid;
 EXTERN struct sysinfo info;
 EXTERN int next_child;
 

@@ -10,7 +10,7 @@ EXTERN event_t *ev_head;
 EXTERN event_t *ev_tail;
 EXTERN int clck_call_expire;	/* Call clck_expire_timer from the mainloop */
 
-EXTERN int local_nodeid;
+// EXTERN int local_nodeid;
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN int inet_lpid;		
 EXTERN dc_usr_t  dcu, *dc_ptr;

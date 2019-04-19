@@ -15,6 +15,8 @@
 #include <semaphore.h>
 #include <ctype.h>
 #include <netdb.h>
+#include <assert.h>
+
 extern int h_errno;
 
 #include <sys/types.h>
@@ -28,6 +30,7 @@ extern int h_errno;
 #include <sys/ipc.h>
 //#include <limits.h>
 #include <sys/msg.h>
+#include <sys/mman.h>
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -86,6 +89,7 @@ extern int h_errno;
 #define PROC_MAPPED(p_nr) ((( p_nr + dc_ptr->dc_nr_tasks ) * dvs_ptr->d_size_proc) + kproc)
 
 extern int	dvk_fd;
+extern int local_nodeid;
 
 
 

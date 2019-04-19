@@ -5608,6 +5608,330 @@ NODE0:
 		para ello se cambio el DVK y los proxies. 
 		
 		
+=======================================================================================
+20190418:		
+		Incorpore TRACKER en dc_init de tal forma de que un proceso pueda bindear
+		un proceso remoto desconocido. Resuelve mediante SPREAD 
+					nodeid = tracker(endpoint);
+					
+		El dvk_wait4bind SE VE AFECTADO!! por lo que para hacer uso deben recompilarse 			
+					
+		ATENCION: ahora local_nodeid esta incorporada en la  libdvklib.so !!!!!!!!!!!
+		
+		tuve que recompilar TODO. 
+		
+		NOTA!!! : Recompilar todo antes de usar. 
+				
+		ATENCION !!!!!: dc_init arranca en el namespace de init (root)	
+				Hace una operacion CLONE donde el child1 cambia todos los namespaces
+				entre ellos el de NET. 
+				por esta razon NO SE PUEDE USAR SPREAD desde dentro del namespace !!!!!!
+				El SP_connect() da error 
+				COULD_NOT_CONNECT	Lower level socket calls failed to allow a connection to the specified spread daemon right now.
+				
+				Para saltar esto, el proceso principal se fija si en el archivo de 
+				configuracion DCx.cfg si esta prendida 
+					tracker "YES";
+				Si esta encendida el parent hace un fork. El child2 permanece en el NS init
+				en tanto que el child1 en el NS del DC. 
+				El child2 crea un hilo que dara tratamiento a los mensajes spread.
+				El child2 es el server TRACKER que espera mensajes TRACKER_REQUEST provenientes
+				de la libreria de dvk_wait4bind().
+				Cuando recibe una peticion TRACKER_REQUEST, la hace multicast al grupo 
+				spread del dominio TRACKER<dcid>.
+				El child2 (de otro nodo) recibe la peticion y si tiene o no bindeado el 
+				endpoint buscado responde con los pararametros del process descriptor via Multicast.
+				Como todos los nodos reciben el multicast (no solo el que hizo la peticion)
+				Si el mensaje es válido, todos dan de alta o modifican la entrada del 
+				process descriptor local.
+				En el nodo peticionante, el thread spread hace un send(TRACKER_REPLY) hacia el 
+				enpoint del TRACKER.
+				Este al recibirlo, se lo envia como respuesta al  wait4bind quien reintenta la operacion
+				Si el enpoint no se encuentra bindeado en ningun nodo, entonces en el 
+				wait4bind vence por timeout.
+				
+				DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+				0 -34   -34   643/643    0    0   80 27342 27342 27342 27342 dc_init  << thread spread tracker       
+				0  -2    -2   641/641    0    8   20 31438 27342 27342 27342 dc_init  << main thread tracker 
+				
+				root@node0:/usr/src/dvs/dvk-tests# ps -efL |grep dc_init
+				root       639     1   639  0    1 10:12 ?        00:00:00 ./dc_init DC0.cfg  << dc_init 
+				root       641     1   641  0    2 10:12 pts/0    00:00:00 ./dc_init DC0.cfg  << main thread tracker 
+				root       641     1   643  0    2 10:12 pts/0    00:00:00 ./dc_init DC0.cfg  << thread spread tracker 
+
+				root@node0:/usr/src/dvs/dvk-tests# cd ../dvs-apps/dc_init/
+				root@node0:/usr/src/dvs/dvs-apps/dc_init# . ./DC0.sh 
+				root@node0:/usr/src/dvs/dvs-apps/dc_init# echo $DC0
+				639 														<<<<<<<<<<<<<<<<<<<< dc_init
+
+	
+ERROR EN TRACKER :
+#ifdef TEMPORAL				/// ESTA DANDO ERROR ESTO !!!!!!!
+				memcpy((void*) trk_sp_members, (void *) target_groups, trk_sp_nr_mbrs*MAX_GROUP_NAME);
+				for( i=0; i < trk_sp_nr_mbrs; i++ ){
+					USRDEBUG("\t%s\n", trk_sp_members[i][0]);	
+				}
+#endif TEMPORAL	
+				
+				
+				
+				
+=======================================================================================
+20190419:			
+				
+EN NODE0:
+	root@node0:/usr/src/dvs/dvk-proxies/test# cd /usr/src/dvs/dvk-tests/
+	root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+	lcl_nodeid=0 dcid=0
+	Enter para continuar... 
+	Spread Enter para continuar... 
+	partition 5
+	mount Enter para continuar... 
+	local_nodeid=0 Enter para continuar... 
+	DEBUG 657:dvk_open:47: Open dvk device file /dev/dvk
+	Initializing DVS. Local node ID 0... 
+	DEBUG 657:dvk_dvs_init:268: nodeid=0
+	DEBUG 657:dvk_dvs_init:272: ioctl ret=0 errno=0
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+	Get DVS info
+	DEBUG 657:dvk_getdvsinfo:120: 
+	DEBUG 657:dvk_getdvsinfo:122: ioctl ret=0
+	local node ID 0... 
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFFFF version=2.1 sizeof(proc)=512
+	DC0 Enter para continuar... 
+	TIPC BAT PROXY Enter para continuar... 
+	Enter para continuar... 
+	eth:eth0
+	Type       Lower      Upper      Port Identity              Publication Scope
+	0          16781412   16781412   <1.1.100:0>                16781412    zone
+	1          1          1          <1.1.100:2991767570>       2991767571  node
+	3001       17         17         <1.1.100:3886939413>       3886939414  zone
+	broadcast-link: up
+	Enter para continuar... 
+	ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     6      -1        0        0 -------------------------------X node0           
+	 1     2       1        0        0 -------------------------------- node1           
+	Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+		  1     1    669      670           node1 ------------------------------X-
+	ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+	 1 send    669      0      1        0        0  27342  27342  27342 tipc_proxy_bat 
+	 1 recv    670      0      1        0        0  27342  27342  27342 tipc_proxy_bat 
+	ADDNODE Enter para continuar... 
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=1
+	dc_pid=660
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  -------------------------------X
+	cpumask=1 
+	DEBUG 678:dvk_open:47: Open dvk device file /dev/dvk
+	Adding node 1 to DC 0... 
+	DEBUG 678:dvk_add_node:240: dcid=0 nodeid=1
+	DEBUG 678:dvk_add_node:244: ioctl ret=0 errno=0
+	ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     6      -1        0        0 -------------------------------X node0           
+	 1     2       1        0        0 -------------------------------X node1           
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=3
+	dc_pid=660
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  ------------------------------XX
+	cpumask=1 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0 -34   -34   663/663    0    0   80 27342 27342 27342 27342 dc_init  << TRACKER SPREAD THREAD       
+	 0  -2    -2   661/661    0    8   20 31438 27342 27342 27342 dc_init  << TRACKER MAIN THREAD      
+	root@node0:/usr/src/dvs/dvk-tests# cd /usr/src/dvs/dvs-apps/dc_init/
+	root@node0:/usr/src/dvs/dvs-apps/dc_init# . ./DC0.sh 
+	root@node0:/usr/src/dvs/dvs-apps/dc_init# cd /usr/src/dvs/dvk-proxies/test/
+	root@node0:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_server 0 10
+	root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0 -34   -34   663/663    0    0   80 27342 27342 27342 27342 dc_init        
+	 0  -2    -2   661/661    0    8   20 31438 27342 27342 27342 dc_init        
+	 0  88    88    -1/-1     1 1000    0 27342 27342 27342 27342 rclient <<< OBTENIDO POR AUTO-BINDING 
+	 
+ EN NODE1:
+	 root@node1:/usr/src/dvs/dvk-proxies/test# cd /usr/src/dvs/dvk-tests/
+	root@node1:/usr/src/dvs/dvk-tests# ./tests.sh 
+	usage: ./tests.sh <lcl_nodeid> <dcid>
+	root@node1:/usr/src/dvs/dvk-tests# ./tests.sh 1 0
+	lcl_nodeid=1 dcid=0
+	Enter para continuar... 
+	Spread Enter para continuar... 
+	partition 5
+	mount Enter para continuar... 
+	mount: el dispositivo especial /dev/sdb5 no existe
+	local_nodeid=1 Enter para continuar... 
+	DEBUG 690:dvk_open:47: Open dvk device file /dev/dvk
+	Initializing DVS. Local node ID 1... 
+	DEBUG 690:dvk_dvs_init:268: nodeid=1
+	DEBUG 690:dvk_dvs_init:272: ioctl ret=1 errno=0
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+	Get DVS info
+	DEBUG 690:dvk_getdvsinfo:120: 
+	DEBUG 690:dvk_getdvsinfo:122: ioctl ret=1
+	local node ID 1... 
+	d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	d_max_copybuf=65536 d_max_copylen=1048576
+	d_dbglvl=FFFFFFFF version=2.1 sizeof(proc)=512
+	DC0 Enter para continuar... 
+	TIPC BAT PROXY Enter para continuar... 
+	Enter para continuar... 
+	eth:eth0
+	Type       Lower      Upper      Port Identity              Publication Scope
+	0          16781412   16781412   <1.1.100:0>                16781412    cluster
+	0          16781413   16781413   <1.1.101:0>                16781413    zone
+	1          1          1          <1.1.101:3091555337>       3091555338  node
+	2          16781412   16781412   <1.1.101:0>                16781412    node
+	3000       17         17         <1.1.101:674998889>        674998890   zone
+	3001       17         17         <1.1.100:3886939413>       3886939414  cluster
+	broadcast-link: up
+	1.1.101:eth0-1.1.100:eth0: up
+	Enter para continuar... 
+	ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     E       0        0        0 -------------------------------- node0           
+	 1     6      -1        0        0 -------------------------------X node1           
+	Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+		  0     7    702      703           node0 -------------------------------X
+	ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+	 0 send    702      8      3        0        0  31438  27342  27342 tipc_proxy_bat 
+	 0 recv    703      0      3        0        0  27342  27342  27342 tipc_proxy_bat 
+	ADDNODE Enter para continuar... 
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=2
+	dc_pid=692
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  ------------------------------X-
+	cpumask=1 
+	DEBUG 711:dvk_open:47: Open dvk device file /dev/dvk
+	Adding node 0 to DC 0... 
+	DEBUG 711:dvk_add_node:240: dcid=0 nodeid=0
+	DEBUG 711:dvk_add_node:244: ioctl ret=0 errno=0
+	ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+	 0     E       0        0        0 -------------------------------X node0           
+	 1     6      -1        0        0 -------------------------------X node1           
+	dcid=0
+	flags=0
+	nr_procs=221
+	nr_tasks=34
+	nr_sysprocs=64
+	nr_nodes=32
+	dc_nodes=3
+	dc_pid=692
+	warn2proc=27342
+	warnmsg=-1
+	dc_name=DC0
+	nodes 33222222222211111111110000000000
+		  10987654321098765432109876543210
+		  ------------------------------XX
+	cpumask=1 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0 -34   -34   696/696    1    0   80 27342 27342 27342 27342 dc_init   << TRACKER SPREAD THREAD      
+	 0  -3    -3   693/693    1    8   20 31438 27342 27342 27342 dc_init   << TRACKER MAIN THREAD   
+	root@node1:/usr/src/dvs/dvk-tests# cd /usr/src/dvs/dvs-apps/dc_init/
+	root@node1:/usr/src/dvs/dvs-apps/dc_init# . ./DC0.sh 
+	root@node1:/usr/src/dvs/dvs-apps/dc_init# cd /usr/src/dvs/dvk-proxies/test/
+	root@node1:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./copy_client 0 10 88
+
+	root@node1:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0 -34   -34   696/696    1    0   80 27342 27342 27342 27342 dc_init        
+	 0  -3    -3   693/693    1    8   20 31438 27342 27342 27342 dc_init        
+	 0  10    10    -1/-1     0 1000    0 27342 27342 27342 27342 copy_server << OBTENIDO POR TRACKER 
+				
+				
+ANALISIS DE LOGS 
+
+NODE1 (CLIENTE):
+		Envia SENDREC a TRACKER MAIN (-3) buscando el endpoint 10 (sch_ep=10)
+		DEBUG 2:dvk_wait4bindep_X:341: source=0 type=1 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=-1 sch_ep=10 sch_rts_flags=0 sch_misc_flags=0
+		DEBUG 2:dvk_sendrec_T:451: endpoint=-3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		DEBUG 2:dvk_wait4bindep_X:372: ioctl ret=10 errno=0
+		copy_client.c:main:91:dvk_wait4bindep_T ret=10
+		
+		TRACKER MAIN RECIBE EL MENSAJE Y HACE MULTICAST AL GRUPO TRACKER00
+		 tracker.c:tracker_main:65:source=88 type=1 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=-1 sch_ep=10 sch_rts_flags=0 sch_misc_flags=0
+		DEBUG 693:dvk_getprocinfo:584: dcid=0 p_nr=88 
+		DEBUG 693:dvk_getprocinfo:589: ioctl ret=0 errno=0
+		
+		TRACKER SPREAD THREAD recibe su propio mensaje y lo ignora 
+		 tracker.c:tracker_loop:258:sender=#TRACKER00.#node1 Private_group=#TRACKER00.#node1 service_type=32
+		tracker.c:tracker_loop:270:TRACKER00.01: message from #TRACKER00.#node1, of type 1, (endian 0) to 1 groups (76 bytes)
+		tracker.c:rcv_tracker_request:428:source=88 type=1 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=-1 sch_ep=10 sch_rts_flags=0 sch_misc_flags=0
+			tracker.c:tracker_thread:131:rcode=0
+ 
+		TRACKER SPREAD THREAD recibe mensaje de NODE0 con la respuesta y hace el dvk_rmtbind del sch_ep=10 en rply_nodeid=0  
+		 tracker.c:tracker_loop:232:SP_receive: TRACKER00.01
+		 tracker.c:tracker_loop:239:ret=92
+		 tracker.c:tracker_loop:258:sender=#TRACKER00.#node0 Private_group=#TRACKER00.#node1 service_type=32
+		 tracker.c:tracker_loop:270:TRACKER00.01: message from #TRACKER00.#node0, of type 2, (endian 0) to 1 groups (92 bytes)
+		 tracker.c:rcv_tracker_reply:476:source=88 type=2 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=0 sch_ep=10 sch_rts_flags=8 sch_misc_flags=20
+		DEBUG 693:dvk_getprocinfo:584: dcid=0 p_nr=10 
+		DEBUG 693:dvk_getprocinfo:589: ioctl ret=0 errno=0
+		DEBUG 693:dvk_bind_X:607: cmd=2 dcid=0 pid=5553708 endpoint=10 nodeid=0
+		DEBUG 693:dvk_bind_X:616: ioctl ret=10 errno=0
+		DEBUG 693:dvk_send_T:417: endpoint=-3 timeout=-1
+		DEBUG 693:dvk_send_T:422: ioctl ret=76 errno=0
+		
+EN NODO0:
+			TRACKER SPREAD THREAD recibe la TRACKER_REQUEST desde NODE1 y hace el multicast con los datos requeridos   
+			 tracker.c:tracker_loop:258:sender=#TRACKER00.#node1 Private_group=#TRACKER00.#node0 service_type=32
+			 tracker.c:tracker_loop:270:TRACKER00.00: message from #TRACKER00.#node1, of type 1, (endian 0) to 1 groups (76 bytes)
+			 tracker.c:rcv_tracker_request:428:source=88 type=1 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=-1 sch_ep=10 sch_rts_flags=0 sch_misc_flags=0
+			DEBUG 661:dvk_getprocinfo:584: dcid=0 p_nr=10 
+			DEBUG 661:dvk_getprocinfo:589: ioctl ret=0 errno=0
+			 tracker.c:rcv_tracker_request:452:source=88 type=2 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=0 sch_ep=10 sch_rts_flags=8 sch_misc_flags=20
+			
+				TRACKER SPREAD THREAD recibe su propia respuesta y la ignora 
+			 tracker.c:tracker_loop:258:sender=#TRACKER00.#node0 Private_group=#TRACKER00.#node0 service_type=32
+			 tracker.c:tracker_loop:270:TRACKER00.00: message from #TRACKER00.#node0, of type 2, (endian 0) to 1 groups (92 bytes)
+			 tracker.c:rcv_tracker_reply:476:source=88 type=2 rqtr_ep=88 rqtr_nodeid=1 rply_nodeid=0 sch_ep=10 sch_rts_flags=8 sch_misc_flags=20
+			 tracker.c:tracker_thread:131:rcode=0
+ 
+NODE1: dvk_wait4bind		NODE1:TRACKER SERVER			NODE1: TRACKER SPREAD		NODE0: TRACKER SPREAD 
+   dvk_sendrec(TRACKER_REQUEST) -------->											
+							multicast(TRACKER_REQUEST) ----------------------------------------->
+																<------------------------multicast(TRACKER_REPLY)
+															dvk_rmtbind()
+								<-------------------------dvk_sendrec(TRACKER_REPLY)
+	<-----------------------dvk_sendrec(TRACKER_REPLY)														
+ 
+ 
+ 
+				
  =========================================================================================
 ULTIMO_LOG
 
