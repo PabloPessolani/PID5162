@@ -50,14 +50,23 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  14    14   600/10     0    8  400 31438 27342 27342 27342 m3ftp          
  0  22    22   599/9      0    0  400 27342 27342 27342 27342 nweb
 
-DESDE EL PROPIO NODE0
-root@node0:/dev/shm
-root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt 
-root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt 
+ATENCION: Existen scripts en  /usr/src/dvs/scripts/benchmarks
+hay que copiar los scripts a /dev/shm  
+ya retornan las estadisticas en time_wget.txt y time_ftp.txt 
  
-DESDE EL CLIENTE 		
-C:\PAP\tmp>wget http://192.168.1.100:8081/file10M.txt
-C:\PAP\tmp>wget http://192.168.1.100:8081/file50M.txt
+		DESDE EL PROPIO NODE0
+		root@node0:/dev/shm
+		root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt 
+		root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt 
+		 
+		DESDE EL CLIENTE 		
+		C:\PAP\tmp>wget http://192.168.1.100:8081/file10M.txt
+		C:\PAP\tmp>wget http://192.168.1.100:8081/file50M.txt
+
+		TRANSFERENCIA DE ARCHIVO LOCAL 
+		nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+		nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+
 
 ==========================================================================
 TRANSFERENCIA WEB CON RDISK EXTERNO 
@@ -92,13 +101,13 @@ muk SERVER1 {
 	ftp_cfg 	"m3ftp.cfg";
 };
 
+ARRANCAR RDISK 
 nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -ec /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
 root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+
+ARRANCAR MUK 
 nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
 root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
-
-
-nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out 
 
 
 

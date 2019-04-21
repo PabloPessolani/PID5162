@@ -19,6 +19,18 @@ char *data_ptr;
 #define WAIT4BIND_MS 		1000
 #define SEND_RECV_MS 		10000
 
+
+
+double dwalltime()
+{
+	double sec;
+	struct timeval tv;
+
+	gettimeofday(&tv,NULL);
+	sec = tv.tv_sec + tv.tv_usec/1000000.0;
+	return sec;
+}
+
 /*===========================================================================*
  *				ftp_reply					     *
  *===========================================================================*/
@@ -137,6 +149,8 @@ int main ( int argc, char *argv[] )
 {
 	int rcode, ret, rlen , oper, opt;
 	char *dir_ptr;
+	double t_start, t_stop, t_total;
+	long total_bytes;
 	
 	MUKDEBUG("M3FTP argc=%d\n", argc);
 
@@ -161,31 +175,45 @@ int main ( int argc, char *argv[] )
         switch (opt) {
 			case 'p':
 				oper = FTP_PUT;
+				m_ptr->FTPOPER 	= FTP_PUT;
+				m_ptr->FTPPATH 	= argv[3];
+				m_ptr->FTPPLEN  = strlen(argv[3]);
 				break;
 			case 'g':
 				oper = FTP_GET;
+				m_ptr->FTPOPER = FTP_GET;
+				m_ptr->FTPPATH = argv[3];
+				m_ptr->FTPPLEN = strlen(argv[3]);
 				break;
 			default: /* '?' */
 				usage();
 				break;
         }
     }
+	t_start = dwalltime();
+	total_bytes = 0;
 	MUKDEBUG("oper=%d\n", oper);
-
+	// SEND PATHNAME 
+	MUKDEBUG("M3FTP: %s\n", argv[3]);
+	MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
+	rcode = dvk_sendrec(ftpd_ep, m_ptr);
+	if( rcode < 0 ) ERROR_EXIT(rcode);
+	MUKDEBUG("M3FTP: reply " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
+	if (m_ptr->m_type < 0 ) {
+		ERROR_EXIT(rcode); 
+	}
 	switch(oper){
 		case FTP_PUT:
 			MUKDEBUG("M3FTP FTP_PUT %s->%s\n", argv[3], argv[4]);
 			fp = fopen(argv[4], "r");
 			if(fp == NULL) ERROR_EXIT(-errno);
-			m_ptr->FTPOPER 	= FTP_PUT;
-			m_ptr->FTPPATH 	= argv[3];
-			m_ptr->FTPPLEN  = strlen(argv[3]);
 			do { 
 				rlen = fread(data_ptr, 1, MAXCOPYBUF, fp);
+				m_ptr->FTPOPER = FTP_NEXT;
 				m_ptr->FTPDATA = data_ptr;
 				m_ptr->FTPDLEN = rlen;
 				MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-				rcode = dvk_sendrec_T(ftpd_ep, m_ptr, SEND_RECV_MS);
+				rcode = dvk_sendrec(ftpd_ep, m_ptr);
 				if ( rcode < 0) {ERROR_PRINT(rcode); break;}
 				MUKDEBUG("M3FTP: reply   " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 				if (m_ptr->m_type != OK) {
@@ -193,7 +221,6 @@ int main ( int argc, char *argv[] )
 					ERROR_PRINT(rcode); 
 					break;
 				}
-				m_ptr->FTPOPER = FTP_NEXT;
 			}while(rlen > 0);
 			break;
 		case FTP_GET:
@@ -201,13 +228,12 @@ int main ( int argc, char *argv[] )
 			fp = fopen(argv[4], "w");
 			if(fp == NULL) ERROR_EXIT(-errno);
 			m_ptr->FTPOPER = FTP_GET;
-			m_ptr->FTPPATH = argv[3];
-			m_ptr->FTPPLEN = strlen(argv[3]);
 			do {
+				m_ptr->FTPOPER = FTP_NEXT;
 				m_ptr->FTPDATA = data_ptr;
 				m_ptr->FTPDLEN = MAXCOPYBUF;
 				MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-				rcode = dvk_sendrec_T(ftpd_ep, m_ptr, SEND_RECV_MS);
+				rcode = dvk_sendrec(ftpd_ep, m_ptr);
 				if ( rcode < 0) {ERROR_PRINT(rcode); break;}
 				MUKDEBUG("M3FTP: reply   " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 				if (m_ptr->m_type != OK) {
@@ -218,9 +244,10 @@ int main ( int argc, char *argv[] )
 				if( m_ptr->FTPDLEN < 0 || m_ptr->FTPDLEN > MAXCOPYBUF)
 					ERROR_EXIT(EDVSMSGSIZE);
 				if( m_ptr->FTPDLEN == 0) break; // EOF 			
+				total_bytes += m_ptr->FTPDLEN;
 				rcode = fwrite(data_ptr, 1, m_ptr->FTPDLEN, fp);
 				if(rcode < 0 ) {ERROR_PRINT(rcode); break;};
-				m_ptr->FTPOPER = FTP_NEXT;
+				putchar('#');
 			}while(TRUE);
 			break;
 		default:
@@ -228,6 +255,13 @@ int main ( int argc, char *argv[] )
 	}
 	MUKDEBUG("M3FTP: CLOSE\n");
 	fclose(fp);
+	t_stop = dwalltime();
+	/*--------- Report statistics  ---------*/
+	t_total = (t_stop-t_start);
+	printf("t_start=%.2f t_stop=%.2f t_total=%.2f\n",t_start, t_stop, t_total);
+	printf("total_bytes = %ld\n", total_bytes);
+	printf("Throuhput = %f [bytes/s]\n", (double)(total_bytes)/t_total);
+		
 	if ( rcode < 0) ERROR_PRINT(rcode);
 }
 	

@@ -11,6 +11,7 @@ message ftp_msg, *ftp_mptr;
 char *ftp_path_ptr;
 char *ftp_data_ptr;
 int clt_ep;
+int oper;
 
 
 #define SEND_RECV_MS 	10000
@@ -159,13 +160,22 @@ int  main_ftpd ( int argc, char *argv[] )
 			continue;			
 		}
 		clt_ep = ftp_mptr->m_source;
+		oper = ftp_mptr->FTPOPER;
+		
 		MUK_vcopy(rcode,clt_ep, ftp_mptr->FTPPATH,
 							SELF, ftp_path_ptr, ftp_mptr->FTPPLEN);
 		if( rcode < 0) break;
 		ftp_path_ptr[ftp_mptr->FTPPLEN] = 0;
 		MUKDEBUG("M3FTPD: path >%s<\n", ftp_path_ptr);
-						
-		switch(ftp_mptr->FTPOPER){
+			
+		ftp_mptr->m_type = OK;					
+		rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
+		if(rcode < 0) {
+			ERROR_PRINT(rcode); 
+			break;
+		}
+		
+		switch(oper){
 			case FTP_GET:
 				MUKDEBUG("M3FTPD: FTP_GET filename:%s\n", ftp_path_ptr);
 				if(( ftpd_fd = mol_open(ftp_path_ptr,O_RDONLY)) == -1) {  
@@ -176,37 +186,42 @@ int  main_ftpd ( int argc, char *argv[] )
 				MUKDEBUG("M3FTPD: READ LOOP\n");
 				t_start = dwalltime();
 				total_bytes = 0;
-							
-				while( (rlen = mol_read(ftpd_fd, ftp_data_ptr, ftp_mptr->FTPDLEN) > 0)) {
-					MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);			
-					MUK_vcopy(rcode, SELF, ftp_data_ptr
-								,clt_ep, ftp_mptr->FTPDATA
-								,rlen);
-					if(rcode < 0) {
-						ERROR_PRINT(rcode); 
-						break;
-					}
-					ftp_mptr->FTPDLEN = rlen;
-					ftp_mptr->m_type = OK;					
-					rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
-					if(rcode < 0) {
-						ERROR_PRINT(rcode); 
-						break;
-					}
-					total_bytes += rlen;
+					
+				do	{	
 					rcode = dvk_receive_T(clt_ep,ftp_mptr, SEND_RECV_MS);
 					if(rcode < 0) {
 						ERROR_PRINT(rcode); 
 						break;
-					}
-					if( ftp_mptr->FTPOPER != FTP_NEXT) {
-						if( ftp_mptr->FTPOPER != FTP_CANCEL) {
-							rcode = EDVSINVAL;
+					}			
+					oper = ftp_mptr->FTPOPER;		
+					if ( (rlen = mol_read(ftpd_fd, ftp_data_ptr, ftp_mptr->FTPDLEN)) > 0) {
+						MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);			
+						MUK_vcopy(rcode, SELF, ftp_data_ptr
+								,clt_ep, ftp_mptr->FTPDATA
+								,rlen);
+						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
+							break;
 						}
-						break;
+						ftp_mptr->FTPDLEN = rlen;
+						ftp_mptr->m_type = OK;					
+						rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
+						if(rcode < 0) {
+							ERROR_PRINT(rcode); 
+							break;
+						}
+						total_bytes += rlen;
+
+						if( oper != FTP_NEXT) {
+							if( oper != FTP_CANCEL) {
+								rcode = EDVSINVAL;
+								ERROR_PRINT(rcode); 
+							}
+							break;
+						}
 					}
-				}
+				} while ( rlen > 0);
+				
 				MUKDEBUG("M3FTPD: CLOSE \n");
 				ret = mol_close(ftpd_fd);		
 				if(rcode < 0) {

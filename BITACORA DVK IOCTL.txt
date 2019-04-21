@@ -5930,7 +5930,15 @@ NODE1: dvk_wait4bind		NODE1:TRACKER SERVER			NODE1: TRACKER SPREAD		NODE0: TRACK
 	<-----------------------dvk_sendrec(TRACKER_REPLY)														
  
  
- 
+ 				
+=======================================================================================
+20190421:
+			Tanto el m3ftp como el m3ftpd funcionaban mal asi que se modifico el protocolo levemente
+			Se trabajo en FTP GET 
+			Se incorporaron scripts para los benchmarks
+			
+			
+TODO:     FALTA PROBAR FTPPUT 			
 				
  =========================================================================================
 ULTIMO_LOG
