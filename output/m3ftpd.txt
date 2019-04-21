@@ -1,0 +1,3 @@
+t_start=690497.00 t_stop=251464.00 t_total=-439033.00
+total_bytes = 157
+Throuhput = -0.000358 [bytes/s]

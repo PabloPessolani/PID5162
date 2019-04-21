@@ -12,12 +12,12 @@ read  -p "Enter para continuar... "
 dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
-/usr/local/sbin/spread -c /etc/spread.conf > spread.txt &
+/usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
 cd /usr/src/dvs/dvk-mod
 mknod /dev/dvk c 33 0
-dmesg -c > /usr/src/dvs/dvk-tests/dmesg.txt
+dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
-dmesg -c > /usr/src/dvs/dvk-tests/dmesg.txt
+dmesg -c >> /dev/shm/dmesg.txt
 #cd /usr/src/dvs/dvs-apps/dvsd
 #./dvsd $lcl 
 part=(5 + $dcid)
@@ -29,24 +29,24 @@ read  -p "local_nodeid=$lcl Enter para continuar... "
 ./test_dvs_init -n $lcl -D 16777215
 read  -p "DC$dcid Enter para continuar... "
 # ./test_dc_init -d $dcid
-cd /usr/src/dvs/dvs-apps/dc_init
-echo "# dc_init config file"     	>  DC$dcid.cfg
-echo "dc DC$dcid {"       			>> DC$dcid.cfg
-echo "dcid $dcid;"     				>> DC$dcid.cfg
-echo "nr_procs 221;"    			>> DC$dcid.cfg
-echo "nr_tasks 34;"    				>> DC$dcid.cfg
-echo "nr_sysprocs 64;"  			>> DC$dcid.cfg
-echo "nr_nodes 32;"    				>> DC$dcid.cfg
-echo "tracker \"YES\";"    			>> DC$dcid.cfg
+cd /dev/shm
+echo "# dc_init config file"     	>  /dev/shm/DC$dcid.cfg
+echo "dc DC$dcid {"       			>> /dev/shm/DC$dcid.cfg
+echo "dcid $dcid;"     				>> /dev/shm/DC$dcid.cfg
+echo "nr_procs 221;"    			>> /dev/shm/DC$dcid.cfg
+echo "nr_tasks 34;"    				>> /dev/shm/DC$dcid.cfg
+echo "nr_sysprocs 64;"  			>> /dev/shm/DC$dcid.cfg
+echo "nr_nodes 32;"    				>> /dev/shm/DC$dcid.cfg
+echo "tracker \"NO\";"    			>> /dev/shm/DC$dcid.cfg
 #echo "warn2proc 0;"     			>> DC$dcid.cfg
 #echo "warnmsg 1;"     				>> DC$dcid.cfg
 #echo "ip_addr \"192.168.10.10$dcid\";"	>> DC$dcid.cfg
-echo "memory 512;"    				>> DC$dcid.cfg
-echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> DC$dcid.cfg
-echo "mount \"/usr/src/dvs/vos/rootfs/DC$dcid\";"  			>> DC$dcid.cfg
+echo "memory 512;"    				>> /dev/shm/DC$dcid.cfg
+echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> /dev/shm/DC$dcid.cfg
+echo "mount \"/usr/src/dvs/vos/rootfs/DC$dcid\";"  			>> /dev/shm/DC$dcid.cfg
 echo "};"          					>> DC$dcid.cfg
-./dc_init DC$dcid.cfg > dc_init$dcid.out 2>dc_init$dcid.err
-dmesg -c >> /usr/src/dvs/dvk-tests/dmesg.txt
+/usr/src/dvs/dvs-apps/dc_init/dc_init /dev/shm/DC$dcid.cfg > /dev/shm/dc_init$dcid.out 2> /dev/shm/dc_init$dcid.err
+dmesg -c >> /dev/shm/dmesg.txt
 #read  -p "TCP PROXY Enter para continuar... "
 #     PARA DESHABILITAR EL ALGORITMO DE NAGLE!! 
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency
@@ -61,7 +61,7 @@ tipc_addr="1.1.10$lcl"
 tipc node set addr $tipc_addr
 tipc bearer enable media eth dev eth0 
 read  -p "Enter para continuar... "
-/usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &	
+/usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
 sleep 5
 tipc bearer list
 tipc nametable show
@@ -78,7 +78,11 @@ sleep 1
 cat /proc/dvs/nodes
 cat /proc/dvs/DC$dcid/info
 cat /proc/dvs/DC$dcid/procs 
-cd /usr/src/dvs/dvs-apps/dc_init
+cd /dev/shm
+echo "file copy to /dev/shm"
+cp /usr/src/dvs/vos/muk/*.cfg /dev/shm 
+cp /usr/src/dvs/vos/images/minixweb100.img /dev/shm
+echo "run # . ./dev/shm/DC0.sh"
 exit 
 
 

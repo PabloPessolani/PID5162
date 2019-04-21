@@ -5935,6 +5935,14 @@ NODE1: dvk_wait4bind		NODE1:TRACKER SERVER			NODE1: TRACKER SPREAD		NODE0: TRACK
  =========================================================================================
 ULTIMO_LOG
 
+		+ CAMBIAR LOS ARCHIVOS DE CONFIGURACION DE RDISK PARA QUE APUNTEN A  
+				/usr/src/dvs/vos/muk/images/minix/minixweb100.img
+
+		
+
+
+
+
   		TODO:  Probar arranque de RADAR en NODE2
 			
 		PROBLEMA:

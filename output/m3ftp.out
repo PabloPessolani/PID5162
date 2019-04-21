@@ -1,0 +1,666 @@
+ m3ftp.c:main:141:M3FTP argc=5
+ m3ftp.c:main:146:M3FTP dcid=0
+ m3ftp.c:main:149:M3FTP ftpd_ep=14
+ m3ftp.c:ftp_init:46:ftp_lpid=12
+DEBUG 12:dvk_open:47: Open dvk device file /dev/dvk
+DEBUG 12:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=15 nodeid=-1
+DEBUG 12:dvk_bind_X:616: ioctl ret=15 errno=0
+ m3ftp.c:ftp_init:64:rcode=15
+ m3ftp.c:ftp_init:71:Get the DVS info from SYSTASK
+DEBUG 12:dvk_sendrec_T:451: endpoint=-2 timeout=-1
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:ftp_init:75:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ m3ftp.c:ftp_init:77:Get the VM info from SYSTASK
+DEBUG 12:dvk_sendrec_T:451: endpoint=-2 timeout=-1
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:ftp_init:81:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ m3ftp.c:ftp_init:82:flags=0 dc_nodes=3 dc_pid=572 dc_name=DC0
+DEBUG 12:dvk_getep:109: pid=12
+DEBUG 12:dvk_getep:111: ioctl ret=15 errno=0
+ m3ftp.c:ftp_init:85:Get M3FTP endpoint=15 info from SYSTASK
+DEBUG 12:dvk_sendrec_T:451: endpoint=-2 timeout=-1
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:ftp_init:89:nr=15 endp=15 dcid=0 flags=408 misc=20 lpid=647 vpid=12 nodeid=0 name=m3ftp 
+ m3ftp.c:ftp_init:91:Get M3FTPD endpoint=14 info from SYSTASK
+DEBUG 12:dvk_sendrec_T:451: endpoint=-2 timeout=-1
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:ftp_init:95:nr=14 endp=14 dcid=0 flags=8 misc=400 lpid=612 vpid=10 nodeid=0 name=m3ftp 
+ m3ftp.c:ftp_init:105:M3FTP m_ptr=0x16b7000
+ m3ftp.c:ftp_init:112:M3FTP path_ptr=0x16b8000
+ m3ftp.c:ftp_init:119:M3FTP data_ptr=0x16b9000
+ m3ftp.c:main:157:M3FTP new cwd=/dev/shm
+ m3ftp.c:main:173:oper=1
+ m3ftp.c:main:200:M3FTP FTP_GET file10M.txt->file10M.out
+ m3ftp.c:main:209:M3FTP: request source=0 type=1 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=1 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:209:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+DEBUG 12:dvk_sendrec_T:451: endpoint=14 timeout=10000
+DEBUG 12:dvk_sendrec_T:456: ioctl ret=0 errno=0
+ m3ftp.c:main:212:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=0 m1i3=0 m1p1=0xbfa5ce1c m1p2=0x16b9000 m1p3=(nil) 
+ m3ftp.c:main:229:M3FTP: CLOSE

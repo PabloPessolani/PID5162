@@ -1,4 +1,4 @@
-all: libftp.so 
+all: libftp.so m3ftp
 # Which compiler
 CC = gcc
 
@@ -14,14 +14,22 @@ CFLAGS =  -g -c -fPIC -Wall -pthread  -v -O0 -D_FILE_OFFSET_BITS=64
 
 #Objetos a compilar
 OBJS = m3ftpd.o 
-# dmp.o dmp_fs.o dmp_pm.o dm_kernel.o
-		
-.c.o:
-	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
+OBJ2 =  m3ftp.o 
 
+
+LIBS = 	/usr/src/dvs/vos/muk/lib/syslib/libsyslib.so \
+		/usr/src/dvs/vos/muk/lib/timers/libtimers.so \
+		/usr/src/dvs/vos/muk/lib/mollib/libmollib.so \
+		/usr/src/dvs/dvk-lib/stub_dvkcall.o 
+	
+m3ftp: $(OBJ2)  m3ftp.h 
+	$(CC)  -MMD -MP -ldl -lm -lrt -lnsl  -pthread -rdynamic -o m3ftp $(OBJ2) $(LIBS) -I$(INCLUDE)
+	
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE) -Wall
 	
 libftp.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libftp.so $(OBJS)  $(LIBS)
-	
+	$(CC) -g -shared -pthread -o libftp.so $(OBJS)  	
+
 clean:
-	rm libftp.so  *.o
+	rm libftp.so m3ftp *.o

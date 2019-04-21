@@ -1,0 +1,123 @@
+BENCHMARKS MUK
+==============
+		
+!!!!!!!!!!!!!!!!!!!!!!!!!! MISMO NODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
+==========================================================================
+TRANSFERENCIA WEB CON RDISK INTERNO 
+------------------------------------
+RED A CONFORMAR
+	NODE0-------PCClient
+	
+Arrancar con 
+root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node0:/dev/shm# ./tests.sh 0 0 
+Este script:
+	arranca el DVS 
+	arranca el DC 
+	arranca el proxy TIPC 
+	Todos los logs van al /dev/shm 
+	Se copian todos los archivos de configuracion .cfg 
+
+root@node0:/dev/shm# cd /dev/shm
+
+Verificar muk.cfg para que TODO este incluido-
+# this is a comment 
+muk SERVER1 {
+	dcid		0;
+	pm_ep		0;
+	fs_ep		1;
+	is_ep		8;
+	rd_ep		3;
+	nweb_ep		22;
+	ftp_ep		14;
+	fs_cfg		"molfs.cfg";
+	rd_cfg		"rdisk.cfg";
+	web_cfg		"m3nweb.cfg";
+	ftp_cfg 	"m3ftp.cfg";
+};
+
+nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
+		
+Verificar que todo este arrancado 
+root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   593/3      0    8  420 31438 27342 27342 27342 systask        
+ 0   0     0   595/5      0    8  400 31438 27342 27342 27342 pm             
+ 0   1     1   596/6      0    8  400 31438 27342 27342 27342 fs             
+ 0   3     3   594/4      0    8  400 31438 27342 27342 27342 rdisk          
+ 0   8     8   597/7      0    0  400 27342 27342 27342 27342 is             
+ 0  14    14   600/10     0    8  400 31438 27342 27342 27342 m3ftp          
+ 0  22    22   599/9      0    0  400 27342 27342 27342 27342 nweb
+
+DESDE EL PROPIO NODE0
+root@node0:/dev/shm
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt 
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt 
+ 
+DESDE EL CLIENTE 		
+C:\PAP\tmp>wget http://192.168.1.100:8081/file10M.txt
+C:\PAP\tmp>wget http://192.168.1.100:8081/file50M.txt
+
+==========================================================================
+TRANSFERENCIA WEB CON RDISK EXTERNO 
+------------------------------------
+RED A CONFORMAR
+	NODE0-------PCClient
+	
+Arrancar con 
+root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node0:/dev/shm# ./tests.sh 0 0 
+Este script:
+	arranca el DVS 
+	arranca el DC 
+	arranca el proxy TIPC 
+	Todos los logs van al /dev/shm 
+	Se copian todos los archivos de configuracion .cfg 
+
+root@node0:/dev/shm# cd /dev/shm
+Editar muk.cfg para que RDISK este fuera 
+# this is a comment 
+muk SERVER1 {
+	dcid		0;
+	pm_ep		0;
+	fs_ep		1;
+	is_ep		8;
+#	rd_ep		3;
+	nweb_ep		22;
+	ftp_ep		14;
+	fs_cfg		"molfs.cfg";
+#	rd_cfg		"rdisk.cfg";
+	web_cfg		"m3nweb.cfg";
+	ftp_cfg 	"m3ftp.cfg";
+};
+
+nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -ec /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
+root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
+root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+
+
+nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				

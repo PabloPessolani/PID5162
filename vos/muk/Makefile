@@ -15,7 +15,7 @@ OBJS = muk.o mukcfg.o
 #	/usr/src/dvs/vos/mol/lib/mollib/libmollib.so \	
 
 LIBS = 	/usr/src/dvs/dvk-lib/stub_dvkcall.o \
-		/usr/src/dvs/vos/mol/lib/timers/libtimers.so \
+		/usr/src/dvs/vos/muk/lib/timers/libtimers.so \
 		/usr/src/dvs/vos/muk/servers/m3nweb/libnw.so \
 		/usr/src/dvs/vos/muk/servers/m3ftp/libftp.so \
 		/usr/src/dvs/vos/muk/servers/is/libis.so \

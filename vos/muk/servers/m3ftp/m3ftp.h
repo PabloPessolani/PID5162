@@ -77,6 +77,10 @@
 extern int	dvk_fd;
 extern int local_nodeid;
 
+
+#define FTP_SVR_EP	14
+#define FTP_CLT_EP	15	
+
 #include "const.h"
 
 #define _POSIX_SOURCE      1	/* tell headers to include POSIX stuff */
