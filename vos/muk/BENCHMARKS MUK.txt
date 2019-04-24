@@ -4,7 +4,7 @@ BENCHMARKS MUK
 !!!!!!!!!!!!!!!!!!!!!!!!!! MISMO NODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
 
 ==========================================================================
-TRANSFERENCIA WEB CON RDISK INTERNO 
+TRANSFERENCIA WEB CON RDISK LOCAL INTERNO 
 ------------------------------------
 RED A CONFORMAR
 	NODE0-------PCClient
@@ -67,10 +67,10 @@ ya retornan las estadisticas en time_wget.txt y time_ftp.txt
 		nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
 		nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
 
-
+				
 ==========================================================================
-TRANSFERENCIA WEB CON RDISK EXTERNO 
-------------------------------------
+TRANSFERENCIA WEB CON RDISK LOCAL EXTERNO 
+----------------------------------------
 RED A CONFORMAR
 	NODE0-------PCClient
 	
@@ -110,7 +110,14 @@ nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdou
 root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
 
 
-
+==========================================================================
+TRANSFERENCIA WEB CON RDISK REMOTO 
+------------------------------------
+RED A CONFORMAR
+	NODE0-------NODE1----NODE2 
+	MUK			RDISK 	 CLIENTS 
+	
+	
 
 
 

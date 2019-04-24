@@ -5936,21 +5936,77 @@ NODE1: dvk_wait4bind		NODE1:TRACKER SERVER			NODE1: TRACKER SPREAD		NODE0: TRACK
 			Tanto el m3ftp como el m3ftpd funcionaban mal asi que se modifico el protocolo levemente
 			Se trabajo en FTP GET 
 			Se incorporaron scripts para los benchmarks
-			
-			
-TODO:     FALTA PROBAR FTPPUT 			
-				
- =========================================================================================
-ULTIMO_LOG
+	
 
-		+ CAMBIAR LOS ARCHIVOS DE CONFIGURACION DE RDISK PARA QUE APUNTEN A  
-				/usr/src/dvs/vos/muk/images/minix/minixweb100.img
+=======================================================================================
+20190423:		Se modifaron m3ftp y m3ftpd pero 
 
+	CUANDO SE TRATA DE ESCRIBIR EN MOL-FS DA ERROR 		
+		nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -p 0 macros.h dmesg.txt 
+
+		 driver.c:driver_task:247:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=1024
+		DEBUG 2:dvk_send_T:417: endpoint=1 timeout=-1
+		DEBUG 2:dvk_send_T:422: ioctl ret=76 errno=0
+		DEBUG 2:dvk_receive_T:434: endpoint=31438 timeout=-1
+		DEBUG 2:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		 device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=1024 
+		 cache.c:rw_scattered:297:RESULT of dev_io r=1024,  <<<< ACA MUERE 
+ 
+root@node0:/dev/shm# dmesg | grep fault
+[ 1710.942928] muk[607]: segfault at 140c ip b7272bd2 sp b54fe100 error 4 in libfs.so[b7264000+1d000]	
+			
+=======================================================================================
+			
+TODO: 		M3PING
+				m3ping <dcid> <endpoint> 
+				mensaje rqst:
+					m_source: src_endpoint
+					m_type: M3PING_RQST
+					m1_i1:	dcid 
+					m1_i2:	dst_endpoint 
+					sendrec(HARDWARE, msg)
+				mensaje rply:
+					m_source: dst_endpoint
+					m_type: M3PING_RPLY
+					m1_i1:	dcid 
+					m1_i2:	src_endpoint 
+					m1_i3:  dst_nodeid 
+				1)	wait4bind para ver si esta bindeado 
+				2) 	t_start: time()
+				3)  sendrec();
+				4) 	t_stop: time()
 		
+TODO:	  	MONITOR DE TRAFICO PARA PROXY
+				las estadisticas se presentan por nweb 
+				incorporar un nweb server por proxy Sender/Receiver 
+				El port en que escucha el web server del proxy RECEIVER sera  
+					rweb_port = (BASE_TYPE + px.px_id);
+					
+				El port en que escucha el web server del proxy SENDER sera  
+					sweb_port = (BASE_TYPE + BASE_SENDER + px.px_id); // BASE_SENDER = 1000
+					
+				los datos se guardan en variables compartidas
+				los datos son una matriz tridimensional para cada nodo. 
+					Para el SENDER  snode = local_nodeid y el variable es el dnode 
+					snode dnode dcid src_ep dst_ep messages data 
+					Para el RECEIVER rnode = local_nodeid y el variable es el snode 
+					count snode dnode dcid src_ep dst_ep messages data  
+				
+				struct px_stats {
+					unsigned long int 	pst_count;
+					int					pst_dcid;
+					int					pst_snode;
+					int					pst_dnode;
+					int					pst_src_ep;
+					int					pst_dst_ep;
+					unsigned long int 	pst_nr_msg;
+					unsigned long int 	pst_nr_data;
+				}
+				
+TODO:		INTEGRAR SPREAD DESDE MODULO DE KERNEL		
 
-
-
-
+=========================================================================================
+ULTIMO_LOG
   		TODO:  Probar arranque de RADAR en NODE2
 			
 		PROBLEMA:

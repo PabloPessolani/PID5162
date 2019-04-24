@@ -26,7 +26,14 @@ static const LZ4F_preferences_t lz4_preferences = {
 #define HEADER_SIZE sizeof(proxy_hdr_t)
 #define SERVER_TYPE  18888
 #define SERVER_INST  17
-#define BASE_TYPE      3000
+#define BASE_TYPE      	3000
+#define BASE_OFFSET		1000
+
+#define PWS_BUFSIZE 65536
+#define ERROR 42
+#define SORRY 43
+#define LOG   44
+
 // makes remotes clients automatic bind when they send a message to local receiver proxy 
 // if local  SYSTASK is running, it does not work 
 #define RMT_CLIENT_BIND	1
@@ -64,6 +71,15 @@ int rmsg_ok   = 0;
 int rmsg_fail = 0;
 int smsg_ok   = 0;
 int smsg_fail = 0; 
+int pws_port;
+
+pthread_mutex_t px_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t pws_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t px_cond = PTHREAD_COND_INITIALIZER;
+
+static char pws_buffer[PWS_BUFSIZE+1]; /* static so zero filled */
+static char pws_html[PWS_BUFSIZE+1]; /* static so zero filled */
+static char tmp_buffer[1024]; 
 
 dvs_usr_t dvs;   
 struct hostent *rmthost;
@@ -72,7 +88,28 @@ proxies_usr_t px, *px_ptr;
 struct sockaddr_tipc rmtclient_addr, rmtserver_addr;
 int    rlisten_sd, rconn_sd;
 int    sproxy_sd;
+pthread_t pws_pth;
 
+void main_pws(void *arg_port);
+void wdmp_px_stats(void);
+
+struct  px_stats_s {
+	int					pst_snode;
+	int					pst_dnode;
+	int					pst_dcid;
+//	int					pst_src_ep;
+//	int					pst_dst_ep;
+	unsigned long int 	pst_nr_msg;
+	unsigned long int 	pst_nr_data;
+	unsigned long int 	pst_nr_cmd;
+};
+typedef struct px_stats_s px_stats_t;
+static px_stats_t px_stats[NR_NODES][NR_DCS];
+
+#define PXS_FORMAT "snode=%d dnode=%d dcid=%d nr_msg=%uld nr_data=%uld nr_cmd=%uld\n" 
+#define PXS_FIELDS(p) 	 p->pst_snode, p->pst_dnode, p->pst_dcid \
+						, p->pst_nr_msg, p->pst_nr_data, p->pst_nr_cmd
+	
 /*----------------------------------------------*/
 /*      PROXY RECEIVER FUNCTIONS               */
 /*----------------------------------------------*/
@@ -606,6 +643,30 @@ int  ps_send_payload(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
     return(OK);
 }
 
+void update_stats(proxy_hdr_t *hd_ptr)
+{
+	px_stats_t *pxs_ptr;
+
+	pxs_ptr = &px_stats[hd_ptr->c_dnode][hd_ptr->c_dcid];
+	pxs_ptr->pst_nr_cmd++;
+	pxs_ptr->pst_dcid 	=  hd_ptr->c_dcid;
+	pxs_ptr->pst_snode	=  local_nodeid;
+	pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
+
+	switch(hd_ptr->c_cmd){
+		case CMD_SEND_MSG:
+		case CMD_SNDREC_MSG:
+		case CMD_REPLY_MSG:
+			pxs_ptr->pst_nr_msg++;
+			break;
+		case CMD_COPYIN_DATA:
+		case CMD_COPYOUT_DATA:
+			pxs_ptr->pst_nr_data += hd_ptr->c_len;
+			break;
+	}
+	PXYDEBUG("SPROXY:" PXS_FORMAT, PXS_FIELDS(pxs_ptr));
+}
+
 /* 
  * ps_send_remote: send a message (header + payload if existing) 
  * to remote receiver
@@ -650,6 +711,8 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 		if ( rcode != OK)  ERROR_RETURN(rcode);
 	}
 	
+	update_stats(p_header) ;
+
     return(OK);
 }
 
@@ -669,10 +732,13 @@ int  ps_start_serving(void)
 	
     while(1) {
 		cmd_flag = 0;
-		batch_nr = 0;		// count the number of batching commands in the buffer
+		batch_nr = 0;		// nr_cmd the number of batching commands in the buffer
 			
 		PXYDEBUG("SPROXY %d: Waiting a message\n", pid);
-		ret = dvk_get2rmt(p_header, p_payload);   
+		MTX_UNLOCK(px_mutex);
+		ret = dvk_get2rmt(p_header, p_payload); 
+		MTX_LOCK(px_mutex);
+
 //		p_header->c_flags   = 0;
 //		p_header->c_snd_seq = 0;
 //		p_header->c_ack_seq = 0;
@@ -753,7 +819,7 @@ int  ps_start_serving(void)
 			rcode =  ps_send_remote(p_header3, p_batch);
 			if (rcode == 0) smsg_ok++;
 			else smsg_fail++;
-			batch_nr = 0;		// count the number of batching commands in the buffer
+			batch_nr = 0;		// nr_cmd the number of batching commands in the buffer
 		} else {
 			PXYDEBUG("SPROXY:" CMD_FORMAT, CMD_FIELDS(p_header));
 			PXYDEBUG("SPROXY:" CMD_XFORMAT, CMD_XFIELDS(p_header));
@@ -842,6 +908,8 @@ int ps_connect_to_remote(void)
 
  	rcode = connect(sproxy_sd, (struct sockaddr *) &rmtserver_addr, sizeof(rmtserver_addr));
     if (rcode != 0) ERROR_RETURN(errno);
+	
+	
     return(OK);
 }
 
@@ -851,7 +919,7 @@ int ps_connect_to_remote(void)
  */
 void  ps_init(void) 
 {
-    int rcode = 0;
+    int rcode = 0, n, d;
 
 	PXYDEBUG("SPROXY: Initializing on PID:%d\n", getpid());
     
@@ -902,21 +970,32 @@ void  ps_init(void)
     		perror("p_batch posix_memalign");
     		exit(1);
   	}
-	
+
     // Create server socket.
     if ( (sproxy_sd = socket(AF_TIPC, SOCK_STREAM, 0)) < 0){
        	ERROR_EXIT(errno);
     }
 	
+	pws_port = (BASE_TYPE + px.px_id);
+	rcode = pthread_create( &pws_pth, NULL, main_pws, pws_port );
+	if(rcode) ERROR_EXIT(rcode);
+	PXYDEBUG("pws_pth=%u\n",pws_pth);
+		
 	/* try to connect many times */
 	batch_nr = 0;		// number of batching commands
 	cmd_flag = 0;		// signals a command to be sent 
+	
+	MTX_LOCK(px_mutex);
+	COND_WAIT(px_cond, px_mutex);
+	COND_SIGNAL(pws_cond);	
+	MTX_UNLOCK(px_mutex);
 	while(1) {
 		do {
 			if (rcode < 0)
 				PXYDEBUG("SPROXY: Could not connect to %d"
                     			" Sleeping for a while...\n", px.px_id);
 			sleep(4);
+
 			rcode = ps_connect_to_remote();
 		} while (rcode != 0);
 		
@@ -924,7 +1003,10 @@ void  ps_init(void)
 		if(rcode){
 			ERROR_EXIT(rcode);
 		} 
+		
+		MTX_LOCK(px_mutex);
 		ps_start_serving();
+		MTX_UNLOCK(px_mutex);
 	
 		rcode = dvk_proxy_conn(px.px_id, DISCONNECT_SPROXY);
 		if(rcode){
@@ -994,4 +1076,202 @@ void  main ( int argc, char *argv[] )
     wait(&status);
     exit(0);
 }
+
+/*===========================================================================*
+ *				PWS web server					     *
+ *===========================================================================*/
+void pws_server(int fd, int hit, int px_type)
+{
+	int j, file_fd, buflen, len;
+	long i, ret;
+	char * fstr;
+
+	PXYDEBUG("fd:%d hit:%d\n", fd, hit);
+
+	ret =read(fd, pws_buffer,PWS_BUFSIZE); 	/* read Web request in one go */
+	if(ret == 0 || ret == -1) {	/* read failure stop now */
+		PXYDEBUG("Failed to read browser request: %s",fd);
+	}
+	if(ret > 0 && ret < PWS_BUFSIZE)	/* return code is valid chars */
+		pws_buffer[ret]=0;		/* terminate the pws_buffer */
+	else pws_buffer[0]=0;
+
+	PXYDEBUG("pws_buffer:%s\n", pws_buffer);
+
+	for(i=0;i<ret;i++)	/* remove CF and LF characters */
+		if(pws_buffer[i] == '\r' || pws_buffer[i] == '\n')
+			pws_buffer[i]='*';
+
+	if( strncmp(pws_buffer,"GET ",4) && strncmp(pws_buffer,"get ",4) )
+		printf("Only simple GET operation supported: %s",fd);
+
+	for(i=4;i<PWS_BUFSIZE;i++) { /* null terminate after the second space to ignore extra stuff */
+		if(pws_buffer[i] == ' ') { /* string is "GET URL " +lots of other stuff */
+			pws_buffer[i] = 0;
+			break;
+		}
+	}
+
+	/* Start building the HTTP response */
+	memset(pws_buffer, 0, PWS_BUFSIZE);
+	(void)strcat(pws_buffer,"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n");
+//	(void)write(fd,pws_buffer,strlen(pws_buffer));
+
+	/* Start building the HTML page */
+	if(px_type == CONNECT_SPROXY)
+		(void)strcat(pws_buffer,"<html><head><title>PWS - RECEIVER PROXY  Server</title>");
+	else 
+		(void)strcat(pws_buffer,"<html><head><title>PWS - SENDER   PROXY  Server</title>");
+		
+	/* Add some CSS style */
+	(void)strcat(pws_buffer,"<style type=\"text/css\">\n");
+	(void)strcat(pws_buffer,"body { font-family: Verdana,Arial,sans-serif; }\n");
+	(void)strcat(pws_buffer,"body,p,blockquote,li,th,td { font-size: 10pt; }\n");
+	(void)strcat(pws_buffer,"table { border-spacing: 0px; background: #E9E9F3; border: 0.5em solid #E9E9F3; }\n");
+	(void)strcat(pws_buffer,"table th { text-align: left; font-weight: normal; padding: 0.1em 0.5em; border: 0px; border-bottom: 1px solid #9999AA; }\n");
+	(void)strcat(pws_buffer,"table td { text-align: right; border: 0px; border-bottom: 1px solid #9999AA; border-left: 1px solid #9999AA; padding: 0.1em 0.5em; }\n");
+	(void)strcat(pws_buffer,"table thead th { text-align: center; font-weight: bold; color: #6C6C9A; border-left: 1px solid #9999AA; }\n");
+	(void)strcat(pws_buffer,"table th.Corner { text-align: left; border-left: 0px; }\n");
+	(void)strcat(pws_buffer,"table tr.Odd { background: #F6F4E4; }\n");
+	(void)strcat(pws_buffer,"</style></head>");
+	
+	/* Start body tag */
+	(void)strcat(pws_buffer,"<body>");
+
+	/* Add the main top table with links to the functions */
+	if(px_type == CONNECT_SPROXY)
+		(void)strcat(pws_buffer,"<table><thead><tr><th colspan=\"10\">SENDER Proxy Web Server .</th></tr></thead><tbody><tr>");
+	else
+		(void)strcat(pws_buffer,"<table><thead><tr><th colspan=\"10\">RECEIVER Proxy Web Server .</th></tr></thead><tbody><tr>");
+		
+	(void)strcat(pws_buffer,"</tr></tbody></table><br />");
+// (void)write(fd,pws_buffer,strlen(pws_buffer));
+#ifdef ANULADO 
+	/* Write the HTML generated in functions to network socket */
+	wdmp_px_stats();
+	if( strlen(pws_html) != 0){
+		(void)strcat(pws_buffer,pws_html);
+//		(void)write(fd,pws_html,strlen(pws_html));
+//		PXYDEBUG("%s\n",pws_buffer);	
+		PXYDEBUG("strlen(pws_buffer)=%d\n", strlen(pws_buffer));
+	}
+#endif // ANULADO 
+	
+	/* Finish HTML code */
+	(void)strcat(pws_buffer,"</body></html>");
+// (void)sprintf(pws_buffer,"</body></html>");
+	(void)write(fd,pws_buffer,strlen(pws_buffer));
+		
+}
+
+/*===========================================================================*
+ *				main_pws                                         *
+ *===========================================================================*/
+void main_pws(void *arg_port)
+{
+	int i, pws_pid, pws_listenfd, pws_sfd, pws_hit, px_type;
+	size_t length;
+	int rcode;
+	static struct sockaddr_in pws_cli_addr; /* static = initialised to zeros */
+	static struct sockaddr_in serv_addr; /* static = initialised to zeros */
+	
+	PXYDEBUG("PWS service starting.\n");
+	pws_pid = syscall (SYS_gettid);
+	PXYDEBUG("pws_pid=%d\n", pws_pid);
+	
+			/* Setup the network socket */
+	if((pws_listenfd = socket(AF_INET, SOCK_STREAM,0)) <0)
+			ERROR_PT_EXIT(errno);
+		
+	/* PWS service Web server pws_port */
+	pws_port = (int) arg_port;
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv_addr.sin_port = htons(pws_port);
+		
+	if(bind(pws_listenfd, (struct sockaddr *)&serv_addr,sizeof(serv_addr)) <0){
+		ERROR_PT_EXIT(errno);
+	}
+		
+	if( listen(pws_listenfd,64) <0){
+		ERROR_PT_EXIT(errno);
+	}
+	
+	MTX_LOCK(px_mutex);
+	COND_SIGNAL(px_cond);
+	COND_WAIT(pws_cond, px_mutex);
+	MTX_UNLOCK(px_mutex);
+	
+	PXYDEBUG("Starting PWS server main loop\n");
+	for(pws_hit=1; ;pws_hit++) {
+		length = sizeof(pws_cli_addr);
+		PXYDEBUG("Conection accept\n");
+		pws_sfd = accept(pws_listenfd, (struct sockaddr *)&pws_cli_addr, &length);
+		if (pws_sfd < 0){
+			rcode = -errno;
+			ERROR_PT_EXIT(rcode);
+		}
+		px_type = (pws_port < (BASE_TYPE+BASE_OFFSET))?CONNECT_SPROXY:CONNECT_RPROXY;
+		pws_server(pws_sfd, pws_hit, px_type);
+		close(pws_sfd);
+	}
+	
+	return(OK);		/* shouldn't come here */
+}
+
+
+/*===========================================================================*
+ *				wdmp_px_stats  					    				     *
+ *===========================================================================*/
+void wdmp_px_stats(void)
+{
+	int n, d;
+	char *page_ptr;
+	px_stats_t	*pxs_ptr;
+
+	PXYDEBUG("\n");
+
+	MTX_LOCK(px_mutex);
+
+	page_ptr = pws_html;
+	*page_ptr = 0;
+	(void)strcat(page_ptr,"<table>\n");
+	(void)strcat(page_ptr,"<thead>\n");
+	(void)strcat(page_ptr,"<tr>\n");
+	(void)strcat(page_ptr,"<th>---snode--</th>\n");
+	(void)strcat(page_ptr,"<th>---dnode--</th>\n");
+	(void)strcat(page_ptr,"<th>---dcid---</th>\n");
+	(void)strcat(page_ptr,"<th>--nr_msgs-</th>\n");
+	(void)strcat(page_ptr,"<th>--nr_data-</th>\n");
+	(void)strcat(page_ptr,"<th>--nr_cmd--</th>\n");
+	(void)strcat(page_ptr,"</tr>\n");
+	(void)strcat(page_ptr,"</thead>\n");
+	(void)strcat(page_ptr,"<tbody>\n");
+	
+	for(n = 0; n < NR_NODES; n++) {
+		for(d = 0; d < NR_DCS; d++) {
+			pxs_ptr = &px_stats[n][d];
+				if (pxs_ptr->pst_nr_cmd == 0) { // have no traffic 
+				continue;
+			}
+			(void)strcat(page_ptr,"<tr>\n");
+			sprintf(tmp_buffer, "<td>%10d</td> <td>%10d</td> <td>%10d</td>"
+								" <td>%10uld</td> <td>%10uld</td> <td>%10uld</td>\n",
+					pxs_ptr->pst_snode,
+					pxs_ptr->pst_dnode,
+					pxs_ptr->pst_dcid,
+					pxs_ptr->pst_nr_msg,
+					pxs_ptr->pst_nr_data,
+					pxs_ptr->pst_nr_cmd);	
+			(void)strcat(page_ptr,tmp_buffer);
+			(void)strcat(page_ptr,"</tr>\n");
+			}
+	}
+	(void)strcat(page_ptr,"</tbody></table>\n");
+   	PXYDEBUG("%s\n",page_ptr);	
+	PXYDEBUG("strlen(page_ptr)=%d\n", strlen(page_ptr));	
+	MTX_UNLOCK(px_mutex);
+}
+
+
 

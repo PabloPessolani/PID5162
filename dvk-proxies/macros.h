@@ -19,3 +19,30 @@
 	return(rcode);\
  }while(0)
    
+ #define ERROR_PT_EXIT(rcode) \
+ do { \
+     	printf("ERROR: %s:%s:%u: rcode=%d\n",__FILE__ , __FUNCTION__ ,__LINE__,rcode); \
+		fflush(stderr);\
+		pthread_exit(&rcode);\
+ }while(0)
+	 
+ #define MTX_LOCK(x) do{ \
+		PXYDEBUG("MTX_LOCK %s \n", #x);\
+		pthread_mutex_lock(&x);\
+		}while(0)
+			
+#define MTX_UNLOCK(x) do{ \
+		pthread_mutex_unlock(&x);\
+		PXYDEBUG("MTX_UNLOCK %s \n", #x);\
+		}while(0)	
+			
+#define COND_WAIT(x,y) do{ \
+		PXYDEBUG("COND_WAIT %s %s\n", #x,#y );\
+		pthread_cond_wait(&x, &y);\
+		}while(0)	
+ 
+#define COND_SIGNAL(x) do{ \
+		pthread_cond_signal(&x);\
+		PXYDEBUG("COND_SIGNAL %s\n", #x);\
+		}while(0)
+			
