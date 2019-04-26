@@ -5954,8 +5954,19 @@ NODE1: dvk_wait4bind		NODE1:TRACKER SERVER			NODE1: TRACKER SPREAD		NODE0: TRACK
  
 root@node0:/dev/shm# dmesg | grep fault
 [ 1710.942928] muk[607]: segfault at 140c ip b7272bd2 sp b54fe100 error 4 in libfs.so[b7264000+1d000]	
-			
+		
 =======================================================================================
+20190425:
+			Se hizo el webserver para el proxy sender/receiver 
+			Cada uno de ellos (son procesos separados) crea su propio thread de webserver
+			recolectan las estadisticas al terminar de enviar/recibir.
+			las URL son:
+				Sender 		http://192.168.1.100:3001/
+				Recevier 	http://192.168.1.100:4001/
+			Es decir escuchan en ports (3000+px_id)  y (4000+px_id)
+		
+=======================================================================================
+ULTIMO_LOG
 			
 TODO: 		M3PING
 				m3ping <dcid> <endpoint> 
@@ -5976,37 +5987,18 @@ TODO: 		M3PING
 				3)  sendrec();
 				4) 	t_stop: time()
 		
-TODO:	  	MONITOR DE TRAFICO PARA PROXY
-				las estadisticas se presentan por nweb 
-				incorporar un nweb server por proxy Sender/Receiver 
-				El port en que escucha el web server del proxy RECEIVER sera  
-					rweb_port = (BASE_TYPE + px.px_id);
-					
-				El port en que escucha el web server del proxy SENDER sera  
-					sweb_port = (BASE_TYPE + BASE_SENDER + px.px_id); // BASE_SENDER = 1000
-					
-				los datos se guardan en variables compartidas
-				los datos son una matriz tridimensional para cada nodo. 
-					Para el SENDER  snode = local_nodeid y el variable es el dnode 
-					snode dnode dcid src_ep dst_ep messages data 
-					Para el RECEIVER rnode = local_nodeid y el variable es el snode 
-					count snode dnode dcid src_ep dst_ep messages data  
+
 				
-				struct px_stats {
-					unsigned long int 	pst_count;
-					int					pst_dcid;
-					int					pst_snode;
-					int					pst_dnode;
-					int					pst_src_ep;
-					int					pst_dst_ep;
-					unsigned long int 	pst_nr_msg;
-					unsigned long int 	pst_nr_data;
-				}
 				
+				SENDER Proxy Web Server .
+
+
+
+
 TODO:		INTEGRAR SPREAD DESDE MODULO DE KERNEL		
 
 =========================================================================================
-ULTIMO_LOG
+
   		TODO:  Probar arranque de RADAR en NODE2
 			
 		PROBLEMA:

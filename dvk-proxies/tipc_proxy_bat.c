@@ -74,8 +74,8 @@ int smsg_fail = 0;
 int pws_port;
 
 pthread_mutex_t px_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t pws_cond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t px_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t pws_cond = PTHREAD_COND_INITIALIZER;
 
 static char pws_buffer[PWS_BUFSIZE+1]; /* static so zero filled */
 static char pws_html[PWS_BUFSIZE+1]; /* static so zero filled */
@@ -324,6 +324,7 @@ int pr_process_message(void) {
 	} else{
 		rcode = dvk_put2lcl(p_header, p_payload);
 	}
+
 #ifdef RMT_CLIENT_BIND	
 	ret = 0;
 	if( rcode < 0) {
@@ -384,11 +385,13 @@ int pr_process_message(void) {
 
 		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
 		PXYDEBUG("RPROXY: put2lcl (autobind)\n");
+
 		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
 			rcode = dvk_put2lcl(p_header, p_decomp_pl);
 		} else{
 			rcode = dvk_put2lcl(p_header, p_payload);
 		}
+
 		if( ret < 0) {
 			ERROR_PRINT(ret);
 			if( rcode < 0) ERROR_RETURN(rcode);
@@ -407,7 +410,7 @@ int pr_process_message(void) {
 		PXYDEBUG("RPROXY: batch_nr=%d\n", batch_nr);
 		// check payload len
 		if( (batch_nr * sizeof(proxy_hdr_t)) != p_header->c_len){
-			PXYDEBUG("RPROXY: put2lcl\n");
+			PXYDEBUG("RPROXY: batched messages \n");
 			ERROR_RETURN(EDVSBADVALUE);
 		}
 		// put the batched commands
@@ -420,10 +423,17 @@ int pr_process_message(void) {
 			bat_ptr = &bat_cmd[i];
 			PXYDEBUG("RPROXY: bat_cmd[%d]:" CMD_FORMAT, i, CMD_FIELDS(bat_ptr));
 			rcode = dvk_put2lcl(bat_ptr, p_payload);
-			if( rcode < 0) ERROR_RETURN(rcode);		
+			if( rcode < 0) {
+				ERROR_RETURN(rcode);
+			}
 		}
 	}
 	
+	if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
+		update_stats(p_header,  p_decomp_pl, CONNECT_RPROXY);
+	else 
+		update_stats(p_header,  p_payload, CONNECT_RPROXY);
+
     return(OK);    
 }
 
@@ -518,7 +528,18 @@ void pr_init(void)
 	
 	PXYDEBUG("p_header=%p p_payload=%p diff=%d\n", 
 			p_header, p_payload, ((char*) p_payload - (char*) p_header));
+	
+	pws_port = ((BASE_TYPE+BASE_OFFSET) +  px.px_id);
+	rcode = pthread_create( &pws_pth, NULL, main_pws, pws_port );
+	if(rcode) ERROR_EXIT(rcode);
+	PXYDEBUG("pws_pth=%u\n",pws_pth);		
 
+	MTX_LOCK(px_mutex);
+	COND_WAIT(px_cond, px_mutex);
+	COND_SIGNAL(pws_cond);
+	MTX_UNLOCK(px_mutex);
+	
+	// MUTEX REMAINS LOCKED 
     if( pr_setup_connection() == OK) {
       	pr_start_serving();
  	} else {
@@ -643,28 +664,53 @@ int  ps_send_payload(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
     return(OK);
 }
 
-void update_stats(proxy_hdr_t *hd_ptr)
+void update_stats(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr, int px_type)
 {
 	px_stats_t *pxs_ptr;
+	proxy_hdr_t *bat_cmd, *bat_ptr;
+	int i;
 
+	PXYDEBUG("px_type=%d\n", px_type);
+
+	MTX_LOCK(px_mutex);
 	pxs_ptr = &px_stats[hd_ptr->c_dnode][hd_ptr->c_dcid];
 	pxs_ptr->pst_nr_cmd++;
 	pxs_ptr->pst_dcid 	=  hd_ptr->c_dcid;
-	pxs_ptr->pst_snode	=  local_nodeid;
-	pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
-
+	if( px_type == CONNECT_RPROXY){
+		pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
+		pxs_ptr->pst_snode	=  hd_ptr->c_snode;		
+	}else{
+		pxs_ptr->pst_snode	=  local_nodeid;
+		pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
+	}
+	
 	switch(hd_ptr->c_cmd){
-		case CMD_SEND_MSG:
-		case CMD_SNDREC_MSG:
-		case CMD_REPLY_MSG:
-			pxs_ptr->pst_nr_msg++;
-			break;
 		case CMD_COPYIN_DATA:
 		case CMD_COPYOUT_DATA:
 			pxs_ptr->pst_nr_data += hd_ptr->c_len;
 			break;
+		case CMD_SEND_MSG:
+		case CMD_SNDREC_MSG:
+		case CMD_REPLY_MSG:
+			pxs_ptr->pst_nr_msg++;
+			// fall down 
+		default:	
+			pxs_ptr->pst_nr_cmd += hd_ptr->c_batch_nr;
+			if( hd_ptr->c_batch_nr != 0) {
+				bat_cmd = (proxy_hdr_t *) pl_ptr;
+				for( i = 0; i < hd_ptr->c_batch_nr; i++){
+					bat_ptr = &bat_cmd[i];
+					if( (bat_ptr->c_cmd == CMD_SEND_MSG)
+					||  (bat_ptr->c_cmd == CMD_SNDREC_MSG)
+					||  (bat_ptr->c_cmd == CMD_REPLY_MSG)){
+						pxs_ptr->pst_nr_msg++;
+					}		  
+				}
+			}			
+			break;
 	}
-	PXYDEBUG("SPROXY:" PXS_FORMAT, PXS_FIELDS(pxs_ptr));
+	PXYDEBUG(PXS_FORMAT, PXS_FIELDS(pxs_ptr));
+	MTX_UNLOCK(px_mutex);
 }
 
 /* 
@@ -710,8 +756,8 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 			rcode =  ps_send_payload(hd_ptr, p_payload);
 		if ( rcode != OK)  ERROR_RETURN(rcode);
 	}
-	
-	update_stats(p_header) ;
+
+	update_stats(hd_ptr, pl_ptr, CONNECT_SPROXY) ;
 
     return(OK);
 }
@@ -735,9 +781,7 @@ int  ps_start_serving(void)
 		batch_nr = 0;		// nr_cmd the number of batching commands in the buffer
 			
 		PXYDEBUG("SPROXY %d: Waiting a message\n", pid);
-		MTX_UNLOCK(px_mutex);
 		ret = dvk_get2rmt(p_header, p_payload); 
-		MTX_LOCK(px_mutex);
 
 //		p_header->c_flags   = 0;
 //		p_header->c_snd_seq = 0;
@@ -777,7 +821,7 @@ int  ps_start_serving(void)
 			}
 			// store original header into batched header 
 			memcpy( (char*) p_header3, p_header, sizeof(proxy_hdr_t));
-			bat_vect = (proxy_hdr_t*) p_batch;		
+			bat_vect = (proxy_hdr_t*) p_batch;	
 			do{
 				PXYDEBUG("SPROXY %d: Getting more messages\n", pid);
 				ret = dvk_get2rmt_T(p_header2, p_payload2, TIMEOUT_NOWAIT);            
@@ -1004,9 +1048,7 @@ void  ps_init(void)
 			ERROR_EXIT(rcode);
 		} 
 		
-		MTX_LOCK(px_mutex);
 		ps_start_serving();
-		MTX_UNLOCK(px_mutex);
 	
 		rcode = dvk_proxy_conn(px.px_id, DISCONNECT_SPROXY);
 		if(rcode){
@@ -1119,9 +1161,9 @@ void pws_server(int fd, int hit, int px_type)
 
 	/* Start building the HTML page */
 	if(px_type == CONNECT_SPROXY)
-		(void)strcat(pws_buffer,"<html><head><title>PWS - RECEIVER PROXY  Server</title>");
-	else 
 		(void)strcat(pws_buffer,"<html><head><title>PWS - SENDER   PROXY  Server</title>");
+	else 
+		(void)strcat(pws_buffer,"<html><head><title>PWS - RECEIVER PROXY  Server</title>");
 		
 	/* Add some CSS style */
 	(void)strcat(pws_buffer,"<style type=\"text/css\">\n");
@@ -1144,9 +1186,9 @@ void pws_server(int fd, int hit, int px_type)
 	else
 		(void)strcat(pws_buffer,"<table><thead><tr><th colspan=\"10\">RECEIVER Proxy Web Server .</th></tr></thead><tbody><tr>");
 		
-	(void)strcat(pws_buffer,"</tr></tbody></table><br />");
+	(void)strcat(pws_buffer,"</tr></tbody></table><br/>");
+	
 // (void)write(fd,pws_buffer,strlen(pws_buffer));
-#ifdef ANULADO 
 	/* Write the HTML generated in functions to network socket */
 	wdmp_px_stats();
 	if( strlen(pws_html) != 0){
@@ -1155,7 +1197,6 @@ void pws_server(int fd, int hit, int px_type)
 //		PXYDEBUG("%s\n",pws_buffer);	
 		PXYDEBUG("strlen(pws_buffer)=%d\n", strlen(pws_buffer));
 	}
-#endif // ANULADO 
 	
 	/* Finish HTML code */
 	(void)strcat(pws_buffer,"</body></html>");
@@ -1230,11 +1271,9 @@ void wdmp_px_stats(void)
 	px_stats_t	*pxs_ptr;
 
 	PXYDEBUG("\n");
-
-	MTX_LOCK(px_mutex);
-
 	page_ptr = pws_html;
 	*page_ptr = 0;
+
 	(void)strcat(page_ptr,"<table>\n");
 	(void)strcat(page_ptr,"<thead>\n");
 	(void)strcat(page_ptr,"<tr>\n");
@@ -1247,16 +1286,18 @@ void wdmp_px_stats(void)
 	(void)strcat(page_ptr,"</tr>\n");
 	(void)strcat(page_ptr,"</thead>\n");
 	(void)strcat(page_ptr,"<tbody>\n");
-	
+
+	MTX_LOCK(px_mutex);
 	for(n = 0; n < NR_NODES; n++) {
 		for(d = 0; d < NR_DCS; d++) {
 			pxs_ptr = &px_stats[n][d];
-				if (pxs_ptr->pst_nr_cmd == 0) { // have no traffic 
+			if ((pxs_ptr->pst_nr_cmd == 0) || // have no traffic
+			    (pxs_ptr->pst_snode == pxs_ptr->pst_dnode)) {  
 				continue;
 			}
 			(void)strcat(page_ptr,"<tr>\n");
 			sprintf(tmp_buffer, "<td>%10d</td> <td>%10d</td> <td>%10d</td>"
-								" <td>%10uld</td> <td>%10uld</td> <td>%10uld</td>\n",
+								" <td>%10ld</td> <td>%10ld</td> <td>%10ld</td>\n",
 					pxs_ptr->pst_snode,
 					pxs_ptr->pst_dnode,
 					pxs_ptr->pst_dcid,
@@ -1267,10 +1308,11 @@ void wdmp_px_stats(void)
 			(void)strcat(page_ptr,"</tr>\n");
 			}
 	}
+	MTX_UNLOCK(px_mutex);
+
 	(void)strcat(page_ptr,"</tbody></table>\n");
    	PXYDEBUG("%s\n",page_ptr);	
 	PXYDEBUG("strlen(page_ptr)=%d\n", strlen(page_ptr));	
-	MTX_UNLOCK(px_mutex);
 }
 
 

@@ -1,6 +1,6 @@
 #include "loops.h"
 
-#define		RANDOM_PATERN	0
+#define		RANDOM_PATERN	1
 #define 	RMTNODE	1
 #define 	DCID	0
 #define 	SVR_NR	0
