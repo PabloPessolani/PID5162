@@ -527,7 +527,6 @@ TODO:
   x            <Select>    < Exit >    < Help >    < Save >    < Load >             x
   mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
 
-
   Probe a ver si se ve el driver
   
   SIN ARRANCAR EL DVS EN EL HOST 
@@ -559,6 +558,167 @@ DMESG EN HOST
 [ 9035.934351] DEBUG 3754:dvk_open:167: 
 		
 ==============================================================================================
+20190430 :
+				
+		EJECUCION DE UML DENTRO DEL NAMESPACE 
+			En HOST
+			cd /usr/src/dvs/dvk-tests
+			./tests.sh 0 0
+			cd /dev/shm
+			. ./DC0.sh 
+			cd /usr/src/dvs/vos/uml/uml1
+			nsenter -p -t$DC0 ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdc6 mem=1024M 		
+
+			EN UML 	
+			root@node0:/usr/src/dvs/dvk-tests# mknod /dev/dvk c 33 0
+
+			TRATO DE EJECUTAR UN SERVIDOR DENTRO DEL UML 
+			root@node0:/usr/src/dvs/dvk-proxies/test# ./copy_server 0 10
+			DEBUG 647:dvk_open:47: Open dvk device file /dev/dvk
+			DEBUG 647:uml_dvk_open:83: dvk_dev=/dev/dvk
+			DEBUG 647:uml_dvk_open:91: rcode=23
+			DEBUG 647:dvk_getdvsinfo:120: 
+			DEBUG 647:uml_dvk_ioctl:62: cmd=8004E31B arg=BF998B68
+			DEBUG 647:uml_dvk_ioctl:70: rcode=0
+			DEBUG 647:dvk_getdvsinfo:122: ioctl ret=0
+			 copy_server.c:main:47:local_nodeid=0
+			 copy_server.c:main:48:d_nr_dcs=0 d_nr_nodes=0 d_nr_procs=0 d_nr_tasks=0 d_nr_sysprocs=0 
+			DEBUG 647:dvk_getdcinfo:170: dcid=0
+			DEBUG 647:uml_dvk_ioctl:62: cmd=8004E30E arg=BF998B24
+			DEBUG 647:uml_dvk_ioctl:70: rcode=0
+			DEBUG 647:dvk_getdcinfo:174: ioctl ret=0 errno=0
+			 copy_server.c:main:58:dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+			 copy_server.c:main:59:flags=0 dc_nodes=0 dc_pid=1073780313 dc_name=
+			svr_ep must be > 0 and < 0
+			DEBUG 647:uml_dvk_release:104: dvk_dev=/dev/dvk
+					
+			DMESG EN HOST 
+			[ 3593.456788] DEBUG 6811:dvk_open:167: 
+			[ 3593.458626] DEBUG 6811:dvk_ioctl:204: cmd=8004E31B arg=BF998B68
+			[ 3593.458629] DEBUG 6811:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+			[ 3593.458732] DEBUG 6811:io_getdvsinfo:288: 
+			[ 3593.458736] DEBUG 6811:new_getdvsinfo:1784: local_nodeid=0 
+			[ 3593.463375] DEBUG 6811:dvk_ioctl:204: cmd=8004E30E arg=BF998B24
+			[ 3593.463379] DEBUG 6811:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+			[ 3593.463380] DEBUG 6811:io_getdcinfo:153: 
+			[ 3593.463383] DEBUG 6811:new_getdcinfo:1813: dcid=0 
+			[ 3593.463386] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
+			[ 3593.463387] ERROR: 6811:check_caller:570: rcode=-310
+			[ 3593.463389] DEBUG 6811:new_getdcinfo:1831: RLOCK_DC dc=0 count=0
+			[ 3593.463391] DEBUG 6811:new_getdcinfo:1833: RUNLOCK_DC dc=0 count=0
+			[ 3593.464124] DVK: exit_unbind local_nodeid:0		
+					
+			DMESG UML
+			[  242.870000] DEBUG 647:uml_dvk_open:83: dvk_dev=/dev/dvk
+			[  242.880000] DEBUG 647:uml_dvk_open:91: rcode=23
+			[  242.880000] DEBUG 647:uml_dvk_ioctl:62: cmd=8004E31B arg=BF998B68
+			[  242.880000] DEBUG 647:uml_dvk_ioctl:70: rcode=0
+			[  242.880000] DEBUG 647:uml_dvk_ioctl:62: cmd=8004E30E arg=BF998B24
+			[  242.880000] DEBUG 647:uml_dvk_ioctl:70: rcode=0
+			[  242.880000] DEBUG 647:uml_dvk_release:104: dvk_dev=/dev/dvk 
+
+PROBLEMA:
+			EL PARAMETRO DE ADDRESS QUE PASA EL PROCESO DENTRO DE UML NO ES EL VERDADERO
+			POR LO TANTO LA COPIA DESDE EL DVK HACIA EL PROCESO DENTRO DE UML NO ESCRIBE EN EL LUGAR CORRECTO
+			
+PRUEBA:		HACER UN PROGRAMA QUE HAGA BIND Y LUEGO GETEP 
+
+root@node0:/usr/src/dvs/dvk-tests# ./test_bind 0 10
+DEBUG 651:dvk_open:47: Open dvk device file /dev/dvk
+DEBUG 651:uml_dvk_open:83: dvk_dev=/dev/dvk
+DEBUG 651:uml_dvk_open:91: rcode=23
+PARENT dvk_bind Binding process 651 to DC0 with p_nr=10
+DEBUG 651:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+DEBUG 651:uml_dvk_ioctl:62: cmd=4004E309 arg=BFF31CD8
+DEBUG 651:uml_dvk_ioctl:70: rcode=-7
+DEBUG 651:dvk_bind_X:616: ioctl ret=-1 errno=7
+DEBUG 651:dvk_getep:109: pid=651
+DEBUG 651:uml_dvk_ioctl:62: cmd=8004E31A arg=28B
+DEBUG 651:uml_dvk_ioctl:70: rcode=-310
+DEBUG 651:dvk_getep:111: ioctl ret=-1 errno=310
+ERROR: 651:dvk_getep:112: rcode=-310
+PARENT ep=-1 dvk_getep=-310
+PARENT dvk_lclbind 652 to DC0 with p_nr+index=11
+DEBUG 651:dvk_bind_X:607: cmd=1 dcid=0 pid=652 endpoint=11 nodeid=-1
+DEBUG 651:uml_dvk_ioctl:62: cmd=4004E309 arg=BFF31CD8
+DEBUG 651:uml_dvk_ioctl:70: rcode=-7
+DEBUG 651:dvk_bind_X:616: ioctl ret=-1 errno=7
+DEBUG 651:dvk_getep:109: pid=652
+CHILD[1] dvk_lclbind
+DEBUG 651:uml_dvk_ioctl:62: cmd=8004E31A arg=28C
+DEBUG 651:uml_dvk_ioctl:70: rcode=-310
+DEBUG 651:dvk_getep:111: ioctl ret=-1 errno=310
+ERROR: 651:dvk_getep:112: rcode=-310
+PARENT ep=-1 dvk_getep=-310
+CHILD[2] dvk_replbind Binding process 653 to DC0 with p_nr=12
+DEBUG 653:dvk_bind_X:607: cmd=4 dcid=0 pid=653 endpoint=12 nodeid=-1
+DEBUG 653:uml_dvk_ioctl:62: cmd=4004E309 arg=BFF31CD8
+DEBUG 653:uml_dvk_ioctl:70: rcode=-7
+DEBUG 653:dvk_bind_X:616: ioctl ret=-1 errno=7
+DEBUG 653:dvk_getep:109: pid=653
+PARENT waiting child index=2
+DEBUG 653:uml_dvk_ioctl:62: cmd=8004E31A arg=28D
+DEBUG 653:uml_dvk_ioctl:70: rcode=-310
+DEBUG 653:dvk_getep:111: ioctl ret=-1 errno=310
+ERROR: 653:dvk_getep:112: rcode=-310
+CHILD[2] ep=-1 dvk_getep=-310
+DEBUG 652:dvk_getep:109: pid=652
+DEBUG 652:uml_dvk_ioctl:62: cmd=8004E31A arg=28C
+DEBUG 652:uml_dvk_ioctl:70: rcode=-310
+DEBUG 652:dvk_getep:111: ioctl ret=-1 errno=310
+ERROR: 652:dvk_getep:112: rcode=-310
+CHILD[1] dvk_getep=-310
+
+EN HOST 
+[ 3914.739362] DEBUG 6811:dvk_open:167: 
+[ 3914.741520] DEBUG 6811:dvk_ioctl:204: cmd=4004E309 arg=BFF31CD8
+[ 3914.741523] DEBUG 6811:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 3914.741524] DEBUG 6811:io_bind:97: 
+[ 3914.741531] ERROR: 6811:io_bind:99: rcode=-7
+[ 3914.741533] ERROR: 6811:dvk_ioctl:228: rcode=-7
+[ 3914.742277] DEBUG 6811:dvk_ioctl:204: cmd=8004E31A arg=28B
+[ 3914.742279] DEBUG 6811:dvk_ioctl:224: DVK_CALL=26 (getep) 
+[ 3914.742347] DEBUG 6811:io_getep:279: 
+[ 3914.742349] DEBUG 6811:new_getep:1966: pid=651
+[ 3914.742352] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
+[ 3914.742353] ERROR: 6811:check_caller:570: rcode=-310
+[ 3914.742355] ERROR: 6811:dvk_ioctl:228: rcode=-310
+[ 3914.771912] DEBUG 6811:dvk_ioctl:204: cmd=4004E309 arg=BFF31CD8
+[ 3914.771916] DEBUG 6811:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 3914.771917] DEBUG 6811:io_bind:97: 
+[ 3914.771924] ERROR: 6811:io_bind:99: rcode=-7
+[ 3914.771926] ERROR: 6811:dvk_ioctl:228: rcode=-7
+[ 3914.797432] DEBUG 6811:dvk_ioctl:204: cmd=8004E31A arg=28C
+[ 3914.797436] DEBUG 6811:dvk_ioctl:224: DVK_CALL=26 (getep) 
+[ 3914.797437] DEBUG 6811:io_getep:279: 
+[ 3914.797439] DEBUG 6811:new_getep:1966: pid=652
+[ 3914.797442] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
+[ 3914.797444] ERROR: 6811:check_caller:570: rcode=-310
+[ 3914.797445] ERROR: 6811:dvk_ioctl:228: rcode=-310
+[ 3914.811079] DEBUG 6811:dvk_ioctl:204: cmd=4004E309 arg=BFF31CD8
+[ 3914.811082] DEBUG 6811:dvk_ioctl:224: DVK_CALL=9 (bind) 
+[ 3914.811084] DEBUG 6811:io_bind:97: 
+[ 3914.811089] ERROR: 6811:io_bind:99: rcode=-7
+[ 3914.811091] ERROR: 6811:dvk_ioctl:228: rcode=-7
+[ 3914.832395] DEBUG 6811:dvk_ioctl:204: cmd=8004E31A arg=28D
+[ 3914.832401] DEBUG 6811:dvk_ioctl:224: DVK_CALL=26 (getep) 
+[ 3914.832402] DEBUG 6811:io_getep:279: 
+[ 3914.832404] DEBUG 6811:new_getep:1966: pid=653
+[ 3914.832408] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
+[ 3914.832409] ERROR: 6811:check_caller:570: rcode=-310
+[ 3914.832411] ERROR: 6811:dvk_ioctl:228: rcode=-310
+[ 3919.787014] DEBUG 6811:dvk_ioctl:204: cmd=8004E31A arg=28C
+[ 3919.787018] DEBUG 6811:dvk_ioctl:224: DVK_CALL=26 (getep) 
+[ 3919.787019] DEBUG 6811:io_getep:279: 
+[ 3919.787021] DEBUG 6811:new_getep:1966: pid=652
+[ 3919.787024] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
+[ 3919.787025] ERROR: 6811:check_caller:570: rcode=-310
+[ 3919.787026] ERROR: 6811:dvk_ioctl:228: rcode=-310
+[ 3954.156308] DVK: exit_unbind local_nodeid:0
+
+	
+	
+==============================================================================================
 TENER EN CUENTA
 I start uml with the following command line:
 linux root=/dev/ubda ubd0=/umls/uml1.rootfs ubd1=/umls/uml1.swapfs mem=128M
@@ -567,7 +727,7 @@ con=pty con0=fd:0,fd:1 eth0=tuntap,tap0,,192.168.1.1 umid=uml1
 Se compilo el 
 
 
- ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdc6   mem=1024M 
+ ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M 
 
  
 

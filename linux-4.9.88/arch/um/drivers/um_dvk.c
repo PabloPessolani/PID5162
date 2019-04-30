@@ -14,6 +14,8 @@
 
 #ifdef CONFIG_UML_DVK
 
+#define DEBUG 1
+
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/dvk-mod/dvk_debug.h"
 #include "/usr/src/dvs/dvk-mod/dvk_macros.h"

@@ -2747,7 +2747,7 @@ root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_lclvcopy3 0 1 2 3 60
 		NODE1
 			nsenter -p -t$DC0 ./loop_copy_client 1 
 			
-			root@node1:/usr/src/dvs/dvk-proxies/test# nsenter -p -t$DC0 ./loop_copy_client 1 
+			root@node1:/usr/src/dvs/dvk-proxies/test#  ./loop_copy_client 1 
 			DEBUG 6:dvk_open:40: Open dvk device file /dev/dvk
 			DEBUG 6:dvk_getdcinfo:163: dcid=0
 			DEBUG 6:dvk_getdcinfo:167: ioctl ret=0 errno=0
