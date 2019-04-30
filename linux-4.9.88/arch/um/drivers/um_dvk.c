@@ -12,6 +12,8 @@
 #include <init.h>
 #include <os.h>
 
+#ifdef CONFIG_UML_DVK
+
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/dvk-mod/dvk_debug.h"
 #include "/usr/src/dvs/dvk-mod/dvk_macros.h"
@@ -31,6 +33,7 @@ static char *dvk_dev = UML_DVK_DEV;
 
 module_param(dvk_dev, charp, 0644);
 MODULE_PARM_DESC(dvk_dev, DVK_HELP);
+
 
 #ifndef MODULE
 static int set_dvk(char *name, int *add)
@@ -71,11 +74,17 @@ static long uml_dvk_ioctl(struct file *file,
 static int uml_dvk_open(struct inode *inode, struct file *file)
 {
 	int rcode;
-	
+	int r = 0, w = 0;
+
 	kernel_param_lock(THIS_MODULE);
 	mutex_lock(&uml_dvk_mutex);
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
 	// int os_open_file(const char *file, struct openflags flags, int mode);
+	if (file->f_mode & FMODE_READ)
+		r = 1;
+	if (file->f_mode & FMODE_WRITE)
+		w = 1;
+	
 	rcode = os_open_file(dvk_dev, of_set_rw(OPENFLAGS(), r, w), 0);
 	DVKDEBUG(INTERNAL,"rcode=%d\n",rcode);
 	mutex_unlock(&uml_dvk_mutex);
@@ -113,11 +122,13 @@ MODULE_LICENSE("GPL");
 
 static int __init uml_dvk_init_module(void)
 {
+	printk("UML Distributed Virtualization Kernel (host dvk_dev = %s)\n",dvk_dev);
+
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL, "UML Distributed Virtualization Kernel (host dvk_dev = %s)\n",dvk_dev);
 	kernel_param_unlock(THIS_MODULE);
 
-	module_dvk = register_chrdev(DVK_MAYOR, DEVICE_NAME, &uml_dvk_fops);
+	module_dvk = register_chrdev(DVK_MAJOR, DEVICE_NAME, &uml_dvk_fops);
 	if (module_dvk < 0) {
 		printk(KERN_ERR "dvk: couldn't register DVK device!\n");
 		return -ENODEV;
@@ -128,9 +139,10 @@ static int __init uml_dvk_init_module(void)
 
 static void __exit uml_dvk_cleanup_module (void)
 {
-	unregister_chrdev(DVK_MAYOR, DEVICE_NAME);
+	unregister_chrdev(DVK_MAJOR, DEVICE_NAME);
 }
 
 module_init(uml_dvk_init_module);
 module_exit(uml_dvk_cleanup_module);
 
+#endif // CONFIG_UML_DVK

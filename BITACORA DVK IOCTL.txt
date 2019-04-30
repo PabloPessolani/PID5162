@@ -5964,6 +5964,13 @@ root@node0:/dev/shm# dmesg | grep fault
 				Sender 		http://192.168.1.100:3001/
 				Recevier 	http://192.168.1.100:4001/
 			Es decir escuchan en ports (3000+px_id)  y (4000+px_id)
+			
+			
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+TODO MUY IMPORTANTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+QUE FUNCIONE BIEN EL PROXY TIPC CON MAS DE 2 NODOS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+			
 		
 =======================================================================================
 ULTIMO_LOG
@@ -5987,14 +5994,6 @@ TODO: 		M3PING
 				3)  sendrec();
 				4) 	t_stop: time()
 		
-
-				
-				
-				SENDER Proxy Web Server .
-
-
-
-
 TODO:		INTEGRAR SPREAD DESDE MODULO DE KERNEL		
 
 =========================================================================================
@@ -6049,13 +6048,6 @@ TODO:		INTEGRAR SPREAD DESDE MODULO DE KERNEL
 		
 
 	PROBLEMA RADAR 
-	
-		 
-PROBLEMA:
-		FUNCIONO BIEN LA TRANSFERENCIA DE MENSAJES SI SE LE ANULA EL BATCHING
-			#ifdef USE_BATCHING			
-		QUIERE DECIR Q ALLI ESTA EL PROBLEMA
-		
 
 PARA INCLUIR EN SPREAD PROXY
 		Cada vez que hay un JOIN es que hay que hacer el 
@@ -6063,18 +6055,9 @@ PARA INCLUIR EN SPREAD PROXY
 		cada vez que hay un DISCONNECT 
 			int dvk_node_down(int nodeid)
  
-PROBAR TRANSFERENICAS DE BLOQUES CON TCP_BAT
-
 INCLUIR UN NOMBRE AL DVS  
  
 	
-	QUEDAN PROBAR 
-			RDISK
-			IS
-			FS-FAT
-			FAT-FUSE
-			MOL-FUSE 
-						
 			
 			https://github.com/w-vi/diyC
 			https://wvi.cz/diyC/
@@ -6083,14 +6066,6 @@ INCLUIR UN NOMBRE AL DVS
 			https://ericchiang.github.io/post/containers-from-scratch/
 			https://doc.opensuse.org/documentation/leap/tuning/html/book.sle.tuning/cha.tuning.cgroups.html
 				
-			RDISK
-			M3NWEB
-			M3FTP
-			PM
-			RS
-			IS
-			FS
-						
 
 	
 ssh root@node0 "bash -s" < node1.sh	
@@ -6108,11 +6083,46 @@ TODO:		Modificar todos los campos de bitmaps a tipo BITMAP como hace MINIX
 TODO:		Nuevo DVK CALLS para obtener estadisticas de uso (que estan en /proc)
 				GETDCSTATS
 				GETNODESTATS
-					
+
+------------------------------------------ UML -----------------------------------------------
+vER UML The externfs Filesystem
+Este es el main de UML
+linux/v4.9.88/source/arch/um/os-Linux/main.c
+En este esta el driver de disco
+https://elixir.bootlin.com/linux/v4.9.88/source/arch/um/drivers/ubd_kern.c#L727
+CONFIG_BLK_DEV_UBD
+PROBLEMA: Como hacer las operaciones IOCTL del FS de UML para que use DVK.
+https://uml.devloop.org.uk/kernels.html
+En https://elixir.bootlin.com/linux/v4.9.88/source/arch/um/os-Linux/file.c
+esta 
+/* FIXME? required only by hostaudio (because it passes ioctls verbatim) */
+int os_ioctl_generic(int fd, unsigned int cmd, unsigned long arg)
+{
+	int err;
+
+	err = ioctl(fd, cmd, arg);
+	if (err < 0)
+		return -errno;
+
+	return err;
+}
+
+Se utiliza segun 
+https://elixir.bootlin.com/linux/v4.9.88/source/arch/um/drivers/hostaudio_kern.c#L158
+err = os_ioctl_generic(state->fd, cmd, (unsigned long) &data);
+
+ESTRATEGIA: 
+	Desarrollar un modulo para el kernel UML (TOMAR COMO BASE hostaudio_kern.c) 
+	Es como un passthrough 
+	
+
+------------------------------------------ UML -----------------------------------------------
+
+TODO: 		INCLUIR DVK en el KCONFIG 
+
+			
 TODO:		Definir los address de espacio de usuario 
 				void __user xxxxx
-TODO: 		Probar el proxy con batching de comandos
-TODO : 		Ver porque no compilan los proxies con LZ4
 
 TODO:		VER EL TEME DE CGROUPS 
 TODO:		Lo mas conveniente es crear un USER y GROUP por cada DC .
@@ -6498,7 +6508,6 @@ http://blog.techveda.org/adding-system-calls-linux-kernel-3-5-x/
 https://medium.com/@ssreehari/implementing-a-system-call-in-linux-kernel-4-7-1-6f98250a8c38
 http://www.franksthinktank.com/howto/addsyscall/
 http://impact.asu.edu/cse430fa12/CSE430%20FA%202012%20-%20HW2.pdf
-
 https://stackoverflow.com/questions/7407652/implementation-of-system-calls-traps-within-linux-kernel-source		
 http://articles.manugarg.com/systemcallinlinux2_6.html
 https://notes.shichao.io/lkd/

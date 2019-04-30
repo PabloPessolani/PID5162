@@ -1,0 +1,574 @@
+BAJE EL .CONFIG DE 
+https://uml.devloop.org.uk/kernels.html
+Y UN FS ROOT DEBIAN
+http://fs.devloop.org.uk/
+
+hice 
+make menuconfig 
+seleccione algunas cosas diferentes
+
+luego para compilar 
+make ARCH=um mrproper
+make ARCH=um defconfig
+make ARCH=um menuconfig
+make ARCH=um
+
+Deja el ejecutable en /usr/src/linux archivo "linux"
+
+http://user-mode-linux.sourceforge.net/
+http://uml.devloop.org.uk/index.html
+http://fs.devloop.org.uk/ FILESYSTEMS 
+http://uml.devloop.org.uk/kernels.html
+
+BITACORA UML EN DVS 
+
+cd /usr/src/dvs/vos/uml 
+mount /dev/sdc8 uml1
+entonces en  /1 
+copio el "linux"
+y el filesystem Debian
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+NO PUDE USAR NI LOS KERNELS NI LOS ROOTFS DE LAS PAGINAS DE UML 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+TUVE MUCHOS INCONVENIENTES PERO PUDE BOOTEAR CON (tanto de CONSOLA HOST como desde SSH ) 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdc6   mem=1024M 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
+En mi caso, /dev/sdc5, /dev/sdc6 y /dev/sdc7 es un Debian pristino instalado directamente desde la red
+
+root@node0:/# mount /dev/sdc5 /mnt
+root@node0:/# ls /mnt
+bin   DC0ROOT.txt  etc   lib    mnt  proc  run   srv  tmp  var
+boot  dev          home  media  opt  root  sbin  sys  usr
+root@node0:/# umount  /mnt
+root@node0:/# mount /dev/sdc6 /mnt
+root@node0:/# ls /mnt
+bin   DC1ROOT.txt  etc   lib    mnt  proc  run   srv  tmp  var
+boot  dev          home  media  opt  root  sbin  sys  usr
+root@node0:/# umount  /mnt
+root@node0:/# mount /dev/sdc7 /mnt
+root@node0:/# ls /mnt
+bin   DC2ROOT.txt  etc   lib         media  opt   root  sbin  sys  usr
+boot  dev          home  lost+found  mnt    proc  run   srv   tmp  var
+root@node0:/# umount  /mnt
+
+root@node0:/usr/src/dvs/vos/uml/uml1# fdisk -l /dev/sdc
+Disco /dev/sdc: 20 GiB, 21474836480 bytes, 41943040 sectores
+Unidades: sectores de 1 * 512 = 512 bytes
+TamaÃ±o de sector (lÃ³gico/fÃ­sico): 512 bytes / 512 bytes
+TamaÃ±o de E/S (mÃ­nimo/Ã³ptimo): 512 bytes / 512 bytes
+Tipo de etiqueta de disco: dos
+Identificador del disco: 0x79c16f1c
+
+Disposit.  Inicio Comienzo    Final Sectores TamaÃ±o Id Tipo
+/dev/sdc1             2048 41943039 41940992    20G  5 Extendida
+/dev/sdc5             4096  2101247  2097152     1G 83 Linux  <<<< DEBIAN 
+/dev/sdc6          2103296  4200447  2097152     1G 83 Linux <<<< DEBIAN 
+/dev/sdc7          4202496  6299647  2097152     1G 83 Linux <<<< DEBIAN 
+/dev/sdc8          6301696 41943039 35641344    17G 83 Linux <<<< El actual directorio de UML 
+
+root@node0:/usr/src/dvs/vos/uml/uml1# mount | grep uml
+/dev/sdc8 on /usr/src/dvs/vos/uml/uml1 type ext3 (rw,relatime,data=ordered)
+ATENCION: No montar esto en forma permanente para que no quede en las imagenes BOOTCD 
+MONTAR A MANO
+root@node0:/# cd /usr/src/dvs/vos/uml/uml1/
+root@node0:/usr/src/dvs/vos/uml# mount /dev/sdc8 uml1 
+
+
+Si hay problemas con la password de root hacer:
+root@node0:/# mount /dev/sdc5 /mnt
+root@node0:/# cd /mnt
+root@node0:/mnt# chroot .
+root@node0:/mnt# passwd 
+root@node0:/mnt# exit 
+root@node0:/# umount  /mnt
+
+Si fuese un archivo de imagen 
+root@node0:/# mount -o loop  <archivo de imagen> /mnt
+root@node0:/# cd /mnt
+root@node0:/mnt# chroot .
+root@node0:/mnt# passwd      <<<<<<<< AQUI CAMBIA LA PASSWORD 
+root@node0:/mnt# exit 
+root@node0:/# umount  /mnt
+
+Cambiandole la password a la imagen de DEBIAN JESSIE pude bootear incluso desde SSH 
+	* kernel32-4.3.5
+	 * Debian-Jessie-x86-root_fs
+root@node0:~# cd /usr/src/dvs/vos/uml/uml1/
+root@node0:/usr/src/dvs/vos/uml/uml1# ./kernel32-4.3.5 con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=Debian-Jessie-x86-root_fs  mem=1024M 
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 16322560 bytes to physical memory to account for exec-shield gap
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 4.3.5 (root@virtual.nagafix.co.uk) (gcc version 4.9.3 (Gentoo 4.9.3 p1.2, pie-0.6.3) ) #4 Mon Feb 1 00:26:30 Local time zone must be set--see zic manua
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 264049
+[    0.000000] Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=Debian-Jessie-x86-root_fs mem=1024M root=98:0
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+[    0.000000] Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+[    0.000000] Memory: 1029596K/1064516K available (5556K kernel code, 345K rwdata, 2648K rodata, 139K init, 332K bss, 34920K reserved, 0K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] NR_IRQS:15
+[    0.000000] clocksource: itimer: mask: 0xffffffffffffffff max_cycles: 0x1d854df40, max_idle_ns: 3526361616960 ns
+[    0.040000] Calibrating delay loop... 1469.64 BogoMIPS (lpj=7348224)
+[    0.040000] pid_max: default: 32768 minimum: 301
+[    0.040000] Security Framework initialized
+[    0.040000] SELinux:  Initializing.
+[    0.040000] AppArmor: AppArmor disabled by boot time parameter
+[    0.040000] Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.040000] Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.040000] Initializing cgroup subsys io
+[    0.040000] Initializing cgroup subsys devices
+[    0.040000] Initializing cgroup subsys freezer
+[    0.040000] Initializing cgroup subsys net_cls
+[    0.040000] Checking for host processor cmov support...Yes
+[    0.040000] Checking that host ptys support output SIGIO...Yes
+[    0.040000] Checking that host ptys support SIGIO on close...No, enabling workaround
+[    0.040000] devtmpfs: initialized
+[    0.040000] Using 2.6 host AIO
+[    0.040000] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.040000] xor: measuring software checksum speed
+[    0.140000]    8regs     :  3063.600 MB/sec
+[    0.240000]    8regs_prefetch:  3154.400 MB/sec
+[    0.340000]    32regs    :  2340.400 MB/sec
+[    0.440000]    32regs_prefetch:  1859.200 MB/sec
+[    0.440000] xor: using function: 8regs_prefetch (3154.400 MB/sec)
+[    0.440000] NET: Registered protocol family 16
+[    0.610000] raid6: int32x1  gen()   717 MB/s
+[    0.780000] raid6: int32x1  xor()   488 MB/s
+[    0.950000] raid6: int32x2  gen()   847 MB/s
+[    1.120000] raid6: int32x2  xor()   519 MB/s
+[    1.290000] raid6: int32x4  gen()   825 MB/s
+[    1.460000] raid6: int32x4  xor()   539 MB/s
+[    1.630000] raid6: int32x8  gen()   746 MB/s
+[    1.800000] raid6: int32x8  xor()   475 MB/s
+[    1.800000] raid6: using algorithm int32x2 gen() 847 MB/s
+[    1.800000] raid6: .... xor() 519 MB/s, rmw enabled
+[    1.800000] raid6: using intx1 recovery algorithm
+[    1.800000] NetLabel: Initializing
+[    1.800000] NetLabel:  domain hash size = 128
+[    1.800000] NetLabel:  protocols = UNLABELED CIPSOv4
+[    1.800000] NetLabel:  unlabeled traffic allowed by default
+[    1.800000] clocksource: Switched to clocksource itimer
+[    1.800000] FS-Cache: Loaded
+[    1.800000] CacheFiles: Loaded
+[    1.800000] NET: Registered protocol family 2
+[    1.800000] TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+[    1.800000] TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+[    1.800000] TCP: Hash tables configured (established 16384 bind 16384)
+[    1.800000] UDP hash table entries: 1024 (order: 2, 16384 bytes)
+[    1.800000] UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+[    1.800000] NET: Registered protocol family 1
+[    1.800000] RPC: Registered named UNIX socket transport module.
+[    1.800000] RPC: Registered udp transport module.
+[    1.800000] RPC: Registered tcp transport module.
+[    1.800000] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    1.800000] console [stderr0] disabled
+[    1.800000] mconsole (version 2) initialized on /root/.uml/oNgXFf/mconsole
+[    1.800000] Checking host MADV_REMOVE support...OK
+[    1.800000] UML Watchdog Timer
+[    1.800000] Host TLS support detected
+[    1.800000] Detected host type: i386 (GDT indexes 6 to 9)
+[    1.800000] futex hash table entries: 256 (order: -1, 3072 bytes)
+[    1.800000] audit: initializing netlink subsys (disabled)
+[    1.800000] audit: type=2000 audit(1556486507.255:1): initialized
+[    1.800000] Initialise system trusted keyring
+[    1.800000] VFS: Disk quotas dquot_6.6.0
+[    1.800000] VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    1.800000] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.800000] FS-Cache: Netfs 'nfs' registered for caching
+[    1.800000] NFS: Registering the id_resolver key type
+[    1.800000] Key type id_resolver registered
+[    1.800000] Key type id_legacy registered
+[    1.800000] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    1.800000] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    1.800000] Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+[    1.800000] FS-Cache: Netfs 'cifs' registered for caching
+[    1.800000] Key type cifs.spnego registered
+[    1.800000] Key type cifs.idmap registered
+[    1.800000] ntfs: driver 2.1.32 [Flags: R/W].
+[    1.800000] fuse init (API version 7.23)
+[    1.800000] NILFS version 2 loaded
+[    1.800000] gfs2: GFS2 installed
+[    1.800000] Key type big_key registered
+[    2.070000] alg: rsa: test failed on vector 4, err=-74
+[    2.070000] alg: No test for 842 (842-generic)
+[    2.070000] jitterentropy: Initialization failed with host not compliant with requirements: 2
+[    2.070000] NET: Registered protocol family 38
+[    2.070000] Key type asymmetric registered
+[    2.070000] Asymmetric key parser 'x509' registered
+[    2.070000] Key type pkcs7_test registered
+[    2.070000] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
+[    2.070000] io scheduler noop registered
+[    2.070000] io scheduler deadline registered
+[    2.070000] io scheduler cfq registered (default)
+[    2.070000] xz_dec_test: module loaded
+[    2.070000] xz_dec_test: Create a device node with 'mknod xz_dec_test c 252 0' and write .xz files to it.
+[    2.110000] brd: module loaded
+[    2.110000] loop: module loaded
+[    2.110000] nbd: registered device at major 43
+[    2.110000] drbd: failed to initialize debugfs -- will not be available
+[    2.110000] drbd: initialized. Version: 8.4.5 (api:1/proto:86-101)
+[    2.110000] drbd: built-in
+[    2.110000] drbd: registered as block device major 147
+[    2.110000] PPP generic driver version 2.4.2
+[    2.110000] PPP BSD Compression module registered
+[    2.110000] PPP Deflate Compression module registered
+[    2.110000] PPP MPPE Compression module registered
+[    2.110000] NET: Registered protocol family 24
+[    2.110000] SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
+[    2.110000] CSLIP: code copyright 1989 Regents of the University of California.
+[    2.110000] SLIP linefill/keepalive option.
+[    2.110000] watchdog: Software Watchdog: cannot register miscdev on minor=130 (err=-16).
+[    2.110000] watchdog: Software Watchdog: a legacy watchdog module is probably present.
+[    2.110000] softdog: Software Watchdog Timer: 0.08 initialized. soft_noboot=0 soft_margin=60 sec soft_panic=0 (nowayout=0)
+[    2.110000] Netfilter messages via NETLINK v0.30.
+[    2.110000] nfnl_acct: registering with nfnetlink.
+[    2.110000] nf_conntrack version 0.5.0 (16087 buckets, 64348 max)
+[    2.110000] nf_tables: (c) 2007-2009 Patrick McHardy <kaber@trash.net>
+[    2.110000] nf_tables_compat: (c) 2012 Pablo Neira Ayuso <pablo@netfilter.org>
+[    2.110000] xt_time: kernel timezone is -0000
+[    2.110000] ip_set: protocol 6
+[    2.110000] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    2.110000] ipt_CLUSTERIP: ClusterIP Version 0.8 loaded successfully
+[    2.110000] arp_tables: (C) 2002 David S. Miller
+[    2.110000] NET: Registered protocol family 10
+[    2.110000] mip6: Mobile IPv6
+[    2.110000] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    2.110000] sit: IPv6 over IPv4 tunneling driver
+[    2.200000] ip6_gre: GRE over IPv6 tunneling driver
+[    2.200000] NET: Registered protocol family 17
+[    2.200000] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    2.200000] Bridge firewalling registered
+[    2.200000] Ebtables v2.0 registered
+[    2.200000] Key type dns_resolver registered
+[    2.200000] Initialized stdio console driver
+[    2.200000] Console initialized on /dev/tty0
+[    2.200000] console [tty0] enabled
+[    2.200000] Initializing software serial port version 1
+[    2.200000] console [mc-1] enabled
+[    2.200000] Loading compiled-in X.509 certificates
+[    2.200000] Btrfs loaded
+[    2.200000] Key type encrypted registered
+[    2.200000] EXT2-fs (ubda): error: couldn't mount because of unsupported optional features (240)
+[    2.200000] EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+[    2.200000] EXT4-fs (ubda): mounted filesystem with ordered data mode. Opts: (null)
+[    2.200000] VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+[    2.200000] random: systemd urandom read with 15 bits of entropy available
+[    2.200000] systemd[1]: systemd 215 running in system mode. (+PAM +AUDIT +SELINUX +IMA +SYSVINIT +LIBCRYPTSETUP +GCRYPT +ACL +XZ -SECCOMP -APPARMOR)
+[    2.200000] systemd[1]: Detected virtualization 'vmware'.
+[    2.200000] systemd[1]: Detected architecture 'x86'.
+
+Welcome to Debian GNU/Linux 8 (jessie)!
+
+[    2.200000] systemd[1]: No hostname configured.
+[    2.200000] systemd[1]: Set hostname to <localhost>.
+[    2.200000] systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+[    2.680000] systemd[1]: Cannot add dependency job for unit dbus.socket, ignoring: Unit dbus.socket failed to load: No such file or directory.
+[    2.680000] systemd[1]: Cannot add dependency job for unit display-manager.service, ignoring: Unit display-manager.service failed to load: No such file or directory.
+[    2.680000] systemd[1]: Starting Forward Password Requests to Wall Directory Watch.
+[    2.680000] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    2.680000] systemd[1]: Starting Remote File Systems (Pre).
+[  OK  ] Reached target Remote File Systems (Pre).
+[    2.680000] systemd[1]: Reached target Remote File Systems (Pre).
+[    2.680000] systemd[1]: Starting Arbitrary Executable File Formats File System Automount Point.
+[  OK  ] Set up automount Arbitrary Executable File Formats F...utomount Point.
+[    2.680000] systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+[    2.680000] systemd[1]: Starting Encrypted Volumes.
+[  OK  ] Reached target Encrypted Volumes.
+[    2.680000] systemd[1]: Reached target Encrypted Volumes.
+[    2.680000] systemd[1]: Starting Dispatch Password Requests to Console Directory Watch.
+[    2.680000] systemd[1]: Started Dispatch Password Requests to Console Directory Watch.
+[    2.680000] systemd[1]: Starting Paths.
+[  OK  ] Reached target Paths.
+[    2.680000] systemd[1]: Reached target Paths.
+[    2.680000] systemd[1]: Starting Swap.
+[  OK  ] Reached target Swap.
+[    2.680000] systemd[1]: Reached target Swap.
+[    2.680000] systemd[1]: Starting Root Slice.
+[  OK  ] Created slice Root Slice.
+[    2.680000] systemd[1]: Created slice Root Slice.
+[    2.680000] systemd[1]: Starting User and Session Slice.
+[  OK  ] Created slice User and Session Slice.
+[    2.680000] systemd[1]: Created slice User and Session Slice.
+[    2.680000] systemd[1]: Starting /dev/initctl Compatibility Named Pipe.
+[  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
+[    2.680000] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
+[    2.680000] systemd[1]: Starting Delayed Shutdown Socket.
+[  OK  ] Listening on Delayed Shutdown Socket.
+[    2.680000] systemd[1]: Listening on Delayed Shutdown Socket.
+[    2.680000] systemd[1]: Starting Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket (/dev/log).
+[    2.680000] systemd[1]: Listening on Journal Socket (/dev/log).
+[    2.680000] systemd[1]: Starting udev Control Socket.
+[  OK  ] Listening on udev Control Socket.
+[    2.680000] systemd[1]: Listening on udev Control Socket.
+[    2.680000] systemd[1]: Starting udev Kernel Socket.
+[  OK  ] Listening on udev Kernel Socket.
+[    2.680000] systemd[1]: Listening on udev Kernel Socket.
+[    2.680000] systemd[1]: Starting Journal Socket.
+[  OK  ] Listening on Journal Socket.
+[    2.680000] systemd[1]: Listening on Journal Socket.
+[    2.680000] systemd[1]: Starting System Slice.
+[  OK  ] Created slice System Slice.
+[    2.680000] systemd[1]: Created slice System Slice.
+[    2.680000] systemd[1]: Starting File System Check on Root Device...
+         Starting File System Check on Root Device...
+[    2.680000] systemd[1]: Starting system-getty.slice.
+[  OK  ] Created slice system-getty.slice.
+[    2.830000] systemd[1]: Created slice system-getty.slice.
+[    2.830000] systemd[1]: Starting Increase datagram queue length...
+         Starting Increase datagram queue length...
+[    2.830000] systemd[1]: Mounted Huge Pages File System.
+[    2.890000] systemd[1]: Started Set Up Additional Binary Formats.
+[    2.890000] systemd[1]: Starting Load Kernel Modules...
+         Starting Load Kernel Modules...
+[    2.890000] systemd[1]: Mounted Debug File System.
+[    2.890000] systemd[1]: Starting udev Coldplug all Devices...
+         Starting udev Coldplug all Devices...
+[    2.890000] systemd[1]: Mounting POSIX Message Queue File System...
+         Mounting POSIX Message Queue File System...
+[    2.890000] systemd[1]: Started Create list of required static device nodes for the current kernel.
+[    2.890000] systemd[1]: Starting Create Static Device Nodes in /dev...
+         Starting Create Static Device Nodes in /dev...
+[    2.890000] systemd[1]: Starting Slices.
+[  OK  ] Reached target Slices.
+[    2.890000] systemd[1]: Reached target Slices.
+[  OK  ] Started Increase datagram queue length.
+[    3.050000] systemd[1]: Started Increase datagram queue length.
+[  OK  ] Started Load Kernel Modules.
+[    3.050000] systemd[1]: Started Load Kernel Modules.
+[  OK  ] Mounted POSIX Message Queue File System.
+[    3.050000] systemd[1]: Mounted POSIX Message Queue File System.
+[  OK  ] Started Create Static Device Nodes in /dev.
+[    3.330000] systemd[1]: Started Create Static Device Nodes in /dev.
+[  OK  ] Started File System Check on Root Device.
+[    3.350000] systemd[1]: Started File System Check on Root Device.
+[    3.510000] systemd[1]: Starting Remount Root and Kernel File Systems...
+         Starting Remount Root and Kernel File Systems...
+[    3.510000] systemd[1]: Starting udev Kernel Device Manager...
+         Starting udev Kernel Device Manager...
+[    3.510000] systemd[1]: Mounting Configuration File System...
+         Mounting Configuration File System...
+[    3.510000] systemd[1]: Starting Apply Kernel Variables...
+         Starting Apply Kernel Variables...
+[    3.510000] systemd[1]: Mounting FUSE Control File System...
+         Mounting FUSE Control File System...
+[    3.510000] systemd[1]: Starting Syslog Socket.
+[  OK  ] Listening on Syslog Socket.
+[    3.510000] systemd[1]: Listening on Syslog Socket.
+[    3.510000] systemd[1]: Starting Sockets.
+[  OK  ] Reached target Sockets.
+[    3.510000] systemd[1]: Reached target Sockets.
+[    3.510000] systemd[1]: Starting Journal Service...
+         Starting Journal Service...
+[  OK  ] Started Journal Service.
+[    3.510000] systemd[1]: Started Journal Service.
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Started Apply Kernel Variables.
+[    3.900000] systemd-udevd[1187]: starting version 215
+[    4.020000] EXT4-fs (ubda): re-mounted. Opts: (null)
+[  OK  ] Mounted Configuration File System.
+[  OK  ] Started udev Kernel Device Manager.
+[  OK  ] Started Remount Root and Kernel File Systems.
+[  OK  ] Started udev Coldplug all Devices.
+[    4.384178] systemd-fsck[1110]: ROOT: clean, 16163/65536 files, 88947/262144 blocks
+         Starting Load/Save Random Seed...
+[  OK  ] Reached target Local File Systems (Pre).
+         Mounting /tmp...
+         Starting Copy rules generated while the root was ro...
+[  OK  ] Mounted /tmp.
+[  OK  ] Started Load/Save Random Seed.
+[  OK  ] Started Copy rules generated while the root was ro.
+[  OK  ] Reached target Local File Systems.
+[  OK  ] Reached target Remote File Systems.
+         Starting Trigger Flushing of Journal to Persistent Storage...
+         Starting Create Volatile Files and Directories...
+         Starting LSB: Raise network interfaces....
+[  OK  ] Started Create Volatile Files and Directories.
+         Starting Update UTMP about System Boot/Shutdown...
+[    5.500000] systemd-journald[1191]: Received request to flush runtime journal from PID 1
+[  OK  ] Started Trigger Flushing of Journal to Persistent Storage.
+[  OK  ] Started Update UTMP about System Boot/Shutdown.
+[  OK  ] Started LSB: Raise network interfaces..
+[  OK  ] Reached target Network.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Reached target Timers.
+[  OK  ] Reached target Basic System.
+         Starting Regular background program processing daemon...
+[  OK  ] Started Regular background program processing daemon.
+         Starting /etc/rc.local Compatibility...
+         Starting System Logging Service...
+         Starting Permit User Sessions...
+[  OK  ] Started System Logging Service.
+[  OK  ] Started /etc/rc.local Compatibility.
+[  OK  ] Started Permit User Sessions.
+         Starting Getty on tty1...
+[  OK  ] Started Getty on tty1.
+[  OK  ] Reached target Login Prompts.
+[  OK  ] Reached target Multi-User System.
+[  OK  ] Reached target Graphical Interface.
+         Starting Update UTMP about System Runlevel Changes...
+[  OK  ] Started Update UTMP about System Runlevel Changes.
+
+Debian GNU/Linux 8 localhost tty1
+
+localhost login: root[   10.060000] random: nonblocking pool is initialized
+
+Password: 
+Last login: Sun Apr 28 21:20:33 UTC 2019 on tty1
+Linux localhost 4.3.5 #4 Mon Feb 1 00:26:30 Local time zone must be set--see zic manua i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+root@localhost:~#
+
+==============================================================================================
+20190429:
+		Se incluyo el driver uml_dvk.c muy basico en  linux/arch/um/drivers
+		y se modifico el Makefile para compilarlo.
+		
+		Al bootear 
+		root@node0:/usr/src/dvs/vos/uml/uml1#  ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdc6   mem=1024M 
+		uno de los mensajes es:
+			UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+			DEBUG 1:uml_dvk_init_module:132: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+
+		Se verifican los simbolos definidos 
+			root@node0:~# grep dvk /proc/kallsyms                                                         
+			0804aefd t uml_dvk_init_module
+			0805f02c t set_dvk
+			0805f063 t uml_dvk_release
+			0805f09d t uml_dvk_open
+			0805f13f t uml_dvk_ioctl
+			080d5e9e t dvk_vm_rw_core
+			080d60ab t dvk_vm_rw
+			080df992 T dvk_rw_check_kvector
+			081d8e04 T dvk_check_iovect
+		
+TODO: 	
+		Se modifico el Kconfig de linux/arch/x86 
+		
+		root@node0:/usr/src/linux# grep DVK test.config 
+			CONFIG_DVS_DVK=y
+
+		Se modifico /usr/src/linux/arch/um/drivers/Kconfig.char 	
+		#
+		# UML Character Devices
+		#
+		CONFIG_UML_DVK=y
+		
+		
+ .config - User Mode Linux/x86 4.9.88 Kernel Configuration
+ qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+  lqqqqqqqqqqqqqqqq User Mode Linux/x86 4.9.88 Kernel Configuration qqqqqqqqqqqqqqqqk
+  x  Arrow keys navigate the menu.  <Enter> selects submenus ---> (or empty         x
+  x  submenus ----).  Highlighted letters are hotkeys.  Pressing <Y> includes, <N>  x
+  x  excludes, <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help,   x
+  x  </> for Search.  Legend: [*] built-in  [ ] excluded  <M> module  < > module    x
+  x lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk x
+  x x        UML-specific options  --->                                           x x
+  x x        General setup  --->                                                  x x
+  x x    [*] Enable loadable module support  --->                                 x x
+  x x    -*- Enable the block layer  --->                                         x x
+  x x        UML Character Devices  --->    !!!!!!!!!!! AQUI                      x x
+  x x        Device Drivers  --->                                                 x x
+  x x    [*] Networking support  --->                                             x x
+  x x        UML Network Devices  --->                                            x x
+  x x        File systems  --->                                                   x x
+  x x        Security options  --->                                               x x
+  x x    -*- Cryptographic API  --->                                              x x
+  x x        Library routines  --->                                               x x
+  x mqqqqv(+)qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj x
+  tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu
+  x            <Select>    < Exit >    < Help >    < Save >    < Load >             x
+  mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
+
+
+   UML Character Devices qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+  lqqqqqqqqqqqqqqqqqqqqqqqqqqqqq UML Character Devices qqqqqqqqqqqqqqqqqqqqqqqqqqqqqk
+  x  Arrow keys navigate the menu.  <Enter> selects submenus ---> (or empty         x
+  x  submenus ----).  Highlighted letters are hotkeys.  Pressing <Y> includes, <N>  x
+  x  excludes, <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help,   x
+  x  </> for Search.  Legend: [*] built-in  [ ] excluded  <M> module  < > module    x
+  x lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk x
+  x x    [*] UML Distributed Virtualization Kernel (DVK) pseudo character device  x x <<<<<<<<<<<<<<<<
+  x x    [*] stderr console                                                       x x
+  x x    [*] Virtual serial line                                                  x x
+  x x    [*] null channel support                                                 x x
+  x x    [*] port channel support                                                 x x
+  x x    [*] pty channel support                                                  x x
+  x x    [*] tty channel support                                                  x x
+  x x    [*] xterm channel support                                                x x
+  x x    (fd:0,fd:1) Default main console channel initialization                  x x
+  x x    (pts) Default console channel initialization                             x x
+  x x    (pts) Default serial line channel initialization                         x x
+  x x    <*> Sound support                                                        x x
+  x mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj x
+  tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu
+  x            <Select>    < Exit >    < Help >    < Save >    < Load >             x
+  mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
+
+
+  Probe a ver si se ve el driver
+  
+  SIN ARRANCAR EL DVS EN EL HOST 
+root@uml-sdc6:~# mknod /dev/dvk c 33 0
+root@uml-sdc6:~# echo hola > /dev/dvk
+DEBUG 674:uml_dvk_open:81: dvk_dev=/dev/dvk
+DEBUG 674:uml_dvk_open:89: rcode=-2
+-bash: /dev/dvk: No such file or directory
+root@uml-sdc6:~# ls -l /dev/dvk
+crw-r--r-- 1 root root 33, 0 Apr 29 23:40 /dev/dvk
+
+  ARRANCANDO EL DVS EN EL HOST 
+ root@uml-sdc6:~# echo hola > /dev/dvk                                                         
+DEBUG 674:uml_dvk_open:81: dvk_dev=/dev/dvk
+DEBUG 674:uml_dvk_open:89: rcode=19
+-bash: echo: write error: Invalid argument
+DEBUG 674:uml_dvk_release:102: dvk_dev=/dev/dvk
+
+DMESG EN UML 
+root@uml-sdc6:~# dmesg | grep DEBUG
+[    0.120000] DEBUG 1:uml_dvk_init_module:132: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+[ 3275.080000] DEBUG 674:uml_dvk_open:81: dvk_dev=/dev/dvk
+[ 3275.080000] DEBUG 674:uml_dvk_open:89: rcode=-2
+[ 3423.180000] DEBUG 674:uml_dvk_open:81: dvk_dev=/dev/dvk
+[ 3423.180000] DEBUG 674:uml_dvk_open:89: rcode=19
+[ 3423.180000] DEBUG 674:uml_dvk_release:102: dvk_dev=/dev/dvk
+
+DMESG EN HOST 
+[ 9035.934351] DEBUG 3754:dvk_open:167: 
+		
+==============================================================================================
+TENER EN CUENTA
+I start uml with the following command line:
+linux root=/dev/ubda ubd0=/umls/uml1.rootfs ubd1=/umls/uml1.swapfs mem=128M
+con=pty con0=fd:0,fd:1 eth0=tuntap,tap0,,192.168.1.1 umid=uml1
+
+Se compilo el 
+
+
+ ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdc6   mem=1024M 
+
+ 
+
+
