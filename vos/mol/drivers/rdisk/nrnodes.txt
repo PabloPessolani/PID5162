@@ -1,116 +1,0 @@
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_usr.h:  /* agregar flags para replicate, bitmap nodes, nr_nodes, compresión, encriptado*/
-Binary file /home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.o matches
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:			TASKDEBUG("\vm_ptr->vm_nr_nodes=%d, nr_nodes=%d\n",vm_ptr->vm_nr_nodes, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:			// if( vm_ptr->vm_nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:			if( active_nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:						if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:					TASKDEBUG("Antes de desbloquear, nr_nodes%d\n", nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:					if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:	TASKDEBUG("active_nr_nodes=%d\n",active_nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:   	// if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:	if( active_nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.c:		TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
-/home/MoL_Module/mol-ipc/tasks/rdisk/glo.h:EXTERN 		int nr_nodes;
-/home/MoL_Module/mol-ipc/tasks/rdisk/glo.h:EXTERN		int active_nr_nodes; 
-Binary file /home/MoL_Module/mol-ipc/tasks/rdisk/rdisk matches
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	nr_nodes 	= 0;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			nr_nodes = num_groups;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			active_nr_nodes = nr_nodes;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			TASKDEBUG("join - nr_nodes=%d - active_nr_nodes=%d\n", nr_nodes, active_nr_nodes); 
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			nr_nodes = num_groups;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			nr_nodes = 0;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:						nr_nodes++;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	TASKDEBUG("new_member=%d primary_mbr=%d nr_nodes=%d\n", 
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		new_mbr, primary_mbr, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	if( nr_nodes < 0 || nr_nodes >= vm_ptr->vm_nr_nodes){
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		TASKDEBUG("nr_nodes=%d vm_ptr->vm_nr_nodes=%d\n", nr_nodes, vm_ptr->vm_nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	TASKDEBUG("new_member=%d primary_mbr=%d nr_nodes=%d\n", 
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		new_mbr, primary_mbr, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	TASKDEBUG("nr_nodes:%d\n", nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		if (nr_nodes == 1){ 			/* I am a LONELY member  */
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		nr_nodes=0;
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	TASKDEBUG("disc_mbr=%d nr_nodes=%d\n",	disc_mbr, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	if (nr_nodes != sp_ptr->m2_i1){
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:		TASKDEBUG("Received nr_nodes=%d don't match local nr_nodes=%d\n"
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:			, sp_ptr->m2_i1, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/replicate.c:	msg.m2_i1	= nr_nodes;
-/home/MoL_Module/mol-ipc/tasks/rdisk/mastercopy.c:	// nr_nodes++;					// PAP , en la línea 289 de replicate sabe que en el grupo hay dos nodos, si incremento cuenta uno más???
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:			TASKDEBUG("\vm_ptr->vm_nr_nodes=%d, nr_nodes=%d\n",vm_ptr->vm_nr_nodes, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:			if( vm_ptr->vm_nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:						if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:					TASKDEBUG("Antes de desbloquear, nr_nodes%d\n", nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:					if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:	TASKDEBUG("\vm_ptr->vm_nr_nodes=%d\n",vm_ptr->vm_nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:   	if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal270317.c:		TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:rd_init:798:d_nr_vms=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:rd_init:805:vm_vmid=0 vm_nr_procs=221 vm_nr_tasks=35 vm_nr_sysprocs=64 vm_nr_nodes=32 flags=0 vm_nodes=3 vm_name=VM0
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: replicate.c:replica_loop:291:join - nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: replicate.c:sp_join:394:new_member=0 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: replicate.c:sp_join:403:new_member=0 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: replicate.c:sp_join:405:nr_nodes:1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:rd_init:872:Replicated driver. nr_nodes=1 primary_mbr=0
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_do_open:734:m_ptr->vm_nr_nodes=32
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/salidardis.txt: rdisk.c:m_transfer:624:Antes de desbloquear, nr_nodes1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: rdisk.c:rd_init:798:d_nr_vms=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: rdisk.c:rd_init:805:vm_vmid=0 vm_nr_procs=221 vm_nr_tasks=35 vm_nr_sysprocs=64 vm_nr_nodes=32 flags=0 vm_nodes=3 vm_name=VM0
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:replica_loop:291:join - nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:394:new_member=0 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:403:new_member=0 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:405:nr_nodes:1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: rdisk.c:rd_init:872:Replicated driver. nr_nodes=1 primary_mbr=0
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:replica_loop:291:join - nr_nodes=2
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:394:new_member=1 primary_mbr=0 nr_nodes=2
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:403:new_member=1 primary_mbr=0 nr_nodes=2
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: replicate.c:sp_join:405:nr_nodes:2
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk0.txt: rdisk.c:m_do_open:734:m_ptr->vm_nr_nodes=32
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:			TASKDEBUG("\vm_ptr->vm_nr_nodes=%d, nr_nodes=%d\n",vm_ptr->vm_nr_nodes, nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:			if( vm_ptr->vm_nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:						if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:					TASKDEBUG("Antes de desbloquear, nr_nodes%d\n", nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:					if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:	TASKDEBUG("\vm_ptr->vm_nr_nodes=%d\n",vm_ptr->vm_nr_nodes);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:   	if( nr_nodes > 1) { /* PRIMARY;  MULTICAST to other nodes the device operation */
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:		TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk_modif bind manual.c:		TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
-Binary file /home/MoL_Module/mol-ipc/tasks/rdisk/replicate.o matches
-Binary file /home/MoL_Module/mol-ipc/tasks/rdisk/rdisktests/02_test_devwrite matches
-Binary file /home/MoL_Module/mol-ipc/tasks/rdisk/rdisktests/01_test_devopen matches
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk.h:  // /* agregar flags para replicate, bitmap nodes, nr_nodes, compresión, encriptado*/
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: rdisk.c:rd_init:686:d_nr_vms=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: rdisk.c:rd_init:693:vm_vmid=0 vm_nr_procs=221 vm_nr_tasks=35 vm_nr_sysprocs=64 vm_nr_nodes=32 flags=0 vm_nodes=3 vm_name=VM0
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: replicate.c:replica_loop:287:join - nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: replicate.c:sp_join:390:new_member=1 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: replicate.c:sp_join:399:new_member=1 primary_mbr=-1 nr_nodes=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: replicate.c:sp_join:401:nr_nodes:1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdisk1.txt: rdisk.c:rd_init:760:Replicated driver. nr_nodes=1 primary_mbr=1
-/home/MoL_Module/mol-ipc/tasks/rdisk/rdiskal271017.h:  // /* agregar flags para replicate, bitmap nodes, nr_nodes, compresión, encriptado*/

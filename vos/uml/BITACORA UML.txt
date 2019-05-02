@@ -716,9 +716,306 @@ EN HOST
 [ 3919.787026] ERROR: 6811:dvk_ioctl:228: rcode=-310
 [ 3954.156308] DVK: exit_unbind local_nodeid:0
 
-	
-	
+
 ==============================================================================================
+20190430.  EL PROBLEMA SON LAS DIRECCIONES EN MODO USUARIO. 
+
+Se modifico temporalemente um_dvk.c funcion uml_dvk_ioctl()
+Se distingue cuando es el pedido de GETDVSINFO del resto.
+Para GETDVSINFO se copia en forma local la estructura de datos y luego se la transfiere a 
+modo usuario. De esta forma funciona
+
+DEBUG 643:dvk_getdvsinfo:122: ioctl ret=0
+ copy_server.c:main:47:local_nodeid=0
+ copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	
+	
+Se pueden decodificar los IOCTL con 
+/* used to decode ioctl numbers.. */
+#define _IOC_DIR(nr)		(((nr) >> _IOC_DIRSHIFT) & _IOC_DIRMASK)
+#define _IOC_TYPE(nr)		(((nr) >> _IOC_TYPESHIFT) & _IOC_TYPEMASK)
+#define _IOC_NR(nr)		(((nr) >> _IOC_NRSHIFT) & _IOC_NRMASK)
+#define _IOC_SIZE(nr)		(((nr) >> _IOC_SIZESHIFT) & _IOC_SIZEMASK)
+
+
+TODOS LOS PROCESOS DE USUARIO UML SE EJECUTAN CON EL MISMO PID !!! 	
+es PORQUE es EL PID DEL UML-KERNEL 
+
+[ 5779.817420] DEBUG 5834:dvk_open:167:
+[ 5841.790515] DEBUG 5834:dvk_open:167: 
+[ 5875.286673] DEBUG 5834:dvk_open:167: 
+
+DEBUG 1:uml_dvk_init_module:149: UML-kernel PID=292  UML-kernel TID=292 <<<< ESTOS SON LO VPID Y VTID 
+
+root@node0:/usr/src/dvs/dvk-proxies/test# more /proc/cpuinfo
+processor       : 0
+vendor_id       : User Mode Linux
+model name      : UML
+mode            : skas <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+host            : Linux node0 4.9.88 #13 SMP Sat Apr 13 02:07:32 -03 2019 i686
+bogomips        : 1810.43
+
+
+DEBUG EN HOST 
+[29326.449835] DEBUG 9443:dvk_open:167: 
+[29326.450513] DEBUG 9443:dvk_ioctl:204: cmd=8004E31B arg=491F6680
+[29326.450515] DEBUG 9443:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+[29326.450517] DEBUG 9443:io_getdvsinfo:288: 
+[29326.450519] DEBUG 9443:new_getdvsinfo:1784: local_nodeid=0 
+[29326.453381] DEBUG 9443:dvk_ioctl:204: cmd=8004E30E arg=BFBA2B24
+[29326.453385] DEBUG 9443:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+[29326.453387] DEBUG 9443:io_getdcinfo:153: 
+[29326.453398] DEBUG 9443:new_getdcinfo:1813: dcid=0 
+[29326.453401] DEBUG 9443:check_caller:536: caller_pid=9443 caller_tgid=9443
+[29326.453403] ERROR: 9443:check_caller:570: rcode=-310
+[29326.453405] DEBUG 9443:new_getdcinfo:1831: RLOCK_DC dc=0 count=0
+[29326.453407] DEBUG 9443:new_getdcinfo:1833: RUNLOCK_DC dc=0 count=0
+[29326.470500] DVK: exit_unbind local_nodeid:0
+
+DEBUG EN UMLoot@node0:/usr/src/dvs/dvk-proxies/test# dmesg -c                                                    
+[  401.060000] DEBUG 657:uml_dvk_open:95: dvk_dev=/dev/dvk
+[  401.060000] DEBUG 657:uml_dvk_open:103: rcode=23
+[  401.060000] DEBUG 657:uml_dvk_ioctl:65: cmd=8004E31B arg=BFBA2B68
+[  401.060000] DEBUG 657:uml_dvk_ioctl:82: rcode=0
+[  401.060000] DEBUG 657:uml_dvk_ioctl:65: cmd=8004E30E arg=BFBA2B24
+[  401.060000] DEBUG 657:uml_dvk_ioctl:82: rcode=0
+[  401.080000] DEBUG 657:uml_dvk_release:116: dvk_dev=/dev/dv
+
+
+DEBUG EN CLIENT UML 
+root@node0:/usr/src/dvs/dvk-proxies/test# ./copy_server 0 10
+DEBUG 657:dvk_open:47: Open dvk device file /dev/dvk
+DEBUG 657:uml_dvk_open:95: dvk_dev=/dev/dvk
+DEBUG 657:uml_dvk_open:103: rcode=23
+DEBUG 657:dvk_getdvsinfo:120: 
+DEBUG 657:uml_dvk_ioctl:65: cmd=8004E31B arg=BFBA2B68
+DEBUG 657:uml_dvk_ioctl:82: rcode=0
+DEBUG 657:dvk_getdvsinfo:122: ioctl ret=0
+ copy_server.c:main:47:local_nodeid=0
+ copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 657:dvk_getdcinfo:170: dcid=0
+DEBUG 657:uml_dvk_ioctl:65: cmd=8004E30E arg=BFBA2B24
+DEBUG 657:uml_dvk_ioctl:82: rcode=0
+DEBUG 657:dvk_getdcinfo:174: ioctl ret=0 errno=0
+ copy_server.c:main:58:dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+ copy_server.c:main:59:flags=0 dc_nodes=0 dc_pid=1073780313 dc_name=
+svr_ep must be > 0 and < 0
+DEBUG 657:uml_dvk_release:116: dvk_dev=/dev/dvk
+
+------------------- SIN ARRANCAR EL NAMESPACE ----------------------
+root@node0:/usr/src/dvs/vos/uml/uml1# ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/
+sdb6   mem=1024M clear
+
+DEBUG 1:uml_dvk_init_module:144: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG 1:uml_dvk_init_module:149: UML-kernel PID=10018  UML-kernel TID=10018
+
+DEBUG DEL PROCESO 
+root@node0:/usr/src/dvs/dvk-proxies/test# ./copy_server 0 10                             
+DEBUG 647:dvk_open:47: Open dvk device file /dev/dvk
+DEBUG 647:uml_dvk_open:95: dvk_dev=/dev/dvk
+DEBUG 647:uml_dvk_open:103: rcode=19
+DEBUG 647:dvk_getdvsinfo:120: 
+DEBUG 647:uml_dvk_ioctl:65: cmd=8004E31B arg=BF9E8B68
+DEBUG 647:uml_dvk_ioctl:82: rcode=0
+DEBUG 647:dvk_getdvsinfo:122: ioctl ret=0
+ copy_server.c:main:47:local_nodeid=0
+ copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 647:dvk_getdcinfo:170: dcid=0
+DEBUG 647:uml_dvk_ioctl:65: cmd=8004E30E arg=BF9E8B24
+DEBUG 647:uml_dvk_ioctl:82: rcode=0
+DEBUG 647:dvk_getdcinfo:174: ioctl ret=0 errno=0
+ copy_server.c:main:58:dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+ copy_server.c:main:59:flags=0 dc_nodes=0 dc_pid=1073780313 dc_name=
+svr_ep must be > 0 and < 0
+DEBUG 647:uml_dvk_release:116: dvk_dev=/dev/dvk
+
+
+DEBUG DE UML#
+[  121.950000] DEBUG 647:uml_dvk_open:95: dvk_dev=/dev/dvk
+[  121.950000] DEBUG 647:uml_dvk_open:103: rcode=19
+[  121.950000] DEBUG 647:uml_dvk_ioctl:65: cmd=8004E31B arg=BF9E8B68
+[  121.950000] DEBUG 647:uml_dvk_ioctl:82: rcode=0
+[  121.950000] DEBUG 647:uml_dvk_ioctl:65: cmd=8004E30E arg=BF9E8B24
+[  121.950000] DEBUG 647:uml_dvk_ioctl:82: rcode=0
+[  121.950000] DEBUG 647:uml_dvk_release:116: dvk_dev=/dev/dvk
+
+DEBUG EN EL HOST 
+[29697.762381] DEBUG 10018:dvk_open:167: 
+[29697.763292] DEBUG 10018:dvk_ioctl:204: cmd=8004E31B arg=4920DAC0
+[29697.763294] DEBUG 10018:dvk_ioctl:224: DVK_CALL=27 (getdvsinfo) 
+[29697.763296] DEBUG 10018:io_getdvsinfo:288: 
+[29697.763298] DEBUG 10018:new_getdvsinfo:1784: local_nodeid=0 
+[29697.766098] DEBUG 10018:dvk_ioctl:204: cmd=8004E30E arg=BF9E8B24
+[29697.766101] DEBUG 10018:dvk_ioctl:224: DVK_CALL=14 (getdcinfo) 
+[29697.766102] DEBUG 10018:io_getdcinfo:153: 
+[29697.766123] DEBUG 10018:new_getdcinfo:1813: dcid=0 
+[29697.766126] DEBUG 10018:check_caller:536: caller_pid=10018 caller_tgid=10018
+[29697.766128] ERROR: 10018:check_caller:570: rcode=-310
+[29697.766130] DEBUG 10018:new_getdcinfo:1831: RLOCK_DC dc=0 count=0
+[29697.766140] DEBUG 10018:new_getdcinfo:1833: RUNLOCK_DC dc=0 count=0
+[29697.767270] DVK: exit_unbind local_nodeid:0
+
+ESTO DEMUESTRA QUE EL QUE HACE LA PETICION ES EL UML-KERNEL (10018)
+
+
+
+==============================================================================================
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+CAMBIO DE ESTRATEGIA!!
+
+UML solo maneja 2 procesos UML-USER y UML-KERNEL con Address spaces separados.
+
+Esto solo permitirá manejar 2 endpoints!!!  
+		UML-USER y UML-KERNEL 
+	
+	En UML-USER podemos poner un WEBSERVER
+	En UML-KERNEL podemos poner un driver del RDISK 
+		
+Utiliza SKAS0, por lo que hay codigo en el tope del proceso UML-USER 
+Aqui hay:
+	1- Hacer el open del FD del DVK (fd_dvk) para guardarlo en una variable global.
+	2- Detectar cuando se hace una invocacion a ioctl()
+		En este caso ver si el (fd == fd_dvk)
+		y en este caso se cambia por un os_ioctl_generic(fd_dvk, cmd,  data)
+
+PROBLEMAS:
+          Cuando el UML-USER hace una dvk_call() sin llamar a UML-KERNEL y queda bloqueado entonces TODO UML-USER queda bloqueado !!!! 
+
+POSIBLE SOLUCION:
+          Crear un thread que se encargue de las operaciones de DVK.
+Ver como hace ubd que crea un thread
+      CLONE_VM (since Linux 2.0)If CLONE_VM is set, the calling process and the child process run in the same memory space.
+int start_io_thread(unsigned long sp, int *fd_out)
+pid = clone(io_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
+
+
+PREGUNTA: Puede caber todo este codigo en el extremo SKAS se UML_USER ??
+
+struct cpu_task {
+	int pid;
+	void *task;
+};
+
+
+SE PODRIA ASOCIAR UN THREAD EN EL UML-KERNEL A CADA PROCESO UML-PID 
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+- El problema aparente esta en las direcciones de memoria de los procesos UML.
+
+1- Verificar que cada proceso UML es un proceso HOST.
+2- Imprimir gettid y getpid para ver que usan 
+3- en la funcion uml_dvk_ioctl de um_dvk.c se deberían discriminar las llamadas al DVK según el tipo de parametro.
+		Si es de entrada o salida
+		Si es de un entero o una estructura de datos 
+		Cantidad de parametros 
+		
+4- Como convertir las direcciones virtuales UML a virtuales de HOST ???
+virt_to_phys()
+
+HACER: 
+UML# more /proc/cpuinfo
+processor : 0
+vendor_id : User Mode Linux
+model name : UML
+mode : skas <<<<<<<<<<<<<<<<<< Separeted Kernel Address Space 
+host : Linux tp.
+
+In skas mode, this is not the case. The UML kernel runs entirely
+within a single process, using longjmp to switch between kernel
+stacks on context switches. gdb
+
+CONFIRMADO se usa mode SKAS 
+In contrast, in skas3 mode, the UML kernel resides
+entirely in a different host address space.
+
+Cuando un proceso UML_user hace un SysCall está cambiando de proceso porque pasa
+al Adress Space del UML_kernel
+
+PROBLEMON!!!!!
+Quiere decir que el que en realidad hace las ioctl() de DVK es el kernel!!! 
+
+APARENTEMENTE, EL MODO DE USO ES SKAS0 DONDE EN EL TOPE HAY UN STUB 
+              PIDb      PIDa 
+           ---------  ---------  
+		   ! STUB  !  ! 	  !
+		   ! SKAS  !  !       !
+           ---------  !       !  
+		   !       !  !  UML  !
+		   !       !  ! KERNEL!
+		   !  USER !  !       !
+		   !  PROCS!  !       !
+		   !       !  !       !
+		   !       !  !       !
+		   !       !  !       !
+           ---------  ---------
+		   
+PREGUNTA: Como hacer  para saber el PID/TID del proceso de usuario??
+
+/arch/um/kernel/skas/process.c
+static int __init start_kernel_proc(void *unused)
+{
+	int pid;
+
+	block_signals();
+	pid = os_getpid(); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PONER UN DEBUG 
+
+	cpu_tasks[0].pid = pid;
+	cpu_tasks[0].task = current;
+
+	start_kernel();
+	return 0;
+}
+
+void __switch_mm(struct mm_id *mm_idp)
+{
+	userspace_pid[0] = mm_idp->u.pid;
+}
+
+En 
+int start_userspace(unsigned long stub_stack)
+esta el PID del userspace 
+
+	pid = clone(userspace_tramp, (void *) sp, flags, (void *) stub_stack);
+	if (pid < 0) {
+		err = -errno;
+		printk(UM_KERN_ERR "start_userspace : clone failed, "
+		       "errno = %d\n", errno);
+		return err;
+	}
+
+
+/arch/um/os-Linux/skas/process.c
+static void handle_trap(int pid, struct uml_pt_regs *regs,
+			int local_using_sysemu)
+Que invoca a handle_syscall(regs);
+			
+/arch/um/kernel/skas/syscall.c
+Aqui maneja los syscalls
+
+En la estructura 
+struct uml_pt_regs {
+	unsigned long gp[MAX_REG_NR];
+	unsigned long fp[MAX_FP_NR];
+	struct faultinfo faultinfo;
+	long syscall; <<<<<<<<<<<<<<<<<<<<< SYSCALL 
+	int is_user;
+};
+
+
+#define NR_CPUS 1
+int userspace_pid[NR_CPUS]; <<<<<<<<<<<<<<<<<<<< USER SPACE PID 
+
+/arch/um/kernel/process.c
+static inline int external_pid(void)
+{
+	/* FIXME: Need to look up userspace_pid by cpu */
+	return userspace_pid[0];
+}
+
+
 TENER EN CUENTA
 I start uml with the following command line:
 linux root=/dev/ubda ubd0=/umls/uml1.rootfs ubd1=/umls/uml1.swapfs mem=128M

@@ -64,14 +64,14 @@
 /*Spread message: message m3-ipc, transfer data*/
 // typedef struct {message msg; unsigned buffer_data[BUFF_SIZE];} SP_message;	 
 typedef struct {
-	message msg; 
-	struct{
-		int flag_buff;	/*compress or uncompress data into buffer*/
-		long buffer_size; /* bytes compress or uncompress */
-		unsigned buffer_data[BUFF_SIZE];
-		} buf;
-	}SP_message;	
-	
+    message msg; 
+    struct{
+        int flag_buff;	/*compress or uncompress data into buffer*/
+        long buffer_size; /* bytes compress or uncompress */
+        unsigned buffer_data[BUFF_SIZE];
+    } buf;
+}SP_message;	
+
 #define NO_PRIMARY_BIND		(-1)
 #define NO_PRIMARY_DEAD		(-2)
 #define NO_PRIMARY_NET 		(-3)
@@ -91,42 +91,42 @@ typedef struct {
 #define MAX_RANDOM_RETRIES	sizeof(unsigned int) 
 
 typedef struct {
-	int			    rad_index;
-	int 			rad_dcid;
-	int				rad_ep;
-	int				rad_replication;		// PB or FSM 
-	
-	char 			rad_svrname[MAXPROCNAME];
-	int				rad_len;
-	int				rad_primary_mbr;
-	int				rad_primary_old;
-	int				rad_nr_nodes;
-	int 			rad_nr_init;
-	int				rad_nr_radar;
-	char 			rad_group[MAXPROCNAME];
-	
-	unsigned int	rad_bm_nodes;		// Connected nodes 
-	unsigned int	rad_bm_init;		// nodes which can be primary (PB) or active nodes (FSM)
-	unsigned int	rad_bm_radar;		// nodes where radar is
-	unsigned int	rad_bm_valid;		// valid replication nodes 
-	
-	pthread_t 		rad_thread;
-
-	mailbox			rad_mbox;
-	char 			rad_sp_group[MAXNODENAME];
-	char    		rad_mbr_name[80];
-	
-	char    		rad_priv_group[MAX_GROUP_NAME];
-	membership_info rad_memb_info;
-	vs_set_info     rad_vssets[MAX_VSSETS];
-	unsigned int    rad_my_vsset_index;
-	int             rad_num_vs_sets;
-	char            rad_members[MAX_MEMBERS][MAX_GROUP_NAME];
-	char		   	rad_sp_members[MAX_MEMBERS][MAX_GROUP_NAME];
-	int		   		rad_sp_nr_mbrs;
-	
-	char		 	rad_mess_in[MAX_MESSLEN];
-
+    int			    rad_index;
+    int 			rad_dcid;
+    int				rad_ep;
+    int				rad_replication;		// PB or FSM 
+    
+    char 			rad_svrname[MAXPROCNAME];
+    int				rad_len;
+    int				rad_primary_mbr;	// actual nodeId Primary
+    int				rad_primary_old;	// old nodeId Primary
+    int				rad_nr_nodes;		// N° connected nodes
+    int 			rad_nr_init;		// N° nodes which can be primary (PB) or active nodes (FSM)
+    int				rad_nr_radar;		// N° nodes where radar is
+    char 			rad_group[MAXPROCNAME];
+    
+    unsigned int	rad_bm_nodes;		// Connected nodes
+    unsigned int	rad_bm_init;		// nodes which can be primary (PB) or active nodes (FSM)
+    unsigned int	rad_bm_radar;		// nodes where radar is
+    unsigned int	rad_bm_valid;		// valid replication nodes 
+    
+    pthread_t 		rad_thread;			//thread to execute radar (?)
+    
+    mailbox			rad_mbox;
+    char 			rad_sp_group[MAXNODENAME];
+    char    		rad_mbr_name[80];
+    
+    char    		rad_priv_group[MAX_GROUP_NAME];
+    membership_info rad_memb_info;
+    vs_set_info     rad_vssets[MAX_VSSETS];
+    unsigned int    rad_my_vsset_index;
+    int             rad_num_vs_sets;
+    char            rad_members[MAX_MEMBERS][MAX_GROUP_NAME];
+    char		   	rad_sp_members[MAX_MEMBERS][MAX_GROUP_NAME];
+    int		   		rad_sp_nr_mbrs;
+    
+    char		 	rad_mess_in[MAX_MESSLEN];
+    
 } radar_t;
 
 #define RAD1_FORMAT 	"rad_dcid=%d rad_ep=%d rad_len=%d rad_svrname=%s rad_mbr_name=%s\n"
@@ -134,7 +134,7 @@ typedef struct {
 
 #define RAD2_FORMAT "rad_primary_mbr=%d rad_primary_old=%d rad_nr_nodes=%d rad_nr_init=%d \n"
 #define RAD2_FIELDS(p) p->rad_primary_mbr, p->rad_primary_old, p->rad_nr_nodes, p->rad_nr_init
-	
+
 #define RAD3_FORMAT "rad_bm_nodes=%X rad_bm_init=%X\n"
 #define RAD3_FIELDS(p) p->rad_bm_nodes, p->rad_bm_init
 

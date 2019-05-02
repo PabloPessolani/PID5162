@@ -23,7 +23,7 @@ dmesg -c >> /dev/shm/dmesg.txt
 part=(5 + $dcid)
 echo "partition $part"
 read  -p "mount Enter para continuar... "
-mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
+#mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
 cd /usr/src/dvs/dvk-tests
 read  -p "local_nodeid=$lcl Enter para continuar... "
 ./test_dvs_init -n $lcl -D 16777215
@@ -43,7 +43,7 @@ echo "tracker \"NO\";"    			>> /dev/shm/DC$dcid.cfg
 #echo "ip_addr \"192.168.10.10$dcid\";"	>> DC$dcid.cfg
 echo "memory 512;"    				>> /dev/shm/DC$dcid.cfg
 echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> /dev/shm/DC$dcid.cfg
-echo "mount \"/usr/src/dvs/vos/rootfs/DC$dcid\";"  			>> /dev/shm/DC$dcid.cfg
+ echo "mount \"/usr/src/dvs/vos/rootfs/DC$dcid\";"  		>> /dev/shm/DC$dcid.cfg
 echo "};"          					>> DC$dcid.cfg
 /usr/src/dvs/dvs-apps/dc_init/dc_init /dev/shm/DC$dcid.cfg > /dev/shm/dc_init$dcid.out 2> /dev/shm/dc_init$dcid.err
 dmesg -c >> /dev/shm/dmesg.txt

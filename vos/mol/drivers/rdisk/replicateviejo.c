@@ -738,17 +738,17 @@ int rep_dev_write(SP_message *sp_ptr){
 
 	// TASKDEBUG("DATA= %s\n", sp_ptr->buffer_data); /*si estaría el buffer sin comprimir*/
 	
-	TASKDEBUG("File descriptor image= %d\n", devvec[mnx_ptr->DEVICE].img_p);
+	TASKDEBUG("File descriptor image= %d\n", devvec[mnx_ptr->DEVICE].img_fd);
 	TASKDEBUG("(receive) mnx->POSITION %X\n", mnx_ptr->POSITION);	
 	
 	
-	// if ( (lseek(img_p, mnx_ptr->POSITION, SEEK_SET)) < 0 ){ /*ubicar, en el offset=POSITION para el fd*/
+	// if ( (lseek(img_fd, mnx_ptr->POSITION, SEEK_SET)) < 0 ){ /*ubicar, en el offset=POSITION para el fd*/
 			// rcode = errno;
 			// return(rcode);
 			// }
 	
 	
-	// if ( (write(img_p, sp_ptr->buffer_data, mnx_ptr->COUNT)) < 0 ){ /*write: buffer_data(recibido msj spread), COUNT bytes*/
+	// if ( (write(img_fd, sp_ptr->buffer_data, mnx_ptr->COUNT)) < 0 ){ /*write: buffer_data(recibido msj spread), COUNT bytes*/
 			// rcode = errno;
 			// return(rcode);
 			// }
@@ -771,7 +771,7 @@ int rep_dev_write(SP_message *sp_ptr){
 		TASKDEBUG("mnx_ptr->COUNT(%d) == sp_ptr->buf.buffer_size (%d)\n",mnx_ptr->COUNT,sp_ptr->buf.buffer_size);
 		if ( mnx_ptr->COUNT == sp_ptr->buf.buffer_size) {
 			TASKDEBUG("BYTES CLIENT = BYTES DECOMPRESS\n");
-			if ( (pwrite(devvec[mnx_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, mnx_ptr->POSITION)) < 0 ){ 
+			if ( (pwrite(devvec[mnx_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, mnx_ptr->POSITION)) < 0 ){ 
 				rcode = errno;
 				return(rcode);
 				}		
@@ -783,7 +783,7 @@ int rep_dev_write(SP_message *sp_ptr){
 	}
 	else{		
 		TASKDEBUG("DATA BUFFER UNCOMPRESS\n");
-		if ( (pwrite(devvec[mnx_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, mnx_ptr->COUNT, mnx_ptr->POSITION)) < 0 ){
+		if ( (pwrite(devvec[mnx_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, mnx_ptr->COUNT, mnx_ptr->POSITION)) < 0 ){
 			rcode = errno;
 			return(rcode);
 			}		

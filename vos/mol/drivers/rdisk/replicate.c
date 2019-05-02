@@ -445,7 +445,7 @@ int sp_join( int new_mbr)
 	TASKDEBUG("nr_nodes:%d\n", nr_nodes);
 	
 	if( new_mbr == local_nodeid){		/*  My own JOIN message	 */
-		if (nr_nodes == 1){ 			/* I am a LONELY member  */
+		if(nr_nodes == 1 ){ 			/* I am a LONELY member  */
 			FSM_state 	= STS_SYNCHRONIZED;
 			synchronized = TRUE;
 			TASKDEBUG("synchronized=%d'n", synchronized);
@@ -470,6 +470,25 @@ int sp_join( int new_mbr)
 			return(OK);
 		}else{
 			/*SLAVE*/						
+			
+			if(update_flag == DONOT_UPDATE) {
+				FSM_state 	= STS_SYNCHRONIZED;
+				synchronized = TRUE;
+				TASKDEBUG("synchronized=%d'n", synchronized);
+				nr_sync = nr_nodes;
+				bm_sync = bm_nodes;
+				CLR_BIT(bm_sync,new_mbr); 
+				primary_mbr = get_primary_mbr();
+				bm_sync = bm_nodes;		
+				TASKDEBUG("primary_mbr=%d nr_sync=%d bm_sync=%X\n", primary_mbr, nr_sync, bm_sync);
+				TASKDEBUG("Starting RDISK as a BACKUP\n");	
+				rcode = dvk_unbind(dc_ptr->dc_dcid, rd_ep);
+				if(rcode < 0 ) ERROR_PRINT(rcode);
+				rcode = dvk_bkupbind(dc_ptr->dc_dcid, rd_lpid, rd_ep, primary_mbr);
+				if(rcode != rd_ep ) ERROR_EXIT(rcode);
+				return(OK);
+			}
+			
 			primary_mbr = get_primary_mbr();
 			
 			if (local_nodeid != primary_mbr){/*SLAVE*/
@@ -488,7 +507,7 @@ int sp_join( int new_mbr)
 					MTX_UNLOCK(bk_mutex);
 					TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
 					ERROR_EXIT(rcode);
-					}
+				}
 		
 				TASKDEBUG("Starting SLAVE COPY\n");
 				rcode = pthread_create( &slavecopy_thread, NULL, slavecopy_main, 0 );
@@ -498,7 +517,7 @@ int sp_join( int new_mbr)
 					TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
 					MTX_UNLOCK(bk_mutex);
 					ERROR_EXIT(rcode);
-					}
+				}
 				
 				TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
 				if ( dynup_flag == DO_DYNUPDATES ){ 
@@ -919,7 +938,7 @@ int sp_net_merge(void)
 							if ( msg_ptr->COUNT == sp_ptr->buf.buffer_size) {
 								TASKDEBUG("BYTES CLIENT = BYTES DECOMPRESS\n");
 						
-								if ( (pwrite(devvec[msg_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, msg_ptr->POSITION)) < 0 ){ 
+								if ( (pwrite(devvec[msg_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, msg_ptr->POSITION)) < 0 ){ 
 									rcode = errno;
 									MTX_UNLOCK(write_mutex);
 									return(rcode);
@@ -938,10 +957,10 @@ int sp_net_merge(void)
 						else{		
 							TASKDEBUG("DATA BUFFER UNCOMPRESS\n");
 		
-							if ( (pwrite(devvec[msg_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, msg_ptr->COUNT, msg_ptr->POSITION)) < 0 ){
+							if ( (pwrite(devvec[msg_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, msg_ptr->COUNT, msg_ptr->POSITION)) < 0 ){
 								rcode = errno;
-								TASKDEBUG("devvec[msg_ptr->DEVICE].img_p= %d, sp_ptr->buf.buffer_data= %s, msg_ptr->COUNT= %u, msg_ptr->POSITION=%X\n",
-										devvec[msg_ptr->DEVICE].img_p, 
+								TASKDEBUG("devvec[msg_ptr->DEVICE].img_fd= %d, sp_ptr->buf.buffer_data= %s, msg_ptr->COUNT= %u, msg_ptr->POSITION=%X\n",
+										devvec[msg_ptr->DEVICE].img_fd, 
 										sp_ptr->buf.buffer_data, 
 										msg_ptr->COUNT, 
 										msg_ptr->POSITION);
@@ -1011,7 +1030,7 @@ int sp_net_merge(void)
 		TASKDEBUG("iovec1.iov_addr= %X\n", iovec1.iov_addr);
 		TASKDEBUG("iovec1.iov_size= %d\n", iovec1.iov_size);
 		
-		TASKDEBUG("File descriptor image= %d\n", devvec[msg_ptr->DEVICE].img_p);
+		TASKDEBUG("File descriptor image= %d\n", devvec[msg_ptr->DEVICE].img_fd);
 		TASKDEBUG("(receive) msg_ptr->POSITION %X\n", msg_ptr->POSITION);	
 		TASKDEBUG("sp_ptr->buf.flag_buff =%d\n", sp_ptr->buf.flag_buff);
 		TASKDEBUG("buffer: %s\n", sp_ptr->buf.buffer_data);			
@@ -1035,7 +1054,7 @@ int sp_net_merge(void)
 			if ( msg_ptr->COUNT == sp_ptr->buf.buffer_size) {
 				TASKDEBUG("BYTES CLIENT = BYTES DECOMPRESS\n");
 			
-				if ( (bytes=(pwrite(devvec[msg_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, msg_ptr->POSITION))) < 0 ){ 
+				if ( (bytes=(pwrite(devvec[msg_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, sp_ptr->buf.buffer_size, msg_ptr->POSITION))) < 0 ){ 
 					rcode = errno;
 					return(rcode);
 					}		
@@ -1048,15 +1067,15 @@ int sp_net_merge(void)
 		}
 		else{		
 			TASKDEBUG("DATA BUFFER UNCOMPRESS\n");
-			TASKDEBUG("msg_ptr->DEVICE].img_p=%d, sp_ptr->buf.buffer_data= %s, msg_ptr->COUNT= %d, msg_ptr->POSITION= %X\n", 
-					devvec[msg_ptr->DEVICE].img_p, 
+			TASKDEBUG("msg_ptr->DEVICE].img_fd=%d, sp_ptr->buf.buffer_data= %s, msg_ptr->COUNT= %d, msg_ptr->POSITION= %X\n", 
+					devvec[msg_ptr->DEVICE].img_fd, 
 					sp_ptr->buf.buffer_data, 
 					msg_ptr->COUNT, 
 					msg_ptr->POSITION);
 										
 			if ( devvec[msg_ptr->DEVICE].active == 1 ){ /*device sync active*/
 				TASKDEBUG("devvec[msg_ptr->DEVICE].active=%d\n", devvec[msg_ptr->DEVICE].active);
-				if ( (bytes=(pwrite(devvec[msg_ptr->DEVICE].img_p, sp_ptr->buf.buffer_data, msg_ptr->COUNT, msg_ptr->POSITION))) < 0 ){
+				if ( (bytes=(pwrite(devvec[msg_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, msg_ptr->COUNT, msg_ptr->POSITION))) < 0 ){
 					TASKDEBUG("bytes write=% u\n", bytes);
 					rcode = errno;
 					return(rcode);

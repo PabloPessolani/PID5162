@@ -21,8 +21,8 @@
 /*===========================================================================*
  *				md5_compute				     *
  *===========================================================================*/  
-void md5_compute(img_p, localbuff, buff_size, position, sigc)
-int img_p;
+void md5_compute(img_fd, localbuff, buff_size, position, sigc)
+int img_fd;
 unsigned *localbuff;
 unsigned	buff_size;
 off_t position;
@@ -35,8 +35,8 @@ int bytes;
 md5_init(&md5);
 
 /*read file of bakcup*/
-TASKDEBUG("img_p: %d, localbuff: %X, buff_size: %u, position: %u:\n", img_p, localbuff, buff_size, position);				
-if( (bytes = pread(img_p, localbuff, buff_size, position)) < 0) ERROR_EXIT(errno);
+TASKDEBUG("img_fd: %d, localbuff: %X, buff_size: %u, position: %u:\n", img_fd, localbuff, buff_size, position);				
+if( (bytes = pread(img_fd, localbuff, buff_size, position)) < 0) ERROR_EXIT(errno);
 TASKDEBUG("pread: %s\n", localbuff);
 TASKDEBUG("bytes: %d\n", bytes);
 

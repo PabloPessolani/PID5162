@@ -1,700 +1,0 @@
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94
- utility.c:cv64ul:31:f_cv64ul: 158532620
- rdisk.c:m_transfer:436:DRIVER - position I/O(mem_phys) 97365B4
- rdisk.c:m_transfer:503:
-<DEV_SCATTER>
- rdisk.c:m_transfer:505:m_ptr->vm_nr_nodes=32, nr_nodes=2
- rdisk.c:m_transfer:662:subtotal de bytes
- rdisk.c:m_transfer:403:count: 30000
- rdisk.c:m_transfer:407:count_s: 30000
- rdisk.c:m_transfer:412:user_vir BFFE1E94

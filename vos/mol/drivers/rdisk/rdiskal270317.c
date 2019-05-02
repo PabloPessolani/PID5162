@@ -62,7 +62,7 @@ struct partition entry; /*no en código original, pero para completar los datos*
 message mess;
 SP_message sp_msg; /*message Spread*/	
 
-// int img_p; /*puntero a la imagen de disco*/
+// int img_fd; /*puntero a la imagen de disco*/
 
 // unsigned *localbuff;		/* pointer to the first byte of the local buffer (=disk image)*/	??
 unsigned *localbuff;
@@ -334,8 +334,8 @@ unsigned nr_req;		/* length of request vector */
 				TASKDEBUG("bytes: %d\n", bytes);		
 			
 				/* read data from the virtual device file into the local buffer  */			
-				// rcode = pread(img_p, localbuff, bytes, position);
-				bytes = pread(devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);
+				// rcode = pread(img_fd, localbuff, bytes, position);
+				bytes = pread(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 				// if(rcode) ERROR_EXIT(errno);
 				TASKDEBUG("pread: bytes=%d\n", bytes);
 				
@@ -432,10 +432,10 @@ unsigned nr_req;		/* length of request vector */
 						
 						/* write data from local buffer to the  virtual device file */
 				
-						// rcode = pwrite(img_p, localbuff, bytes, position);
-						TASKDEBUG("devvec[m_device].img_p=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
-							devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);			
-						bytes = pwrite(devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);
+						// rcode = pwrite(img_fd, localbuff, bytes, position);
+						TASKDEBUG("devvec[m_device].img_fd=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
+							devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);			
+						bytes = pwrite(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 						TASKDEBUG("pwrite: %d\n", bytes);
 						// if(rcode) ERROR_EXIT(errno);
 						if(bytes < 0) ERROR_EXIT(errno);	
@@ -574,7 +574,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 	rcode = OK;
 	TASKDEBUG("rcode %d\n", rcode);
 	do {
-		// img_p = open(img_ptr, O_RDWR);
+		// img_fd = open(img_ptr, O_RDWR);
 		if ( devvec[m_ptr->DEVICE].available == 0 ){
 			TASKDEBUG("devvec[m_ptr->DEVICE].available=%d\n", devvec[m_ptr->DEVICE].available);
 			rcode = errno;
@@ -582,13 +582,13 @@ int m_do_open(struct driver *dp, message *m_ptr)
 			break;
 			}
 			
-		devvec[m_ptr->DEVICE].img_p = open(devvec[m_ptr->DEVICE].img_ptr, O_RDWR);
-		TASKDEBUG("Open imagen FD=%d\n", devvec[m_ptr->DEVICE].img_p);
+		devvec[m_ptr->DEVICE].img_fd = open(devvec[m_ptr->DEVICE].img_ptr, O_RDWR);
+		TASKDEBUG("Open imagen FD=%d\n", devvec[m_ptr->DEVICE].img_fd);
 			
 			
-		// if(img_p < 0) {
-		if(devvec[m_ptr->DEVICE].img_p < 0) {
-			TASKDEBUG("devvec[m_ptr->DEVICE].img_p=%d\n", devvec[m_ptr->DEVICE].img_p);
+		// if(img_fd < 0) {
+		if(devvec[m_ptr->DEVICE].img_fd < 0) {
+			TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n", devvec[m_ptr->DEVICE].img_fd);
 			rcode = errno;
 			TASKDEBUG("rcode=%d\n", rcode);
 			break;
@@ -789,19 +789,19 @@ message *m_ptr;
 {
 int rcode;
 
-	// rcode = close(img_p);
+	// rcode = close(img_fd);
 	if (devvec[m_ptr->DEVICE].active != 1) { //VER SI HAY QUE FIJAR UN ERROR
 		TASKDEBUG("Device %d, is not open\n", m_ptr->DEVICE);
 		rcode = -1; 
 		}
 	else{	
-		TASKDEBUG("devvec[m_ptr->DEVICE].img_p=%d\n",devvec[m_ptr->DEVICE].img_p);
-		rcode = close(devvec[m_ptr->DEVICE].img_p);
+		TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n",devvec[m_ptr->DEVICE].img_fd);
+		rcode = close(devvec[m_ptr->DEVICE].img_fd);
 		if(rcode < 0) ERROR_EXIT(errno); 
 		
 		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
 		devvec[m_ptr->DEVICE].img_ptr = NULL;
-		devvec[m_ptr->DEVICE].img_p = NULL;
+		devvec[m_ptr->DEVICE].img_fd = NULL;
 		devvec[m_ptr->DEVICE].st_size = 0;
 		devvec[m_ptr->DEVICE].st_blksize = 0;
 		devvec[m_ptr->DEVICE].localbuff = NULL;

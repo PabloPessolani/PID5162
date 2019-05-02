@@ -33,6 +33,7 @@
 
 #define DONOT_REPLICATE		0
 #define DO_REPLICATE		1
+#define DONOT_UPDATE		0
 
 #define DONOT_COMPRESS		0
 #define DO_COMPRESS			1

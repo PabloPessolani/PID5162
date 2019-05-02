@@ -74,6 +74,57 @@ fprintf(stderr, "Usage: rdisk -r<replicate> -[f<full_update>|d<diff_updates>] -D
 fflush(stderr);
 }
 
+void check_same_image( void ) 
+{
+	/* the same inode of file image*/
+	struct stat f_stat, n_stat;
+	int i; /* first device*/
+	int j; /* next device*/
+		
+	for( i = 0 ; i < max_devs; i++){
+		if( devvec[i].available == 0) continue;
+		rcode = stat(devvec[i].img_ptr, &f_stat);
+		TASKDEBUG("stat0 %s rcode=%d\n",devvec[i].img_ptr, rcode);
+		if(rcode){
+			fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode , c_file, i );
+			fflush(stderr);
+			devvec[i].available = 0;
+			continue;
+		}
+		
+		// get file size and block size 
+		if( devvec[i]. dev_type == FILE_IMAGE) {
+			devvec[i].st_size = img_stat.st_size;
+			TASKDEBUG("dev=%d image size=%d[bytes] %d\n", i, img_stat.st_size, devvec[i].st_size);
+			devvec[i].st_blksize = img_stat.st_blksize;
+			TASKDEBUG("dev=%d block size=%d[bytes] %d\n", i, img_stat.st_blksize, devvec[i].st_blksize);
+		}
+		
+		if( i == max_devs) continue; // last device to check 
+		
+		for( j = i+1; j < max_devs; j++){
+			if( devvec[j].available == 0) continue;
+			rcode = stat(devvec[j].img_ptr, &n_stat);
+			TASKDEBUG("stat1 %s rcode=%d\n",devvec[j].img_ptr, rcode);
+			if(rcode){
+				fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode, c_file, j );
+				fflush(stderr);
+				devvec[j].available = 0;
+			}
+			TASKDEBUG("devvec[%d].img_ptr=%s,devvec[%d].img_ptr=%s\n", 
+				i, devvec[i].img_ptr,j,devvec[j].img_ptr);
+	
+			if ( f_stat.st_ino == n_stat.st_ino ){
+				fprintf( stderr,"\nERROR. Minor numbers %d - %d are the same file\n", i, j );
+				fflush(stderr);
+				devvec[j].available = 0;
+				fprintf( stderr,"\nDevice with minor numbers: %d is not available now\n", j );
+				fflush(stderr);
+			}
+		}
+	}
+}
+	
 /*===========================================================================*
  *				   main 				     *
  *===========================================================================*/
@@ -81,19 +132,13 @@ fflush(stderr);
 int main (int argc, char *argv[] )
 {
 	/* Main program.*/
-	int rcode, c, i, j, l_dev, f_dev, cfile_flag, fflag, Fflag, Mflag;  
+	int rcode, c, i, j, j, i, cfile_flag, fflag, Fflag, Mflag;  
 	char *c_file;
 	char prueba;
 	
 	struct stat img_stat,img_stat1;
 	
 	struct option long_options[] = {
-		/* These options are their values. */
-		{ "replicate", 	no_argument,		NULL, 'r' },
-		{ "full_update",no_argument, 		NULL, 'f' },
-		{ "diff_update",no_argument, 		NULL, 'd' },
-		{ "dyn_update", no_argument, 		NULL, 'D' }, /*dynamic update*/
-		{ "zcompress", 	no_argument, 		NULL, 'z' },
 		{ "endpoint", 	no_argument, 		NULL, 'e' },
 		{ "config", 	required_argument, 	NULL, 'c' },
 		{ 0, 0, 0, 0 }, 		
@@ -108,43 +153,11 @@ int main (int argc, char *argv[] )
 	}
 
 	/* flags getopt*/
-	replicate_flag = DONOT_REPLICATE;
-	r_comp = DONOT_COMPRESS;
-	dynup_flag = DONOT_DYNUPDATES; /*not dynamic update*/
-	cfile_flag = 0;
-	fflag = 0;
-	Fflag = 0;
-	Mflag = 0;
-	r_type = 0;
-	r_comp = 0;
-	endp_flag = 0;
+	cfile_flag 		= NO;
+	endp_flag 		= NO;
 
-	while((c = getopt_long_only(argc, argv, "rfFdDzec:", long_options, NULL)) >= 0) {
+	while((c = getopt_long_only(argc, argv, "ec:", long_options, NULL)) >= 0) {
 		switch(c) {
-			case 'r':
-				TASKDEBUG("Active replicate\n");
-				replicate_flag = DO_REPLICATE;
-				break;
-			case 'f':
-				TASKDEBUG("COPY_FULL\n");
-				r_type = DEV_CFULL; 
-				TASKDEBUG("r_type: %d - DEV_CFULL\n", r_type);	
-				fflag = 1;
-				break;	
-			case 'd':		
-				TASKDEBUG("DIFF_UPDATE\n");
-				r_type = DEV_CMD5; 
-				TASKDEBUG("r_type: %d - DEV_CMD5\n", r_type);	
-				Mflag = 1;
-				break;	
-			case 'D':		
-				TASKDEBUG("Sync - Active Dynamic Updates\n");
-				dynup_flag = DO_DYNUPDATES; 
-				break;		
-			case 'z':		
-				r_comp = DO_COMPRESS; 
-				TASKDEBUG("r_comp(DO_COMPRESS=1/DONOT_COMPRESS=0)=%d\n",r_comp);
-				break;			
 			case 'c': /*config file*/
 				c_file = optarg;
 				TASKDEBUG("Option c: %s\n", c_file);
@@ -159,102 +172,30 @@ int main (int argc, char *argv[] )
 				exit(EXIT_FAILURE);
 			}
 		}	
-	
-	TASKDEBUG("(sizeof(mess_3) =  %d\n", sizeof(mess_3));
-	TASKDEBUG("sizeof(message) =  %d\n", sizeof(message));
  	
 	if ( (argc < 2) || (cfile_flag != 1) ) { /*al menos el nombre el archivo de configuración*/
  	    usage( "No arguments", optarg );
 		exit(1);
     }
-	
-	if ( ( fflag + Mflag ) > 1) { /*más de un flag de tipo de transferencia activo, no se puede: copy or differents*/
- 	    usage( "Select: f|d", optarg );
-		exit(1);
-    }
-	
-	count_availables = 0;		
-	test_config(c_file);
+
+	max_devs = 0;		
+	parse_config(c_file);
 		
-	if (count_availables == 0){
+	if (max_devs == 0){
 		fprintf( stderr,"\nERROR. No availables devices in %s\n", c_file );
 		fflush(stderr);
 		exit(1);
 	}
-	TASKDEBUG("count_availables=%d\n",count_availables);
+	TASKDEBUG("max_devs=%d\n",max_devs);
 	
-	
-	/* the same inode of file image*/
-	f_dev=0; /*count first device*/
-	l_dev=1; /*count last device*/
-		
-	while (f_dev < NR_DEVS){
-	for( i = f_dev; i < NR_DEVS; i++){
-			if( devvec[i].available == 0){
-				f_dev++;
-			}
-			else{
-				rcode = stat(devvec[i].img_ptr, &img_stat);
-				TASKDEBUG("stat0 %s rcode=%d\n",devvec[i].img_ptr, rcode);
-				if(rcode){
-					fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode , c_file, i );
-					fflush(stderr);
-					f_dev++;
-				}
-				for( j = l_dev; j < NR_DEVS; j++){
-					if( devvec[j].available == 0){
-						l_dev++;
-					}	
-					else{
-						rcode = stat(devvec[j].img_ptr, &img_stat1);
-						TASKDEBUG("stat1 %s rcode=%d\n",devvec[i].img_ptr, rcode);
-						if(rcode){
-							fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode, c_file, j );
-							fflush(stderr);
-							l_dev++;
-						}
-						TASKDEBUG("devvec[%d].img_ptr=%s,devvec[%d].img_ptr=%s\n", 
-							i, devvec[i].img_ptr,j,devvec[j].img_ptr);
-				
-						if ( img_stat.st_ino == img_stat1.st_ino ){
-							fprintf( stderr,"\nERROR. Minor numbers %d - %d are the same file\n", i, j );
-							fflush(stderr);
-							devvec[j].available = 0;
-							fprintf( stderr,"\nDevice with minor numbers: %d is not available now\n", j );
-							fflush(stderr);
-						}
-					}
-				}
-				f_dev++;
-				l_dev++;
-			}
-		}	
-	}
+	if (max_devs > 1)
+		check_same_image();
 
-/* get the image file size */
-	for( i = 0; i < NR_DEVS; i++){
-		if (devvec[i].available == 0){
-			TASKDEBUG("Minor device %d is not available\n", i);
-		}else{
-			TASKDEBUG("devvec[%d].img_ptr=%s\n", i, devvec[i].img_ptr);
-			rcode = stat(devvec[i].img_ptr, &img_stat);
-			
-			if(rcode) ERROR_EXIT(errno);
-			
-			devvec[i].st_size = img_stat.st_size;
-			TASKDEBUG("image size=%d[bytes] %d\n", img_stat.st_size, devvec[i].st_size);
-			devvec[i].st_blksize = img_stat.st_blksize;
-			TASKDEBUG("block size=%d[bytes] %d\n", img_stat.st_blksize, devvec[i].st_blksize);
-		}
-	}
-/* the same inode of file image*/
-			
-  rcode = rd_init();
-  if(rcode) ERROR_RETURN(rcode);  
-  driver_task(&m_dtab);	
+	rcode = rd_init();
+	if(rcode) ERROR_RETURN(rcode);  
+	driver_task(&m_dtab);	
   
-  free(localbuff);
-  return(OK);				
+	return(OK);				
 }
 
 /*===========================================================================*
@@ -367,7 +308,7 @@ unsigned nr_req;		/* length of request vector */
 				TASKDEBUG("bytes: %d\n", bytes);		
 			
 				/* read data from the virtual device file into the local buffer  */			
-				bytes = pread(devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);
+				bytes = pread(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 				TASKDEBUG("pread: bytes=%d\n", bytes);
 				
 				if(bytes < 0) ERROR_EXIT(errno);
@@ -480,11 +421,11 @@ unsigned nr_req;		/* length of request vector */
 						
 						/* write data from local buffer to the  virtual device file */
 				
-						TASKDEBUG("devvec[m_device].img_p=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
-							devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);			
+						TASKDEBUG("devvec[m_device].img_fd=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
+							devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);			
 
 								
-						bytes = pwrite(devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);
+						bytes = pwrite(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 						TASKDEBUG("buffer: %s\n", devvec[m_device].localbuff);		
 						
 						if ( bytes == (-1) ){ 
@@ -655,10 +596,10 @@ unsigned nr_req;		/* length of request vector */
 						/* write data from local buffer to the  virtual device file */
 						TASKDEBUG("NOT COMPRESS DATA\n");
 				
-						TASKDEBUG("devvec[m_device].img_p=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
-							devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);			
+						TASKDEBUG("devvec[m_device].img_fd=%d, devvec[m_device].localbuff=%X, bytes=%d, position=%u\n", 
+							devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);			
 						
-						bytes = pwrite(devvec[m_device].img_p, devvec[m_device].localbuff, bytes, position);
+						bytes = pwrite(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 						
 						TASKDEBUG("pwrite: %d\n", bytes);
 						
@@ -680,7 +621,7 @@ unsigned nr_req;		/* length of request vector */
 						sp_msg.buf.buffer_size = msg_lz4cd.buf.buffer_size;
 						TASKDEBUG("sp_msg.buf.buffer_size =%d\n", sp_msg.buf.buffer_size);
 						
-						bytes_c = pwrite(devvec[m_device].img_p, msg_lz4cd.buf.buffer_data, sp_msg.buf.buffer_size, position);
+						bytes_c = pwrite(devvec[m_device].img_fd, msg_lz4cd.buf.buffer_data, sp_msg.buf.buffer_size, position);
 						
 						TASKDEBUG("pwrite: %d\n", bytes_c);
 						
@@ -738,11 +679,11 @@ int m_do_open(struct driver *dp, message *m_ptr)
 			return(rcode);
 			}
 			
-		devvec[m_ptr->DEVICE].img_p = open(devvec[m_ptr->DEVICE].img_ptr, O_RDWR);
-		TASKDEBUG("Open imagen FD=%d\n", devvec[m_ptr->DEVICE].img_p);
+		devvec[m_ptr->DEVICE].img_fd = open(devvec[m_ptr->DEVICE].img_ptr, O_RDWR);
+		TASKDEBUG("Open imagen FD=%d\n", devvec[m_ptr->DEVICE].img_fd);
 			
-		if(devvec[m_ptr->DEVICE].img_p < 0) {
-			TASKDEBUG("devvec[m_ptr->DEVICE].img_p=%d\n", devvec[m_ptr->DEVICE].img_p);
+		if(devvec[m_ptr->DEVICE].img_fd < 0) {
+			TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n", devvec[m_ptr->DEVICE].img_fd);
 			rcode = errno;
 			TASKDEBUG("rcode=%d\n", rcode);
 			return(rcode);
@@ -880,7 +821,8 @@ int rd_init(void )
 				if(rcode < 0) ERROR_EXIT(rcode);						
 			} 
 		}
-	} else {							// WITH REPLICATION 
+	} 
+	else {							// WITH REPLICATION 
 		if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) { // PRIMARY as REPLICA 
 			TASKDEBUG("Starting RDISK PRIMARY\n");
 			active_nr_nodes = 1;
@@ -891,7 +833,6 @@ int rd_init(void )
 				rcode = sys_bindproc(rd_ep, rd_lpid, REPLICA_BIND);
 				if(rcode < 0) ERROR_EXIT(rcode);						
 			} 
-			
 		}else{											// SECONDARY as BACKUP 
 			TASKDEBUG("Starting RDISK BACKUP\n");	
 			rcode = dvk_bkupbind(DCID, rd_lpid, rd_ep, rd_ptr->p_nodeid);
@@ -983,19 +924,19 @@ message *m_ptr;
 {
 int rcode;
 
-	// rcode = close(img_p);
+	// rcode = close(img_fd);
 	if (devvec[m_ptr->DEVICE].active != 1) { 
 		TASKDEBUG("Device %d, is not open\n", m_ptr->DEVICE);
 		rcode = -1; //MARIE: VER SI ESTO ES CORRECTO?
 		}
 	else{	
-		TASKDEBUG("devvec[m_ptr->DEVICE].img_p=%d\n",devvec[m_ptr->DEVICE].img_p);
-		rcode = close(devvec[m_ptr->DEVICE].img_p);
+		TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n",devvec[m_ptr->DEVICE].img_fd);
+		rcode = close(devvec[m_ptr->DEVICE].img_fd);
 		if(rcode) ERROR_EXIT(errno); 
 		
 		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
 		devvec[m_ptr->DEVICE].img_ptr = NULL;
-		devvec[m_ptr->DEVICE].img_p = NULL;
+		devvec[m_ptr->DEVICE].img_fd = NULL;
 		devvec[m_ptr->DEVICE].st_size = 0;
 		devvec[m_ptr->DEVICE].st_blksize = 0;
 		devvec[m_ptr->DEVICE].localbuff = NULL;

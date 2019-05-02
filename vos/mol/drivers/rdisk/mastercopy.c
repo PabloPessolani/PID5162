@@ -31,7 +31,7 @@ struct msdevvec {		/* vector for minor devices */
   blksize_t st_trblksize; /* of stat */
   unsigned *localbuff;	/* buffer to the device*/
   unsigned	buff_size;	/* buffer size for this device*/
-  int img_p; 			/*file descriptor - disk image*/
+  int img_fd; 			/*file descriptor - disk image*/
 };
 
 typedef struct msdevvec msdevvec_t;
@@ -319,11 +319,11 @@ message *mp;			/* pointer to read or write message */
   TASKDEBUG("Device to update=%d\n", mtr_dev);
 
   /*---------- Open image device ---------------*/
-  ms_devvec[mp->DEVICE].img_p = open(devvec[mp->DEVICE].img_ptr, O_RDONLY);
-  TASKDEBUG("Open imagen FD=%d\n", ms_devvec[mp->DEVICE].img_p);
+  ms_devvec[mp->DEVICE].img_fd = open(devvec[mp->DEVICE].img_ptr, O_RDONLY);
+  TASKDEBUG("Open imagen FD=%d\n", ms_devvec[mp->DEVICE].img_fd);
 			
-  if(ms_devvec[mp->DEVICE].img_p < 0) {
-	TASKDEBUG("img_p=%d\n", ms_devvec[mp->DEVICE].img_p);
+  if(ms_devvec[mp->DEVICE].img_fd < 0) {
+	TASKDEBUG("img_fd=%d\n", ms_devvec[mp->DEVICE].img_fd);
 	rcode = errno;
 	TASKDEBUG("rcode=%d\n", rcode);
 	exit(EXIT_FAILURE);
@@ -373,7 +373,7 @@ message *mp;			/* pointer to read or write message */
   TASKDEBUG("Buffer backup %X\n", mp->ADDRESS);
   
   /*tr_blksize, ya quedó definido anteriormente es la cantidad de bytes que se van a transferir*/
-  bytes = pread(ms_devvec[mp->DEVICE].img_p, ms_devvec[mp->DEVICE].localbuff, tr_blksize, position);
+  bytes = pread(ms_devvec[mp->DEVICE].img_fd, ms_devvec[mp->DEVICE].localbuff, tr_blksize, position);
   TASKDEBUG("pread: %s\n", ms_devvec[mp->DEVICE].localbuff);
 				
   if(bytes < 0) ERROR_EXIT(errno);
@@ -420,7 +420,7 @@ message *mp;			/* pointer to read or write message */
   TASKDEBUG("Buffer backup %X\n", mp->ADDRESS);
   
   /*tr_blksize, ya quedó definido anteriormente es la cantidad de bytes que se van a transferir*/
-  bytes = pread(ms_devvec[mp->DEVICE].img_p, ms_devvec[mp->DEVICE].localbuff, tr_blksize, ( position * tr_blksize) );
+  bytes = pread(ms_devvec[mp->DEVICE].img_fd, ms_devvec[mp->DEVICE].localbuff, tr_blksize, ( position * tr_blksize) );
   TASKDEBUG("pread: %s\n", ms_devvec[mp->DEVICE].localbuff);
 				
   if(bytes < 0) ERROR_EXIT(errno);
@@ -468,7 +468,7 @@ message *mp;			/* pointer to read or write message */
   TASKDEBUG("mp->mB_md5: %s\n", mp->mB_md5);	
   
   /*tr_blksize, ya quedó definido anteriormente es la cantidad de bytes que se van a transferir*/
-  bytes = pread(ms_devvec[mtr_dev].img_p, ms_devvec[mtr_dev].localbuff, tr_blksize, ( position * tr_blksize) );
+  bytes = pread(ms_devvec[mtr_dev].img_fd, ms_devvec[mtr_dev].localbuff, tr_blksize, ( position * tr_blksize) );
   TASKDEBUG("pread: %s\n", ms_devvec[mtr_dev].localbuff);
 				
   if(bytes < 0) ERROR_EXIT(errno);
@@ -481,12 +481,12 @@ message *mp;			/* pointer to read or write message */
   TASKDEBUG("Block number: %d\n", position);
   
   TASKDEBUG("md5_compute: fd=%d, buffer=%X, bytes=%u, position=%u\n",
-							ms_devvec[mtr_dev].img_p,
+							ms_devvec[mtr_dev].img_fd,
 							ms_devvec[mtr_dev].localbuff,
 							tr_blksize,
 							(tr_blksize * position));
 							
-  md5_compute(ms_devvec[mtr_dev].img_p, ms_devvec[mtr_dev].localbuff, tr_blksize, ( tr_blksize * position), sigm);
+  md5_compute(ms_devvec[mtr_dev].img_fd, ms_devvec[mtr_dev].localbuff, tr_blksize, ( tr_blksize * position), sigm);
 
   TASKDEBUG("sigm: %s\n", sigm);	
      
@@ -529,9 +529,9 @@ message *mp;			/* pointer to read or write message */
 int rcode;
 
 /*---------- Close image device ---------------*/
-TASKDEBUG("Close imagen FD=%d\n", ms_devvec[mp->DEVICE].img_p);
+TASKDEBUG("Close imagen FD=%d\n", ms_devvec[mp->DEVICE].img_fd);
 			
-if ( rcode = close(ms_devvec[mp->DEVICE].img_p) < 0) {
+if ( rcode = close(ms_devvec[mp->DEVICE].img_fd) < 0) {
 	TASKDEBUG("Error close=%d\n", rcode);
 	exit(EXIT_FAILURE);
 	}

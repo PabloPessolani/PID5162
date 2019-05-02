@@ -22,7 +22,7 @@ EXTERN char *img_ptr;		/* pointer to the first byte of the ram disk image */
 EXTERN int rd_lpid;		
 EXTERN int rd_ep;		
 //EXTERN int fs_nr;	
-EXTERN int img_p; /*pointer to the first byte of the ram disk image*/
+EXTERN int img_fd; /*pointer to the first byte of the ram disk image*/
 
 EXTERN int	endp_flag;
 EXTERN int minor_dev;
@@ -42,6 +42,7 @@ EXTERN unsigned int s_nrblock;
 EXTERN int r_type; 
 EXTERN int r_comp;
 EXTERN int dynup_flag;
+EXTERN int update_flag;
 EXTERN blksize_t r_trblksize; 
 EXTERN unsigned long nr_updated; /*cantidad de nodos actualizados en una DYN_UPDATES*/
 
@@ -103,7 +104,7 @@ EXTERN 		int nr_radar;
 EXTERN		int active_nr_nodes; 
 // EXTERN		int active_nodes; /*ver si sólo dejo este, este se cuenta en la systask*/
 EXTERN 		int nr_sync;
-EXTERN 		int count_availables; /*numbers minor devices availables*/
+EXTERN 		int max_devs; /*numbers minor devices availables*/
 EXTERN 		unsigned long int nr_optrans; /*numers transfer operations*/
 EXTERN	  	unsigned long int	bm_acks;
 EXTERN	  	unsigned long int	bm_nodes;

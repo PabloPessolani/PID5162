@@ -17,6 +17,8 @@
 #define DEBUG 1
 
 #include "/usr/src/dvs/include/com/config.h"
+#include "/usr/src/dvs/include/com/dvk_ioctl.h"
+#include "/usr/src/dvs/include/com/dvs_usr.h"
 #include "/usr/src/dvs/dvk-mod/dvk_debug.h"
 #include "/usr/src/dvs/dvk-mod/dvk_macros.h"
 
@@ -56,6 +58,7 @@ static long uml_dvk_ioctl(struct file *file,
 			   unsigned int cmd, unsigned long arg)
 {
 	int rcode;
+	void *ptr; 
 
 #ifdef DEBUG
 	kernel_param_lock(THIS_MODULE);
@@ -63,8 +66,17 @@ static long uml_dvk_ioctl(struct file *file,
 	kernel_param_unlock(THIS_MODULE);
 #endif
 
-	rcode = os_ioctl_generic(file->private_data, cmd, arg);
-	
+	if( cmd == DVK_IOCGGETDVSINFO){
+		dvs_usr_t *dvsu_ptr;
+		dvsu_ptr = kmalloc(sizeof(dvs_usr_t), GFP_KERNEL);
+		if (dvsu_ptr == NULL)
+			return -ENOMEM;
+		rcode = os_ioctl_generic(file->private_data, cmd, dvsu_ptr);
+		copy_to_user( (void *) arg, dvsu_ptr, sizeof(dvs_usr_t));
+		kfree(dvsu_ptr);
+	} else {
+		rcode = os_ioctl_generic(file->private_data, cmd, arg);
+	}
 #ifdef DEBUG
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL,"rcode=%d\n",rcode);
@@ -124,11 +136,17 @@ MODULE_LICENSE("GPL");
 
 static int __init uml_dvk_init_module(void)
 {
+	int kpid, ktid;
+	
 	printk("UML Distributed Virtualization Kernel (host dvk_dev = %s)\n",dvk_dev);
 
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL, "UML Distributed Virtualization Kernel (host dvk_dev = %s)\n",dvk_dev);
 	kernel_param_unlock(THIS_MODULE);
+	
+	kpid = os_getpid();
+	ktid = os_getpid();
+	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", kpid, ktid);
 
 	module_dvk = register_chrdev(DVK_MAJOR, DEVICE_NAME, &uml_dvk_fops);
 	if (module_dvk < 0) {

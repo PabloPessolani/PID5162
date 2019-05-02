@@ -311,7 +311,7 @@ static int init_dc(void *arg)
     printf("CHILD Machine:  %s\n", uts.machine);
 	
 	printf("CHILD chroot to:  %s\n", c_ptr->c_mount);
-    if (chroot(c_ptr->c_mount) == -1) ERROR_EXIT(-errno);
+    if (chroot(c_ptr->c_mount) == -1) ERROR_PRINT(-errno);
 	
 	/* remount / as private, on some systems / is shared */
 #ifdef REMOUNT 	
@@ -364,6 +364,8 @@ static int init_dc(void *arg)
 
 #endif //  OVERLAYFS 	
 
+#ifdef PROC_DEV  	
+
     /* Mount new /proc so commands like ps show correct information */
     if (mkdir("/proc", 0700) < 0 && errno != EEXIST) {
 		ERROR_EXIT(-errno);
@@ -384,6 +386,7 @@ static int init_dc(void *arg)
         ERROR_EXIT(-errno);
     }
     USRDEBUG("/dev mounted\n");
+#endif // PROC_DEV  	
 
     /* Setting env variables here just to make sure that the shell in
      * container works correctly, otherwise ther PATH and others ENV

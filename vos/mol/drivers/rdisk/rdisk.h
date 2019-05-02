@@ -154,7 +154,7 @@ _PROTOTYPE( int m_init, (void) );
 _PROTOTYPE( void m_geometry, (struct partition *entry));
 _PROTOTYPE( int do_nop, (struct driver *dp, message *m_ptr));
 _PROTOTYPE( void lz4_data_cd, (unsigned * in_buffer, size_t inbuffer_size, int flag_in));
-_PROTOTYPE( void test_config, (char *f_conf));
+_PROTOTYPE( void parse_config, (char *f_conf));
 
 #define RDISK_FORMAT "nr_nodes=%d nr_sync=%d nr_radar=%d bm_nodes=%X bm_sync=%X bm_radar=%X\n"
 #define RDISK_FIELDS nr_nodes, nr_sync, nr_radar, bm_nodes, bm_sync, bm_radar

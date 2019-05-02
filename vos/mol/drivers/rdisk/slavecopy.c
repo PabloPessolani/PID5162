@@ -23,7 +23,7 @@ struct msdevvec {			/* vector for minor devices */
   blksize_t st_trblksize; 	/* of stat */
   unsigned char *localbuff;	/* buffer to the device*/
   int buff_size;			/* buffer size for this device*/
-  int img_p; 				/*file descriptor - disk image*/
+  int img_fd; 				/*file descriptor - disk image*/
 };
 
 typedef struct msdevvec msdevvec_t;
@@ -110,11 +110,11 @@ void sync_request(int nr_dev, int stype){
 	// unsigned *localbuff; //julio
 
 	/*---------- Open image device ---------------*/
-	ms_devvec[nr_dev].img_p = open(devvec[nr_dev].img_ptr, O_RDWR);
-	TASKDEBUG("Open imagen FD=%d\n", ms_devvec[nr_dev].img_p);
+	ms_devvec[nr_dev].img_fd = open(devvec[nr_dev].img_ptr, O_RDWR);
+	TASKDEBUG("Open imagen FD=%d\n", ms_devvec[nr_dev].img_fd);
 				
-	if(ms_devvec[nr_dev].img_p < 0) {
-		TASKDEBUG("img_p=%d\n", ms_devvec[nr_dev].img_p);
+	if(ms_devvec[nr_dev].img_fd < 0) {
+		TASKDEBUG("img_fd=%d\n", ms_devvec[nr_dev].img_fd);
 		rcode = errno;
 		TASKDEBUG("rcode=%d\n", rcode);
 		exit(EXIT_FAILURE);
@@ -256,13 +256,13 @@ do{
 	switch(sl_msg.m_type){
 		case DEV_CFULLR: {			
 			TASKDEBUG("Position %d (%d)\n", sl_msg.POSITION, sl_position);
-			TASKDEBUG("ms_devvec[nr_dev].img_p=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, sl_msg.POSITION=%u\n",
-					ms_devvec[nr_dev].img_p, 
+			TASKDEBUG("ms_devvec[nr_dev].img_fd=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, sl_msg.POSITION=%u\n",
+					ms_devvec[nr_dev].img_fd, 
 					ms_devvec[nr_dev].localbuff,
 					ms_devvec[nr_dev].st_trblksize,
 					sl_msg.POSITION);
 									
-			bytes = pwrite(ms_devvec[nr_dev].img_p, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, sl_msg.POSITION);
+			bytes = pwrite(ms_devvec[nr_dev].img_fd, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, sl_msg.POSITION);
 					
 			TASKDEBUG("pwrite: %s\n", ms_devvec[nr_dev].localbuff);
 			TASKDEBUG("bytes: %u\n", bytes);
@@ -285,8 +285,8 @@ do{
 		
 		case DEV_UFULLR:{
 			TASKDEBUG("Block %d (%d)\n", sl_msg.POSITION, sl_position);
-			TASKDEBUG("ms_devvec[nr_dev].img_p=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (sl_msg.POSITION * ms_devvec[nr_dev].st_trblksize=%u\n",
-						ms_devvec[nr_dev].img_p, 
+			TASKDEBUG("ms_devvec[nr_dev].img_fd=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (sl_msg.POSITION * ms_devvec[nr_dev].st_trblksize=%u\n",
+						ms_devvec[nr_dev].img_fd, 
 						ms_devvec[nr_dev].localbuff,
 						ms_devvec[nr_dev].st_trblksize,
 						(sl_msg.POSITION * ms_devvec[nr_dev].st_trblksize));
@@ -296,7 +296,7 @@ do{
 			// pthread_mutex_lock(&write_mutex);
 			MTX_LOCK(write_mutex);
 							
-			bytes = pwrite(ms_devvec[nr_dev].img_p, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.POSITION * ms_devvec[nr_dev].st_trblksize));
+			bytes = pwrite(ms_devvec[nr_dev].img_fd, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.POSITION * ms_devvec[nr_dev].st_trblksize));
 					
 			TASKDEBUG("pwrite: %s\n", ms_devvec[nr_dev].localbuff);
 			TASKDEBUG("bytes: %u\n", bytes);
@@ -381,12 +381,12 @@ do{
 	/*aplico MD5: leer el bloque, calcular el "sig" y enviar al master: posición, cantidad y sig*/
 	
 	TASKDEBUG("md5_compute: fd=%d, buffer=%X, bytes=%u, position=%u\n",
-							ms_devvec[nr_dev].img_p,
+							ms_devvec[nr_dev].img_fd,
 							ms_devvec[nr_dev].localbuff,
 							ms_devvec[nr_dev].st_trblksize,
 							(ms_devvec[nr_dev].st_trblksize * sl_position));
 							
-	md5_compute(ms_devvec[nr_dev].img_p, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (ms_devvec[nr_dev].st_trblksize * sl_position), sigs);
+	md5_compute(ms_devvec[nr_dev].img_fd, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (ms_devvec[nr_dev].st_trblksize * sl_position), sigs);
 	
 	TASKDEBUG("sigs = %s\n", sigs);
 	memcpy(sl_msg.mB_md5, sigs, MD5_SIZE);
@@ -420,13 +420,13 @@ do{
 			else{
 				
 				TASKDEBUG("Block %d (%d) NOT matches\n", sl_msg.mB_nr, sl_position);
-				TASKDEBUG("ms_devvec[nr_dev].img_p=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (m.mB_nr * ms_devvec[nr_dev].st_trblksize=%u\n",
-							ms_devvec[nr_dev].img_p, 
+				TASKDEBUG("ms_devvec[nr_dev].img_fd=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (m.mB_nr * ms_devvec[nr_dev].st_trblksize=%u\n",
+							ms_devvec[nr_dev].img_fd, 
 							ms_devvec[nr_dev].localbuff,
 							ms_devvec[nr_dev].st_trblksize,
 							(sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
 				
-				bytes = pwrite(ms_devvec[nr_dev].img_p, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
+				bytes = pwrite(ms_devvec[nr_dev].img_fd, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
 				
 				TASKDEBUG("pwrite: %s\n", ms_devvec[nr_dev].localbuff);
 				TASKDEBUG("bytes: %u\n", bytes);
@@ -464,8 +464,8 @@ do{
 			else{
 				
 				TASKDEBUG("Block %d (%d) NOT matches\n", sl_msg.mB_nr, sl_position);
-				TASKDEBUG("ms_devvec[nr_dev].img_p=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize=%u\n",
-							ms_devvec[nr_dev].img_p, 
+				TASKDEBUG("ms_devvec[nr_dev].img_fd=%d, ms_devvec[nr_dev].localbuff=%s, ms_devvec[nr_dev].st_trblksize=%u, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize=%u\n",
+							ms_devvec[nr_dev].img_fd, 
 							ms_devvec[nr_dev].localbuff,
 							ms_devvec[nr_dev].st_trblksize,
 							(sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
@@ -474,7 +474,7 @@ do{
 				// pthread_mutex_lock(&write_mutex);
 				MTX_LOCK(write_mutex);
 			
-				bytes = pwrite(ms_devvec[nr_dev].img_p, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
+				bytes = pwrite(ms_devvec[nr_dev].img_fd, ms_devvec[nr_dev].localbuff, ms_devvec[nr_dev].st_trblksize, (sl_msg.mB_nr * ms_devvec[nr_dev].st_trblksize));
 				
 				TASKDEBUG("pwrite: %s\n", ms_devvec[nr_dev].localbuff);
 				TASKDEBUG("bytes: %u\n", bytes);
@@ -538,9 +538,9 @@ int sync_devready(int nr_dev, unsigned long t, int stype)
 		devvec[nr_dev].available = 1; /*dispositivo disponible*/
 					
 		/*---------- Close image device ---------------*/
-		TASKDEBUG("Close imagen FD=%d\n", ms_devvec[nr_dev].img_p);
+		TASKDEBUG("Close imagen FD=%d\n", ms_devvec[nr_dev].img_fd);
 		
-		if ( rcode=close(ms_devvec[nr_dev].img_p) < 0) {
+		if ( rcode=close(ms_devvec[nr_dev].img_fd) < 0) {
 				TASKDEBUG("Error close=%d\n", rcode);
 				exit(EXIT_FAILURE);
 				}

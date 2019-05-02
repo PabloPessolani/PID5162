@@ -16,10 +16,10 @@ porque todo proceso se crea a traves del PM que se lo informa a la SYSTASK
 
 Cuando no se ejecuta MOL, entonces los servidores corren en diferentes nodos del cluster.
 El problema es que los clientes no saben su localización y los servers no saben la localizacion 
-de los clients. Esto ultimo se resuelve con el AUTOBIND del proxy TCP.
-Cuando un cliente hace un BIND a en un nodo e intenta enviar un mensaje al server en otro nodos, el proxy receiver del nodo 
-del server verifica si el cliente ya esta bindeado. Si no esta bindeado, entonces hace el AUTOBIND.
-Si estaba bindeado en otro nodo le da el tratamiento de una migracion.
+de los clients. Esto ultimo se resuelve con el AUTOBIND del proxy TCP/TIPC.
+Cuando un cliente hace un BIND a en un nodo e intenta enviar un mensaje al server en otro nodos, 
+el proxy receiver del nodo del server verifica si el cliente ya esta bindeado. Si no esta bindeado, 
+entonces hace el AUTOBIND. Si estaba bindeado en otro nodo le da el tratamiento de una migracion.
 Desde ese momento el nodo del server sabe cual es el nodo del client.
 
 Supongamos que se dispone de DC0 compuesto por NODO0,NODO1,NODO2
@@ -43,7 +43,7 @@ Al iniciar, RADAR leera de un archivo de configuración en NODE2 sobre los servi
 // Monitorear servicio de grupo RDISK00, del DCID=0 endpoint 3 de tipo PRIMARY/BACKUP 
 // que tiene habilitados los nodos 0,1,4,7,9
 RDISK0 {
-	type		PB
+	replica		PB;
 	dc_id  		0;
 	endpoint 	3;
 	group		"RDISK";
@@ -53,15 +53,15 @@ RDISK0 {
 // Monitorear servicio de grupo RDISK01, del DCID=1 endpoint 3 de tipo Replicated State Machine 
 // que tiene habilitados los nodos 0,1,4,5,8
 RDISK1 {
-	type		RSM;
+	replica		RSM;
 	dc_id  		1;
 	endpoint 	3;
 	group		"RDISK"
-	nodos 		0,1,4,5,8;
+	nodes 		0,1,4,5,8;
 }
 
-Si no se especifica tipo, se asume PRIMARY/BACKUP 
-Si no se especifican nodes, entonces se asuma ANY (cualquier nodo)
+Si no se especifica "type", se asume PRIMARY/BACKUP 
+Si no se especifican "nodes", entonces se asuma ANY (cualquier nodo)
 
 Deberan chequearse incompatibilidades tales como el mismo nombre de grupo 
 para el mismo endpoint en el mismo DCID.
@@ -78,7 +78,7 @@ dc_id	endpoint	group
 
 dc_id	endpoint	group   
 0		3			RDISK
-0		5			RDISK  <<< INCORRECTO: Mismo nombre para el mismo DCID
+0		5			RDISK  <<< INCORRECTO: Mismo nombre de grupo para el mismo DCID
 
 Se modifico RDISK de tal forma que se pueda ignorar aquellos mensajes que provienen de miembros
 diferentes a "RDISK" (como por ejemplo RADAR)- 
@@ -140,7 +140,8 @@ ahora en el MC_RADAR_INFO RADAR puede decidir por otros criterios, cuales nodos 
 Cuando sucede un cambio de topología (JOIN, DISCONNECT, SPLIT, MERGE), 
 y se recibe el MC_RADAR_INFO, en el caso de RSM se puede hacer lo siguiente:
 - Si el nodo que el endpoint del server tenia asignado en el nodo RADAR sigue vivo, no cambia nada
-- Si el nodo que el endpoint del server tenia asignado en el nodo RADAR murió, entonces entre los (nodos vivos AND nodos válidos) puede hacer un sorteo.
+- Si el nodo que el endpoint del server tenia asignado en el nodo RADAR murió, 
+entonces entre los (nodos vivos AND nodos válidos) puede hacer un sorteo.
 
  Aunque en RSM no exista el concepto de primario, en RADAR si existe porque será el nodo donde estará el servicio.	
 
@@ -228,7 +229,6 @@ PRUEBA3:
 	- Hacer un KILL al proceso RDISK 
 	- Verificar que el nuevo primario de RADAR es NODE1 
 	- Verificar en NODE2 que el endpoint haya cambiado a NODE1	
-
 
 PRUEBA4:
 	- Arrancar RDISK en NODE0 

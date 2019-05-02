@@ -58,7 +58,7 @@ _PROTOTYPE( void nop_cleanup, (void) );
 extern phys_bytes tmp_phys;		/* phys address of DMA buffer */
 
 /* Functions defined by rdisk_config.c: */
-//_PROTOTYPE( void test_config, (char **f_conf) );
+//_PROTOTYPE( void parse_config, (char **f_conf) );
 
 /* Parameters for compress or decompress data. */
 #define DEV_CREAD		(DEV_READ * 3) /* read compress data */

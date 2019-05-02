@@ -28,7 +28,7 @@ dmesg -c > /usr/src/dvs/dvk-tests/dmesg.txt
 part=(5 + $dcid)
 echo "partition $part"
 read  -p "mount Enter para continuar... "
-mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
+#mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
 cd /usr/src/dvs/dvk-tests
 read  -p "local_nodeid=$lcl Enter para continuar... "
 ./test_dvs_init -n $lcl -D 16777215

@@ -1,5 +1,5 @@
 /***********************************************
-	TEST CONFIGURATION FILE
+	CONFIGURATION FILE
 *  Sample File format *
 
 device MY_FILE_IMG {
@@ -69,7 +69,10 @@ device MY_MEMORY_IMG {
 #define TKN_IMAGE_FILE	3
 #define TKN_VOLATILE	4
 #define TKN_BUFFER		5
-#define TKN_REPLICATED	6
+#define TKN_REPLICATE	6
+#define TKN_UPDATE 		7
+#define TKN_DYNAMIC 	8
+#define TKN_COMPRESS 	9
 
 #define nil ((void*)0)
 
@@ -80,9 +83,12 @@ char *cfg_ident[] = {
 	"image_file",
 	"volatile",
 	"buffer",
-	"replicated",
+	"replicate",
+	"update",
+	"dynamic",
+	"compress"
 };
-#define NR_IDENT 7
+#define NR_IDENT 10
 
 #define MAX_FLAG_LEN 30
 struct flag_s {
@@ -97,15 +103,6 @@ flag_t dev_type[] = {
 	{"MEMORY_IMAGE",MEMORY_IMAGE},	
 	{"NBD_IMAGE",NBD_IMAGE},
 };
-
-#define NR_DBIT	2
-flag_t dev_bit[] = {
-	{"YES",YES},
-	{"NO",NO},	
-};
-
-
-int bit_flag;
 
 int search_type(config_t *cfg)
 {
@@ -147,59 +144,6 @@ int search_type(config_t *cfg)
 		}
 		
 	}
-	return(OK);
-}
-
-int search_bit(config_t *cfg)
-{
-	int j;
-	unsigned int flags;
-	config_t *cfg_lcl;
-	
-	if( cfg == nil) {
-		fprintf(stderr, "No Bit OK at line %d\n", cfg->line);
-		return(EXIT_CODE);
-	}
-	if (config_isatom(cfg)) {
-		TASKDEBUG("Bit=%s\n", cfg->word); 
-		// cfg = cfg->next;
-		
-		if (! config_isatom(cfg)) {
-			fprintf(stderr, "Bad argument bit OK at line %d\n", cfg->line);
-			return(EXIT_CODE);
-		}
-		cfg_lcl = cfg;
-		flags = 0;
-		/* 
-		* Search for bit: YES / NO
-		*/
-		for( j = 0; j < NR_DBIT; j++) {
-			if( !strcmp(cfg->word, dev_bit[j].f_name)) {
-				flags |= dev_bit[j].f_value;
-				break;
-			}
-		}
-		if( j == NR_DBIT){
-			fprintf(stderr, "No bit OK defined at line %d\n", cfg->line);
-			return(EXIT_CODE);
-		}
-		// cfg = cfg->next;
-		if (!config_isatom(cfg)) {
-			fprintf(stderr, "Bad argument bit OK at line %d\n", cfg->line);
-			return(EXIT_CODE);
-		}
-
-		if ( !strcmp(cfg->word, dev_bit[0].f_name)){
-			bit_flag = YES;
-			TASKDEBUG("dev_bit[0].f_name=%s, bit_flag=%d\n", dev_bit[0].f_name, bit_flag);
-			}
-		else{
-			bit_flag = NO;
-			TASKDEBUG("dev_bit[0].f_name=%s, bit_flag=%d\n", dev_bit[0].f_name, bit_flag);
-		}
-			
-	}
-		
 	return(OK);
 }
 
@@ -276,19 +220,30 @@ int search_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							rcode = search_bit(cfg);
-							if( rcode) return(rcode);
+							if( strncmp(cfg->word, "YES", 3) == 0) 
+								volatile_flag = VOLATILE_YES;
+							else if ( strncmp(cfg->word, "NO", 2) == 0)
+								volatile_flag = VOLATILE_NO;
+							else {
+								fprintf(stderr, "Configuration Error\n");
+								exit(1);
+							}						
+							TASKDEBUG("volatile_flag=%d\n", volatile_flag);
 							 break;
-						 case TKN_REPLICATED:
+						 case TKN_REPLICATE:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							rcode = search_bit(cfg);
-							
-							TASKDEBUG("bit_flag=%d\n", bit_flag);
-
-							if( rcode) return(rcode);
+							if( strncmp(cfg->word, "YES", 3) == 0) 
+								replicate_flag = REPLICATE_YES;
+							else if ( strncmp(cfg->word, "NO", 2) == 0)
+								replicate_flag = REPLICATE_NO;
+							else {
+								fprintf(stderr, "Configuration Error\n");
+								exit(1);
+							}						
+							TASKDEBUG("replicate_flag=%d\n", replicate_flag);
 							break;
 						case TKN_BUFFER:
 							if (!config_isatom(cfg)) {
@@ -299,6 +254,51 @@ int search_ident(config_t *cfg)
 							
 							devvec[minor_dev].buff_size = (( atoi(cfg->word) < 0 || atoi(cfg->word)) >= BUFF_SIZE)?BUFF_SIZE:atoi(cfg->word);
 							TASKDEBUG("devvec[%d].buff_size=%d\n", minor_dev,devvec[minor_dev].buff_size);
+							break;
+						case TKN_UPDATE:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}					
+							if( strncmp(cfg->word, "FULL", 4) == 0) 
+								update_flag = UPDATE_FULL;
+							else if ( strncmp(cfg->word, "DIFF", 4) == 0)
+								update_flag = UPDATE_DIFF;
+							else {
+								fprintf(stderr, "Configuration Error\n");
+								exit(1);
+							}
+							TASKDEBUG("update_flag=%d\n", update_flag);
+							break
+						case TKN_DYNAMIC: 
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}					
+							if( strncmp(cfg->word, "YES", 3) == 0) 
+								dynamic_flag = DYNAMIC_YES;
+							else if ( strncmp(cfg->word, "NO", 2) == 0)
+								dynamic_flag = DYNAMIC_NO;
+							else {
+								fprintf(stderr, "Configuration Error\n");
+								exit(1);
+							}
+							TASKDEBUG("dynamic_flag=%d\n", dynamic_flag);
+							break;						
+						case TKN_COMPRESS:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							if( strncmp(cfg->word, "YES", 3) == 0) 
+								compress_flag = COMPRESS_YES;
+							else if ( strncmp(cfg->word, "NO", 2) == 0)
+								compress_flag = COMPRESS_NO;
+							else {
+								fprintf(stderr, "Configuration Error\n");
+								exit(1);
+							}							
+							TASKDEBUG("compress_flag=%d\n", compress_flag);
 							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -378,7 +378,7 @@ int search_dc_config(config_t *cfg)
 		rcode = search_device_tkn(cfg->list);
 		if( rcode == EXIT_CODE)
 			return(rcode);
-		count_availables++;
+		max_devs++;
 		cfg= cfg->next;
 	}
 	return(OK);
@@ -386,11 +386,11 @@ int search_dc_config(config_t *cfg)
 
  
 /*===========================================================================*
- *				test_config				     *
+ *				parse_config				     *
  *===========================================================================*/
-void test_config(char *f_conf)	/* config file name. */
+void parse_config(char *f_conf)	/* config file name. */
 {
-/* Main program of test_config. */
+/* Main program of parse_config. */
 config_t *cfg;
 int rcode;
 
