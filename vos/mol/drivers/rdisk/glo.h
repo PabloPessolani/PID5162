@@ -41,8 +41,12 @@ EXTERN unsigned int s_nrblock;
 /* sync */
 EXTERN int r_type; 
 EXTERN int r_comp;
-EXTERN int dynup_flag;
-EXTERN int update_flag;
+
+EXTERN int update_opt;
+EXTERN int dynamic_opt;
+EXTERN int replicate_opt;
+EXTERN int compress_opt;
+
 EXTERN blksize_t r_trblksize; 
 EXTERN unsigned long nr_updated; /*cantidad de nodos actualizados en una DYN_UPDATES*/
 
@@ -101,10 +105,10 @@ EXTERN	  int		   sp_nr_mbrs;
 
 EXTERN 		int nr_nodes;
 EXTERN 		int nr_radar;
-EXTERN		int active_nr_nodes; 
+EXTERN		int nr_nodes; 
 // EXTERN		int active_nodes; /*ver si sólo dejo este, este se cuenta en la systask*/
 EXTERN 		int nr_sync;
-EXTERN 		int max_devs; /*numbers minor devices availables*/
+EXTERN 		int minor_devs; /*numbers minor devices availables*/
 EXTERN 		unsigned long int nr_optrans; /*numers transfer operations*/
 EXTERN	  	unsigned long int	bm_acks;
 EXTERN	  	unsigned long int	bm_nodes;
@@ -114,48 +118,27 @@ EXTERN	  	unsigned long int	bm_radar;
 EXTERN unsigned char sigs[MD5_SIZE]; /* for slave */
 EXTERN unsigned char sigm[MD5_SIZE]; /* for master */
 
-EXTERN devvec_t devvec[NR_DEVS];
+EXTERN devvec_t 	devvec[NR_DEVS];
 EXTERN sumdevvec_t sumdevvec[NR_DEVS];
 
-/*rd_mutex: control acciones del primario*/
+/*rd_mutex: sincroniza RDISK con REPLICATE */
 /*rd_barrier: */
-/*primary_mutex: */
-/*primary_barrier: */
-/*write_mutex: */ 
 
 #ifdef _RDISK
-pthread_mutex_t rd_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t bk_mutex = PTHREAD_MUTEX_INITIALIZER;  
+pthread_mutex_t rd_mutex = PTHREAD_MUTEX_INITIALIZER;  
+pthread_mutex_t write_mutex = PTHREAD_MUTEX_INITIALIZER;  
 pthread_cond_t rd_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t primary_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t primary_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t update_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t ms_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t ms_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t slave_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t slavebarrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t updatems_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t updatems_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t write_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t bk_barrier = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t bk_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t update_barrier = PTHREAD_COND_INITIALIZER;
 
 #else
-extern pthread_mutex_t rd_mutex;
-extern pthread_cond_t rd_barrier;
-extern pthread_mutex_t primary_mutex;
-extern pthread_cond_t primary_barrier;
-extern pthread_mutex_t update_mutex;
-extern pthread_cond_t update_barrier;
-extern pthread_mutex_t ms_mutex;
-extern pthread_cond_t ms_barrier;
-extern pthread_mutex_t slave_mutex;
-extern pthread_cond_t slave_barrier;
-extern pthread_mutex_t updatems_mutex;
-extern pthread_cond_t updatems_barrier;
-extern pthread_mutex_t write_mutex;
 extern pthread_mutex_t bk_mutex;
+extern pthread_mutex_t rd_mutex;
+extern pthread_mutex_t write_mutex;
+extern pthread_cond_t rd_barrier;
 extern pthread_cond_t bk_barrier;
+extern pthread_cond_t update_barrier;
 #endif
 
 extern _PROTOTYPE (int (*call_vec[]), (void) ); /* sys call table */

@@ -103,8 +103,6 @@ SP_message msg_lz4cd;
 #include "../macros.h"
 #include "../debug.h" 
 
-
-
 #define SET_BIT(bitmap, bit_nr)    (bitmap |= (1 << bit_nr))
 #define CLR_BIT(bitmap, bit_nr)    (bitmap &= ~(1 << bit_nr))
 #define TEST_BIT(bitmap, bit_nr)   (bitmap & (1 << bit_nr))
@@ -137,9 +135,28 @@ SP_message msg_lz4cd;
 
 #define NO_PRIMARY			(-1)
 
-#define DONOT_REPLICATE		0
-#define DO_REPLICATE		1
+#define REPLICATE_NO		0
+#define REPLICATE_YES		1
+#define VOLATILE_NO			0
+#define VOLATILE_YES		1
+#define REPLICATED_NO		0
+#define REPLICATED_YES		1
+#define ACTIVE_NO			0
+#define ACTIVE_YES			1
+#define DYNAMIC_NO			0
+#define DYNAMIC_YES 		1
+#define COMPRESS_NO			0
+#define COMPRESS_YES 		1
+#define AVAILABLE_NO		0
+#define AVAILABLE_YES 		1
+#define YES					1
+#define NO					0
+#define UPDATE_DIFF			0
+#define UPDATE_FULL			1
 
+#define FILE_IMAGE		0
+#define MEMORY_IMAGE	1
+#define NBD_IMAGE		2
 
 #define RDISK_TIMEOUT_SEC	5
 #define RDISK_TIMEOUT_MSEC	0

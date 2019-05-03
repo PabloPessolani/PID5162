@@ -19,7 +19,7 @@ SP_message sp_ptr1; /*message to m_transfer*/
 
 SP_message *sp_ptr;
 message *msg_ptr;
-unsigned *data_ptr, slave_ac, sync_pr, master_ac; /*slave active; sync proccesing; master active*/
+unsigned *data_ptr, slave_ac, sync_pr, master_ac; /*slave active_flag; sync proccesing; master active_flag*/
 
 /*===========================================================================*
  *				init_replicate				     
@@ -80,16 +80,13 @@ int init_replicate(void)
 
 	synchronized = FALSE;
 	TASKDEBUG("synchronized=%d\n", synchronized);
-	FSM_state = STS_NEW;	
+	FSM_state 	= STS_NEW;	
 	primary_mbr = NO_PRIMARY;
 	
 	bm_nodes 	= 0;			/* initialize  conected  members'  bitmap */
-	bm_acks 	= 0;			/* initialize  members'  bitmap which has sent the acknowledges  */
 	bm_sync   	= 0;			/* initialize  synchoronized  members'  bitmap */
-	
 	nr_nodes 	= 0;
 	nr_sync  	= 0;
-	TASKDEBUG("nr_sync=%d\n", nr_sync);
 	
 	return(OK);
 }
@@ -166,9 +163,9 @@ int replica_loop(int *mtype, char *source)
 	// pthread_mutex_lock(&rd_mutex);	/* protect global variables */
 	MTX_LOCK(bk_mutex); //MARIE
 	
-	TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
-	if ( dynup_flag == DO_DYNUPDATES ){ 
-		TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
+	TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
+	if ( dynamic_opt == DO_DYNUPDATES ){ 
+		TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
 		}
 	
 	
@@ -471,7 +468,7 @@ int sp_join( int new_mbr)
 		}else{
 			/*SLAVE*/						
 			
-			if(update_flag == DONOT_UPDATE) {
+			if(update_opt == DONOT_UPDATE) {
 				FSM_state 	= STS_SYNCHRONIZED;
 				synchronized = TRUE;
 				TASKDEBUG("synchronized=%d'n", synchronized);
@@ -498,7 +495,7 @@ int sp_join( int new_mbr)
 				slave_ac = TRUE;
 				sync_pr = TRUE;
 				TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
-				TASKDEBUG("dynup_flag%d\n", dynup_flag);
+				TASKDEBUG("dynamic_opt%d\n", dynamic_opt);
 							
 				rcode = init_slavecopy();	
 				if(rcode){
@@ -519,9 +516,9 @@ int sp_join( int new_mbr)
 					ERROR_EXIT(rcode);
 				}
 				
-				TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
-				if ( dynup_flag == DO_DYNUPDATES ){ 
-					TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
+				TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
+				if ( dynamic_opt == DO_DYNUPDATES ){ 
+					TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
 					COND_WAIT(bk_barrier, bk_mutex); //MARIE
 				}
 
@@ -540,8 +537,8 @@ int sp_join( int new_mbr)
 					int i;
 					for( i = 0; i < NR_DEVS; i++){
 						TASKDEBUG("devvec[%d].available=%d\n", i, devvec[i].available);
-						if ( devvec[i].active == 0 ){ /*device open in primary*/ 
-							TASKDEBUG("devvec[%d].active=%d\n", i, devvec[i].active);
+						if ( devvec[i].active_flag == 0 ){ /*device open in primary*/ 
+							TASKDEBUG("devvec[%d].active_flag=%d\n", i, devvec[i].active_flag);
 						}
 					}	
 					MTX_UNLOCK(bk_mutex);
@@ -567,14 +564,14 @@ int sp_join( int new_mbr)
 	}else{ /* Other node JOINs the group	*/
 		if (primary_mbr == local_nodeid){ 	/* I am the first init member 	*/
 			
-			// if ( dynup_flag == DONOT_DYNUPDATES ){ 
+			// if ( dynamic_opt == DONOT_DYNUPDATES ){ 
 				// MTX_LOCK(rd_mutex); //JULIO - bloqueo el rdisk primario hasta que se sincronicen;
 			// }
 			TASKDEBUG("Initializing MASTER COPY THREAD\n");
 			master_ac = TRUE;
 			sync_pr = TRUE;
 			TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
-			TASKDEBUG("dynup_flag%d\n", dynup_flag);
+			TASKDEBUG("dynamic_opt%d\n", dynamic_opt);
 			
 			sc_node = new_mbr;
 			rcode = init_mastercopy();	
@@ -600,9 +597,9 @@ int sp_join( int new_mbr)
 				ERROR_EXIT(rcode);
 			}
 
-			TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
-			if ( dynup_flag == DO_DYNUPDATES ){ 
-				TASKDEBUG("dynup_flag:%d - DO_DYNUPDATES:%d\n", dynup_flag, DO_DYNUPDATES);
+			TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
+			if ( dynamic_opt == DO_DYNUPDATES ){ 
+				TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
 				COND_WAIT(bk_barrier, bk_mutex); //MARIE
 			}
 			
@@ -684,8 +681,7 @@ int sp_disconnect(int  disc_mbr)
 						primary_mbr = local_nodeid;
 						TASKDEBUG("PRIMARY_MBR=%d\n", primary_mbr);
 						TASKDEBUG("Wake up rdisk: local_nodeid=%d\n", local_nodeid);
-						// pthread_cond_signal(&primary_barrier);	/* Wakeup RDISK 		*/	
-						COND_SIGNAL(primary_barrier);
+						COND_SIGNAL(rd_barrier);
 					}
 				}	
 			}
@@ -715,8 +711,8 @@ int sp_net_partition(void)
 		return(OK);
 
 	TASKDEBUG("bm_sync=%X bm_nodes=%X\n",bm_sync, bm_nodes);
-	/* mask the old init members bitmap with the mask of active members */
-	/* only the active nodes should be considered synchronized */
+	/* mask the old init members bitmap with the mask of active_flag members */
+	/* only the active_flag nodes should be considered synchronized */
 	bm_sync &= bm_nodes;
 
 	/* is this the primary_mbr partition (where the old primary_mbr is located) ? */
@@ -881,7 +877,7 @@ int sp_net_merge(void)
 	
 		if (( slave_ac == TRUE) || ( sync_pr == TRUE)) {
 			
-			if ((( r_type == DEV_CFULL ) || ( r_type == DEV_CMD5)) && ( dynup_flag == DO_DYNUPDATES)) { /*sync: only updates*/
+			if ((( r_type == DEV_CFULL ) || ( r_type == DEV_CMD5)) && ( dynamic_opt == DO_DYNUPDATES)) { /*sync: only updates*/
 				TASKDEBUG("DEV_UFULL=%d DEV_UMD5=%d\n", DEV_UFULL, DEV_UMD5);
 				if( primary_mbr == local_nodeid){
 					TASKDEBUG("Number op_transf: %d\n", msg_ptr->m2_l2);					
@@ -1073,8 +1069,8 @@ int sp_net_merge(void)
 					msg_ptr->COUNT, 
 					msg_ptr->POSITION);
 										
-			if ( devvec[msg_ptr->DEVICE].active == 1 ){ /*device sync active*/
-				TASKDEBUG("devvec[msg_ptr->DEVICE].active=%d\n", devvec[msg_ptr->DEVICE].active);
+			if ( devvec[msg_ptr->DEVICE].active_flag == 1 ){ /*device sync active_flag*/
+				TASKDEBUG("devvec[msg_ptr->DEVICE].active_flag=%d\n", devvec[msg_ptr->DEVICE].active_flag);
 				if ( (bytes=(pwrite(devvec[msg_ptr->DEVICE].img_fd, sp_ptr->buf.buffer_data, msg_ptr->COUNT, msg_ptr->POSITION))) < 0 ){
 					TASKDEBUG("bytes write=% u\n", bytes);
 					rcode = errno;

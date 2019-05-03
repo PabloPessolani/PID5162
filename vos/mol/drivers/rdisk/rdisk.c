@@ -20,9 +20,6 @@
 #define _RDISK
 
 // #define TASKDBG		1
-#define DCID		0
-#define	NODE0		0
-#define	NODE1		1
 
 #include "rdisk.h"
 #include "data_usr.h"
@@ -41,7 +38,7 @@ SP_message sp_msg; /*message Spread*/
 
 unsigned *localbuff;		/* pointer to the first byte of the local buffer (=disk image)*/	
 
-struct mdevvec *devinfo_ptr;
+devvec_t *devinfo_ptr;
 
 struct driver m_dtab = {
   m_name,	/* current device's name */
@@ -60,64 +57,64 @@ struct driver m_dtab = {
   NULL
 };
 
-static int replicate_flag; 
+static int replica_type; 
 
 void usage(char* errmsg, ...) {
-	if(errmsg) {
-		fprintf("ERROR: %s\n", errmsg);
-		fprintf(stderr, "Usage: rdisk -r<replicate> -[f<full_update>|d<diff_updates>] -D<dyn_updates> -z<compress> -c <config file>\n");
-		
-	} else {
-		fprintf(stderr, "por ahora nada nbd-client imprime la versión\n");
-	}
-fprintf(stderr, "Usage: rdisk -r<replicate> -[f<full_update>|d<diff_updates>] -D<dyn_updates> -z<compress> -c <config file>\n");
-fflush(stderr);
+	fprintf("ERROR: %s\n", errmsg);
+	fprintf(stderr, "Usage: rdisk  -d <dcid> [-e <endpoint>] [-R] [-D] [-Z] [-U {FULL | DIFF }] -c <config_file>\n");
+	fprintf(stderr, "\t e: Endpoint number if RDISK is not started by MOL SYSTASK\n");
+	fprintf(stderr, "\t R: Replicate (Default: do not replicate)\n");
+	fprintf(stderr, "\t D: Dynamic Update (Default: no Dynamic update)\n");
+	fprintf(stderr, "\t U: FULL update or DIFFerential update (Default: DIFFerential update)\n");
+	fprintf(stderr, "\t Z: Use compression for data transfers during synchronization (Default: do not compress)\n");
+	fflush(stderr);
 }
 
 void check_same_image( void ) 
 {
 	/* the same inode of file image*/
-	struct stat f_stat, n_stat;
+	struct stat i_stat, j_stat;
+	int rcode;
 	int i; /* first device*/
 	int j; /* next device*/
 		
-	for( i = 0 ; i < max_devs; i++){
-		if( devvec[i].available == 0) continue;
-		rcode = stat(devvec[i].img_ptr, &f_stat);
+	for( i = 0 ; i < minor_devs; i++){
+		if( devvec[i].available == AVAILABLE_NO) continue;
+		rcode = stat(devvec[i].img_ptr, &i_stat);
 		TASKDEBUG("stat0 %s rcode=%d\n",devvec[i].img_ptr, rcode);
 		if(rcode){
-			fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode , c_file, i );
+			fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode , devvec[minor_devs].dev_name, i );
 			fflush(stderr);
-			devvec[i].available = 0;
+			devvec[i].available = AVAILABLE_NO;
 			continue;
 		}
 		
 		// get file size and block size 
-		if( devvec[i]. dev_type == FILE_IMAGE) {
-			devvec[i].st_size = img_stat.st_size;
-			TASKDEBUG("dev=%d image size=%d[bytes] %d\n", i, img_stat.st_size, devvec[i].st_size);
-			devvec[i].st_blksize = img_stat.st_blksize;
-			TASKDEBUG("dev=%d block size=%d[bytes] %d\n", i, img_stat.st_blksize, devvec[i].st_blksize);
+		if( devvec[i].img_type != NBD_IMAGE ) {
+			devvec[i].st_size = i_stat.st_size;
+			TASKDEBUG("dev=%d image size=%d[bytes] %d\n", i, i_stat.st_size, devvec[i].st_size);
+			devvec[i].st_blksize = i_stat.st_blksize;
+			TASKDEBUG("dev=%d block size=%d[bytes] %d\n", i, i_stat.st_blksize, devvec[i].st_blksize);
 		}
 		
-		if( i == max_devs) continue; // last device to check 
+		if( i == (minor_devs-1) ) continue; // last device to check 
 		
-		for( j = i+1; j < max_devs; j++){
-			if( devvec[j].available == 0) continue;
-			rcode = stat(devvec[j].img_ptr, &n_stat);
+		for( j = i+1; j < minor_devs; j++){
+			if( devvec[j].available == AVAILABLE_NO) continue;
+			rcode = stat(devvec[j].img_ptr, &j_stat);
 			TASKDEBUG("stat1 %s rcode=%d\n",devvec[j].img_ptr, rcode);
 			if(rcode){
-				fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode, c_file, j );
+				fprintf( stderr,"\nERROR %d: Device %s minor_number %d is not valid\n", rcode, devvec[minor_devs].dev_name, j );
 				fflush(stderr);
-				devvec[j].available = 0;
+				devvec[j].available = AVAILABLE_NO;
 			}
 			TASKDEBUG("devvec[%d].img_ptr=%s,devvec[%d].img_ptr=%s\n", 
 				i, devvec[i].img_ptr,j,devvec[j].img_ptr);
 	
-			if ( f_stat.st_ino == n_stat.st_ino ){
+			if ( i_stat.st_ino == j_stat.st_ino ){
 				fprintf( stderr,"\nERROR. Minor numbers %d - %d are the same file\n", i, j );
 				fflush(stderr);
-				devvec[j].available = 0;
+				devvec[j].available = AVAILABLE_NO;
 				fprintf( stderr,"\nDevice with minor numbers: %d is not available now\n", j );
 				fflush(stderr);
 			}
@@ -132,15 +129,18 @@ void check_same_image( void )
 int main (int argc, char *argv[] )
 {
 	/* Main program.*/
-	int rcode, c, i, j, j, i, cfile_flag, fflag, Fflag, Mflag;  
+	int rcode, c, i, j;  
 	char *c_file;
-	char prueba;
-	
-	struct stat img_stat,img_stat1;
+	char cfile_flag;
 	
 	struct option long_options[] = {
-		{ "endpoint", 	no_argument, 		NULL, 'e' },
-		{ "config", 	required_argument, 	NULL, 'c' },
+		{ "dcid", 		required_argument, 		NULL, 'd' },
+		{ "endpoint", 	required_argument, 		NULL, 'e' },
+		{ "config", 	required_argument, 		NULL, 'c' },
+		{ "replicate", 	no_argument, 			NULL, 'R' },
+		{ "dynamic", 	no_argument, 			NULL, 'D' },
+		{ "update", 	required_argument, 		NULL, 'U' },
+		{ "compress", 	no_argument, 			NULL, 'Z' },
 		{ 0, 0, 0, 0 }, 		
 	};
 	
@@ -149,23 +149,59 @@ int main (int argc, char *argv[] )
 	
 	/* Not availables minor device  */
 	for( i = 0; i < NR_DEVS; i++){
-		devvec[i].available = 0;
+		devvec[i].available = AVAILABLE_NO;
 	}
 
 	/* flags getopt*/
 	cfile_flag 		= NO;
-	endp_flag 		= NO;
+	rd_ep			= HARDWARE; // (-1) 
+	dcid			= HARDWARE;
+	endp_flag		= NO;
 
-	while((c = getopt_long_only(argc, argv, "ec:", long_options, NULL)) >= 0) {
+	replicate_opt   = REPLICATE_NO;
+	compress_opt    = COMPRESS_NO;
+	dynamic_opt     = DYNAMIC_NO;
+	update_opt 		= UPDATE_DIFF;
+	
+	while((c = getopt_long_only(argc, argv, "ecdRDUZ:", long_options, NULL)) >= 0) {
 		switch(c) {
 			case 'c': /*config file*/
 				c_file = optarg;
 				TASKDEBUG("Option c: %s\n", c_file);
-				cfile_flag=1; 
+				cfile_flag= YES; 
 				break;	
 			case 'e': /*endpoint number- not Started by MoL */
-				TASKDEBUG("Autonomous Bind\n");
-				endp_flag =1;
+				rd_ep 		= atoi(optarg);
+				endp_flag 	= YES;
+				TASKDEBUG("Option e: %s rd_ep=%d\n", optarg, rd_ep);
+				break;
+			case 'd': /*DC ID - not Started by MoL */
+				dcid = atoi(optarg);
+				TASKDEBUG("Option d: %s dcid=%d\n", optarg, dcid);
+				break;
+			case 'R': 
+				replicate_opt =  REPLICATE_YES;
+				TASKDEBUG("Option R: replicate_opt=REPLICATE_YES\n");
+				break;
+			case 'D': 
+				dynamic_opt =  DYNAMIC_YES;
+				TASKDEBUG("Option D: dynamic_opt=DYNAMIC_YES\n");
+				break;
+			case 'Z': 
+				compress_opt =  COMPRESS_YES;
+				TASKDEBUG("Option Z: compress_opt=COMPRESS_YES\n");
+				break;
+			case 'U': 
+				if( !strncmp(optarg,"FULL",4)){
+					update_opt =  UPDATE_FULL;
+					TASKDEBUG("Option U: update_opt=UPDATE_FULL\n");
+				} else  if( !strncmp(optarg,"DIFF",4)){
+					update_opt =  UPDATE_DIFF;
+					TASKDEBUG("Option U: update_opt=UPDATE_DIFF\n");
+				} else {
+					usage("Unknown Update option %s", optarg);
+					exit(EXIT_FAILURE);
+				}
 				break;
 			default:
 				usage("Unknown option %s encountered", optarg);
@@ -173,22 +209,26 @@ int main (int argc, char *argv[] )
 			}
 		}	
  	
-	if ( (argc < 2) || (cfile_flag != 1) ) { /*al menos el nombre el archivo de configuración*/
- 	    usage( "No arguments", optarg );
+	if ( cfile_flag == NO)  {
+ 	    usage( "Need Configuration File", optarg );
 		exit(1);
     }
 
-	max_devs = 0;		
+	if( dcid == HARDWARE){
+ 	    usage( "Need DC ID" , optarg );
+		exit(1);
+    }
+	
 	parse_config(c_file);
 		
-	if (max_devs == 0){
+	if (minor_devs == 0){
 		fprintf( stderr,"\nERROR. No availables devices in %s\n", c_file );
 		fflush(stderr);
 		exit(1);
 	}
-	TASKDEBUG("max_devs=%d\n",max_devs);
+	TASKDEBUG("minor_devs=%d\n",minor_devs);
 	
-	if (max_devs > 1)
+	if (minor_devs > 1)
 		check_same_image();
 
 	rcode = rd_init();
@@ -221,7 +261,7 @@ int device;
 {
 /* Prepare for I/O on a device: check if the minor device number is ok. */
   
-	if (device < 0 || device >= NR_DEVS || devvec[device].active != 1) {
+	if (device < 0 || device >= NR_DEVS || devvec[device].active_flag != 1) {
 		TASKDEBUG("Error en m_prepare\n");
 		return(NIL_DEV);
 		}
@@ -261,8 +301,8 @@ unsigned nr_req;		/* length of request vector */
 	
 	TASKDEBUG("m_device: %d\n", m_device); 
 	
-	if (devvec[m_device].active != 1) { /*minor device active must be -1-*/
-		TASKDEBUG("Minor device = %d\n is not active", m_device);
+	if (devvec[m_device].active_flag != 1) { /*minor device active_flag must be -1-*/
+		TASKDEBUG("Minor device = %d\n is not active_flag", m_device);
 		ERROR_RETURN(EDVSNODEV);	
 	}
 	
@@ -374,9 +414,9 @@ unsigned nr_req;		/* length of request vector */
 			TASKDEBUG("\n<DEV_SCATTER>\n");
 			
 			stbytes = 0;
-			TASKDEBUG("\dc_ptr->dc_nr_nodes=%d, active_nr_nodes=%d\n",dc_ptr->dc_nr_nodes, active_nr_nodes);
+			TASKDEBUG("\dc_ptr->dc_nr_nodes=%d, nr_nodes=%d\n",dc_ptr->dc_nr_nodes, nr_nodes);
 
-			if (replicate_flag == DO_REPLICATE){
+			if (replica_type == REPLICATE_YES){
 				
 				TASKDEBUG("DO REPLICATE\n");
 				if(primary_mbr == local_nodeid) {
@@ -672,7 +712,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 	rcode = OK;
 	TASKDEBUG("rcode %d\n", rcode);
 	do {
-		if ( devvec[m_ptr->DEVICE].available == 0 ){
+		if ( devvec[m_ptr->DEVICE].available == AVAILABLE_NO ){
 			TASKDEBUG("devvec[m_ptr->DEVICE].available=%d\n", devvec[m_ptr->DEVICE].available);
 			rcode = errno;
 			TASKDEBUG("rcode=%d\n", rcode);
@@ -702,8 +742,8 @@ int m_do_open(struct driver *dp, message *m_ptr)
 		TASKDEBUG("Local Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
 		TASKDEBUG("Buffer size %d\n", devvec[m_ptr->DEVICE].buff_size);
 			
-		devvec[m_ptr->DEVICE].active = 1;
-		TASKDEBUG("Device %d is active %d\n", m_ptr->DEVICE, devvec[m_ptr->DEVICE].active);
+		devvec[m_ptr->DEVICE].active_flag = 1;
+		TASKDEBUG("Device %d is active_flag %d\n", m_ptr->DEVICE, devvec[m_ptr->DEVICE].active_flag);
 		
 		/* Check device number on open. */
 		if (m_prepare(m_ptr->DEVICE) == NIL_DEV) {
@@ -715,7 +755,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 	}while(0);
 	
 
-   	if( replicate_flag == DO_REPLICATE ) { /* PRIMARY;  MULTICAST to other nodes the device operation */
+   	if( replica_type == REPLICATE_YES ) { /* PRIMARY;  MULTICAST to other nodes the device operation */
 		if(primary_mbr == local_nodeid) {
 			TASKDEBUG("PRIMARY multicast DEV_OPEN dev=%d\n", m_ptr->DEVICE);
 			
@@ -765,8 +805,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 	}
   
   devinfo_ptr  = &devvec[m_ptr->DEVICE];
-  
-  TASKDEBUG(DEV_USR_FORMAT,DEV_USR_FIELDS(devinfo_ptr));
+  TASKDEBUG(DEV_USR1_FORMAT,DEV_USR1_FIELDS(devinfo_ptr));
 	
   TASKDEBUG("END m_do_open\n");  return(rcode);
 }
@@ -781,13 +820,6 @@ int rd_init(void )
 
  	rd_lpid = getpid();
 	
-	if( mayor_dev != (-1) && endp_flag == 1)
-		rd_ep = mayor_dev;
-	else
-		rd_ep = RDISK_PROC_NR;
-	
-	TASKDEBUG("rd_ep=%d\n", rd_ep);
-
 	/* NODE info */
 	local_nodeid = dvk_getdvsinfo(&dvs);
 	if(local_nodeid < 0 )
@@ -797,54 +829,102 @@ int rd_init(void )
 	TASKDEBUG("local_nodeid=%d\n", local_nodeid);
 	
 	TASKDEBUG("Get the DC info\n");
-	rcode = dvk_getdcinfo(DCID, &dcu);
+	rcode = dvk_getdcinfo(dcid, &dcu);
 	if(rcode < 0) ERROR_EXIT(rcode);
 	dc_ptr = &dcu;
 	TASKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	TASKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
 	TASKDEBUG("Get RDISK info\n");
-	rcode = dvk_getprocinfo(DCID, rd_ep, &proc_rd);
-	if(rcode < 0 ) ERROR_EXIT(rcode);
+	if( rd_ep == HARDWARE) {
+		rd_ep = RDISK_PROC_NR;
+		TASKDEBUG("rd_ep=%d\n", rd_ep);
+	}
+	
 	rd_ptr = &proc_rd;
+	rcode = dvk_getprocinfo(dcid, rd_ep, rd_ptr);
+	if(rcode < 0 ) ERROR_EXIT(rcode);
 	TASKDEBUG("BEFORE " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));
 	
-	if( replicate_flag != DO_REPLICATE) { // WITHOUT REPLICATION 
+	if( replicate_opt == REPLICATE_NO) { // WITHOUT REPLICATION 
+		TASKDEBUG("Starting single RDISK\n");
+		nr_nodes = 1;
+		TASKDEBUG("nr_nodes=%d\n", nr_nodes);
+
+		// RDISK not bound by SYSTASK 
 		if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
-			TASKDEBUG("Starting single RDISK\n");
-			active_nr_nodes = 1;
-			TASKDEBUG("active_nr_nodes=%d\n", active_nr_nodes);
-			rcode = dvk_bind(DCID, rd_ep);
+			rcode = dvk_bind(dcid, rd_ep);
 			if(rcode != rd_ep ) ERROR_EXIT(rcode);					
-			if (endp_flag == 0) { // Started by MoL 
+			if (endp_flag == NO) { // Started by MoL 
 				rcode = sys_bindproc(rd_ep, rd_lpid, LCL_BIND);
 				if(rcode < 0) ERROR_EXIT(rcode);						
 			} 
 		}
-	} 
-	else {							// WITH REPLICATION 
-		if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) { // PRIMARY as REPLICA 
-			TASKDEBUG("Starting RDISK PRIMARY\n");
-			active_nr_nodes = 1;
-			TASKDEBUG("active_nr_nodes=%d\n", active_nr_nodes);
-			rcode = dvk_replbind(DCID, rd_lpid, rd_ep);
+		rcode = dvk_getprocinfo(dcid, rd_ep, &proc_rd);
+		if(rcode < 0) ERROR_EXIT(rcode);
+		TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));
+	} else {	
+		TASKDEBUG("Initializing RDISK REPLICATED\n");
+		rcode = init_replicate();	
+		if( rcode)ERROR_EXIT(rcode);
+		
+		TASKDEBUG("Starting REPLICATE thread\n");
+		rcode = pthread_create( &replicate_thread, NULL, replicate_main, 0 );
+		if( rcode )ERROR_EXIT(rcode);
+		
+		// Wait until this process will be the primary 
+		MTX_LOCK(rd_mutex);
+		while (  primary_mbr != local_nodeid) {
+			TASKDEBUG("wait until this process will be the PRIMARY\n");
+			COND_WAIT(rd_barrier,rd_mutex);
+			
+			TASKDEBUG("RDISK has been signaled by the REPLICATE thread  FSM_state=%d\n",  FSM_state);
+			if( FSM_state == STS_LEAVE) {	/* An error occurs trying to join the spread group */
+				MTX_UNLOCK(rd_mutex);
+				ERROR_RETURN(EDVSCONNREFUSED);
+			}	
+
+			TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
+			TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid);
+			if ( primary_mbr != local_nodeid) {
+				// if RDISK is not bound, bound it as a BACKUP
+				if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+					rcode = dvk_bkupbind(dcid,rd_lpid,rd_ep,primary_mbr);
+					if(rcode != rd_ep ) ERROR_EXIT(rcode);
+				} else {
+					if( rd_ptr->p_nodeid != primary_mbr) {	// else Migrate it 
+						TASKDEBUG("RDISK endpoint %d\n", rd_ep);
+						rcode = dvk_migr_start(dc_ptr->dc_dcid, rd_ep);
+						TASKDEBUG("dvk_migr_start rcode=%d\n",	rcode);
+						rcode = dvk_migr_commit(rd_lpid, dc_ptr->dc_dcid, rd_ep, primary_mbr);
+						TASKDEBUG("dvk_migr_commit rcode=%d\n",	rcode);			
+						TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid);
+					}
+				}
+			} 
+		}
+		if( TEST_BIT(rd_ptr->p_misc_flags, MIS_BIT_RMTBACKUP)) {
+			rcode = dvk_unbind(dc_ptr->dc_dcid, rd_ep);
+			if(rcode < 0 ) ERROR_PRINT(rcode);
+		}
+		
+		TASKDEBUG("nr_nodes=%d\n", nr_nodes);
+		if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+			rcode = dvk_bind(dcid, rd_ep);
 			if(rcode != rd_ep ) ERROR_EXIT(rcode);					
-			if (endp_flag == 0) { // Started by MoL 
-				rcode = sys_bindproc(rd_ep, rd_lpid, REPLICA_BIND);
+			if (endp_flag == NO) { // Started by MoL 
+				rcode = sys_bindproc(rd_ep, rd_lpid, LCL_BIND);
 				if(rcode < 0) ERROR_EXIT(rcode);						
 			} 
-		}else{											// SECONDARY as BACKUP 
-			TASKDEBUG("Starting RDISK BACKUP\n");	
-			rcode = dvk_bkupbind(DCID, rd_lpid, rd_ep, rd_ptr->p_nodeid);
-			if(rcode != rd_ep ) ERROR_EXIT(rcode);					
 		}
+		rcode = dvk_getprocinfo(dcid, rd_ep, &proc_rd);
+		if(rcode < 0) ERROR_EXIT(rcode);
+		TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));
+		MTX_UNLOCK(rd_mutex);	
 	}
-	rcode = dvk_getprocinfo(DCID, rd_ep, &proc_rd);
-	if(rcode < 0) ERROR_EXIT(rcode);
-	TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));	
 	
 	for( i = 0; i < NR_DEVS; i++){
-		if ( devvec[i].available != 0 ){
+		if ( devvec[i].available == AVAILABLE_YES ){
 			TASKDEBUG("Byte offset to the partition start (Device = %d - img_ptr): %X\n", i, devvec[i].img_ptr);
 			m_geom[i].dv_base = cvul64(devvec[i].img_ptr);
 			fprintf(stdout, "Byte offset to the partition start (m_geom[DEV=%d].dv_base): %X\n", i, m_geom[i].dv_base);
@@ -857,47 +937,6 @@ int rd_init(void )
 			}
 	}
 	
-	if (replicate_flag == DO_REPLICATE){	
-		TASKDEBUG("Initializing REPLICATE\n");
-		rcode = init_replicate();	
-		if( rcode)ERROR_EXIT(rcode);
-		
-		TASKDEBUG("Starting REPLICATE thread\n");
-		rcode = pthread_create( &replicate_thread, NULL, replicate_main, 0 );
-		if( rcode )ERROR_EXIT(rcode);
-
-		// pthread_mutex_lock(&rd_mutex);
-		MTX_LOCK(rd_mutex);
-		
-		// pthread_cond_wait(&rd_barrier,&rd_mutex); /* unlock, wait, and lock again rd_mutex */	
-		COND_WAIT(rd_barrier,rd_mutex);
-		
-		TASKDEBUG("RDISK has been signaled by the REPLICATE thread  FSM_state=%d\n",  FSM_state);
-		if( FSM_state == STS_LEAVE) {	/* An error occurs trying to join the spread group */
-			// pthread_mutex_unlock(&rd_mutex);
-			MTX_UNLOCK(rd_mutex);
-			ERROR_RETURN(EDVSCONNREFUSED);
-		}	
-
-		TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
-		TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid);
-		if ( primary_mbr != local_nodeid) {
-			TASKDEBUG("wait until  the process will be the PRIMARY\n");
-			// pthread_cond_wait(&primary_barrier,&rd_mutex); /*wait until  the process will be the PRIMARY  */	
-			COND_WAIT(primary_barrier,rd_mutex);
-			
-			TASKDEBUG("RDISK_PROC_NR(%d) endpoint %d\n", RDISK_PROC_NR, rd_ep);
-			rcode = dvk_migr_start(dc_ptr->dc_dcid, RDISK_PROC_NR);
-			TASKDEBUG("dvk_migr_start rcode=%d\n",	rcode);
-			rcode = dvk_migr_commit(rd_lpid, dc_ptr->dc_dcid, RDISK_PROC_NR, local_nodeid);
-			TASKDEBUG("dvk_migr_commit rcode=%d\n",	rcode);			
-			TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid);
-		}
-		// pthread_mutex_unlock(&rd_mutex);
-		
-		MTX_UNLOCK(rd_mutex);
-			
-	}
 	TASKDEBUG("END rd_init\n");
 	return(OK);
 }
@@ -925,7 +964,7 @@ message *m_ptr;
 int rcode;
 
 	// rcode = close(img_fd);
-	if (devvec[m_ptr->DEVICE].active != 1) { 
+	if (devvec[m_ptr->DEVICE].active_flag != 1) { 
 		TASKDEBUG("Device %d, is not open\n", m_ptr->DEVICE);
 		rcode = -1; //MARIE: VER SI ESTO ES CORRECTO?
 		}
@@ -940,8 +979,8 @@ int rcode;
 		devvec[m_ptr->DEVICE].st_size = 0;
 		devvec[m_ptr->DEVICE].st_blksize = 0;
 		devvec[m_ptr->DEVICE].localbuff = NULL;
-		devvec[m_ptr->DEVICE].active = 0;
-		devvec[m_ptr->DEVICE].available = 0;
+		devvec[m_ptr->DEVICE].active_flag = ACTIVE_NO;
+		devvec[m_ptr->DEVICE].available = AVAILABLE_NO;
 	
 		TASKDEBUG("Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
 		free(devvec[m_ptr->DEVICE].localbuff);

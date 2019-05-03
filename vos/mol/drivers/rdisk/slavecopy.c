@@ -19,24 +19,24 @@
 
 /*for master-slave struct*/
 
-struct msdevvec {			/* vector for minor devices */
+struct msdevvec_s {			/* vector for minor devices */
   blksize_t st_trblksize; 	/* of stat */
   unsigned char *localbuff;	/* buffer to the device*/
   int buff_size;			/* buffer size for this device*/
   int img_fd; 				/*file descriptor - disk image*/
 };
 
-typedef struct msdevvec msdevvec_t;
+typedef struct msdevvec_s msdevvec_t;
 
 
-#define DEV_USR_FORMAT "st_trblksize=%d localbuff=%X buff_size=%d\n"
-#define DEV_USR_FIELDS(p) p->st_trblksize, p->localbuff,p->buff_size
+#define MSDEV_USR_FORMAT "st_trblksize=%d localbuff=%X buff_size=%d\n"
+#define MSDEV_USR_FIELDS(p) p->st_trblksize, p->localbuff,p->buff_size
 
 message sl_msg;
 msdevvec_t ms_devvec[NR_DEVS];
 off_t sl_position;
 unsigned long sl_size, bk_count; /*image file size -  total block count*/	
-unsigned long int nr_transfered, nr_matched; /*number transfer block*/
+unsigned long int nr_transferred, nr_matched; /*number transfer block*/
 unsigned char*localbuff = NULL; //julio
 
 /*===========================================================================*
@@ -274,8 +274,8 @@ do{
 			TASKDEBUG("position: %u, tbytes: %u, bytes: %u\n", sl_position, tbytes, bytes);
 			size -= bytes;
 			TASKDEBUG("size: %u, bytes: %u\n", size, bytes);				
-			sumdevvec[nr_dev].nr_transfered++; /*number transfer block*/
-			TASKDEBUG("nr_transfered: %u - dev: %d\n", sumdevvec[nr_dev].nr_transfered, nr_dev);				
+			sumdevvec[nr_dev].nr_transferred++; /*number transfer block*/
+			TASKDEBUG("nr_transferred: %u - dev: %d\n", sumdevvec[nr_dev].nr_transferred, nr_dev);				
 			
 			cond = ((size > 0) && (tbytes < sl_size))?FALSE:TRUE;
 			TASKDEBUG("cond:%d\n", cond);
@@ -309,7 +309,7 @@ do{
 			tbytes += bytes;			
 			sl_position++;
 			tblock++;
-			sumdevvec[nr_dev].nr_transfered = tblock;
+			sumdevvec[nr_dev].nr_transferred = tblock;
 			TASKDEBUG("nr_block: %d, tblock: %d, tbytes: %u\n", sl_position, tblock, tbytes);						
 			
 			cond = ((tblock < bk_count) && (( tblock * ms_devvec[nr_dev].st_trblksize ) < sl_size)) ?FALSE:TRUE;
@@ -331,7 +331,7 @@ do{
 stype == DEV_CFULL?(total = tbytes):(total = tblock);	
 TASKDEBUG("tbytes: %u\n", tbytes);					
 TASKDEBUG("tblock: %u\n", tblock);					
-TASKDEBUG("Total nr_transfered: %u - dev\n", sumdevvec[nr_dev].nr_transfered, nr_dev);				
+TASKDEBUG("Total nr_transferred: %u - dev\n", sumdevvec[nr_dev].nr_transferred, nr_dev);				
 return(total);
 }
 /*===========================================================================*
@@ -431,8 +431,8 @@ do{
 				TASKDEBUG("pwrite: %s\n", ms_devvec[nr_dev].localbuff);
 				TASKDEBUG("bytes: %u\n", bytes);
 			
-				sumdevvec[nr_dev].nr_transfered++;
-				TASKDEBUG("sumdevvec[nr_dev].nr_transfered= %d\n", sumdevvec[nr_dev].nr_transfered);	
+				sumdevvec[nr_dev].nr_transferred++;
+				TASKDEBUG("sumdevvec[nr_dev].nr_transferred= %d\n", sumdevvec[nr_dev].nr_transferred);	
 				tbytes += bytes;
 				
 				if(bytes < 0) ERROR_EXIT(errno);
@@ -444,7 +444,7 @@ do{
 			TASKDEBUG("position: %u, tblock: %u, bytes: %u\n", sl_position, tblock, bytes);
 			//size -= bytes;
 			//TASKDEBUG("size: %u, bytes: %u\n", size, bytes);				
-			TASKDEBUG("dev: %d, nr_transfered: %u\n", nr_dev, sumdevvec[nr_dev].nr_transfered);				
+			TASKDEBUG("dev: %d, nr_transferred: %u\n", nr_dev, sumdevvec[nr_dev].nr_transferred);				
 			break;
 			
 			}
@@ -483,8 +483,8 @@ do{
 				// pthread_mutex_unlock(&write_mutex);
 				MTX_UNLOCK(write_mutex);
 				
-				sumdevvec[nr_dev].nr_transfered++;
-				TASKDEBUG("sumdevvec[nr_dev].nr_transfered=%d\n", sumdevvec[nr_dev].nr_transfered);
+				sumdevvec[nr_dev].nr_transferred++;
+				TASKDEBUG("sumdevvec[nr_dev].nr_transferred=%d\n", sumdevvec[nr_dev].nr_transferred);
 				tbytes += bytes;
 				
 				if(bytes < 0) ERROR_EXIT(errno);
@@ -510,7 +510,7 @@ do{
 total = tblock;	
 TASKDEBUG("tbytes: %u\n", tbytes);					
 TASKDEBUG("tblock: %u\n", tblock);					
-TASKDEBUG("Total dev: %d - nr_transfered: %u\n", nr_dev, sumdevvec[nr_dev].nr_transfered);				
+TASKDEBUG("Total dev: %d - nr_transferred: %u\n", nr_dev, sumdevvec[nr_dev].nr_transferred);				
 TASKDEBUG("Total nr_matched: %u - Dev: %d\n", sumdevvec[nr_dev].nr_matched);				
 return(total);
 }
@@ -569,8 +569,8 @@ int sync_devready(int nr_dev, unsigned long t, int stype)
 		
 		if ( sl_msg.m_type == DEV_EOFR ){
 			
-			devvec[nr_dev].active=sl_msg.m2_l2;
-			TASKDEBUG("sl_msg.m2_l2=%d, devvec[%d].active=%d\n", sl_msg.m2_l2, nr_dev, devvec[nr_dev].active);
+			devvec[nr_dev].active_flag=sl_msg.m2_l2;
+			TASKDEBUG("sl_msg.m2_l2=%d, devvec[%d].active_flag=%d\n", sl_msg.m2_l2, nr_dev, devvec[nr_dev].active_flag);
 			nr_dev++;
 			TASKDEBUG("nr_dev=%d\n", nr_dev); 
 			}
@@ -616,7 +616,7 @@ total = 0;
 switch(stype) {
 	
 		case DEV_CFULL:		
-					if ( dynup_flag != DO_DYNUPDATES ) {
+					if ( dynamic_opt != DO_DYNUPDATES ) {
 						fprintf(stdout, "Transfer method: FULL UPDATE\n");	
 						fflush(stdout);
 						break;
@@ -626,7 +626,7 @@ switch(stype) {
 						break;							
 					}
 		case DEV_CMD5:	
-					if ( dynup_flag != DO_DYNUPDATES ) {
+					if ( dynamic_opt != DO_DYNUPDATES ) {
 						fprintf(stdout,"Transfer method: DIFF UPDATE\n");	
 						fflush(stdout);
 						break;
@@ -647,7 +647,7 @@ fflush(stdout);
 
 for ( i = 0; i < NR_DEVS; i++){ 
 	if ( devvec[i].available == 1 ){ /*device open in primary*/ 
-		fprintf(stdout,"Total blocks transfered: %u - Dev: %d\n", sumdevvec[i].nr_transfered, i);		
+		fprintf(stdout,"Total blocks transfered: %u - Dev: %d\n", sumdevvec[i].nr_transferred, i);		
 		fflush(stdout);
 		fprintf(stdout,"Blocks matched: %u - Dev: %d\n", sumdevvec[i].nr_matched, i);						
 		fflush(stdout);
@@ -728,7 +728,7 @@ void *slavecopy_main(void *arg)
 	
 	switch(r_type) {
 		case DEV_CFULL:		
-			if ( dynup_flag != DO_DYNUPDATES ) {
+			if ( dynamic_opt != DO_DYNUPDATES ) {
 				TASKDEBUG("r_type: %d - DEV_CFULL\n", r_type);	
 				fprintf(stdout,"Transfer Method: COPY FULL\n");
 				fflush(stdout);
@@ -744,7 +744,7 @@ void *slavecopy_main(void *arg)
 				break;							
 			}
 		case DEV_CMD5:	
-			if ( dynup_flag != DO_DYNUPDATES ) {
+			if ( dynamic_opt != DO_DYNUPDATES ) {
 				TASKDEBUG("r_type: %d - DEV_CMD5\n", r_type);	
 				fprintf(stdout,"Transfer Method: DIFF UPDATE\n");
 				fflush(stdout);
@@ -784,7 +784,6 @@ void *slavecopy_main(void *arg)
 	if( ret != 0 ) {
 		fprintf( stderr,"SEND ret=%d\n",ret);
 		fflush(stderr);
-		// pthread_mutex_unlock(&ms_mutex);	
 		exit(1);
 	}
 
@@ -804,7 +803,7 @@ void *slavecopy_main(void *arg)
 
 	sync_summary(infotime_init, r_type); 
 
-	if ( dynup_flag == DO_DYNUPDATES ){ 
+	if ( dynamic_opt == DO_DYNUPDATES ){ 
 		COND_SIGNAL(bk_barrier); //MARIE
 	}
 
@@ -823,7 +822,7 @@ int scopy_full( int stype)
 	 
 	i = 0;
 	nr_dev = 0; /*count devices*/
-	sumdevvec[nr_dev].nr_transfered = 0;
+	sumdevvec[nr_dev].nr_transferred = 0;
 	sumdevvec[nr_dev].nr_matched = 0;
 	sumdevvec[nr_dev].tbytes = 0;
 		
@@ -870,7 +869,7 @@ unsigned long bytes, sl_tblock;
 	
 nr_dev = 0; /*count devices*/
 nr_block = 0;
-sumdevvec[nr_dev].nr_transfered = 0;
+sumdevvec[nr_dev].nr_transferred = 0;
 sumdevvec[nr_dev].nr_matched = 0;
 sumdevvec[nr_dev].tbytes = 0;
 
@@ -915,7 +914,7 @@ int sdiff_copy( int stype)
 		
 	nr_dev = 0; /*count devices*/
 	nr_block = 0;
-	sumdevvec[nr_dev].nr_transfered = 0;
+	sumdevvec[nr_dev].nr_transferred = 0;
 	sumdevvec[nr_dev].nr_matched = 0;
 	sumdevvec[nr_dev].tbytes = 0;
 	

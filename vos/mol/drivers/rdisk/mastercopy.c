@@ -27,14 +27,14 @@ vir_bytes address_bk; /*buffer bk to dvk_vcopy*/
 
 /*for master-slave struct*/
 
-struct msdevvec {		/* vector for minor devices */
+struct msdevvec_s {		/* vector for minor devices */
   blksize_t st_trblksize; /* of stat */
   unsigned *localbuff;	/* buffer to the device*/
   unsigned	buff_size;	/* buffer size for this device*/
   int img_fd; 			/*file descriptor - disk image*/
 };
 
-typedef struct msdevvec msdevvec_t;
+typedef struct msdevvec_s msdevvec_t;
 
 msdevvec_t ms_devvec[NR_DEVS];
 
@@ -172,7 +172,7 @@ while (TRUE) {
 					TASKDEBUG("r(dev_transfer): %d\n", r);
 					break;	
 		case DEV_CFULL:	
-					if (( dynup_flag != DO_DYNUPDATES ) && ( r_type == DEV_CFULL )) {
+					if (( dynamic_opt != DO_DYNUPDATES ) && ( r_type == DEV_CFULL )) {
 						TASKDEBUG("m_type: %d - DEV_CFULL\n", mess.m_type);	
 						TASKDEBUG("\nRECEIVE: m_source=%d, m_type=%d, DEVICE=%d, IO_ENDPT=%d, POSITION/BLOCK_NR=%u, COUNT=%d, ADDRESS:%X, Device size/sigs(m2_l2):%d\n",
 							mess.m_source,
@@ -188,12 +188,12 @@ while (TRUE) {
 						break;					
 					}
 					else{
-						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynup_flag, mess.m_type);
+						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynamic_opt, mess.m_type);
 						fflush(stderr);
 						exit(1);	
 					}
 		case DEV_UFULL:
-					if (( dynup_flag == DO_DYNUPDATES ) && ( r_type == DEV_CFULL )) {
+					if (( dynamic_opt == DO_DYNUPDATES ) && ( r_type == DEV_CFULL )) {
 						TASKDEBUG("m_type: %d - DEV_UFULL\n", mess.m_type);	
 						TASKDEBUG("\nRECEIVE: m_source=%d, m_type=%d, DEVICE=%d, IO_ENDPT=%d, POSITION/BLOCK_NR=%u, COUNT=%d, ADDRESS:%X, Device size/sigs(m2_l2):%d\n",
 							mess.m_source,
@@ -209,13 +209,13 @@ while (TRUE) {
 						break;					
 					}
 					else{
-						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynup_flag, mess.m_type);
+						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynamic_opt, mess.m_type);
 						fflush(stderr);
 						exit(1);	
 					}
 		case DEV_CMD5:
-					if (( dynup_flag != DO_DYNUPDATES ) && ( r_type == DEV_CMD5 )) {
-						TASKDEBUG("m_type: %d - DEV_CMD5 - DO_DYNUPDATES: %d\n", mess.m_type, dynup_flag );	
+					if (( dynamic_opt != DO_DYNUPDATES ) && ( r_type == DEV_CMD5 )) {
+						TASKDEBUG("m_type: %d - DEV_CMD5 - DO_DYNUPDATES: %d\n", mess.m_type, dynamic_opt );	
 						TASKDEBUG("\nRECEIVE: m_source=%d, m_type=%d, POSITION/BLOCK_NR=%u, sigs:%s\n",
 								mess.m_source,
 								mess.m_type,
@@ -226,13 +226,13 @@ while (TRUE) {
 						break;					
 					}
 					else{
-						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynup_flag, mess.m_type);
+						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynamic_opt, mess.m_type);
 						fflush(stderr);
 						exit(1);	
 					}
 		case DEV_UMD5:
-				if (( dynup_flag == DO_DYNUPDATES ) && ( r_type == DEV_CMD5 )) {
-						TASKDEBUG("m_type: %d - DEV_UMD5 - DO_DYNUPDATES: %d\n", mess.m_type, dynup_flag );	
+				if (( dynamic_opt == DO_DYNUPDATES ) && ( r_type == DEV_CMD5 )) {
+						TASKDEBUG("m_type: %d - DEV_UMD5 - DO_DYNUPDATES: %d\n", mess.m_type, dynamic_opt );	
 						TASKDEBUG("\nRECEIVE: m_source=%d, m_type=%d, POSITION/BLOCK_NR=%u, sigs:%s\n",
 								mess.m_source,
 								mess.m_type,
@@ -243,7 +243,7 @@ while (TRUE) {
 						break;					
 					}
 					else{
-						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynup_flag, mess.m_type);
+						fprintf( stderr,"ERROR Transfer Method - Prymary: %d(dyn=%d), Backup%d\n", r_type, dynamic_opt, mess.m_type);
 						fflush(stderr);
 						exit(1);	
 					}		
@@ -540,8 +540,8 @@ free(ms_devvec[mp->DEVICE].localbuff);
 TASKDEBUG("check open device\n");
 if ( devvec[mp->DEVICE].available == 1){
 	TASKDEBUG("devvec[%d].available=%d\n", mp->DEVICE, devvec[mp->DEVICE].available);
-	mp->m2_l2 = ( devvec[mp->DEVICE].active == 1 )?1:0;
-	TASKDEBUG("mp->m2_l2=%d, devvec[%d].active=%d\n", mp->m2_l2, mp->DEVICE, devvec[mp->DEVICE].active);
+	mp->m2_l2 = ( devvec[mp->DEVICE].active_flag == 1 )?1:0;
+	TASKDEBUG("mp->m2_l2=%d, devvec[%d].active_flag=%d\n", mp->m2_l2, mp->DEVICE, devvec[mp->DEVICE].active_flag);
 	}
 
 
@@ -561,8 +561,8 @@ int rd_ready( message *mp)			/* pointer to read or write message */
 	if (mp->m_type == RD_DISK_EOF || mp->m_type == RD_DISK_ERR){
 		TASKDEBUG("nuevo nodo: m2_l2 %d\n", mp->m2_l2);
 		SET_BIT(bm_nodes, slv_mbr); // PAP 
-		active_nr_nodes++;
-		TASKDEBUG("active_nr_nodes=%d\n", active_nr_nodes);
+		nr_nodes++;
+		TASKDEBUG("nr_nodes=%d\n", nr_nodes);
 		nr_sync++;
 		TASKDEBUG("nr_sync=%d\n", nr_sync);
 		SET_BIT(bm_sync, mp->m2_l2);
@@ -574,8 +574,8 @@ int rd_ready( message *mp)			/* pointer to read or write message */
 	TASKDEBUG("check open device\n");
 	for( i = 0; i < NR_DEVS; i++){
 		TASKDEBUG("devvec[%d].available=%d\n", i, devvec[i].available);
-		if ( devvec[i].active == 1 ){ /*device open in primary*/ 
-			TASKDEBUG("devvec[%d].active=%d\n", i, devvec[i].active);
+		if ( devvec[i].active_flag == 1 ){ /*device open in primary*/ 
+			TASKDEBUG("devvec[%d].active_flag=%d\n", i, devvec[i].active_flag);
 		}
 	}
 	
@@ -591,7 +591,7 @@ int rd_ready( message *mp)			/* pointer to read or write message */
 	TASKDEBUG("rcode unbind=%d\n", rcode);
 	if(rcode < 0) ERROR_EXIT(rcode);
 
-	if ( dynup_flag == DO_DYNUPDATES ){ 
+	if ( dynamic_opt == DO_DYNUPDATES ){ 
 		COND_SIGNAL(bk_barrier); //MARIE
 	}
 

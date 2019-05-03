@@ -31,8 +31,8 @@
 
 #define NO_PRIMARY			(-1)
 
-#define DONOT_REPLICATE		0
-#define DO_REPLICATE		1
+#define REPLICATE_NO		0
+#define REPLICATE_YES		1
 #define DONOT_UPDATE		0
 
 #define DONOT_COMPRESS		0

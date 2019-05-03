@@ -13,7 +13,7 @@ LZ4FLAGS = $(CFLAGS)
 LZ4FLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wstrict-prototypes
 
 
-OBJS =  utility.o test_config.o replicate.o rdisk.o \
+OBJS =  utility.o parse_config.o replicate.o rdisk.o \
 		driver.o mastercopy.o md5_compute.o \
 		slavecopy.o lz4_data_cd.o
 
