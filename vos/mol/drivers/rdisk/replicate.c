@@ -134,6 +134,7 @@ int replica_loop(int *mtype, char *source)
 	service_type = 0;
 	num_groups = -1;
 	
+	TASKDEBUG("SPREAD Listening ...\n");  
 	ret = SP_receive( sysmbox, &service_type, sender, 100, &num_groups, target_groups,
 			&mess_type, &endian_mismatch, sizeof(mess_in), mess_in );
 	
@@ -162,13 +163,7 @@ int replica_loop(int *mtype, char *source)
 		
 	// pthread_mutex_lock(&rd_mutex);	/* protect global variables */
 	MTX_LOCK(bk_mutex); //MARIE
-	
-	TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
-	if ( dynamic_opt == DO_DYNUPDATES ){ 
-		TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
-		}
-	
-	
+		
 	if( Is_regular_mess( service_type ) )	{
 		mess_in[ret] = 0;
 		if     ( Is_unreliable_mess( service_type ) ) {TASKDEBUG("received UNRELIABLE \n ");}
@@ -184,7 +179,7 @@ int replica_loop(int *mtype, char *source)
 			*----------------------------------------------------------------------------------------------------*/
 			if( mess_type == DEV_WRITE ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_dev_write(sp_ptr);
+				ret = handle_dev_write(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   DEV_SCATTER		The PRIMARY has sent a DEV_SCATTER request 
@@ -192,14 +187,14 @@ int replica_loop(int *mtype, char *source)
 			}else if( mess_type == DEV_SCATTER ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
 				// ret = rep_dev_scatter(sp_ptr);
-				ret = rep_dev_write(sp_ptr); /*como rdisk hace un msg spread x cada vcopy, siempre hago un write*/
+				ret = handle_dev_write(sp_ptr); /*como rdisk hace un msg spread x cada vcopy, siempre hago un write*/
 				*mtype = mess_type;;
 			/*----------------------------------------------------------------------------------------------------
 			*   A BACKUP member has sent a reply to the PRIMARY
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == MOLTASK_REPLY ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_task_reply(sp_ptr);
+				ret = handle_bkup_reply(sp_ptr);
 				*mtype = mess_type;
 				TASKDEBUG("mess_type=%d\n", mess_type); 
 			/*----------------------------------------------------------------------------------------------------
@@ -207,7 +202,7 @@ int replica_loop(int *mtype, char *source)
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == DEV_OPEN ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_dev_open(sp_ptr);
+				ret = handle_dev_open(sp_ptr);
 				*mtype = mess_type;
 						
 			/*----------------------------------------------------------------------------------------------------
@@ -215,42 +210,42 @@ int replica_loop(int *mtype, char *source)
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == DEV_CLOSE ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_dev_close(sp_ptr);
+				ret = handle_dev_close(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   DEV_IOCTL		The PRIMARY has sent DEV_IOCTL request 
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == DEV_IOCTL ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_dev_ioctl(sp_ptr);
+				ret = handle_dev_ioctl(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   CANCEL		The PRIMARY has sent CANCEL request 
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == CANCEL ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_cancel(sp_ptr);
+				ret = handle_cancel(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   SELECT		The PRIMARY has sent SELECT request 
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == CANCEL ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = rep_select(sp_ptr);
+				ret = handle_select(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   MC_STATUS_INFO		The PRIMARY has sent MC_STATUS_INFO message 
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == MC_STATUS_INFO ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = mc_status_info(sp_ptr);
+				ret = handle_status_info(sp_ptr);
 				*mtype = mess_type;
 			/*----------------------------------------------------------------------------------------------------
 			*   MC_SYNCHRONIZED		The new member inform that it is SYNCHRONIZED
 			*----------------------------------------------------------------------------------------------------*/
 			}else if ( mess_type == MC_SYNCHRONIZED ) {
 				TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(msg_ptr));
-				ret = mc_synchronized(sp_ptr);
+				ret = handle_synchronized(sp_ptr);
 				*mtype = mess_type;
 			}else if ( mess_type == MC_RADAR_INFO ) {
 				TASKDEBUG("RADAR Message, ignored..\n");
@@ -267,8 +262,6 @@ int replica_loop(int *mtype, char *source)
         if (ret < 0) {
 			TASKDEBUG("BUG: membership message does not have valid body\n");
            	SP_error( ret );
-			// pthread_mutex_unlock(&rd_mutex);
-			MTX_UNLOCK(bk_mutex);
          	ERROR_EXIT(ret);
         }
 
@@ -335,16 +328,12 @@ int replica_loop(int *mtype, char *source)
             if (num_vs_sets < 0) {
 				TASKDEBUG("BUG: membership message has more then %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
 				SP_error( num_vs_sets );
-				// pthread_mutex_unlock(&rd_mutex);
-				MTX_UNLOCK(bk_mutex);
                	ERROR_EXIT( num_vs_sets );
 			}
             if (num_vs_sets == 0) {
 				TASKDEBUG("BUG: membership message has %d vs_sets\n", 
 					num_vs_sets);
 				SP_error( num_vs_sets );
-				// pthread_mutex_unlock(&rd_mutex);
-				MTX_UNLOCK(bk_mutex);
                	ERROR_EXIT( EDVSGENERIC );
 			}
 
@@ -358,8 +347,6 @@ int replica_loop(int *mtype, char *source)
                	if (ret < 0) {
 					TASKDEBUG("VS Set has more then %d members. Recompile with larger MAX_MEMBERS\n", MAX_MEMBERS);
 					SP_error( ret );
-					// pthread_mutex_unlock(&rd_mutex);
-					MTX_UNLOCK(bk_mutex);
                    	ERROR_EXIT( ret);
               	}
 
@@ -405,8 +392,8 @@ int replica_loop(int *mtype, char *source)
 		}
 	}
 	// pthread_mutex_unlock(&rd_mutex);
-	MTX_UNLOCK(bk_mutex); /*marie*/
-
+	MTX_UNLOCK(bk_mutex); 
+	
 	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);
 }
@@ -426,7 +413,7 @@ int sp_join( int new_mbr)
 		new_mbr, primary_mbr, nr_nodes);
 	if( nr_nodes < 0 || nr_nodes >= dc_ptr->dc_nr_nodes){
 		TASKDEBUG("nr_nodes=%d dc_ptr->dc_nr_nodes=%d\n", nr_nodes, dc_ptr->dc_nr_nodes);
-		ERROR_RETURN(EDVSINVAL);
+		ERROR_EXIT(EDVSINVAL);
 		}
 		
 	if( TEST_BIT(bm_radar, new_mbr) != 0){
@@ -435,24 +422,20 @@ int sp_join( int new_mbr)
 	}
 		
 	SET_BIT(bm_nodes, new_mbr);
-
+	
+	primary_mbr = get_primary_mbr();
 	TASKDEBUG("new_member=%d primary_mbr=%d nr_nodes=%d\n", 
 		new_mbr, primary_mbr, nr_nodes);
-	
-	TASKDEBUG("nr_nodes:%d\n", nr_nodes);
-	
+
 	if( new_mbr == local_nodeid){		/*  My own JOIN message	 */
-		if(nr_nodes == 1 ){ 			/* I am a LONELY member  */
+		if( primary_mbr == NO_PRIMARY){ /* I am a LONELY member  */
 			FSM_state 	= STS_SYNCHRONIZED;
 			synchronized = TRUE;
-			TASKDEBUG("synchronized=%d'n", synchronized);
-			
+			TASKDEBUG("synchronized=%d'n", synchronized);		
 			if ( ! replica_updated(local_nodeid)) {
 				TASKDEBUG("I am a BACKUP member: start the primary FIRST\n");
 				rcode = EDVSPRIMARY;
 				SP_error(rcode);
-				// pthread_mutex_unlock(&rd_mutex);		
-				MTX_UNLOCK(bk_mutex);
 				ERROR_EXIT(rcode);
 			}
 			SET_BIT(bm_sync, local_nodeid);
@@ -461,37 +444,26 @@ int sp_join( int new_mbr)
 			primary_mbr =  local_nodeid;
 			TASKDEBUG("PRIMARY_MBR=%d\n", primary_mbr);
 			TASKDEBUG("Wake up rdisk: new_mbr=%d\n", new_mbr);
-			// pthread_cond_signal(&rd_barrier);	/* Wakeup RDISK 		*/
 			COND_SIGNAL(rd_barrier);
-	
 			return(OK);
-		}else{
-			/*SLAVE*/						
-			
-			if(update_opt == DONOT_UPDATE) {
+		}else{  /*SLAVE*/								
+			if(update_opt == UPDATE_NO) { // WITHOUT UPDATE 
 				FSM_state 	= STS_SYNCHRONIZED;
 				synchronized = TRUE;
 				TASKDEBUG("synchronized=%d'n", synchronized);
-				nr_sync = nr_nodes;
-				bm_sync = bm_nodes;
-				CLR_BIT(bm_sync,new_mbr); 
-				primary_mbr = get_primary_mbr();
-				bm_sync = bm_nodes;		
+				SET_BIT(bm_sync, local_nodeid);
+				nr_sync++;
 				TASKDEBUG("primary_mbr=%d nr_sync=%d bm_sync=%X\n", primary_mbr, nr_sync, bm_sync);
 				TASKDEBUG("Starting RDISK as a BACKUP\n");	
 				rcode = dvk_unbind(dc_ptr->dc_dcid, rd_ep);
 				if(rcode < 0 ) ERROR_PRINT(rcode);
 				rcode = dvk_bkupbind(dc_ptr->dc_dcid, rd_lpid, rd_ep, primary_mbr);
 				if(rcode != rd_ep ) ERROR_EXIT(rcode);
-				return(OK);
-			}
-			
-			primary_mbr = get_primary_mbr();
-			
-			if (local_nodeid != primary_mbr){/*SLAVE*/
-				
+				COND_SIGNAL(rd_barrier);
+			} else {						// WITH UPDATE 
+							
 				TASKDEBUG("Initializing SLAVE COPY THREAD\n");
-			
+
 				slave_ac = TRUE;
 				sync_pr = TRUE;
 				TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
@@ -501,18 +473,16 @@ int sp_join( int new_mbr)
 				if(rcode){
 					slave_ac = FALSE;
 					sync_pr = FALSE;
-					MTX_UNLOCK(bk_mutex);
 					TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
 					ERROR_EXIT(rcode);
 				}
-		
+
 				TASKDEBUG("Starting SLAVE COPY\n");
 				rcode = pthread_create( &slavecopy_thread, NULL, slavecopy_main, 0 );
 				if(rcode){
 					slave_ac = FALSE;
 					sync_pr = FALSE;
 					TASKDEBUG("slave_ac=%d sync_pr=%d\n", slave_ac, sync_pr);
-					MTX_UNLOCK(bk_mutex);
 					ERROR_EXIT(rcode);
 				}
 				
@@ -541,10 +511,9 @@ int sp_join( int new_mbr)
 							TASKDEBUG("devvec[%d].active_flag=%d\n", i, devvec[i].active_flag);
 						}
 					}	
-					MTX_UNLOCK(bk_mutex);
 					ERROR_EXIT(rcode);
 				}
-	
+
 				/*MARIE_VER: en slave fijo STS_LEAVE si hubo un error*/
 				// TASKDEBUG("RDISK has been signaled by the REPLICATE thread  FSM_state=%d\n",  FSM_state);
 				// if( FSM_state == STS_LEAVE) {	/* An error occurs trying to join the spread group */
@@ -552,76 +521,67 @@ int sp_join( int new_mbr)
 					// ERROR_RETURN(EDVSCONNREFUSED);
 					// }	
 				TASKDEBUG("End SLAVE OK\n");
+					
+				if ( FSM_state != STS_WAIT4PRIMARY){
+					TASKDEBUG("Sync ERROR\n");
+					ERROR_RETURN(EDVSCONNREFUSED);
+				}	
 			}
-				
-			if ( FSM_state != STS_WAIT4PRIMARY){
-				TASKDEBUG("Sync ERROR\n");
-				MTX_UNLOCK(bk_mutex);
-				ERROR_RETURN(EDVSCONNREFUSED);
-			}	
-
 		}
 	}else{ /* Other node JOINs the group	*/
-		if (primary_mbr == local_nodeid){ 	/* I am the first init member 	*/
-			
-			// if ( dynamic_opt == DONOT_DYNUPDATES ){ 
-				// MTX_LOCK(rd_mutex); //JULIO - bloqueo el rdisk primario hasta que se sincronicen;
-			// }
-			TASKDEBUG("Initializing MASTER COPY THREAD\n");
-			master_ac = TRUE;
-			sync_pr = TRUE;
-			TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
-			TASKDEBUG("dynamic_opt%d\n", dynamic_opt);
-			
-			sc_node = new_mbr;
-			rcode = init_mastercopy();	
-			if( rcode){
-				master_ac = FALSE;
-				sync_pr = FALSE;
-				MTX_UNLOCK(bk_mutex);
-				MTX_UNLOCK(rd_mutex);
+		if (primary_mbr == local_nodeid){ 	/* I am the first init member 	*/		
+			if(update_opt != UPDATE_NO) {
+				TASKDEBUG("Initializing MASTER COPY THREAD\n");
+				master_ac = TRUE;
+				sync_pr = TRUE;
 				TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
-				ERROR_EXIT(rcode);
-			}
-		
-			TASKDEBUG("Starting MASTER COPY\n");
-			TASKDEBUG("new_mbr %d, %d\n", &new_mbr, new_mbr);
-			rcode = pthread_create( &mastercopy_thread, NULL, mastercopy_main, (void *) &new_mbr ); //PAP
+				TASKDEBUG("dynamic_opt%d\n", dynamic_opt);
+				
+				sc_node = new_mbr;
+				rcode = init_mastercopy();	
+				if( rcode){
+					master_ac = FALSE;
+					sync_pr = FALSE;
+					MTX_UNLOCK(rd_mutex);
+					TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
+					ERROR_EXIT(rcode);
+				}
 			
-			if( rcode){
-				master_ac = FALSE;
-				sync_pr = FALSE;
-				MTX_UNLOCK(bk_mutex);
-				// MTX_UNLOCK(rd_mutex); //JULIO
-				TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
-				ERROR_EXIT(rcode);
-			}
+				TASKDEBUG("Starting MASTER COPY\n");
+				TASKDEBUG("new_mbr %d, %d\n", &new_mbr, new_mbr);
+				rcode = pthread_create( &mastercopy_thread, NULL, mastercopy_main, (void *) &new_mbr ); //PAP
+				
+				if( rcode){
+					master_ac = FALSE;
+					sync_pr = FALSE;
+					TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
+					ERROR_EXIT(rcode);
+				}
 
-			TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
-			if ( dynamic_opt == DO_DYNUPDATES ){ 
 				TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
-				COND_WAIT(bk_barrier, bk_mutex); //MARIE
-			}
-			
-			rcode = pthread_join(mastercopy_thread, NULL);
-			master_ac = FALSE;
-			TASKDEBUG("master_ac=%d\n", master_ac);
-			TASKDEBUG("rcode - pthread_join-master\n", rcode);
-			if( rcode){
+				if ( dynamic_opt == DO_DYNUPDATES ){ 
+					TASKDEBUG("dynamic_opt:%d - DO_DYNUPDATES:%d\n", dynamic_opt, DO_DYNUPDATES);
+					COND_WAIT(bk_barrier, bk_mutex); //MARIE
+				}
+				
+				// rcode = pthread_join(mastercopy_thread, NULL);
+				
 				master_ac = FALSE;
-				sync_pr = FALSE;
-				MTX_UNLOCK(bk_mutex);
-				// MTX_UNLOCK(rd_mutex); //JULIO
-				TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
-				ERROR_EXIT(rcode);
+				TASKDEBUG("master_ac=%d\n", master_ac);
+				TASKDEBUG("rcode - pthread_join-master\n", rcode);
+				if( rcode){
+					master_ac = FALSE;
+					sync_pr = FALSE;
+					TASKDEBUG("master_ac=%d sync_pr=%d\n", master_ac, sync_pr);
+					ERROR_EXIT(rcode);
+				}
+				TASKDEBUG("End MASTER OK\n");
+			} else {				// WITHOUT UPDATE 
+				rcode = mc_status_info();
+				if( rcode < 0) ERROR_RETURN(rcode);
 			}
-			// MTX_UNLOCK(rd_mutex); //JULIO
-			TASKDEBUG("End MASTER OK\n");
-
 		}
-	
 	}
-
 	return(OK);
 }
 
@@ -631,7 +591,7 @@ int sp_join( int new_mbr)
  *===========================================================================*/
 int sp_disconnect(int  disc_mbr)
 {
-	int i;
+	int i, rcode;
 	
 	TASKDEBUG("disc_mbr=%d\n",disc_mbr);
 
@@ -668,187 +628,69 @@ int sp_disconnect(int  disc_mbr)
 	
 	/* if the dead node was the primary_mbr, search another primary_mbr */
 	if( primary_mbr == disc_mbr) {
-		TASKDEBUG("primary_mbr=%d, disc_mbr=%d\n",primary_mbr, disc_mbr);
+		TASKDEBUG("PRIMARY DEAD: primary_mbr=%d, disc_mbr=%d\n",primary_mbr, disc_mbr);
 		if( bm_sync == 0) {
-			TASKDEBUG("THERE IS NO PRIMARY\n");
+			TASKDEBUG("THERE IS NO SYNCHRONIZED REPLICAS\n");
 			FSM_state = STS_NEW;
-			bm_acks=0;
 			return(sp_join(local_nodeid));
-		} else { /* Am I the new primary ?*/
-			for( i = 0; i < NR_NODES; i++) {
-				if(TEST_BIT(bm_nodes, i)) {
-					if( i == local_nodeid){ /* I am the new primary */
-						primary_mbr = local_nodeid;
-						TASKDEBUG("PRIMARY_MBR=%d\n", primary_mbr);
-						TASKDEBUG("Wake up rdisk: local_nodeid=%d\n", local_nodeid);
-						COND_SIGNAL(rd_barrier);
-					}
-				}	
+		} else { 
+			primary_mbr = get_primary_mbr();
+			TASKDEBUG("PRIMARY_MBR=%d\n", primary_mbr);
+			if( primary_mbr == local_nodeid){ /* I am the new primary */
+				TASKDEBUG("Wake up rdisk: local_nodeid=%d\n", local_nodeid);
+				rcode = mc_status_info();
+				if( rcode < 0) ERROR_RETURN(rcode);				
+				COND_SIGNAL(rd_barrier);
 			}
-		}
+			rcode = dvk_migr_start(dc_ptr->dc_dcid, rd_ep);
+			TASKDEBUG("dvk_migr_start rcode=%d\n",	rcode);
+			rcode = dvk_migr_commit(rd_lpid, dc_ptr->dc_dcid, rd_ep, primary_mbr);
+			TASKDEBUG("dvk_migr_commit rcode=%d\n",	rcode);			
+			TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid)
+		}	
 	}
 	
-	CLR_BIT(bm_acks, disc_mbr);
 	TASKDEBUG("disc_mbr=%d nr_nodes=%d\n",	disc_mbr, nr_nodes);
-	
-	
 	TASKDEBUG("primary_mbr=%d nr_sync=%d\n", primary_mbr, nr_sync);
-	TASKDEBUG("bm_nodes=%X bm_sync=%X bm_acks=%X\n", bm_nodes,bm_sync,bm_acks);
+	TASKDEBUG("bm_nodes=%X bm_sync=%X\n", bm_nodes,bm_sync);
 	
 	return(OK);
 }
 
+/*===========================================================================*
+ *				get_sync_nodes				     
+ * get the count of sync members from bitmap					     
+ *===========================================================================*/
+int get_sync_nodes(void)
+{
+	int init_nr, i;
+
+	init_nr = 0;
+	for( i=0; i < dc_ptr->dc_nr_nodes; i++ ) {
+		if( TEST_BIT(bm_sync, i)){
+			init_nr++;
+		}
+	}
+	
+	TASKDEBUG("init_nr=%d\n", init_nr);
+	return(init_nr);
+}
+
 /*----------------------------------------------------------------------------------------------------
 *				sp_net_partition
-*  A network partition has occurred
 *----------------------------------------------------------------------------------------------------*/
 int sp_net_partition(void)
 {
 	TASKDEBUG("\n");
-
-#ifdef ANULADO
-	if( synchronized == FALSE )
-		return(OK);
-
-	TASKDEBUG("bm_sync=%X bm_nodes=%X\n",bm_sync, bm_nodes);
-	/* mask the old init members bitmap with the mask of active_flag members */
-	/* only the active_flag nodes should be considered synchronized */
-	bm_sync &= bm_nodes;
-
-	/* is this the primary_mbr partition (where the old primary_mbr is located) ? */
-	if( TEST_BIT(bm_sync, first_act_mbr)){
-		/* primary_mbr of this partition */
-		primary_mbr = first_act_mbr;
-	}else{
-		/* get the first init member of this partition */
-		primary_mbr = NO_FIRST_INIT_MBR;
-		for( i = 0; i < num_vs_sets; i++ )  {
-			for( j = 0; j < vssets[i].num_members; j++ ) {
-				TASKDEBUG("\t%s\n", members[j] );
-				if ( strncmp(memb_info.changed_member, "#RADAR",6) != 0) {			
-					mbr = get_nodeid("RDISK", members[j]);
-					if(!TEST_BIT(bm_sync, mbr)) {
-						first_act_mbr = mbr;
-						break;
-					}
-				}
-			}
-			if(first_act_mbr != NO_FIRST_INIT_MBR)
-				break;
-		}
-		if(first_act_mbr == NO_FIRST_INIT_MBR){
-			TASKDEBUG("Can't find primary_mbr of this partition %d\n",primary_mbr);
-			return(EDVSBADNODEID);
-		}
-	}
-
-	if( bm_acks != 0) { /* is this member waiting for donors responses ? */
-		bm_acks  &= bm_nodes;
-		if( bm_acks == 0) {
-			FSM_state = STS_SYNCHRONIZED;
-			if (FSM_state == STS_REQ_SLOTS && owned_slots > 0)
-				// pthread_cond_signal(&fork_barrier);
-				COND_SIGNAL(fork_barrier);
-		}
-	}
-
-	total_slots = 0;
-	for( i = dc_ptr->dc_nr_sysprocs; i < (dc_ptr->dc_nr_tasks + dc_ptr->dc_nr_procs);i++) {
-		/* restore slots from uncompleted donations */
-		if( proc[i].p_rts_flags == SLOT_FREE) {
-			if ( (TEST_BIT(proc[i].p_rts_flags, BIT_DONATING)) &&
-				 (!TEST_BIT(bm_sync, slot[i].s_owner))) { /*The destination is not on my partition */
-				free_slots++;
-				owned_slots++;
-				CLR_BIT(proc[i].p_rts_flags, BIT_DONATING);
-				TASKDEBUG("Restoring slot %d from uncompleted donation after a network partition\n",i);
-			}
-		}
-		if(TEST_BIT(bm_sync, slot[i].s_owner)) { /* The owner is on my partition */
-			total_slots++;
-		}
-	}
-
-	nr_sync = 0;
-	TASKDEBUG("nr_sync=%d\n", nr_sync);
- 	for( i =0; i < (sizeof(unsigned long int) * 8); i++){
-		if( TEST_BIT(bm_sync, i)){
-			nr_sync++;
-			TASKDEBUG("nr_sync=%d\n", nr_sync);
-		}
-	}
-
-	TASKDEBUG("primary_mbr=%d bm_sync=%X bm_acks=%X\n",
-		primary_mbr, bm_sync, bm_acks);
-
-	/* recalculate global variables */
-	max_owned_slots	= (total_slots - (min_owned_slots*nr_sync));
-	TASKDEBUG("total_slots=%d max_owned_slots=%d nr_sync=%d bm_sync=%X\n",
-		total_slots,max_owned_slots, nr_sync,bm_sync);
-
-#endif /* ANULADO */
 	return(OK);
 }
 
 /*----------------------------------------------------------------------------------------------------
 *				sp_net_merge
-*  A network merge has occurred
-*  the first synchronized member of each merged partition
-*  broadcast its current process slot table (PST)
-*  only filled with the slots owned by members of their partition
 *----------------------------------------------------------------------------------------------------*/
 int sp_net_merge(void)
 {
 	TASKDEBUG("\n");
-	
-#ifdef ANULADO 
-
-	if( synchronized == FALSE )
-		return(OK);
-
-	/* Only executed this function the first init members  of all partitions */
-	if ( primary_mbr != local_nodeid) 
-		return(OK);
-
-	/*------------------------------------
-	* Alloc memory for temporal  PST
- 	*------------------------------------*/
-	slot_part = (slot_t *) malloc( sizeof(slot_t)  * (dcu.dc_nr_procs+dcu.dc_nr_tasks));
-	if(slot_part == NULL) return (EDVSNOMEM);
-
-	/* Copy the PST to temporar PST */
-	memcpy( (void*) slot_part, slot, (sizeof(slot_t) * (dcu.dc_nr_procs+dcu.dc_nr_tasks)));
-
-	/* fill the slot table with endpoint and name				*/
-	total_slots = 0;
-	for( i = dc_ptr->dc_nr_sysprocs; i < (dcu.dc_nr_procs+dcu.dc_nr_tasks); i++) {
-		/* bm_ init keeps the synchronized members before MERGE */
-		if( !TEST_BIT(bm_sync, slot[i].s_owner)) { /* the owner is not on this partition */
-			TASKDEBUG("slot reserved %d for owner=%d\n", i, slot_part[i].s_owner);
-			slot_part[i].s_owner = NO_FIRST_INIT_MBR; /* this partition does not own this slot*/
-		}else{
-			if( proc[i].p_rts_flags != SLOT_FREE){
-				slot_part[i].s_endpoint = proc[i].p_endpoint;
-				strncpy(slot_part[i].s_name, proc[i].p_name, (MAXPROCNAME-1));
-			} else {
-				slot_part[i].s_endpoint = NONE;
-			}
-			total_slots++;
-		}
-	}
-
-	/* broadcast the partition PST */
-	TASKDEBUG("Send the partition's PST to all members \n");
-	rcode = SP_multicast (sysmbox, FIFO_MESS, (char *) dc_ptr->dc_name,
-			SYS_MERGE_PST,
-			(sizeof(slot_t) * ((dcu.dc_nr_procs+dcu.dc_nr_tasks)-dc_ptr->dc_nr_sysprocs)),
-			(char*) &slot_part[dc_ptr->dc_nr_sysprocs]);
-
-    free( (void*)slot_part);
-
-	if(rcode <0) ERROR_RETURN(rcode);
-#endif /* ANULADO */
-
 	return(OK);
 }
 
@@ -856,10 +698,10 @@ int sp_net_merge(void)
 /* FUNCTIONS TO DEAL WITH DEVICE REPLICATION  MESSAGES 			*/
 /***************************************************************************/
 /*===========================================================================*
-*				rep_dev_write								     			 *
+*				handle_dev_write								     			 *
  ============================================================================*/
 /*for SCATTER | WRITE */
- int rep_dev_write(SP_message *sp_ptr){
+ int handle_dev_write(SP_message *sp_ptr){
 
 	int rcode;
 	unsigned int sp_nrblock;
@@ -894,7 +736,6 @@ int sp_net_merge(void)
 						if(rcode <0) ERROR_RETURN(rcode);
 						CLR_BIT(bm_acks, primary_mbr);
 						if(rcode < 0){
-							MTX_UNLOCK(bk_mutex);
 							ERROR_RETURN(rcode);
 						}
 				
@@ -1097,13 +938,13 @@ int sp_net_merge(void)
 		 TASKDEBUG("synchronized(%d) - TRUE(%d) - sync_pr(%d) - master_ac(%d) - slave_ac(%d)\n", synchronized, TRUE, sync_pr, master_ac, slave_ac); 
 		 return(OK);
 	} 
-	}
+}
 
 
 /*===========================================================================*
- *				rep_task_reply								     	*
+ *				handle_bkup_reply								     	*
  ===========================================================================*/
-int rep_task_reply( message *m_ptr)
+int handle_bkup_reply( message *m_ptr)
 {
 	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	
@@ -1132,9 +973,9 @@ int rep_task_reply( message *m_ptr)
 }
 
 /*===========================================================================*
- *				rep_dev_open								     	*
+ *				handle_dev_open								     	*
  ===========================================================================*/
-int rep_dev_open( message *m_ptr)
+int handle_dev_open( message *m_ptr)
 {
 	int rcode;
 	unsigned *localbuff;
@@ -1171,41 +1012,32 @@ int rep_dev_open( message *m_ptr)
 				rcode = SP_multicast (sysmbox, SAFE_MESS, (char *) rdisk_group,  
 						MOLTASK_REPLY, sizeof(message), (char *) &msg); 
 						
-				if(rcode < 0){
-					MTX_UNLOCK(bk_mutex);
-					ERROR_RETURN(rcode);
-				}
-				
+			if(rcode < 0)ERROR_RETURN(rcode);
 			COND_SIGNAL(update_barrier);	
 			return(OK);
-		}
-		else{
+		}else{
 			return(OK);	
 		}
 	}
 	rcode = m_do_open(m_dtab, m_ptr); // modificado pap antes era &m_dtab
 	TASKDEBUG("rcode=%d\n");
-	if(rcode < 0){
-		MTX_UNLOCK(bk_mutex);
-		ERROR_RETURN(rcode);
-	}
-	
+	if(rcode < 0) ERROR_RETURN(rcode);
 	return(rcode);
 }
 
-int rep_dev_close( message *sp_ptr){
+int handle_dev_close( message *sp_ptr){
 		TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
 		return(OK);
 }
-int rep_dev_ioctl( message *sp_ptr){
+int handle_dev_ioctl( message *sp_ptr){
 		TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
 		return(OK);
 }
-int rep_cancel( message *sp_ptr){
+int handle_cancel( message *sp_ptr){
 		TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
 		return(OK);
 }
-int rep_select( message *sp_ptr){
+int handle_select( message *sp_ptr){
 		TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
 		return(OK);
 }
@@ -1214,19 +1046,16 @@ int rep_select( message *sp_ptr){
 /***************************************************************************/
 
 /*===========================================================================*
- *				mc_status_info								     	*
+ *				handle_status_info								     	*
  * The PRIMARY member sent a multicast to no sync members					*
  ===========================================================================*/
-int mc_status_info(	message  *sp_ptr)
+int handle_status_info(	message  *sp_ptr)
 {
 	int rcode;
 	
 	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
 
-	// if( FSM_state != STS_WAIT4PRIMARY ) return (OK); PAP
-
-	if ( local_nodeid == sp_ptr->m_source)
-		return (OK);
+	if( FSM_state != STS_WAIT4PRIMARY) return (OK);
 	
 	primary_mbr = sp_ptr->m_source;
 	TASKDEBUG("Primary_mbr=%d\n", primary_mbr);
@@ -1237,7 +1066,6 @@ int mc_status_info(	message  *sp_ptr)
 		rcode = EDVSBADVALUE;
 		SP_error(rcode);
 		// pthread_mutex_unlock(&rd_mutex);
-		MTX_UNLOCK(bk_mutex);
 		ERROR_EXIT(rcode);
 	}
 	nr_sync 	= sp_ptr->m2_i2;
@@ -1247,28 +1075,31 @@ int mc_status_info(	message  *sp_ptr)
 	bm_sync		= sp_ptr->m2_l2;
 	bm_radar	= (long) sp_ptr->m2_p1;
 	FSM_state   = STS_WAIT4SYNC;
-	rcode = send_synchronized();
-	/* ESTO NO SE SI ESTA BIEN */
-	// if( rcode) 
-		// FSM_state   = STS_WAIT4PRIMARY; PAP
+	rcode = mc_synchronized();
+
 	return(OK);	
 }
 
 /*=========================================================================*
- *				mc_synchronized							     	*
+ *				handle_synchronized							     	*
  * A new sync member inform about it to other sync	members					*
  ===========================================================================*/
-int mc_synchronized(  message  *sp_ptr)
+int handle_synchronized(  message  *sp_ptr)
 {
+	int rcode;
+	
 	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(sp_ptr));
+	
 	if ( sp_ptr->m_source == local_nodeid) {
+		if( FSM_state != STS_WAIT4SYNC){
+			TASKDEBUG("FSM_state=%d != STS_WAIT4SYNC\n", FSM_state);
+		}
 		FSM_state = STS_SYNCHRONIZED;
 		TASKDEBUG("synchronized=%d\n", synchronized);
 		synchronized = TRUE;
 		TASKDEBUG("synchronized=%d\n", synchronized);
 		sync_pr = FALSE; //MARIE
-		TASKDEBUG("Sync proccesing end - sync_pr=%d\n", sync_pr);
-		return(OK);
+		TASKDEBUG("Sync proccesing - sync_pr=%d\n", sync_pr);
 	}
 	/* ESTO NO SE SI ESTA BIEN 	
 	* puede que un miembro recien ingresado haya recibido un mensaje 
@@ -1283,11 +1114,11 @@ int mc_synchronized(  message  *sp_ptr)
 	SET_BIT(bm_sync, sp_ptr->m_source);
 	TASKDEBUG("New sync mbr=%d bm_sync=%X\n", 
 		sp_ptr->m_source , bm_sync);
-
-		
-	// pthread_cond_signal(&rd_barrier);	/* Wakeup RDISK 		*/
-	COND_SIGNAL(rd_barrier);
-
+	
+	if ( primary_mbr == local_nodeid) {
+		rcode = mc_status_info();
+		if( rcode < 0) ERROR_RETURN(rcode);
+	}
 	return(OK);	
 }
 				
@@ -1365,10 +1196,10 @@ int get_nodeid(char *grp_name, char *mbr_string)
 
 
 /*===========================================================================*
-*				send_status_info
+*				mc_status_info
 * Send GROUP status to members
 *===========================================================================*/
-int send_status_info(void)
+int mc_status_info(void)
 {
 	int rcode;
 	message  msg;
@@ -1429,10 +1260,10 @@ int mcast_radar_info(void)
 }
 
 /*===========================================================================*
-*				send_synchronized
+*				mc_synchronized
 * A new synchronized member informs to other sync members
 *===========================================================================*/
-int send_synchronized(void)
+int mc_synchronized(void)
 {
 	int rcode;
 	message  msg;
@@ -1456,7 +1287,7 @@ int get_primary_mbr(void)
 	int i, first_mbr;
 	
 	first_mbr = NO_PRIMARY;  /* to test for errors */
-	for( i=0; i < nr_sync; i++ ) {
+	for( i=0; i < dc_ptr->dc_nr_nodes; i++ ) {
 		if ( TEST_BIT(bm_sync, i) ){
 			first_mbr = i;
 			break;

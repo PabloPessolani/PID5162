@@ -1,0 +1,186 @@
+./rdisk -d 0 -e 3 -R -c /tmp/rdisk0.cfg > rdisk_out.txt 2> rdisk_err.txt &
+
+DEBUG 1071:dvk_open:47: Open dvk device file /dev/dvk
+ rdisk.c:main:177:Option d: 0 dcid=0
+ rdisk.c:main:173:Option e: 3 rd_ep=3
+ rdisk.c:main:181:Option R: replicate_opt=REPLICATE_YES
+ rdisk.c:main:167:Option c: /tmp/rdisk0.cfg
+ parse_config.c:parse_config:321:BEFORE
+ configfile.c:config_read:459:file=/tmp/rdisk0.cfg flags=400
+ configfile.c:read_file:412:file=/tmp/rdisk0.cfg
+ configfile.c:allocate:65:size=24
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=85
+ configfile.c:allocate:65:size=57
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=31
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=32
+ parse_config.c:parse_config:323:AFTER 
+ parse_config.c:search_dc_config:291:search_dc_config[0] line=1
+ parse_config.c:search_device_tkn:253:TKN_DEVICE   parse_config.c:search_device_tkn:257:MY_FILE_IMG
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=2 word=image_type
+ parse_config.c:search_ident:137:line[2] MATCH identifier image_type
+ parse_config.c:search_img_type:97:image type=FILE_IMAGE
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=3 word=image_file
+ parse_config.c:search_ident:137:line[3] MATCH identifier image_file
+ parse_config.c:search_ident:157:image_file=/usr/src/dvs/vos/images/minixweb.img
+ parse_config.c:search_ident:159:devvec[0].img_ptr=/usr/src/dvs/vos/images/minixweb.img
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=4 word=volatile
+ parse_config.c:search_ident:137:line[4] MATCH identifier volatile
+ parse_config.c:search_ident:174:devvec[0].volatile_flag=0
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=5 word=replicated
+ parse_config.c:search_ident:137:line[5] MATCH identifier replicated
+ parse_config.c:search_ident:189:devvec[0].replica_flag=1
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=6 word=buffer
+ parse_config.c:search_ident:137:line[6] MATCH identifier buffer
+ parse_config.c:search_ident:212:devvec[0].buff_size=4096
+ parse_config.c:read_lines:235:read_lines type=200
+ parse_config.c:search_ident:134:search_ident[0] line=7 word=active
+ parse_config.c:search_ident:137:line[7] MATCH identifier active
+ parse_config.c:search_ident:204:devvec[0].active_flag=1
+ parse_config.c:search_dc_config:296:MINOR=0
+ parse_config.c:search_dc_config:298:img_fd=0 st_size=0 st_blksize=0 localbuff=0 active=1 available=1
+ parse_config.c:search_dc_config:299:img_ptr=/usr/src/dvs/vos/images/minixweb.img buff_size=4096 img_type=0
+ parse_config.c:search_dc_config:300:volatile=0 replica=1 
+ parse_config.c:parse_config:326:AFTER2 
+ rdisk.c:main:226:minor_devs=1
+DEBUG 1071:dvk_getdvsinfo:120: 
+DEBUG 1071:dvk_getdvsinfo:122: ioctl ret=0
+ rdisk.c:rd_init:826:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rdisk.c:rd_init:827:local_nodeid=0
+ rdisk.c:rd_init:829:Get the DC info
+DEBUG 1071:dvk_getdcinfo:170: dcid=0
+DEBUG 1071:dvk_getdcinfo:174: ioctl ret=0 errno=0
+ rdisk.c:rd_init:833:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rdisk.c:rd_init:834:flags=0 dc_nodes=7 dc_pid=761 dc_name=DC0
+ rdisk.c:rd_init:836:Get RDISK info
+DEBUG 1071:dvk_getprocinfo:584: dcid=0 p_nr=3 
+DEBUG 1071:dvk_getprocinfo:589: ioctl ret=0 errno=0
+ rdisk.c:rd_init:845:BEFORE nr=3 endp=3 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ rdisk.c:rd_init:865:Initializing RDISK REPLICATED
+ replicate.c:init_replicate:49:Spread library version is 5.0.1
+ replicate.c:init_replicate:58:rdisk_group=RDISK00
+ replicate.c:init_replicate:61:User=RDISK00.00
+ replicate.c:init_replicate:70:User RDISK00.00: connected to 4803 with private group #RDISK00.00#node0
+ replicate.c:init_replicate:82:synchronized=0
+ rdisk.c:rd_init:869:Starting REPLICATE thread
+ rdisk.c:rd_init:874:MTX_LOCK rd_mutex 
+ rdisk.c:rd_init:876:wait until this process will be the PRIMARY
+ rdisk.c:rd_init:877:COND_WAIT rd_barrier rd_mutex
+ replicate.c:replicate_main:104:replicate_main dcid=0 local_nodeid=0
+ replicate.c:replica_loop:137:
+ replicate.c:replica_loop:158:sender=RDISK00 Private_group=#RDISK00.00#node0 dc_name=DC0 service_type=4352
+ replicate.c:replica_loop:165:MTX_LOCK bk_mutex 
+ replicate.c:replica_loop:270:Received REGULAR membership for group RDISK00 with 1 members, where I am member 0:
+ replicate.c:replica_loop:279:	#RDISK00.00#node0
+ replicate.c:get_nodeid:1179:grp_name=RDISK mbr_string=RDISK00.00#node0 len=5
+ replicate.c:get_nodeid:1192:member=RDISK00.00#node0 nid=0
+ replicate.c:replica_loop:286:bm_nodes=1 nr_nodes=1
+ replicate.c:replica_loop:295:Due to the JOIN of #RDISK00.00#node0 service_type=4352
+ replicate.c:get_nodeid:1179:grp_name=RDISK mbr_string=RDISK00.00#node0 len=5
+ replicate.c:get_nodeid:1192:member=RDISK00.00#node0 nid=0
+ replicate.c:replica_loop:299:JOIN - nr_nodes=1
+ replicate.c:sp_join:413:new_member=0 primary_mbr=-1 nr_nodes=1
+ replicate.c:get_primary_mbr:1296:primary_mbr=-1
+ replicate.c:sp_join:428:new_member=0 primary_mbr=-1 nr_nodes=1
+ replicate.c:sp_join:434:synchronized=1'n replicate.c:sp_join:443:nr_sync=1
+ replicate.c:sp_join:445:PRIMARY_MBR=0
+ replicate.c:sp_join:446:Wake up rdisk: new_mbr=0
+ rdisk.c:rd_init:879:RDISK has been signaled by the REPLICATE thread  FSM_state=0
+ rdisk.c:rd_init:885:Replicated driver. nr_nodes=1 primary_mbr=0
+ rdisk.c:rd_init:886:primary_mbr=0 - local_nodeid=0
+ rdisk.c:rd_init:909:nr_nodes=1
+DEBUG 1071:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=3 nodeid=-1
+DEBUG 1071:dvk_bind_X:616: ioctl ret=3 errno=0
+DEBUG 1071:dvk_getprocinfo:584: dcid=0 p_nr=3 
+DEBUG 1071:dvk_getprocinfo:589: ioctl ret=0 errno=0
+ rdisk.c:rd_init:920:AFTER  nr=3 endp=3 dcid=0 flags=0 misc=20 lpid=1071 vpid=1071 nodeid=0 name=rdisk 
+ rdisk.c:rd_init:921:MTX_UNLOCK rd_mutex 
+ rdisk.c:rd_init:926:Byte offset to the partition start (Device = 0 - img_ptr): 17BF2EC
+ utility.c:cvul64:19:f_cvul64: 24900332:0 24900332
+Byte offset to the partition start (m_geom[DEV=0].dv_base): 17BF2EC
+ rdisk.c:rd_init:931:Number of bytes in the partition (Device = 0 - img_size): 0
+ utility.c:cvul64:19:f_cvul64: 0:0 0
+Number of bytes in the partition (m_geom[DEV=0].dv_size): 0
+ rdisk.c:rd_init:938:END rd_init
+ driver.c:init_buffer:253:
+---Init_buffer---
+ driver.c:driver_task:104:
+Listening ...
+DEBUG 1071:dvk_receive_T:434: endpoint=31438 timeout=-1
+ replicate.c:sp_join:447:COND_SIGNAL rd_barrier
+ replicate.c:replica_loop:301:JOIN end - nr_nodes=1
+ replicate.c:mcast_radar_info:1252:local_nodeid=0, nr_nodes=1, nr_sync=1
+ replicate.c:mcast_radar_info:1253:source=0 type=218 m2i1=1 m2i2=1 m2i3=3 m2l1=1 m2l2=1 m2p1=0xb75722f9
+ replicate.c:replica_loop:395:MTX_UNLOCK bk_mutex 
+ replicate.c:replica_loop:137:
+ replicate.c:replica_loop:158:sender=#RDISK00.00#node0 Private_group=#RDISK00.00#node0 dc_name=DC0 service_type=32
+ replicate.c:replica_loop:165:MTX_LOCK bk_mutex 
+ replicate.c:replica_loop:175:message from #RDISK00.00#node0, of type 218, (endian 0) to 1 groups (76 bytes)
+ replicate.c:replica_loop:251:RADAR Message, ignored..
+ replicate.c:replica_loop:395:MTX_UNLOCK bk_mutex 
+ replicate.c:replica_loop:137:
+
+ 

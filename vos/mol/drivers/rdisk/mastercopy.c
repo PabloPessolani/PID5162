@@ -568,7 +568,7 @@ int rd_ready( message *mp)			/* pointer to read or write message */
 		SET_BIT(bm_sync, mp->m2_l2);
 		TASKDEBUG("New sync mbr=%d bm_sync=%X\n", 
 			mp->m2_l2 , bm_sync);
-		send_status_info();
+		mc_status_info();
 	}
 		
 	TASKDEBUG("check open device\n");

@@ -101,7 +101,6 @@ struct driver *dp;	/* Device dependent entry points. */
   /* Get a DMA buffer. */
   init_buffer();
 
-  TASKDEBUG("\nListening ...\n");  
  
   /* Here is the main loop of the disk task.  It waits for a message, carries
    * it out, and sends a reply.
@@ -112,8 +111,7 @@ struct driver *dp;	/* Device dependent entry points. */
 		//if (receive(ANY, &mess) != OK) continue;
 
 		/*recibo el mensaje*/
-
-		
+		TASKDEBUG("M3-IPC Listening ...\n");  
 		ret = dvk_receive( ANY , (long) &mess);
 	
 		if( ret != OK){

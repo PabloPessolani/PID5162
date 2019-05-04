@@ -43,8 +43,8 @@ int rep_dev_ioctl( message *sp_ptr);
 int rep_cancel( message *sp_ptr);
 int rep_select( message *sp_ptr);
 
-int mc_status_info( message *sp_ptr);
-int mc_synchronized( message *sp_ptr);
+int mc_status_info( void);
+int mc_synchronized( void );
 
 int get_nodeid(char *grp_name, char *mbr_string);
 int replica_updated(int localnodeid);

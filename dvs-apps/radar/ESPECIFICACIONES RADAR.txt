@@ -217,45 +217,41 @@ PRUEBA2:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
 	- Arrancar RADAR en NODE2 
-	- Desconectar la placa de red de NODE0
-	- Volverla a conectar 
+	- Hacer un kill al proceso RDISK de NODE0
 	- Verificar que el nuevo primario de RADAR es NODE1 
 	- Verificar en NODE2 que el endpoint haya cambiado a NODE1	
+	- Volver a arrancar RDISK en NODE0 
+	- Verificar que en NODE0 haya quedado como endpoint backup apuntando a NODE1
+	- Verificar que en NODE1 este como enpoint local 
+	- Verificar que en NODE2 este como enpoint remoto en NODE1 
+	
 	
 PRUEBA3:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
 	- Arrancar RADAR en NODE2 
-	- Hacer un KILL al proceso RDISK 
-	- Verificar que el nuevo primario de RADAR es NODE1 
-	- Verificar en NODE2 que el endpoint haya cambiado a NODE1	
-
+	- Desconectar la placa de red de NODE2
+	- Ver el estado en NODE2 del endpoint 
+	- Conectar la placa de red de NODE2
+	- Verificar que el primario de RADAR es NODE0
+	- Verificar en NODE2 que el endpoint este en NODE0
+	
 PRUEBA4:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
 	- Arrancar RADAR en NODE2 
 	- Desconectar la placa de red de NODE2
- 	- Desconectar la placa de red de NODE1
-	- Conectar la placa de red de NODE2
-	- Verificar que el primario de RADAR es NODE0
-	- Verificar en NODE2 que el endpoint este en NODE0
-	
-PRUEBA5:
-	- Arrancar RDISK en NODE0 
-	- Arrancar RDISK en NODE1 
-	- Arrancar RADAR en NODE2 
-	- Desconectar la placa de red de NODE2
- 	- Desconectar la placa de red de NODE0
+ 	- Hacer KILL a RDISK de NODE0
 	- Conectar la placa de red de NODE2
 	- Verificar que el primario de RADAR es NODE1 
 	- Verificar en NODE2 que el endpoint este en NODE1
 
-PRUEBA6:
+PRUEBA5:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
 	- Arrancar RADAR en NODE2 
 	- Arrancar TEST_RADAR en NODE2 
- 	- Desconectar la placa de red de NODE0
+ 	- Hacer KILL a RDISK de NODE0
 	- Verificar que el primario de RADAR es NODE1 
 	- Verificar en NODE2 que el endpoint este en NODE1
 	

@@ -22,8 +22,8 @@ device MY_MEMORY_IMG {
 };
 **************************************************/
 
-#define TASKDEBG		1
-#define  MOL_USERSPACE	1
+#define 	TASKDBG		1
+#define  	MOL_USERSPACE	1
 
 
 #define OPER_NAME 0
@@ -156,9 +156,7 @@ int search_ident(config_t *cfg)
 							}
 							TASKDEBUG("image_file=%s\n", cfg->word);						
 							devvec[minor_devs].img_ptr=(cfg->word);
-							devvec[minor_devs].available = YES;
 							TASKDEBUG("devvec[%d].img_ptr=%s\n", minor_devs,devvec[minor_devs].img_ptr);
-							TASKDEBUG("devvec[%d].available=%d\n", minor_devs,devvec[minor_devs].available);
 							break;
 						case TKN_VOLATILE:
 							if (!config_isatom(cfg)) {
@@ -296,6 +294,7 @@ int search_dc_config(config_t *cfg)
 			return(rcode);
 		p_dev = &devvec[minor_devs];
 		TASKDEBUG("MINOR=%d\n",minor_devs);
+		devvec[minor_devs].available = YES;
 		TASKDEBUG(DEV_USR1_FORMAT, DEV_USR1_FIELDS(p_dev));
 		TASKDEBUG(DEV_USR2_FORMAT, DEV_USR2_FIELDS(p_dev));
 		TASKDEBUG(DEV_USR3_FORMAT, DEV_USR3_FIELDS(p_dev));

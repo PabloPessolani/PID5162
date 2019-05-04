@@ -19,8 +19,6 @@
 #define  MOL_USERSPACE	1
 #define _RDISK
 
-// #define TASKDBG		1
-
 #include "rdisk.h"
 #include "data_usr.h"
 #include "const.h"
@@ -59,8 +57,7 @@ struct driver m_dtab = {
 
 static int replica_type; 
 
-void usage(char* errmsg, ...) {
-	fprintf("ERROR: %s\n", errmsg);
+void usage(void) {
 	fprintf(stderr, "Usage: rdisk  -d <dcid> [-e <endpoint>] [-R] [-D] [-Z] [-U {FULL | DIFF }] -c <config_file>\n");
 	fprintf(stderr, "\t e: Endpoint number if RDISK is not started by MOL SYSTASK\n");
 	fprintf(stderr, "\t R: Replicate (Default: do not replicate)\n");
@@ -161,9 +158,9 @@ int main (int argc, char *argv[] )
 	replicate_opt   = REPLICATE_NO;
 	compress_opt    = COMPRESS_NO;
 	dynamic_opt     = DYNAMIC_NO;
-	update_opt 		= UPDATE_DIFF;
+	update_opt 		= UPDATE_NO;
 	
-	while((c = getopt_long_only(argc, argv, "ecdRDUZ:", long_options, NULL)) >= 0) {
+	while((c = getopt_long_only(argc, argv, "e:c:d:RDU:Z:", long_options, NULL)) >= 0) {
 		switch(c) {
 			case 'c': /*config file*/
 				c_file = optarg;
@@ -199,23 +196,23 @@ int main (int argc, char *argv[] )
 					update_opt =  UPDATE_DIFF;
 					TASKDEBUG("Option U: update_opt=UPDATE_DIFF\n");
 				} else {
-					usage("Unknown Update option %s", optarg);
+					usage();
 					exit(EXIT_FAILURE);
 				}
 				break;
 			default:
-				usage("Unknown option %s encountered", optarg);
+				usage();
 				exit(EXIT_FAILURE);
 			}
 		}	
  	
 	if ( cfile_flag == NO)  {
- 	    usage( "Need Configuration File", optarg );
+ 	    usage();
 		exit(1);
     }
 
 	if( dcid == HARDWARE){
- 	    usage( "Need DC ID" , optarg );
+ 	    usage();
 		exit(1);
     }
 	

@@ -74,6 +74,8 @@
 
 #include <getopt.h>
 
+#define TASKDBG		1
+
 #define BUFF_SIZE		MAXCOPYBUF
 #define MAX_MESSLEN     (BUFF_SIZE+1024)
 #define MAX_VSSETS      10
@@ -151,8 +153,9 @@ SP_message msg_lz4cd;
 #define AVAILABLE_YES 		1
 #define YES					1
 #define NO					0
-#define UPDATE_DIFF			0
-#define UPDATE_FULL			1
+#define UPDATE_NO			0
+#define UPDATE_DIFF			1
+#define UPDATE_FULL			2
 
 #define FILE_IMAGE		0
 #define MEMORY_IMAGE	1
