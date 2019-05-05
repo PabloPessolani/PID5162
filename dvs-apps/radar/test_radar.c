@@ -6,7 +6,7 @@
 
 int main ( int argc, char *argv[] )
 {
-    int dcid, clt_pid, clt_ep, clt_nr, svr_nr, ret;
+    int dcid, clt_pid, clt_ep, clt_nr, svr_nr, ret, i;
     message *m_ptr;
     proc_usr_t usr_info, *p_usr;
     
@@ -57,11 +57,20 @@ int main ( int argc, char *argv[] )
     m_ptr->m1_i3 = 0x03;
     
     // FIRST SENDREC MESSAGE
-    printf("CLIENT FIRST SENDREC msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-    ret = dvk_sendrec(svr_nr, (long) m_ptr);
-    if( ret != 0 ) ERROR_PRINT(ret);
-    
-    printf("CLIEN FIRST REPLY msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
+#define RADAR_TIMEOUT 		5000
+#define MAX_RETRIES 		30
+
+	for( i = 0;  i < MAX_RETRIES; i++){
+	    m_ptr->m1_i1 = i;
+		printf("CLIENT SENDREC msg %d:" MSG1_FORMAT, i, MSG1_FIELDS(m_ptr));
+		ret = dvk_sendrec_T(svr_nr, (long) m_ptr, RADAR_TIMEOUT);
+		if( ret == 0 ) 
+			ERROR_PRINT(ret);
+		else 
+			printf("CLIENT received  REPLY msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
+		sleep(1);
+	}
+	
     exit(0);
 }
 

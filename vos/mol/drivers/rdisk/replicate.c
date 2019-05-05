@@ -87,7 +87,7 @@ int init_replicate(void)
 	bm_sync   	= 0;			/* initialize  synchoronized  members'  bitmap */
 	nr_nodes 	= 0;
 	nr_sync  	= 0;
-	
+	nr_radar    = 0;
 	return(OK);
 }
 
@@ -295,8 +295,6 @@ int replica_loop(int *mtype, char *source)
 				memb_info.changed_member, service_type );
 			if ( strncmp(memb_info.changed_member, "#RDISK",6) == 0) { // RDISK member 		
 				mbr = get_nodeid("RDISK", (char *)  memb_info.changed_member);
-				nr_nodes = num_groups - nr_radar;
-				TASKDEBUG("JOIN - nr_nodes=%d\n", nr_nodes); 
 				ret = sp_join(mbr);
 				TASKDEBUG("JOIN end - nr_nodes=%d\n", nr_nodes); 
 			}
@@ -311,8 +309,6 @@ int replica_loop(int *mtype, char *source)
 				memb_info.changed_member );
 			if ( strncmp(memb_info.changed_member, "#RDISK",6) == 0) { // RDISK member 		
 				mbr = get_nodeid("RDISK", (char *)  memb_info.changed_member);
-				nr_nodes = num_groups - nr_radar;
-				TASKDEBUG("LEAVE - nr_nodes=%d\n", nr_nodes); 
 				ret = sp_disconnect(mbr);
 				TASKDEBUG("LEAVE end - nr_nodes=%d\n", nr_nodes); 
 				if( local_nodeid == primary_mbr)
@@ -427,8 +423,8 @@ int sp_join( int new_mbr)
 	TASKDEBUG("new_member=%d primary_mbr=%d nr_nodes=%d\n", 
 		new_mbr, primary_mbr, nr_nodes);
 
-	if( new_mbr == local_nodeid){		/*  My own JOIN message	 */
-		if( primary_mbr == NO_PRIMARY){ /* I am a LONELY member  */
+	if( new_mbr == local_nodeid){	/*  My own JOIN message	 */
+		if( nr_nodes == 1 ) {		/* I am a LONELY member  */
 			FSM_state 	= STS_SYNCHRONIZED;
 			synchronized = TRUE;
 			TASKDEBUG("synchronized=%d'n", synchronized);		
@@ -448,18 +444,8 @@ int sp_join( int new_mbr)
 			return(OK);
 		}else{  /*SLAVE*/								
 			if(update_opt == UPDATE_NO) { // WITHOUT UPDATE 
-				FSM_state 	= STS_SYNCHRONIZED;
-				synchronized = TRUE;
-				TASKDEBUG("synchronized=%d'n", synchronized);
-				SET_BIT(bm_sync, local_nodeid);
-				nr_sync++;
-				TASKDEBUG("primary_mbr=%d nr_sync=%d bm_sync=%X\n", primary_mbr, nr_sync, bm_sync);
-				TASKDEBUG("Starting RDISK as a BACKUP\n");	
-				rcode = dvk_unbind(dc_ptr->dc_dcid, rd_ep);
-				if(rcode < 0 ) ERROR_PRINT(rcode);
-				rcode = dvk_bkupbind(dc_ptr->dc_dcid, rd_lpid, rd_ep, primary_mbr);
-				if(rcode != rd_ep ) ERROR_EXIT(rcode);
-				COND_SIGNAL(rd_barrier);
+				FSM_state 	= STS_WAIT4PRIMARY;
+				return(OK);
 			} else {						// WITH UPDATE 
 							
 				TASKDEBUG("Initializing SLAVE COPY THREAD\n");
@@ -641,12 +627,13 @@ int sp_disconnect(int  disc_mbr)
 				rcode = mc_status_info();
 				if( rcode < 0) ERROR_RETURN(rcode);				
 				COND_SIGNAL(rd_barrier);
+			} else {
+				rcode = dvk_migr_start(dc_ptr->dc_dcid, rd_ep);
+				TASKDEBUG("dvk_migr_start rcode=%d\n",	rcode);
+				rcode = dvk_migr_commit(rd_lpid, dc_ptr->dc_dcid, rd_ep, primary_mbr);
+				TASKDEBUG("dvk_migr_commit rcode=%d\n",	rcode);			
+				TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid)
 			}
-			rcode = dvk_migr_start(dc_ptr->dc_dcid, rd_ep);
-			TASKDEBUG("dvk_migr_start rcode=%d\n",	rcode);
-			rcode = dvk_migr_commit(rd_lpid, dc_ptr->dc_dcid, rd_ep, primary_mbr);
-			TASKDEBUG("dvk_migr_commit rcode=%d\n",	rcode);			
-			TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid)
 		}	
 	}
 	
@@ -1100,6 +1087,10 @@ int handle_synchronized(  message  *sp_ptr)
 		TASKDEBUG("synchronized=%d\n", synchronized);
 		sync_pr = FALSE; //MARIE
 		TASKDEBUG("Sync proccesing - sync_pr=%d\n", sync_pr);
+		if ( primary_mbr != local_nodeid) {
+			rcode = dvk_bkupbind(dcid,rd_lpid,rd_ep,primary_mbr);
+			if(rcode != rd_ep ) ERROR_PRINT(rcode);
+		} 			
 	}
 	/* ESTO NO SE SI ESTA BIEN 	
 	* puede que un miembro recien ingresado haya recibido un mensaje 

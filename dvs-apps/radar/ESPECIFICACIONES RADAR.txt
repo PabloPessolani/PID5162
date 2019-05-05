@@ -173,7 +173,7 @@ Arrancar en NODE0 RDISK el script
 	root@node0:/usr/src/dvs/scripts# ./rdisk.sh 0 0
 	root@node0:/usr/src/dvs/scripts# . /usr/src/dvs/dvs-apps/dc_init/DC0.sh 
 	root@node0:/usr/src/dvs/scripts# cd /usr/src/dvs/vos/mol/drivers/rdisk
-	root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh 0
+	root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# nsenter -p -u -F -t$DC0 ./rdisk.sh 0 
 
 Arrancar en NODE1 RDISK el script 
 	root@node1:/usr/src/dvs/scripts# ./rdisk.sh 1 0
@@ -212,7 +212,276 @@ PRUEBA 1
 		radar.c:get_radar_info:519:RDISK: rad_primary_mbr=0 rad_primary_old=0 rad_nr_nodes=1 rad_nr_init=1 <<< ACTUAL PRIMARIO IGUAL ANTIGUO PRIMARIO 
 		radar.c:get_radar_info:520:RDISK: rad_bm_nodes=1 rad_bm_init=1
 		
+
+EN NODE0:
+	NODE0 PRIMARIO 
+./rdisk -d 0 -e 3 -R -c /tmp/rdisk0.cfg
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3   669/4      0    8   20 31438 27342 27342 27342 rdisk  
+ 
+EN NODE1:	
+	NODE0 PRIMARIO 
+./rdisk -d 0 -e 3 -R -c /tmp/rdisk0.cfg
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3   595/4      0 1000   30 27342 27342 27342 27342 rdisk
+	NODE0 MUERE => NODE1 PRIMARIO 
+root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3   595/4      1    8   20 31438 27342 27342 27342 rdisk 
+ 
+EN NODE2:
+	NODE0 PRIMARIO 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     0 1000    0 27342 27342 27342 27342 RDISK0         
+	NODE1 PRIMARIO 
+root@node2:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0  
+ 	NODE1 MUERE => EN PROCESO DE MIGRACION 
+ root@node2:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     1 1800    0 27342 27342 27342 27342 RDISK0   
+	NODE0 LEVANTA => FIN DE MIGRACION DESDE NODE1->NODE0 
+root@node2:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     0 1000    0 27342 27342 27342 27342 RDISK0
+    NODE0 MUERE => EN PROCESO DE MIGRACION
+root@node2:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     0 1800    0 27342 27342 27342 27342 RDISK0    
+	NODE1 LEVANTA Y ES PRIMARIO 
+root@node2:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0
+ 
+ 
+ 
+ =======================================================================
+ NODE0: RDISK PRIMARIO
+ NODE1: RDISK BACKUP
+ NODE2: CLIENT (RADAR)
+ 
+	NODE0 ES EL PRIMARIO  
+		root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		0   3     3   641/4      0    8   20 31438 27342 27342 27342 rdisk 
+ 
+		root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		0   3     3   633/4      0 1000   30 27342 27342 27342 27342 rdisk
+ 
+		 root@node2:/usr/src/dvs/dvs-apps/radar# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3    -1/-1     0 1000    0 27342 27342 27342 27342 RDISK0  
+		 
+	PRUEBO CLIENTE DE RDISK en NODE2 
+		root@node2:/usr/src/dvs/dvs-apps/radar# ./test_radar 
+		Usage: ./test_radar <dcid> <svr_nr> <clt_nr> 
+		root@node2:/usr/src/dvs/dvs-apps/radar# ./test_radar 0 3 70
+		DEBUG 653:dvk_open:47: Open dvk device file /dev/dvk
+		DEBUG 653:dvk_getprocinfo:584: dcid=0 p_nr=3 
+		DEBUG 653:dvk_getprocinfo:589: ioctl ret=0 errno=0
+		nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=RDISK0 
+		endp=3 dcid=0 flags=1000 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+		nr=3 endp=3 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+		DEBUG 653:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=70 nodeid=-1
+		DEBUG 653:dvk_bind_X:616: ioctl ret=70 errno=0
+		CLIENT BIND dcid=0 clt_pid=653 clt_nr=70 clt_ep=70 m_ptr=0xebc008
+		CLIENT pause before SENDREC
+		CLIENT SENDREC msg 0:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 653:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 653:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		CLIENT received  REPLY msg:source=3 type=68 m1i1=2 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		FUNCIONA OK!!!!
 		
+	EN NODE0 SE VE EL ENDPOINT DEL CLIENTE BINDEADO AUTOMATICAMENTE	
+		root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3   641/4      0    8   20 31438 27342 27342 27342 rdisk          
+		 0  70    70    -1/-1     2 1000    0 27342 27342 27342 27342 rclient  
+ 
+	NODE0 MUERE => NODE1 PRIMARIO 
+		root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		0   3     3   633/4      1    8   20 31438 27342 27342 27342 rdisk  
+ 
+		EN NODE2 
+		root@node2:/usr/src/dvs/dvs-apps/radar# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0  
+		 
+	PRUEBO CLIENTE DE RDISK  
+		root@node2:/usr/src/dvs/dvs-apps/radar# ./test_radar 0 3 70
+		DEBUG 656:dvk_open:47: Open dvk device file /dev/dvk
+		DEBUG 656:dvk_getprocinfo:584: dcid=0 p_nr=3 
+		DEBUG 656:dvk_getprocinfo:589: ioctl ret=0 errno=0
+		nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=RDISK0 
+		endp=3 dcid=0 flags=1000 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+		nr=3 endp=3 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+		DEBUG 656:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=70 nodeid=-1
+		DEBUG 656:dvk_bind_X:616: ioctl ret=70 errno=0
+		CLIENT BIND dcid=0 clt_pid=656 clt_nr=70 clt_ep=70 m_ptr=0x12c2008
+		CLIENT pause before SENDREC
+		CLIENT SENDREC msg 0:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 656:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 656:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		CLIENT received  REPLY msg:source=3 type=68 m1i1=2 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ 
+	EN NODE1 SE VE EL ENDPOINT DEL CLIENTE BINDEADO AUTOMATICAMENTE 
+		 root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3   633/4      1    8   20 31438 27342 27342 27342 rdisk          
+		 0  70    70    -1/-1     2 1000    0 27342 27342 27342 27342 rclient 
+ 
+ 
+ 
+ PRUEBA DE TRANSPARENCIA 
+	NODE0   PRIMARIO
+	NODE1	BACKUP 
+ 
+		root@node2:/usr/src/dvs/dvs-apps/radar# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3    -1/-1     0 1000    0 27342 27342 27342 27342 RDISK0  <<<< NODE0 PRIMARIO
+		 
+		 SE HACEN 30 LOOPS DE SENDREC EN 1 SEGUNDO CADA UNO DONDO m1i1 CONTIENE EL NUMERO DE ITERACION   
+		root@node2:/usr/src/dvs/dvs-apps/radar# ./test_radar 0 3 71
+		DEBUG 734:dvk_open:47: Open dvk device file /dev/dvk
+		DEBUG 734:dvk_getprocinfo:584: dcid=0 p_nr=3 
+		DEBUG 734:dvk_getprocinfo:589: ioctl ret=0 errno=0
+		nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=RDISK0 
+		endp=3 dcid=0 flags=1000 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+		nr=3 endp=3 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+		DEBUG 734:dvk_bind_X:607: cmd=0 dcid=0 pid=-1 endpoint=71 nodeid=-1
+		DEBUG 734:dvk_bind_X:616: ioctl ret=71 errno=0
+		CLIENT BIND dcid=0 clt_pid=734 clt_nr=71 clt_ep=71 m_ptr=0x1cc5008
+		CLIENT pause before SENDREC
+		CLIENT SENDREC msg 0:source=0 type=10 m1i1=0 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 1:source=3 type=68 m1i1=1 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 2:source=3 type=68 m1i1=2 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 3:source=3 type=68 m1i1=3 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 4:source=3 type=68 m1i1=4 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 5:source=3 type=68 m1i1=5 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 6:source=3 type=68 m1i1=6 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 7:source=3 type=68 m1i1=7 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 8:source=3 type=68 m1i1=8 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 9:source=3 type=68 m1i1=9 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 10:source=3 type=68 m1i1=10 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 11:source=3 type=68 m1i1=11 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 12:source=3 type=68 m1i1=12 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 13:source=3 type=68 m1i1=13 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 14:source=3 type=68 m1i1=14 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 15:source=3 type=68 m1i1=15 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 16:source=3 type=68 m1i1=16 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 17:source=3 type=68 m1i1=17 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 18:source=3 type=68 m1i1=18 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 19:source=3 type=68 m1i1=19 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 20:source=3 type=68 m1i1=20 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 21:source=3 type=68 m1i1=21 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 22:source=3 type=68 m1i1=22 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 23:source=3 type=68 m1i1=23 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 24:source=3 type=68 m1i1=24 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 25:source=3 type=68 m1i1=25 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 26:source=3 type=68 m1i1=26 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 27:source=3 type=68 m1i1=27 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 28:source=3 type=68 m1i1=28 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		CLIENT SENDREC msg 29:source=3 type=68 m1i1=29 m1i2=0 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 734:dvk_sendrec_T:451: endpoint=3 timeout=5000
+		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
+		ERROR: test_radar.c:main:68: rcode=0
+		
+		EN EL MEDIO NOD0 MUERE, NODE1 PASA A SER EL PRIMARIO Y ASI TERMINA EN NODE2  
+		root@node2:/usr/src/dvs/dvs-apps/radar# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0    
+ 
+	
 PRUEBA2:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
@@ -225,7 +494,7 @@ PRUEBA2:
 	- Verificar que en NODE1 este como enpoint local 
 	- Verificar que en NODE2 este como enpoint remoto en NODE1 
 	
-	
+ 
 PRUEBA3:
 	- Arrancar RDISK en NODE0 
 	- Arrancar RDISK en NODE1 
@@ -254,8 +523,4 @@ PRUEBA5:
  	- Hacer KILL a RDISK de NODE0
 	- Verificar que el primario de RADAR es NODE1 
 	- Verificar en NODE2 que el endpoint este en NODE1
-	
-	
-		 
- 
 	

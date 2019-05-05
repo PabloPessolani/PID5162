@@ -356,6 +356,7 @@ long int new_node_migrate(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid)
 	}else{
 		if ( pid != pid_vnr(get_task_pid(proc_ptr->p_task, PIDTYPE_PID)))
 			ERROR_RETURN(EDVSBADPID);
+		clear_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags);
 	}
 	
 	proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);	

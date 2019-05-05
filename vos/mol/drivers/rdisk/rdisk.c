@@ -881,6 +881,10 @@ int rd_init(void )
 				ERROR_RETURN(EDVSCONNREFUSED);
 			}	
 
+			rcode = dvk_getprocinfo(dcid, rd_ep, rd_ptr);
+			if(rcode < 0 ) ERROR_EXIT(rcode);
+			TASKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));
+		
 			TASKDEBUG("Replicated driver. nr_nodes=%d primary_mbr=%d\n",  nr_nodes, primary_mbr);
 			TASKDEBUG("primary_mbr=%d - local_nodeid=%d\n", primary_mbr, local_nodeid);
 			if ( primary_mbr != local_nodeid) {
@@ -900,12 +904,18 @@ int rd_init(void )
 				}
 			} 
 		}
+
+		rcode = dvk_getprocinfo(dcid, rd_ep, rd_ptr);
+		if(rcode < 0 ) ERROR_EXIT(rcode);
+		TASKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));	
 		if( TEST_BIT(rd_ptr->p_misc_flags, MIS_BIT_RMTBACKUP)) {
 			rcode = dvk_unbind(dc_ptr->dc_dcid, rd_ep);
 			if(rcode < 0 ) ERROR_PRINT(rcode);
 		}
 		
-		TASKDEBUG("nr_nodes=%d\n", nr_nodes);
+		rcode = dvk_getprocinfo(dcid, rd_ep, rd_ptr);
+		if(rcode < 0 ) ERROR_EXIT(rcode);
+		TASKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rd_ptr));		
 		if( TEST_BIT(rd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 			rcode = dvk_bind(dcid, rd_ep);
 			if(rcode != rd_ep ) ERROR_EXIT(rcode);					
