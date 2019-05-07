@@ -225,8 +225,7 @@ int main (int argc, char *argv[] )
 	}
 	TASKDEBUG("minor_devs=%d\n",minor_devs);
 	
-	if (minor_devs > 1)
-		check_same_image();
+	check_same_image();
 
 	rcode = rd_init();
 	if(rcode) ERROR_RETURN(rcode);  

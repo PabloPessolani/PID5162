@@ -264,8 +264,8 @@ int pr_receive_header(void)
         	p_ptr += n;
         }
    	}
-    
-    ERROR_RETURN(errno);
+    if( n < 0)  ERROR_RETURN(errno);
+	return(OK);
 }
 
 /* pr_process_message: receives header and payload if any. Then deliver the 

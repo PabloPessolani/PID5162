@@ -339,7 +339,7 @@ extern mproc_t *mp;		/* PM process table			*/
 	// Esta apertura a continuacion pertenece al codigo original.
 	// Hace en paralelo lo que hacemos hasta ahora con la imagen del disco.
 	MUKDEBUG(" dev_open -> root_dev=%d, PROC_NR=%d, R_BIT|W_BIT=%d\n", root_dev, fs_ep, R_BIT|W_BIT);    
-	if ((s=dev_open(root_dev, fs_ep, R_BIT|W_BIT)) != OK)
+	if ((s=dev_open(root_dev, fs_ep, R_BIT|W_BIT)) < OK)
 		MUKDEBUG("Cannot open root device %d\n", s);
 
 	//#if ENABLE_CACHE2

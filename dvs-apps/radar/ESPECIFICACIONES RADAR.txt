@@ -476,10 +476,10 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 		DEBUG 734:dvk_sendrec_T:456: ioctl ret=0 errno=0
 		ERROR: test_radar.c:main:68: rcode=0
 		
-		EN EL MEDIO NOD0 MUERE, NODE1 PASA A SER EL PRIMARIO Y ASI TERMINA EN NODE2  
+		EN EL MEDIO NODE0 MUERE, NODE1 PASA A SER EL PRIMARIO Y ASI TERMINA EN NODE2  
 		root@node2:/usr/src/dvs/dvs-apps/radar# cat /proc/dvs/DC0/procs 
 		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
-		 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0    
+		 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK0   <<<< NODE1 PRIMARIO 
  
 	
 PRUEBA2:

@@ -50,7 +50,8 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  14    14   600/10     0    8  400 31438 27342 27342 27342 m3ftp          
  0  22    22   599/9      0    0  400 27342 27342 27342 27342 nweb
 
-ATENCION: Existen scripts en  /usr/src/dvs/scripts/benchmarks
+ATENCION: Existen scripts en  
+
 hay que copiar los scripts a /dev/shm  
 ya retornan las estadisticas en time_wget.txt y time_ftp.txt 
  
@@ -85,6 +86,8 @@ Este script:
 	Se copian todos los archivos de configuracion .cfg 
 
 root@node0:/dev/shm# cd /dev/shm
+root@node0:/dev/shm# . ./DC0.sh 
+
 Editar muk.cfg para que RDISK este fuera 
 # this is a comment 
 muk SERVER1 {
@@ -109,7 +112,6 @@ ARRANCAR MUK
 nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
 root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
 
-
 ==========================================================================
 TRANSFERENCIA WEB CON RDISK REMOTO 
 ------------------------------------
@@ -117,23 +119,79 @@ RED A CONFORMAR
 	NODE0-------NODE1----NODE2 
 	MUK			RDISK 	 CLIENTS 
 	
-	
 
+==================================== EN NODE 0	
+Arrancar con 
+root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node0:/dev/shm# ./tests.sh 0 0 
+Este script:
+	arranca el DVS 
+	arranca el DC 
+	arranca el proxy TIPC 
+	Todos los logs van al /dev/shm 
+	Se copian todos los archivos de configuracion .cfg 
 
+root@node0:/dev/shm# cd /dev/shm
+root@node0:/dev/shm# . ./DC0.sh 
 
+Editar muk.cfg para que RDISK este fuera 
+# this is a comment 
+muk SERVER1 {
+	dcid		0;
+	pm_ep		0;
+	fs_ep		1;
+	is_ep		8;
+#	rd_ep		3;
+	nweb_ep		22;
+	ftp_ep		14;
+	fs_cfg		"molfs.cfg";
+#	rd_cfg		"rdisk.cfg";
+	web_cfg		"m3nweb.cfg";
+	ftp_cfg 	"m3ftp.cfg";
+};
 
+root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node0:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 3 1 RDISK
+root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK 
 
+==================================== EN NODE 1
+root@node1:/# cd /usr/src/dvs/dvk-tests
+root@node1:/usr/src/dvs/dvk-tests# ./tests.sh 1 0
+root@node1:/dev/shm# 
+root@node1:/dev/shm# . ./DC0.sh 
+root@node1:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node1:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 1 0 FS 
+root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1    -1/-1     0 1000    0 27342 27342 27342 27342 FS  
+root@node1:/dev/shm# cd /usr/src/dvs/vos/mol/drivers/rdisk/
+root@node1:/usr/src/dvs/vos/mol/drivers/rdisk# ./rdisk.sh 0
+root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1    -1/-1     0 1000    0 27342 27342 27342 27342 FS             
+ 0   3     3   749/749    1    8   20 31438 27342 27342 27342 rdisk 
+ 
+root@node1:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 14 0 FTP 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1    -1/-1     0 1000    0 27342 27342 27342 27342 FS             
+ 0   3     3   594/594    1    4   20 27342     1 27342 27342 rdisk          
+ 0  14    14    -1/-1     0 1000    0 27342 27342 27342 27342 FTP 
+ 
+==================================== EN NODE 0
 
+root@node0:/usr/src/dvs/dvk-tests# cd /dev/shm
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
+[1] 628
+root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   630/3      0    8  420 31438 27342 27342 27342 systask        
+ 0   0     0   631/4      0    8  400 31438 27342 27342 27342 pm             
+ 0   1     1   632/5      0    8  400 31438 27342 27342 27342 fs             
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK          
+ 0   8     8   633/6      0    0  400 27342 27342 27342 27342 is             
+ 0  14    14   636/9      0    8  400 31438 27342 27342 27342 m3ftp          
+ 0  22    22   635/8      0    0  400 27342 27342 27342 27342 nweb           
+root@node0:/dev/shm# 
 
-
-
-
-
-
-
-
-
-
-
-
-				
