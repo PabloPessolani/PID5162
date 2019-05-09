@@ -75,6 +75,8 @@ ssize_t info_read(struct file *file, char __user *ubuf, size_t count, loff_t *pp
 	int i, len, rcode;
 	char *page;
 	static int last_line = 0;
+	dvs_usr_t *d_ptr;
+
 	
 	DVKDEBUG(INTERNAL,"last_line=%d count=%d ppos=%ld\n", last_line, count, *ppos);
 
@@ -101,6 +103,11 @@ ssize_t info_read(struct file *file, char __user *ubuf, size_t count, loff_t *pp
   	len += sprintf(page+len, "sizeof(proc) aligned=%d\n", sizeof_proc_aligned);
   	len += sprintf(page+len, "sizeof(dc)=%d\n", sizeof(dc_desc_t));
   	len += sprintf(page+len, "sizeof(node)=%d\n", sizeof(cluster_node_t));
+
+	d_ptr = &dvs;
+	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(d_ptr));
+	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(d_ptr));
+	DVKDEBUG(DBGPARAMS,DVS_VER_FORMAT, DVS_VER_FIELDS(d_ptr));
 
 	rcode = copy_to_user(ubuf,page,len);
 	kfree(page);

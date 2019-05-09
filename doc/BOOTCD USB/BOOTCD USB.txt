@@ -26,11 +26,12 @@ mkntfs --fast ${USB}1
 mkdir -p /mnt/usbstick                                    
 mount ${USB}1 /mnt/usbstick                                      
 mkdir -p /mnt/usbstick/boot/grub
+
 ###### ATENCION en este archivo hay que copiar lo que dice abajo.
-joe /mnt/usbstick/boot/grub/grub.cfg  
+joe  /mnt/usbstick/boot/grub/grub.cfg 
 cp /image/bootcd.iso /mnt/usbstick
 grub-install --root-directory=/mnt/usbstick $USB                
-umount /mnt/usbstick     
+umount /mnt/usbstick  
 
 ---------------------- /mnt/usbstick/boot/grub/grub.cfg -------------------
 set default=0                                                                                             
@@ -80,6 +81,14 @@ PARA COPIAR PENDRIVE IDENTICOS
 dd if=/dev/sdh of=/dev/sdd bs=1024k status=progress 
 
 	 
+cpio: cannot link var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.usage to /image
+/input_dir//var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.usage: Invalid cross-
+device link
+cpio: cannot link var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.stat to /image/
+input_dir//var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.stat: Invalid cross-de
+vice link
+
+
 
 
 

@@ -198,9 +198,6 @@ long dvk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	int err = 0, dvk_call;
 	int rcode = 0;
 
-	// TEMPORAL
-   	dvs.d_dbglvl = 0xFFFFFFFF;
-
 	DVKDEBUG(DBGLVL0,"cmd=%X arg=%lX\n", cmd, arg);
 	/*
 	 * extract the type and number bitfields, and don't decode

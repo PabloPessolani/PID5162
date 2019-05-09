@@ -64,7 +64,12 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 		}
 		memcpy(&dvs,&lcldvs, sizeof(dvs_usr_t));
 	}
-
+	
+	d_ptr = &dvs;
+	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(d_ptr));
+	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(d_ptr));
+	DVKDEBUG(DBGPARAMS,DVS_VER_FORMAT, DVS_VER_FIELDS(d_ptr));
+	
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_size=%d\n", boot_cpu_data.x86_cache_size);
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_alignment =%d\n", boot_cpu_data.x86_cache_alignment);
 
