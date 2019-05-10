@@ -78,15 +78,13 @@ para evitar tantos mensajes en pantalla/consola
 	 
 	 
 PARA COPIAR PENDRIVE IDENTICOS 
-dd if=/dev/sdh of=/dev/sdd bs=1024k status=progress 
+dd if=/dev/sdd of=/dev/sde bs=1024k status=progress 
 
-	 
-cpio: cannot link var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.usage to /image
-/input_dir//var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.usage: Invalid cross-
-device link
-cpio: cannot link var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.stat to /image/
-input_dir//var/lib/lxcfs/cgroup/cpu,cpuacct/system.slice/dev-mqueue.mount/cpuacct.stat: Invalid cross-de
-vice link
+Hacer dmesg | grep eth  para ver que nombre le asigno a la interface ethernet
+luego cambiar /etc/network/interfaces para asigarle el nombre correcto
+ejecutar /etc/init.d/networking restart 
+
+En el caso de NODE1 o NODE2 debe cambiarse el hostname y la direccion IP 
 
 
 

@@ -1,0 +1,252 @@
+root@node1:/usr/src/dvs/dvk-tests# cat /proc/cpuinfo 
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 60
+model name      : Intel(R) Celeron(R) CPU G1820 @ 2.70GHz
+stepping        : 3
+microcode       : 0x12
+cpu MHz         : 799.914
+cache size      : 2048 KB
+physical id     : 0
+siblings        : 2
+core id         : 0
+cpu cores       : 2
+apicid          : 0
+initial apicid  : 0
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg cx16 xtpr pdcm sse4_1 sse4_2 movbe popcnt tsc_deadline_timer xsave rdrand lahf_lm abm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust erms invpcid xsaveopt dtherm arat pln pts
+bugs            : cpu_meltdown spectre_v1 spectre_v2
+bogomips        : 5387.95
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 39 bits physical, 48 bits virtual
+power management:
+
+processor       : 1
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 60
+model name      : Intel(R) Celeron(R) CPU G1820 @ 2.70GHz
+stepping        : 3
+microcode       : 0x12
+cpu MHz         : 799.914
+cache size      : 2048 KB
+physical id     : 0
+siblings        : 2
+core id         : 1
+cpu cores       : 2
+apicid          : 2
+initial apicid  : 2
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg cx16 xtpr pdcm sse4_1 sse4_2 movbe popcnt tsc_deadline_timer xsave rdrand lahf_lm abm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust erms invpcid xsaveopt dtherm arat pln pts
+bugs            : cpu_meltdown spectre_v1 spectre_v2
+bogomips        : 5387.95
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 39 bits physical, 48 bits virtual
+power management:
+
+root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+root@node0:/usr/src/dvs/dvk-tests#  cat /proc/dvs/DC0/procs
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+root@node0:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 3 1 RDISK
+ dvk_rmtbind RDISK with p_nr=3 to DC0 on node=1
+root@node0:/usr/src/dvs/dvk-tests#  cat /proc/dvs/DC0/procs
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK          
+root@node0:/usr/src/dvs/dvk-tests# cd /dev/shm
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &
+[1] 1546
+root@node0:/dev/shm#  cat /proc/dvs/DC0/procs
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  1548/3      0    8  420 31438 27342 27342 27342 systask        
+ 0   0     0  1549/4      0    8  400 31438 27342 27342 27342 pm             
+ 0   1     1  1550/5      0    8  400 31438 27342 27342 27342 fs             
+ 0   3     3    -1/-1     1 1000    0 27342 27342 27342 27342 RDISK          
+ 0   8     8  1551/6      0    0  400 27342 27342 27342 27342 is             
+ 0  14    14  1554/9      0    8  400 31438 27342 27342 27342 m3ftp          
+ 0  22    22  1553/8      0    0  400 27342 27342 27342 27342 nweb           
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 17:48:36--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out              100%[=================================>]   9,77M  1,14MB/s    in 8,9s    
+
+2019-05-09 17:48:45 (1,10 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 17:48:48--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out              100%[=================================>]   9,77M  1,11MB/s    in 9,0s    
+
+2019-05-09 17:48:57 (1,09 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 17:48:58--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out              100%[=================================>]   9,77M  1,10MB/s    in 9,0s    
+
+2019-05-09 17:49:07 (1,09 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt
+--2019-05-09 17:49:20--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out              100%[=================================>]  48,83M  1,11MB/s    in 44s     
+
+2019-05-09 17:50:05 (1,10 MB/s) - âfile50M.outâguardado [51200000/51200000]
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt
+--2019-05-09 17:50:35--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out              100%[=================================>]  48,83M  1,11MB/s    in 45s     
+
+2019-05-09 17:51:20 (1,09 MB/s) - âfile50M.outâguardado [51200000/51200000]
+
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt
+--2019-05-09 17:51:21--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out              100%[=================================>]  48,83M  1,11MB/s    in 45s     
+
+2019-05-09 17:52:06 (1,10 MB/s) - âfile50M.outâguardado [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 20:52:37--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt'
+
+file10M.txt                    100%[=================================================>]   9,77M  1,14MB/s    in 8,8s
+
+2019-05-09 20:52:46 (1,11 MB/s) - 'file10M.txt' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 20:52:47--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt.1'
+
+file10M.txt.1                  100%[=================================================>]   9,77M  1,11MB/s    in 9,0s
+
+2019-05-09 20:52:56 (1,09 MB/s) - 'file10M.txt.1' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 20:52:58--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt.2'
+
+file10M.txt.2                  100%[=================================================>]   9,77M  1,10MB/s    in 9,0s
+
+2019-05-09 20:53:07 (1,09 MB/s) - 'file10M.txt.2' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 20:53:33--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt'
+
+file50M.txt                    100%[=================================================>]  48,83M  1,11MB/s    in 45s
+
+2019-05-09 20:54:17 (1,10 MB/s) - 'file50M.txt' saved [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 20:54:19--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt.1'
+
+file50M.txt.1                  100%[=================================================>]  48,83M  1,11MB/s    in 45s
+
+2019-05-09 20:55:03 (1,09 MB/s) - 'file50M.txt.1' saved [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 20:55:05--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt.2'
+
+file50M.txt.2                  100%[=================================================>]  48,83M  1,11MB/s    in 44s
+
+2019-05-09 20:55:50 (1,10 MB/s) - 'file50M.txt.2' saved [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>
+
+
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435418.80 t_stop=1557435427.67 t_total=8.88
+total_bytes = 10240000
+Throuhput = 1153754.465426 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435432.25 t_stop=1557435441.26 t_total=9.01
+total_bytes = 10240000
+Throuhput = 1136230.225541 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435443.24 t_stop=1557435452.24 t_total=9.01
+total_bytes = 10240000
+Throuhput = 1137141.981161 [bytes/s
+
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt fi
+le50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435486.29 t_stop=1557435530.73 t_total=44.44
+total_bytes = 51200000
+Throuhput = 1152147.933423 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435534.29 t_stop=1557435578.87 t_total=44.59
+total_bytes = 51200000
+Throuhput = 1148272.764313 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557435581.19 t_stop=1557435625.87 t_total=44.68
+total_bytes = 51200000
+Throuhput = 1145999.969913 [bytes/s
+
+

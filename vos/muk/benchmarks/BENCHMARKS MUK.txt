@@ -105,7 +105,7 @@ muk SERVER1 {
 };
 
 ARRANCAR RDISK 
-nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -ec /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
+root@node0:/dev/shm# nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -d 0 -e 3 -c /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
 root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
 
 ARRANCAR MUK 
@@ -123,6 +123,13 @@ RED A CONFORMAR
 ==================================== EN NODE 0	
 Arrancar con 
 root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+ATENCION HAY QUE CAMBIAR ./test.sh para que la linea
+tipc bearer enable media eth dev eth0 <<<<< diga el nombre correcto de la interface !!!!!!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+
+
 root@node0:/dev/shm# ./tests.sh 0 0 
 Este script:
 	arranca el DVS 
@@ -172,6 +179,7 @@ root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0   1     1    -1/-1     0 1000    0 27342 27342 27342 27342 FS             
  0   3     3   749/749    1    8   20 31438 27342 27342 27342 rdisk 
+
  
 root@node1:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 14 0 FTP 
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
@@ -180,6 +188,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  14    14    -1/-1     0 1000    0 27342 27342 27342 27342 FTP 
  
 ==================================== EN NODE 0
+
 
 root@node0:/usr/src/dvs/dvk-tests# cd /dev/shm
 root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg > /dev/shm/muk_stdout.txt 2> /dev/shm/muk_stderr.txt &

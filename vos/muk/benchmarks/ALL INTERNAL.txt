@@ -1,0 +1,312 @@
+root@node0:/dev/shm# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  1528/3      0    8  420 31438 27342 27342 27342 systask        
+ 0   0     0  1530/5      0    8  400 31438 27342 27342 27342 pm             
+ 0   1     1  1531/6      0    8  400 31438 27342 27342 27342 fs             
+ 0   3     3  1529/4      0    8  400 31438 27342 27342 27342 rdisk          
+ 0   8     8  1532/7      0    0  400 27342 27342 27342 27342 is             
+ 0  14    14  1535/10     0    8  400 31438 27342 27342 27342 m3ftp          
+ 0  22    22  1534/9      0    0  400 27342 27342 27342 27342 nweb 
+ 
+  1527  81056  |   \_ /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg SSH_CONNECTION=192.168.1.5 50619 192.168.1.100 22 LANG=es_AR.UTF-8 OLDPWD=/usr/src/dvs/dvk-tests XDG_SESSION_ID=4 USER=root NODEID=0 DC0=1492 PWD=/dev/shm HOME=/root SSH_CLIENT=192.168.1.5 50619 22 SSH_TTY=/dev/pts/0 MAIL=/var/mail/root TERM=vt100 SHELL=/bin/bash SHLVL=1 LANGUAGE=es_AR:es LOGNAME=root XDG_RUNTIME_DIR=/run/user/0 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin _=/usr/bin/nsenter
+
+root@node0:/dev/shm# cat /proc/cpuinfo 
+processor       : 0
+vendor_id       : AuthenticAMD
+cpu family      : 18
+model           : 1
+model name      : AMD A6-3670 APU with Radeon(tm) HD Graphics
+stepping        : 0
+microcode       : 0x3000027
+cpu MHz         : 800.000
+cache size      : 1024 KB
+physical id     : 0
+siblings        : 4
+core id         : 0
+cpu cores       : 4
+apicid          : 0
+initial apicid  : 0
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 6
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow constant_tsc rep_good nonstop_tsc extd_apicid aperfmperf eagerfpu pni monitor cx16 popcnt lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt hw_pstate vmmcall arat npt lbrv svm_lock nrip_save pausefilter
+bugs            : fxsave_leak sysret_ss_attrs spectre_v1 spectre_v2
+bogomips        : 5399.68
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 40 bits physical, 48 bits virtual
+power management: ts ttp tm stc 100mhzsteps hwpstate
+
+processor       : 1
+vendor_id       : AuthenticAMD
+cpu family      : 18
+model           : 1
+model name      : AMD A6-3670 APU with Radeon(tm) HD Graphics
+stepping        : 0
+microcode       : 0x3000027
+cpu MHz         : 800.000
+cache size      : 1024 KB
+physical id     : 0
+siblings        : 4
+core id         : 2
+cpu cores       : 4
+apicid          : 1
+initial apicid  : 2
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 6
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow constant_tsc rep_good nonstop_tsc extd_apicid aperfmperf eagerfpu pni monitor cx16 popcnt lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt hw_pstate vmmcall arat npt lbrv svm_lock nrip_save pausefilter
+bugs            : fxsave_leak sysret_ss_attrs spectre_v1 spectre_v2
+bogomips        : 5399.68
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 40 bits physical, 48 bits virtual
+power management: ts ttp tm stc 100mhzsteps hwpstate
+
+processor       : 2
+vendor_id       : AuthenticAMD
+cpu family      : 18
+model           : 1
+model name      : AMD A6-3670 APU with Radeon(tm) HD Graphics
+stepping        : 0
+microcode       : 0x3000027
+cpu MHz         : 800.000
+cache size      : 1024 KB
+physical id     : 0
+siblings        : 4
+core id         : 1
+cpu cores       : 4
+apicid          : 2
+initial apicid  : 1
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 6
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow constant_tsc rep_good nonstop_tsc extd_apicid aperfmperf eagerfpu pni monitor cx16 popcnt lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt hw_pstate vmmcall arat npt lbrv svm_lock nrip_save pausefilter
+bugs            : fxsave_leak sysret_ss_attrs spectre_v1 spectre_v2
+bogomips        : 5399.68
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 40 bits physical, 48 bits virtual
+power management: ts ttp tm stc 100mhzsteps hwpstate
+
+processor       : 3
+vendor_id       : AuthenticAMD
+cpu family      : 18
+model           : 1
+model name      : AMD A6-3670 APU with Radeon(tm) HD Graphics
+stepping        : 0
+microcode       : 0x3000027
+cpu MHz         : 800.000
+cache size      : 1024 KB
+physical id     : 0
+siblings        : 4
+core id         : 3
+cpu cores       : 4
+apicid          : 3
+initial apicid  : 3
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 6
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow constant_tsc rep_good nonstop_tsc extd_apicid aperfmperf eagerfpu pni monitor cx16 popcnt lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt hw_pstate vmmcall arat npt lbrv svm_lock nrip_save pausefilter
+bugs            : fxsave_leak sysret_ss_attrs spectre_v1 spectre_v2
+bogomips        : 5399.68
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 40 bits physical, 48 bits virtual
+power management: ts ttp tm stc 100mhzsteps hwpstate
+
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 15:52:32--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out                 100%[==========================================>]   9,77M  11,0MB/s    in 0,9s    
+
+2019-05-09 15:52:33 (11,0 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 15:52:37--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out                 100%[==========================================>]   9,77M  10,9MB/s    in 0,9s    
+
+2019-05-09 15:52:38 (10,9 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+root@node0:/dev/shm# wget -O file10M.out  http://192.168.1.100:8081/file10M.txt
+--2019-05-09 15:52:40--  http://192.168.1.100:8081/file10M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 10240000 (9,8M) [text/txt]
+Grabando a: âfile10M.outâ
+
+file10M.out                 100%[==========================================>]   9,77M  11,1MB/s    in 0,9s    
+
+2019-05-09 15:52:41 (11,1 MB/s) - âfile10M.outâguardado [10240000/10240000]
+
+       
+--2019-05-09 15:53:17--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out                 100%[==========================================>]  48,83M  11,0MB/s    in 4,4s    
+
+2019-05-09 15:53:21 (11,0 MB/s) - âfile50M.outâguardado [51200000/51200000]
+
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt
+--2019-05-09 15:53:23--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out                 100%[==========================================>]  48,83M  18,5MB/s    in 2,6s    
+
+2019-05-09 15:53:25 (18,5 MB/s) - âfile50M.outâguardado [51200000/51200000]
+
+root@node0:/dev/shm# wget -O file50M.out  http://192.168.1.100:8081/file50M.txt
+--2019-05-09 15:53:27--  http://192.168.1.100:8081/file50M.txt
+Conectando con 192.168.1.100:8081... conectado.
+PeticiÃ³n HTTP enviada, esperando respuesta... 200 OK
+Longitud: 51200000 (49M) [text/txt]
+Grabando a: âfile50M.outâ
+
+file50M.out                 100%[==========================================>]  48,83M  17,8MB/s    in 2,8s    
+
+2019-05-09 15:53:29 (17,8 MB/s) - âfile50M.outâguardado [51200000/51200000]
+
+    
+
+   
+desde PC SWITCH 100 MBPS
+file10M.txt                    100%[==================================================>]   9,77M  3,26MB/s    in 3,0s
+file10M.txt.1                  100%[==================================================>]   9,77M  2,93MB/s    in 3,3s
+file10M.txt.2                  100%[=================================================>]   9,77M  2,97MB/s    in 3,3s
+
+file50M.txt                    100%[==================================================>]  48,83M  3,11MB/s    in 16s
+file50M.txt.1                  100%[==================================================>]  48,83M  3,14MB/s    in 16s
+file50M.txt.2                  100%[=================================================>]  48,83M  2,42MB/s    in 17s
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 18:54:12--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt'
+
+file10M.txt                    100%[=================================================>]   9,77M  10,9MB/s    in 0,9s
+
+2019-05-09 18:54:13 (10,9 MB/s) - 'file10M.txt' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 18:54:16--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt'
+
+file50M.txt                    100%[=================================================>]  48,83M  11,4MB/s    in 4,3s
+
+2019-05-09 18:54:20 (11,3 MB/s) - 'file50M.txt' saved [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 18:54:22--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt.1'
+
+file10M.txt.1                  100%[=================================================>]   9,77M  10,9MB/s    in 0,9s
+
+2019-05-09 18:54:23 (10,9 MB/s) - 'file10M.txt.1' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 18:54:26--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt.1'
+
+file50M.txt.1                  100%[=================================================>]  48,83M  10,8MB/s    in 4,5s
+
+2019-05-09 18:54:31 (10,8 MB/s) - 'file50M.txt.1' saved [51200000/51200000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file10M.txt
+--2019-05-09 18:54:33--  http://192.168.1.100:8081/file10M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 10240000 (9,8M) [text/txt]
+Saving to: 'file10M.txt.2'
+
+file10M.txt.2                  100%[=================================================>]   9,77M  10,7MB/s    in 0,9s
+
+2019-05-09 18:54:34 (10,7 MB/s) - 'file10M.txt.2' saved [10240000/10240000]
+
+
+C:\Users\Admin\Downloads>wget http://192.168.1.100:8081/file50M.txt
+--2019-05-09 18:54:38--  http://192.168.1.100:8081/file50M.txt
+Connecting to 192.168.1.100:8081... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51200000 (49M) [text/txt]
+Saving to: 'file50M.txt.2'
+
+file50M.txt.2                  100%[=================================================>]  48,83M  25,5MB/s    in 1,9s
+
+2019-05-09 18:54:40 (25,5 MB/s) - 'file50M.txt.2' saved [51200000/5120000
+
+
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428136.04 t_stop=1557428136.92 t_total=0.88
+total_bytes = 10240000
+Throuhput = 11616521.757005 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428140.65 t_stop=1557428141.53 t_total=0.89
+total_bytes = 10240000
+Throuhput = 11547917.489972 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file10M.txt file10M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428144.05 t_stop=1557428144.94 t_total=0.89
+total_bytes = 10240000
+Throuhput = 11538353.014502 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428159.14 t_stop=1557428162.68 t_total=3.54
+total_bytes = 51200000
+Throuhput = 14463109.448756 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428165.26 t_stop=1557428168.74 t_total=3.48
+total_bytes = 51200000
+Throuhput = 14700976.426095 [bytes/s]
+root@node0:/dev/shm# nsenter -p -t$DC0 /usr/src/dvs/vos/muk/servers/m3ftp/m3ftp -g 0 file50M.txt file50M.out
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<t_start=1557428171.64 t_stop=1557428173.57 t_total=1.93
+total_bytes = 51200000
+Throuhput = 26502694.446721 [bytes/
+
+
+
+
+  
