@@ -1,5 +1,5 @@
 
-//define DVKDBG		1
+#define DVKDBG		1
 
 #define NODEBUG  	0x00000000
 #define DBGLVL0  	0x00000001
