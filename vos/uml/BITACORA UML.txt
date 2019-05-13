@@ -1701,17 +1701,215 @@ CHILD[1] dvk_getep=-338
 		
 RESUMEN: NO ES LA DIRECCION DE MEMORIA CORRECTA
 
+	SOLUCION COMPLICADA:
+			Si no se encuentra la forma de localizar la direccion del proceso UML entonces se va a tener que manejar con copias
+			Para ellos hay que:
+				Cada proceso UML que haga BIND debera crear un hilo en el kernel que hara el bind 
+				Cada IPC que haga el proceso UML sera hecha por su hilo correspondiente
+				Hay que mantener una relacion proceso_UML-Thread_KERNEL_UML
+				
+
+DONDE HAY mmap()????????
+kernel/syscall.c:long old_mmap(unsigned long addr, unsigned long len,
+kernel/tlb.c:static int add_mmap(unsigned long virt, unsigned long phys, unsigned long len,
+kernel/tlb.c:				ret = add_mmap(addr, pte_val(*pte) & PAGE_MASK,
+kernel/skas/mmu.c:void arch_exit_mmap(struct mm_struct *mm)
+include/asm/mmu_context.h:static inline void arch_dup_mmap(struct mm_struct *oldmm, struct mm_struct *mm)
+include/asm/mmu_context.h:extern void arch_exit_mmap(struct mm_struct *mm);
+os-Linux/mem.c:	addr = mmap(NULL, UM_KERN_PAGE_SIZE,
+os-Linux/skas/process.c:		addr = mmap((void *) STUB_DATA,
+os-Linux/skas/process.c:	stack = mmap(NULL, UM_KERN_PAGE_SIZE,
+drivers/mmapper_kern.c:static int mmapper_mmap(struct file *file, struct vm_area_struct *vma)
+
+EN QUE DIRECTORIO CREA LOS ARCHIVOS TEMPORALES ???
+os-Linux/skas/process.c
+	static int userspace_tramp(void *stack){
+		
+	}
+
+
+Skas effects on the host
+You will notice some differences on the host. If you run ps, you 
+will notice only four processes per UML rather than the dozens 
+that you see in tt mode. They are 
+The UML kernel thread, which runs in the separate kernel 
+address space, executes kernel code, and does system call 
+interception on UML processes 
+•
+The UML userspace thread, which runs all UML process 
+code and switches between host address spaces on each 
+UML context switch 
+•
+The ubd driver asynchronous IO thread •
+The write SIGIO emulation thread  •
+
+Quien usa clone??
+drivers/ubd_user.c:     pid = clone(io_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
+os-Linux/helper.c:      pid = clone(helper_child, (void *) sp, CLONE_VM, &data);
+os-Linux/helper.c:      pid = clone(proc, (void *) sp, flags, arg);
+os-Linux/skas/process.c:        pid = clone(userspace_tramp, (void *) sp, flags, (void *) stub_stack);
+os-Linux/process.c: * syscalls, and also breaks with clone(), which does not unshare the TLS.
+
+
+PARA CONSIDERAR!!!!!!!!!!!!!!!!!1111
+En el kernel se puede obtener el task_ptr a partir el uml_vpid
+Como se convierte una direccion desde la tarea al kernel ??
+https://slideplayer.com/slide/13193958/79/images/28/UML+tt%2Fskas3%2Fskas0+Modes.jpg
+
+CONFIRMADO:  SE CREA UN PROCESO EN LINUX POR CADA PROCESO EN UML-USER 
+Seguramente todos comparten el mismo 
+
+En UML
+root@node0:~# read "hola" &
+[1] 673
+[1]+  Stopped                 read "hola"
+root@node0:~# read "hola" &
+[2] 675
+[2]+  Stopped                 read "hola"
+root@node0:~# read "hola" &
+[3] 676
+[3]+  Stopped                 read "hola"
+root@node0:~# read "hola" &
+[4] 677
+root@node0:~# read "hola" &
+[5] 678
+[4]-  Stopped                 read "hola"
+[5]+  Stopped                 read "hola"
+root@node0:~# read "hola" &
+[6] 679
+[6]+  Stopped                 read "hola"
+
+En HOST 
+root@node0:/usr/src/linux/arch/um# ps -ef | grep linux 
+root       442     1  0 20:58 tty1     00:00:00 /sbin/agetty --noclear tty1 linux
+root       680   670  2 21:15 pts/1    00:00:03 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M
+root       686   680  0 21:15 pts/1    00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M
+root       687   680  0 21:15 pts/1    00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M
+root       688   680  0 21:15 pts/1    00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M
+root       690   680  0 21:15 pts/1    00:00:00 [linux]
+root       712   680  0 21:15 pts/1    00:00:00 [linux]
+root       732   680  0 21:15 pts/1    00:00:00 [linux]
+root       817   680  0 21:15 pts/1    00:00:00 [linux]
+root       818   680  0 21:15 pts/1    00:00:00 [linux]
+root       833   680  0 21:15 pts/1    00:00:00 [linux]
+root       834   680  0 21:15 pts/1    00:00:00 [linux]
+root       835   680  0 21:15 pts/1    00:00:00 [linux]
+root       836   680  0 21:15 pts/1    00:00:00 [linux]
+root       837   680  0 21:15 pts/1    00:00:00 [linux]
+root       847   680  0 21:16 pts/1    00:00:00 [linux] <<<< 
+root       858   680  0 21:16 pts/1    00:00:00 [linux] <<<<
+root       864   680  0 21:16 pts/1    00:00:00 [linux] <<<<
+root       870   680  0 21:17 pts/1    00:00:00 [linux] <<<<
+root       871   680  0 21:17 pts/1    00:00:00 [linux] <<<<
+root       872   680  0 21:17 pts/1    00:00:00 [linux] <<<<
+root       873   680  0 21:17 pts/1    00:00:00 [linux] <<<<
+root       874   680  0 21:17 pts/1    00:00:00 [linux] <<<<
+root       879   620  0 21:17 pts/0    00:00:00 grep linux
+
+  PID TTY      STAT   TIME  MAJFL   TRS   DRS   RSS %MEM COMMAND
+  872 pts/1    t+     0:00      0  3529 4191458 340  0.0      \_ [linux]
+  873 pts/1    t+     0:00      0  3529 4191458 340  0.0      \_ [linux]
+  874 pts/1    t+     0:00      0  3529 4191458 340  0.0      \_ [linux]
+  893 pts/1    t+     0:00      0  3529 4191458 340  0.0      \_ [linux]
+  895 pts/1    t+     0:00      0  3529 4191462 340  0.0      \_ [linux]
+  897 pts/1    t+     0:00      0  3529 4191462 340  0.0      \_ [linux]
 
 
 
+skas0 Mode
+More recently, an Italian college student, Paolo Giarrusso, who had been doing good work on UML,
+thought that it might be possible to implement something like skas3 on hosts without the skas3 patch.
 
+His basic idea was to insert just enough code into the address space of each UML process to perform
+the address space updates and information retrieval for which skas3 requires a host patch. 
+As I implemented it over the following weekend, this inserted code takes the form of two pages 
+mapped by the UML kernel at the top of each process address space. 
+One of these pages is for a SIGSEGV signal frame and is mapped with write permission, 
+and the other contains UML code and is mapped read-only.
 
+The code page contains a function that invokes mmap, munmap, and mprotect as requested by the UML kernel.
+The page also contains the SIGSEGV signal handler. The function is invoked whenever address space 
+changes are needed in a UML process and is the equivalent of requesting an address space change 
+through a /proc/mm file descriptor. 
 
+The signal handler implements the equivalent of PTRACE_FAULTINFO by receiving the SIGSEGV signal, 
+reading all of the fault information from its stack, and putting it in a convenient form where 
+the UML kernel can read it.
 
+Without changes in the host kernel, we have no way to create new host address spaces without 
+creating new host processes. So, skas0 mode resembles tt mode in having one host process  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+for each UML process.
 
+This is the only similarity between skas0 mode and tt mode. In skas0 mode, the UML kernel 
+runs in a separate host process and has a separate host address space from its processes. 
+All of the skas3 benefits to security and performance flow from this property. 
 
+The fact that the UML kernel is controlling many more processes than in skas3 mode 
+means that we have the same wasted kernel memory that tt mode has.
 
+This makes skas0 mode somewhat less efficient than skas3 mode but still a large improvement over tt mode.
 
+C:\Users\Usuario\AppData\Local\Temp\scp32181\usr\src\linux\arch\um\kernel\skas\syscall.c
+	void handle_syscall(struct uml_pt_regs *r)
+	{
+		struct pt_regs *regs = container_of(r, struct pt_regs, regs);
+		int syscall;
+		
+		static int pid, vpid ;
+			if( vpid != get_current_pid()) {
+				pid = os_getpid();
+				vpid = get_current_pid();
+			}
+	
+	
+		syscall = UPT_SYSCALL_NR(r);
+#define SYSCALL_IOCTL	54	
+	if( syscall == SYSCALL_IOCTL)
+		printk("UML pid=%d vpid=%d ioctl syscall=%d\n", pid, vpid, syscall);
+	
+
+En 
+/usr/src/linux/arch/x86/include/generated/asm/syscalls_32.h
+esta la lista de SYSCALLS
+donde 
+__SYSCALL_I386(54, sys_ioctl, )
+
+UML pid=2421 vpid=661 ioctl syscall=54
+UML pid=2421 vpid=661 ioctl syscall=54
+UML pid=2421 vpid=661 ioctl syscall=54
+UML pid=2421 vpid=661 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+Debian GNU/Linux 9 node0 tty1
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+node0 login: UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+UML pid=2421 vpid=660 ioctl syscall=54
+
+Esto demuestra que el PID que ejecuta los syscalls es el PID del KERNEL
+
+root@node0:~# cat /etc/network/interfaces
+UML pid=2421 vpid=670 ioctl syscall=54             <<<<< 670 es la shell 
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=675 ioctl syscall=54 				<<<<< 675 es el cat 
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+UML pid=2421 vpid=670 ioctl syscall=54
+
+POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK 
 
 
 
