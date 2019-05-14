@@ -23,7 +23,7 @@ static int __init start_kernel_proc(void *unused)
 	tid = os_gettid();
 	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
 #endif // CONFIG_UML_DVK
-	
+		
 	cpu_tasks[0].pid = pid;
 	cpu_tasks[0].task = current;
 

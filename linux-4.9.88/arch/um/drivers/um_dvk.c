@@ -54,18 +54,68 @@
 #define DEVICE_NAME "dvk"
 
 
-#define UMK_KERNEL_NR	(-2)
+#define UML_KERNEL_NR	(-2)
 #define DCID0			0
 
 
 int  dvk_fd; 
 static char *dvk_dev = UML_DVK_DEV;
 extern int userspace_pid[];
-
+dvs_usr_t dvs;
+dc_usr_t dcu;
+int 	dcid; 
+extern int local_nodeid;
+int uml_ep;
+int rd_ep;
+proc_usr_t uml_proc;
+proc_usr_t rd_proc;
 
 #define uml_bind(dcid,endpoint) 			uml_bind_X(SELF_BIND, dcid, (-1), endpoint, LOCALNODE)
 #define uml_lclbind(dcid,pid,endpoint) 		uml_bind_X(LCL_BIND, dcid, pid, endpoint, LOCALNODE)
 
+
+long uml_getdcinfo(int dcid, dc_usr_t *dcu_ptr)
+{
+    long ret;
+	parm_getdcinfo_t parm;
+	
+    DVKDEBUG(DBGPARAMS, "dcid=%d\n", dcid);
+	parm.parm_dcid	= dcid;
+	parm.parm_dc	= dcu_ptr;
+	ret = os_ioctl_generic(dvk_fd,DVK_IOCGGETDCINFO, (int) &parm);
+    DVKDEBUG(DBGPARAMS,"os_ioctl_generic ret=%d\n",ret);	
+	if (ret < 0) ERROR_RETURN(ret); 
+    DVKDEBUG(DBGPARAMS, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
+    DVKDEBUG(DBGPARAMS, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
+	return(ret);
+}
+
+long uml_getdvsinfo(dvs_usr_t *dvsu_ptr)
+{
+    long ret;
+    DVKDEBUG(DBGPARAMS, "\n");
+	ret = os_ioctl_generic(dvk_fd,DVK_IOCGGETDVSINFO, (int) dvsu_ptr);
+    DVKDEBUG(DBGPARAMS,"os_ioctl_generic ret=%d\n",ret); 
+	if (ret < 0) ERROR_RETURN(ret); 
+    DVKDEBUG(DBGPARAMS, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));
+	return(ret);
+}
+
+long uml_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
+{
+    long ret;
+	parm_procinfo_t parm;
+
+    DVKDEBUG(DBGPARAMS, "dcid=%d p_nr=%d \n", dcid, p_nr);
+	parm.parm_dcid	= dcid;
+	parm.parm_nr	= p_nr;
+	parm.parm_proc	= p_usr;
+	ret = os_ioctl_generic(dvk_fd,DVK_IOCGGETPRINFO, (int) &parm);
+    DVKDEBUG(DBGPARAMS,"os_ioctl_generic ret=%d\n",ret);	
+	if (ret < 0) ERROR_RETURN(ret); 
+    DVKDEBUG(DBGPARAMS, PROC_USR_FORMAT, PROC_USR_FIELDS(p_usr));
+	return(ret);
+}
 
 long uml_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 {
@@ -82,7 +132,6 @@ long uml_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	parm.parm_nodeid= nodeid;	
 	ret = os_ioctl_generic(dvk_fd,DVK_IOCSDVKBIND, (int) &parm);
     DVKDEBUG(DBGPARAMS,"os_ioctl_generic ret=%d\n",ret);	
-
 	return(ret);
 }
 
@@ -143,7 +192,7 @@ static long uml_dvk_ioctl(struct file *file,
 		DVKDEBUG(DBGPARAMS, "BEFORE cmd=%d dcid=%d pid=%d endpoint=%d nodeid=%d\n", 
 			bind_ptr->parm_cmd, bind_ptr->parm_dcid, bind_ptr->parm_pid, bind_ptr->parm_ep, bind_ptr->parm_nodeid);
 		bind_ptr->parm_cmd  = LCL_BIND;
-		bind_ptr->parm_dcid = DCID0;
+		bind_ptr->parm_dcid = dcid;
 		bind_ptr->parm_pid  = uml_pid;
 		bind_ptr->parm_nodeid   = LOCALNODE;
 		DVKDEBUG(DBGPARAMS, "AFTER cmd=%d dcid=%d pid=%d endpoint=%d nodeid=%d\n", 
@@ -164,10 +213,14 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 {
 	int rcode;
 	int ep;
+	dvs_usr_t *dvsu_ptr;
+	dc_usr_t *dcu_ptr;
+	proc_usr_t *proc_ptr;
 	int r = 0, w = 0;
 
 	kernel_param_lock(THIS_MODULE);
 	mutex_lock(&uml_dvk_mutex);
+	
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
 	// int os_open_file(const char *file, struct openflags flags, int mode);
 	if (file->f_mode & FMODE_READ)
@@ -179,14 +232,35 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	DVKDEBUG(INTERNAL,"dvk_fd=%d\n",dvk_fd);
 	mutex_unlock(&uml_dvk_mutex);
 	kernel_param_unlock(THIS_MODULE);
-
 	if (dvk_fd < 0) {
-		return dvk_fd;
+		ERROR_PRINT(dvk_fd);
 	}
+	
 	file->private_data = dvk_fd;
 
-    ep = uml_bind(DCID0, UMK_KERNEL_NR);
-	DVKDEBUG(INTERNAL,"dvk_bind ep=%d\n",ep);
+	dvsu_ptr = &dvs;
+	local_nodeid = uml_getdvsinfo(dvsu_ptr);
+	if( local_nodeid < 0){
+		ERROR_PRINT(local_nodeid);
+		return(0);
+	}
+	DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);	
+	
+	dcu_ptr = &dcu;
+	rcode = uml_getdcinfo(DCID0, dcu_ptr);
+	if( rcode < 0){
+		ERROR_PRINT(rcode);
+		return(0);
+	}
+	
+	ep = uml_bind(dcid, uml_ep);
+	DVKDEBUG(INTERNAL,"uml_bind ep=%d\n",ep);
+
+	proc_ptr = &uml_proc;
+	rcode = uml_getprocinfo(dcid, uml_ep, proc_ptr);
+	if(rcode < 0)
+		ERROR_PRINT(rcode);
+
 
 	return 0;
 }

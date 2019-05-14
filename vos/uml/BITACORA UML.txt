@@ -1911,10 +1911,287 @@ UML pid=2421 vpid=670 ioctl syscall=54
 
 POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK 
 
+====================================================================================================
+20190513:
+
+			SE INCORPORO LA LECTURA DE PARAMETROS EN LA LINEA DE COMANDOS (dcid=23 uml_ep=-4 rd_ep=3)
+			
+			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6  
+				 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
+		>>>>	uml_dcid: dcid=0
+		>>>>	uml_uml_ep: uml_ep=-2
+		>>>>	uml_rd_ep: rd_ep=3
+				Locating the bottom of the address space ... 0x0
+				Locating the top of the address space ... 0xc0000000
+				Core dump limits :
+						soft - 0
+						hard - NONE
+				Checking that ptrace can change system call numbers...OK
+				Checking syscall emulation patch for ptrace...OK
+				Checking advanced syscall emulation patch for ptrace...OK
+				Checking environment variables for a tempdir...none found
+				Checking if /dev/shm is on tmpfs...OK
+				Checking PROT_EXEC mmap in /dev/shm...OK
+				Adding 11911168 bytes to physical memory to account for exec-shield gap
+				DEBUG 0:start_kernel_proc:30: UML-kernel PID=31362  UML-kernel TID=31362
+				DEBUG 0:start_kernel_proc:36: DVK device file successfully opened!! dvk_fd=3
+				Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #29 Tue May 14 00:01:20 -03 2019
+				Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 262981
+				Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+				PID hash table entries: 4096 (order: 2, 16384 bytes)
+				Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+				Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+				Memory: 1035020K/1060208K available (2184K kernel code, 627K rwdata, 620K rodata, 81K init, 125K bss, 25188K reserved, 0K cma-reserved)
+				NR_IRQS:15
+				clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+				Calibrating delay loop... 1836.64 BogoMIPS (lpj=9183232)
+				pid_max: default: 32768 minimum: 301
+				Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+				Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+				Checking for host processor cmov support...Yes
+				Checking that host ptys support output SIGIO...Yes
+				Checking that host ptys support SIGIO on close...No, enabling workaround
+				devtmpfs: initialized
+				Using 2.6 host AIO
+				clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+				futex hash table entries: 256 (order: -1, 3072 bytes)
+				NET: Registered protocol family 16
+				clocksource: Switched to clocksource timer
+				VFS: Disk quotas dquot_6.6.0
+				VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+				NET: Registered protocol family 2
+				TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+				TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+				TCP: Hash tables configured (established 16384 bind 16384)
+				UDP hash table entries: 1024 (order: 2, 16384 bytes)
+				UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+				NET: Registered protocol family 1
+				console [stderr0] disabled
+				mconsole (version 2) initialized on /root/.uml/wHVYj1/mconsole
+				Checking host MADV_REMOVE support...OK
+				UML Audio Relay (host dsp = /dev/sound/dsp, host mixer = /dev/sound/mixer)
+		>>>>>   UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+		>>>>>   DEBUG 1:uml_dvk_init_module:298: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+		>>>>>	DEBUG 1:uml_dvk_init_module:303: UML-kernel PID=31362  UML-kernel TID=31362
+				Host TLS support detected
+				Detected host type: i386 (GDT indexes 6 to 9)
+				workingset: timestamp_bits=30 max_order=18 bucket_order=0
+				io scheduler noop registered
+				io scheduler deadline registered (default)
+				io scheduler cfq registered
+				loop: module loaded
+				nbd: registered device at major 43
+				tun: Universal TUN/TAP device driver, 1.6
+				tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+				PPP generic driver version 2.4.2
+				SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+				NET: Registered protocol family 17
+				Initialized stdio console driver
+				Console initialized on /dev/tty0
+				console [tty0] enabled
+				Initializing software serial port version 1
+				console [mc-1] enabled
+				EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+				EXT4-fs (ubda): mounting ext2 file system using the ext4 subsystem
+				EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+				VFS: Mounted root (ext2 filesystem) readonly on device 98:0.
+				devtmpfs: mounted
+				This architecture does not have kernel memory protection.
+				random: fast init done
+				systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
+				systemd[1]: Detected virtualization vmware.
+				systemd[1]: Detected architecture x86.
+
+				Welcome to Debian GNU/Linux 9 (stretch)!
+
+				systemd[1]: Set hostname to <node0>.
+				systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+				systemd[1]: Created slice System Slice.
+				[  OK  ] Created slice System Slice.
+				systemd[1]: Reached target Slices.
+				[  OK  ] Reached target Slices.
+				systemd[1]: Started Dispatch Password Requests to Console Directory Watch.
+				[  OK  ] Started Dispatch Password Requests to Console Directory Watch.
+				systemd[1]: Set up automount Arbitrary Executable File Formats File System Automount Point.
+				[  OK  ] Set up automount Arbitrary Executabâ¦rmats File System Automount Point.
+				systemd[1]: dev-hugepages.mount: Couldn't determine result for ConditionVirtualization=!private-users, assuming failed: No such file or directory
+				[  OK  ] Reached target Remote File Systems.
+						 Mounting POSIX Message Queue File System...
+				[  OK  ] Reached target Swap.
+				[  OK  ] Listening on Journal Socket (/dev/log).
+				[  OK  ] Listening on udev Control Socket.
+				[  OK  ] Listening on udev Kernel Socket.
+				[  OK  ] Created slice system-getty.slice.
+				[  OK  ] Started Forward Password Requests to Wall Directory Watch.
+				[  OK  ] Reached target Encrypted Volumes.
+				[  OK  ] Reached target Paths.
+				[  OK  ] Listening on Journal Socket.
+						 Starting Remount Root and Kernel File Systems...
+				[  OK  ] Listening on Syslog Socket.
+						 Starting Journal Service...
+						 Starting Load Kernel Modules...
+						 Starting Create Static Device Nodes in /dev...
+				[  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
+				[  OK  ] Reached target Sockets.
+				[  OK  ] Mounted POSIX Message Queue File System.
+				[  OK  ] Started Remount Root and Kernel File Systems.
+						 Starting Load/Save Random Seed...
+						 Starting udev Coldplug all Devices...
+				[  OK  ] Started Load Kernel Modules.
+						 Starting Apply Kernel Variables...
+				[  OK  ] Started Journal Service.
+				[  OK  ] Started Load/Save Random Seed.
+						 Starting Flush Journal to Persistent Storage...
+				[  OK  ] Started Create Static Device Nodes in /dev.
+						 Starting udev Kernel Device Manager...
+				[  OK  ] Reached target Local File Systems (Pre).
+				[  OK  ] Reached target Local File Systems.
+				[  OK  ] Started Apply Kernel Variables.
+				systemd-journald[351]: Received request to flush runtime journal from PID 1
+				[  OK  ] Started Flush Journal to Persistent Storage.
+						 Starting Create Volatile Files and Directories...
+						 Starting Raise network interfaces...
+				[  OK  ] Started udev Kernel Device Manager.
+				[  OK  ] Started udev Coldplug all Devices.
+				[FAILED] Failed to start Create Volatile Files and Directories.
+				See 'systemctl status systemd-tmpfiles-setup.service' for details.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[  OK  ] Reached target System Time Synchronized.
+						 Starting Update UTMP about System Boot/Shutdown...
+				[  OK  ] Stopped Network Time Synchronization.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[  OK  ] Stopped Network Time Synchronization.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+				See 'systemctl status systemd-update-utmp.service' for details.
+				[DEPEND] Dependency failed for Update UTMP about System Runlevel Changes.
+				[  OK  ] Stopped Network Time Synchronization.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[  OK  ] Reached target System Initialization.
+				[  OK  ] Reached target Basic System.
+				[  OK  ] Started Daily Cleanup of Temporary Directories.
+				[  OK  ] Started Daily apt download activities.
+				[  OK  ] Started Daily apt upgrade and clean activities.
+				[  OK  ] Reached target Timers.
+						 Starting System Logging Service...
+						 Starting getty on tty2-tty6 if dbus and logind are not available...
+				[  OK  ] Started Regular background program processing daemon.
+				[  OK  ] Stopped Network Time Synchronization.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[  OK  ] Started System Logging Service.
+				[  OK  ] Started Raise network interfaces.
+				[  OK  ] Reached target Network.
+						 Starting Permit User Sessions...
+				[  OK  ] Stopped Network Time Synchronization.
+				[FAILED] Failed to start Network Time Synchronization.
+				See 'systemctl status systemd-timesyncd.service' for details.
+				[  OK  ] Started getty on tty2-tty6 if dbus and logind are not available.
+				[  OK  ] Started Permit User Sessions.
+				[  OK  ] Started Getty on tty2.
+				[  OK  ] Started Getty on tty4.
+				[  OK  ] Started Getty on tty1.
+				[  OK  ] Started Getty on tty3.
+				[  OK  ] Started Getty on tty6.
+				[  OK  ] Started Getty on tty5.
+				[  OK  ] Reached target Login Prompts.
+				[  OK  ] Reached target Multi-User System.
+				[  OK  ] Reached target Graphical Interface.
+
+				Debian GNU/Linux 9 node0 tty1
+
+		
+		SE LEE INFO DEL DC Y DEL DVS en el open del device /dev/dvk 
+			root@node0:~# mknod /dev/dvk c 33 0
+			random: crng init done
+			root@node0:~# echo > /dev/dvk
+			DEBUG 668:uml_dvk_open:224: dvk_dev=/dev/dvk
+			DEBUG 668:uml_dvk_open:232: dvk_fd=20
+			
+			DEBUG 668:uml_getdvsinfo:96: 
+			DEBUG 668:uml_getdvsinfo:98: os_ioctl_generic ret=0
+			DEBUG 668:uml_getdvsinfo:100: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			
+			DEBUG 668:uml_dvk_open:247: local_nodeid=0
+			DEBUG 668:uml_getdcinfo:82: dcid=0
+			DEBUG 668:uml_getdcinfo:86: os_ioctl_generic ret=0
+			DEBUG 668:uml_getdcinfo:88: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			DEBUG 668:uml_getdcinfo:89: flags=0 dc_nodes=3 dc_pid=16698 dc_name=DC0
+
+			DEBUG 668:uml_bind_X:126: cmd=0 dcid=0 pid=-1 endpoint=-2 nodeid=-1
+			DEBUG 668:uml_bind_X:134: os_ioctl_generic ret=-2
+			DEBUG 668:uml_dvk_open:257: uml_bind ep=-2
+			DEBUG 668:uml_getprocinfo:109: dcid=0 p_nr=-2 
+			DEBUG 668:uml_getprocinfo:114: os_ioctl_generic ret=0
+			DEBUG 668:uml_getprocinfo:116: nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=31362 vpid=31362 nodeid=0 name=linux 
+			-bash: echo: write error: Invalid argument
+			DEBUG 668:uml_dvk_release:270: dvk_dev=/dev/dvk
+
+		EN EL HOST 
+			root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0  -2    -2 31362/31362  0    0   20 27342 27342 27342 27342 linux
+
+================================== TODO ==================================================
+
+Hacer que el UML-Kernel utilice M3-IPC no es problematico.
+Se crean hilos por cada driver o FS y se manejan sin ningun problema. 
+Proyecto1: uso de RDISK
+Proyecto2: uso de MOLFS
+
+PASO1: 
+Imprimir info sobre DVS 
+	Imprimir info sobre DC 
+	Pasarle parametro por linea de comando “endpoint=XX”
+	Bindear el UML-Kernel como SYSTEM (-2) o XX 
+	Imprimir info del proceso 
+
+PASO2:
+	En base a dc_init crear uml_init
+	Alli automaticamente se hace un fork/exec con UML 
+	Modificar el UML para que haga wait4bind()
+
+En definitiva: 
+Si existe el parámetro “endpoint=XX”, entonces se bindea SOLO.
+Si no existe, entonces hace wait4bind()
+
+PASO3:
+	Leer como muk.cfg un archivo de configuracion es decir
+	Parametro config=”uml.cfg”
+
+===============================================================
+Como pasarle parametros al kernel desde la linea de comandos?
 
 
-
-
+int Atoi(char *str)
+{
+    if (*str == '\0')
+       return 0;
+ 
+    int res = 0;		// Initialize result
+    int sign = 1;		// Initialize sign as positive
+    int i = 0;			// Initialize index of first digit
+ 
+     if (str[0] == '-')
+    {
+        sign = -1;
+        i++;  			// Also update index of first digit
+    }
+ 
+    for (; str[i] != '\0'; ++i)
+    {
+        if ( str[i] <= '0' || str[i] >= '9')	// If string contain character it will terminate
+            return 0; 
+            
+        res = res*10 + str[i] - '0';
+    }
+ 
+    return sign*res;
+}
 
 
 
