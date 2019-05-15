@@ -1916,8 +1916,7 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 
 			SE INCORPORO LA LECTURA DE PARAMETROS EN LA LINEA DE COMANDOS (dcid=23 uml_ep=-4 rd_ep=3)
 			
-			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6  
-				 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
+			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
 		>>>>	uml_dcid: dcid=0
 		>>>>	uml_uml_ep: uml_ep=-2
 		>>>>	uml_rd_ep: rd_ep=3
@@ -2135,6 +2134,102 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 			root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
 			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 			 0  -2    -2 31362/31362  0    0   20 27342 27342 27342 27342 linux
+
+====================================================================================================
+20190514:
+		Se incluyeron todas las funciones de la libreria stub_dvkcall.c como fuentes
+		dentro de um_dvk.c
+		Obviamente se modifico completa la stub_dvkcall.c pero de esta forma se mantiene
+		compatibilidad a futuro.
+		Se especifican dcid, uml_ep, rd_ep y rd_cfg.
+		
+		
+		# cd /usr/src/dvs/dvk-tests/
+		# ./tests.sh 0 0
+		# . /dev/shm/DC0.sh 
+		# cd /usr/src/linux 
+		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg="rdisk.cfg"
+
+		EN UML 
+		UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+		DEBUG 1:uml_dvk_init_module:185: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+		DEBUG 1:uml_dvk_init_module:190: UML-kernel PID=2  UML-kernel TID=2
+
+		winch_thread : TIOCSCTTY failed on fd 1 err = 1 <<<<<<<!!!!!!!!!! WHY ?????????
+		
+		root@node0:~# mknod /dev/dvk c 33 0
+		random: crng init done
+		root@node0:~# echo > /dev/dvk 
+		DEBUG 664:uml_dvk_open:116: dvk_dev=/dev/dvk
+		DEBUG 2:dvk_open:61: Open dvk device file /dev/dvk
+		DEBUG 2:dvk_getdvsinfo:176: 
+		DEBUG 2:dvk_getdvsinfo:184: ioctl ret=0
+		DEBUG 664:uml_dvk_open:131: local_nodeid=0
+		DEBUG 664:uml_dvk_open:132: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		DEBUG 2:dvk_getdcinfo:254: dcid=0
+		DEBUG 2:dvk_getdcinfo:264: ioctl ret=0
+		DEBUG 664:uml_dvk_open:138: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		DEBUG 664:uml_dvk_open:139: flags=0 dc_nodes=3 dc_pid=30977 dc_name=DC0
+		DEBUG 2:dvk_bind_X:922: cmd=0 dcid=0 pid=2 endpoint=-2 nodeid=-1
+		DEBUG 2:dvk_bind_X:941: ioctl ret=-2
+		DEBUG 664:uml_dvk_open:142: uml_bind uml_ep=-2 ep=-2
+		DEBUG 2:dvk_getprocinfo:890: dcid=0 p_nr=-2 
+		DEBUG 2:dvk_getprocinfo:901: ioctl ret=0
+		DEBUG 664:uml_dvk_open:150: nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=1739 vpid=2 nodeid=0 name=linux 
+		-bash: echo: write error: Invalid argument
+		DEBUG 664:uml_dvk_release:157: dvk_dev=/dev/dvk 
+
+		EN UML 
+		[   31.370000] DEBUG 664:uml_dvk_open:116: dvk_dev=/dev/dvk
+		[   31.370000] DEBUG 2:dvk_open:61: Open dvk device file /dev/dvk
+		[   31.370000] DEBUG 2:dvk_getdvsinfo:176: 
+		[   31.370000] DEBUG 2:dvk_getdvsinfo:184: ioctl ret=0
+		[   31.370000] DEBUG 664:uml_dvk_open:131: local_nodeid=0
+		[   31.370000] DEBUG 664:uml_dvk_open:132: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		[   31.370000] DEBUG 2:dvk_getdcinfo:254: dcid=0
+		[   31.370000] DEBUG 2:dvk_getdcinfo:264: ioctl ret=0
+		[   31.370000] DEBUG 664:uml_dvk_open:138: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		[   31.370000] DEBUG 664:uml_dvk_open:139: flags=0 dc_nodes=3 dc_pid=30977 dc_name=DC0
+		[   31.370000] DEBUG 2:dvk_bind_X:922: cmd=0 dcid=0 pid=2 endpoint=-2 nodeid=-1
+		[   31.370000] DEBUG 2:dvk_bind_X:941: ioctl ret=-2
+		[   31.370000] DEBUG 664:uml_dvk_open:142: uml_bind uml_ep=-2 ep=-2
+		[   31.370000] DEBUG 2:dvk_getprocinfo:890: dcid=0 p_nr=-2 
+		[   31.370000] DEBUG 2:dvk_getprocinfo:901: ioctl ret=0
+		[   31.370000] DEBUG 664:uml_dvk_open:150: nr=-2 endp=-2 dcid=0 flags=0 misc=20 lpid=1739 vpid=2 nodeid=0 name=linux 
+		[   31.370000] DEBUG 664:uml_dvk_release:157: dvk_dev=/dev/dvk
+
+
+		EN EL HOST 
+		root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  -2    -2  1739/2      0    0   20 27342 27342 27342 27342 linux   
+ 
+		
+		root@node0:/usr/src/linux# ps -ef | grep linux
+		root       451     1  0 19:05 tty1     00:00:00 /sbin/agetty --noclear tty1 linux
+		root      1738  1721  0 20:58 pts/1    00:00:00 nsenter -p -t30977 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg=rdisk.cfg
+		root      1739  1738  1 20:58 ?        00:00:02 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg=rdisk.cfg
+		root      1744  1739  0 20:58 ?        00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg=rdisk.cfg
+		root      1745  1739  0 20:58 ?        00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg=rdisk.cfg
+		root      1746  1739  0 20:58 ?        00:00:00 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg=rdisk.cfg
+		root      1748  1739  0 20:58 ?        00:00:00 [linux] <defunct>
+		root      1749  1739  0 20:58 ?        00:00:00 [linux]
+		root      1779  1739  0 20:58 ?        00:00:00 [linux]
+		root      1791  1739  0 20:58 ?        00:00:00 [linux]
+		root      1857  1739  0 20:58 ?        00:00:00 [linux]
+		root      1863  1739  0 20:58 ?        00:00:00 [linux]
+		root      1889  1739  0 20:58 ?        00:00:00 [linux] <defunct> <<<<<<< QUE LE HABRA PASASO ?????
+		root      1890  1739  0 20:58 ?        00:00:00 [linux]
+		root      1892  1739  0 20:58 ?        00:00:00 [linux]
+		root      1893  1739  0 20:58 ?        00:00:00 [linux]
+		root      1894  1739  0 20:58 ?        00:00:00 [linux]
+		root      1895  1739  0 20:58 ?        00:00:00 [linux]
+		root      1896  1739  0 20:59 ?        00:00:00 [linux]
+		root      1907  1739  0 20:59 ?        00:00:00 [linux]
+
+
+
+
 
 ================================== TODO ==================================================
 

@@ -19,7 +19,7 @@ long dvk_getdcinfo(int dcid, dc_usr_t *dcu_ptr);
 long dvk_getnodeinfo(int nodeid, node_usr_t *nodeu_ptr);
 long dvk_relay(int endpoint, message *mptr);
 long dvk_wakeup(int dcid, int dst_ep);
-long dvk_put2lcl(cmd_t *header, char *proxy_payload_t);
+long dvk_put2lcl(cmd_t *header,  proxy_payload_t *payload);
 long dvk_delnode(int dcid, int nodeid);
 long dvk_dvs_init(int nodeid, dvs_usr_t *dvsu_ptr);
 long dvk_proxy_conn(int pxid, int status);

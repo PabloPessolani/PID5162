@@ -1,4 +1,3 @@
-
 #define LIBDBG		1
 
 #define NODEBUG  	0x00000000
@@ -28,6 +27,26 @@
 #define DBGPROXYLOCK	0x00100000
 #define DBGREFCOUNT	0x00200000
 
+#ifdef CONFIG_UML_DVK
+#define LIBDEBUG	DVKDEBUG
+#define getpid		os_getpid
+#define printf		printk
+
+#define ERROR_RETURN(rcode) \
+ do { \
+     	printf("ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
+	return(rcode); \
+ }while(0);
+
+#else // CONFIG_UML_DVK
+ 
+ #define ERROR_RETURN(rcode) \
+ do { \
+     	fprintf(stderr, "ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
+	return(rcode); \
+ }while(0);
+ 
+#endif // CONFIG_UML_DVK
 
 #ifdef LIBDBG
 #define LIBDEBUG(dbglvl, text, args ...) \
@@ -37,10 +56,8 @@
 #define LIBDEBUG(x, args ...)
 #endif 
 
-#define ERROR_RETURN(rcode) \
+#define PRINT_RETURN(rcode) \
  do { \
-     	fprintf(stderr, "ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
+     	printf("DEBUG: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
 	return(rcode); \
- }while(0);
-
- 
+ }while(0); 

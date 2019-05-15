@@ -154,15 +154,16 @@ __uml_setup("root=", uml_root_setup,
 extern int dcid;
 extern int uml_ep;
 extern int rd_ep;
+extern char rd_cfg[];
 
 static int __init uml_dcid(char *line, int *add)
 {
 	int rcode;
 	
+	dcid = (-1);
 	rcode =  kstrtoint ( line, 10, &dcid);
 	if( rcode < 0){
 		printf("kstrtoint rcode=%d\n", rcode);
-		dcid = 0;
 	}
 	printf("uml_dcid: dcid=%d\n", dcid);
 	return 0;
@@ -176,10 +177,10 @@ static int __init uml_uml_ep(char *line, int *add)
 {
 	int rcode;
 	
+	uml_ep= (-1);
 	rcode =  kstrtoint ( line, 10, &uml_ep);
 	if( rcode < 0){
 		printf("kstrtoint rcode=%d\n", rcode);
-		uml_ep= (-2);
 	}
 	printf("uml_uml_ep: uml_ep=%d\n", uml_ep);
 	return 0;
@@ -193,18 +194,34 @@ static int __init uml_rd_ep(char *line, int *add)
 {
 	int rcode;
 	
+	rd_ep= (-1);
 	rcode =  kstrtoint ( line, 10, &rd_ep);
 	if( rcode < 0){
 		printf("kstrtoint rcode=%d\n", rcode);
-		rd_ep= (-2);
 	}
 	printf("uml_rd_ep: rd_ep=%d\n", rd_ep);
 	return 0;
 }
 
 __uml_setup("rd_ep=", uml_rd_ep,
-"rd_ep=<RDISK  endpoint>\n"
+"rd_ep=<RDISK endpoint>\n"
 );
+
+static int __init uml_rd_cfg(char *line, int *add)
+{
+	int rcode;
+	
+	rd_cfg[0] = '\0';
+	if( line == NULL) return 0; 
+	strncpy( rd_cfg, line, PATH_MAX);
+	printf("uml_rd_cfg: rd_cfg=%s\n", rd_cfg);
+	return 0;
+}
+
+__uml_setup("rd_cfg=", uml_rd_cfg,
+"rd_cfg=<RDISK configuration file name>\n"
+);
+
 
 #endif // CONFIG_UML_DVK
 
@@ -325,6 +342,26 @@ int __init linux_main(int argc, char **argv)
 	}
 	if (have_root == 0)
 		add_arg(DEFAULT_COMMAND_LINE);
+
+#ifdef CONFIG_UML_DVK
+	if( dcid == (-1) ){		
+			printk("dcid command line argument not specified");
+			exit(1);
+	}
+	if( uml_ep == (-1) ){		
+			printk("uml_ep command line argument not specified");
+			exit(1);
+	}
+	if( rd_ep == (-1) ){		
+			printk("rd_ep command line argument not specified");
+			exit(1);
+	}
+	if( rd_cfg[0] == '\0' ){		
+			printk("rd_cfg command line argument not specified");
+			exit(1);
+	}
+#endif //CONFIG_UML_DVK
+	
 
 	host_task_size = os_get_top_address();
 	/*
