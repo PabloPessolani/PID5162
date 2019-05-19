@@ -23,11 +23,9 @@
 #include "data_usr.h"
 #include "const.h"
 
-struct device m_geom[NR_DEVS];  /* base and size of each device */
-
 int m_device;			/* current device */
 
-struct partition entry; /*no en código original, pero para completar los datos*/
+// struct partition entry; /*no en código original, pero para completar los datos*/
 
 /* Entry points to this driver. */
 	
@@ -88,8 +86,9 @@ void check_same_image( void )
 		
 		// get file size and block size 
 		if( devvec[i].img_type != NBD_IMAGE ) {
-			devvec[i].st_size = i_stat.st_size;
-			TASKDEBUG("dev=%d image size=%d[bytes] %d\n", i, i_stat.st_size, devvec[i].st_size);
+			devvec[i].part.size._[0] = i_stat.st_size;
+			devvec[i].part.size._[1] = 0;
+			TASKDEBUG("dev=%d image size=%ld[bytes] %d\n", i, i_stat.st_size, devvec[i].part.size._[0]);
 			devvec[i].st_blksize = i_stat.st_blksize;
 			TASKDEBUG("dev=%d block size=%d[bytes] %d\n", i, i_stat.st_blksize, devvec[i].st_blksize);
 		}
@@ -255,18 +254,18 @@ char *m_name()
 struct device *m_prepare(device)
 int device;
 {
+	devvec_t *dv_ptr;
 /* Prepare for I/O on a device: check if the minor device number is ok. */
-  
-	if (device < 0 || device >= NR_DEVS || devvec[device].active_flag != 1) {
+
+	TASKDEBUG("device = %d\n", device);
+ 	if (device < 0 || device >= NR_DEVS || devvec[device].active_flag != 1) {
 		TASKDEBUG("Error en m_prepare\n");
 		return(NIL_DEV);
 		}
-	m_device = device;
-	TASKDEBUG("device = %d (m_device = %d)\n", device, m_device);
-	TASKDEBUG("Prepare for I/O on a given minor device: (%X;%X), (%u;%u)\n", 
-	m_geom[device].dv_base._[0],m_geom[device].dv_base._[1], m_geom[device].dv_size._[0], m_geom[device].dv_size._[1]);
+
+	get_geometry(device);
   
-  return(&m_geom[device]);
+  return(&devvec[device]);
  
 }
 
@@ -303,8 +302,9 @@ unsigned nr_req;		/* length of request vector */
 	}
 	
 	/* Get minor device number and check for /dev/null. */
-	dv = &m_geom[m_device];
-	dv_size = cv64ul(dv->dv_size); 
+//	dv = &m_geom[m_device];
+	dv_size = devvec[m_device].st_size; 
+	TASKDEBUG("dv_size: %d\n", dv_size);	
 	
 	posit = position;
 	TASKDEBUG("posit: %X\n", posit);	
@@ -330,7 +330,7 @@ unsigned nr_req;		/* length of request vector */
 			TASKDEBUG("count dv_size-position: %u\n", count); 
 			}
 					
-		mem_phys = cv64ul(dv->dv_base) + position;
+		mem_phys = cv64ul(devvec[m_device].part.base) + position;
 		TASKDEBUG("DRIVER - position I/O(mem_phys) %X\n", mem_phys);
 			
 		if ((opcode == DEV_GATHER) ||(opcode == DEV_CGATHER))  {/* copy data */ /*DEV_GATHER read from an array (com.h)*/
@@ -932,13 +932,13 @@ int rd_init(void )
 	for( i = 0; i < NR_DEVS; i++){
 		if ( devvec[i].available == AVAILABLE_YES ){
 			TASKDEBUG("Byte offset to the partition start (Device = %d - img_ptr): %X\n", i, devvec[i].img_ptr);
-			m_geom[i].dv_base = cvul64(devvec[i].img_ptr);
-			fprintf(stdout, "Byte offset to the partition start (m_geom[DEV=%d].dv_base): %X\n", i, m_geom[i].dv_base);
+			devvec[i].part.base = cvul64(devvec[i].img_ptr);
+			fprintf(stdout, "Byte offset to the partition start (m_geom[DEV=%d].dv_base): %X\n",
+				i, devvec[i].part.base);
 			fflush(stdout);
 	
-			TASKDEBUG("Number of bytes in the partition (Device = %d - img_size): %u\n", i, devvec[i].st_size);
-			m_geom[i].dv_size = cvul64(devvec[i].st_size);	
-			fprintf(stdout, "Number of bytes in the partition (m_geom[DEV=%d].dv_size): %u\n", i, m_geom[i].dv_size);
+			TASKDEBUG("Number of bytes in the partition (Device = %d - img_size): %u\n", 
+			i, devvec[i].part.size);
 			fflush(stdout);
 			}
 	}
@@ -948,16 +948,41 @@ int rd_init(void )
 }
 
 /*===========================================================================*
+ *				get_geometry				     *
+ *===========================================================================*/
+int get_geometry(int device)
+{
+	mnx_part_t *part_ptr;
+	devvec_t *dv_ptr;
+	m_device = device;
+	dv_ptr =&devvec[m_device];
+	dv_ptr->part.cylinders	= (dv_ptr->st_size/(SECTOR_SIZE * DFT_HEADS * DFT_SECTORS));
+	dv_ptr->part.heads		= DFT_HEADS;
+	dv_ptr->part.sectors	= DFT_SECTORS;
+	
+	part_ptr = &dv_ptr->part;
+	TASKDEBUG(PART_FORMAT, PART_FIELDS(part_ptr));
+    return(OK);
+}
+
+/*===========================================================================*
  *				m_geometry				     *
  *===========================================================================*/
-//PRIVATE void m_geometry(entry)
-void m_geometry(entry)
-struct partition *entry;
+int m_geometry(struct driver *dp, message *m_ptr)
 {
-  /* Memory devices don't have a geometry, but the outside world insists. */
-  entry->cylinders = div64u(m_geom[m_device].dv_size, SECTOR_SIZE) / (64 * 32);
-  entry->heads = 64;
-  entry->sectors = 32;
+	int rcode;
+	devvec_t *dv_ptr;
+	m_device = m_ptr->DEVICE;
+	dv_ptr =&devvec[m_device];
+	
+	get_geometry(m_device);
+	
+	rcode = dvk_vcopy(m_ptr->IO_ENDPT, m_ptr->ADDRESS,
+					SELF, &dv_ptr->part, sizeof(mnx_part_t));
+	if( rcode < 0)
+		ERROR_RETURN(rcode);
+	
+    return(OK);
 }
 
 /*===========================================================================*

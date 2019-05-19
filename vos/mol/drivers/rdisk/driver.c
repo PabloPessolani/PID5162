@@ -152,8 +152,9 @@ struct driver *dp;	/* Device dependent entry points. */
 						r = (*dp->dr_close)(dp, &mess);
 						break;	
 	//case DEV_IOCTL:		r = (*dp->dr_ioctl)(dp, &mess);	break;
-			case DEV_IOCTL:		TASKDEBUG("m_type: %d - DEV_IOCTL\n", mess.m_type);	break;	
-	//			r = (*dp->dr_geometry)(dp, &mess);break;
+			case DEV_IOCTL:		TASKDEBUG("m_type: %d - DEV_IOCTL\n", mess.m_type);		
+				r = (*dp->dr_geometry)(dp, &mess);
+				break;
 			case CANCEL:		TASKDEBUG("m_type: %d - DEV_CANCEL\n", mess.m_type);	break;	
 	//case DEV_SELECT:	r = (*dp->dr_select)(dp, &mess);break;
 			case DEV_SELECT:	TASKDEBUG("m_type: %d - DEV_SELECT\n", mess.m_type);	break;	

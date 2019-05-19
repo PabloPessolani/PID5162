@@ -55,10 +55,7 @@ dvs_usr_t 	dvs;
 dc_usr_t 	dcu;
 int 		dcid; 
 int 		uml_ep;
-int 		rd_ep;
-char 		rd_cfg[PATH_MAX+1];
 proc_usr_t 	uml_proc;
-proc_usr_t 	rd_proc;
 
 #define DVK_HELP \
 "    This is used to specify the host dvk device to the dvk driver.\n" \

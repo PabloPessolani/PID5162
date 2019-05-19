@@ -16,8 +16,8 @@ struct devvec_s {				/* vector for minor devices */
 	unsigned 	*localbuff;		/* buffer to the device*/
 	int 		active_flag;		/* if device active_flag for open value=1, else 0 */
 	int 		available;		/* if device is available to use value=1, else 0. For example, its in configure file*/
+	mnx_part_t 	part;
 };
-
 typedef struct devvec_s devvec_t;
 
 #define DEV_USR1_FORMAT "img_fd=%d st_size=%d st_blksize=%d localbuff=%X active=%d available=%d\n"
@@ -28,7 +28,6 @@ typedef struct devvec_s devvec_t;
 
 #define DEV_USR3_FORMAT "volatile=%X replica=%d \n"
 #define DEV_USR3_FIELDS(p) p->volatile_flag, p->replica_flag
-
 
 //crear el otro vector y declararlo en rdisk.h
 struct sumdevvec {					/* vector for minor devices - summary */
@@ -42,4 +41,7 @@ typedef struct sumdevvec sumdevvec_t;
 
 #define SUM_USR_FORMAT "nr_transferred=%u nr_matched=%u nr_updated=%u tbytes=%u\n"
 #define SUM_USR_FIELDS(sum) sum->nr_transferred,sum->nr_matched, sum->nr_updated, sum->tbytes
+
+#define DFT_HEADS		64
+#define DFT_SECTORS 	32 
 

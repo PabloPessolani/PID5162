@@ -52,7 +52,13 @@ long dvk_get2rmt_T(cmd_t *header, proxy_payload_t *payload , long timeout);
 long dvk_node_up(char *name, int nodeid,  int pxid);
 long dvk_getproxyinfo(int pxid, proc_usr_t *sproc_usr, proc_usr_t *rproc_usr);
 #define dvk_bind(dcid,endpoint) 			dvk_bind_X(SELF_BIND, dcid, (-1), endpoint, LOCALNODE)
+
+#ifndef  CONFIG_UML_DVK
 #define dvk_tbind(dcid,endpoint) 			dvk_bind_X(SELF_BIND, dcid, (pid_t) syscall (SYS_gettid), endpoint, LOCALNODE)
+#else // CONFIG_UML_DVK
+#define dvk_tbind(dcid,endpoint) 			dvk_bind_X(SELF_BIND, dcid, (pid_t) os_gettid(), endpoint, LOCALNODE)
+#endif // CONFIG_UML_DVK
+
 #define dvk_lclbind(dcid,pid,endpoint) 		dvk_bind_X(LCL_BIND, dcid, pid, endpoint, LOCALNODE)
 #define dvk_rmtbind(dcid,name,endpoint,nodeid) 	dvk_bind_X(RMT_BIND, dcid, (int) name, endpoint, nodeid)
 #define dvk_bkupbind(dcid,pid,endpoint,nodeid) 	dvk_bind_X(BKUP_BIND, dcid, pid, endpoint, nodeid)

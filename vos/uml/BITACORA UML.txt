@@ -2229,7 +2229,54 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 
 
 
-
+====================================================================================================
+20190518:
+			Modifique mol/drivers/rdisk 
+			Incorpore um/drivers/rdisk_user.*
+			
+			ATENCION: hay que modificar el Kconfig.char del directorio arch/um/
+			
+config UML_RDISK 
+	bool "UML Replicated Disk proxy"
+	default y
+	help
+	This options enable RDISK proxy to the host RDISK.
+	
+	
+config UML_DVK 
+	bool "UML Distributed Virtualization Kernel (DVK) pseudo character device"
+	default y
+	help
+	This options enable DVK pseudo device driver as a pass-through to the host-DVK.
+	
+	
+	
+> UML Character Devices qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+  lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq UML Character Devices qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk
+  x  Arrow keys navigate the menu.  <Enter> selects submenus ---> (or empty submenus  x
+  x  ----).  Highlighted letters are hotkeys.  Pressing <Y> includes, <N> excludes,   x
+  x  <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help, </> for       x
+  x  Search.  Legend: [*] built-in  [ ] excluded  <M> module  < > module capable      x
+  x lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk x
+  x x    [*] UML Replicated Disk proxy                                              x x <<<<<<<<<<<<<<<
+  x x    [*] UML Distributed Virtualization Kernel (DVK) pseudo character device    x x <<<<<<<<<<<<<<<
+  x x    [ ] stderr console                                                         x x
+  x x    [ ] Virtual serial line                                                    x x
+  x x    [ ] null channel support                                                   x x
+  x x    [ ] port channel support                                                   x x
+  x x    [ ] pty channel support                                                    x x
+  x x    [ ] tty channel support                                                    x x
+  x x    [ ] xterm channel support                                                  x x
+  x x    (fd:0,fd:1) Default main console channel initialization                    x x
+  x x    (xterm) Default console channel initialization                             x x
+  x x    (pty) Default serial line channel initialization                           x x
+  x x    [ ] Sound support                                                          x x
+  x x                                                                               x x
+  x x                                                                               x x
+  x mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj x
+  tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu
+  x             <Select>    < Exit >    < Help >    < Save >    < Load >              x
+  mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
 
 ================================== TODO ==================================================
 

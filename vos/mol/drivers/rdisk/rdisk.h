@@ -171,7 +171,7 @@ _PROTOTYPE( int m_transfer, (int proc_nr, int opcode, off_t position,
 _PROTOTYPE( int m_do_open, (struct driver *dp, message *m_ptr));
 _PROTOTYPE( int m_do_close, (struct driver *dp, message *m_ptr));
 _PROTOTYPE( int m_init, (void) );
-_PROTOTYPE( void m_geometry, (struct partition *entry));
+_PROTOTYPE( int m_geometry, (struct driver *dp, message *m_ptr));
 _PROTOTYPE( int do_nop, (struct driver *dp, message *m_ptr));
 _PROTOTYPE( void lz4_data_cd, (unsigned * in_buffer, size_t inbuffer_size, int flag_in));
 _PROTOTYPE( void parse_config, (char *f_conf));

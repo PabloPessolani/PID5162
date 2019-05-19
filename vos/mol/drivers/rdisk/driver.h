@@ -16,7 +16,7 @@ struct driver {
   _PROTOTYPE( int (*dr_transfer), (int proc_nr, int opcode, off_t position,
 					iovec_t *iov, unsigned nr_req) );
   _PROTOTYPE( void (*dr_cleanup), (void) );
-  _PROTOTYPE( void (*dr_geometry), (struct partition *entry) );
+  _PROTOTYPE( int (*dr_geometry), (struct driver *dp, message *m_ptr) );
   _PROTOTYPE( void (*dr_signal), (struct driver *dp, message *m_ptr) );
   _PROTOTYPE( void (*dr_alarm), (struct driver *dp, message *m_ptr) );
   _PROTOTYPE( int (*dr_cancel), (struct driver *dp, message *m_ptr) );
