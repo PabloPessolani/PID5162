@@ -14,53 +14,18 @@
 #ifdef CONFIG_UML_DVK
 #include <kern_util.h>
 
-#include "/usr/src/dvs/include/com/dvs_config.h"
-#include "/usr/src/dvs/include/com/config.h"
-#include "/usr/src/dvs/include/com/const.h"
-#include "/usr/src/dvs/include/com/com.h"
-#include "/usr/src/dvs/include/com/cmd.h"
-#include "/usr/src/dvs/include/com/proc_sts.h"
-#include "/usr/src/dvs/include/com/proc_usr.h"
-#include "/usr/src/dvs/include/com/proxy_sts.h"
-#include "/usr/src/dvs/include/com/proxy_usr.h"
-#include "/usr/src/dvs/include/com/dc_usr.h"
-#include "/usr/src/dvs/include/com/node_usr.h"
-#include "/usr/src/dvs/include/com/priv_usr.h"
-#include "/usr/src/dvs/include/com/dvs_usr.h"
-#include "/usr/src/dvs/include/com/dvk_calls.h"
-#include "/usr/src/dvs/include/com/dvk_ioctl.h"
-#include "/usr/src/dvs/include/com/dvs_errno.h"
-#include "/usr/src/dvs/include/com/ipc.h"
-#include "/usr/src/dvs/include/dvk/dvk_ioparm.h"
-#include "/usr/src/dvs/include/generic/tracker.h"
-#include "/usr/src/dvs/include/com/stub_dvkcall.h"
-
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
-
+#define DVK_GLOBAL_HERE		1
+#include "um_dvk.h"
+#include "glo_dvk.h"
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
 
-#ifndef DVK_MAJOR
-#define DVK_MAJOR 33   /* dynamic major by default */
-#endif
-#define UML_DVK_DEV "/dev/dvk"
-#define DEVICE_NAME "dvk"
 
-extern int  dvk_fd; 
-extern int local_nodeid;
 extern int userspace_pid[];
-
-char *dvk_dev = UML_DVK_DEV;
-dvs_usr_t 	dvs;
-dc_usr_t 	dcu;
-int 		dcid; 
-int 		uml_ep;
-proc_usr_t 	uml_proc;
+int module_dvk;
 
 #define DVK_HELP \
 "    This is used to specify the host dvk device to the dvk driver.\n" \
 "    The default is \"" UML_DVK_DEV "\".\n\n"
-
 
 module_param(dvk_dev, charp, 0644);
 MODULE_PARM_DESC(dvk_dev, DVK_HELP);
@@ -165,8 +130,6 @@ static const struct file_operations uml_dvk_fops = {
 	.open           = uml_dvk_open,
 	.release        = uml_dvk_release,
 };
-
-int module_dvk;
 
 MODULE_AUTHOR("Pablo Pessolani - UTN FRSF");
 MODULE_DESCRIPTION("Distributed Virtualization Kernel UML Relay");

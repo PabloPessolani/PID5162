@@ -31,17 +31,17 @@
 
 #ifdef DVKDBG
 
-#ifdef CONFIG_DVS 
+#ifdef CONFIG_DVK
  #define DVKDEBUG(dbglvl, text, args ...) \
  do { \
  if(dbglvl & dvs.d_dbglvl) \
      printk("DEBUG %d:%s:%u: " \
              text, current->pid, __FUNCTION__ ,__LINE__, ## args); \
  }while(0);
-#else //CONFIG_DVS
+#else //CONFIG_DVK
  #define DVKDEBUG(dbglvl, text, args ...) \
-    printk("DEBUG %d:%s:%u: " text, current->pid, __FUNCTION__ ,__LINE__, ## args)
-#endif //CONFIG_DVS
+    printk("DEBUG %s:%u: " text, __FUNCTION__ ,__LINE__, ## args)
+#endif //CONFIG_DVK
 	 
 #else
 #define DVKDEBUG(x, args ...)

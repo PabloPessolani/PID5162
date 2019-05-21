@@ -154,7 +154,6 @@ __uml_setup("root=", uml_root_setup,
 extern int dcid;
 extern int uml_ep;
 extern int rd_ep;
-extern char rd_cfg[];
 
 static int __init uml_dcid(char *line, int *add)
 {
@@ -206,22 +205,6 @@ static int __init uml_rd_ep(char *line, int *add)
 __uml_setup("rd_ep=", uml_rd_ep,
 "rd_ep=<RDISK endpoint>\n"
 );
-
-static int __init uml_rd_cfg(char *line, int *add)
-{
-	int rcode;
-	
-	rd_cfg[0] = '\0';
-	if( line == NULL) return 0; 
-	strncpy( rd_cfg, line, PATH_MAX);
-	printf("uml_rd_cfg: rd_cfg=%s\n", rd_cfg);
-	return 0;
-}
-
-__uml_setup("rd_cfg=", uml_rd_cfg,
-"rd_cfg=<RDISK configuration file name>\n"
-);
-
 
 #endif // CONFIG_UML_DVK
 
@@ -356,10 +339,6 @@ int __init linux_main(int argc, char **argv)
 			printk("rd_ep command line argument not specified");
 			exit(1);
 	}
-	if( rd_cfg[0] == '\0' ){		
-			printk("rd_cfg command line argument not specified");
-			exit(1);
-	}
 #endif //CONFIG_UML_DVK
 	
 
@@ -394,7 +373,7 @@ int __init linux_main(int argc, char **argv)
 	uml_reserved = ROUND_4M(brk_start) + (1 << 22);
 
 	setup_machinename(init_utsname()->machine);
-
+	
 	highmem = 0;
 	iomem_size = (iomem_size + PAGE_SIZE - 1) & PAGE_MASK;
 	max_physmem = TASK_SIZE - uml_physmem - iomem_size - MIN_VMALLOC;

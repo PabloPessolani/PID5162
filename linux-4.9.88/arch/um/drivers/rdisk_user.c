@@ -22,8 +22,9 @@
 
 #ifdef CONFIG_UML_RDISK 
 
+#include "um_dvk.h"
 #include "uml_rdisk.h"
-#include "/usr/src/dvs/include/com/stub_dvkcall.h"
+#include "glo_dvk.h"
 
 int start_rd_thread(unsigned long sp, int *fd_out)
 {

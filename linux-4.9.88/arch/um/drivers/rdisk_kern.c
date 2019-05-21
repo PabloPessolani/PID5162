@@ -41,14 +41,15 @@
 #include <irq_kern.h>
 #include <os.h>
 
+#include "um_dvk.h"
 #include "uml_rdisk.h"
+#include "glo_dvk.h"
+#include "/usr/src/dvs/vos/mol/include/com.h"
+#include "/usr/src/dvs/vos/mol/include/partition.h"
+#include "/usr/src/dvs/vos/mol/include/ioc_disk.h"
 
-extern proc_usr_t 	uml_proc;
-extern int 			dcid; 
-extern dvs_usr_t 	dvs;
-extern dc_usr_t 	dcu;
-extern int 			local_nodeid;
-int					rdc_ep; // RDISK Client endpoint 
+int	rdc_ep; // RDISK Client endpoint 
+int rd_ep;
 
 enum rd_req { RD_READ, RD_WRITE, RD_FLUSH };
 
@@ -81,6 +82,10 @@ struct rd_thread_req {
 	int sectorsize;
 	int error;
 };
+
+#define RD_REQ_FORMAT 		"op=%d offset=%lld length=%ld sectorsize=%d error=%d\n"
+#define RD_REQ_FIELDS(p) 	p->op, p->offset, p->length, p->sectorsize, p->error
+
 
 #define RDISK_NAME "rdisk"
 
@@ -475,59 +480,115 @@ static void do_rd_request(struct request_queue *q)
 
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
-	return 0;
+	message dev_mess, *m_ptr;
+	int rcode;
+	mnx_part_t mnx_part, *part_ptr;
+	struct rdisk *rd_dev = bdev->bd_disk->private_data;
+
+	part_ptr = &mnx_part;
+	/* Set up the message passed to task. */
+	m_ptr= &dev_mess;
+	m_ptr->m_type   = DEV_IOCTL;
+	m_ptr->REQUEST	= DIOCGETP;
+	m_ptr->DEVICE   = bdev->bd_disk->first_minor;
+	m_ptr->IO_ENDPT = rdc_ep;
+	m_ptr->ADDRESS  = (char *) part_ptr; 
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
+	if(rcode < 0) ERROR_RETURN(rcode);
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+
+	DVKDEBUG(INTERNAL,PART_FORMAT, PART_FIELDS(part_ptr));
+	geo->heads 		= part_ptr->heads;
+	geo->sectors 	= part_ptr->sectors;
+	geo->cylinders 	= part_ptr->cylinders;
+	return 0;	
 }
 
-static int rd_ioctl(struct block_device *bdev, fmode_t mode,
-		     unsigned int cmd, unsigned long arg)
+static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, unsigned long arg)
 {
+	struct ubd *ubd_dev = bdev->bd_disk->private_data;
+	struct hd_geometry geo;
+	u16 rd_id[ATA_ID_WORDS];
+	int rcode;
+
+	switch (cmd) {
+		case HDIO_GET_IDENTITY:
+			rcode = rd_getgeo(bdev, &geo);
+			memset(&rd_id, 0, ATA_ID_WORDS * 2);
+			rd_id[ATA_ID_CYLS]		= geo.cylinders;
+			rd_id[ATA_ID_HEADS]		= geo.heads;
+			rd_id[ATA_ID_SECTORS]	= geo.sectors;
+			if(copy_to_user((char __user *) arg, (char *) &rd_id,
+					 sizeof(rd_id)))
+				return -EFAULT;
+			return 0;
+		default:
+			return -EINVAL;	
+	}
 	return -EINVAL;
 }
 
+int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
+{
+	message dev_mess, *m_ptr;
+	int rcode;
+	
+	/* Set up the message passed to task. */
+	m_ptr= &dev_mess;
+	m_ptr->m_type   = oper;
+	m_ptr->DEVICE   = minor;
+	m_ptr->POSITION = (int) off;
+	m_ptr->IO_ENDPT = rdc_ep;
+	m_ptr->ADDRESS  = buf;
+	m_ptr->COUNT    = len;
+	m_ptr->TTY_FLAGS = 0;
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
+	if(rcode < 0) ERROR_RETURN(rcode);
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+		
+	return(m_ptr->REP_STATUS);
+}
 
 static void do_rdisk(struct rd_thread_req *req)
 {
 	char *buf;
 	unsigned long len;
-	int n, nsectors, start, end, bit;
+	int n, nsectors, start, end, minor;
 	__u64 off;
 
 	if (req->op == RD_FLUSH) {
 		printk("do_rdisk - sync ignored\n");
 		return;
 	}
-
-	nsectors = req->length/req->sectorsize;
+	
+	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+	
+	minor = req->req->rq_disk->first_minor;
 	start = 0;
+	len = req->length;
 	do {
-		off = req->offset +	start * req->sectorsize;
-		len = (end - start) * req->sectorsize;
-		buf = &req->buffer[start * req->sectorsize];
-
+		off = req->offset +	start;
+		buf = &req->buffer[start];
 		if(req->op == RD_READ){
-			n = 0;
-			do {
-				buf = &buf[n];
-				len -= n;
-				n = rdisk_read(buf, len, off);
-				if (n < 0) {
-					printk("do_rdisk - read failed, err = %d\n", n);
-					req->error = 1;
-					return;
-				}
-			} while((n < len) && (n != 0));
-			if (n < len) memset(&buf[n], 0, len - n);
+			n = rdisk_rw(DEV_READ, minor, buf, len, off);
+			if (n < 0) {
+				printk("do_rdisk - read failed, err = %d\n", n);
+				req->error = 1;
+				return;
+			}
 		} else {
-			n = rdisk_write( buf, len, off);
+			n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
 			if(n != len){
 				printk("do_rdisk - write failed err = %d\n", n);
 				req->error = 1;
 				return;
 			}
 		}
-
-		start = end;
-	} while(start < nsectors);
+		start += n;
+		len -= n;
+	} while( len > 0);
 
 	req->error = 0;
 }
