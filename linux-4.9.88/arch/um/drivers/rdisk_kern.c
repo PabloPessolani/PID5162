@@ -604,6 +604,10 @@ static int init_rdisk(void)
 	dc_usr_t *dcu_ptr;
 	proc_usr_t *proc_ptr;
 	
+printk("PAP init_rdisk\n");
+os_flush_stdout();
+
+	
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
 

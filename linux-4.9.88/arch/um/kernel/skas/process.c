@@ -11,7 +11,8 @@
 #include <skas.h>
 
 #ifdef CONFIG_UML_DVK
-#include "../../drivers/um_dvk.h"
+#include "../../include/uml_debug.h"
+#include "../../include/uml_macros.h"
 extern int dvk_fd;
 #endif // CONFIG_UML_DVK
 
@@ -27,17 +28,18 @@ static int __init start_kernel_proc(void *unused)
 #ifdef CONFIG_UML_DVK
 	pid = os_getpid();
 	tid = os_gettid();
-	printf("UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
-	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
+//	printf("UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
+	UMLDEBUG("UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
 	os_flush_stdout();
 	
+#define UML_DVK_DEV "/dev/dvk"
 	dvk_fd = (-1);
 	dvk_fd = os_open_file(UML_DVK_DEV, of_set_rw(OPENFLAGS(), 1, 1), 0);
 	if ( dvk_fd < 0){
 		ERROR_PRINT(dvk_fd);
 	}else{
-		DVKDEBUG(INTERNAL, "DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
-		printf("DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
+		UMLDEBUG("DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
+//		printf("DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
 	}
 	os_flush_stdout();
 #endif // CONFIG_UML_DVK

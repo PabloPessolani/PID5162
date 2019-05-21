@@ -2278,6 +2278,108 @@ config UML_DVK
   x             <Select>    < Exit >    < Help >    < Save >    < Load >              x
   mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
 
+====================================================================================================
+20190520:
+
+		# cd /usr/src/dvs/dvk-tests/
+		# ./tests.sh 0 0
+		# . /dev/shm/DC0.sh 
+		# cd /dev/shm 
+		# nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -d 0 -e 3 -c /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
+		# cat /proc/dvs/DC0/procs 
+		# cd /usr/src/linux 
+		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
+		
+
+
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+				uml_dcid: dcid=0
+				uml_uml_ep: uml_ep=-2
+				uml_rd_ep: rd_ep=3
+				Locating the bottom of the address space ... 0x0
+				Locating the top of the address space ... 0xc0000000
+				Core dump limits :
+						soft - 0
+						hard - NONE
+				Checking that ptrace can change system call numbers...OK
+				Checking syscall emulation patch for ptrace...OK
+				Checking advanced syscall emulation patch for ptrace...OK
+				Checking environment variables for a tempdir...none found
+				Checking if /dev/shm is on tmpfs...OK
+				Checking PROT_EXEC mmap in /dev/shm...OK
+				Adding 14602240 bytes to physical memory to account for exec-shield gap
+				Abortado
+
+LO QUE FALTA ES 
+				DEBUG 0:start_kernel_proc:30: UML-kernel PID=31362  UML-kernel TID=31362
+				DEBUG 0:start_kernel_proc:36: DVK device file successfully opened!! dvk_fd=3
+				Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #29 Tue May 14 00:01:20 -03 2019
+				Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 262981
+
+
+EL PROBLEMA APARENTEMENTE ESTA EN LOS DVKDEBUG 
+SI SE LOS REMUEVE DA EL RESULTADO DE ABAJO 
+
+static int __init start_kernel_proc(void *unused)
+{
+	int pid, tid;
+
+	block_signals();
+	
+#ifdef CONFIG_UML_DVK
+	pid = os_getpid();
+	tid = os_gettid();
+	printf("UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
+//	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", pid, tid);
+	os_flush_stdout();
+	
+	dvk_fd = (-1);
+	dvk_fd = os_open_file(UML_DVK_DEV, of_set_rw(OPENFLAGS(), 1, 1), 0);
+	if ( dvk_fd < 0){
+		ERROR_PRINT(dvk_fd);
+	}else{
+//		DVKDEBUG(INTERNAL, "DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
+printf("DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
+	}
+	os_flush_stdout();
+#endif // CONFIG_UML_DVK
+		
+	cpu_tasks[0].pid = pid;
+	cpu_tasks[0].task = current;
+
+	start_kernel();
+	return 0;
+}
+
+
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rd_ep: rd_ep=3
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 21426176 bytes to physical memory to account for exec-shield gap
+UML-kernel PID=99  UML-kernel TID=99
+DVK device file successfully opened!! dvk_fd=3
+Abortado
+
+
+
+
+
+
+
+
+
 ================================== TODO ==================================================
 
 Hacer que el UML-Kernel utilice M3-IPC no es problematico.

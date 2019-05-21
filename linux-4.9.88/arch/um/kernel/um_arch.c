@@ -153,7 +153,7 @@ __uml_setup("root=", uml_root_setup,
 #ifdef CONFIG_UML_DVK
 extern int dcid;
 extern int uml_ep;
-extern int rd_ep;
+
 
 static int __init uml_dcid(char *line, int *add)
 {
@@ -189,6 +189,8 @@ __uml_setup("uml_ep=", uml_uml_ep,
 "uml_ep=<UML Kernel endpoint>\n"
 );
 
+#ifdef CONFIG_UML_RDISK 
+extern int rd_ep;
 static int __init uml_rd_ep(char *line, int *add)
 {
 	int rcode;
@@ -205,6 +207,7 @@ static int __init uml_rd_ep(char *line, int *add)
 __uml_setup("rd_ep=", uml_rd_ep,
 "rd_ep=<RDISK endpoint>\n"
 );
+#endif // CONFIG_UML_RDISK 
 
 #endif // CONFIG_UML_DVK
 
@@ -335,10 +338,13 @@ int __init linux_main(int argc, char **argv)
 			printk("uml_ep command line argument not specified");
 			exit(1);
 	}
+#ifdef CONFIG_UML_RDISK 
 	if( rd_ep == (-1) ){		
 			printk("rd_ep command line argument not specified");
 			exit(1);
 	}
+#endif // CONFIG_UML_RDISK 
+
 #endif //CONFIG_UML_DVK
 	
 

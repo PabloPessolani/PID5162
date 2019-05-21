@@ -25,6 +25,9 @@
 #include "/usr/src/dvs/dvk-mod/dvk_debug.h"
 #include "/usr/src/dvs/dvk-mod/dvk_macros.h"
 
+#include "../include/uml_debug.h"
+#include "../include/uml_macros.h"
+
 #ifndef DVK_MAJOR
 #define DVK_MAJOR 33   /* dynamic major by default */
 #endif

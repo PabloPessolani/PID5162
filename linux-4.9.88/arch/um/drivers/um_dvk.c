@@ -11,6 +11,8 @@
 #include <init.h>
 #include <os.h>
 
+#define DVKDBG		1
+
 #ifdef CONFIG_UML_DVK
 #include <kern_util.h>
 
@@ -138,7 +140,7 @@ MODULE_LICENSE("GPL");
 static int __init uml_dvk_init_module(void)
 {
 	int kpid, ktid;
-	
+
 	printk("UML Distributed Virtualization Kernel (host dvk_dev = %s)\n",dvk_dev);
 
 	kernel_param_lock(THIS_MODULE);
@@ -166,4 +168,4 @@ static void __exit uml_dvk_cleanup_module (void)
 module_init(uml_dvk_init_module);
 module_exit(uml_dvk_cleanup_module);
 
-#endif // CONFIG_UML_DVK
+#endif // DVKDEBUG
