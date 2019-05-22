@@ -54,9 +54,10 @@ int rd_ep;
 enum rd_req { RD_READ, RD_WRITE, RD_FLUSH };
 
 static LIST_HEAD(restart);
-static int thread_fd = -1;
+static int rd_thread_fd = -1;
 
-#define MAX_SG 64
+#define MAX_SG 			64
+#define RD_SECTOR_SIZE	512
 
 struct rdisk {
 	struct list_head restart;
@@ -72,6 +73,21 @@ struct rdisk {
 	int start_sg, end_sg;
 	sector_t rq_pos;
 };
+
+#define RD_OPEN_FLAGS ((struct openflags) { .r = 1, .w = 1, .s = 1, .c = 0, .cl = 1 })
+static struct openflags global_openflags = RD_OPEN_FLAGS;
+
+#define DEFAULT_RDISK { \
+	.count =		0, \
+	.size =			-1, \
+	.boot_openflags =	RD_OPEN_FLAGS, \
+	.openflags =		RD_OPEN_FLAGS, \
+	.lock =			__SPIN_LOCK_UNLOCKED(rd_devs.lock), \
+	.request =		NULL, \
+	.start_sg =		0, \
+	.end_sg =		0, \
+	.rq_pos =		0, \
+}
 
 struct rd_thread_req {
 	struct request *req;
@@ -98,7 +114,7 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode,
 		     unsigned int cmd, unsigned long arg);
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
 
-#define MAX_DEV (16)
+#define RD_MAX_DEV (16)
 
 static const struct block_device_operations rd_blops = {
         .owner		= THIS_MODULE,
@@ -108,58 +124,148 @@ static const struct block_device_operations rd_blops = {
 		.getgeo		= rd_getgeo,
 };
 
+static struct rdisk rd_devs[RD_MAX_DEV] = { [0 ... RD_MAX_DEV - 1] = DEFAULT_RDISK };
+
 /* Protected by rd_lock */
-static int 	  fake_major = RD_MAJOR;
-static struct gendisk *rd_gendisk[MAX_DEV];
-static struct gendisk *fake_gendisk[MAX_DEV];
+static int 	  fake_rd_major = RD_MAJOR;
+static struct gendisk *rd_gendisk[RD_MAX_DEV];
+static struct gendisk *fake_rd_gendisk[RD_MAX_DEV];
 
-#ifdef  ANULADO 
-
-/* Only changed by fake_ide_setup which is a setup */
-static int fake_ide = 0;
-static struct proc_dir_entry *proc_ide_root = NULL;
-static struct proc_dir_entry *proc_ide = NULL;
+/* Only changed by fake_rd_ide_setup which is a setup */
+static int 		fake_rd_ide = 0;
+static struct proc_dir_entry *proc_rd_ide_root = NULL;
+static struct proc_dir_entry *proc_rd_ide = NULL;
 
 static void make_proc_ide(void)
 {
-	proc_ide_root = proc_mkdir("ide", NULL);
-	proc_ide = proc_mkdir("ide0", proc_ide_root);
+	proc_rd_ide_root = proc_mkdir("ide", NULL);
+	proc_rd_ide = proc_mkdir("ide0", proc_rd_ide_root);
 }
 
-static int fake_ide_media_proc_show(struct seq_file *m, void *v)
+static int fake_rd_ide_media_show(struct seq_file *m, void *v)
 {
 	seq_puts(m, "disk\n");
 	return 0;
 }
 
-static int fake_ide_media_proc_open(struct inode *inode, struct file *file)
+static int fake_rd_ide_media_open(struct inode *inode, struct file *file)
 {
 	return 0;
 }
 
-static const struct file_operations fake_ide_media_proc_fops = {
+static const struct file_operations fake_rd_ide_media_fops = {
 	.owner		= THIS_MODULE,
-	.open		= fake_ide_media_proc_open,
+	.open		= fake_rd_ide_media_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
 
-static void make_ide_entries(const char *dev_name)
+static void make_rd_ide_entries(const char *dev_name)
 {
 	struct proc_dir_entry *dir, *ent;
 	char name[64];
 
-	if(proc_ide_root == NULL) make_proc_ide();
+	if(proc_rd_ide_root == NULL) make_proc_ide();
 
-	dir = proc_mkdir(dev_name, proc_ide);
+	dir = proc_mkdir(dev_name, proc_rd_ide);
 	if(!dir) return;
 
-	ent = proc_create("media", S_IRUGO, dir, &fake_ide_media_proc_fops);
+	ent = proc_create("media", S_IRUGO, dir, &fake_rd_ide_media_fops);
 	if(!ent) return;
 	snprintf(name, sizeof(name), "ide0/%s", dev_name);
-	proc_symlink(dev_name, proc_ide_root, name);
+	proc_symlink(dev_name, proc_rd_ide_root, name);
 }
+
+static int fake_rd_ide_setup(char *str)
+{
+	fake_rd_ide = 1;
+	return 1;
+}
+
+__setup("fake_rd_ide", fake_rd_ide_setup);
+
+__uml_help(fake_rd_ide_setup,
+"fake_rd_ide\n"
+"    Create ide0 entries that map onto rdisk devices.\n\n"
+);
+
+/* If *index_out == -1 at exit, the passed option was a general one;
+ * otherwise, the str pointer is used (and owned) inside rd_devs array, so it
+ * should not be freed on exit.
+ */
+static int rd_setup_common(char *str, int *index_out, char **error_out)
+{
+	return 0;
+}
+
+
+static int rd_setup(char *str)
+{
+	char *error;
+	int err;
+
+	err = rd_setup_common(str, NULL, &error);
+	if(err)
+		printk(KERN_ERR "Failed to initialize device with \"%s\" : "
+		       "%s\n", str, error);
+	return 1;
+}
+
+__setup("rdisk", rd_setup);
+__uml_help(rd_setup,
+"rdisk<n><flags>=<filename>[(:|,)<filename2>]\n"
+"    This is used to associate a device with a file in the underlying\n"
+"    filesystem. When specifying two filenames, the first one is the\n"
+"    COW name and the second is the backing file name. As separator you can\n"
+"    use either a ':' or a ',': the first one allows writing things like;\n"
+"	ubd0=~/Uml/root_cow:~/Uml/root_backing_file\n"
+"    while with a ',' the shell would not expand the 2nd '~'.\n"
+"    When using only one filename, UML will detect whether to treat it like\n"
+"    a COW file or a backing file. To override this detection, add the 'd'\n"
+"    flag:\n"
+"	ubd0d=BackingFile\n"
+"    Usually, there is a filesystem in the file, but \n"
+"    that's not required. Swap devices containing swap files can be\n"
+"    specified like this. Also, a file which doesn't contain a\n"
+"    filesystem can have its contents read in the virtual \n"
+"    machine by running 'dd' on the device. <n> must be in the range\n"
+"    0 to 7. Appending an 'r' to the number will cause that device\n"
+"    to be mounted read-only. For example ubd1r=./ext_fs. Appending\n"
+"    an 's' will cause data to be written to disk on the host immediately.\n"
+"    'c' will cause the device to be treated as being shared between multiple\n"
+"    UMLs and file locking will be turned off - this is appropriate for a\n"
+"    cluster filesystem and inappropriate at almost all other times.\n\n"
+);
+
+static int udb_setup(char *str)
+{
+	printk("udb%s specified on command line is almost certainly a rdisk -> "
+	       "udb TYPO\n", str);
+	return 1;
+}
+
+__setup("udb", udb_setup);
+__uml_help(udb_setup,
+"udb\n"
+"    This option is here solely to catch rdisk -> udb typos, which can be\n"
+"    to impossible to catch visually unless you specifically look for\n"
+"    them.  The only result of any option starting with 'udb' is an error\n"
+"    in the boot output.\n\n"
+);
+
+static void do_rd_request(struct request_queue * q);
+
+/* Only changed by rd_init, which is an initcall. */
+static int rd_pid = -1;
+
+static void kill_rd_thread(void)
+{
+	if(rd_pid != -1)
+		os_kill_process(rd_pid, 1);
+}
+
+__uml_exitcall(kill_rd_thread);
 
 
 static void rd_close_dev(struct rdisk *rd_dev)
@@ -177,7 +283,7 @@ static void rd_device_release(struct device *dev)
 	struct rdisk *rd_dev = dev_get_drvdata(dev);
 
 	blk_cleanup_queue(rd_dev->queue);
-	*rd_dev = ((struct rdisk) DEFAULT_UBD);
+	*rd_dev = ((struct rdisk) DEFAULT_RDISK);
 }
 
 static int rd_disk_register(int major, u64 size, int unit,
@@ -193,7 +299,7 @@ static int rd_disk_register(int major, u64 size, int unit,
 	disk->major = major;
 	disk->first_minor = unit << RD_SHIFT;
 	disk->fops = &rd_blops;
-	set_capacity(disk, size / SECTOR_SIZE);
+	set_capacity(disk, size / RD_SECTOR_SIZE);
 	if (major == RD_MAJOR)
 		sprintf(disk->disk_name, "rdisk%c", 'a' + unit);
 	else
@@ -219,20 +325,186 @@ static int rd_disk_register(int major, u64 size, int unit,
 
 #define ROUND_BLOCK(n) ((n + ((1 << 9) - 1)) & (-1 << 9))
 
+static int rd_add(int n, char **error_out)
+{
+	struct rdisk *rd_dev = &rd_devs[n];
+	int err = 0;
+
+	err = rd_dev_size(rd_dev, &rd_dev->size);
+	if(err < 0){
+		*error_out = "Couldn't determine size of device's file";
+		goto out;
+	}
+
+	rd_dev->size = ROUND_BLOCK(rd_dev->size);
+
+	INIT_LIST_HEAD(&rd_dev->restart);
+	sg_init_table(rd_dev->sg, MAX_SG);
+
+	err = -ENOMEM;
+	rd_dev->queue = blk_init_queue(do_rd_request, &rd_dev->lock);
+	if (rd_dev->queue == NULL) {
+		*error_out = "Failed to initialize device queue";
+		goto out;
+	}
+	rd_dev->queue->queuedata = rd_dev;
+	blk_queue_write_cache(rd_dev->queue, true, false);
+
+	blk_queue_max_segments(rd_dev->queue, MAX_SG);
+	err = rd_disk_register(UBD_MAJOR, rd_dev->size, n, &rd_gendisk[n]);
+	if(err){
+		*error_out = "Failed to register device";
+		goto out_cleanup;
+	}
+
+	if (fake_rd_major != UBD_MAJOR)
+		rd_disk_register(fake_rd_major, rd_dev->size, n,
+				  &fake_rd_gendisk[n]);
+
+	/*
+	 * Perhaps this should also be under the "if (fake_rd_major)" above
+	 * using the fake_disk->disk_name
+	 */
+	if (fake_rd_ide)
+		make_rd_ide_entries(rd_gendisk[n]->disk_name);
+
+	err = 0;
+out:
+	return err;
+
+out_cleanup:
+	blk_cleanup_queue(rd_dev->queue);
+	goto out;
+}
+
+static int rd_config(char *str, char **error_out)
+{
+	int n, ret;
+
+	/* This string is possibly broken up and stored, so it's only
+	 * freed if rd_setup_common fails, or if only general options
+	 * were set.
+	 */
+	str = kstrdup(str, GFP_KERNEL);
+	if (str == NULL) {
+		*error_out = "Failed to allocate memory";
+		return -ENOMEM;
+	}
+
+	ret = rd_setup_common(str, &n, error_out);
+	if (ret)
+		goto err_free;
+
+	if (n == -1) {
+		ret = 0;
+		goto err_free;
+	}
+
+	mutex_lock(&rd_lock);
+	ret = rd_add(n, error_out);
+	if (ret)
+		rd_devs[n].file = NULL;
+	mutex_unlock(&rd_lock);
+
+out:
+	return ret;
+
+err_free:
+	kfree(str);
+	goto out;
+}
+
+static int rd_parse_unit(char **ptr)
+{
+	char *str = *ptr, *end;
+	int n = -1;
+
+	if(isdigit(*str)) {
+		n = simple_strtoul(str, &end, 0);
+		if(end == str)
+			return -1;
+		*ptr = end;
+	}
+	else if (('a' <= *str) && (*str <= 'z')) {
+		n = *str - 'a';
+		str++;
+		*ptr = str;
+	}
+	return n;
+}
+
+static int rd_get_config(char *name, char *str, int size, char **error_out)
+{
+	struct rdisk *rd_dev;
+	int n, len = 0;
+
+	n = rd_parse_unit(&name);
+	if((n >= RD_MAX_DEV) || (n < 0)){
+		*error_out = "rd_get_config : device number out of range";
+		return -1;
+	}
+
+	rd_dev = &rd_devs[n];
+	mutex_lock(&rd_lock);
+
+	if(rd_dev->file == NULL){
+		CONFIG_CHUNK(str, size, len, "", 1);
+		goto out;
+	}
+
+	CONFIG_CHUNK(str, size, len, rd_dev->file, 0);
+	CONFIG_CHUNK(str, size, len, "", 1);
+
+ out:
+	mutex_unlock(&rd_lock);
+	return len;
+}
+
 static int rd_id(char **str, int *start_out, int *end_out)
 {
 	int n;
 
-	n = parse_unit(str);
+	n = rd_parse_unit(str);
 	*start_out = 0;
-	*end_out = MAX_DEV - 1;
+	*end_out = RD_MAX_DEV - 1;
 	return n;
 }
 
 static int rd_remove(int n, char **error_out)
 {
-	return 0;
+	struct gendisk *disk = rd_gendisk[n];
+	struct rdisk *rd_dev;
+	int err = -ENODEV;
+
+	mutex_lock(&rd_lock);
+
+	rd_dev = &rd_devs[n];
+
+	/* you cannot remove a open disk */
+	err = -EBUSY;
+	if(rd_dev->count > 0)
+		goto out;
+
+	rd_gendisk[n] = NULL;
+	if(disk != NULL){
+		del_gendisk(disk);
+		put_disk(disk);
+	}
+
+	if(fake_rd_gendisk[n] != NULL){
+		del_gendisk(fake_rd_gendisk[n]);
+		put_disk(fake_rd_gendisk[n]);
+		fake_rd_gendisk[n] = NULL;
+	}
+
+	err = 0;
+	platform_device_unregister(&rd_dev->pdev);
+out:
+	mutex_unlock(&rd_lock);
+	return err;
+	
 }
+
 
 /* All these are called by mconsole in process context and without
  * rdisk-specific locks.  The structure itself is const except for .list.
@@ -254,7 +526,7 @@ static int __init rd_mc_init(void)
 
 __initcall(rd_mc_init);
 
-static int __init ubd0_init(void)
+static int __init rd0_init(void)
 {
 	struct rdisk *rd_dev = &rd_devs[0];
 
@@ -266,7 +538,8 @@ static int __init ubd0_init(void)
 	return 0;
 }
 
-__initcall(ubd0_init);
+__initcall(rd0_init);
+
 
 /* Used in rd_init, which is an initcall */
 static struct platform_driver rd_driver = {
@@ -274,6 +547,7 @@ static struct platform_driver rd_driver = {
 		.name  = RDISK_NAME,
 	},
 };
+
 
 static int __init rd_init(void)
 {
@@ -283,16 +557,16 @@ static int __init rd_init(void)
 	if (register_blkdev(RD_MAJOR, "rdisk"))
 		return -1;
 
-	if (fake_major != RD_MAJOR) {
+	if (fake_rd_major != RD_MAJOR) {
 		char name[sizeof("rd_nnn\0")];
 
-		snprintf(name, sizeof(name), "rd_%d", fake_major);
-		if (register_blkdev(fake_major, "rdisk"))
+		snprintf(name, sizeof(name), "rd_%d", fake_rd_major);
+		if (register_blkdev(fake_rd_major, "rdisk"))
 			return -1;
 	}
 	platform_driver_register(&rd_driver);
 	mutex_lock(&rd_lock);
-	for (i = 0; i < MAX_DEV; i++){
+	for (i = 0; i < RD_MAX_DEV; i++){
 		err = rd_add(i, &error);
 		if(err)
 			printk(KERN_ERR "Failed to initialize rdisk device %d :"
@@ -303,6 +577,47 @@ static int __init rd_init(void)
 }
 
 late_initcall(rd_init);
+
+/* XXX - move this inside rd_intr. */
+/* Called without dev->lock held, and only in interrupt context. */
+static void rd_handler(void)
+{
+	struct io_thread_req *req;
+	struct rdisk *rdisk;
+	struct list_head *list, *next_ele;
+	unsigned long flags;
+	int n;
+
+	while(1){
+		n = os_read_file(rd_thread_fd, &req,
+				 sizeof(struct io_thread_req *));
+		if(n != sizeof(req)){
+			if(n == -EAGAIN)
+				break;
+			printk(KERN_ERR "spurious interrupt in rd_handler, "
+			       "err = %d\n", -n);
+			return;
+		}
+
+		blk_end_request(req->req, 0, req->length);
+		kfree(req);
+	}
+	reactivate_fd(rd_thread_fd, UBD_IRQ);
+
+	list_for_each_safe(list, next_ele, &restart){
+		rdisk = container_of(list, struct rdisk, restart);
+		list_del_init(&rdisk->restart);
+		spin_lock_irqsave(&rdisk->lock, flags);
+		do_rd_request(rdisk->queue);
+		spin_unlock_irqrestore(&rdisk->lock, flags);
+	}
+}
+
+static irqreturn_t rd_intr(int irq, void *dev)
+{
+	rd_handler();
+	return IRQ_HANDLED;
+}
 
 static int __init rd_driver_init(void){
 	unsigned long stack;
@@ -315,15 +630,15 @@ static int __init rd_driver_init(void){
 		 * enough. So use anyway the io thread. */
 	}
 	stack = alloc_stack(0, 0);
-	io_pid = start_io_thread(stack + PAGE_SIZE - sizeof(void *), &thread_fd);
-	if(io_pid < 0){
+	rd_pid = start_rd_thread(stack + PAGE_SIZE - sizeof(void *), &rd_thread_fd);
+	if(rd_pid < 0){
 		printk(KERN_ERR
 		       "rdisk : Failed to start I/O thread (errno = %d) - "
-		       "falling back to synchronous I/O\n", -io_pid);
-		io_pid = -1;
+		       "falling back to synchronous I/O\n", -rd_pid);
+		rd_pid = -1;
 		return 0;
 	}
-	err = um_request_irq(RD_IRQ, thread_fd, IRQ_READ, rd_intr, 0, "rdisk", rd_devs);
+	err = um_request_irq(RDISK_IRQ, rd_thread_fd, IRQ_READ, rd_intr, 0, "rdisk", rd_devs);
 	if(err != 0)
 		printk(KERN_ERR "um_request_irq failed - errno = %d\n", -err);
 	return 0;
@@ -341,8 +656,8 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 	if(rd_dev->count == 0){
 		err = rd_open_dev(rd_dev);
 		if(err){
-			printk(KERN_ERR "%s: Can't open \"%s\": errno = %d\n",
-			       disk->disk_name, rd_dev->file, -err);
+			printk(KERN_ERR "%s: Can't open: errno = %d\n",
+			       disk->disk_name, -err);
 			goto out;
 		}
 	}
@@ -370,50 +685,48 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 	mutex_unlock(&rd_mutex);
 }
 
-#endif // ANULADO 
-
 /* Called with dev->lock held */
-static void prepare_request(struct request *req, struct rd_thread_req *io_req,
+static void rd_prepare_request(struct request *req, struct rd_thread_req *rd_req,
 			    unsigned long long offset, int page_offset,
 			    int len, struct page *page)
 {
 	struct gendisk *disk = req->rq_disk;
 	struct rdisk *rd_dev = disk->private_data;
 
-	io_req->req = req;
-	io_req->offset = offset;
-	io_req->length = len;
-	io_req->error = 0;
-	io_req->op = (rq_data_dir(req) == READ) ? RD_READ : RD_WRITE;
-	io_req->offset= 0;
-	io_req->buffer = page_address(page) + page_offset;
-	io_req->sectorsize = 1 << 9;
+	rd_req->req = req;
+	rd_req->offset = offset;
+	rd_req->length = len;
+	rd_req->error = 0;
+	rd_req->op = (rq_data_dir(req) == READ) ? RD_READ : RD_WRITE;
+	rd_req->offset= 0;
+	rd_req->buffer = page_address(page) + page_offset;
+	rd_req->sectorsize = 1 << 9;
 
 }
 
 /* Called with dev->lock held */
-static void prepare_flush_request(struct request *req,
-				  struct rd_thread_req *io_req)
+static void rd_prepare_flush_request(struct request *req,
+				  struct rd_thread_req *rd_req)
 {
 	struct gendisk *disk = req->rq_disk;
 	struct rdisk *rd_dev = disk->private_data;
 
-	io_req->req = req;
-	io_req->op = RD_FLUSH;
+	rd_req->req = req;
+	rd_req->op = RD_FLUSH;
 }
 
-static bool submit_request(struct rd_thread_req *io_req, struct rdisk *dev)
+static bool rd_submit_request(struct rd_thread_req *rd_req, struct rdisk *dev)
 {
-	int n = os_write_file(thread_fd, &io_req,
-			     sizeof(io_req));
-	if (n != sizeof(io_req)) {
+	int n = os_write_file(rd_thread_fd, &rd_req,
+			     sizeof(rd_req));
+	if (n != sizeof(rd_req)) {
 		if (n != -EAGAIN)
 			printk("write to io thread failed, "
 			       "errno = %d\n", -n);
 		else if (list_empty(&dev->restart))
 			list_add(&dev->restart, &restart);
 
-		kfree(io_req);
+		kfree(rd_req);
 		return false;
 	}
 	return true;
@@ -422,7 +735,7 @@ static bool submit_request(struct rd_thread_req *io_req, struct rdisk *dev)
 /* Called with dev->lock held */
 static void do_rd_request(struct request_queue *q)
 {
-	struct rd_thread_req *io_req;
+	struct rd_thread_req *rd_req;
 	struct request *req;
 
 	while(1){
@@ -441,33 +754,33 @@ static void do_rd_request(struct request_queue *q)
 		req = dev->request;
 
 		if (req_op(req) == REQ_OP_FLUSH) {
-			io_req = kmalloc(sizeof(struct rd_thread_req),
+			rd_req = kmalloc(sizeof(struct rd_thread_req),
 					 GFP_ATOMIC);
-			if (io_req == NULL) {
+			if (rd_req == NULL) {
 				if (list_empty(&dev->restart))
 					list_add(&dev->restart, &restart);
 				return;
 			}
-			prepare_flush_request(req, io_req);
-			if (submit_request(io_req, dev) == false)
+			rd_prepare_flush_request(req, rd_req);
+			if (rd_submit_request(rd_req, dev) == false)
 				return;
 		}
 
 		while(dev->start_sg < dev->end_sg){
 			struct scatterlist *sg = &dev->sg[dev->start_sg];
 
-			io_req = kmalloc(sizeof(struct rd_thread_req),
+			rd_req = kmalloc(sizeof(struct rd_thread_req),
 					 GFP_ATOMIC);
-			if(io_req == NULL){
+			if(rd_req == NULL){
 				if(list_empty(&dev->restart))
 					list_add(&dev->restart, &restart);
 				return;
 			}
-			prepare_request(req, io_req,
+			rd_prepare_request(req, rd_req,
 					(unsigned long long)dev->rq_pos << 9,
 					sg->offset, sg->length, sg_page(sg));
 
-			if (submit_request(io_req, dev) == false)
+			if (rd_submit_request(rd_req, dev) == false)
 				return;
 
 			dev->rq_pos += sg->length >> 9;
@@ -507,7 +820,7 @@ static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 
 static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, unsigned long arg)
 {
-	struct ubd *ubd_dev = bdev->bd_disk->private_data;
+	struct rdisk *rd_dev = bdev->bd_disk->private_data;
 	struct hd_geometry geo;
 	u16 rd_id[ATA_ID_WORDS];
 	int rcode;
@@ -593,7 +906,7 @@ static void do_rdisk(struct rd_thread_req *req)
 	req->error = 0;
 }
 
-/* Changed in start_io_thread, which is serialized by being called only
+/* Changed in start_rd_thread, which is serialized by being called only
  * from rd_init, which is an initcall.
  */
 
@@ -603,10 +916,6 @@ static int init_rdisk(void)
 	dvs_usr_t *dvsu_ptr;
 	dc_usr_t *dcu_ptr;
 	proc_usr_t *proc_ptr;
-	
-printk("PAP init_rdisk\n");
-os_flush_stdout();
-
 	
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
