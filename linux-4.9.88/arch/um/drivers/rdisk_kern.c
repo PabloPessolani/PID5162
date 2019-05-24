@@ -136,6 +136,12 @@ static int 		fake_rd_ide = 0;
 static struct proc_dir_entry *proc_rd_ide_root = NULL;
 static struct proc_dir_entry *proc_rd_ide = NULL;
 
+
+int rd_dev_size(struct rdisk *rd_dev, __u64 size)
+{
+	return(OK);
+}
+
 static void make_proc_ide(void)
 {
 	proc_rd_ide_root = proc_mkdir("ide", NULL);
@@ -402,8 +408,6 @@ static int rd_config(char *str, char **error_out)
 
 	mutex_lock(&rd_lock);
 	ret = rd_add(n, error_out);
-	if (ret)
-		rd_devs[n].file = NULL;
 	mutex_unlock(&rd_lock);
 
 out:
@@ -446,13 +450,6 @@ static int rd_get_config(char *name, char *str, int size, char **error_out)
 
 	rd_dev = &rd_devs[n];
 	mutex_lock(&rd_lock);
-
-	if(rd_dev->file == NULL){
-		CONFIG_CHUNK(str, size, len, "", 1);
-		goto out;
-	}
-
-	CONFIG_CHUNK(str, size, len, rd_dev->file, 0);
 	CONFIG_CHUNK(str, size, len, "", 1);
 
  out:
@@ -530,11 +527,6 @@ static int __init rd0_init(void)
 {
 	struct rdisk *rd_dev = &rd_devs[0];
 
-	mutex_lock(&rd_lock);
-	if(rd_dev->file == NULL)
-		rd_dev->file = "root_fs";
-	mutex_unlock(&rd_lock);
-
 	return 0;
 }
 
@@ -582,7 +574,7 @@ late_initcall(rd_init);
 /* Called without dev->lock held, and only in interrupt context. */
 static void rd_handler(void)
 {
-	struct io_thread_req *req;
+	struct rd_thread_req *req;
 	struct rdisk *rdisk;
 	struct list_head *list, *next_ele;
 	unsigned long flags;
@@ -590,7 +582,7 @@ static void rd_handler(void)
 
 	while(1){
 		n = os_read_file(rd_thread_fd, &req,
-				 sizeof(struct io_thread_req *));
+				 sizeof(struct rd_thread_req *));
 		if(n != sizeof(req)){
 			if(n == -EAGAIN)
 				break;
