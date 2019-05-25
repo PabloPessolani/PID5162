@@ -13,7 +13,7 @@
  *	Jul 26, 2004	moved RAM driver to user-space  (Jorrit N. Herder)
  *	Apr 20, 1992	device dependent/independent split  (Kees J. Bot)
  */
-#define _TABLE
+#define _GLOBAL_VARS_HERE
 #define _MULTI_THREADED
 #define _GNU_SOURCE     
 #define  MOL_USERSPACE	1
@@ -86,9 +86,9 @@ void check_same_image( void )
 		
 		// get file size and block size 
 		if( devvec[i].img_type != NBD_IMAGE ) {
-			devvec[i].part.size._[0] = i_stat.st_size;
-			devvec[i].part.size._[1] = 0;
-			TASKDEBUG("dev=%d image size=%ld[bytes] %d\n", i, i_stat.st_size, devvec[i].part.size._[0]);
+			devvec[i].part.size = i_stat.st_size;
+			devvec[i].st_size = i_stat.st_size;			
+			TASKDEBUG("dev=%d image size=%ld[bytes] %lld\n", i, i_stat.st_size, devvec[i].part.size);
 			devvec[i].st_blksize = i_stat.st_blksize;
 			TASKDEBUG("dev=%d block size=%d[bytes] %d\n", i, i_stat.st_blksize, devvec[i].st_blksize);
 		}
@@ -281,7 +281,7 @@ iovec_t *iov;			/* pointer to read or write request vector */
 unsigned nr_req;		/* length of request vector */
 {
 	/* Read or write one the driver's minor devices. */
-	phys_bytes mem_phys;
+//	phys_bytes mem_phys;
 	unsigned count, tbytes, stbytes, bytes, count_s, bytes_c; //left, chunk; 
 	vir_bytes user_vir, addr_s;
 	struct device *dv;
@@ -329,9 +329,9 @@ unsigned nr_req;		/* length of request vector */
 			count = dv_size - position; 
 			TASKDEBUG("count dv_size-position: %u\n", count); 
 			}
-					
-		mem_phys = cv64ul(devvec[m_device].part.base) + position;
-		TASKDEBUG("DRIVER - position I/O(mem_phys) %X\n", mem_phys);
+
+//		mem_phys = devvec[m_device].part.base + position;
+//		TASKDEBUG("DRIVER - position I/O(mem_phys) %X\n", mem_phys);
 			
 		if ((opcode == DEV_GATHER) ||(opcode == DEV_CGATHER))  {/* copy data */ /*DEV_GATHER read from an array (com.h)*/
 		
@@ -382,8 +382,8 @@ unsigned nr_req;		/* length of request vector */
 				
 				TASKDEBUG("DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=%d\n", rcode);  
 				TASKDEBUG("bytes= %d\n", bytes);
-				TASKDEBUG("DRIVER - Offset (read) %X\n", devvec[m_device].localbuff);			
-				TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
+				TASKDEBUG("DRIVER - Offset (read) %X\n", devvec[m_device].localbuff);		
+//				TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
 				TASKDEBUG("user_vir: %X (in proc_nr %d)\n", user_vir, proc_nr);			
 			
 				if (rcode < 0 ) {
@@ -444,7 +444,7 @@ unsigned nr_req;		/* length of request vector */
 						
 						TASKDEBUG("DRIVER: dvk_vcopy(proc_nr -> DRIVER)= %d\n", rcode);  
 						TASKDEBUG("bytes= %d\n", bytes);     
-						TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
+//						TASKDEBUG("mem_phys: %X (in DRIVER)\n", devvec[m_device].localbuff);			
 						TASKDEBUG("user_vir: %X (in proc_nr %d)\n", user_vir, proc_nr);			
 									
 						if (rcode < 0 ){
@@ -931,13 +931,12 @@ int rd_init(void )
 	
 	for( i = 0; i < NR_DEVS; i++){
 		if ( devvec[i].available == AVAILABLE_YES ){
-			TASKDEBUG("Byte offset to the partition start (Device = %d - img_ptr): %X\n", i, devvec[i].img_ptr);
-			devvec[i].part.base = cvul64(devvec[i].img_ptr);
+			TASKDEBUG("Byte offset to the partition start (Device = %d - img_ptr): %X\n", i, devvec[i].img_ptr);	
+			devvec[i].part.base = 0;
 			fprintf(stdout, "Byte offset to the partition start (m_geom[DEV=%d].dv_base): %X\n",
 				i, devvec[i].part.base);
 			fflush(stdout);
-	
-			TASKDEBUG("Number of bytes in the partition (Device = %d - img_size): %u\n", 
+			TASKDEBUG("Number of bytes in the partition (Device = %d - img_size): %lld\n", 
 			i, devvec[i].part.size);
 			fflush(stdout);
 			}
@@ -956,6 +955,8 @@ int get_geometry(int device)
 	devvec_t *dv_ptr;
 	m_device = device;
 	dv_ptr =&devvec[m_device];
+
+	TASKDEBUG(DEV_USR1_FORMAT, DEV_USR1_FIELDS(dv_ptr));	
 	dv_ptr->part.cylinders	= (dv_ptr->st_size/(SECTOR_SIZE * DFT_HEADS * DFT_SECTORS));
 	dv_ptr->part.heads		= DFT_HEADS;
 	dv_ptr->part.sectors	= DFT_SECTORS;

@@ -112,6 +112,8 @@ int read_write(int rw_flag)
   if (!char_spec && !block_spec)
     block_size = rip->i_sp->s_block_size;
 
+	MUKDEBUG("block_size%d\n", block_size);    
+
   rdwt_err = OK;    /* set to EIO if disk error occurs */
 
   /* Check for character special files. */
@@ -289,7 +291,7 @@ int rw_chunk(register struct inode *rip, mnx_off_t position, unsigned off, int c
   mnx_dev_t dev;
 
   *completed = 0;
-// MUKDEBUG("INICIO CHUNK %d\n", 1);
+  MUKDEBUG("chunk%d\n", chunk);
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
   if (block_spec) {
   b = position/block_size;

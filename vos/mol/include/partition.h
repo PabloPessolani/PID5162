@@ -24,19 +24,19 @@ struct part_entry {
 };
 
 typedef unsigned long  mnx_u32_t;	   /* 32 bit type */
-typedef struct { mnx_u32_t _[2]; } mnx_u64_t;
+typedef unsigned long long mnx_u64_t;
 
 struct mnx_part_s {
-  u64_t base;		/* byte offset to the partition start */
-  u64_t size;		/* number of bytes in the partition */
+  mnx_u64_t base;		/* byte offset to the partition start */
+  mnx_u64_t size;		/* number of bytes in the partition */
   unsigned cylinders;	/* disk geometry */
   unsigned heads;
   unsigned sectors;
 };
 typedef struct mnx_part_s mnx_part_t;
 
-#define PART_FORMAT 	"base[0]=%lX base[1]=%lX size[0]=%lX size[1]=%lX cyl=%d heads=%d sec=%d\n"
-#define PART_FIELDS(p) p->base._[0],p->base._[0],p->size._[0],p->size._[1], p->cylinders, p->heads, p->sectors
+#define PART_FORMAT 	"base=%lld size=%lld cyl=%d heads=%d sec=%d\n"
+#define PART_FIELDS(p)  p->base,p->size, p->cylinders, p->heads, p->sectors
 
 #define ACTIVE_FLAG	0x80	/* value for active in bootind field (hd0) */
 #define NR_PARTITIONS	4	/* number of entries in partition table */

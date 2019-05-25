@@ -349,9 +349,11 @@ int main ( int argc, char *argv[] )
 	int ret_is;
 	int ret_web;
 	int ret_ftp;
-
+	double t_start, t_stop, t_total; 
 	
 	pthread_attr_t attrs;
+	
+	t_start =  dwalltime();
 	
 	if ( argc != 2) {
 		print_usage(argv[0]);
@@ -520,7 +522,11 @@ int main ( int argc, char *argv[] )
 	}
 #endif // ENABLE_FTP
 
+	t_stop =  dwalltime();
+	t_total = (t_stop-t_start);
+ 	printf("BOOT TIME: t_start=%.2f t_stop=%.2f t_total=%.2f [s]\n",t_start, t_stop, t_total);
 	MUKDEBUG("JOINING ALL THREADS -------------------------------------\n");
+    fflush(stdout);
 
 		// JOINING ALL THREADS 
 #if ENABLE_FTP

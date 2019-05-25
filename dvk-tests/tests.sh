@@ -61,7 +61,7 @@ tipc_addr="1.1.10$lcl"
 tipc node set addr $tipc_addr
 tipc bearer enable media eth dev eth0 
 read  -p "Enter para continuar... "
-/usr/src/dvs/dvk-proxies/tipc_proxy_bat node$rmt $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
 sleep 5
 tipc bearer list
 tipc nametable show

@@ -34,9 +34,15 @@ static const LZ4F_preferences_t lz4_preferences = {
 #define SORRY 43
 #define LOG   44
 
+#define BATCH_NO			0
+#define BATCH_YES	 		1
+#define COMPRESS_NO			0
+#define COMPRESS_YES 		1
+#define AUTOBIND_NO			0
+#define AUTOBIND_YES 		1
+
 // makes remotes clients automatic bind when they send a message to local receiver proxy 
 // if local  SYSTASK is running, it does not work 
-#define RMT_CLIENT_BIND	1
 // it enables automating binding through SYSTASK 
 // define SYSTASK_BIND 1
 
@@ -89,6 +95,10 @@ struct sockaddr_tipc rmtclient_addr, rmtserver_addr;
 int    rlisten_sd, rconn_sd;
 int    sproxy_sd;
 pthread_t pws_pth;
+
+int compress_opt;
+int batch_opt;
+int autobind_opt;
 
 void main_pws(void *arg_port);
 void wdmp_px_stats(void);
@@ -304,31 +314,40 @@ int pr_process_message(void) {
         bzero(p_payload, payload_size);
         rcode = pr_receive_payload(p_payload, payload_size);
         if (rcode != 0) ERROR_RETURN(rcode);
-		
-		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
-				raw_len = decompress_payload(p_header, p_payload); 
-				if(raw_len < 0)	ERROR_RETURN(raw_len);
-				if(!TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) { // ONLY CMD_COPYIN_DATA AND  CMD_COPYOUT_DATA  
-					if( raw_len != p_header->c_u.cu_vcopy.v_bytes){
-							fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(p_header));
-							ERROR_RETURN(EDVSBADVALUE);
+		if(compress_opt){
+			if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+					raw_len = decompress_payload(p_header, p_payload); 
+					if(raw_len < 0)	ERROR_RETURN(raw_len);
+					if(!TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) { // ONLY CMD_COPYIN_DATA AND  CMD_COPYOUT_DATA  
+						if( raw_len != p_header->c_u.cu_vcopy.v_bytes){
+								fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(p_header));
+								ERROR_RETURN(EDVSBADVALUE);
+						}
 					}
-				}
-				p_header->c_len = raw_len;
+					p_header->c_len = raw_len;
+			}
 		}
 	}
 
 	PXYDEBUG("RPROXY: put2lcl\n");
-	if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
-		rcode = dvk_put2lcl(p_header, p_decomp_pl);
-	} else{
+	if( compress_opt) {
+		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+			rcode = dvk_put2lcl(p_header, p_decomp_pl);
+		} else{
+			rcode = dvk_put2lcl(p_header, p_payload);
+		}
+	}else {
 		rcode = dvk_put2lcl(p_header, p_payload);
 	}
-
-#ifdef RMT_CLIENT_BIND	
+	
+	if( autobind_opt == AUTOBIND_NO) {
+		if( rcode < 0 ) ERROR_RETURN(rcode);
+	    return(OK);    
+	}
+		
+	/******************** REMOTE CLIENT BINDING ************************************/
 	ret = 0;
 	if( rcode < 0) {
-		/******************** REMOTE CLIENT BINDING ************************************/
 		/* rcode: the result of the las dvk_put2lcl 	*/
 		/* ret: the result of the following operations	*/
 		PXYDEBUG("RPROXY: REMOTE CLIENT BINDING rcode=%d\n", rcode);
@@ -385,55 +404,60 @@ int pr_process_message(void) {
 
 		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
 		PXYDEBUG("RPROXY: put2lcl (autobind)\n");
-
-		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
-			rcode = dvk_put2lcl(p_header, p_decomp_pl);
-		} else{
-			rcode = dvk_put2lcl(p_header, p_payload);
+		if( compress_opt) {
+			if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+				rcode = dvk_put2lcl(p_header, p_decomp_pl);
+			} else{
+				rcode = dvk_put2lcl(p_header, p_payload);
+			}
+		}else {
+			rcode = dvk_put2lcl(p_header, p_payload);			
 		}
-
+		
 		if( ret < 0) {
 			ERROR_PRINT(ret);
 			if( rcode < 0) ERROR_RETURN(rcode);
 		}
 		rcode = 0;
 	}
-#else /* RMT_CLIENT_BIND	*/
-	if( rcode < 0 ) ERROR_RETURN(rcode);
-
-#endif /* RMT_CLIENT_BIND	*/
 	PXYDEBUG("RPROXY:" CMD_FORMAT, CMD_FIELDS(p_header));
 	PXYDEBUG("RPROXY:" CMD_XFORMAT, CMD_XFIELDS(p_header));
 	
-	if( TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) {
-		batch_nr = p_header->c_batch_nr;
-		PXYDEBUG("RPROXY: batch_nr=%d\n", batch_nr);
-		// check payload len
-		if( (batch_nr * sizeof(proxy_hdr_t)) != p_header->c_len){
-			PXYDEBUG("RPROXY: batched messages \n");
-			ERROR_RETURN(EDVSBADVALUE);
-		}
-		// put the batched commands
-		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
-			bat_cmd = (proxy_hdr_t *) p_decomp_pl;
-		else 
-			bat_cmd = (proxy_hdr_t *) p_payload;
-			
-		for( i = 0; i < batch_nr; i++){
-			bat_ptr = &bat_cmd[i];
-			PXYDEBUG("RPROXY: bat_cmd[%d]:" CMD_FORMAT, i, CMD_FIELDS(bat_ptr));
-			rcode = dvk_put2lcl(bat_ptr, p_payload);
-			if( rcode < 0) {
-				ERROR_RETURN(rcode);
+	if( batch_opt) {
+		if( TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) {
+			batch_nr = p_header->c_batch_nr;
+			PXYDEBUG("RPROXY: batch_nr=%d\n", batch_nr);
+			// check payload len
+			if( (batch_nr * sizeof(proxy_hdr_t)) != p_header->c_len){
+				PXYDEBUG("RPROXY: batched messages \n");
+				ERROR_RETURN(EDVSBADVALUE);
+			}
+			// put the batched commands
+			if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
+				bat_cmd = (proxy_hdr_t *) p_decomp_pl;
+			else 
+				bat_cmd = (proxy_hdr_t *) p_payload;
+				
+			for( i = 0; i < batch_nr; i++){
+				bat_ptr = &bat_cmd[i];
+				PXYDEBUG("RPROXY: bat_cmd[%d]:" CMD_FORMAT, i, CMD_FIELDS(bat_ptr));
+				rcode = dvk_put2lcl(bat_ptr, p_payload);
+				if( rcode < 0) {
+					ERROR_RETURN(rcode);
+				}
 			}
 		}
 	}
 	
-	if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
-		update_stats(p_header,  p_decomp_pl, CONNECT_RPROXY);
-	else 
+	if( compress_opt) {
+		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
+			update_stats(p_header,  p_decomp_pl, CONNECT_RPROXY);
+		else 
+			update_stats(p_header,  p_payload, CONNECT_RPROXY);
+	}else {
 		update_stats(p_header,  p_payload, CONNECT_RPROXY);
-
+	}
+	
     return(OK);    
 }
 
@@ -479,7 +503,8 @@ void pr_start_serving(void)
 		rcode = dvk_proxy_conn(px.px_id, DISCONNECT_RPROXY);
 		close(rconn_sd);
    	}
-    stop_decompression();
+	if( compress_opt)
+		stop_decompression();
     /* never reached */
 }
 
@@ -520,11 +545,13 @@ void pr_init(void)
     		exit(1);
   	}
 	
-	posix_memalign( (void**) &p_batch, getpagesize(), (sizeof(proxy_payload_t)));
-	if (p_payload== NULL) {
-    		perror("p_batch posix_memalign");
-    		exit(1);
-  	}
+	if( batch_opt) {
+		posix_memalign( (void**) &p_batch, getpagesize(), (sizeof(proxy_payload_t)));
+		if (p_payload== NULL) {
+				perror("p_batch posix_memalign");
+				exit(1);
+		}
+	}
 	
 	PXYDEBUG("p_header=%p p_payload=%p diff=%d\n", 
 			p_header, p_payload, ((char*) p_payload - (char*) p_header));
@@ -723,26 +750,28 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 
 	PXYDEBUG("SPROXY:" CMD_FORMAT, CMD_FIELDS(hd_ptr));
 	PXYDEBUG("SPROXY:" CMD_XFORMAT, CMD_XFIELDS(hd_ptr));
-	
-	if( (hd_ptr->c_cmd == CMD_COPYIN_DATA) || 
-		(hd_ptr->c_cmd == CMD_COPYOUT_DATA) || 
-		TEST_BIT(hd_ptr->c_flags, FLAG_BATCH_BIT) ){
 
-		PXYDEBUG("SPROXY: c_len=%d\n", hd_ptr->c_len);
-		assert( hd_ptr->c_len > 0);	
+	if( compress_opt) {
+		if( (hd_ptr->c_cmd == CMD_COPYIN_DATA) || 
+			(hd_ptr->c_cmd == CMD_COPYOUT_DATA) || 
+			TEST_BIT(hd_ptr->c_flags, FLAG_BATCH_BIT) ){
 
-		/* compress here */
-		comp_len = compress_payload(hd_ptr, pl_ptr);
-		PXYDEBUG("SPROXY: c_len=%d comp_len=%d\n", hd_ptr->c_len, comp_len);
-		if(comp_len < hd_ptr->c_len){
-			/* change command header  */
-			hd_ptr->c_len = comp_len; 
-			SET_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT); 
+			PXYDEBUG("SPROXY: c_len=%d\n", hd_ptr->c_len);
+			assert( hd_ptr->c_len > 0);	
+
+			/* compress here */
+			comp_len = compress_payload(hd_ptr, pl_ptr);
+			PXYDEBUG("SPROXY: c_len=%d comp_len=%d\n", hd_ptr->c_len, comp_len);
+			if(comp_len < hd_ptr->c_len){
+				/* change command header  */
+				hd_ptr->c_len = comp_len; 
+				SET_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT); 
+			}
+			PXYDEBUG(CMD_XFORMAT, CMD_XFIELDS(hd_ptr));		
+		}else {
+			assert( hd_ptr->c_len == 0);
 		}
-		PXYDEBUG(CMD_XFORMAT, CMD_XFIELDS(hd_ptr));		
-	}else {
-		assert( hd_ptr->c_len == 0);
-	}
+	} 
 	
 	/* send the header */
 	rcode =  ps_send_header(hd_ptr);
@@ -750,10 +779,14 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 
 	if( hd_ptr->c_len > 0) {
 		PXYDEBUG("SPROXY: send payload len=%d\n", hd_ptr->c_len );
-		if( TEST_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT) )
-			rcode =  ps_send_payload(hd_ptr, p_comp_pl);
-		else
-			rcode =  ps_send_payload(hd_ptr, p_payload);
+		if( compress_opt) {
+			if( TEST_BIT(hd_ptr->c_flags, FLAG_LZ4_BIT) )
+				rcode =  ps_send_payload(hd_ptr, p_comp_pl);
+			else
+				rcode =  ps_send_payload(hd_ptr, p_payload);
+		}else {
+				rcode =  ps_send_payload(hd_ptr, pl_ptr);
+		}
 		if ( rcode != OK)  ERROR_RETURN(rcode);
 	}
 
@@ -773,7 +806,9 @@ int  ps_start_serving(void)
     message *m_ptr;
     int pid, ret;
 
-	init_compression();
+	if( compress_opt)
+		init_compression();
+	
     pid = getpid();
 	
     while(1) {
@@ -810,48 +845,52 @@ int  ps_start_serving(void)
 		PXYDEBUG("SPROXY: %d "CMD_FORMAT,pid, CMD_FIELDS(p_header)); 
 		PXYDEBUG("SPROXY: %d "CMD_XFORMAT,pid, CMD_XFIELDS(p_header)); 
 		//------------------------ BATCHEABLE COMMAND -------------------------------
-		if(  (p_header->c_cmd != CMD_COPYIN_DATA )     // is a batcheable command ??
-		  && (p_header->c_cmd != CMD_COPYOUT_DATA)){	// YESSSSS
+		if (batch_opt) {
+			if(  (p_header->c_cmd != CMD_COPYIN_DATA )     // is a batcheable command ??
+			  && (p_header->c_cmd != CMD_COPYOUT_DATA)){	// YESSSSS
 
-			if ( (p_header->c_cmd  == CMD_SEND_MSG) 
-				||(p_header->c_cmd == CMD_SNDREC_MSG)
-				||(p_header->c_cmd == CMD_REPLY_MSG)){
-				m_ptr = &p_header->c_u.cu_msg;
-				PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
-			}
-			// store original header into batched header 
-			memcpy( (char*) p_header3, p_header, sizeof(proxy_hdr_t));
-			bat_vect = (proxy_hdr_t*) p_batch;	
-			do{
-				PXYDEBUG("SPROXY %d: Getting more messages\n", pid);
-				ret = dvk_get2rmt_T(p_header2, p_payload2, TIMEOUT_NOWAIT);            
-				if( ret != OK) {
-					switch(ret) {
-						case EDVSTIMEDOUT:
-						case EDVSAGAIN:
-							ERROR_PRINT(ret); 
-							break;
-						case EDVSNOTCONN: 
-							ERROR_RETURN(EDVSNOTCONN);
-							break;
-						default:
-							ERROR_PRINT(ret);
-							break;
-					}
-					break;
-				} 
-			
-				if(  (p_header2->c_cmd == CMD_COPYIN_DATA )    // is a batcheable command ??
-					|| (p_header2->c_cmd == CMD_COPYOUT_DATA)){// NOOOOOOO
-					cmd_flag = CMD_PENDING;
-					break;
+				if ( (p_header->c_cmd  == CMD_SEND_MSG) 
+					||(p_header->c_cmd == CMD_SNDREC_MSG)
+					||(p_header->c_cmd == CMD_REPLY_MSG)){
+					m_ptr = &p_header->c_u.cu_msg;
+					PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				}
-			
-				// Get another command 
-				memcpy( (char*) &bat_vect[batch_nr], (char*) p_header2, sizeof(proxy_hdr_t));
-				batch_nr++;		
-				PXYDEBUG("SPROXY: new BATCHED COMMAND batch_nr=%d\n", batch_nr);		
-			}while ( batch_nr < MAXBATCMD);
+				// store original header into batched header 
+				memcpy( (char*) p_header3, p_header, sizeof(proxy_hdr_t));
+				bat_vect = (proxy_hdr_t*) p_batch;	
+				do{
+					PXYDEBUG("SPROXY %d: Getting more messages\n", pid);
+					ret = dvk_get2rmt_T(p_header2, p_payload2, TIMEOUT_NOWAIT);            
+					if( ret != OK) {
+						switch(ret) {
+							case EDVSTIMEDOUT:
+							case EDVSAGAIN:
+								ERROR_PRINT(ret); 
+								break;
+							case EDVSNOTCONN: 
+								ERROR_RETURN(EDVSNOTCONN);
+								break;
+							default:
+								ERROR_PRINT(ret);
+								break;
+						}
+						break;
+					} 
+				
+					if(  (p_header2->c_cmd == CMD_COPYIN_DATA )    // is a batcheable command ??
+						|| (p_header2->c_cmd == CMD_COPYOUT_DATA)){// NOOOOOOO
+						cmd_flag = CMD_PENDING;
+						break;
+					}
+				
+					// Get another command 
+					memcpy( (char*) &bat_vect[batch_nr], (char*) p_header2, sizeof(proxy_hdr_t));
+					batch_nr++;		
+					PXYDEBUG("SPROXY: new BATCHED COMMAND batch_nr=%d\n", batch_nr);		
+				}while ( batch_nr < MAXBATCMD);
+			}
+		} else {
+			batch_nr = 0;
 		}
 		
 		if( batch_nr > 0) { 			// is batching in course??	
@@ -882,7 +921,9 @@ int  ps_start_serving(void)
 	}
 
     /* never reached */
-	stop_compression();
+	if( compress_opt)
+		stop_compression();
+	
     exit(1);
 }
 
@@ -1009,12 +1050,14 @@ void  ps_init(void)
     		exit(1);
   	}
 	
-	posix_memalign( (void**) &p_batch, getpagesize(), (sizeof(proxy_payload_t)));
-	if (p_payload== NULL) {
-    		perror("p_batch posix_memalign");
-    		exit(1);
-  	}
-
+	if( batch_opt) {
+		posix_memalign( (void**) &p_batch, getpagesize(), (sizeof(proxy_payload_t)));
+		if (p_payload== NULL) {
+				perror("p_batch posix_memalign");
+				exit(1);
+		}
+	}
+	
     // Create server socket.
     if ( (sproxy_sd = socket(AF_TIPC, SOCK_STREAM, 0)) < 0){
        	ERROR_EXIT(errno);
@@ -1061,6 +1104,16 @@ void  ps_init(void)
     /* code never reaches here */
 }
 
+void usage(void)
+{
+   	fprintf(stderr,"Usage: tipc_proxy_bat -[bBZ] -n <px_name> -i <px_id> \n");
+   	fprintf(stderr,"/t b: Remote Client auto-binding\n");
+   	fprintf(stderr,"/t B: Message Batching\n");
+   	fprintf(stderr,"/t Z: LZ4 Data Compression\n");
+   	fprintf(stderr,"/t n: Proxy name\n");
+   	fprintf(stderr,"/t i: Proxy ID\n");
+	exit(1);
+}
 
 /*----------------------------------------------*/
 /*		MAIN: 			*/
@@ -1068,27 +1121,64 @@ void  ps_init(void)
 void  main ( int argc, char *argv[] )
 {
     int spid, rpid, pid, status;
-    int ret;
+    int ret, c;
     dvs_usr_t *d_ptr;    
+	struct option long_options[] = {
+		{ "px_name", 	required_argument, 	NULL, 'n' },
+		{ "px_id", 		required_argument, 	NULL, 'i' },
+		{ "autobind", 	no_argument, 		NULL, 'b' },
+		{ "batch", 		no_argument, 		NULL, 'B' },
+		{ "compress", 	no_argument, 		NULL, 'Z' },
+		{ 0, 0, 0, 0 }, 		
+	};
+	
+	compress_opt    = COMPRESS_NO;
+	batch_opt    	= BATCH_NO;
+	autobind_opt   	= AUTOBIND_NO;
+	px.px_id 		= (-1);
+	px.px_name[0]	= '\0';
+	
+	while((c = getopt_long_only(argc, argv, "n:i:bBZ", long_options, NULL)) >= 0) {
+		switch(c) {
+			case 'b': 
+				autobind_opt =  AUTOBIND_YES;
+				PXYDEBUG("Option b: autobind_opt=AUTOBIND_YES\n");
+				break;
+			case 'B': 
+				batch_opt =  BATCH_YES;
+				PXYDEBUG("Option B: batch_opt=BATCH_YES\n");
+				break;
+			case 'Z': 
+				compress_opt =  COMPRESS_YES;
+				PXYDEBUG("Option Z: compress_opt=COMPRESS_YES\n");
+				break;
+			case 'i':
+				px.px_id = atoi(optarg);
+				printf("Proxy Pair id: %d\n",px.px_id);
+				break;							
+			case 'n':			
+				strncpy(px.px_name,optarg, MAXPROXYNAME);
+				px.px_name[MAXPROCNAME-1]= '\0';
+				printf("TCP Proxy Pair name: %s\n",px.px_name);
+				break;							
+			default:
+				usage();
+				exit(EXIT_FAILURE);
+			}
+		}	
+ 	
+	if( px.px_id == (-1)) 		usage();
+	if( px.px_name[0]= '\0') 	usage();
 
-    if (argc != 3) {
-     	fprintf(stderr,"Usage: %s <px_name> <px_id> \n", argv[0]);
-    	exit(0);
-    }
-
-	if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
-		fprintf(stderr, "MAXCOPYBUF(%d) must be greater than (BLOCK_16K <<"
-			"lz4_preferences.frameInfo.blockSizeID)(%d)\n",MAXCOPYBUF,
-			(BLOCK_16K << lz4_preferences.frameInfo.blockSizeID));
-		exit(1);
+    if( compress_opt){
+		if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
+			fprintf(stderr, "MAXCOPYBUF(%d) must be greater than (BLOCK_16K <<"
+				"lz4_preferences.frameInfo.blockSizeID)(%d)\n",MAXCOPYBUF,
+				(BLOCK_16K << lz4_preferences.frameInfo.blockSizeID));
+			exit(1);
+		}
 	}
-		
-    strncpy(px.px_name,argv[1], MAXPROXYNAME);
-	px.px_name[MAXPROCNAME-1]= '\0';
-    printf("TCP Proxy Pair name: %s\n",px.px_name);
- 
-    px.px_id = atoi(argv[2]);
-    printf("Proxy Pair id: %d\n",px.px_id);
+
 
 	ret = dvk_open();
 	if (ret < 0)  ERROR_PRINT(ret);

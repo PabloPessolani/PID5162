@@ -204,3 +204,172 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  22    22   635/8      0    0  400 27342 27342 27342 27342 nweb           
 root@node0:/dev/shm# 
 
+
+COMO REFERENCIA 
+root@node0:/usr/src# scp dvs.tar.gz root@node1:/usr/src
+root@node1's password: 
+dvs.tar.gz                                                  100%   30MB  25.1MB/s   00:01 
+
+COMO REFERENCIA DESDE EL MISMO ARCHIVO MINIX !!!
+root@node0:/dev/shm# mount -o loop -t minix minixweb100.img /mnt
+root@node0:/dev/shm# cd /mnt
+root@node0:/mnt# ls
+debug.h      file50M.txt  index.mht  muk.txt      test.zip
+file10M.txt  index.html   macros.h   test.tar.gz
+root@node0:/mnt# scp file10M.txt root@node1:/tmp
+root@node1's password: 
+file10M.txt                                                 100%   10MB  15.4MB/s   00:00    
+
+
+PARA VER EL CONSUMO DE MEMORIA EN PORCENTAJE 
+root@node0:/usr/src#  ps -o pid,user,%mem,command ax | grep muk
+ 1027 root      0.0 nsenter -p -t581 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+ 1028 root      0.0 [muk] <defunct>
+ 1201 root      0.0 nsenter -p -t581 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+ 1202 root      0.0 [muk] <defunct>
+ 1353 root      0.0 nsenter -p -t581 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+ 1354 root      0.0 [muk] <defunct>
+ 1409 root      0.0 nsenter -p -t581 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+ 1410 root      0.3 /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+ 1503 root      0.0 grep muk
+ 
+ 
+PARA VER EL CONSUMO DE MEMORIA DEL PROCESO 
+ root@node0:/usr/src# pmap 1410
+1410:   /usr/src/dvs/vos/muk/muk /dev/shm/muk.cfg
+00441000     16K r-x-- muk
+00446000      4K r---- muk
+00447000      4K rw--- muk
+00448000    196K rw---   [ anon ]
+012e5000    284K rw---   [ anon ]
+b34fb000      4K -----   [ anon ]
+b34fc000   8192K rw---   [ anon ]
+b3cfc000      4K -----   [ anon ]
+b3cfd000   8192K rw---   [ anon ]
+b44fd000      4K -----   [ anon ]
+b44fe000   8192K rw---   [ anon ]
+b4cfe000      4K -----   [ anon ]
+b4cff000   8192K rw---   [ anon ]
+b54ff000      4K -----   [ anon ]
+b5500000   8192K rw---   [ anon ]
+b5d00000    132K rw---   [ anon ]
+b5d21000    892K -----   [ anon ]
+b5eff000      4K -----   [ anon ]
+b5f00000   8192K rw---   [ anon ]
+b6700000    164K rw---   [ anon ]
+b6729000    860K -----   [ anon ]
+b6842000    204K rw---   [ anon ]
+b6875000    128K rw-s- procs
+b6895000      4K -----   [ anon ]
+b6896000   8200K rw---   [ anon ]
+b7098000   1732K r-x-- libc-2.24.so
+b7249000      4K ----- libc-2.24.so
+b724a000      8K r---- libc-2.24.so
+b724c000      4K rw--- libc-2.24.so
+b724d000     12K rw---   [ anon ]
+b7250000    100K r-x-- libpthread-2.24.so
+b7269000      4K r---- libpthread-2.24.so
+b726a000      4K rw--- libpthread-2.24.so
+b726b000      8K rw---   [ anon ]
+b726d000     40K r-x-- libsystask.so
+b7277000      4K r---- libsystask.so
+b7278000      4K rw--- libsystask.so
+b7279000     24K r-x-- libmollib.so
+b727f000      4K r---- libmollib.so
+b7280000      4K rw--- libmollib.so
+b7281000     12K r-x-- libsyslib.so
+b7284000      4K r---- libsyslib.so
+b7285000      4K rw--- libsyslib.so
+b7286000      8K rw---   [ anon ]
+b7288000     32K r-x-- libpm.so
+b7290000      4K r---- libpm.so
+b7291000      4K rw--- libpm.so
+b7292000     16K rw---   [ anon ]
+b7296000     12K r-x-- libconfig.so
+b7299000      4K r---- libconfig.so
+b729a000      4K rw--- libconfig.so
+b729b000     24K r-x-- librdisk.so
+b72a1000      4K r---- librdisk.so
+b72a2000      4K rw--- librdisk.so
+b72a3000      4K rw---   [ anon ]
+b72a4000     88K r-x-- libfs.so
+b72ba000      4K r---- libfs.so
+b72bb000      4K rw--- libfs.so
+b72bc000   4876K rw---   [ anon ]
+b777f000     16K r-x-- libis.so
+b7783000      4K r---- libis.so
+b7784000      4K rw--- libis.so
+b7785000    128K rw---   [ anon ]
+b77a5000      8K r-x-- libftp.so
+b77a7000      4K ----- libftp.so
+b77a8000      4K r---- libftp.so
+b77a9000      4K rw--- libftp.so
+b77aa000     16K r-x-- libnw.so
+b77ae000      4K r---- libnw.so
+b77af000      4K rw--- libnw.so
+b77b0000      4K r-x-- libtimers.so
+b77b1000      4K r---- libtimers.so
+b77b2000      4K rw--- libtimers.so
+b77b3000     20K r-x-- stub_dvkcall.o
+b77b8000      4K r---- stub_dvkcall.o
+b77b9000      4K rw--- stub_dvkcall.o
+b77ba000     12K r-x-- libdl-2.24.so
+b77bd000      4K r---- libdl-2.24.so
+b77be000      4K rw--- libdl-2.24.so
+b77c6000      8K rw---   [ anon ]
+b77c8000      8K r----   [ anon ]
+b77ca000      8K r-x--   [ anon ]
+b77cc000    140K r-x-- ld-2.24.so
+b77ef000      4K r---- ld-2.24.so
+b77f0000      4K rw--- ld-2.24.so
+bfc59000    132K rw---   [ stack ]
+ total    67892K
+
+root@node0:/dev/shm# fsck.minix -v  minixweb100.img
+
+    10 nodos-i utilizados (0%)
+ 64356 zonas utilizadas (64%)
+
+     9 ficheros normales
+     1 directorios
+     0 ficheros de dispositivos de caracteres
+     0 ficheros de dispositivos de bloques
+     0 enlaces
+     0 enlaces simbÃ³licos
+------
+    10 ficheros
+	
+root@node0:/dev/shm# fsck.minix -s  minixweb100.img
+33344 nodos-i
+100000 bloques
+Primera zona de datos=2103 (2103)
+TamaÃ±o de zona=1024 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ACA ESTA EL TEMA
+TamaÃ±o mÃ¡ximo=2147483647
+Longitud de nombre=60
+	
+
+BAJE ES SOFT
+https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.34/ 
+Para ver si puedo crear el mkfs.minix con un tamaño de bloque mayor 
+NO FUNCIONA Y DESTRUYE VARIAS COSAS YA INSTALADAS!!!! 
+Para solucionar el tema 
+apt-get install --reinstall
+
+
+PROBE VARIOS MINIX PARA GENERA LA IMAGEN
+Se tienen que dar las siguientes condiciones
+	- que tenga conectividad IP
+	- que funcione el FTP o cualquier protocolo de transferencia
+	- que tenga el MKFS
+	- que tenga el DD
+
+PROBAR MIGRAR 
+https://github.com/jncraton/minix3/blob/master/commands/simple/mkfs.c
+
+	
+	
+
+
+
+
+

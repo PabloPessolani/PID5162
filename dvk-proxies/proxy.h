@@ -53,6 +53,8 @@
 #include <linux/if_packet.h>  // struct sockaddr_ll (see man 7 packet)
 #include <netinet/ip_icmp.h>  // struct icmp, ICMP_ECHO
 
+#include <getopt.h>
+
 #define DVS_USERSPACE
 //#define _GNU_SOURCE
 //#define  __USE_GNU

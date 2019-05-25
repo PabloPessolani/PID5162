@@ -1,5 +1,5 @@
 /* EXTERN should be extern except for the table file */
-#ifdef _TABLE
+#ifdef _GLOBAL_VARS_HERE
 #define EXTERN
 #else
 #define EXTERN extern
