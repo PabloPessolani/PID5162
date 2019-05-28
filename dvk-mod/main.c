@@ -222,7 +222,7 @@ long dvk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	rcode = (*dvk_io_routine[dvk_call])(arg);
 
-	if(rcode) ERROR_RETURN(rcode);
+	if(rcode < 0 ) ERROR_RETURN(rcode);
 	return(rcode);
 }
 

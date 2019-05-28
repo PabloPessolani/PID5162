@@ -366,8 +366,126 @@ Se tienen que dar las siguientes condiciones
 PROBAR MIGRAR 
 https://github.com/jncraton/minix3/blob/master/commands/simple/mkfs.c
 
+PROBE BAJAR 
+https://github.com/redcap97/fuse-mfs
 	
+root@node0:/usr/src# apt-get install build-essential pkg-config fuse libfuse-dev
+root@node0:/usr/src# git clone https://github.com/redcap97/fuse-mfs.git
+mkfs.mfs -B 4096 minix3.img 
+
+fuse-mfs
+Build Status
+
+fuse-mfs is FUSE-based Minix3 Filesystem.
+
+Usage
+mount
+fuse-mfs /path/to/image_file /path/to/mountpoint/
+umount
+# GNU/Linux
+fusermount -u /path/to/mountpoint/
+
+# Mac OS X
+umount /path/to/mountpoint/
+mkfs
+mkfs.mfs /path/to/image_file
+fsck (check)
+fsck.mfs /path/to/image_file
+fsck (repair)
+fsck.mfs -r /path/to/image_file
+Build Prerequisites
+Ubuntu
+apt-get install build-essential pkg-config fuse libfuse-dev
+Arch Linux
+pacman -S --needed base-devel fuse
+Mac OS X
+Command Line Tools for Xcode and FUSE for OS X are required. Please also install the following packages.
+
+brew install pkg-config coreutils
+Build and Install
+GNU/Linux
+# Build
+make
+
+# Install to /usr/local
+make install
+
+# Install to /usr
+make install PREFIX=/usr
+Mac OS X
+# Build
+make
+
+# Install to /usr/local
+make install INSTALL=ginstall
+
+# Install to /usr
+make install INSTALL=ginstall PREFIX=/usr
+Test
+Docker is required to run tests.
+
+make test
+Acknowledgments
+fuse-mfs uses code from the following open-source projects:
+
+MINIX3 - LICENSE
+pjd-fstest - LICENSE
+License
+fuse-mfs is distributed under the BSD License. See LICENSE file.
+
+
+root@node0:/minix#  base64 /dev/urandom | head -c $[1024*1024*50] > file50M.txt
+
+============================================
+BUENO, FUNCION SOLO PARA 1024 Y 4096
+Se probo: 8192, 16384, 32768 
+en estos casos
+FS panic (fs.c): Invalid root file system  sys_exit.c:_sys_exit:17:SYS_EXIT request to SYSTEM(-2) proc=35534 nodeid=0
+
+super.c:read_super:226:_MIN_BLOCK_SIZE r=1024, 
+Filesystem block size is 8 kB; maximum filesystem
+block size is 4 kB. This limit can be increased by recompiling.
+FS panic (fs.c): Invalid root file system  sys_exit.c:_sys_exit:17:SYS_EXIT request to SYSTEM(-2) proc=35534 nodeid=0
+
+EL PROBLEMA ES ENTONCES:
+	molfs.cfg 
+	dirent.h 
+	const.h 
 	
+============================================
+rdisk.c:rd_transfer:313:pread: bytes=4096
+
+
+root@node0:/dev/shm# ls -l /usr/src/dvs/vos/muk/muk
+-rwxr-xr-x 1 root root 36536 may 26 10:26 /usr/src/dvs/vos/muk/muk  <<<<< TAMAÑO EN DISCO 
+root@node0:/dev/shm# pmap 618 | grep total
+ total   148192K <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< MEMORIA RAM PARA BLOQUES DE 16K PERO MAXIMOS DE 64 K
+root@node0:/dev/shm# 
+================================================
+
+Habilite APACHE2. LOS archivos disponibles son 
+root@node0:/var/www/html# ls -l
+total 61868
+-rw-r--r-- 1 root root 10485760 may 27 20:42 file10M.tar.gz
+-rw-r--r-- 1 root root 52428800 may 27 20:42 file50M.tar.gz
+-rw-r--r-- 1 pap  pap     10701 jul  8  2018 index.html
+-rw-r--r-- 1 root root   100000 may 27 20:42 muk.txt
+-rw-r--r-- 1 root root   320742 may 27 20:33 test.tar.gz
+
+POR LO TANTO USAR 
+http://192.168.1.100/file10M.tar.gz
+
+Y en windows utiliza 
+C:\PAP\tmp>wget http://192.168.1.100/file50M.tar.gz
+BOOT TIME: t_start=1559026918.03 t_stop=1559026918.15 t_total=0.11 [s]
+
+
+
+
+
+
+
+
 
 
 

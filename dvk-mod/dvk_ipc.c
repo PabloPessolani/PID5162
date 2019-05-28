@@ -400,7 +400,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 		COPY_TO_USER_PROC(ret, (void *)&caller_ptr->p_message, 
 			(void *)m_ptr,  sizeof(message));
 		WUNLOCK_PROC(caller_ptr);
-		if (ret != 0) ERROR_RETURN(EDVSMSGSIZE);
+		if (ret < 0) ERROR_RETURN(EDVSMSGSIZE);
 		return(OK);	/* report success */
 	}
 
@@ -455,7 +455,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 				
 			WUNLOCK_PROC(xpp);
 			WUNLOCK_PROC(caller_ptr);
-			if( ret) ERROR_RETURN(ret);
+			if( ret < 0 ) ERROR_RETURN(ret);
 			return(OK);
 		}else{
 			WUNLOCK_PROC(xpp);
@@ -486,7 +486,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	clear_bit(MIS_BIT_NOTIFY, &caller_ptr->p_usr.p_misc_flags);
 
 	WUNLOCK_PROC(caller_ptr);
-	if(ret) ERROR_RETURN(ret);
+	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);
 }	
 
@@ -592,7 +592,7 @@ sendrec_replay:
 
 	// Set the message source endpoint 
 	ret = put_user(caller_ep, &m_ptr->m_source);
-	if( ret != OK) {							
+	if( ret < OK) {							
 		WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
 		ERROR_RETURN(ret);
 	}
@@ -1626,7 +1626,7 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 				
 		WUNLOCK_PROC(xpp);
 		WUNLOCK_PROC(caller_ptr);
-		if( ret) ERROR_RETURN(ret);
+		if( ret < 0) ERROR_RETURN(ret);
 		return(OK);
 	}
 	

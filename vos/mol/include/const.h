@@ -58,7 +58,9 @@
  * 3 of these blocks and has to fit within 64kB, so this can't be
  * increased without taking that into account.
  */
-#define _MAX_BLOCK_SIZE		 4096
+//#define _MAX_BLOCK_SIZE		 4096
+#define _MAX_BLOCK_SIZE		 65536
+
 
 #define _STATIC_BLOCK_SIZE   1024
 
