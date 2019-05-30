@@ -6,9 +6,11 @@
 #ifndef _MINIX__PARTITION_H
 #define _MINIX__PARTITION_H
 
+#ifndef CONFIG_UML_RDISK
 #ifndef _TYPES_H
 #include <sys/types.h>
 #endif
+#endif // CONFIG_UML_RDISK
 
 struct part_entry {
   unsigned char bootind;	/* boot indicator 0/ACTIVE_FLAG	 */

@@ -11,7 +11,7 @@ RED A CONFORMAR
 	
 Arrancar con 
 root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
-root@node0:/dev/shm# ./muk.sh 0 0 
+root@node0:/dev/shm# ./tests.sh 0 0 
 Este script:
 	arranca el DVS 
 	arranca el DC 
@@ -77,7 +77,7 @@ RED A CONFORMAR
 	
 Arrancar con 
 root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
-root@node0:/dev/shm# ./muk.sh 0 0 
+root@node0:/dev/shm# ./tests.sh 0 0 
 Este script:
 	arranca el DVS 
 	arranca el DC 
@@ -125,24 +125,12 @@ Arrancar con
 root@node0:/dev/shm# cd /usr/src/dvs/dvk-tests/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
-ATENCION HAY QUE CAMBIAR ./muk.sh para que la linea
+ATENCION HAY QUE CAMBIAR ./test.sh para que la linea
 tipc bearer enable media eth dev eth0 <<<<< diga el nombre correcto de la interface !!!!!!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
-Para saber el nombre # dmesg | grep eth
 
-Cambiar el nombre de la interface por ejemplo:
-ifconfig ens3 down  
-ip link set ens3 name eth0  
-
-luego modificar si se necesita /etc/network/interfaces
-y /etc/hostname
-o directamente hostname
-y arrancar la red 
-/etc/init.d/network restart 
-
-
-root@node0:/dev/shm# ./muk.sh 0 0 <block_size> 
+root@node0:/dev/shm# ./tests.sh 0 0 
 Este script:
 	arranca el DVS 
 	arranca el DC 
@@ -177,7 +165,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 
 ==================================== EN NODE 1
 root@node1:/# cd /usr/src/dvs/dvk-tests
-root@node1:/usr/src/dvs/dvk-tests# ./muk.sh 1 0
+root@node1:/usr/src/dvs/dvk-tests# ./tests.sh 1 0
 root@node1:/dev/shm# 
 root@node1:/dev/shm# . ./DC0.sh 
 root@node1:/dev/shm# cd /usr/src/dvs/dvk-tests/

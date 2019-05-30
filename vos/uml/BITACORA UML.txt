@@ -2568,6 +2568,229 @@ Debian GNU/Linux 9 node0 tty1
 
 node0 login:
 
+==============================================================================================
+20190529:
+		Se modifico RDISK pero hay un problema en rdisk_user.c 
+Aparentemente ignora la constante de configuracion CONFIG_UML_RDISK y no compila si la 
+siguiente lineas estan habilitadas
+ 	
+// #ifdef CONFIG_UML_RDISK 
+.....
+// #endif // CONFIG_UML_RDISK 
+
+
+Console initialized on /dev/tty0
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+console [tty0] enabled
+Initializing software serial port version 1
+console [mc-1] enabled
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at fs/sysfs/dir.c:31 sysfs_warn_dup+0x44/0x52
+sysfs: cannot create duplicate filename '/devices/virtual/bdi/98:0'
+CPU: 0 PID: 1 Comm: swapper Not tainted 4.9.88 #10
+Stack:
+ 082f7c4f 082ea9a2 49489d44 082ea9d5 49489cf0 081c0f16 00000000 00000000
+ 082f7c4f 49489d08 08071e9a 4953e8b8 494cc000 4982c108 4953e8b8 49489d30
+ 08071edb 082ea9d5 0000001f 08129d86 00000009 00000000 49489d28 082ea9a2
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c0f16>] dump_stack+0x16/0x1b
+ [<08071e9a>] __warn+0xa5/0xbe
+ [<08071edb>] warn_slowpath_fmt+0x28/0x2d
+ [<08129d86>] ? sysfs_warn_dup+0x44/0x52
+ [<08129d86>] sysfs_warn_dup+0x44/0x52
+ [<08129e05>] sysfs_create_dir_ns+0x71/0x84
+ [<081c279a>] kobject_add_internal+0x97/0x254
+ [<081c29b5>] kobject_add+0x5e/0x69
+ [<081df40f>] device_add+0xc5/0x464
+ [<081df847>] device_create_groups_vargs+0x81/0xab
+ [<081dff50>] device_create_vargs+0x1c/0x1e
+ [<080c6130>] bdi_register+0x2c/0x88
+ [<080c61dc>] bdi_register_owner+0x2c/0x4c
+ [<081b5e38>] device_add_disk+0x139/0x37d
+ [<081c7369>] ? sprintf+0x17/0x19
+ [<080678d1>] rd_disk_register+0xde/0xf6
+ [<08067b4c>] rd_add+0xc4/0x1a6
+ [<081c3458>] ? kobject_uevent+0x10/0x12
+ [<081e247c>] ? driver_register+0xbc/0xc7
+ [<081e3362>] ? __platform_driver_register+0x31/0x33
+ [<0804b168>] rd_init+0x42/0x71
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<080497f3>] do_one_initcall+0x9a/0x117
+ [<08084c8d>] ? parse_args+0x1ae/0x271
+ [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
+ [<080499b0>] kernel_init_freeable+0x140/0x1ba
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<082790a6>] kernel_init+0x8/0xb6
+ [<08059f3f>] new_thread_handler+0x63/0x7c
+
+---[ end trace 5226cb5f0f806108 ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at lib/kobject.c:240 kobject_add_internal+0x214/0x254
+kobject_add_internal failed for 98:0 with -EEXIST, don't try to register things with the same name in the same directory.
+CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
+Stack:
+ 082f7c4f 082f7e8c 49489d78 082f7dd4 49489d24 081c0f16 00000000 00000000
+ 082f7c4f 49489d3c 08071e9a 49542100 4982c108 ffffffef 49542100 49489d64
+ 08071edb 082f7dd4 000000f0 081c2917 00000009 00000000 49489d5c 082f7e8c
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c0f16>] dump_stack+0x16/0x1b
+ [<08071e9a>] __warn+0xa5/0xbe
+ [<08071edb>] warn_slowpath_fmt+0x28/0x2d
+ [<081c2917>] ? kobject_add_internal+0x214/0x254
+ [<081c2917>] kobject_add_internal+0x214/0x254
+ [<081c29b5>] kobject_add+0x5e/0x69
+ [<081df40f>] device_add+0xc5/0x464
+ [<081df847>] device_create_groups_vargs+0x81/0xab
+ [<081dff50>] device_create_vargs+0x1c/0x1e
+ [<080c6130>] bdi_register+0x2c/0x88
+ [<080c61dc>] bdi_register_owner+0x2c/0x4c
+ [<081b5e38>] device_add_disk+0x139/0x37d
+ [<081c7369>] ? sprintf+0x17/0x19
+ [<080678d1>] rd_disk_register+0xde/0xf6
+ [<08067b4c>] rd_add+0xc4/0x1a6
+ [<081c3458>] ? kobject_uevent+0x10/0x12
+ [<081e247c>] ? driver_register+0xbc/0xc7
+ [<081e3362>] ? __platform_driver_register+0x31/0x33
+ [<0804b168>] rd_init+0x42/0x71
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<080497f3>] do_one_initcall+0x9a/0x117
+ [<08084c8d>] ? parse_args+0x1ae/0x271
+ [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
+ [<080499b0>] kernel_init_freeable+0x140/0x1ba
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<082790a6>] kernel_init+0x8/0xb6
+ [<08059f3f>] new_thread_handler+0x63/0x7c
+
+---[ end trace 5226cb5f0f806109 ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at fs/sysfs/dir.c:31 sysfs_warn_dup+0x44/0x52
+sysfs: cannot create duplicate filename '/dev/block/98:0'
+CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
+Stack:
+ 082f7c4f 082ea9a2 49489dd8 082ea9d5 49489d84 081c0f16 00000000 00000000
+ 082f7c4f 49489d9c 08071e9a ffffffef 494cc000 4944e1d0 ffffffef 49489dc4
+ 08071edb 082ea9d5 0000001f 08129d86 00000009 00000000 49489dbc 082ea9a2
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c0f16>] dump_stack+0x16/0x1b
+ [<08071e9a>] __warn+0xa5/0xbe
+ [<08071edb>] warn_slowpath_fmt+0x28/0x2d
+ [<08129d86>] ? sysfs_warn_dup+0x44/0x52
+ [<08129d86>] sysfs_warn_dup+0x44/0x52
+ [<08129f95>] sysfs_do_create_link_sd.isra.0+0x82/0x8e
+ [<08129fe8>] sysfs_create_link+0x2f/0x35
+ [<081df69e>] device_add+0x354/0x464
+ [<081b5e77>] device_add_disk+0x178/0x37d
+ [<081c7369>] ? sprintf+0x17/0x19
+ [<080678d1>] rd_disk_register+0xde/0xf6
+ [<08067b4c>] rd_add+0xc4/0x1a6
+ [<081c3458>] ? kobject_uevent+0x10/0x12
+ [<081e247c>] ? driver_register+0xbc/0xc7
+ [<081e3362>] ? __platform_driver_register+0x31/0x33
+ [<0804b168>] rd_init+0x42/0x71
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<080497f3>] do_one_initcall+0x9a/0x117
+ [<08084c8d>] ? parse_args+0x1ae/0x271
+ [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
+ [<080499b0>] kernel_init_freeable+0x140/0x1ba
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<082790a6>] kernel_init+0x8/0xb6
+ [<08059f3f>] new_thread_handler+0x63/0x7c
+
+---[ end trace 5226cb5f0f80610a ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at lib/kobject.c:244 kobject_add_internal+0x241/0x254
+kobject_add_internal failed for queue (error: -2 parent: rd_fake0)
+CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
+Stack:
+ 082f7c4f 082f7ef3 49489e0c 082f7dd4 49489db8 081c0f16 00000000 00000000
+ 082f7c4f 49489dd0 08071e9a 49611464 49838a40 fffffffe 49611464 49489df8
+ 08071edb 082f7dd4 000000f4 081c2944 00000009 00000000 49489df0 082f7ef3
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c0f16>] dump_stack+0x16/0x1b
+ [<08071e9a>] __warn+0xa5/0xbe
+ [<08071edb>] warn_slowpath_fmt+0x28/0x2d
+ [<081c2944>] ? kobject_add_internal+0x241/0x254
+ [<081c2944>] kobject_add_internal+0x241/0x254
+ [<081c29b5>] kobject_add+0x5e/0x69
+ [<081ac9af>] blk_register_queue+0x7d/0xdd
+ [<081b5f4b>] device_add_disk+0x24c/0x37d
+ [<081c7369>] ? sprintf+0x17/0x19
+ [<080678d1>] rd_disk_register+0xde/0xf6
+ [<08067b4c>] rd_add+0xc4/0x1a6
+ [<081c3458>] ? kobject_uevent+0x10/0x12
+ [<081e247c>] ? driver_register+0xbc/0xc7
+ [<081e3362>] ? __platform_driver_register+0x31/0x33
+ [<0804b168>] rd_init+0x42/0x71
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<080497f3>] do_one_initcall+0x9a/0x117
+ [<08084c8d>] ? parse_args+0x1ae/0x271
+ [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
+ [<080499b0>] kernel_init_freeable+0x140/0x1ba
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<082790a6>] kernel_init+0x8/0xb6
+ [<08059f3f>] new_thread_handler+0x63/0x7c
+
+---[ end trace 5226cb5f0f80610b ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at block/genhd.c:632 device_add_disk+0x2af/0x37d
+CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
+Stack:
+ 082f7c4f 00000000 081b5fae 082f733e 49489e30 081c0f16 00000000 00000000
+ 082f7c4f 49489e48 08071e9a 4961145c 49611400 49611464 4961145c 49489e68
+ 08071f25 082f733e 00000278 081b5fae 00000009 00000000 00000000 49489ea0
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081b5fae>] ? device_add_disk+0x2af/0x37d
+ [<081c0f16>] dump_stack+0x16/0x1b
+ [<08071e9a>] __warn+0xa5/0xbe
+ [<08071f25>] warn_slowpath_null+0x17/0x1c
+ [<081b5fae>] ? device_add_disk+0x2af/0x37d
+ [<081b5fae>] device_add_disk+0x2af/0x37d
+ [<081c7369>] ? sprintf+0x17/0x19
+ [<080678d1>] rd_disk_register+0xde/0xf6
+ [<08067b4c>] rd_add+0xc4/0x1a6
+ [<081c3458>] ? kobject_uevent+0x10/0x12
+ [<081e247c>] ? driver_register+0xbc/0xc7
+ [<081e3362>] ? __platform_driver_register+0x31/0x33
+ [<0804b168>] rd_init+0x42/0x71
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<080497f3>] do_one_initcall+0x9a/0x117
+ [<08084c8d>] ? parse_args+0x1ae/0x271
+ [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
+ [<080499b0>] kernel_init_freeable+0x140/0x1ba
+ [<0804b126>] ? rd_init+0x0/0x71
+ [<082790a6>] kernel_init+0x8/0xb6
+ [<08059f3f>] new_thread_handler+0x63/0x7c
+
+---[ end trace 5226cb5f0f80610c ]---
+DVK: old_exit_unbind code:0
+DVK: exit_unbind local_nodeid:0
+DEBUG 20:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 20:dvk_sendrec_T:712: ioctl ret=-105
+ERROR: 20:dvk_sendrec_T:714: rcode=-105
+ERROR: 0:rdisk_rw:853: rcode=-105
+do_rdisk - read failed, err = -105
+find_irq_by_fd doesn't have descriptor 14
+DVK: old_exit_unbind code:0
+DVK: exit_unbind local_nodeid:0
+DEBUG 20:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 20:dvk_sendrec_T:712: ioctl ret=-105
+ERROR: 20:dvk_sendrec_T:714: rcode=-105
+ERROR: 0:rdisk_rw:853: rcode=-105
+do_rdisk - read failed, err = -105
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+
+
+
 
 
 
