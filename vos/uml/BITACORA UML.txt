@@ -2790,6 +2790,7 @@ DVK: old_exit_unbind code:0
 winch_thread : TIOCSCTTY failed on fd 2 err = 1
 
 
+EN EL HOST 
 
 
 

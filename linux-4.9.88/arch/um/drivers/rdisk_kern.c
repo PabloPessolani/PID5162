@@ -244,22 +244,6 @@ __uml_help(rd_setup,
 "    cluster filesystem and inappropriate at almost all other times.\n\n"
 );
 
-static int udb_setup(char *str)
-{
-	printk("udb%s specified on command line is almost certainly a rdisk -> "
-	       "udb TYPO\n", str);
-	return 1;
-}
-
-__setup("udb", udb_setup);
-__uml_help(udb_setup,
-"udb\n"
-"    This option is here solely to catch rdisk -> udb typos, which can be\n"
-"    to impossible to catch visually unless you specifically look for\n"
-"    them.  The only result of any option starting with 'udb' is an error\n"
-"    in the boot output.\n\n"
-);
-
 static void do_rd_request(struct request_queue * q);
 
 /* Only changed by rd_init, which is an initcall. */
@@ -357,13 +341,13 @@ static int rd_add(int n, char **error_out)
 	blk_queue_write_cache(rd_dev->queue, true, false);
 
 	blk_queue_max_segments(rd_dev->queue, MAX_SG);
-	err = rd_disk_register(UBD_MAJOR, rd_dev->size, n, &rd_gendisk[n]);
+	err = rd_disk_register(RD_MAJOR, rd_dev->size, n, &rd_gendisk[n]);
 	if(err){
 		*error_out = "Failed to register device";
 		goto out_cleanup;
 	}
 
-	if (fake_rd_major != UBD_MAJOR)
+	if (fake_rd_major != RD_MAJOR)
 		rd_disk_register(fake_rd_major, rd_dev->size, n,
 				  &fake_rd_gendisk[n]);
 
