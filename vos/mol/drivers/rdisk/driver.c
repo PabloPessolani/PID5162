@@ -231,9 +231,8 @@ struct driver *dp;	/* Device dependent entry points. */
 		
 		//send(device_caller, &mess);
 			ret = dvk_send(device_caller, &mess); /*envío respuesta al cliente q solicitó*/
-			if( ret != 0 ) {
+			if( ret < 0 ) {
 				fprintf( stderr,"SEND ret=%d\n",ret);
-				exit(1);
 			}
 		}
 	}

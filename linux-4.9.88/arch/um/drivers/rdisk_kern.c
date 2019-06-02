@@ -48,9 +48,6 @@
 #include "/usr/src/dvs/vos/mol/include/partition.h"
 #include "/usr/src/dvs/vos/mol/include/ioc_disk.h"
 
-int	rdc_ep; // RDISK Client endpoint 
-int rd_ep;
-
 enum rd_req { RD_READ, RD_WRITE, RD_FLUSH };
 
 static LIST_HEAD(restart);
@@ -114,7 +111,7 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode,
 		     unsigned int cmd, unsigned long arg);
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
 
-#define RD_MAX_DEV (16)
+#define RD_MAX_DEV (1)
 
 static const struct block_device_operations rd_blops = {
         .owner		= THIS_MODULE,
@@ -202,6 +199,8 @@ __uml_help(fake_rd_ide_setup,
  */
 static int rd_setup_common(char *str, int *index_out, char **error_out)
 {
+     if( index_out != NULL)
+		*index_out = 1; 
 	return 0;
 }
 
@@ -265,7 +264,28 @@ static void rd_close_dev(struct rdisk *rd_dev)
 
 static int rd_open_dev(struct rdisk *rd_dev)
 {
-	return 0;
+	message dev_mess, *m_ptr;
+	int rcode, major, minor;
+
+	major = RD_MAJOR;
+	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
+
+	DVKDEBUG(INTERNAL, "major=%d minor=%d\n", major, minor);
+	if (minor >= RD_MAX_DEV) ERROR_RETURN(EDVSOVERRUN);
+	
+	/* Set up the message passed to task. */
+	m_ptr= &dev_mess;
+	m_ptr->m_type   = DEV_OPEN;
+	m_ptr->DEVICE   = minor;
+	m_ptr->POSITION = 0;
+	m_ptr->IO_ENDPT = rdc_ep;
+	m_ptr->ADDRESS  = NULL;
+	m_ptr->COUNT    = NULL;
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
+	if(rcode < 0) ERROR_RETURN(rcode);
+	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+	return(OK);	
 }
 
 static void rd_device_release(struct device *dev)
@@ -578,7 +598,7 @@ static void rd_handler(void)
 		blk_end_request(req->req, 0, req->length);
 		kfree(req);
 	}
-	reactivate_fd(rd_thread_fd, UBD_IRQ);
+	reactivate_fd(rd_thread_fd, RDISK_IRQ);
 
 	list_for_each_safe(list, next_ele, &restart){
 		rdisk = container_of(list, struct rdisk, restart);
@@ -627,6 +647,8 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 	struct gendisk *disk = bdev->bd_disk;
 	struct rdisk *rd_dev = disk->private_data;
 	int err = 0;
+
+	DVKDEBUG(INTERNAL,"\n");
 
 	mutex_lock(&rd_mutex);
 	if(rd_dev->count == 0){
@@ -891,11 +913,11 @@ static int init_rdisk(void)
 	int rcode, i;
 	dvs_usr_t *dvsu_ptr;
 	dc_usr_t *dcu_ptr;
-	proc_usr_t *proc_ptr;
+	proc_usr_t *proc_ptr;  
 	
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
-
+	
 	dvsu_ptr = &dvs;
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
@@ -908,23 +930,21 @@ static int init_rdisk(void)
 	DVKDEBUG(INTERNAL, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	DVKDEBUG(INTERNAL, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
 	
-
-	for( i = dcu_ptr->dc_nr_sysprocs - dcu_ptr->dc_nr_procs;
-		i < dcu_ptr->dc_nr_procs; i++){
+	for( i = dcu_ptr->dc_nr_sysprocs - dcu_ptr->dc_nr_tasks;
+		i < dcu_ptr->dc_nr_procs - dcu_ptr->dc_nr_tasks; i++){
 		rdc_ep = dvk_tbind(dcid, i);
 		if( rdc_ep == i ) break; 
 	}
 	if( i == dcu_ptr->dc_nr_procs) ERROR_RETURN(EDVSSLOTUSED);
 	DVKDEBUG(INTERNAL,"rdisk bind rdc_ep=%d\n",rdc_ep);
 	
-	proc_ptr = &uml_proc;
+	proc_ptr = &rdc_proc;
 	rcode = dvk_getprocinfo(dcid, rdc_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
 	
 }
 
-int rdc_ep; // RDISK Client Endpoint 
 int rdk_fd = -1;
 /* Only changed by the io thread. XXX: currently unused. */
 static int rd_count = 0;

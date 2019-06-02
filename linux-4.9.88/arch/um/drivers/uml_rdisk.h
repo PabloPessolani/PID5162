@@ -12,5 +12,6 @@ extern int rd_thread(void *arg);
 extern int kernel_fd;
 
 #define 	RD_MAJOR		3
+#define 	RD_MINOR		0
 #endif // __UM_RDISK_USER_H
 

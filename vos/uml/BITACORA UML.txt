@@ -2579,223 +2579,409 @@ siguiente lineas estan habilitadas
 // #endif // CONFIG_UML_RDISK 
 
 
-Console initialized on /dev/tty0
+EN EL HOST
+[ 1850.940406] DEBUG dvk_open:167: 
+[ 1851.086936] DEBUG dvk_open:167: 
+[ 1851.086946] DEBUG dvk_ioctl:201: cmd=8004E31B arg=83C6A20
+[ 1851.086948] DEBUG dvk_ioctl:221: DVK_CALL=27 (getdvsinfo) 
+[ 1851.086949] DEBUG io_getdvsinfo:288: 
+[ 1851.086951] DEBUG new_getdvsinfo:1789: local_nodeid=0 
+[ 1851.086960] DEBUG dvk_ioctl:201: cmd=8004E30E arg=48958FA8
+[ 1851.086961] DEBUG dvk_ioctl:221: DVK_CALL=14 (getdcinfo) 
+[ 1851.086963] DEBUG io_getdcinfo:153: 
+[ 1851.086964] DEBUG new_getdcinfo:1818: dcid=0 
+[ 1851.087053] DEBUG check_caller:536: caller_pid=13424 caller_tgid=13424
+[ 1851.087055] ERROR: 13424:check_caller:570: rcode=-310
+[ 1851.087057] DEBUG new_getdcinfo:1836: RLOCK_DC dc=0 count=0
+[ 1851.087059] DEBUG new_getdcinfo:1838: RUNLOCK_DC dc=0 count=0
+[ 1851.087071] DEBUG dvk_ioctl:201: cmd=4004E309 arg=48958F88
+[ 1851.087073] DEBUG dvk_ioctl:221: DVK_CALL=9 (bind) 
+[ 1851.087074] DEBUG io_bind:97: 
+[ 1851.087076] DEBUG new_bind:1372: oper=0 dcid=0 param_pid=10 endpoint=30 nodeid=-1
+[ 1851.087078] DEBUG new_bind:1394: RLOCK_DC dc=0 count=0
+[ 1851.087079] DEBUG new_bind:1407: WLOCK_PROC ep=30 count=0
+[ 1851.087081] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+[ 1851.087084] DEBUG new_bind:1441: param_pid=10 lpid=13424 vpid=10 tid=13424
+[ 1851.087085] DEBUG new_bind:1465: SELF_BIND param_pid=10 lpid=13424 vpid=10 tid=13424
+[ 1851.087087] DEBUG new_bind:1487: WUNLOCK_PROC ep=30 count=0
+[ 1851.087088] DEBUG new_bind:1490: WLOCK_TASK pid=13424 count=0
+[ 1851.087089] DEBUG new_bind:1491: WLOCK_PROC ep=30 count=0
+[ 1851.087090] DEBUG new_bind:1527: increment the reference count of the task struct=13424 count=2
+[ 1851.087091] DEBUG new_bind:1538: process p_name=linux *p_name_ptr=linux
+[ 1851.087094] DEBUG new_bind:1595: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=13424 vpid=10 nodeid=0 name=linux 
+[ 1851.087096] DEBUG new_bind:1596: nr=30 endp=30 dcid=0 lpid=13424 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[ 1851.087098] DEBUG new_bind:1610: WUNLOCK_TASK pid=13424 count=0
+[ 1851.087099] DEBUG new_bind:1616: WUNLOCK_PROC ep=30 count=0
+[ 1851.087099] DEBUG new_bind:1618: DC_INCREF counter=2
+[ 1851.087101] DEBUG new_bind:1619: RUNLOCK_DC dc=0 count=0
+[ 1851.087106] DEBUG dvk_ioctl:201: cmd=8004E30F arg=48958F8C
+[ 1851.087107] DEBUG dvk_ioctl:221: DVK_CALL=15 (getprocinfo) 
+[ 1851.087108] DEBUG io_getprocinfo:164: 
+[ 1851.087109] DEBUG new_getprocinfo:1898: dcid=0 p_nr=30
+[ 1851.087111] DEBUG check_caller:536: caller_pid=13424 caller_tgid=13424
+[ 1851.087112] DEBUG check_caller:572: WLOCK_PROC ep=30 count=0
+[ 1851.087113] DEBUG check_caller:601: WUNLOCK_PROC ep=30 count=0
+[ 1851.087114] DEBUG check_caller:604: dcid=0
+[ 1851.087115] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+[ 1851.087116] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 1851.087117] DEBUG check_caller:618: caller_pid=13424 
+[ 1851.087118] DEBUG new_getprocinfo:1915: RLOCK_DC dc=0 count=0
+[ 1851.087119] DEBUG new_getprocinfo:1920: RUNLOCK_DC dc=0 count=0
+[ 1851.087120] DEBUG new_getprocinfo:1922: RLOCK_PROC ep=30 count=0
+[ 1851.087121] DEBUG new_getprocinfo:1923: lpid=13424 name=linux
+[ 1851.087123] DEBUG new_getprocinfo:1925: RUNLOCK_PROC ep=30 count=0
+
+[ 1854.765504] DEBUG dvk_ioctl:201: cmd=4004E305 arg=48169C2C
+[ 1854.765508] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+[ 1854.765509] DEBUG io_mini_sendrec:56: 
+[ 1854.765510] DEBUG new_mini_sendrec:507: srcdst_ep=3
+[ 1854.765512] DEBUG check_caller:536: caller_pid=13416 caller_tgid=13416
+[ 1854.765514] ERROR: 13416:check_caller:570: rcode=-310
+[ 1854.765515] ERROR: 13416:new_mini_sendrec:511: rcode=-310 <<<<<<<<<<<<<<<<< EDVSNOTBIND
+[ 1854.765516] ERROR: 13416:dvk_ioctl:225: rcode=-310
+
+[ 1884.620082] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+[ 1884.620083] DEBUG io_mini_sendrec:56: 
+[ 1884.620085] DEBUG new_mini_sendrec:507: srcdst_ep=3
+[ 1884.620087] DEBUG check_caller:536: caller_pid=13416 caller_tgid=13416
+[ 1884.620088] ERROR: 13416:check_caller:570: rcode=-310
+[ 1884.620090] ERROR: 13416:new_mini_sendrec:511: rcode=-310
+[ 1884.620091] ERROR: 13416:dvk_ioctl:225: rcode=-310
+[ 1884.625925] DEBUG dvk_ioctl:201: cmd=4004E305 arg=48C07CC0
+[ 1884.625928] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+[ 1884.625929] DEBUG io_mini_sendrec:56: 
+[ 1884.625931] DEBUG new_mini_sendrec:507: srcdst_ep=3
+[ 1884.625933] DEBUG check_caller:536: caller_pid=13416 caller_tgid=13416
+[ 1884.625935] ERROR: 13416:check_caller:570: rcode=-310
+[ 1884.625936] ERROR: 13416:new_mini_sendrec:511: rcode=-310
+[ 1884.625937] ERROR: 13416:dvk_ioctl:225: rcode=-310
+[ 1884.641001] DVK: exit_unbind local_nodeid:0
+
+root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 13424/10     0    0   20 27342 27342 27342 27342 linux 
+
+PROBLEMA: 
+[ 1851.087096] DEBUG new_bind:1596: nr=30 endp=30 dcid=0 lpid=13424 <<<<<< p_cpumask=FFFFFFFF nodemap=1 name=linux 
+
+[ 1854.765512] DEBUG check_caller:536: caller_pid=13416 caller_tgid=13416<<<<<<<<<
+   
+
+
+EN UML 
+
+root@node0:~# mount /dev/rdiska /mnt
+DEBUG rd_open:654: 
+DEBUG rd_open_dev:276: major=3 minor=0
+DEBUG rd_open_dev:287: source=1219208292 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1219208192 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:712: ioctl ret=-310
+ERROR: 2:dvk_sendrec_T:714: rcode=-310
+ERROR: 682:rd_open_dev:289: rcode=-310
+rdiska: Can't open: errno = 310
+DEBUG rd_open:654: 
+DEBUG rd_open_dev:276: major=3 minor=0
+DEBUG rd_open_dev:287: source=1219208292 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1219208192 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:712: ioctl ret=-310
+ERROR: 2:dvk_sendrec_T:714: rcode=-310
+ERROR: 682:rd_open_dev:289: rcode=-310
+rdiska: Can't open: errno = 310
+mount: mount /dev/rdiska on /mnt failed: Unknown error 310
 DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-console [tty0] enabled
-Initializing software serial port version 1
-console [mc-1] enabled
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at fs/sysfs/dir.c:31 sysfs_warn_dup+0x44/0x52
-sysfs: cannot create duplicate filename '/devices/virtual/bdi/98:0'
-CPU: 0 PID: 1 Comm: swapper Not tainted 4.9.88 #10
-Stack:
- 082f7c4f 082ea9a2 49489d44 082ea9d5 49489cf0 081c0f16 00000000 00000000
- 082f7c4f 49489d08 08071e9a 4953e8b8 494cc000 4982c108 4953e8b8 49489d30
- 08071edb 082ea9d5 0000001f 08129d86 00000009 00000000 49489d28 082ea9a2
-Call Trace:
- [<0805ae5b>] show_stack+0xaf/0xf7
- [<081c0f16>] dump_stack+0x16/0x1b
- [<08071e9a>] __warn+0xa5/0xbe
- [<08071edb>] warn_slowpath_fmt+0x28/0x2d
- [<08129d86>] ? sysfs_warn_dup+0x44/0x52
- [<08129d86>] sysfs_warn_dup+0x44/0x52
- [<08129e05>] sysfs_create_dir_ns+0x71/0x84
- [<081c279a>] kobject_add_internal+0x97/0x254
- [<081c29b5>] kobject_add+0x5e/0x69
- [<081df40f>] device_add+0xc5/0x464
- [<081df847>] device_create_groups_vargs+0x81/0xab
- [<081dff50>] device_create_vargs+0x1c/0x1e
- [<080c6130>] bdi_register+0x2c/0x88
- [<080c61dc>] bdi_register_owner+0x2c/0x4c
- [<081b5e38>] device_add_disk+0x139/0x37d
- [<081c7369>] ? sprintf+0x17/0x19
- [<080678d1>] rd_disk_register+0xde/0xf6
- [<08067b4c>] rd_add+0xc4/0x1a6
- [<081c3458>] ? kobject_uevent+0x10/0x12
- [<081e247c>] ? driver_register+0xbc/0xc7
- [<081e3362>] ? __platform_driver_register+0x31/0x33
- [<0804b168>] rd_init+0x42/0x71
- [<0804b126>] ? rd_init+0x0/0x71
- [<080497f3>] do_one_initcall+0x9a/0x117
- [<08084c8d>] ? parse_args+0x1ae/0x271
- [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
- [<080499b0>] kernel_init_freeable+0x140/0x1ba
- [<0804b126>] ? rd_init+0x0/0x71
- [<082790a6>] kernel_init+0x8/0xb6
- [<08059f3f>] new_thread_handler+0x63/0x7c
-
----[ end trace 5226cb5f0f806108 ]---
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at lib/kobject.c:240 kobject_add_internal+0x214/0x254
-kobject_add_internal failed for 98:0 with -EEXIST, don't try to register things with the same name in the same directory.
-CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
-Stack:
- 082f7c4f 082f7e8c 49489d78 082f7dd4 49489d24 081c0f16 00000000 00000000
- 082f7c4f 49489d3c 08071e9a 49542100 4982c108 ffffffef 49542100 49489d64
- 08071edb 082f7dd4 000000f0 081c2917 00000009 00000000 49489d5c 082f7e8c
-Call Trace:
- [<0805ae5b>] show_stack+0xaf/0xf7
- [<081c0f16>] dump_stack+0x16/0x1b
- [<08071e9a>] __warn+0xa5/0xbe
- [<08071edb>] warn_slowpath_fmt+0x28/0x2d
- [<081c2917>] ? kobject_add_internal+0x214/0x254
- [<081c2917>] kobject_add_internal+0x214/0x254
- [<081c29b5>] kobject_add+0x5e/0x69
- [<081df40f>] device_add+0xc5/0x464
- [<081df847>] device_create_groups_vargs+0x81/0xab
- [<081dff50>] device_create_vargs+0x1c/0x1e
- [<080c6130>] bdi_register+0x2c/0x88
- [<080c61dc>] bdi_register_owner+0x2c/0x4c
- [<081b5e38>] device_add_disk+0x139/0x37d
- [<081c7369>] ? sprintf+0x17/0x19
- [<080678d1>] rd_disk_register+0xde/0xf6
- [<08067b4c>] rd_add+0xc4/0x1a6
- [<081c3458>] ? kobject_uevent+0x10/0x12
- [<081e247c>] ? driver_register+0xbc/0xc7
- [<081e3362>] ? __platform_driver_register+0x31/0x33
- [<0804b168>] rd_init+0x42/0x71
- [<0804b126>] ? rd_init+0x0/0x71
- [<080497f3>] do_one_initcall+0x9a/0x117
- [<08084c8d>] ? parse_args+0x1ae/0x271
- [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
- [<080499b0>] kernel_init_freeable+0x140/0x1ba
- [<0804b126>] ? rd_init+0x0/0x71
- [<082790a6>] kernel_init+0x8/0xb6
- [<08059f3f>] new_thread_handler+0x63/0x7c
-
----[ end trace 5226cb5f0f806109 ]---
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at fs/sysfs/dir.c:31 sysfs_warn_dup+0x44/0x52
-sysfs: cannot create duplicate filename '/dev/block/98:0'
-CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
-Stack:
- 082f7c4f 082ea9a2 49489dd8 082ea9d5 49489d84 081c0f16 00000000 00000000
- 082f7c4f 49489d9c 08071e9a ffffffef 494cc000 4944e1d0 ffffffef 49489dc4
- 08071edb 082ea9d5 0000001f 08129d86 00000009 00000000 49489dbc 082ea9a2
-Call Trace:
- [<0805ae5b>] show_stack+0xaf/0xf7
- [<081c0f16>] dump_stack+0x16/0x1b
- [<08071e9a>] __warn+0xa5/0xbe
- [<08071edb>] warn_slowpath_fmt+0x28/0x2d
- [<08129d86>] ? sysfs_warn_dup+0x44/0x52
- [<08129d86>] sysfs_warn_dup+0x44/0x52
- [<08129f95>] sysfs_do_create_link_sd.isra.0+0x82/0x8e
- [<08129fe8>] sysfs_create_link+0x2f/0x35
- [<081df69e>] device_add+0x354/0x464
- [<081b5e77>] device_add_disk+0x178/0x37d
- [<081c7369>] ? sprintf+0x17/0x19
- [<080678d1>] rd_disk_register+0xde/0xf6
- [<08067b4c>] rd_add+0xc4/0x1a6
- [<081c3458>] ? kobject_uevent+0x10/0x12
- [<081e247c>] ? driver_register+0xbc/0xc7
- [<081e3362>] ? __platform_driver_register+0x31/0x33
- [<0804b168>] rd_init+0x42/0x71
- [<0804b126>] ? rd_init+0x0/0x71
- [<080497f3>] do_one_initcall+0x9a/0x117
- [<08084c8d>] ? parse_args+0x1ae/0x271
- [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
- [<080499b0>] kernel_init_freeable+0x140/0x1ba
- [<0804b126>] ? rd_init+0x0/0x71
- [<082790a6>] kernel_init+0x8/0xb6
- [<08059f3f>] new_thread_handler+0x63/0x7c
-
----[ end trace 5226cb5f0f80610a ]---
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at lib/kobject.c:244 kobject_add_internal+0x241/0x254
-kobject_add_internal failed for queue (error: -2 parent: rd_fake0)
-CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
-Stack:
- 082f7c4f 082f7ef3 49489e0c 082f7dd4 49489db8 081c0f16 00000000 00000000
- 082f7c4f 49489dd0 08071e9a 49611464 49838a40 fffffffe 49611464 49489df8
- 08071edb 082f7dd4 000000f4 081c2944 00000009 00000000 49489df0 082f7ef3
-Call Trace:
- [<0805ae5b>] show_stack+0xaf/0xf7
- [<081c0f16>] dump_stack+0x16/0x1b
- [<08071e9a>] __warn+0xa5/0xbe
- [<08071edb>] warn_slowpath_fmt+0x28/0x2d
- [<081c2944>] ? kobject_add_internal+0x241/0x254
- [<081c2944>] kobject_add_internal+0x241/0x254
- [<081c29b5>] kobject_add+0x5e/0x69
- [<081ac9af>] blk_register_queue+0x7d/0xdd
- [<081b5f4b>] device_add_disk+0x24c/0x37d
- [<081c7369>] ? sprintf+0x17/0x19
- [<080678d1>] rd_disk_register+0xde/0xf6
- [<08067b4c>] rd_add+0xc4/0x1a6
- [<081c3458>] ? kobject_uevent+0x10/0x12
- [<081e247c>] ? driver_register+0xbc/0xc7
- [<081e3362>] ? __platform_driver_register+0x31/0x33
- [<0804b168>] rd_init+0x42/0x71
- [<0804b126>] ? rd_init+0x0/0x71
- [<080497f3>] do_one_initcall+0x9a/0x117
- [<08084c8d>] ? parse_args+0x1ae/0x271
- [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
- [<080499b0>] kernel_init_freeable+0x140/0x1ba
- [<0804b126>] ? rd_init+0x0/0x71
- [<082790a6>] kernel_init+0x8/0xb6
- [<08059f3f>] new_thread_handler+0x63/0x7c
-
----[ end trace 5226cb5f0f80610b ]---
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at block/genhd.c:632 device_add_disk+0x2af/0x37d
-CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #10
-Stack:
- 082f7c4f 00000000 081b5fae 082f733e 49489e30 081c0f16 00000000 00000000
- 082f7c4f 49489e48 08071e9a 4961145c 49611400 49611464 4961145c 49489e68
- 08071f25 082f733e 00000278 081b5fae 00000009 00000000 00000000 49489ea0
-Call Trace:
- [<0805ae5b>] show_stack+0xaf/0xf7
- [<081b5fae>] ? device_add_disk+0x2af/0x37d
- [<081c0f16>] dump_stack+0x16/0x1b
- [<08071e9a>] __warn+0xa5/0xbe
- [<08071f25>] warn_slowpath_null+0x17/0x1c
- [<081b5fae>] ? device_add_disk+0x2af/0x37d
- [<081b5fae>] device_add_disk+0x2af/0x37d
- [<081c7369>] ? sprintf+0x17/0x19
- [<080678d1>] rd_disk_register+0xde/0xf6
- [<08067b4c>] rd_add+0xc4/0x1a6
- [<081c3458>] ? kobject_uevent+0x10/0x12
- [<081e247c>] ? driver_register+0xbc/0xc7
- [<081e3362>] ? __platform_driver_register+0x31/0x33
- [<0804b168>] rd_init+0x42/0x71
- [<0804b126>] ? rd_init+0x0/0x71
- [<080497f3>] do_one_initcall+0x9a/0x117
- [<08084c8d>] ? parse_args+0x1ae/0x271
- [<0804998d>] ? kernel_init_freeable+0x11d/0x1ba
- [<080499b0>] kernel_init_freeable+0x140/0x1ba
- [<0804b126>] ? rd_init+0x0/0x71
- [<082790a6>] kernel_init+0x8/0xb6
- [<08059f3f>] new_thread_handler+0x63/0x7c
-
----[ end trace 5226cb5f0f80610c ]---
+DVK: old_exit_unbind code:8192
+root@node0:~# DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:0
 DVK: exit_unbind local_nodeid:0
-DEBUG 20:dvk_sendrec_T:701: endpoint=3 timeout=30000
-DEBUG 20:dvk_sendrec_T:712: ioctl ret=-105
-ERROR: 20:dvk_sendrec_T:714: rcode=-105
-ERROR: 0:rdisk_rw:853: rcode=-105
-do_rdisk - read failed, err = -105
+DVK: old_exit_unbind code:0
+
+
+==============================================================================================
+20190531:
+	Sesion 1:
+		Arrancar rtest.sh 
+		Arrancar rdisk.sh 
+		root@node0:/usr/src/linux/arch/um# cat /proc/dvs/DC0/procs 
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk
+		
+	Sesion 2:
+		. /dev/shm/DC0.sh
+		cd /usr/src/linux 
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		
+	Aqui se bindea RDISK CLIENT con el mayor nombre disponible
+		root@node0:/usr/src/linux/arch/um# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name        
+		 0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk          
+		
+	Luego hacer DENTRO de UML 
+		mknod /dev/dvk c 33 0 
+		echo > /dev/dvk  <<<<<<<<<<<< ESTO FUERZA EL OPEN DEL DVK y por lo tanto hace el BIND del UML con endpoint=SYSTASK 
+		
+	root@node0:/usr/src/linux/arch/um# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  -2    -2 13416/2      0    0   20 27342 27342 27342 27342 linux  <<<<<<<<< UML KERNEL 
+	 0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk          
+	 0  30    30 13424/10     0    0   20 27342 27342 27342 27342 linux  <<<<<<<<<<<< RDISK CLIENT 
+	  
+	  
+		EN EL BOOTEO DE UML 
+	  DEBUG rd_open:651: 
+		DEBUG rd_open_dev:273: major=3 minor=0
+		DEBUG rd_open_dev:284: source=1205896292 type=1030 m2i1=0 m2i2=0 m2i3=0 m2l1=0 m2l2=1205896192 m2p1=  (null)
+		DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:712: ioctl ret=-310
+		ERROR: 2:dvk_sendrec_T:714: rcode=-310
+		ERROR: 579:rd_open_dev:286: rcode=-310
+		rdiska: Can't open: errno = 310
+
+	  
+	 Cuando se trata de hacer el mount del RDISK en UML 
+root@node0:~# mount /dev/rdiska /mnt
+DEBUG rd_open:651: 
+DEBUG rd_open_dev:273: major=3 minor=0
+DEBUG rd_open_dev:284: source=1218733156 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1218733056 m2p1=  (null)
+DEBUG 226:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 226:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rd_open_dev:287: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1218733056 m2p1=  (null)
+DEBUG rd_open:651: 
+DEBUG rd_open_dev:273: major=3 minor=0
+DEBUG rd_open_dev:284: source=1218733156 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1218733056 m2p1=  (null)
+DEBUG 226:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 226:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rd_open_dev:287: source=3 type=68 m2i1=30 m2i2=-16 m2i3=0 m2l1=0 m2l2=1218733056 m2p1=  (null)
+DEBUG do_rdisk:877: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rdisk_rw:857: source=4 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=46d33000
+DEBUG 234:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 234:dvk_sendrec_T:712: ioctl ret=-108
+ERROR: 234:dvk_sendrec_T:714: rcode=-108
+ERROR: 0:rdisk_rw:859: rcode=-108
+do_rdisk - read failed, err = -108
 find_irq_by_fd doesn't have descriptor 14
-DVK: old_exit_unbind code:0
-DVK: exit_unbind local_nodeid:0
-DEBUG 20:dvk_sendrec_T:701: endpoint=3 timeout=30000
-DEBUG 20:dvk_sendrec_T:712: ioctl ret=-105
-ERROR: 20:dvk_sendrec_T:714: rcode=-105
-ERROR: 0:rdisk_rw:853: rcode=-105
+DEBUG do_rdisk:877: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rdisk_rw:857: source=1204 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=46d34000
+DEBUG 234:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 234:dvk_sendrec_T:712: ioctl ret=-105
+ERROR: 234:dvk_sendrec_T:714: rcode=-105
+ERROR: 0:rdisk_rw:859: rcode=-105
 do_rdisk - read failed, err = -105
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-winch_thread : TIOCSCTTY failed on fd 2 err = 1
 
+RDISK VE 
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=-2, m_type=1030, DEVICE=0, IO_ENDPT=0, POSITION=0, COUNT=0, ADDRESS:0, compress(m2_l2):1205896192
+ driver.c:driver_task:140:device_caller= -2, mess.m_source= -2
+ driver.c:driver_task:147:m_type: 1030 - DEV_OPEN
+ rdisk.c:m_do_open:711:m_do_open - device number: 0 - OK to open
+ rdisk.c:m_do_open:717:rcode 0
+ rdisk.c:m_do_open:726:Open imagen FD=4
+ rdisk.c:m_do_open:743:Aligned Buffer size=4096 on address 246E000, device=0
+ rdisk.c:m_do_open:744:Local Buffer 246E000
+ rdisk.c:m_do_open:745:Buffer size 4096
+ rdisk.c:m_do_open:748:Device 0 is active_flag 1
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:966:img_fd=4 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=246E000 active=1 available=1
+ rdisk.c:get_geometry:972:base=0 size=102400000 cyl=97 heads=64 sec=32
+ rdisk.c:m_do_open:810:img_fd=4 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=246E000 active=1 available=1
+ rdisk.c:m_do_open:812:END m_do_open
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: -2 -> m_type=68, (REP_ENDPT)=0, (REP_STATUS)=0
+DEBUG 597:dvk_send_T:653: endpoint=-2 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=-2, m_type=1030, DEVICE=0, IO_ENDPT=0, POSITION=0, COUNT=0, ADDRESS:0, compress(m2_l2):1205896192
+ driver.c:driver_task:140:device_caller= -2, mess.m_source= -2
+ driver.c:driver_task:147:m_type: 1030 - DEV_OPEN
+ rdisk.c:m_do_open:711:m_do_open - device number: 0 - OK to open
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: -2 -> m_type=68, (REP_ENDPT)=0, (REP_STATUS)=-16
+DEBUG 597:dvk_send_T:653: endpoint=-2 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+ 
 
-EN EL HOST 
+==============================================================================================
+20190601:
+	
+UML MOUNT 	
+root@node0:~# mount /dev/rdiska /mnt/
+DEBUG rd_open:651: 
+DEBUG rd_open_dev:273: major=3 minor=0
+DEBUG rd_open_dev:284: source=1231062116 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1231062016 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rd_open_dev:287: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1231062016 m2p1=  (null)
+DEBUG rd_open:651: 
+DEBUG rd_open_dev:273: major=3 minor=0
+DEBUG rd_open_dev:284: source=1231062116 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1231062016 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rd_open_dev:287: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1231062016 m2p1=  (null)
+DEBUG do_rdisk:877: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rdisk_rw:857: source=4 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=47918000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:860: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=47918000
+find_irq_by_fd doesn't have descriptor 14 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DEBUG do_rdisk:877: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rdisk_rw:857: source=3 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=47919000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:860: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=47919000
 
+RDISK REPORTA 		 
+driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=-2, m_type=1030, DEVICE=0, IO_ENDPT=30, POSITION=0, COUNT=0, ADDRESS:0, compress(m2_l2):1231062016
+ driver.c:driver_task:140:device_caller= -2, mess.m_source= -2
+ driver.c:driver_task:147:m_type: 1030 - DEV_OPEN
+ rdisk.c:m_do_open:719:m_do_open - device number: 0 - OK to open
+ rdisk.c:m_do_open:728:rcode 0
+ rdisk.c:m_do_open:737:Open imagen FD=4
+ rdisk.c:m_do_open:754:Aligned Buffer size=4096 on address 154F000, device=0
+ rdisk.c:m_do_open:755:Local Buffer 154F000
+ rdisk.c:m_do_open:756:Buffer size 4096
+ rdisk.c:m_do_open:759:Device 0 is active_flag 1
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:977:img_fd=4 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=154F000 active=1 available=1
+ rdisk.c:get_geometry:983:base=0 size=102400000 cyl=97 heads=64 sec=32
+ rdisk.c:m_do_open:821:img_fd=4 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=154F000 active=1 available=1
+ rdisk.c:m_do_open:823:END m_do_open
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: -2 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=0
+DEBUG 597:dvk_send_T:653: endpoint=-2 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=-2, m_type=1030, DEVICE=0, IO_ENDPT=30, POSITION=0, COUNT=0, ADDRESS:0, compress(m2_l2):1231062016
+ driver.c:driver_task:140:device_caller= -2, mess.m_source= -2
+ driver.c:driver_task:147:m_type: 1030 - DEV_OPEN
+ rdisk.c:m_do_open:719:m_do_open - device number: 0 - OK to open
+ rdisk.c:m_do_open:728:rcode 0
+ rdisk.c:m_do_open:737:Open imagen FD=5
+ rdisk.c:m_do_open:754:Aligned Buffer size=4096 on address 1551000, device=0
+ rdisk.c:m_do_open:755:Local Buffer 1551000
+ rdisk.c:m_do_open:756:Buffer size 4096
+ rdisk.c:m_do_open:759:Device 0 is active_flag 1
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:977:img_fd=5 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1551000 active=1 available=1
+ rdisk.c:get_geometry:983:base=0 size=102400000 cyl=97 heads=64 sec=32
+ rdisk.c:m_do_open:821:img_fd=5 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1551000 active=1 available=1
+ rdisk.c:m_do_open:823:END m_do_open
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: -2 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=0
+DEBUG 597:dvk_send_T:653: endpoint=-2 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=-2, m_type=1030, DEVICE=0, IO_ENDPT=30, POSITION=0, COUNT=0, ADDRESS:0, compress(m2_l2):1231062016
+ driver.c:driver_task:140:device_caller= -2, mess.m_source= -2
+ driver.c:driver_task:147:m_type: 1030 - DEV_OPEN
+ rdisk.c:m_do_open:719:m_do_open - device number: 0 - OK to open
+ rdisk.c:m_do_open:728:rcode 0
+ rdisk.c:m_do_open:737:Open imagen FD=6
+ rdisk.c:m_do_open:754:Aligned Buffer size=4096 on address 1553000, device=0
+ rdisk.c:m_do_open:755:Local Buffer 1553000
+ rdisk.c:m_do_open:756:Buffer size 4096
+ rdisk.c:m_do_open:759:Device 0 is active_flag 1
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:977:img_fd=6 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1553000 active=1 available=1
+ rdisk.c:get_geometry:983:base=0 size=102400000 cyl=97 heads=64 sec=32
+ rdisk.c:m_do_open:821:img_fd=6 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1553000 active=1 available=1
+ rdisk.c:m_do_open:823:END m_do_open
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: -2 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=0
+DEBUG 597:dvk_send_T:653: endpoint=-2 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=30, m_type=1027, DEVICE=0, IO_ENDPT=30, POSITION=0, COUNT=4096, ADDRESS:47918000, compress(m2_l2):0
+ driver.c:driver_task:140:device_caller= 30, mess.m_source= 30
+ driver.c:driver_task:164:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:267:mp->COUNT=4096
+ driver.c:do_rdwt:277:mp->IO_ENDPT=30 - mp->ADDRESS:47918000 - mp->COUNT=4096
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:977:img_fd=6 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1553000 active=1 available=1
+ rdisk.c:get_geometry:983:base=0 size=102400000 cyl=97 heads=64 sec=32
+ driver.c:do_rdwt:283:mp->m_type: 1027
+ driver.c:do_rdwt:303:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:m_transfer:299:m_device: 0
+ rdisk.c:m_transfer:312:dv_size: 102400000
+ rdisk.c:m_transfer:315:posit: 0
+ rdisk.c:m_transfer:316:nr_req: 1
+ rdisk.c:m_transfer:326:count: 4096
+ rdisk.c:m_transfer:330:user_vir 47918000
+ rdisk.c:m_transfer:351:
+<DEV_GATHER>
+ rdisk.c:m_transfer:357:bytes: 4096
+ rdisk.c:m_transfer:361:pread: bytes=4096
+DEBUG 597:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 597:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:396:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:397:bytes= 4096
+ rdisk.c:m_transfer:398:DRIVER - Offset (read) 1553000
+ rdisk.c:m_transfer:400:user_vir: 47918000 (in proc_nr 30)
+ rdisk.c:m_transfer:413:user_vir (do-buffer) 47919000
+ rdisk.c:m_transfer:416:count=0 stbytes=4096 position=4096
+ rdisk.c:m_transfer:702:subtotal de bytes
+ driver.c:do_rdwt:310:mp->m2_l2 =0, buffer_size=0
+ driver.c:do_rdwt:311:dr_trasnfer = (r) 4096
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: 30 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=4096
+DEBUG 597:dvk_send_T:653: endpoint=30 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+DEBUG 597:dvk_receive_T:677: endpoint=31438 timeout=-1
+DEBUG 597:dvk_receive_T:683: ioctl ret=0 errno=0
+ driver.c:driver_task:129:
+RECEIVE: m_source=30, m_type=1027, DEVICE=0, IO_ENDPT=30, POSITION=0, COUNT=4096, ADDRESS:47919000, compress(m2_l2):0
+ driver.c:driver_task:140:device_caller= 30, mess.m_source= 30
+ driver.c:driver_task:164:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:267:mp->COUNT=4096
+ driver.c:do_rdwt:277:mp->IO_ENDPT=30 - mp->ADDRESS:47919000 - mp->COUNT=4096
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:977:img_fd=6 dev_owner=-2 st_size=102400000 st_blksize=4096 localbuff=1553000 active=1 available=1
+ rdisk.c:get_geometry:983:base=0 size=102400000 cyl=97 heads=64 sec=32
+ driver.c:do_rdwt:283:mp->m_type: 1027
+ driver.c:do_rdwt:303:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:m_transfer:299:m_device: 0
+ rdisk.c:m_transfer:312:dv_size: 102400000
+ rdisk.c:m_transfer:315:posit: 0
+ rdisk.c:m_transfer:316:nr_req: 1
+ rdisk.c:m_transfer:326:count: 4096
+ rdisk.c:m_transfer:330:user_vir 47919000
+ rdisk.c:m_transfer:351:
+<DEV_GATHER>
+ rdisk.c:m_transfer:357:bytes: 4096
+ rdisk.c:m_transfer:361:pread: bytes=4096
+DEBUG 597:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 597:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:396:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:397:bytes= 4096
+ rdisk.c:m_transfer:398:DRIVER - Offset (read) 1553000
+ rdisk.c:m_transfer:400:user_vir: 47919000 (in proc_nr 30)
+ rdisk.c:m_transfer:413:user_vir (do-buffer) 4791A000
+ rdisk.c:m_transfer:416:count=0 stbytes=4096 position=4096
+ rdisk.c:m_transfer:702:subtotal de bytes
+ driver.c:do_rdwt:310:mp->m2_l2 =0, buffer_size=0
+ driver.c:do_rdwt:311:dr_trasnfer = (r) 4096
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: 30 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=4096
+DEBUG 597:dvk_send_T:653: endpoint=30 timeout=-1
+DEBUG 597:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
+ 
+ 
 
-
-
-
+	
 
 ================================== TODO ==================================================
 

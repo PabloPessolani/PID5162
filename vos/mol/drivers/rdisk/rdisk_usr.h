@@ -11,6 +11,7 @@ struct devvec_s {				/* vector for minor devices */
 	
 	// internal fields 
 	int 		img_fd; 		/*file descriptor - disk image*/
+	int			dev_owner;			/* client endpoint which owns/opens the device */
 	off_t 		st_size;    	/* of stat */
 	blksize_t 	st_blksize; 	/* of stat */
 	unsigned 	*localbuff;		/* buffer to the device*/
@@ -20,8 +21,8 @@ struct devvec_s {				/* vector for minor devices */
 };
 typedef struct devvec_s devvec_t;
 
-#define DEV_USR1_FORMAT "img_fd=%d st_size=%d st_blksize=%d localbuff=%X active=%d available=%d\n"
-#define DEV_USR1_FIELDS(p) p->img_fd, p->st_size, p->st_blksize, p->localbuff, p->active_flag, p->available
+#define DEV_USR1_FORMAT "img_fd=%d dev_owner=%d st_size=%d st_blksize=%d localbuff=%X active=%d available=%d\n"
+#define DEV_USR1_FIELDS(p) p->img_fd, p->dev_owner, p->st_size, p->st_blksize, p->localbuff, p->active_flag, p->available
 
 #define DEV_USR2_FORMAT "img_ptr=%s buff_size=%d img_type=%d\n"
 #define DEV_USR2_FIELDS(p) p->img_ptr, p->buff_size, p->img_type

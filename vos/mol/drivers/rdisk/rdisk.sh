@@ -12,7 +12,7 @@ cd /usr/src/dvs/vos/mol/drivers/rdisk
 echo "================= building /dev/shm/rdisk$dcid.cfg ===================="
 echo "device MY_FILE_IMG {" 			>   /dev/shm/rdisk$dcid.cfg
 echo "	image_type		FILE_IMAGE;"	>>  /dev/shm/rdisk$dcid.cfg
-echo " 	image_file 		\"/dev/shm/minixweb100.img\";" 	>>  /dev/shm/rdisk$dcid.cfg
+echo " 	image_file 		\"/dev/shm/rdisk.img\";" 	>>  /dev/shm/rdisk$dcid.cfg
 echo "	volatile		NO;"			>>  /dev/shm/rdisk$dcid.cfg
 echo "	replicated		NO;"			>>  /dev/shm/rdisk$dcid.cfg
 echo "  buffer			4096;" 			>>  /dev/shm/rdisk$dcid.cfg
@@ -21,6 +21,9 @@ echo "};"								>>  /dev/shm/rdisk$dcid.cfg
 cat /dev/shm/rdisk$dcid.cfg 
 read  -p "Enter para continuar... "
 dmesg -c  >> /dev/shm/dmesg$lcl.txt
+cp /usr/src/dvs/vos/images/ext4.img /dev/shm/rdisk.img
+ls -l /dev/shm/rdisk.img
+fsck -vf  /dev/shm/rdisk.img
 read  -p "RDISK Enter para continuar... "
 #./rdisk rdisk  -d <dcid> [-e <endpoint>] [-R] [-D] [-Z] [-U {FULL | DIFF }] -c <config_file>
 echo "./rdisk -d $dcid -e $rd_ep -R -c /dev/shm/rdisk$dcid.cfg"

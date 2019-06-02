@@ -10,8 +10,12 @@
 EXTERN dvs_usr_t 	dvs;
 EXTERN dc_usr_t 	dcu;
 EXTERN proc_usr_t 	uml_proc;
+EXTERN proc_usr_t 	rdc_proc;
 EXTERN int 			dcid; 
-EXTERN int 			uml_ep;
+
+EXTERN int 			uml_ep;		// UML KERNEL ENDPOING : from boot parameter
+EXTERN int 			rdc_ep;		// RDISK Client ENDPOING :  the lowest USER endpoint 
+EXTERN int 			rd_ep;		// RDISK Endpoint (external from UML)  from boot parameter
 
 extern int  dvk_fd; 
 extern int local_nodeid;

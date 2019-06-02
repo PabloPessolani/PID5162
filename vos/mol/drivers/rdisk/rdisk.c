@@ -146,6 +146,8 @@ int main (int argc, char *argv[] )
 	/* Not availables minor device  */
 	for( i = 0; i < NR_DEVS; i++){
 		devvec[i].available = AVAILABLE_NO;
+		devvec[i].img_fd = (-1); 
+		devvec[i].dev_owner = HARDWARE;
 	}
 
 	/* flags getopt*/
@@ -296,6 +298,9 @@ unsigned nr_req;		/* length of request vector */
 	
 	TASKDEBUG("m_device: %d\n", m_device); 
 	
+//	if ( m_ptr->m_source != devvec[m_ptr->DEVICE].dev_owner)
+//		ERROR_RETURN(EDVSBADOWNER);
+	
 	if (devvec[m_device].active_flag != 1) { /*minor device active_flag must be -1-*/
 		TASKDEBUG("Minor device = %d\n is not active_flag", m_device);
 		ERROR_RETURN(EDVSNODEV);	
@@ -323,16 +328,16 @@ unsigned nr_req;		/* length of request vector */
 		if (position >= dv_size) {
 			TASKDEBUG("EOF\n"); 
 			return(OK);
-			} 	/* check for EOF */
+		} 	/* check for EOF */
 			
 		if (position + count > dv_size) { 
 			count = dv_size - position; 
 			TASKDEBUG("count dv_size-position: %u\n", count); 
-			}
+		}
 
 //		mem_phys = devvec[m_device].part.base + position;
 //		TASKDEBUG("DRIVER - position I/O(mem_phys) %X\n", mem_phys);
-			
+		
 		if ((opcode == DEV_GATHER) ||(opcode == DEV_CGATHER))  {/* copy data */ /*DEV_GATHER read from an array (com.h)*/
 		
 			TASKDEBUG("\n<DEV_GATHER>\n");
@@ -347,7 +352,7 @@ unsigned nr_req;		/* length of request vector */
 				bytes = pread(devvec[m_device].img_fd, devvec[m_device].localbuff, bytes, position);
 				TASKDEBUG("pread: bytes=%d\n", bytes);
 				
-				if(bytes < 0) ERROR_EXIT(errno);
+				if(bytes < 0) ERROR_RETURN(errno);
 				
 				if ( opcode == DEV_CGATHER ) {
 			
@@ -466,7 +471,7 @@ unsigned nr_req;		/* length of request vector */
 						
 						if ( bytes == (-1) ){ 
 							TASKDEBUG("pwrite: %d\n", bytes);
-							ERROR_EXIT(errno);
+							ERROR_RETURN(errno);
 						}	
 						TASKDEBUG("pwrite: %d\n", bytes);
 						
@@ -663,7 +668,7 @@ unsigned nr_req;		/* length of request vector */
 						
 						TASKDEBUG("bytes: %d\n", bytes); /*no se modifica, pero es el contabiliza para count > 0)*/
 						
-						if(bytes_c < 0) ERROR_EXIT(errno);	
+						if(bytes_c < 0) ERROR_RETURN(errno);	
 							
 					} 
 						
@@ -705,26 +710,30 @@ int m_do_open(struct driver *dp, message *m_ptr)
 	
 	TASKDEBUG("m_do_open - device number: %d - OK to open\n", m_ptr->DEVICE);
 
+//	if ( m_ptr->m_source == devvec[m_ptr->DEVICE].dev_owner)
+//		ERROR_RETURN(OK);
+	
+//	if ( devvec[m_ptr->DEVICE].dev_owner != HARDWARE) 
+//		ERROR_RETURN(EDVSBUSY);
+	
 	rcode = OK;
 	TASKDEBUG("rcode %d\n", rcode);
 	do {
 		if ( devvec[m_ptr->DEVICE].available == AVAILABLE_NO ){
 			TASKDEBUG("devvec[m_ptr->DEVICE].available=%d\n", devvec[m_ptr->DEVICE].available);
 			rcode = errno;
-			TASKDEBUG("rcode=%d\n", rcode);
-			return(rcode);
-			}
+			ERROR_RETURN(rcode);
+		}
 			
 		devvec[m_ptr->DEVICE].img_fd = open(devvec[m_ptr->DEVICE].img_ptr, O_RDWR);
 		TASKDEBUG("Open imagen FD=%d\n", devvec[m_ptr->DEVICE].img_fd);
-			
 		if(devvec[m_ptr->DEVICE].img_fd < 0) {
 			TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n", devvec[m_ptr->DEVICE].img_fd);
 			rcode = errno;
-			TASKDEBUG("rcode=%d\n", rcode);
-			return(rcode);
-			}
-			
+			ERROR_RETURN(rcode);
+		}
+		devvec[m_ptr->DEVICE].dev_owner =  m_ptr->m_source; 
+		
 		/* local buffer to the minor device */
 		rcode = posix_memalign( (void**) &localbuff, getpagesize(), devvec[m_ptr->DEVICE].buff_size);
 		devvec[m_ptr->DEVICE].localbuff = localbuff;
@@ -732,7 +741,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 			fprintf(stderr,"posix_memalign rcode=%d, device=%d\n", rcode, m_ptr->DEVICE);
 			fflush(stderr);
 			exit(1);
-			}
+		}
 		
 		TASKDEBUG("Aligned Buffer size=%d on address %X, device=%d\n", devvec[m_ptr->DEVICE].buff_size, devvec[m_ptr->DEVICE].localbuff, m_ptr->DEVICE);
 		TASKDEBUG("Local Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
@@ -973,6 +982,10 @@ int m_geometry(struct driver *dp, message *m_ptr)
 {
 	int rcode;
 	devvec_t *dv_ptr;
+	
+//	if ( m_ptr->m_source != devvec[m_ptr->DEVICE].dev_owner)
+//		ERROR_RETURN(EDVSBADOWNER);
+	
 	m_device = m_ptr->DEVICE;
 	dv_ptr =&devvec[m_device];
 	
@@ -995,6 +1008,9 @@ message *m_ptr;
 {
 int rcode;
 
+//	if ( m_ptr->m_source != devvec[m_ptr->DEVICE].dev_owner)
+//		ERROR_RETURN(EDVSBADOWNER);
+	
 	// rcode = close(img_fd);
 	if (devvec[m_ptr->DEVICE].active_flag != 1) { 
 		TASKDEBUG("Device %d, is not open\n", m_ptr->DEVICE);
@@ -1003,16 +1019,11 @@ int rcode;
 	else{	
 		TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n",devvec[m_ptr->DEVICE].img_fd);
 		rcode = close(devvec[m_ptr->DEVICE].img_fd);
-		if(rcode) ERROR_EXIT(errno); 
+		if(rcode) ERROR_RETURN(errno); 
 		
 		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
-		devvec[m_ptr->DEVICE].img_ptr = NULL;
-		devvec[m_ptr->DEVICE].img_fd = NULL;
+		devvec[m_ptr->DEVICE].dev_owner = HARDWARE;
 		devvec[m_ptr->DEVICE].st_size = 0;
-		devvec[m_ptr->DEVICE].st_blksize = 0;
-		devvec[m_ptr->DEVICE].localbuff = NULL;
-		devvec[m_ptr->DEVICE].active_flag = ACTIVE_NO;
-		devvec[m_ptr->DEVICE].available = AVAILABLE_NO;
 	
 		TASKDEBUG("Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
 		free(devvec[m_ptr->DEVICE].localbuff);

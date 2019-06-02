@@ -21,7 +21,6 @@
 #include "glo_dvk.h"
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
 
-
 extern int userspace_pid[];
 int module_dvk;
 
@@ -58,7 +57,9 @@ static long uml_dvk_ioctl(struct file *file,
 	DVKDEBUG(DBGPARAMS,"uml_pid=%d uml_vpid=%d cmd=%X arg=%X\n", uml_pid, uml_vpid, cmd, arg);
 	kernel_param_unlock(THIS_MODULE);
 
-	rcode = os_ioctl_generic(file->private_data, cmd, arg);
+#ifdef ANULADO 
+	rcode = os_ioctl_generic(dvk_fd, cmd, arg);
+#endif // ANULADO 
 
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL,"rcode=%d\n",rcode);
@@ -78,16 +79,18 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	mutex_lock(&uml_dvk_mutex);
 	
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
-	
+
+#ifdef ANULADO 
 	rcode = dvk_open();
 	if( rcode < 0)
 		ERROR_RETURN(rcode);
+#endif // ANULADO 
 
 	mutex_unlock(&uml_dvk_mutex);
 	kernel_param_unlock(THIS_MODULE);
 
+#ifdef ANULADO 
 	file->private_data = dvk_fd;
-
 	dvsu_ptr = &dvs;
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0)
@@ -102,6 +105,8 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	DVKDEBUG(INTERNAL, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	DVKDEBUG(INTERNAL, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
 	
+#endif // ANULADO 
+
 	ep = dvk_bind(dcid, uml_ep);
 	DVKDEBUG(INTERNAL,"uml_bind uml_ep=%d ep=%d\n",uml_ep, ep);
 	if( ep < EDVSERRCODE)
@@ -119,7 +124,9 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 static int uml_dvk_release(struct inode *inode, struct file *file)
 {
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
+#ifdef ANULADO 
 	os_close_file(file->private_data);
+#endif // ANULADO 
 	return 0;
 }
 
