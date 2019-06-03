@@ -143,6 +143,8 @@ int rd_dev_size(struct rdisk *rd_dev, __u64 *size)
 	struct hd_geometry geo,  *g_ptr;
 	int rcode, major, minor;
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	major = RD_MAJOR;
 	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
 
@@ -159,18 +161,22 @@ int rd_dev_size(struct rdisk *rd_dev, __u64 *size)
 
 static void make_proc_ide(void)
 {
+	DVKDEBUG(INTERNAL,"\n");
+
 	proc_rd_ide_root = proc_mkdir("rd_ide", NULL);
 	proc_rd_ide = proc_mkdir("rd_ide0", proc_rd_ide_root);
 }
 
 static int fake_rd_ide_media_show(struct seq_file *m, void *v)
 {
+	DVKDEBUG(INTERNAL,"\n");
 	seq_puts(m, "disk\n");
 	return 0;
 }
 
 static int fake_rd_ide_media_open(struct inode *inode, struct file *file)
 {
+	DVKDEBUG(INTERNAL,"\n");
 	return 0;
 }
 
@@ -187,6 +193,8 @@ static void make_rd_ide_entries(const char *dev_name)
 	struct proc_dir_entry *dir, *ent;
 	char name[64];
 
+	DVKDEBUG(INTERNAL,"dev_name=%s\n", dev_name);
+
 	if(proc_rd_ide_root == NULL) make_proc_ide();
 
 	dir = proc_mkdir(dev_name, proc_rd_ide);
@@ -200,6 +208,8 @@ static void make_rd_ide_entries(const char *dev_name)
 
 static int fake_rd_ide_setup(char *str)
 {
+	DVKDEBUG(INTERNAL,"\n");
+
 	fake_rd_ide = 1;
 	return 1;
 }
@@ -217,6 +227,8 @@ __uml_help(fake_rd_ide_setup,
  */
 static int rd_setup_common(char *str, int *index_out, char **error_out)
 {
+	DVKDEBUG(INTERNAL,"\n");
+
      if( index_out != NULL)
 		*index_out = 1; 
 	return 0;
@@ -227,6 +239,8 @@ static int rd_setup(char *str)
 {
 	char *error;
 	int err;
+
+	DVKDEBUG(INTERNAL,"\n");
 
 	err = rd_setup_common(str, NULL, &error);
 	if(err)
@@ -277,7 +291,7 @@ __uml_exitcall(kill_rd_thread);
 
 static void rd_close_dev(struct rdisk *rd_dev)
 {
-
+	DVKDEBUG(INTERNAL,"\n");
 }
 
 static int rd_open_dev(struct rdisk *rd_dev)
@@ -310,6 +324,8 @@ static void rd_device_release(struct device *dev)
 {
 	struct rdisk *rd_dev = dev_get_drvdata(dev);
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	blk_cleanup_queue(rd_dev->queue);
 	*rd_dev = ((struct rdisk) DEFAULT_RDISK);
 }
@@ -319,6 +335,8 @@ static int rd_disk_register(int major, u64 size, int unit,
 {
 	struct device *parent = NULL;
 	struct gendisk *disk;
+
+	DVKDEBUG(INTERNAL,"major=%d unit=%d\n", major, unit);
 
 	disk = alloc_disk(1 << RD_SHIFT);
 	if(disk == NULL)
@@ -357,6 +375,9 @@ static int rd_add(int n, char **error_out)
 {
 	struct rdisk *rd_dev = &rd_devs[n];
 	int err = 0;
+	
+	DVKDEBUG(INTERNAL,"n=%d\n", n);
+
 
 	err = rd_dev_size(rd_dev, &rd_dev->size);
 	if(err < 0){
@@ -413,6 +434,8 @@ static int rd_config(char *str, char **error_out)
 	 * freed if rd_setup_common fails, or if only general options
 	 * were set.
 	 */
+ 	DVKDEBUG(INTERNAL,"\n");
+
 	str = kstrdup(str, GFP_KERNEL);
 	if (str == NULL) {
 		*error_out = "Failed to allocate memory";
@@ -464,6 +487,8 @@ static int rd_get_config(char *name, char *str, int size, char **error_out)
 	struct rdisk *rd_dev;
 	int n, len = 0;
 
+	DVKDEBUG(INTERNAL,"name=%s size=%d\n", name, size);
+
 	n = rd_parse_unit(&name);
 	if((n >= RD_MAX_DEV) || (n < 0)){
 		*error_out = "rd_get_config : device number out of range";
@@ -483,6 +508,8 @@ static int rd_id(char **str, int *start_out, int *end_out)
 {
 	int n;
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	n = rd_parse_unit(str);
 	*start_out = 0;
 	*end_out = RD_MAX_DEV - 1;
@@ -494,6 +521,9 @@ static int rd_remove(int n, char **error_out)
 	struct gendisk *disk = rd_gendisk[n];
 	struct rdisk *rd_dev;
 	int err = -ENODEV;
+
+
+	DVKDEBUG(INTERNAL,"n=%d\n", n);
 
 	mutex_lock(&rd_lock);
 
@@ -568,6 +598,8 @@ static int __init rd_init(void)
 	char *error;
 	int i, err;
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	if (register_blkdev(RD_MAJOR, "rdisk"))
 		return -1;
 
@@ -602,6 +634,8 @@ static void rd_handler(void)
 	unsigned long flags;
 	int n;
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	while(1){
 		n = os_read_file(rd_thread_fd, &req,
 				 sizeof(struct rd_thread_req *));
@@ -629,13 +663,18 @@ static void rd_handler(void)
 
 static irqreturn_t rd_intr(int irq, void *dev)
 {
+	DVKDEBUG(INTERNAL,"\n");
+
 	rd_handler();
 	return IRQ_HANDLED;
 }
 
-static int __init rd_driver_init(void){
+static int __init rd_driver_init(void)
+{
 	unsigned long stack;
 	int err;
+
+	DVKDEBUG(INTERNAL,"\n");
 
 	/* Set by CONFIG_BLK_DEV_RD_SYNC or rdisk=sync.*/
 	if(global_openflags.s){
@@ -695,6 +734,8 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 {
 	struct rdisk *rd_dev = disk->private_data;
 
+	DVKDEBUG(INTERNAL,"\n");
+
 	mutex_lock(&rd_mutex);
 	if(--rd_dev->count == 0)
 		rd_close_dev(rd_dev);
@@ -708,6 +749,8 @@ static void rd_prepare_request(struct request *req, struct rd_thread_req *rd_req
 {
 	struct gendisk *disk = req->rq_disk;
 	struct rdisk *rd_dev = disk->private_data;
+
+	DVKDEBUG(INTERNAL,"len=%d\n", len);
 
 	rd_req->req = req;
 	rd_req->offset = offset;
@@ -728,12 +771,15 @@ static void rd_prepare_flush_request(struct request *req,
 	struct gendisk *disk = req->rq_disk;
 	struct rdisk *rd_dev = disk->private_data;
 
+	DVKDEBUG(INTERNAL,"\n");
 	rd_req->req = req;
 	rd_req->op = RD_FLUSH;
 }
 
 static bool rd_submit_request(struct rd_thread_req *rd_req, struct rdisk *dev)
 {
+	DVKDEBUG(INTERNAL,"\n");
+
 	int n = os_write_file(rd_thread_fd, &rd_req,
 			     sizeof(rd_req));
 	if (n != sizeof(rd_req)) {
@@ -754,6 +800,8 @@ static void do_rd_request(struct request_queue *q)
 {
 	struct rd_thread_req *rd_req;
 	struct request *req;
+
+	DVKDEBUG(INTERNAL,"\n");
 
 	while(1){
 		struct rdisk *dev = q->queuedata;
@@ -814,6 +862,8 @@ static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	int minor= bdev->bd_disk->first_minor;
 	int rcode; 
 	
+	DVKDEBUG(INTERNAL,"\n");
+
 	rcode = get_geometry(rd_dev, minor, geo);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	return(rcode);
@@ -856,6 +906,8 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, u
 	struct hd_geometry geo;
 	u16 rd_id[ATA_ID_WORDS];
 	int rcode;
+
+	DVKDEBUG(INTERNAL,"cmd=%d\n",cmd);
 
 	switch (cmd) {
 		case HDIO_GET_IDENTITY:
@@ -900,7 +952,7 @@ static void do_rdisk(struct rd_thread_req *req)
 {
 	char *buf;
 	unsigned long len;
-	int n, nsectors, start_sec, end_sec, minor;
+	int n, minor;
 	__u64 off;
 
 	if (req->op == RD_FLUSH) {
@@ -910,19 +962,12 @@ static void do_rdisk(struct rd_thread_req *req)
 	
 	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
 
-	nsectors = req->length / req->sectorsize;	
 	minor = req->req->rq_disk->first_minor;
-	start_sec = 0;
 	len = req->length;
-	DVKDEBUG(INTERNAL,"minor=%d nsectors=%d len=%d\n", 
-			minor, nsectors, len);
-	end_sec =  start_sec + nsectors;
-			
 	do {
-		off = req->offset +	start_sec * req->sectorsize;
-		buf = &req->buffer[start_sec * req->sectorsize];
-		DVKDEBUG(INTERNAL,"start_sec=%d end_sec=%d len=%d off=%d\n", 
-			start_sec, end_sec, len, off);
+		off = req->offset +	(req->length - len);
+		buf = &req->buffer[(req->length - len)];
+		DVKDEBUG(INTERNAL,"len=%d off=%d\n", len, off);
 		if(req->op == RD_READ){
 			n = rdisk_rw(DEV_READ, minor, buf, len, off);
 			if (n < 0) {
@@ -930,22 +975,27 @@ static void do_rdisk(struct rd_thread_req *req)
 				req->error = 1;
 				return;
 			}
-			if (n < len) memset(&buf[n], 0, len - n);			
+			if (n == 0 ) {
+				if( len < req->length)
+					memset(&buf[n], 0, req->length - len);
+				len = 0;
+				break;
+			}
 		} else {
 			n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
-			if(n != len){
+			if(n < 0){
 				printk("do_rdisk - write failed err = %d\n", n);
 				req->error = 1;
 				return;
 			}
 		}
-		start_sec += (n/req->sectorsize);
 		len -= n;
-	} while( len > 0);
+	} while( (len > 0) );
 
-	DVKDEBUG(INTERNAL,"start_sec=%d minor=%d len=%d off=%d\n", start_sec, minor, len, off);
+	DVKDEBUG(INTERNAL,"minor=%d len=%d off=%d\n", minor, len, off);
 	req->error = 0;
 }
+
 
 /* Changed in start_rd_thread, which is serialized by being called only
  * from rd_init, which is an initcall.

@@ -1,4 +1,2 @@
 
-<<< Log from 192.168.1.100 started junio 02, 2019, 22:48:39 >>>
-                                                                                 
-<<< Log from 192.168.1.100 ended junio 02, 2019, 22:50:55 >>>
+<<< Log from 192.168.1.100 started junio 03, 2019, 13:30:59 >>>

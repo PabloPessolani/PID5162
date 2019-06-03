@@ -3848,7 +3848,87 @@ DEBUG rdisk_rw:891: source=1 type=1027 m2i1=0 m2i2=30 m2i3=8192 m2l1=233472 m2l2
 DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
 DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
 
+==============================================================================================
+20190602:
+		en FSCK 
+		
+UML entra en LOOP y el ultimo mensaje intercambiado con RDISK es este 
+		
+DEBUG rd_thread:1019: op=0 offset=229376 length=16384 sectorsize=512 error=0
+DEBUG do_rdisk:911: op=0 offset=229376 length=16384 sectorsize=512 error=0
+DEBUG do_rdisk:918: minor=0 nsectors=32 len=16384
+DEBUG do_rdisk:925: start_sec=0 end_sec=32 len=16384 off=229376
+DEBUG rdisk_rw:891: source=1 type=1027 m2i1=0 m2i2=30 m2i3=16384 m2l1=229376 m2l2=0 m2p1=4886c000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:894: source=3 type=68 m2i1=30 m2i2=16384 m2i3=16384 m2l1=229376 m2l2=0 m2p1=4886c000
 
+RDISK RECIBE Y ATIENDE CORRECTAMENTE EL MENSAJE
+RECEIVE: m_source=30, m_type=1027, DEVICE=0, IO_ENDPT=30, POSITION=38000, COUNT=16384, ADDRESS:4886C000, compress(m2_l2):0
+ driver.c:driver_task:140:device_caller= 30, mess.m_source= 30
+ driver.c:driver_task:164:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:267:mp->COUNT=16384
+ driver.c:do_rdwt:277:mp->IO_ENDPT=30 - mp->ADDRESS:4886C000 - mp->COUNT=16384
+ rdisk.c:m_prepare:262:device = 0
+ rdisk.c:get_geometry:969:img_fd=6 dev_owner=-2 st_size=134217728 st_blksize=4096 localbuff=1AB9000 active=1 available=1
+ rdisk.c:get_geometry:977:base=0 size=134217728 cyl=128 heads=64 sec=32
+ driver.c:do_rdwt:283:mp->m_type: 1027
+ driver.c:do_rdwt:303:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:m_transfer:299:m_device: 0
+ rdisk.c:m_transfer:312:dv_size: 134217728
+ rdisk.c:m_transfer:315:posit: 38000
+ rdisk.c:m_transfer:316:nr_req: 1
+ rdisk.c:m_transfer:322:count: 16384
+ rdisk.c:m_transfer:326:user_vir 4886C000
+ rdisk.c:m_transfer:343:
+<DEV_GATHER>
+ rdisk.c:m_transfer:349:bytes: 4096
+ rdisk.c:m_transfer:353:pread: bytes=4096
+DEBUG 617:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 617:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:389:bytes= 4096
+ rdisk.c:m_transfer:390:DRIVER - Offset (read) 1AB9000
+ rdisk.c:m_transfer:392:user_vir: 4886C000 (in proc_nr 30)
+ rdisk.c:m_transfer:405:user_vir (do-buffer) 4886D000
+ rdisk.c:m_transfer:408:count=12288 stbytes=4096 position=233472
+ rdisk.c:m_transfer:349:bytes: 4096
+ rdisk.c:m_transfer:353:pread: bytes=4096
+DEBUG 617:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 617:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:389:bytes= 4096
+ rdisk.c:m_transfer:390:DRIVER - Offset (read) 1AB9000
+ rdisk.c:m_transfer:392:user_vir: 4886D000 (in proc_nr 30)
+ rdisk.c:m_transfer:405:user_vir (do-buffer) 4886E000
+ rdisk.c:m_transfer:408:count=8192 stbytes=8192 position=237568
+ rdisk.c:m_transfer:349:bytes: 4096
+ rdisk.c:m_transfer:353:pread: bytes=4096
+DEBUG 617:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 617:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:389:bytes= 4096
+ rdisk.c:m_transfer:390:DRIVER - Offset (read) 1AB9000
+ rdisk.c:m_transfer:392:user_vir: 4886E000 (in proc_nr 30)
+ rdisk.c:m_transfer:405:user_vir (do-buffer) 4886F000
+ rdisk.c:m_transfer:408:count=4096 stbytes=12288 position=241664
+ rdisk.c:m_transfer:349:bytes: 4096
+ rdisk.c:m_transfer:353:pread: bytes=4096
+DEBUG 617:dvk_vcopy:80: src_ep=3 dst_ep=30 bytes=4096
+DEBUG 617:dvk_vcopy:89: ioctl ret=4096 errno=0
+ rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+ rdisk.c:m_transfer:389:bytes= 4096
+ rdisk.c:m_transfer:390:DRIVER - Offset (read) 1AB9000
+ rdisk.c:m_transfer:392:user_vir: 4886F000 (in proc_nr 30)
+ rdisk.c:m_transfer:405:user_vir (do-buffer) 48870000
+ rdisk.c:m_transfer:408:count=0 stbytes=16384 position=245760
+ rdisk.c:m_transfer:694:subtotal de bytes
+ driver.c:do_rdwt:310:mp->m2_l2 =0, buffer_size=0
+ driver.c:do_rdwt:311:dr_trasnfer = (r) 16384
+ driver.c:driver_task:230:SEND msg a DEVICE_CALLER: 30 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=16384
+DEBUG 617:dvk_send_T:653: endpoint=30 timeout=-1
+DEBUG 617:dvk_send_T:659: ioctl ret=76 errno=0
+ driver.c:driver_task:114:M3-IPC Listening ...
 
 
 
