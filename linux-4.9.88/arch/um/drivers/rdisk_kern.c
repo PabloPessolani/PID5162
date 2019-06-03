@@ -110,6 +110,8 @@ static void rd_release(struct gendisk *disk, fmode_t mode);
 static int rd_ioctl(struct block_device *bdev, fmode_t mode,
 		     unsigned int cmd, unsigned long arg);
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
+static int get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo);
+
 
 #define RD_MAX_DEV (1)
 
@@ -133,16 +135,32 @@ static int 		fake_rd_ide = 0;
 static struct proc_dir_entry *proc_rd_ide_root = NULL;
 static struct proc_dir_entry *proc_rd_ide = NULL;
 
+#define GEO_FORMAT  	"cyl=%d heads=%d sec=%d\n"
+#define GEO_FIELDS(p)    p->cylinders, p->heads, p->sectors
 
-int rd_dev_size(struct rdisk *rd_dev, __u64 size)
+int rd_dev_size(struct rdisk *rd_dev, __u64 *size)
 {
-	return(OK);
+	struct hd_geometry geo,  *g_ptr;
+	int rcode, major, minor;
+
+	major = RD_MAJOR;
+	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
+
+	rcode = get_geometry(rd_dev, minor, &geo);
+	if( rcode < 0) ERROR_RETURN(rcode);
+	
+	g_ptr = &geo;
+	DVKDEBUG(INTERNAL, GEO_FORMAT, GEO_FIELDS(g_ptr));
+	*size = g_ptr->heads * g_ptr->sectors * g_ptr->cylinders * RD_SECTOR_SIZE;
+	DVKDEBUG(INTERNAL, "RDISK size=%lld \n",*size);
+
+	return(OK);	
 }
 
 static void make_proc_ide(void)
 {
-	proc_rd_ide_root = proc_mkdir("ide", NULL);
-	proc_rd_ide = proc_mkdir("ide0", proc_rd_ide_root);
+	proc_rd_ide_root = proc_mkdir("rd_ide", NULL);
+	proc_rd_ide = proc_mkdir("rd_ide0", proc_rd_ide_root);
 }
 
 static int fake_rd_ide_media_show(struct seq_file *m, void *v)
@@ -696,9 +714,10 @@ static void rd_prepare_request(struct request *req, struct rd_thread_req *rd_req
 	rd_req->length = len;
 	rd_req->error = 0;
 	rd_req->op = (rq_data_dir(req) == READ) ? RD_READ : RD_WRITE;
-	rd_req->offset= 0;
 	rd_req->buffer = page_address(page) + page_offset;
 	rd_req->sectorsize = 1 << 9;
+
+	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(rd_req));
 
 }
 
@@ -791,18 +810,32 @@ static void do_rd_request(struct request_queue *q)
 
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
-	message dev_mess, *m_ptr;
-	int rcode;
-	mnx_part_t mnx_part, *part_ptr;
 	struct rdisk *rd_dev = bdev->bd_disk->private_data;
+	int minor= bdev->bd_disk->first_minor;
+	int rcode; 
+	
+	rcode = get_geometry(rd_dev, minor, geo);
+	if( rcode < 0) ERROR_RETURN(rcode);
+	return(rcode);
+}
 
-	part_ptr = &mnx_part;
+static int get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
+{
+	message dev_mess, *m_ptr;
+	int rcode, tid, my_ep;
+	mnx_part_t mnx_part, *part_ptr;
+
+	tid = os_gettid();
+	my_ep = dvk_getep(tid);
+	DVKDEBUG(INTERNAL,"tid=%d my_ep=%d minor=%d\n", tid, my_ep, minor);
+
+  	part_ptr = &mnx_part;
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	m_ptr->m_type   = DEV_IOCTL;
 	m_ptr->REQUEST	= DIOCGETP;
-	m_ptr->DEVICE   = bdev->bd_disk->first_minor;
-	m_ptr->IO_ENDPT = rdc_ep;
+	m_ptr->DEVICE   = minor;
+	m_ptr->IO_ENDPT = my_ep;
 	m_ptr->ADDRESS  = (char *) part_ptr; 
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
@@ -813,6 +846,7 @@ static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	geo->heads 		= part_ptr->heads;
 	geo->sectors 	= part_ptr->sectors;
 	geo->cylinders 	= part_ptr->cylinders;
+	geo->start 		= part_ptr->base;
 	return 0;	
 }
 
@@ -866,7 +900,7 @@ static void do_rdisk(struct rd_thread_req *req)
 {
 	char *buf;
 	unsigned long len;
-	int n, nsectors, start, end, minor;
+	int n, nsectors, start_sec, end_sec, minor;
 	__u64 off;
 
 	if (req->op == RD_FLUSH) {
@@ -875,13 +909,20 @@ static void do_rdisk(struct rd_thread_req *req)
 	}
 	
 	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
-	
+
+	nsectors = req->length / req->sectorsize;	
 	minor = req->req->rq_disk->first_minor;
-	start = 0;
+	start_sec = 0;
 	len = req->length;
+	DVKDEBUG(INTERNAL,"minor=%d nsectors=%d len=%d\n", 
+			minor, nsectors, len);
+	end_sec =  start_sec + nsectors;
+			
 	do {
-		off = req->offset +	start;
-		buf = &req->buffer[start];
+		off = req->offset +	start_sec * req->sectorsize;
+		buf = &req->buffer[start_sec * req->sectorsize];
+		DVKDEBUG(INTERNAL,"start_sec=%d end_sec=%d len=%d off=%d\n", 
+			start_sec, end_sec, len, off);
 		if(req->op == RD_READ){
 			n = rdisk_rw(DEV_READ, minor, buf, len, off);
 			if (n < 0) {
@@ -889,6 +930,7 @@ static void do_rdisk(struct rd_thread_req *req)
 				req->error = 1;
 				return;
 			}
+			if (n < len) memset(&buf[n], 0, len - n);			
 		} else {
 			n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
 			if(n != len){
@@ -897,10 +939,11 @@ static void do_rdisk(struct rd_thread_req *req)
 				return;
 			}
 		}
-		start += n;
+		start_sec += (n/req->sectorsize);
 		len -= n;
 	} while( len > 0);
 
+	DVKDEBUG(INTERNAL,"start_sec=%d minor=%d len=%d off=%d\n", start_sec, minor, len, off);
 	req->error = 0;
 }
 
@@ -972,6 +1015,9 @@ int rd_thread(void *arg)
 			}
 			continue;
 		}
+
+		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+
 		rd_count++;
 		do_rdisk(req);
 		n = os_write_file(rdk_fd, &req,

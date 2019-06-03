@@ -966,9 +966,13 @@ int get_geometry(int device)
 	dv_ptr =&devvec[m_device];
 
 	TASKDEBUG(DEV_USR1_FORMAT, DEV_USR1_FIELDS(dv_ptr));	
-	dv_ptr->part.cylinders	= (dv_ptr->st_size/(SECTOR_SIZE * DFT_HEADS * DFT_SECTORS));
+	dv_ptr->part.cylinders	= (dv_ptr->st_size << SECTOR_SHIFT)
+	dv_ptr->part.cylinders	/= DFT_HEADS;
+	dv_ptr->part.cylinders	/= DFT_SECTORS;
 	dv_ptr->part.heads		= DFT_HEADS;
 	dv_ptr->part.sectors	= DFT_SECTORS;
+	dv_ptr->part.base		= 0;
+	dv_ptr->part.size		= dv_ptr->st_size;
 	
 	part_ptr = &dv_ptr->part;
 	TASKDEBUG(PART_FORMAT, PART_FIELDS(part_ptr));
@@ -991,8 +995,9 @@ int m_geometry(struct driver *dp, message *m_ptr)
 	
 	get_geometry(m_device);
 	
-	rcode = dvk_vcopy(m_ptr->IO_ENDPT, m_ptr->ADDRESS,
-					SELF, &dv_ptr->part, sizeof(mnx_part_t));
+	rcode = dvk_vcopy(SELF, &dv_ptr->part, 
+					m_ptr->IO_ENDPT, m_ptr->ADDRESS,
+					sizeof(mnx_part_t));
 	if( rcode < 0)
 		ERROR_RETURN(rcode);
 	
