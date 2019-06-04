@@ -8,6 +8,7 @@
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/uaccess.h>
+#include <linux/string.h>
 #include <init.h>
 #include <os.h>
 
@@ -57,9 +58,17 @@ static long uml_dvk_ioctl(struct file *file,
 	DVKDEBUG(DBGPARAMS,"uml_pid=%d uml_vpid=%d cmd=%X arg=%X\n", uml_pid, uml_vpid, cmd, arg);
 	kernel_param_unlock(THIS_MODULE);
 
-#ifdef ANULADO 
-	rcode = os_ioctl_generic(dvk_fd, cmd, arg);
-#endif // ANULADO 
+//#ifdef ANULADO
+	if(cmd == DVK_IOCQGETEP)
+		arg = uml_pid;
+
+	if( cmd == DVK_IOCSDVKBIND){
+		rcode = os_ioctl_generic(dvk_fd, cmd, &parm);
+	}else{ 
+		rcode = os_ioctl_generic(dvk_fd, cmd, arg);
+	}
+	
+//#endif // ANULADO 
 
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL,"rcode=%d\n",rcode);
@@ -80,11 +89,11 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
 
-#ifdef ANULADO 
+//#ifdef ANULADO 
 	rcode = dvk_open();
 	if( rcode < 0)
 		ERROR_RETURN(rcode);
-#endif // ANULADO 
+//#endif // ANULADO 
 
 	mutex_unlock(&uml_dvk_mutex);
 	kernel_param_unlock(THIS_MODULE);
@@ -105,8 +114,6 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	DVKDEBUG(INTERNAL, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	DVKDEBUG(INTERNAL, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
 	
-#endif // ANULADO 
-
 	ep = dvk_bind(dcid, uml_ep);
 	DVKDEBUG(INTERNAL,"uml_bind uml_ep=%d ep=%d\n",uml_ep, ep);
 	if( ep < EDVSERRCODE)
@@ -117,7 +124,7 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	if(rcode < 0)
 		ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
-
+#endif // ANULADO 
 	return 0;
 }
 

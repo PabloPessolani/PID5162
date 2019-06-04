@@ -3932,6 +3932,442 @@ DEBUG 617:dvk_send_T:659: ioctl ret=76 errno=0
 
 
 
+==============================================================================================
+20190603:		FUNCIONO EL FSCK Y MOUNT !!!
+
+			root@node0:~# mount
+			/dev/ubda on / type ext2 (ro,relatime,block_validity,barrier,user_xattr)
+			devtmpfs on /dev type devtmpfs (rw,relatime,mode=755)
+			.......
+			mqueue on /dev/mqueue type mqueue (rw,relatime)
+			/dev/rdiska on /mnt type ext2 (rw,relatime,block_validity,barrier,user_xattr
+
+			root@node0:~# ls -l /mnt
+			total 63708
+			-rw------- 1 root root      793 Jun  2 15:24 debug.h
+			-rw-r--r-- 1 root root 10485760 Jun  2 15:24 file10M.txt
+			-rw-r--r-- 1 root root 52428800 Jun  2 15:24 file50M.txt
+			-rw------- 1 root root   103630 Jun  2 15:24 index.html
+			-rw-r--r-- 1 root root  1377610 Jun  2 15:24 index.mht
+			drwx------ 2 root root    12288 Jun  2 15:21 lost+found
+			-rw------- 1 root root      984 Jun  2 15:24 macros.h
+			-rw-r--r-- 1 root root   100000 Jun  2 15:24 muk.txt
+			-rw-r--r-- 1 root root   320742 Jun  2 15:24 test.tar.gz
+			-rw-r--r-- 1 root root   142097 Jun  2 15:24 test.z
+
+
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133799936 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133799936 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=24576 off=133799936
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=24576 m2l1=133799936 m2l2=0 m2p1=48b08000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=24576 m2i3=24576 m2l1=133799936 m2l2=0 m2p1=48b08000
+DEBUG do_rdisk:995: minor=0 len=0 off=133799936
+systemd-journald[360]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=16384
+DEBUG rd_prepare_request:763: op=0 offset=133824512 length=16384 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133824512 length=16384 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133824512 length=16384 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=16384 off=133824512
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=16384 m2l1=133824512 m2l2=0 m2p1=48b0e000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=16384 m2i3=16384 m2l1=133824512 m2l2=0 m2p1=48b0e000
+DEBUG do_rdisk:995: minor=0 len=0 off=133824512
+DEBUG rd_prepare_request:753: len=24576
+DEBUG rd_prepare_request:763: op=0 offset=133844992 length=24576 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133844992 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133844992 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=24576 off=133844992
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=24576 m2l1=133844992 m2l2=0 m2p1=48b12000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=24576 m2i3=24576 m2l1=133844992 m2l2=0 m2p1=48b12000
+DEBUG do_rdisk:995: minor=0 len=0 off=133844992
+DEBUG rd_prepare_request:753: len=40960
+DEBUG rd_prepare_request:763: op=0 offset=133873664 length=40960 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133873664 length=40960 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133873664 length=40960 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=40960 off=133873664
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=40960 m2l1=133873664 m2l2=0 m2p1=48b18000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=40960 m2i3=40960 m2l1=133873664 m2l2=0 m2p1=48b18000
+DEBUG do_rdisk:995: minor=0 len=0 off=133873664
+DEBUG rd_prepare_request:753: len=24576
+DEBUG rd_prepare_request:763: op=0 offset=133918720 length=24576 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133918720 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133918720 length=24576 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=24576 off=133918720
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=24576 m2l1=133918720 m2l2=0 m2p1=48b22000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_prepare_request:753: len=8192
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=24576 m2i3=24576 m2l1=133918720 m2l2=0 m2p1=48b22000
+DEBUG do_rdisk:995: minor=0 len=0 off=133918720
+DEBUG rd_prepare_request:763: op=0 offset=133943296 length=8192 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133943296 length=8192 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133943296 length=8192 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=8192 off=133943296
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=8192 m2l1=133943296 m2l2=0 m2p1=48ac8000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_prepare_request:753: len=4096
+DEBUG rd_prepare_request:763: op=0 offset=133951488 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=8192 m2i3=8192 m2l1=133943296 m2l2=0 m2p1=48ac8000
+DEBUG do_rdisk:995: minor=0 len=0 off=133943296
+DEBUG rd_thread:1069: op=0 offset=133951488 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133951488 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=4096 off=133951488
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133951488 m2l2=0 m2p1=48acb000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_intr:666: 
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133951488 m2l2=0 m2p1=48acb000
+DEBUG do_rdisk:995: minor=0 len=0 off=133951488
+DEBUG rd_handler:637: 
+systemd-journald[360]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=57344
+DEBUG rd_prepare_request:763: op=0 offset=133955584 length=57344 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=133955584 length=57344 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=133955584 length=57344 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=57344 off=133955584
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=57344 m2l1=133955584 m2l2=0 m2p1=48acc000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=57344 m2i3=57344 m2l1=133955584 m2l2=0 m2p1=48acc000
+DEBUG do_rdisk:995: minor=0 len=0 off=133955584
+DEBUG rd_prepare_request:753: len=57344
+DEBUG rd_prepare_request:763: op=0 offset=134017024 length=57344 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=134017024 length=57344 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=134017024 length=57344 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=57344 off=134017024
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=57344 m2l1=134017024 m2l2=0 m2p1=48ada000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=57344 m2i3=57344 m2l1=134017024 m2l2=0 m2p1=48ada000
+DEBUG do_rdisk:995: minor=0 len=0 off=134017024
+DEBUG rd_prepare_request:753: len=8192
+DEBUG rd_prepare_request:763: op=0 offset=134074368 length=8192 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=134074368 length=8192 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=134074368 length=8192 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=8192 off=134074368
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=8192 m2l1=134074368 m2l2=0 m2p1=48aa8000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=8192 m2i3=8192 m2l1=134074368 m2l2=0 m2p1=48aa8000
+DEBUG do_rdisk:995: minor=0 len=0 off=134074368
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+systemd-journald[360]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=61440
+DEBUG rd_prepare_request:763: op=0 offset=134090752 length=61440 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=134090752 length=61440 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=134090752 length=61440 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=61440 off=134090752
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=61440 m2l1=134090752 m2l2=0 m2p1=48aaa000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=61440 m2i3=61440 m2l1=134090752 m2l2=0 m2p1=48aaa000
+DEBUG do_rdisk:995: minor=0 len=0 off=134090752
+DEBUG rd_prepare_request:753: len=28672
+DEBUG rd_prepare_request:763: op=0 offset=134156288 length=28672 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=134156288 length=28672 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=134156288 length=28672 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=28672 off=134156288
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=28672 m2l1=134156288 m2l2=0 m2p1=48ab9000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG rd_prepare_request:753: len=20480
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=28672 m2i3=28672 m2l1=134156288 m2l2=0 m2p1=48ab9000
+DEBUG do_rdisk:995: minor=0 len=0 off=134156288
+DEBUG rd_prepare_request:763: op=0 offset=134189056 length=20480 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=134189056 length=20480 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=134189056 length=20480 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=20480 off=134189056
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=20480 m2l1=134189056 m2l2=0 m2p1=48ac0000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=4096
+DEBUG rd_prepare_request:763: op=0 offset=2097152 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=2097152 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=2097152 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=4096 off=2097152
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=2097152 m2l2=0 m2p1=48ac5000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=2097152 m2l2=0 m2p1=48ac5000
+DEBUG do_rdisk:995: minor=0 len=0 off=2097152
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+systemd-journald[360]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG rd_release:737: 
+DEBUG rd_close_dev:294: 
+DEBUG rd_open:708: 
+DEBUG rd_open_dev:305: major=3 minor=0
+DEBUG rd_open_dev:316: source=1227088996 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1227088896 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rd_open_dev:319: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1227088896 m2p1=  (null)
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=1024 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=1024 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=1024 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=1024
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=1024 m2l2=0 m2p1=48aca400
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=1024 m2l2=0 m2p1=48aca400
+DEBUG do_rdisk:995: minor=0 len=0 off=1024
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+EXT4-fs (rdiska): mounting ext2 file system using the ext4 subsystem
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=2048 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=2048 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=2048 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=2048
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=2048 m2l2=0 m2p1=48aca800
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=2048 m2l2=0 m2p1=48aca800
+DEBUG do_rdisk:995: minor=0 len=0 off=2048
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=268288 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=268288 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=268288 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=268288
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=268288 m2l2=0 m2p1=47313800
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=268288 m2l2=0 m2p1=47313800
+DEBUG do_rdisk:995: minor=0 len=0 off=268288
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=269312 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=269312 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=269312 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=269312
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=269312 m2l2=0 m2p1=47313c00
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=269312 m2l2=0 m2p1=47313c00
+DEBUG do_rdisk:995: minor=0 len=0 off=269312DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=284672 m2l2=0 m2p1=4730f800
+DEBUG do_rdisk:995: minor=0 len=0 off=284672
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=285696 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=285696 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=285696 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=285696
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=285696 m2l2=0 m2p1=4730fc00
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=285696 m2l2=0 m2p1=4730fc00
+DEBUG do_rdisk:995: minor=0 len=0 off=285696
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=286720 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=286720 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=286720 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=286720
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=286720 m2l2=0 m2p1=4730e000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=286720 m2l2=0 m2p1=4730e000
+DEBUG do_rdisk:995: minor=0 len=0 off=286720
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=287744 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=287744 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=287744 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=287744
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=287744 m2l2=0 m2p1=4730e400
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=287744 m2l2=0 m2p1=4730e400
+DEBUG do_rdisk:995: minor=0 len=0 off=287744
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=288768 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=288768 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=288768 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=288768
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=288768 m2l2=0 m2p1=4730e800
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=288768 m2l2=0 m2p1=4730e800
+DEBUG do_rdisk:995: minor=0 len=0 off=288768
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=289792 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=289792 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=289792 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=289792
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=289792 m2l2=0 m2p1=4730ec00
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=289792 m2l2=0 m2p1=4730ec00
+DEBUG do_rdisk:995: minor=0 len=0 off=289792
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=290816 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=290816 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=290816 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=290816
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=290816 m2l2=0 m2p1=4730d000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=290816 m2l2=0 m2p1=4730d000
+DEBUG do_rdisk:995: minor=0 len=0 off=290816
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=291840 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=291840 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=291840 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=291840
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=291840 m2l2=0 m2p1=4730d400
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=291840 m2l2=0 m2p1=4730d400
+DEBUG do_rdisk:995: minor=0 len=0 off=291840
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=292864 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=292864 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=292864 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=292864
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=292864 m2l2=0 m2p1=4730d800
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=292864 m2l2=0 m2p1=4730d800
+DEBUG do_rdisk:995: minor=0 len=0 off=292864
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=293888 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=293888 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=293888 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=293888
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=293888 m2l2=0 m2p1=4730dc00
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=293888 m2l2=0 m2p1=4730dc00
+DEBUG do_rdisk:995: minor=0 len=0 off=293888
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=294912 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG rd_thread:1069: op=0 offset=294912 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:963: op=0 offset=294912 length=1024 sectorsize=512 error=0
+DEBUG do_rdisk:970: len=1024 off=294912
+DEBUG rdisk_rw:943: source=1225879404 type=1027 m2i1=0 m2i2=30 m2i3=1024 m2l1=294912 m2l2=0 m2p1=4730c000
+DEBUG 10:dvk_sendrec_T:701: endpoint=3 timeout=30000
+DEBUG 10:dvk_sendrec_T:712: ioctl ret=0
+DEBUG rdisk_rw:946: source=3 type=68 m2i1=30 m2i2=1024 m2i3=1024 m2l1=294912 m2l2=0 m2p1=4730c000
+DEBUG do_rdisk:995: minor=0 len=0 off=294912
+DEBUG rd_intr:666: 
+DEBUG rd_handler:637: 
+DEBUG do_rd_request:804: 
+DEBUG rd_prepare_request:753: len=1024
+DEBUG rd_prepare_request:763: op=0 offset=295936 length=1024 sectorsize=512 error=0
+DEBUG rd_submit_request:781: 
+DEBUG do_rd_request:804: 
+DEBUG rd_thread:1069: op=0 offset=295936 length=1024 sectorsize=512 error=0EXT4-fs (rdiska): mounted filesystem without journal. Opts: (null)
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+
+------------------------------------------------------------------------------------------
+OBJETIVO: Hacer que un programa comun UML puede invocar las APIs del DVK 
+
+LA CLAVE DE LO QUE ESTA EN EL STUB ESTA EN
+		/arch/um/os-Linux/skas
+
+mknod /dev/dvk c 33 0
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+DEBUG uml_dvk_open:83: dvk_dev=/dev/dvk
+DEBUG 1889:dvk_open:61: Open dvk device file /dev/dvk
+DEBUG uml_dvk_ioctl:57: uml_pid=2071 uml_vpid=684 cmd=4004E309 arg=BF94ACE8
+DEBUG uml_dvk_ioctl:67: rcode=-301
+ERROR: 684:dvk_bind_X:943: rcode=-301 <<<< EDVSBADNODEID
+DEBUG uml_dvk_ioctl:57: uml_pid=2071 uml_vpid=684 cmd=8004E31A arg=2AC
+DEBUG uml_dvk_ioctl:67: rcode=-310
+ERROR: 684:dvk_getep:163: rcode=-310
+PARENT dvk_getep pid=684 ep=-301 rep=-310 fd=0
+
+
+root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2 27178/1889   0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   607/607    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 27186/1897   0    0   20 27342 27342 27342 27342 linux 
+ 
+   
+  
 
 
 ================================== TODO ==================================================
