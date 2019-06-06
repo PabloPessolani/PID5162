@@ -18,7 +18,7 @@
 //#include <stub-data.h>
 //#include <sysdep/stub.h>
 
-#ifdef 	PAP_NULO
+#ifdef 	ANULADO
 extern int dvk_fd; 
 static inline long stub_syscall0(long syscall)
 {
@@ -38,21 +38,21 @@ static inline long stub_syscall3(long syscall, long arg1, long arg2, long arg3)
 
 	return ret;
 }
-#endif // 	PAP_NULO
+#endif // 	ANULADO
 
 void handle_syscall(struct uml_pt_regs *r)
 {
 	struct pt_regs *regs = container_of(r, struct pt_regs, regs);
 	int syscall;
 
-#ifdef 	PAP_NULO
+#ifdef 	ANULADO
 	static int pid, vpid;
 	static int cmd, arg, rcode;
 	if( vpid != get_current_pid()) {
 		pid = os_getpid();
 		vpid = get_current_pid();
 	}
-#endif // 	PAP_NULO
+#endif // 	ANULADO
 	
 	/* Initialize the syscall number and default return value. */
 	UPT_SYSCALL_NR(r) = PT_SYSCALL_NR(r->gp);
@@ -67,7 +67,7 @@ void handle_syscall(struct uml_pt_regs *r)
 
 	syscall = UPT_SYSCALL_NR(r);
 
-#ifdef 	PAP_NULO
+#ifdef 	ANULADO
 	// Este funcion handle_syscall se ejecutan en el PROCESO DEL UML_KERNEL, no de un proceso de USUARIO
 	// Esto que viene a continauaciòn NO ES UTIL !!!! 
 	if( syscall == __NR_ioctl){
@@ -83,7 +83,7 @@ void handle_syscall(struct uml_pt_regs *r)
 			}
 		}
 	}
-#endif // 	PAP_NULO
+#endif // 	ANULADO
 	
 	if (syscall >= 0 && syscall <= __NR_syscall_max)
 		PT_REGS_SET_SYSCALL_RETURN(regs,

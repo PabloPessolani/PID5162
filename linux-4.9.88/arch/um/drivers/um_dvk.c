@@ -53,22 +53,20 @@ static long uml_dvk_ioctl(struct file *file,
 	void *ptr; 
 
 	kernel_param_lock(THIS_MODULE);
-	int uml_pid = userspace_pid[0];
-	int uml_vpid = get_current_pid();
-	DVKDEBUG(DBGPARAMS,"uml_pid=%d uml_vpid=%d cmd=%X arg=%X\n", uml_pid, uml_vpid, cmd, arg);
+	int lnx_pid = os_getpid();
+	int us_pid = userspace_pid[0];
+	int uml_pid = get_current_pid();
+	DVKDEBUG(DBGPARAMS,"lnx_pid=%d us_pid=%d uml_pid=%d cmd=%X arg=%X\n", 
+		lnx_pid, us_pid, uml_pid, cmd, arg);
 	kernel_param_unlock(THIS_MODULE);
 
-//#ifdef ANULADO
-	if(cmd == DVK_IOCQGETEP)
+#ifdef ANULADO
+	if(cmd == DVK_IOCQGETEP) {
 		arg = uml_pid;
-
-	if( cmd == DVK_IOCSDVKBIND){
-		rcode = os_ioctl_generic(dvk_fd, cmd, &parm);
-	}else{ 
 		rcode = os_ioctl_generic(dvk_fd, cmd, arg);
 	}
 	
-//#endif // ANULADO 
+#endif // ANULADO 
 
 	kernel_param_lock(THIS_MODULE);
 	DVKDEBUG(INTERNAL,"rcode=%d\n",rcode);
@@ -89,11 +87,11 @@ static int uml_dvk_open(struct inode *inode, struct file *file)
 	
 	DVKDEBUG(DBGPARAMS,"dvk_dev=%s\n",dvk_dev);
 
-//#ifdef ANULADO 
+#ifdef ANULADO 
 	rcode = dvk_open();
 	if( rcode < 0)
 		ERROR_RETURN(rcode);
-//#endif // ANULADO 
+#endif // ANULADO 
 
 	mutex_unlock(&uml_dvk_mutex);
 	kernel_param_unlock(THIS_MODULE);

@@ -2,7 +2,7 @@
    
 void  main ( int argc, char *argv[] )
 {
-	int dcid, pid, p_nr, ret, ep, rep; 
+	int dcid, pid, p_nr, ret, ep, rep, dvk_fd; 
 	int index=0;
 
 	if ( argc != 3) {
@@ -18,15 +18,19 @@ void  main ( int argc, char *argv[] )
 
 	p_nr = atoi(argv[2]);
 	pid = getpid();
+    printf("UML user-mode pid=%d\n", pid);
 	
-	ret = dvk_open();
-	if (ret < 0)  ERROR_PRINT(ret);
+	dvk_fd = dvk_open();
+	if (dvk_fd < 0)  ERROR_PRINT(dvk_fd);
+    printf("UML user-mode dvk_fd=%d\n", dvk_fd);
 	
     ep = dvk_bind(dcid, p_nr);
-
-	rep = dvk_getep(pid);
+	if( ep < 0) ERROR_PRINT(ep);
 	
-    printf("PARENT dvk_getep pid=%d ep=%d rep=%d fd=%d\n", pid, ep, rep, ret);
+	rep = dvk_getep(pid);
+	if (rep != ep)  ERROR_PRINT(rep);
+	
+    printf("PARENT dvk_getep pid=%d ep=%d rep=%d dvk_fd=%d\n", pid, ep, rep, dvk_fd);
 
 sleep(60);
 

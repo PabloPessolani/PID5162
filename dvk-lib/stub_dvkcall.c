@@ -69,7 +69,7 @@ long dvk_open(void)
 	if (dvk_fd < 0)  
 		ERROR_RETURN(dvk_fd);
 #endif // CONFIG_UML_DVK
-	return(OK);
+	return(dvk_fd);
 }
 
 long dvk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes)

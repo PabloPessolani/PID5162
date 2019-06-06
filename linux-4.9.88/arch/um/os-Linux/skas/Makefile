@@ -3,7 +3,7 @@
 # Licensed under the GPL
 #
 
-obj-y := mem.o process.o
+obj-y := mem.o process.o dvk.o
 
 USER_OBJS := $(obj-y)
 

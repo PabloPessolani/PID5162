@@ -4366,10 +4366,275 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0   3     3   607/607    0    8   20 31438 27342 27342 27342 rdisk          
  0  30    30 27186/1897   0    0   20 27342 27342 27342 27342 linux 
  
-   
-  
+ ==============================================================================================
+20190603:  
+      
+ root@node0:/usr/src/dvs/dvk-tests# mknod /dev/dvk c 33 0
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 682:dvk_open:61: Open dvk device file /dev/dvk
+DEBUG uml_dvk_ioctl:60: lnx_pid=682 us_pid=866 uml_pid=685 cmd=4004E309 arg=BFADCCE8
+DEBUG uml_dvk_ioctl:72: rcode=-1079128856
+DEBUG uml_dvk_ioctl:60: lnx_pid=682 us_pid=866 uml_pid=685 cmd=8004E31A arg=2AD
+DEBUG uml_dvk_ioctl:72: rcode=-305
+UML DVK CALL user=1 tracee_lpid=866 tracer_lpid=682 dvk_fd=27 cmd=8004E31A
+ERROR: 685:dvk_getep:163: rcode=-305
+PARENT dvk_getep pid=685 ep=-1079128856 rep=-305 fd=0
+
+lnx_pid= UML KERNEL = 682 (userspace de LINUX HOST)
+us_pid = USER MODE PROCESS = 866 (userspace de LINUX HOST)
+uml_pid= 685 = PID del proceso desde el punto de vista de UML 
+
+	int lnx_pid = os_getpid();
+	int us_pid = userspace_pid[0];
+	int uml_pid = get_current_pid();
+	DVKDEBUG(DBGPARAMS,"lnx_pid=%d us_pid=%d uml_pid=%d cmd=%X arg=%X\n", 
+		lnx_pid, us_pid, uml_pid, cmd, arg);
+		
+tracer_lpid UML KERNEL = 682 (userspace de LINUX HOST)
+tracee_lpid=721 es el PID de uml_bind (userspace de LINUX HOST) 
+
+EN EL HOST 
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2 14193/682    0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3  3198/3198   0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 14201/690    0    0   20 27342 27342 27342 27342 linux  
+ 
+ 
+ root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=684
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 936:dvk_open:61: Open dvk device file /dev/dvk
+UML user-mode dvk_fd=0
+DEBUG uml_dvk_ioctl:60: lnx_pid=936 us_pid=1119 uml_pid=684 cmd=4004E309 arg=BF8D6CE8
+DEBUG uml_dvk_ioctl:72: rcode=-1081250584
+ERROR: uml_bind.c:main:28: rcode=-1081250584
+DEBUG uml_dvk_ioctl:60: lnx_pid=936 us_pid=1119 uml_pid=684 cmd=8004E31A arg=2AC
+DEBUG uml_dvk_ioctl:72: rcode=-305
+UML DVK CALL user=1 tracee_lpid=1119 tracer_lpid=936 dvk_fd=27 cmd=8004E31A
+ERROR: 684:dvk_getep:163: rcode=-305
+ERROR: uml_bind.c:main:31: rcode=-305
+PARENT dvk_getep pid=684 ep=-1081250584 rep=-305 dvk_fd=0
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+DEBUG uml_dvk_release:131: dvk_dev=/dev/dvk
+
+----------------------------------------------------------------------------------
+PROBLEMA:
+		UML trabaja con ptrace. Llamemos UML_USR al proceso de usuario TRACEE que quiere utilizar DVK.
+		Llamemos UML_KERNEL al kernel de UML que es el TRACER
+
+		Hay que encontrar la forma en que UML_USR puede utilizar una llamada al sistema IOCTL
+		sin ser traceada por UML_KERNEL. Esta llamada DEBE ser hecha por el mismo proceso porque
+		el DVK obtienes sus atributos reales: proc_ptr, lpid, y su espacio de memoria para
+		hacer las copias de datos copy_to_user(), copy_from_user() y copy_usr2usr()
+		
+		Se podria modificar la syscall sys_ptrace en el kernel de linux y si cumple la condicion:
+				- syscall: __NR_ioctl
+				- fd = (-1)
+		entonces asume que es correcta y retorna.
+		
+		Seguramente la cosa es diferente. Cuando uno invoca sys_ioctl hay algun flag que indica si 
+		es traceada o no. 
+		
+		
+EN /arch/x86/entry/common.c
+		
+static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+{
+	struct thread_info *ti = current_thread_info(); 
+	unsigned int nr = (unsigned int)regs->orig_ax;
+
+#ifdef CONFIG_IA32_EMULATION
+	ti->status |= TS_COMPAT;
+#endif
+
+	if (READ_ONCE(ti->flags) & _TIF_WORK_SYSCALL_ENTRY) {  <<<< FLAGS EN /arch/x86/include/asm/thread_info.h
+		/*
+		 * Subtlety here: if ptrace pokes something larger than
+		 * 2^32-1 into orig_ax, this truncates it.  This may or
+		 * may not be necessary, but it matches the old asm
+		 * behavior.
+		 */
+		nr = syscall_trace_enter(regs);
+	}
+
+	if (likely(nr < IA32_NR_syscalls)) {
+		nr = array_index_nospec(nr, IA32_NR_syscalls);
+		/*
+		 * It's possible that a 32-bit syscall implementation
+		 * takes a 64-bit parameter but nonetheless assumes that
+		 * the high bits are zero.  Make sure we zero-extend all
+		 * of the args.
+		 */
+		regs->ax = ia32_sys_call_table[nr](
+			(unsigned int)regs->bx, (unsigned int)regs->cx,
+			(unsigned int)regs->dx, (unsigned int)regs->si,
+			(unsigned int)regs->di, (unsigned int)regs->bp);
+	}
+
+	syscall_return_slowpath(regs);
+}		
+
+SOLUCION PARA NO SER TRACEADO:
+		Poner los flags de READ_ONCE(ti->flags) en CERO 
+		
+ESTRATEGIA: Supongamos que el kernel a través de uml_dvk (driver) hace el bind de proceso-
+	
+	
+????????????????????????????????????????????????????????????????????????????????????????
+OTRA ESTRATEGIA:
+		El UML_KERNEL se comporta como SYSTASK+PM pero en forma implicita 
+		Los procesos UML_USER para utilizar deberàn ejecutar dvk_bind()
+		este será atrapado por el uml_kernel el cual harà el bind en el DVK
+		El UML_DVK creará un hilo con CLONE  por cada proceso bindeado. 
+		Por lo tanto habra que tener tantos identifiadores de threads
+		struckt dvk_proxy_s {
+			int user_lpid;		// PID del HOST del proceso UML_USER 
+			int proxy_tid;		// Thread ID del representante del proceso en el UML_KERNEL 
+			int pipe_fd[2];		// PIPE para comunicar los UML_KERNEL con DVK_PROXY
+		}; 
+		typedef dvk_proxy_s dvk_proxy_t; 
+		dvk_threads_t dvk_proxy[NR_PROCS] <<< Solo admite endpoints de procesos de usuario
+			
+		PRIMITIVAS DE GESTION: 
+			- bind: 
+					Se crea el thread asociado en dvk_proxy[ep_nr] 
+					conecta al pipe
+					El thread asociado hace el bind(ep_nr)
+					thread se conecta al PIPE 
+					DVK_PROXY retorna el resultado al UML_DVK por el pipe 
+					DVK_PROXY queda a la espera de nuevos comandos en un pipe
+					UML_DVK si el resultado del BIND es OK
+					retorna al UML_USER  
+					sino 
+						envia un comando de FIN al DVK_PROXY el cual finaliza cerrando el pipe 
+						UML_DVK cierra el pipe
+			- unbind:
+					UML_DVK ->> DVK_PROXY 
+					DVK_PROXY hace el unbind 
+					DVK_PROXY sale del loop 
+					retorna el resultado a UML_DVK
+					UML_DVK 
+					
+			- getep: 
+			- wait4bind
+			- wain4unbind 
+					UML_DVK ->> DVK_PROXY 
+					DVK_PROXY wait4bind
+					cuando despierta retorna el resultado a UML_DVK
+					UML_DVK 
+		PRIMITIVAS DE IPC:
+			- send
+			- receive
+			- sendrec
+			- notify
+			- vcopy; 
+			- rcvrqst
+			- sendrply
+	
+PROBLEMAS A RESOLVER:
+			- supongamos que el DVK_PROXY espera en una primitiva.
+			- como retorna al UML_USER ????
+			- Se puede utilizar el mecanismo de interrupciones IRQ usado por ubd_kern
+			- Se puede utilizar copy_to_user y copy_from_user para copiar los parametros de ioctl 
+			- Respecto a vcopy, no queda otra que asignar un buffer al DVK_PROXY al iniciarlo y usarlo 
+				para todas las transferencias como intermediario.
+							
+EN /arch/um/include/shared/os.h ESTAN TODAS LAS LLAMADAS PERMITIDAS DESDE UML-->HOST 
+LAS QUE ESTAN DEFINIDAS EN  /arch/um/os-Linux/file.c
+
+ATENCION: Pensar de tener un DVK_PROXY como servidor modo usuario en UML: que ganamos??
+			igual debe esperar alguien en el kernel, no parece alentador 
+			
+==============================================================================================
+20190605: 
+				CAMBIO DE ESTRATEGIA: QUE LO HAGA EL STUB 
+
+		
+ATENCION!!! Quizas se pueden ejecutar cosas en el STUB!!!
+long run_syscall_stub(struct mm_id * mm_idp, int syscall,
+		      unsigned long *args, long expected, void **addr,
+		      int done)
+static inline long do_syscall_stub(struct mm_id * mm_idp, void **addr)
+donde 
+		struct mm_id * mm_idp = &current->mm->context.id;
+		
+TRABAJA DE LA SIGUIENTE MANERA
+		UML_USER hace una syscall pero que tiene que ejecutarse en su espacio de direcciones
+		UML_KERNEL intercepta el syscall y carga los argumentos para que se ejecute una funcion/syscall 
+		generica en el STUB.
+		Luego hace continuar el UML_USER, pero ahora desde una direccion del STUB 
+		Luego espera por el STUB hasta que finalice.
+		
+SE NECESITA LOCALIZAR CUANDO UNA SYSCALL ES RECIBIDA 
+void handle_syscall(struct uml_pt_regs *r)
+Se deberia hacer el open del DVK al arrancar el proceso de usuario y almacenar su valor en el STUB.
+
+Ver en /arch/um/os-Linux/skas/mem.c donde se hace el map y unmap
+
+EL CODIGO QUE ESTA EN EL STUB ES ESTE!!
+/arch/um/kernel/skas
+
+En este directorio estan las funciones que preparan el entorno para la ejecución de algo en el STUB
+/arch/um/os-Linux/skas
+
+Aqui habria que incluir un archivo dvk.c para que contenga la invocacion
+
+Quizas aqui se pueda incluir la apertura del dvk para obtener el FD.
+stub_clone_handler(void)
 
 
+Stub_syscall3 y el  resto se encuentran definidos en 
+/arch/x86/um/shared/sysdep/stub_32.h
+
+/arch/um/include/shared/skas/mm_id.h
+
+
+Se podria modificar 
+/arch/um/include/shared/skas/mm_id.h
+struct mm_id {
+	union {
+		int mm_fd;
+		int pid;
+	} u;
+	unsigned long stack;
+	Int dvk_fd;
+};
+
+HAY QUE INICIALIZAR  mm_idp->dvk_fd = (-1);
+Quizas en void userspace(struct uml_pt_regs *regs)
+struct mm_id * mm_idp = &current->mm->context.id;
+mm_idp->dvk_fd = (-1);
+
+ATENCION ATENCION ATENCION 
+ATENCION ATENCION ATENCION 
+ATENCION ATENCION ATENCION 
+ATENCION ATENCION ATENCION 
+ EN arch/um/os-Linux/skas se ignoran las constantes de configuracion CONFIG_UML_DVK!!!
+
+DESPUES DE COMPILAR DA ESTOS ERRORES QUE QUEDAN PENDIENTES 
+arch/um/os-Linux/skas/process.c:379:27: error: ‘current’ undeclared (first use in this function)
+   struct mm_id *mm_idp = &current->mm->context.id;
+                           ^~~~~~~
+arch/um/os-Linux/skas/process.c:379:27: note: each undeclared identifier is reported only once for each function it appears in
+arch/um/os-Linux/skas/process.c:395:16: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+      open_path = UPT_SYSCALL_ARG1(regs);
+                ^
+arch/um/os-Linux/skas/process.c:398:14: error: implicit declaration of function ‘copy_from_user’ [-Werror=implicit-function-declaration]
+      rcode = copy_from_user(tmp_path, open_path, len);
+              ^~~~~~~~~~~~~~
+arch/um/os-Linux/skas/process.c:404:8: error: implicit declaration of function ‘PT_REGS_SET_SYSCALL_RETURN’ [-Werror=implicit-function-declaration]
+        PT_REGS_SET_SYSCALL_RETURN(regs, rcode); // set the return code
+
+
+
+
+			
 ================================== TODO ==================================================
 
 Hacer que el UML-Kernel utilice M3-IPC no es problematico.
