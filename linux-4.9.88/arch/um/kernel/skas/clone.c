@@ -23,9 +23,10 @@
  * on some systems.
  */
  
-#ifdef CONFIG_UML_DVK
-static void reset_dvk_fd(void);
-#endif CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK_NULO
+static void set_dvk_fd(int value);
+static	int stub_dvk_fd;
+#endif CONFIG_UML_DVK_NULO
 
 void __attribute__ ((__section__ (".__syscall_stub")))
 stub_clone_handler(void)
@@ -37,9 +38,12 @@ stub_clone_handler(void)
 			    STUB_DATA + UM_KERN_PAGE_SIZE / 2 - sizeof(void *));
 	if (err != 0)
 		goto out;
-#ifdef CONFIG_UML_DVK
-	reset_dvk_fd();
-#endif // CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK_NULO
+#define DVK_FILE_NAME "/dev/dvk"
+	stub_dvk_fd = stub_syscall2(__NR_open, DVK_FILE_NAME, 0);
+//	printk("stub_clone_handler stub_dvk_fd =%d\n", stub_dvk_fd);
+//	set_dvk_fd(stub_dvk_fd);
+#endif // CONFIG_UML_DVK_NULO
 	err = stub_syscall4(__NR_ptrace, PTRACE_TRACEME, 0, 0, 0);
 	if (err)
 		goto out;

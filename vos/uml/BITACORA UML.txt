@@ -4632,6 +4632,91 @@ arch/um/os-Linux/skas/process.c:404:8: error: implicit declaration of function â
         PT_REGS_SET_SYSCALL_RETURN(regs, rcode); // set the return code
 
 
+==============================================================================================
+20190606: 
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 77
+UML DVK __NR_ioctl tracee_lpid=185 tracer_lpid=13 fd=0 cmd=5403
+UML DVK __NR_ioctl tracee_lpid=185 tracer_lpid=13 fd=0 cmd=5401
+UML DVK __NR_ioctl tracee_lpid=185 tracer_lpid=13 fd=2 cmd=BFA11FC8
+UML DVK __NR_ioctl tracee_lpid=185 tracer_lpid=13 fd=0 cmd=BFA1273C
+UML DVK __NR_ioctl tracee_lpid=185 tracer_lpid=13 fd=2 cmd=BFA127BC
+UML user-mode pid=691
+ERROR: 691:dvk_open:65: rcode=-2
+ERROR: uml_bind.c:main:24: rcode=-2
+UML user-mode dvk_fd=-2
+UML DVK __NR_ioctl tracee_lpid=204 tracer_lpid=13 fd=2 cmd=BF8027F0
+ERROR: uml_bind.c:main:28: rcode=-1
+UML DVK __NR_ioctl tracee_lpid=204 tracer_lpid=13 fd=1074446336 cmd=8004E31A
+ERROR: 691:dvk_getep:163: rcode=-9
+ERROR: uml_bind.c:main:31: rcode=-9
+PARENT dvk_getep pid=691 ep=-1 rep=-9 dvk_fd=-2
+
+ATENCION: TUVE QUE ANULAR EN stub_dvkcall los indicios de CONFIG_UML_DVK
+//###################################################################
+//###################################################################
+#ifdef CONFIG_UML_DVK
+#undef CONFIG_UML_DVK
+#endif // CONFIG_UML_DVK
+//###################################################################
+//###################################################################
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=683 DVK_FILE_NAME=/dev/dvk
+DVK userspace MATCH __NR_open user=1 tracee_lpid=3290 tracer_lpid=3110 tmp_path=/dev/dvk flags=0 mode=80000C6F
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Segmentation fault
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=684 DVK_FILE_NAME=/dev/dvk
+DVK userspace MATCH __NR_open user=1 tracee_lpid=3292 tracer_lpid=3110 tmp_path=/dev/dvk flags=0 mode=80000C6F
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Segmentation fault
+
+
+ESTO QUIERE DECIR QUE NO ESTA RETORNANDO CORRECTAMENTE A LA MISMA POSICION QUE TENIA.
+ATENCION, PARA PODER DISTINGUIR SI ES UN PEDIDO AL DVK, SE PUEDE HACER UTILIZAR
+#define DVK_IOC_MAGIC  0xE3 <<<<<<<<<<<<<<<<<< 
+
+Todas estan constitudas con este componente.
+#define DVK_IOCQGETEP	 _IOR(DVK_IOC_MAGIC, DVK_GETEP, int)
+
+
+
+
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 			

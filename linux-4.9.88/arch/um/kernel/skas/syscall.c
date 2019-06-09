@@ -11,7 +11,7 @@
 #include <sysdep/ptrace_user.h>
 #include <sysdep/syscalls.h>
 #include <shared/os.h>
-
+ 
 #include <asm/unistd.h>
 #include <as-layout.h>
 //#include <ptrace_user.h>
@@ -67,10 +67,17 @@ void handle_syscall(struct uml_pt_regs *r)
 
 	syscall = UPT_SYSCALL_NR(r);
 
-#ifdef 	ANULADO
 	// Este funcion handle_syscall se ejecutan en el PROCESO DEL UML_KERNEL, no de un proceso de USUARIO
 	// Esto que viene a continauaciòn NO ES UTIL !!!! 
+	static int pid, fd;
+	static int cmd, arg, rcode;
+	
+#ifdef 	ANULADO
 	if( syscall == __NR_ioctl){
+		fd 		=  UPT_SYSCALL_ARG1(r);
+		cmd 	=  UPT_SYSCALL_ARG2(r);
+		arg   	=  UPT_SYSCALL_ARG3(r);
+		printk("handle_syscall __NR_ioctl pid=%d fd=%d cmd=%X\n", pid, fd, cmd);
 		pid = stub_syscall0(__NR_getpid);
 		if( dvk_fd >= 0) {
 			if( dvk_fd ==  UPT_SYSCALL_ARG1(r) ) {
@@ -83,6 +90,12 @@ void handle_syscall(struct uml_pt_regs *r)
 			}
 		}
 	}
+#endif // 	ANULADO
+	
+#ifdef 	ANULADO
+	if( syscall == __NR_open){
+		printk("handle_syscall pid=%d syscall=%d __NR_open=%d\n", pid, syscall, __NR_open);
+	}	
 #endif // 	ANULADO
 	
 	if (syscall >= 0 && syscall <= __NR_syscall_max)

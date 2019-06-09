@@ -45,7 +45,7 @@ static int __init init_syscall_regs(void)
 
 __initcall(init_syscall_regs);
 
-static inline long do_syscall_stub(struct mm_id * mm_idp, void **addr)
+static inline long do_syscall_stub(struct mm_id *mm_idp, void **addr)
 {
 	int n, i;
 	long ret, offset;

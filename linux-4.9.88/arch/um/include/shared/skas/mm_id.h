@@ -12,9 +12,9 @@ struct mm_id {
 		int pid;
 	} u;
 	unsigned long stack;
-//#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK_NULO
 	int  mm_dvk_fd;
-//#endif // CONFIG_UML_DVK
+#endif // CONFIG_UML_DVK_NULO
 
 };
 

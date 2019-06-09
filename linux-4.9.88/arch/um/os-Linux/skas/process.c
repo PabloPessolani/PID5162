@@ -23,10 +23,11 @@
 #include <sysdep/stub.h>
 #include <asm/ptrace.h>
 
-struct mm_id *dvk_get_mm_id(void);
-
 #define  CONFIG_UML_DVK		1
 #define  UML_DVK_DEV		"/dev/dvk"
+
+#include "/usr/src/dvs/include/com/dvk_calls.h"
+#include "/usr/src/dvs/include/com/dvk_ioctl.h"
 
 int is_skas_winch(int pid, int fd, void *data)
 {
@@ -312,6 +313,7 @@ int start_userspace(unsigned long stub_stack)
 }
 
 int do_stub_open(struct mm_id *mm_idp, char *dvk_dev, int open_flags, mode_t open_mode);
+int do_stub_ioctl(int fd, int cmd , void *parms);
 
 void userspace(struct uml_pt_regs *regs)
 {
@@ -319,12 +321,10 @@ void userspace(struct uml_pt_regs *regs)
 	/* To prevent races if using_sysemu changes under us.*/
 	int local_using_sysemu;
 	siginfo_t si;
-
 	/* Handle any immediate reschedules or signals */
 	interrupt_end();
 
 	while (1) {
-
 		/*
 		 * This can legitimately fail if the process loads a
 		 * bogus value into a segment register.  It will
@@ -333,6 +333,7 @@ void userspace(struct uml_pt_regs *regs)
 		 * fail.  In this case, there is nothing to do but
 		 * just kill the process.
 		 */
+		  
 		if (ptrace(PTRACE_SETREGS, pid, 0, regs->gp))
 			fatal_sigsegv();
 
@@ -370,44 +371,58 @@ void userspace(struct uml_pt_regs *regs)
 			       "errno = %d\n", errno);
 			fatal_sigsegv();
 		}
-		
+
 #ifdef CONFIG_UML_DVK
 		extern int dvk_fd; 
-		int syscall, lpid, fd, user, cmd, sg, rcode, len;
+		int syscall, lpid, fd, user, cmd, sg, rcode, len, tmp_fd;
 		char *open_path;
-		char *tmp_path = "/dev/xxx";
+		char *tmp_path = "/dev/xxxxxxxxx";
 		int open_flags;
 		mode_t open_mode;
-		struct mm_id *mm_idp =  dvk_get_mm_id();
-		
+		void *args;
+	
 		if (WIFSTOPPED(status)) {
 			sg = WSTOPSIG(status);
+			ptrace(PTRACE_GETSIGINFO, pid, 0, (struct siginfo *)&si);
 			if( sg == SIGTRAP + 0x80) { 
+				UPT_SYSCALL_NR(regs) = PT_SYSCALL_NR(regs->gp);
 				syscall = UPT_SYSCALL_NR(regs);
-				user =  UPT_IS_USER(regs);
-				if( syscall == __NR_ioctl){
+				user 	=  UPT_IS_USER(regs);
+				
+				if( syscall == __NR_ioctl){ // DETECT IOCTL //////////////////////////
+					//  int ioctl(int fd, unsigned long cmd, void *args);
 					fd 		= UPT_SYSCALL_ARG1(regs);
-					cmd 	=  UPT_SYSCALL_ARG2(regs);
+					cmd 	= UPT_SYSCALL_ARG2(regs);
+					args 	= UPT_SYSCALL_ARG3(regs);
 					lpid    = stub_syscall0(__NR_getpid);
-					printk("UML DVK __NR_ioctl user=%d tracee_lpid=%d tracer_lpid=%d dvk_fd=%d cmd=%X\n", 
-							user, pid, lpid, dvk_fd, cmd);
-				} else if( syscall == __NR_open){
+					// AQUI SE DEBERIA COMPARAR EL FD DEL SYSCALL CON EL FD DEL DVK ASIGNADO AL PROCESO 
+//					printk("DVK userspace __NR_ioctl tracee_lpid=%d tracer_lpid=%d fd=%d cmd=%X DVK_IOCSDVKBIND=%X\n", 
+//							pid, lpid, fd, cmd, DVK_IOCSDVKBIND);	
+					if( (cmd == DVK_IOCSDVKBIND) ||  (cmd == DVK_IOCQGETEP)){
+						printk("DVK userspace __NR_ioctl fd=%d cmd=%X\n", fd, cmd);
+						pid = userspace_pid[0];
+						interrupt_end();
+						err = ptrace(PTRACE_SYSCALL, pid, 0, 0);
+						continue;
+					}
+				} else if( syscall == __NR_open ){ // DETECT OPEN ////////////////////////// 
 					// int open(const char *pathname, int flags, mode_t mode);
 					len =  strlen(UML_DVK_DEV);
 					open_path	= UPT_SYSCALL_ARG1(regs);
 					open_flags  = UPT_SYSCALL_ARG2(regs);
-					open_mode   = UPT_SYSCALL_ARG2(regs);
+					open_mode   = UPT_SYSCALL_ARG3(regs);
+					memset(tmp_path, 0, len+1);
 					rcode = copy_from_user_proc(tmp_path, open_path, len);
-					if( rcode == 0){ // COPY OK
-						printk("UML DVK __NR_open user=%d tracee_lpid=%d tracer_lpid=%d path_fd=%s flags=%X mode=%X\n", user, pid, lpid, tmp_path, open_flags, open_mode);
-						if ( strcmp(tmp_path, UML_DVK_DEV) == 0) { // string MATCH!
-							rcode = do_stub_open(mm_idp, UML_DVK_DEV, open_flags, open_mode);
-							if( rcode >= 0) mm_idp->mm_dvk_fd = rcode;
-							UPT_AX(regs) = rcode; // set the return code 
-							continue;
-						}  
+					if ( !strcmp(tmp_path, UML_DVK_DEV)) { // string MATCH!
+						lpid    = stub_syscall0(__NR_getpid);
+						printk("DVK userspace MATCH __NR_open user=%d tracee_lpid=%d tracer_lpid=%d tmp_path=%s flags=%X mode=%X\n", 
+						user, pid, lpid, tmp_path, open_flags, open_mode);	
+						pid = userspace_pid[0];
+						interrupt_end();
+						err = ptrace(PTRACE_SYSCALL, pid, 0, 0);
+						continue;
 					} 
-				}
+				}			
 			}
 		}
 #endif // 	CONFIG_UML_DVK

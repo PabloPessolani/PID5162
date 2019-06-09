@@ -1,8 +1,10 @@
 #include "tests.h"
-   
+  
+extern int dvk_fd;
+  
 void  main ( int argc, char *argv[] )
 {
-	int dcid, pid, p_nr, ret, ep, rep, dvk_fd; 
+	int dcid, pid, p_nr, ret, ep, rep; 
 	int index=0;
 
 	if ( argc != 3) {
@@ -18,9 +20,9 @@ void  main ( int argc, char *argv[] )
 
 	p_nr = atoi(argv[2]);
 	pid = getpid();
-    printf("UML user-mode pid=%d\n", pid);
+    printf("UML user-mode pid=%d DVK_FILE_NAME=%s\n", pid, DVK_FILE_NAME);
 	
-	dvk_fd = dvk_open();
+	dvk_fd = open(DVK_FILE_NAME, 0);
 	if (dvk_fd < 0)  ERROR_PRINT(dvk_fd);
     printf("UML user-mode dvk_fd=%d\n", dvk_fd);
 	

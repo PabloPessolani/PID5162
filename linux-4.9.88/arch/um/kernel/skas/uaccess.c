@@ -14,21 +14,6 @@
 #include <kern_util.h>
 #include <os.h>
 
-#ifdef CONFIG_UML_DVK
-static void reset_dvk_fd(void)
-{
-	
-	struct mm_id *mm_idp = &current->mm->context.id;
-	mm_idp->mm_dvk_fd = (-1);
-	printk("reset_dvk_fd mm_idp->pid=%d\n", mm_idp->u.pid);
-}
-static struct mm_id *dvk_get_mm_id(void)
-{
-	return(&current->mm->context.id);
-}
-
-#endif // CONFIG_UML_DVK
-
 pte_t *virt_to_pte(struct mm_struct *mm, unsigned long addr)
 {
 	pgd_t *pgd;

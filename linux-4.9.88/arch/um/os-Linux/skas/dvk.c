@@ -18,7 +18,7 @@
 #include <sysdep/ptrace.h>
 #include <sysdep/stub.h>
 
-//#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK_NULO
 #include "../../drivers/um_dvk.h"
 #include "../../drivers/glo_dvk.h"
 
@@ -37,11 +37,35 @@ int do_stub_open(struct mm_id *mm_idp, char *dvk_dev, int open_flags, mode_t ope
 				0,
 				0};
 			 
-	ret = run_syscall_stub(mm_idp, __NR_ioctl, args, 0, &addr, 1);
+	ret = run_syscall_stub(mm_idp, __NR_open, args, 0, &addr, 1);
 
 	return ret;
 }
-//#endif // CONFIG_UML_DVK
+
+int do_stub_ioctl(int fd, int cmd , void *parms)
+{
+	long ret = 0;
+	void *addr; 
+
+//	struct mm_id *mm_idp =  &current->mm->context.id;
+
+	printk("do_stub_ioctl: fd=%d cmd=%X\n", fd, cmd);
+#ifdef ANULADO	
+	unsigned long args[] = { 
+				fd, 
+				cmd,
+				parms,
+				0,
+				0,
+				0};
+			 
+	ret = run_syscall_stub(mm_idp, __NR_ioctl, args, 0, &addr, 1);
+	printk("do_stub_ioctl: ret=%d\n", ret);
+#endif // ANULADO	
+
+	return ret;
+}
+#endif // CONFIG_UML_DVK_NULO
 
 
 

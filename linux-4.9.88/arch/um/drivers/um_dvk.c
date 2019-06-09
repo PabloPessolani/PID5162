@@ -180,4 +180,4 @@ static void __exit uml_dvk_cleanup_module (void)
 module_init(uml_dvk_init_module);
 module_exit(uml_dvk_cleanup_module);
 
-#endif // DVKDEBUG
+#endif // CONFIG_UML_DVK

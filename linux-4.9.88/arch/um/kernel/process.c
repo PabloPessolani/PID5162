@@ -243,6 +243,13 @@ int copy_to_user_proc(void __user *to, void *from, int size)
 	return copy_to_user(to, from, size);
 }
 
+#ifdef CONFIG_UML_DVK_ANULADO
+int get_user_proc(void *to, void __user *from)
+{
+	return(get_user(to, from);
+}
+#endif // 	CONFIG_UML_DVK
+
 int copy_from_user_proc(void *to, void __user *from, int size)
 {
 	return copy_from_user(to, from, size);
