@@ -4,7 +4,7 @@ extern int dvk_fd;
   
 void  main ( int argc, char *argv[] )
 {
-	int dcid, pid, p_nr, ret, ep, rep; 
+	int dcid, pid, p_nr, ret, ep, rep, fd; 
 	int index=0;
 
 	if ( argc != 3) {
@@ -21,10 +21,24 @@ void  main ( int argc, char *argv[] )
 	p_nr = atoi(argv[2]);
 	pid = getpid();
     printf("UML user-mode pid=%d DVK_FILE_NAME=%s\n", pid, DVK_FILE_NAME);
+
+    ep = dvk_bind(dcid, p_nr);
+	if( ep < 0) ERROR_PRINT(ep);
+
+	rep = dvk_getep(pid);
+	if (rep != ep)  ERROR_PRINT(rep);
 	
-	dvk_fd = open(DVK_FILE_NAME, 0);
-	if (dvk_fd < 0)  ERROR_PRINT(dvk_fd);
-    printf("UML user-mode dvk_fd=%d\n", dvk_fd);
+	fd = dvk_open();
+    printf("UML user-mode dvk_open fd=%d\n", fd);
+	
+	rep = dvk_getep(pid);
+	if (rep != ep)  ERROR_PRINT(rep);
+
+	if( fd < 0) {
+		dvk_fd = open(DVK_FILE_NAME, 0);
+		if (dvk_fd < 0)  ERROR_PRINT(dvk_fd);
+		printf("UML user-mode open dvk_fd=%d\n", dvk_fd);
+	}
 	
     ep = dvk_bind(dcid, p_nr);
 	if( ep < 0) ERROR_PRINT(ep);

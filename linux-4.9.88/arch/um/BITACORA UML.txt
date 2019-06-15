@@ -4683,37 +4683,865 @@ ATENCION, PARA PODER DISTINGUIR SI ES UN PEDIDO AL DVK, SE PUEDE HACER UTILIZAR
 Todas estan constitudas con este componente.
 #define DVK_IOCQGETEP	 _IOR(DVK_IOC_MAGIC, DVK_GETEP, int)
 
+Aaparentemente funciona asi:
+	El UML_USER hace un syscalll
+	
+==============================================================================================
+20190607/8:
+		Ya probe en insertar el codigo tanto en process.c/userspace como en syscall.c/handle_syscall
+		En todo los casos da segmentation fault
+		
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=683 DVK_FILE_NAME=/dev/dvk
+DVK userspace MATCH __NR_open user=0 tracee_lpid=0 tracer_lpid=2 tmp_path=/dev/dvk flags=0 mode=C6F
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Segmentation fault
 
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=684 DVK_FILE_NAME=/dev/dvk
+DVK userspace MATCH __NR_open user=0 tracee_lpid=0 tracer_lpid=2 tmp_path=/dev/dvk flags=0 mode=C6F
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Segmentation fault
 
+PTRACE_SYSEMU, PTRACE_SYSEMU_SINGLESTEP (since Linux 2.6.14)
+For PTRACE_SYSEMU, continue and stop on entry to the next system call, which will not be executed. 
+For PTRACE_SYSEMU_SINGLESTEP, do the same but also singlestep if not a system call. 
+This call is used by programs like User Mode Linux that want to emulate all the tracee's system calls. 
+The data argument is treated as for PTRACE_CONT. The addr argument is ignored. These requests 
+are currently supported only on x8
 
+PTRACE_SYSCALL, PTRACE_SINGLESTEP
+Restart the stopped tracee as for PTRACE_CONT, but arrange for the tracee to be stopped at the next entry
+ to or exit from a system call, or after execution of a single instruction, respectively. 
+ (The tracee will also, as usual, be stopped upon receipt of a signal.) 
+ From the tracer's perspective, the tracee will appear to have been stopped by receipt of a SIGTRAP. 
+ So, for PTRACE_SYSCALL, for example, the idea is to inspect the arguments to the system call at the first stop, 
+ then do another PTRACE_SYSCALL and inspect the return value of the system call at the second stop. 
+ The data argument is treated as for PTRACE_CONT. (addr is ignored.)
+	
+WIFCONTINUED(status)
+(since Linux 2.6.10) returns true if the child process was resumed by delivery of SIGCONT.	
+	
+	!!!!!!!!!!!!!!!!! si op=PTRACE_SYSEMU entonces NUNCA va a ejecutar la dvk_call !!!!!!!!!!!!!!!!! 
+		/* Now we set local_using_sysemu to be used for one loop */
+		local_using_sysemu = get_using_sysemu();
+		op = SELECT_PTRACE_OPERATION(local_using_sysemu, singlestepping(NULL));
+		if (ptrace(op, pid, 0, 0)) {
+			printk(UM_KERN_ERR "userspace - ptrace continue "
+			       "failed, op = %d, errno = %d\n", op, errno);
+			fatal_sigsegv();
+		}
+
+EL PROBLEMA si se cambia de  PTRACE_SYSEMU --> PTRACE_SYSCALL para que si se ejecute la dvk_call()
+			- se setea de prepo  local_using_sysemu=0 >>>> da segfault 
+			- se setea el parametro de arranque  "nosysemu" >>>>> da segfault 
+Supongo que esto se debe a que una vez q se ejecuta la syscall, retorna otra vez a la rutina userspace()
+y alli se produce el error.
+
+systemd[1]: Set hostname to <node0>.
+Stub registers -
+        0 - 4015b000
+        1 - 1000
+        2 - 5
+        3 - 11
+        4 - 4
+        5 - 101028
+        6 - 1000
+        7 - 7b
+        8 - 7b
+        9 - 0
+        10 - 33
+        11 - ffffffff
+        12 - 1000a0
+        13 - 73
+        14 - 10246
+        15 - 101028
+        16 - 7b
+handle_trap - failed to wait at end of syscall, errno = 0, status = 2943= 0x0‭B7F‬
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+
+CPU: 0 PID: 1 Comm: systemd Not tainted 4.9.88 #107
+Stack:
+ 082f81b8 48887400 08331ec0 00000000 48889da0 081c1771 00000000 00000000
+ 082f81b8 48889db8 080b3131 48857cec 48887400 08331ec0 00000000 48889df0
+ 080745ea 082e16de 0000000b 00000000 00000422 00000000 01889dd0 48889e58
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c1771>] dump_stack+0x16/0x1b
+ [<080b3131>] panic+0x84/0x18a
+ [<080745ea>] do_exit+0x3bf/0x763
+ [<08074a0f>] do_group_exit+0x56/0xa9
+ [<0807b9e5>] get_signal+0x46e/0x491
+ [<0805aac6>] do_signal+0x1d/0x286
+ [<08088f84>] ? wake_up_state+0x10/0x12
+ [<08079f74>] ? signal_wake_up_state+0x1a/0x1e
+ [<0807a5c7>] ? __send_signal.constprop.9+0x144/0x1c9
+ [<0806aeca>] ? set_signals+0x1a/0x2b
+ [<0807ad0c>] ? force_sig_info+0x81/0x8b
+ [<0807b0eb>] ? force_sig+0x10/0x15
+ [<0807b12c>] ? force_sigsegv+0x3c/0x45
+ [<0805bc41>] fatal_sigsegv+0x2a/0x2f
+ [<0806cbc6>] userspace+0x134/0x4c2
+ [<080e2f2a>] ? do_execveat_common+0x4bb/0x586
+ [<080e300d>] ? do_execve+0x18/0x1a
+ [<08059019>] ? run_init_process+0x1e/0x20
+ [<08059027>] ? try_to_run_init_process+0xc/0x2e
+ [<08059f54>] new_thread_handler+0x78/0x7c
+
+Abortado
+root@node0:/usr/src/linux# 
 
 	
+#define WNOHANG		0x00000001<<<
+#define WUNTRACED	0x00000002<<<
+#define WSTOPPED	WUNTRACED
+#define WEXITED		0x00000004
+#define WCONTINUED	0x00000008 <<<
+#define WNOWAIT		0x01000000	/* Don't reap, just poll status.  */
 	
+#define SIGTRAP		 5
+
+systemd[1]: Set hostname to <node0>.
+WSTOPSIG(status)=B (11=8+2+1) SIGTRAP + 0x80=85 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+Stub registers -
+        0 - 4015b000
+        1 - 1000
+        2 - 5
+        3 - 11
+        4 - 4
+        5 - 101028
+        6 - 1000
+        7 - 7b
+        8 - 7b
+        9 - 0
+        10 - 33
+        11 - ffffffff
+        12 - 1000a0
+        13 - 73
+        14 - 10246
+        15 - 101028
+        16 - 7b
+handle_trap - failed to wait at end of syscall, errno = 0, status = 2943
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+
+CPU: 0 PID: 1 Comm: systemd Not tainted 4.9.88 #110
+Stack:
+ 082f81fd 48083400 08331ec0 00000000 48085d9c 081c17d1 00000000 00000000
+ 082f81fd 48085db4 080b3191 48057cec 48083400 08331ec0 00000000 48085dec
+ 0807464a 082e1723 0000000b 00000000 00000422 00000000 01085dcc 48085e54
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c17d1>] dump_stack+0x16/0x1b
+ [<080b3191>] panic+0x84/0x18a
+ [<0807464a>] do_exit+0x3bf/0x763
+ [<08074a6f>] do_group_exit+0x56/0xa9
+ [<0807ba45>] get_signal+0x46e/0x491
+ [<0805aac6>] do_signal+0x1d/0x286
+ [<08088fe4>] ? wake_up_state+0x10/0x12
+ [<08079fd4>] ? signal_wake_up_state+0x1a/0x1e
+ [<0807a627>] ? __send_signal.constprop.9+0x144/0x1c9
+ [<0806aeca>] ? set_signals+0x1a/0x2b
+ [<0807ad6c>] ? force_sig_info+0x81/0x8b
+ [<0807b14b>] ? force_sig+0x10/0x15
+ [<0807b18c>] ? force_sigsegv+0x3c/0x45
+ [<0805bc41>] fatal_sigsegv+0x2a/0x2f
+ [<0806cc01>] userspace+0x16f/0x529
+ [<080e2f8a>] ? do_execveat_common+0x4bb/0x586
+ [<080e306d>] ? do_execve+0x18/0x1a
+ [<08059019>] ? run_init_process+0x1e/0x20
+ [<08059027>] ? try_to_run_init_process+0xc/0x2e
+ [<08059f54>] new_thread_handler+0x78/0x7c
+
+Abortado
+root@node0:/usr/src/linux# 
+
+
+https://www.cyphar.com/blog/post/20160703-remainroot-ptrace-hell
+Entry and Exit
+It turns out that ptrace(PTRACE_SYSCALL, 0, NULL, NULL) doesn’t really 
+have any semantic information for syscalls. In particular, the entry and exit
+ from a syscall are separate ptrace(2) events (which are indistinguishable 
+ from each other so you need to keep track yourself). 
+ It also means that you’ll have to keep track of the syscall number and arguments yourself.
+
+
+Quizas hay que hacer un doble ptrace
+		
+			ptrace SYSCALL 
+			wait enter 
+			ptrace SYSCALL 
+			wait exit 
+
+==============================================================================================
+20190610:
+
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 nosysemu 
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 76
+		UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
+		ERROR: 685:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		ERROR: uml_bind.c:main:30: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:35: rcode=-1
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=183
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:38: rcode=-9
+		PARENT dvk_getep pid=685 ep=-1 rep=-9 dvk_fd=-1
+		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
+		^CDVK: exit_unbind local_nodeid:0
+		DVK: old_exit_unbind code:2
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 76
+		UML user-mode pid=686 DVK_FILE_NAME=/dev/dvk
+		ERROR: 686:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		ERROR: uml_bind.c:main:30: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:35: rcode=-1
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=185
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:38: rcode=-9
+		PARENT dvk_getep pid=686 ep=-1 rep=-9 dvk_fd=-1
+		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
+		^CDVK: exit_unbind local_nodeid:0
+		DVK: old_exit_unbind code:2
+
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+		UML user-mode pid=682 DVK_FILE_NAME=/dev/dvk
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=180
+		ERROR: -38:dvk_getep:163: rcode=-25
+		ERROR: uml_bind.c:main:26: rcode=-25
+		DVK userspace __NR_open tmp_path=[èN] UML_DVK_DEV=[/dev/dvk]
+		ERROR: 682:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=180
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:32: rcode=-9
+		DVK userspace __NR_open tmp_path=[] UML_DVK_DEV=[/dev/dvk]
+		ERROR: uml_bind.c:main:36: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:41: rcode=-1
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=180
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:44: rcode=-9
+		PARENT dvk_getep pid=682 ep=-1 rep=-9 dvk_fd=-1
+		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+		UML user-mode pid=683 DVK_FILE_NAME=/dev/dvk
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=182
+		ERROR: -38:dvk_getep:163: rcode=-25
+		ERROR: uml_bind.c:main:26: rcode=-25
+		DVK userspace __NR_open tmp_path=[èN] UML_DVK_DEV=[/dev/dvk]
+		ERROR: 683:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=182
+		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:32: rcode=-9
+		ERROR: uml_bind.c:main:36: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:41: rcode=-1
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A
+		handle_dvk pid=182
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:44: rcode=-9
+		PARENT dvk_getep pid=683 ep=-1 rep=-9 dvk_fd=-1
+		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
+
+
+			
+
+
+==============================================================================================
+20190610:
+
+	ESTRATEGIA: se intento que el stub hiciera el OPEN y que le pasara al kernel la direccion
+	pero aparentemente esto no funciona ni utilizando PTRACE_PEEKDATA ni copy_from_user_proc
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+		Failed PTRACE_PEEKDATA Parent pid=901 errno=0 &stub_fd=48EB5DA0
+		Failed PTRACE_PEEKDATA Child pid=908 errno=0 &stub_fd=48EB5DA0
+		Failed PTRACE_PEEKDATA Parent pid=908 errno=0 &stub_fd=48EADDF8
+		Failed PTRACE_PEEKDATA Child pid=909 errno=0 &stub_fd=48EADDF8
+		UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=728
+		handle_dvk pid=909
+		ERROR: -38:dvk_getep:163: rcode=-25
+		ERROR: uml_bind.c:main:26: rcode=-25
+		ERROR: 685:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=728
+		handle_dvk pid=909
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:32: rcode=-9
+		ERROR: uml_bind.c:main:36: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:41: rcode=-1
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=728
+		handle_dvk pid=909
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:44: rcode=-9
+		PARENT dvk_getep pid=685 ep=-1 rep=-9 dvk_fd=-1
+		PARENT dvk_getep pid=683 ep=-1 rep=-9 dvk_fd=-1
+
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 55 
+		UML user-mode pid=680 DVK_FILE_NAME=/dev/dvk
+		 cmd=8004E31A filter_cmd=E3 magic=E3
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3019
+		handle_dvk pid=3197
+		ERROR: -38:dvk_getep:163: rcode=-25
+		ERROR: uml_bind.c:main:26: rcode=-25
+		ERROR: 680:dvk_open:65: rcode=-2
+		UML user-mode dvk_open fd=-2
+		 cmd=8004E31A filter_cmd=E3 magic=E3
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3019
+		handle_dvk pid=3197
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:32: rcode=-9
+		ERROR: uml_bind.c:main:36: rcode=-1
+		UML user-mode open dvk_fd=-1
+		ERROR: uml_bind.c:main:41: rcode=-1 <<<<<<<<<<<<<<<<<<<<<< ESTE ES EL RCODE DE DVK_BIND!!
+		 cmd=8004E31A filter_cmd=E3 magic=E3
+		DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3019
+		handle_dvk pid=3197
+		ERROR: -38:dvk_getep:163: rcode=-9
+		ERROR: uml_bind.c:main:44: rcode=-9
+		PARENT dvk_getep pid=680 ep=-1 rep=-9 dvk_fd=-1
+
+ATENCION, SOLO ESTA DETECTANDO EL GETEP !!!!!!!!!
+
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3481
+handle_dvk pid=3664
+ERROR: -38:dvk_getep:163: rcode=-25
+ERROR: uml_bind.c:main:26: rcode=-25
+ERROR: 685:dvk_open:65: rcode=-2
+UML user-mode dvk_open fd=-2
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3481
+handle_dvk pid=3664
+ERROR: -38:dvk_getep:163: rcode=-9
+ERROR: uml_bind.c:main:32: rcode=-9
+ERROR: uml_bind.c:main:36: rcode=-1
+UML user-mode open dvk_fd=-1
+ERROR: uml_bind.c:main:41: rcode=-1
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=3481
+handle_dvk pid=3664
+ERROR: -38:dvk_getep:163: rcode=-9
+ERROR: uml_bind.c:main:44: rcode=-9
+PARENT dvk_getep pid=685 ep=-1 rep=-9 dvk_fd=-1
+
+ATENCION:  A VECES CUANDO ARRANCA DA
+winch_thread : TIOCSCTTY failed on fd 1 err = 1
+ cmd=BF9AE3D8 filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=13 cmd=BF9AE3D8 lpid=3715  <<<<< BIND !!! 
+handle_dvk pid=3869
+
+
+
+==============================================================================================
+20190612:
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+Failed PTRACE_PEEKDATA Parent pid=1094 stub_fd=-1 errno=5 stub_fd_addr=4
+Failed PTRACE_PEEKDATA Parent pid=1095 stub_fd=-1 errno=5 stub_fd_addr=4
+UML user-mode pid=684 DVK_FILE_NAME=/dev/dvk
+ERROR: uml_bind.c:main:26: rcode=-1
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=915
+handle_dvk pid=1095
+ERROR: -38:dvk_getep:163: rcode=-25
+ERROR: uml_bind.c:main:29: rcode=-25
+ERROR: 684:dvk_open:65: rcode=-2
+UML user-mode dvk_open fd=-2
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=915
+handle_dvk pid=1095
+ERROR: -38:dvk_getep:163: rcode=-9
+ERROR: uml_bind.c:main:35: rcode=-9
+ERROR: uml_bind.c:main:39: rcode=-1
+UML user-mode open dvk_fd=-1
+ERROR: uml_bind.c:main:44: rcode=-1
+ cmd=8004E31A filter_cmd=E3 magic=E3
+DVK userspace __NR_ioctl fd=1074446336 cmd=8004E31A lpid=915
+handle_dvk pid=1095
+ERROR: -38:dvk_getep:163: rcode=-9
+ERROR: uml_bind.c:main:47: rcode=-9
+
+       EIO    request is invalid, or an attempt was made to read from or
+              write to an invalid area in the tracer's or the tracee's
+              memory, or there was a word-alignment violation, or an invalid
+              signal was specified during a restart request.
+
+
+
+WSTOPSIG(status)=B SIGTRAP + 0x80=85  <<< B = 11 = SIGSEGV	11	Core	Invalid memory reference
+Stub registers -
+        0 - 4015b000
+        1 - 1000
+        2 - 5
+        3 - 11
+        4 - 4
+        5 - 101028
+        6 - 1000
+        7 - 7b
+        8 - 7b
+        9 - 0
+        10 - 33
+        11 - ffffffff
+        12 - 1000a0
+        13 - 73
+        14 - 10246
+        15 - 101028
+        16 - 7b
+handle_trap - failed to wait at end of syscall, errno = 0, status = 2943
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+
+CPU: 0 PID: 1 Comm: systemd Not tainted 4.9.88 #165
+Stack:
+ 082f8366 48487400 08331ec0 00000000 48489dac 081c1891 00000000 00000000
+ 082f8366 48489dc4 080b3251 48457cec 48487400 08331ec0 00000000 48489dfc
+ 0807470a 082e188c 0000000b 00000000 00000422 00000000 01489ddc 48489e64
+Call Trace:
+ [<0805ae5b>] show_stack+0xaf/0xf7
+ [<081c1891>] dump_stack+0x16/0x1b
+ [<080b3251>] panic+0x84/0x18a
+ [<0807470a>] do_exit+0x3bf/0x763
+ [<08074b2f>] do_group_exit+0x56/0xa9
+ [<0807bb05>] get_signal+0x46e/0x491
+ [<0805aac6>] do_signal+0x1d/0x286
+ [<080890a4>] ? wake_up_state+0x10/0x12
+ [<0807a094>] ? signal_wake_up_state+0x1a/0x1e
+ [<0807a6e7>] ? __send_signal.constprop.9+0x144/0x1c9
+ [<0806af96>] ? set_signals+0x1a/0x2b
+ [<0807ae2c>] ? force_sig_info+0x81/0x8b
+ [<0807b20b>] ? force_sig+0x10/0x15
+ [<0807b24c>] ? force_sigsegv+0x3c/0x45
+ [<0805bc41>] fatal_sigsegv+0x2a/0x2f
+ [<0806ccfb>] userspace+0x19d/0x521
+ [<080e304a>] ? do_execveat_common+0x4bb/0x586
+ [<080e312d>] ? do_execve+0x18/0x1a
+ [<08059019>] ? run_init_process+0x1e/0x20
+ [<08059027>] ? try_to_run_init_process+0xc/0x2e
+ [<08059f54>] new_thread_handler+0x78/0x7c
+
+
+==============================================================================================
+20190613:
+
+		ATENCION, primero hice 
+		mknod /dev/dvk c 33 0
+			
+		LO EXTRAÑO ES QUE EN NINGUN MOMENTO EL NR_OPEN FUE DETECTADO 
 	
-	
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 77                              
+UML user-mode pid=689 DVK_FILE_NAME=/dev/dvk
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=4004E309 lpid=1659
+DVK handle_dvk_exit pid=1849
+ERROR: uml_bind.c:main:26: rcode=-1
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1849
+ERROR: 689:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:29: rcode=-38
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 1659:dvk_open:68: Open dvk device file /dev/dvk
+UML user-mode dvk_open fd=0
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1849
+ERROR: 689:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:35: rcode=-38
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=4004E309 lpid=1659
+DVK handle_dvk_exit pid=1849
+ERROR: uml_bind.c:main:44: rcode=-1
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1849
+ERROR: 689:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:47: rcode=-38
+PARENT dvk_getep pid=689 ep=-1 rep=-38 dvk_fd=3
 
-
-
-
-
-
-
-
-
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2 22384/1659   0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   642/642    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 22392/1667   0    0   20 27342 27342 27342 27342 linux          
+ 0  77    77 22592/1849   0    0   20 27342 27342 27342 27342 linux  <<<<<<<< BINDEO!!!! 
  
+El BIND funciona bien porque el parametro que le pasa al DVK es SELF_BIND.
+ 
+PRIMER GETEP  
+[51064.400493] DEBUG dvk_ioctl:201: cmd=8004E31A arg=2B1
+[51064.400497] DEBUG dvk_ioctl:221: DVK_CALL=26 (getep) 
+[51064.400498] DEBUG io_getep:279: 
+[51064.400500] DEBUG new_getep:1971: pid=689
+[51064.400504] DEBUG check_caller:536: caller_pid=22592 caller_tgid=22592
+[51064.400505] ERROR: 22592:check_caller:570: rcode=-310
+[51064.400507] ERROR: 22592:dvk_ioctl:225: rcode=-310
+[51064.405712] DEBUG dvk_ioctl:201: cmd=4004E309 arg=BFA7BCE8
+
+BIND 
+[51064.405716] DEBUG dvk_ioctl:221: DVK_CALL=9 (bind) 
+[51064.405718] DEBUG io_bind:97: 
+[51064.405723] DEBUG new_bind:1372: oper=0 dcid=0 param_pid=-1 endpoint=77 nodeid=-1
+[51064.405725] DEBUG new_bind:1394: RLOCK_DC dc=0 count=0
+[51064.405726] DEBUG new_bind:1407: WLOCK_PROC ep=77 count=0
+[51064.405728] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+[51064.405731] DEBUG new_bind:1441: param_pid=-1 lpid=22592 vpid=1849 tid=22592
+[51064.405733] DEBUG new_bind:1465: SELF_BIND param_pid=-1 lpid=22592 vpid=1849 tid=22592
+[51064.405734] DEBUG new_bind:1487: WUNLOCK_PROC ep=77 count=0
+[51064.405735] DEBUG new_bind:1490: WLOCK_TASK pid=22592 count=0
+[51064.405737] DEBUG new_bind:1491: WLOCK_PROC ep=77 count=0
+[51064.405738] DEBUG new_bind:1527: increment the reference count of the task struct=22592 count=2
+[51064.405739] DEBUG new_bind:1538: process p_name=linux *p_name_ptr=linux
+[51064.405742] DEBUG new_bind:1595: nr=77 endp=77 dcid=0 flags=0 misc=20 lpid=22592 vpid=1849 nodeid=0 name=linux 
+[51064.405744] DEBUG new_bind:1596: nr=77 endp=77 dcid=0 lpid=22592 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[51064.405745] DEBUG new_bind:1610: WUNLOCK_TASK pid=22592 count=0
+[51064.405747] DEBUG new_bind:1616: WUNLOCK_PROC ep=77 count=0
+[51064.405747] DEBUG new_bind:1618: DC_INCREF counter=4
+[51064.405749] DEBUG new_bind:1619: RUNLOCK_DC dc=0 count=0
+
+SEGUNDO GETEP 
+[51064.405914] DEBUG dvk_ioctl:201: cmd=8004E31A arg=2B1
+[51064.405916] DEBUG dvk_ioctl:221: DVK_CALL=26 (getep) 
+[51064.405917] DEBUG io_getep:279: 
+[51064.405918] DEBUG new_getep:1971: pid=689                     <<<<<<<<<<<<<< USER_MODE PID 
+[51064.405920] DEBUG check_caller:536: caller_pid=22592 caller_tgid=22592
+[51064.405921] DEBUG check_caller:572: WLOCK_PROC ep=77 count=0
+[51064.405922] DEBUG check_caller:601: WUNLOCK_PROC ep=77 count=0
+[51064.405923] DEBUG check_caller:604: dcid=0
+[51064.405925] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+[51064.405926] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+[51064.405927] DEBUG check_caller:618: caller_pid=22592 
+[51064.405928] DEBUG new_getep:1986: caller_pid=22592 caller_vpid=1849 dcid=0
+[51064.405930] ERROR: 22592:new_getep:1991: rcode=-305 <<<<< ESTA BIEN EDVSBADPID  	(_SIGN 305)  /* Bad Process ID */
+[51064.405931] ERROR: 22592:dvk_ioctl:225: rcode=-305  < PORQUE LE PASO COMO PARAMETRO EL USER_MODE PID 
+
+................................................................................
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 79
+UML user-mode pid=693 DVK_FILE_NAME=/dev/dvk
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=4004E309 lpid=1659
+DVK handle_dvk_exit pid=1854
+ERROR: uml_bind.c:main:26: rcode=-1
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1854
+ERROR: 693:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:29: rcode=-38
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 1659:dvk_open:68: Open dvk device file /dev/dvk
+UML user-mode dvk_open fd=0
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1854
+ERROR: 693:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:35: rcode=-38
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=4004E309 lpid=1659
+DVK handle_dvk_exit pid=1854
+ERROR: uml_bind.c:main:44: rcode=-1
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=8004E31A lpid=1659
+DVK handle_dvk_exit pid=1854
+ERROR: 693:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:47: rcode=-38
+PARENT dvk_getep pid=693 ep=-1 rep=-38 dvk_fd=3
+
+
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2 22384/1659   0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   642/642    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 22392/1667   0    0   20 27342 27342 27342 27342 linux          
+ 0  79    79 22616/1854   0    0   20 27342 27342 27342 27342 linux  
+
+...........................................................................
+PROBLEMA: 
+		Aquellas funciones que usan el PID del proceso entregan el UML_PID (mal)
+		Hay que entregar el PID del HOST (aunque sea del namespace)
+		Se hizo interceptando el GETEP y NO funciono 
+		el BIND es mas complicado porque se necesita copiar la estructura completa.
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 79                              
+UML user-mode pid=695 DVK_FILE_NAME=/dev/dvk
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=2335
+ERROR: uml_bind.c:main:26: rcode=-1
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=0 cmd=8004E31A args=695
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=0 cmd=8004E31A args=2335  <<<< SE SUPONE QUE PASO CORRECTAMENTE EL PID 
+DVK handle_dvk_exit pid=2335
+ERROR: 695:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:29: rcode=-38
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 2133:dvk_open:68: Open dvk device file /dev/dvk
+UML user-mode dvk_open fd=0
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=3 cmd=8004E31A args=695
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=3 cmd=8004E31A args=2335
+DVK handle_dvk_exit pid=2335
+ERROR: 695:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:35: rcode=-38
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=2335
+ERROR: uml_bind.c:main:44: rcode=-1
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=3 cmd=8004E31A args=695
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=3 cmd=8004E31A args=2335
+DVK handle_dvk_exit pid=2335
+ERROR: 695:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:47: rcode=-38
+PARENT dvk_getep pid=695 ep=-1 rep=-38 dvk_fd=3
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+DEBUG uml_dvk_release:131: dvk_dev=/dev/dvk
+
+
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2 30603/2133   0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   642/642    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30 30611/2141   0    0   20 27342 27342 27342 27342 linux          
+ 0  76    76 30806/2332   0    0   20 27342 27342 27342 27342 linux 
+ 
+[53755.686043] DEBUG dvk_ioctl:201: cmd=8004E31A arg=2B7
+[53755.686044] DEBUG dvk_ioctl:221: DVK_CALL=26 (getep) 
+[53755.686045] DEBUG io_getep:279: 
+[53755.686046] DEBUG new_getep:1971: pid=695								<<< PERO RECIBIO OTRO VALOR DE PID (UML_USER PID)
+[53755.686047] DEBUG check_caller:536: caller_pid=30821 caller_tgid=30821
+[53755.686048] DEBUG check_caller:572: WLOCK_PROC ep=79 count=0
+[53755.686050] DEBUG check_caller:601: WUNLOCK_PROC ep=79 count=0
+[53755.686051] DEBUG check_caller:604: dcid=0
+[53755.686052] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+[53755.686053] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+[53755.686054] DEBUG check_caller:618: caller_pid=30821 
+[53755.686055] DEBUG new_getep:1986: caller_pid=30821 caller_vpid=2335 dcid=0
+[53755.686057] ERROR: 30821:new_getep:1991: rcode=-305
+[53755.686058] ERROR: 30821:dvk_ioctl:225: rcode=-305
+
+ .......................................................................
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 79                              
+UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=2570
+ERROR: uml_bind.c:main:26: rcode=-1
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=0 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=0 cmd=8004E31A args=2570
+DVK handle_dvk_exit pid=2570
+ERROR: 685:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:29: rcode=-38
+
+DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
+DEBUG 2387:dvk_open:68: Open dvk device file /dev/dvk
+UML user-mode dvk_open fd=0
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=3 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=3 cmd=8004E31A args=2570
+DVK handle_dvk_exit pid=2570
+ERROR: 685:dvk_getep:163: rcode=-38
+
+ERROR: uml_bind.c:main:35: rcode=-38
+DVK handle_dvk_enter __NR_ioctl fd=3 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=2570
+ERROR: uml_bind.c:main:44: rcode=-1
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=3 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=3 cmd=8004E31A args=2570
+DVK handle_dvk_exit pid=2570
+ERROR: 685:dvk_getep:163: rcode=-38
+ERROR: uml_bind.c:main:47: rcode=-38
+PARENT dvk_getep pid=685 ep=-1 rep=-38 dvk_fd=3
+
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  1060/2387   0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   642/642    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30  1068/2395   0    0   20 27342 27342 27342 27342 linux          
+ 0  79    79  1249/2570   0    0   20 27342 27342 27342 27342 linux 
+
+
+...........................................................................
+
+root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
+
+DVK handle_dvk_enter __NR_ioctl fd=0 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=-25
+ERROR: uml_bind.c:main:26: rcode=-1
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=0 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=0 cmd=8004E31A args=867
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=-25
+ERROR: 685:dvk_getep:163: rcode=-25
+ERROR: uml_bind.c:main:29: rcode=-25
+
+DVK handle_dvk_enter MATCH __NR_open tracee_lpid=867 tracer_lpid=684 tmp_path=/dev/dvk flags=0 mode=0
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=27
+UML user-mode dvk_open fd=0
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=27 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=27 cmd=8004E31A args=867
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=-310
+ERROR: 685:dvk_getep:163: rcode=-310
+ERROR: uml_bind.c:main:35: rcode=-310
+
+DVK handle_dvk_enter __NR_ioctl fd=27 cmd=4004E309 lpid=0
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=66
+
+DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=27 cmd=8004E31A args=685
+DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=27 cmd=8004E31A args=867
+DVK handle_dvk_exit pid=867
+handle_dvk_exit dvk_retcode=66
+PARENT dvk_getep pid=685 ep=66 rep=66 dvk_fd=27
+
+AQUI ESTAN LOS GETEP UTILIZANDO EL LINUX PID DEL CONTAINER 
+
+[ 3127.642709] DEBUG dvk_ioctl:201: cmd=8004E31A arg=363
+[ 3127.642713] DEBUG dvk_ioctl:221: DVK_CALL=26 (getep) 
+[ 3127.642714] DEBUG io_getep:279: 
+[ 3127.642716] DEBUG new_getep:1971: pid=867
+[ 3127.642719] DEBUG check_caller:536: caller_pid=15778 caller_tgid=15778
+[ 3127.642721] ERROR: 15778:check_caller:570: rcode=-310
+[ 3127.642723] ERROR: 15778:dvk_ioctl:225: rcode=-310
+[ 3127.651216] DEBUG dvk_ioctl:201: cmd=4004E309 arg=BFDFBCE8
+[ 3127.651220] DEBUG dvk_ioctl:221: DVK_CALL=9 (bind) 
+[ 3127.651221] DEBUG io_bind:97: 
+[ 3127.651226] DEBUG new_bind:1372: oper=0 dcid=0 param_pid=-1 endpoint=66 nodeid=-1
+[ 3127.651228] DEBUG new_bind:1394: RLOCK_DC dc=0 count=0
+[ 3127.651229] DEBUG new_bind:1407: WLOCK_PROC ep=66 count=0
+[ 3127.651232] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+[ 3127.651235] DEBUG new_bind:1441: param_pid=-1 lpid=15778 vpid=867 tid=15778
+[ 3127.651237] DEBUG new_bind:1465: SELF_BIND param_pid=-1 lpid=15778 vpid=867 tid=15778
+[ 3127.651238] DEBUG new_bind:1487: WUNLOCK_PROC ep=66 count=0
+[ 3127.651239] DEBUG new_bind:1490: WLOCK_TASK pid=15778 count=0
+[ 3127.651240] DEBUG new_bind:1491: WLOCK_PROC ep=66 count=0
+[ 3127.651242] DEBUG new_bind:1527: increment the reference count of the task struct=15778 count=2
+[ 3127.651243] DEBUG new_bind:1538: process p_name=linux *p_name_ptr=linux
+[ 3127.651246] DEBUG new_bind:1595: nr=66 endp=66 dcid=0 flags=0 misc=20 lpid=15778 vpid=867 nodeid=0 name=linux 
+[ 3127.651248] DEBUG new_bind:1596: nr=66 endp=66 dcid=0 lpid=15778 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[ 3127.651249] DEBUG new_bind:1610: WUNLOCK_TASK pid=15778 count=0
+[ 3127.651250] DEBUG new_bind:1616: WUNLOCK_PROC ep=66 count=0
+[ 3127.651251] DEBUG new_bind:1618: DC_INCREF counter=4
+[ 3127.651252] DEBUG new_bind:1619: RUNLOCK_DC dc=0 count=0
+[ 3127.651472] DEBUG dvk_ioctl:201: cmd=8004E31A arg=363
+[ 3127.651474] DEBUG dvk_ioctl:221: DVK_CALL=26 (getep) 
+[ 3127.651475] DEBUG io_getep:279: 
+[ 3127.651476] DEBUG new_getep:1971: pid=867
+[ 3127.651479] DEBUG check_caller:536: caller_pid=15778 caller_tgid=15778
+[ 3127.651480] DEBUG check_caller:572: WLOCK_PROC ep=66 count=0
+[ 3127.651481] DEBUG check_caller:601: WUNLOCK_PROC ep=66 count=0
+[ 3127.651483] DEBUG check_caller:604: dcid=0
+[ 3127.651484] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+[ 3127.651485] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+[ 3127.651486] DEBUG check_caller:618: caller_pid=15778 
+[ 3127.651488] DEBUG new_getep:1986: caller_pid=15778 caller_vpid=867 dcid=0
+[ 3127.651489] DEBUG new_getep:1995: task_pid_nr(task_ptr)=15778 vpid=867
+[ 3127.651490] DEBUG new_getep:2008: RLOCK_PROC ep=66 count=0
+[ 3127.651491] DEBUG new_getep:2027: RUNLOCK_PROC ep=66 count=0
+[ 3127.651492] DEBUG new_getep:2030: dcid=0
+[ 3127.651493] DEBUG new_getep:2031: RLOCK_DC dc=0 count=0
+[ 3127.651494] DEBUG new_getep:2034: RUNLOCK_DC dc=0 count=0
+[ 3127.651495] DEBUG new_getep:2037: endpoint=66
+
+
+
+==============================================================================================
+20190615:			FUNCIONO 
+
+		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
+		UML user-mode pid=682 DVK_FILE_NAME=/dev/dvk
+		
+		// Aqui hace un GETEP por lo que debe cambiar el pid de 682 (UML_USER) a 1099 (HOST allocated PID)
+		DVK handle_dvk_enter DVK_IOCSDVKBIND BEFORE fd=0 cmd=4004E309 pid=-1
+		DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=0 cmd=4004E309 pid=1099
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=-25							<<<< EDVSNOTTY, es porque no se hizo el open del DVK 
+		ERROR: uml_bind.c:main:26: rcode=-1
+		
+		DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=0 cmd=8004E31A args=682
+		DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=0 cmd=8004E31A args=1099
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=-25
+		ERROR: 682:dvk_getep:163: rcode=-25
+		ERROR: uml_bind.c:main:29: rcode=-25
+		
+		// SE HACE EL OPEN DEL DVK 
+		DVK handle_dvk_enter MATCH __NR_open tracee_lpid=1099 tracer_lpid=919 tmp_path=/dev/dvk flags=0 mode=0
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=27
+		UML user-mode dvk_open fd=0
+		
+		// SE HACE NUEVAMENTE UN GETEP 
+		DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=27 cmd=8004E31A args=682
+		DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=27 cmd=8004E31A args=1099
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=-310
+		ERROR: 682:dvk_getep:163: rcode=-310			// AHORA ES EL DVK QUE RETORNA  EDVSNOTBIND
+		ERROR: uml_bind.c:main:35: rcode=-310
+
+		// HACE EL BIND CAMBIANDO EL PID 
+		DVK handle_dvk_enter DVK_IOCSDVKBIND BEFORE fd=27 cmd=4004E309 pid=-1 <<< PID PROC_NO_PID = -1 ==> SELF
+		DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=27 cmd=4004E309 pid=1099  <<<< PID DEL HOST 
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=66			<<< ENDPOINT ASIGNADO 
+		
+		// HACE EL GETEP 
+		DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=27 cmd=8004E31A args=682
+		DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=27 cmd=8004E31A args=1099
+		DVK handle_dvk_exit pid=1099
+		handle_dvk_exit dvk_retcode=66 					<<< ENDPOINT RETORNADO 
+		PARENT dvk_getep pid=682 ep=66 rep=66 dvk_fd=27
 
 
 
 
 
+=====================================================================================
 
+PARA LISTAR OPEN FILEDESCRIPTORS
+cat /proc/$pid/fd 
 
+PROBLEMA:		Esta retornando -38 = ENOSYS 
+			
+PROBLEMA: No funciona la deteccion del open y la comparacion con "/dev/dvk"
 
+PROBLEMA: Varias de las llamadas a libraria usan como parametro el PID
+			El PID que pasa el proceso es el UML_USER PID, es decir el PID interno del UML.
+PROBLEMA: 
+		Se da el mismo problema si un padre quiere poner al hijo como backup por ejempolo
+		long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 
-
-
-
-
+POSIBLE SOLUCION: 
+		Interceptar el GETEP y BIND y directamente cambiar el parametro "pid" por "lpid"
+		
+TODO:  Modificar el DVK para que un proceso que haga GETEP no necesite poner el PID o getpid()
+		a traves de la libreria. 
+		Deberia definirse en include/com la constante SELF_PID 
+		Entonces uno haria
+				ep = dvk_getep(SELFPID);
+				
 
 
 

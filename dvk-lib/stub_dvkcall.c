@@ -72,7 +72,7 @@ long dvk_open(void)
 		ERROR_RETURN(-errno);
 	errno = 0;
 #else // CONFIG_UML_DVK
-	dvk_fd = os_open_file(dvk_dev, of_set_rw(OPENFLAGS(), 1, 1), 0);
+	dvk_fd = os_open_file(DVK_FILE_NAME, of_set_rw(OPENFLAGS(), 1, 1), &dvk_fd);
 	if (dvk_fd < 0)  
 		ERROR_RETURN(dvk_fd);
 #endif // CONFIG_UML_DVK

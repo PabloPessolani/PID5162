@@ -1,3 +1,9 @@
+
+#ifdef CONFIG_UML_DVK
+#undef CONFIG_UML_DVK
+#endif // CONFIG_UML_DVK
+
+
 #define LIBDBG		1
 
 #define NODEBUG  	0x00000000

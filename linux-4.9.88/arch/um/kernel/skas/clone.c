@@ -24,8 +24,8 @@
  */
  
 #ifdef CONFIG_UML_DVK_NULO
-static void set_dvk_fd(int value);
-static	int stub_dvk_fd;
+#define DVK_FILE_NAME "/dev/dvk"
+static	int stub_dvk_fd = (-1);
 #endif CONFIG_UML_DVK_NULO
 
 void __attribute__ ((__section__ (".__syscall_stub")))
@@ -34,19 +34,26 @@ stub_clone_handler(void)
 	struct stub_data *data = (struct stub_data *) STUB_DATA;
 	long err;
 
+#ifdef CONFIG_UML_DVK_NULO
 	err = stub_syscall2(__NR_clone, CLONE_PARENT | CLONE_FILES | SIGCHLD,
 			    STUB_DATA + UM_KERN_PAGE_SIZE / 2 - sizeof(void *));
-	if (err != 0)
+				
+	if (err != 0) {  // PARENT OUT 
+		data->fd = &stub_dvk_fd;
 		goto out;
-#ifdef CONFIG_UML_DVK_NULO
-#define DVK_FILE_NAME "/dev/dvk"
+    }
+	// CHILD here 	
 	stub_dvk_fd = stub_syscall2(__NR_open, DVK_FILE_NAME, 0);
-//	printk("stub_clone_handler stub_dvk_fd =%d\n", stub_dvk_fd);
-//	set_dvk_fd(stub_dvk_fd);
+	
+#else // CONFIG_UML_DVK_NULO
+	err = stub_syscall2(__NR_clone, CLONE_PARENT | CLONE_FILES | SIGCHLD,
+			    STUB_DATA + UM_KERN_PAGE_SIZE / 2 - sizeof(void *));
+	if (err != 0) goto out; // PARENT OUT 
+	
 #endif // CONFIG_UML_DVK_NULO
+
 	err = stub_syscall4(__NR_ptrace, PTRACE_TRACEME, 0, 0, 0);
-	if (err)
-		goto out;
+	if (err) goto out;
 
 	remap_stack(data->fd, data->offset);
 	goto done;

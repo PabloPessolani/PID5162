@@ -120,6 +120,8 @@ struct parm_bind_s {
 	int		parm_nodeid;	
 };
 typedef struct parm_bind_s parm_bind_t;
+#define PARM_BIND_FORMAT 	"parm_cmd=%d parm_dcid=%d parm_pid=%d parm_ep=%d parm_nodeid=%d\n"
+#define PARM_BIND_FIELDS(p) 	p->parm_cmd,p->parm_dcid, p->parm_pid, p->parm_ep, p->parm_nodeid
 
 struct parm_pxbind_s {
 	char 	*parm_name;
