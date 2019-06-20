@@ -1,9 +1,4 @@
 
-#ifdef CONFIG_UML_DVK
-#undef CONFIG_UML_DVK
-#endif // CONFIG_UML_DVK
-
-
 #define LIBDBG		1
 
 #define NODEBUG  	0x00000000
@@ -44,12 +39,22 @@
 	return(rcode); \
  }while(0);
 
+#define ERROR_PRINT(rcode) \
+ do { \
+     	printf("ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
+ }while(0);
+ 
 #else // CONFIG_UML_DVK
  
  #define ERROR_RETURN(rcode) \
  do { \
      	fprintf(stderr, "ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
 	return(rcode); \
+ }while(0);
+
+ #define ERROR_PRINT(rcode) \
+ do { \
+     	fprintf(stderr, "ERROR: %d:%s:%u: rcode=%d\n",getpid(), __FUNCTION__ ,__LINE__,rcode); \
  }while(0);
  
 #endif // CONFIG_UML_DVK

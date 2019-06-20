@@ -3,7 +3,7 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
 		test_lclvcopy test_wait4bind test_add_node test_priv \
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
-		uml_bind
+		uml_test
 		
 	
 INCLUDE = ..
@@ -73,8 +73,8 @@ test_node_down: test_node_down.c
 test_lclvcopy3: test_lclvcopy3.c 
 	$(CC)  $(CFLAGS) -o test_lclvcopy3 test_lclvcopy3.c  $(LIBS) -I$(INCLUDE)	
 	
-uml_bind: uml_bind.c 
-	$(CC)  $(CFLAGS) -o uml_bind uml_bind.c  $(LIBS) -I$(INCLUDE)
+uml_test: uml_test.c 
+	$(CC)  $(CFLAGS) -o uml_test uml_test.c  $(LIBS) -I$(INCLUDE)
 	
 clean:
 	rm -f $(BINS)

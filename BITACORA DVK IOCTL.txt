@@ -18,6 +18,7 @@ COMPILAR EL KERNEL LINUX
 
 sudo apt-get update
 sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc
+apt-get install linux-headers-686-pae
 
 cp /boot/config-$(uname -r) .config
 make menuconfig
@@ -5965,15 +5966,38 @@ root@node0:/dev/shm# dmesg | grep fault
 				Recevier 	http://192.168.1.100:4001/
 			Es decir escuchan en ports (3000+px_id)  y (4000+px_id)
 			
+
+
+
+=======================================================================================
+20190617:			
+		Voy a intentar migrar a kernel 4.19.51 
+		root@node0:/usr/src# apt-get dist-upgrade
+		root@node0:/usr/src# cat /etc/debian_version 
+			9.9
+			
+		Hago el upgrade STRETCH TO BUSTER 
+		
+		https://phoenixnap.com/kb/how-to-upgrade-debian-9-stretch-to-debian-10-buster
+
+		root@node0:/usr/src/linux# apt-get install linux-headers-4.19.0-5-all
+
+		cp /boot/config-$(uname -r) .config
+		make menuconfig
+		sudo make -j 4 && sudo make modules_install -j 4 && sudo make install -j 4
+		update-initramfs -c -k 4.19.51
+		update-grub  
+		update-grub2
+		
+		
+=======================================================================================
+ULTIMO_LOG
+
 			
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 TODO MUY IMPORTANTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 QUE FUNCIONE BIEN EL PROXY TIPC CON MAS DE 2 NODOS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-			
-		
-=======================================================================================
-ULTIMO_LOG
 			
 TODO: 		M3PING
 				m3ping <dcid> <endpoint> 

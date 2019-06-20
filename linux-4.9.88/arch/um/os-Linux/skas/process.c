@@ -29,6 +29,7 @@
 #define  CONFIG_UML_DVK		1
 
 #ifdef CONFIG_UML_DVK
+#include <signal.h>
 
 #define DVS_USERSPACE 1
 
@@ -367,10 +368,88 @@ int start_userspace(unsigned long stub_stack)
 
 void return_from_dvkcall(int dvk_retcode,  struct uml_pt_regs *r);
 
+#define SI_INFO_FORMAT 		"si_signo=%d si_errno=%d si_code=%d si_pid=%d si_uid=%d si_syscall=%d\n"
+#define SI_INFO_FIELDS(p) 	p->si_signo,p->si_errno, p->si_code, p->si_pid, p->si_uid, p->si_syscall
+
+
+static void handle_dvk_wait(int pid, struct uml_pt_regs *regs)
+{
+	int err, status, dvk_retcode;
+	siginfo_t si;
+	siginfo_t *sptr;
+	sigset_t ss;
+	sigset_t *ss_ptr;
+	
+	printk("DVK handle_dvk_wait pid=%d\n", pid);
+	
+	if ((UPT_IP(regs) >= STUB_START) && (UPT_IP(regs) < STUB_END))
+		fatal_sigsegv();
+	
+	ss_ptr = &ss;
+	err = ptrace(PTRACE_GETSIGMASK, pid, sizeof(sigset_t), ss_ptr);
+	if (err < 0) {
+		printk(UM_KERN_ERR "handle_dvk_wait - PTRACE_GETSIGMASK failed, errno = %d\n", errno);
+		fatal_sigsegv();
+	}
+	
+	err = sigaddset(ss_ptr, SIGALRM);
+	if (err < 0) {
+		printk(UM_KERN_ERR "handle_dvk_wait - sigaddset failed, errno = %d\n", errno);
+		fatal_sigsegv();
+	}
+	
+	err = ptrace(PTRACE_SETSIGMASK, pid, sizeof(sigset_t), ss_ptr);
+	if (err < 0) {
+		printk(UM_KERN_ERR "handle_dvk_wait - PTRACE_SETSIGMASK failed, errno = %d\n", errno);
+		fatal_sigsegv();
+	}
+	
+	// resumes the DVK_CALL entry  
+	err = ptrace(PTRACE_CONT, pid, 0, 0);
+	if (err < 0) {
+		printk(UM_KERN_ERR "handle_dvk_wait - continuing to end of "
+			   "syscall failed, errno = %d\n", errno);
+		fatal_sigsegv();
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// FROM HERE, the USER process execute by itself the DVK_CALL, then, when it finished it 
+	// it calls ptrace(PTRACE_PTRACEME)
+	// The UML_KERNEL process remains running in the while(1) loop of userspace() function
+	// There it captures the TRAP of the USER process 
+	///////////////////////////////////////////////////////////////////////////////////
+	
+#ifdef ANULADO
+	// waits for the DVK_CALL exit  
+	CATCH_EINTR(err = waitpid(pid, &status, WUNTRACED | WCONTINUED));
+	if (err < 0) {
+		printk(UM_KERN_ERR "errno = %d\n", -err);					
+		printk(UM_KERN_ERR "handle_dvk_wait - failed to wait at "
+			   "end of syscall, errno = %d, status = %d\n",
+			   errno, status);
+		fatal_sigsegv();
+	}
+
+   if (WIFEXITED(status)) {
+		printk("exited, status=%d\n", WEXITSTATUS(status));
+	} else if (WIFSIGNALED(status)) {
+		printk("killed by signal %d\n", WTERMSIG(status));
+	} else if (WIFSTOPPED(status)) {
+		printk("stopped by signal %d\n", WSTOPSIG(status));
+	} else if (WIFCONTINUED(status)) {
+		printk("continued\n");
+	}
+#endif // ANULADO
+
+	// return_from_dvkcall(dvk_retcode, regs);
+}
+
 static void handle_dvk_exit(int pid, struct uml_pt_regs *regs)
 {
 	int err, status, dvk_retcode;
-
+	siginfo_t si;
+	siginfo_t *sptr;
+	
 	printk("DVK handle_dvk_exit pid=%d\n", pid);
 	
 	if ((UPT_IP(regs) >= STUB_START) && (UPT_IP(regs) < STUB_END))
@@ -412,7 +491,16 @@ static void handle_dvk_exit(int pid, struct uml_pt_regs *regs)
 			   errno, status);
 		fatal_sigsegv();
 	}
-
+	
+#define ERESTARTSYS 	512 
+	if( dvk_retcode == (-ERESTARTSYS)){
+		sptr = &si;
+		err = ptrace(PTRACE_GETSIGINFO, pid, 0, (struct siginfo *)sptr);
+		if( err) 
+			printk(UM_KERN_ERR "handle_dvk_exit Failed to get signal info err=%d\n", err);
+		printk(SI_INFO_FORMAT, SI_INFO_FIELDS(sptr));
+	}
+	
 	return_from_dvkcall(dvk_retcode, regs);
 }
 
@@ -443,7 +531,12 @@ static	char *tmp_path = "01234567890123456789";
 		// AQUI SE DEBERIA COMPARAR EL FD DEL SYSCALL CON EL FD DEL DVK ASIGNADO AL PROCESO 
 //					printk("DVK userspace __NR_ioctl tracee_lpid=%d tracer_lpid=%d fd=%d cmd=%X DVK_IOCSDVKBIND=%X\n", 
 //							pid, lpid, fd, cmd, DVK_IOCSDVKBIND);
-		if (cmd == DVK_IOCQGETEP) {
+
+
+		if (cmd == DVK_IOCSRECEIVE) {
+			printk("DVK handle_dvk_enter DVK_IOCSRECEIVE fd=%d cmd=%X args=%d\n", fd, cmd, args);
+			return(2);
+		} else if (cmd == DVK_IOCQGETEP) {
 			printk("DVK handle_dvk_enter DVK_IOCQGETEP BEFORE fd=%d cmd=%X args=%d\n", fd, cmd, args);		
 			// change the UML_USER PID by the HOST allocated PID 
 			UPT_SYSCALL_ARG3(r) = pid;
@@ -453,7 +546,7 @@ static	char *tmp_path = "01234567890123456789";
 				printk("DVK handle_dvk_enter DVK_IOCQGETEP PTRACE_SETREGS errno=%d\n", errno);			
 				fatal_sigsegv();
 			}
-			return(0);
+			return(1);
 		} else if (cmd == DVK_IOCSDVKBIND) {
 			args 	= UPT_SYSCALL_ARG3(r);
 			// change the UML_USER PID by the HOST allocated PID 
@@ -461,45 +554,55 @@ static	char *tmp_path = "01234567890123456789";
 			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+2*sizeof(int), NULL);
 			printk("DVK handle_dvk_enter DVK_IOCSDVKBIND BEFORE fd=%d cmd=%X pid=%d\n", fd, cmd, tmp_pid);
 			tmp_pid = ptrace(PTRACE_POKEDATA, pid, args+2*sizeof(int), pid);
-			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+2*sizeof(int), NULL);		
+			
+			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+(0*sizeof(int)), NULL);
+			printk("DVK handle_dvk_enter bind parm_cmd=%d\n",tmp_pid);
+			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+(1*sizeof(int)), NULL);
+			printk("DVK handle_dvk_enter bind parm_dcid=%d\n",tmp_pid);
+			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+(2*sizeof(int)), NULL);
+			printk("DVK handle_dvk_enter bind parm_pid=%d\n",tmp_pid);
 			printk("DVK handle_dvk_enter DVK_IOCQGETEP AFTER  fd=%d cmd=%X pid=%d\n", fd, cmd, tmp_pid);
+			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+(3*sizeof(int)), NULL);
+			printk("DVK handle_dvk_enter bind parm_ep=%d\n",tmp_pid);
+			tmp_pid = ptrace(PTRACE_PEEKDATA, pid, args+(4*sizeof(int)), NULL);
+			printk("DVK handle_dvk_enter bind parm_nodeid=%d\n",tmp_pid);	
+			
 			if (ptrace(PTRACE_SETREGS, pid, 0, r->gp)){
 				printk("DVK handle_dvk_enter DVK_IOCQGETEP PTRACE_SETREGS errno=%d\n", errno);			
 				fatal_sigsegv();
 			}
-			return(0);
-		}	
-		if( (((cmd  >> _IOC_TYPESHIFT) & _IOC_TYPEMASK)  == DVK_IOC_MAGIC)) {
+			return(1);
+		} else if ( (((cmd  >> _IOC_TYPESHIFT) & _IOC_TYPEMASK)  == DVK_IOC_MAGIC)) {
 //			|| (cmd == DVK_IOCSDVKBIND)) { 
 //			printk(" cmd=%X filter_cmd=%X magic=%X\n", cmd, ((cmd  >> _IOC_TYPESHIFT) & _IOC_TYPEMASK), DVK_IOC_MAGIC);
 			printk("DVK handle_dvk_enter __NR_ioctl fd=%d cmd=%X lpid=%d\n", fd, cmd, lpid);
-			return(0);
+			return(1);
 		}
-	} else if( syscall == __NR_open ){ // DETECT OPEN ////////////////////////// 
-		// int open(const char *pathname, int flags, mode_t mode);
-		open_path = (char  *) ptrace(PTRACE_PEEKUSER, pid, sizeof(long)*EBX, 0);
-//		open_path	= UPT_SYSCALL_ARG1(r);
-		open_flags  = UPT_SYSCALL_ARG2(r);
-		open_mode   = UPT_SYSCALL_ARG3(r);
-//					memset(tmp_path, 0, len+1);
-		tmp_ptr = (long *) &tmp_path[0];
-		*tmp_ptr = (long) ptrace(PTRACE_PEEKDATA, pid, open_path+0, NULL ); 
-		tmp_ptr = (long *) &tmp_path[4];
-		*tmp_ptr = (long) ptrace(PTRACE_PEEKDATA, pid, open_path+sizeof(long), NULL); 
-//		tmp_path[4] = ptrace(PTRACE_PEEKDATA, pid, open_path+4, &rcode); 
-		tmp_path[2*sizeof(long)] = 0;
-//		if(count > 0) {
-//			count--;
-//			printk("DVK handle_dvk_enter __NR_open tmp_path=[%s] UML_DVK_DEV=[%s]\n", tmp_path, UML_DVK_DEV);
-//		}
-		if ( strncmp(tmp_path, UML_DVK_DEV, UML_DVK_NAMELEN) == 0) { // string MATCH!
-				lpid    = stub_syscall0(__NR_getpid);
-				printk("DVK handle_dvk_enter MATCH __NR_open tracee_lpid=%d tracer_lpid=%d tmp_path=%s flags=%X mode=%X\n", 
-				pid, lpid, tmp_path, open_flags, open_mode);
-				return(0);
-		} 
-	}			
-	return(1);
+	}else if( syscall == __NR_open ){ // DETECT OPEN ////////////////////////// 
+			// int open(const char *pathname, int flags, mode_t mode);
+			open_path = (char  *) ptrace(PTRACE_PEEKUSER, pid, sizeof(long)*EBX, 0);
+	//		open_path	= UPT_SYSCALL_ARG1(r);
+			open_flags  = UPT_SYSCALL_ARG2(r);
+			open_mode   = UPT_SYSCALL_ARG3(r);
+	//					memset(tmp_path, 0, len+1);
+			tmp_ptr = (long *) &tmp_path[0];
+			*tmp_ptr = (long) ptrace(PTRACE_PEEKDATA, pid, open_path+0, NULL ); 
+			tmp_ptr = (long *) &tmp_path[4];
+			*tmp_ptr = (long) ptrace(PTRACE_PEEKDATA, pid, open_path+sizeof(long), NULL); 	
+	//		tmp_path[4] = ptrace(PTRACE_PEEKDATA, pid, open_path+4, &rcode); 
+			tmp_path[2*sizeof(long)] = 0;
+	//		if(count > 0) {
+	//			count--;
+	//			printk("DVK handle_dvk_enter __NR_open tmp_path=[%s] UML_DVK_DEV=[%s]\n", tmp_path, UML_DVK_DEV);
+	//		}
+			if ( strncmp(tmp_path, UML_DVK_DEV, UML_DVK_NAMELEN) == 0) { // string MATCH!
+					lpid    = stub_syscall0(__NR_getpid);
+					printk("DVK handle_dvk_enter MATCH __NR_open tracee_lpid=%d tracer_lpid=%d tmp_path=%s flags=%X mode=%X\n", 
+					pid, lpid, tmp_path, open_flags, open_mode);
+				return(1);
+			} 
+	} 
+	return(0);
 }
 #endif // 	CONFIG_UML_DVK
 
@@ -563,7 +666,7 @@ void userspace(struct uml_pt_regs *regs)
 
 #ifdef CONFIG_UML_DVK
 		extern int dvk_fd; 
-		int sg, rcode;
+		int sg, rcode, err;
 		int dvk_retcode;
 		// only works without PTRACE_SYSEMU 
 //		if( local_using_sysemu) goto userspace_sysemu;
@@ -576,12 +679,26 @@ void userspace(struct uml_pt_regs *regs)
 				if( dvk_retcode != (-ENOSYS))
 					printk("userspace WARNING dvk_retcode=%d != -ENOSYS\n", dvk_retcode);
 				rcode = handle_dvk_enter(pid, regs);
-				if( rcode < 0) goto userspace_sysemu; 
-				if( rcode == 0) { // DVKCALL ENTER  
+				if( rcode < 0) goto userspace_sysemu;				
+				if( rcode == 1) { // NON-WAITING DVKCALL ENTER  
 					handle_dvk_exit( pid, regs);
 					dvk_retcode = ptrace(PTRACE_PEEKUSER, pid, SC_RETCODE, NULL);
 					if( dvk_retcode == (-ENOSYS))
 							printk("handle_dvk_exit WARNING dvk_retcode=%d == -ENOSYS\n", dvk_retcode);
+					pid = userspace_pid[0];
+					interrupt_end();
+					/* Avoid -ERESTARTSYS handling in host */
+					if (PT_SYSCALL_NR_OFFSET != PT_SYSCALL_RET_OFFSET)
+						PT_SYSCALL_NR(regs->gp) = -1;
+					continue;
+				} else  if( rcode == 2) { // WAITING  DVKCALL ENTER  
+					handle_dvk_wait( pid, regs);
+					err = ptrace(PTRACE_CONT, pid, 0, 0);
+					if (err < 0) {
+						printk(UM_KERN_ERR "handle_dvk_exit - continuing to end of "
+							   "syscall failed, errno = %d\n", errno);
+						fatal_sigsegv();
+					}
 					pid = userspace_pid[0];
 					interrupt_end();
 					continue;

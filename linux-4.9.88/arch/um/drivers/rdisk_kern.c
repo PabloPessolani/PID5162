@@ -1,4 +1,3 @@
-#define EDVSNOTTY        (_SIGN 25)  /* inappropriate I/O control operation */
 /*
  * Copyright (C) 2000 Jeff Dike (jdike@karaya.com)
  * Licensed under the GPL

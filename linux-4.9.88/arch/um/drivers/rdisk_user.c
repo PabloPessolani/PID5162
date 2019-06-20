@@ -4,6 +4,7 @@
  * Licensed under the GPL
  */
 
+// WARNING the configuration setting CONFIG_UML_RDISK is not seeing here!!!!!!!
 // #ifdef CONFIG_UML_RDISK 
 
 #include <stddef.h>
@@ -65,7 +66,7 @@ int start_rd_thread(unsigned long sp, int *fd_out)
  rd_out:
 	return err;
 }
-// #endif // CONFIG_UML_RDISK 
+//#endif // CONFIG_UML_RDISK 
 
 
 
