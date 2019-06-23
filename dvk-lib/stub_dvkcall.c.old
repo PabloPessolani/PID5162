@@ -33,7 +33,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <signal.h>
 #include <sys/ioctl.h>
 #include <sys/ptrace.h>
 #include <sys/syscall.h>    /* For SYS_xxx definitions */
@@ -76,9 +75,9 @@ int dvk_fd;
 
 //###################################################################
 //###################################################################
-#ifdef  CONFIG_UML_USER
-#undef  CONFIG_UML_USER
-#endif // CONFIG_UML_USER
+//#ifdef CONFIG_UML_DVK
+//#undef CONFIG_UML_DVK
+//#endif // CONFIG_UML_DVK
 //###################################################################
 //###################################################################
 
@@ -93,6 +92,11 @@ long dvk_open(void)
 	dvk_fd = open(DVK_FILE_NAME, 0);
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ret = (-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
+	
 #else // CONFIG_UML_DVK
 	dvk_fd = os_open_file(DVK_FILE_NAME, of_set_rw(OPENFLAGS(), 1, 1), &dvk_fd);
 #endif // CONFIG_UML_DVK
@@ -136,6 +140,10 @@ long dvk_dvs_end(void)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -151,6 +159,10 @@ long dvk_dc_init(dc_usr_t *dcu_ptr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -166,6 +178,10 @@ long dvk_dc_end(int dcid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -181,6 +197,10 @@ long dvk_getep(int pid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < EDVSERRCODE) { ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < EDVSERRCODE) ERROR_RETURN(ret);
@@ -196,6 +216,11 @@ long dvk_getdvsinfo(dvs_usr_t *dvsu_ptr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+    raise(SIGSTOP);
+//	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret); 
 	if (ret < 0) ERROR_RETURN(ret);
@@ -211,6 +236,10 @@ long dvk_proxies_unbind(int pxid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -226,6 +255,10 @@ long dvk_node_down(int nodeid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -268,6 +301,10 @@ long dvk_getdcinfo(int dcid, dc_usr_t *dcu_ptr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -286,6 +323,10 @@ long dvk_getnodeinfo(int nodeid, node_usr_t *node_ptr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -326,6 +367,10 @@ long dvk_wakeup(int dcid, int dst_ep)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -344,6 +389,10 @@ long dvk_put2lcl(cmd_t *header, proxy_payload_t *payload)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -362,6 +411,11 @@ long dvk_add_node(int dcid, int nodeid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
+#else // CONFIG_UML_DVK
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -380,6 +434,10 @@ long dvk_del_node(int dcid, int nodeid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -398,6 +456,10 @@ long dvk_dvs_init(int nodeid, dvs_usr_t *dvsu_ptr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -416,6 +478,10 @@ long dvk_proxy_conn(int pxid, int status)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -644,6 +710,10 @@ long dvk_unbind_T(int dcid, int endpoint, unsigned long timeout)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USER		
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -690,9 +760,8 @@ long dvk_receive_T(int endpoint , message *mptr, long timeout)
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
 #ifdef  CONFIG_UML_USER
-//       ret = raise(SIGSTOP);
-//	ret = ptrace(PTRACE_TRACEME,0,0,0);
-//	if (ret< 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
 #endif //  CONFIG_UML_USER		
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
@@ -791,6 +860,10 @@ long dvk_setpriv(int dcid , int endpoint, priv_usr_t *priv)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -811,6 +884,10 @@ long dvk_getpriv(int dcid , int endpoint, priv_usr_t *priv)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -856,6 +933,10 @@ long dvk_node_up(char *name, int nodeid,  int pxid)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -876,6 +957,10 @@ long dvk_getproxyinfo(int pxid, proc_usr_t *sproc_usr, proc_usr_t *rproc_usr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -896,6 +981,10 @@ long dvk_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);
@@ -942,6 +1031,10 @@ long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	}
 	errno = 0;
 bind_return:	
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE		
 #endif  // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if ( ret < EDVSERRCODE) ERROR_RETURN(ret); 
@@ -966,6 +1059,10 @@ long dvk_proxies_bind(char *name, int pxid, int spid, int rpid, int maxcopybuf)
 #ifndef  CONFIG_UML_DVK
 	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);}
+#endif //  CONFIG_UML_USE	
 #endif // CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 	if (ret < 0) ERROR_RETURN(ret);

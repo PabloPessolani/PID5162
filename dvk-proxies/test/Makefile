@@ -1,6 +1,6 @@
 CC=gcc
 BINS= 	loop_r-s_server loop_sr_client loop_copy_server loop_copy_client \
-		copy_client copy_server 
+		copy_client copy_server uml_server uml_client 
 
 # loop_clt_vcopy3 \
 #		loop_clt_vcopy3a loop_clt_vcopy3b loop_clt_vcopy4 \
@@ -9,6 +9,7 @@ BINS= 	loop_r-s_server loop_sr_client loop_copy_server loop_copy_client \
 	
 INCLUDE = ..
 LIBS = ../../dvk-lib/stub_dvkcall.o
+LIBUML = ../../dvk-lib/libuserdvk.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
 		
 all: $(BINS)
@@ -31,11 +32,11 @@ copy_server: copy_server.c
 copy_client: copy_client.c 
 	$(CC)  $(CFLAGS)  -o copy_client copy_client.c $(LIBS) -I$(INCLUDE)
 
-copy_server: copy_server.c 
-	$(CC)  $(CFLAGS)  -o copy_server copy_server.c $(LIBS) -I$(INCLUDE)
+uml_server: copy_server.c 
+	$(CC)  $(CFLAGS)  -o uml_server copy_server.c $(LIBUML) -I$(INCLUDE)
 
-copy_client: copy_client.c 
-	$(CC)  $(CFLAGS)  -o copy_client copy_client.c $(LIBS) -I$(INCLUDE)
+uml_client: copy_client.c 
+	$(CC)  $(CFLAGS)  -o uml_client copy_client.c $(LIBUML) -I$(INCLUDE)
 	
 clean:
 	rm -f $(BINS)

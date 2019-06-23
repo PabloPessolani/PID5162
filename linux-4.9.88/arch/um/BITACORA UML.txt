@@ -6000,8 +6000,272 @@ CONFIG_UML_USER
 
 ./rdisk: error while loading shared libraries: /usr/src/dvs/dvk-lib/stub_dvkcall.o: only ET_DYN and ET_EXEC can be loaded
 
+==============================================================================================
+20190621: 	Cambie el MAKEFILE de  /usr/src/dvs/dvk-lib
+
+Solo genera librerias para DVK NATIVO y DVK UML_USER
+No se genera libreria para DVK_KERNEL dado que el codigo es incorporado directamente como fuente 
+no como objeto.
 
 
+root@node0:/usr/src/dvs/dvk-proxies/test# ./uml_server 0 10
+DEBUG 681:dvk_open:90: Open dvk device file /dev/dvk
+DVK handle_dvk_enter MATCH __NR_open tracee_lpid=429 tracer_lpid=251 tmp_path=/dev/dvk flags=0 mode=4017ED5C
+DVK handle_dvk_exit pid=429
+handle_dvk_exit dvk_retcode=27
+DEBUG 681:dvk_getdvsinfo:213: 
+DVK handle_dvk_enter __NR_ioctl fd=27 cmd=8004E31B lpid=0
+DVK handle_dvk_exit pid=429
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_getdvsinfo:215: ioctl ret=0 errno=0
+ERROR: 681:dvk_getdvsinfo:221: rcode=-1
+ERROR: 681:dvk_getdvsinfo:221: rcode=-1
+dvk_getdvsinfo error=-1 
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:256
+
+ERROR: 681:dvk_getdvsinfo:221: rcode=-1
+ERROR: 681:dvk_getdvsinfo:221: rcode=-1
+#ifdef  CONFIG_UML_USER
+	ret = ptrace(PTRACE_TRACEME,0,0,0);
+	if (ret < 0) {ERROR_PRINT(-errno); ERROR_RETURN(ret);} <<<<<<<<<<<<<<<<<< 
+#endif //  CONFIG_UML_USER
+
+
+
+
+==============================================================================================
+20190623:
+		Al arrancar el uml_server 0 10 queda bloqueado el kernel.
+		Luego, desde el host ejecuto copy_client 0 10 55 y lo rehabilita 
+		
+DEBUG 719:dvk_receive_T:683: endpoint=31438 timeout=-1
+DVK handle_dvk_enter __NR_ioctl fd=29 cmd=4004E303 lpid=0 dvk_call=3 wait=2
+DVK handle_dvk_wait pid=912
+
+DEBUG 912:dvk_receive_T:688: ioctl ret=0 errno=0
+[3]+  Stopped                 ./uml_server 0 10 <<<<<<<<<<<<<<<< STOPEADO, NO MUERTO 
+
+
+root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  9012/691    0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   579/579    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  10    10  9978/912    0    0   20 27342 27342 27342 27342 linux  <<<<<<<<<<< ESTA STOPEADO         
+ 0  30    30  9020/699    0    0   20 27342 27342 27342 27342 linux 
+
+
+BIND DE UML_SERVER 
+	[65889.399119] DEBUG dvk_ioctl:201: cmd=4004E309 arg=BFB4CB08
+	[65889.399120] DEBUG dvk_ioctl:221: DVK_CALL=9 (bind) 
+	[65889.399121] DEBUG io_bind:97: 
+	[65889.399124] DEBUG new_bind:1372: oper=0 dcid=0 param_pid=912 endpoint=10 nodeid=-1
+	[65889.399126] DEBUG new_bind:1394: RLOCK_DC dc=0 count=0
+	[65889.399128] DEBUG new_bind:1407: WLOCK_PROC ep=10 count=0
+	[65889.399130] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+	[65889.399133] DEBUG new_bind:1441: param_pid=912 lpid=9978 vpid=912 tid=9978
+	[65889.399134] DEBUG new_bind:1465: SELF_BIND param_pid=912 lpid=9978 vpid=912 tid=9978
+	[65889.399136] DEBUG new_bind:1487: WUNLOCK_PROC ep=10 count=0
+	[65889.399137] DEBUG new_bind:1490: WLOCK_TASK pid=9978 count=0
+	[65889.399138] DEBUG new_bind:1491: WLOCK_PROC ep=10 count=0
+	[65889.399139] DEBUG new_bind:1527: increment the reference count of the task struct=9978 count=2
+	[65889.399141] DEBUG new_bind:1538: process p_name=linux *p_name_ptr=linux
+	[65889.399143] DEBUG new_bind:1595: nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=9978 vpid=912 nodeid=0 name=linux 
+	[65889.399145] DEBUG new_bind:1596: nr=10 endp=10 dcid=0 lpid=9978 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+	[65889.399147] DEBUG new_bind:1610: WUNLOCK_TASK pid=9978 count=0
+	[65889.399148] DEBUG new_bind:1616: WUNLOCK_PROC ep=10 count=0
+	[65889.399149] DEBUG new_bind:1618: DC_INCREF counter=4
+	[65889.399150] DEBUG new_bind:1619: RUNLOCK_DC dc=0 count=0
+
+RECEIVE DE UML_SERVER 
+	[65889.430196] DEBUG dvk_ioctl:201: cmd=4004E303 arg=BFB4CB20
+	[65889.430200] DEBUG dvk_ioctl:221: DVK_CALL=3 (mini_receive) 
+	[65889.430201] DEBUG io_mini_receive:35: 
+	[65889.430203] DEBUG new_mini_receive:288: src_ep=31438
+	[65889.430207] DEBUG check_caller:536: caller_pid=9978 caller_tgid=9978
+	[65889.430208] DEBUG check_caller:572: WLOCK_PROC ep=10 count=0
+	[65889.430210] DEBUG check_caller:601: WUNLOCK_PROC ep=10 count=0
+	[65889.430211] DEBUG check_caller:604: dcid=0
+	[65889.430212] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+	[65889.430213] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+	[65889.430214] DEBUG check_caller:618: caller_pid=9978 
+	[65889.430216] DEBUG new_mini_receive:299: RLOCK_PROC ep=10 count=0
+	[65889.430217] DEBUG new_mini_receive:303: caller_nr=10 caller_ep=10 src_ep=31438 
+	[65889.430218] DEBUG new_mini_receive:307: dcid=0
+	[65889.430219] DEBUG new_mini_receive:311: RUNLOCK_PROC ep=10 count=0
+	[65889.430220] DEBUG new_mini_receive:313: RLOCK_DC dc=0 count=0
+	[65889.430221] DEBUG new_mini_receive:316: RUNLOCK_DC dc=0 count=0
+	[65889.430223] DEBUG new_mini_receive:366: WLOCK_PROC ep=10 count=0
+	[65889.430224] DEBUG new_mini_receive:471: Any suitable message from 31438 was not found.
+	[65889.430225] DEBUG sleep_proc:344: timeout=-1
+	[65889.430227] DEBUG sleep_proc:355: BEFORE DOWN lpid=9978 p_sem=0 timeout=-1
+	[65889.430228] DEBUG sleep_proc:357: endpoint=10 flags=8
+	[65889.430229] DEBUG sleep_proc:361: WUNLOCK_PROC ep=10 count=0
+
+SENDREC DEL COPY_CLIENT EN EL HOST 
+	[65969.007070] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+	[65969.007071] DEBUG io_mini_sendrec:56: 
+	[65969.007072] DEBUG new_mini_sendrec:507: srcdst_ep=10
+	[65969.007074] DEBUG check_caller:536: caller_pid=9991 caller_tgid=9991
+	[65969.007075] DEBUG check_caller:572: WLOCK_PROC ep=55 count=0
+	[65969.007076] DEBUG check_caller:601: WUNLOCK_PROC ep=55 count=0
+	[65969.007077] DEBUG check_caller:604: dcid=0
+	[65969.007078] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+	[65969.007079] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+	[65969.007080] DEBUG check_caller:618: caller_pid=9991 
+	[65969.007081] DEBUG new_mini_sendrec:518: RLOCK_PROC ep=55 count=0
+	[65969.007083] DEBUG new_mini_sendrec:523: caller_nr=55 caller_ep=55 srcdst_ep=10 
+	[65969.007084] DEBUG new_mini_sendrec:526: RUNLOCK_PROC ep=55 count=0
+	[65969.007085] DEBUG new_mini_sendrec:528: dcid=0
+	[65969.007086] DEBUG new_mini_sendrec:532: RLOCK_DC dc=0 count=0
+	[65969.007087] DEBUG new_mini_sendrec:535: RUNLOCK_DC dc=0 count=0
+	[65969.007088] DEBUG new_mini_sendrec:550: WLOCK_PROC ep=55 count=0
+	[65969.007090] DEBUG new_mini_sendrec:557: WUNLOCK_PROC ep=55 count=0
+	[65969.007091] DEBUG new_mini_sendrec:557: WLOCK_PROC ep=10 count=0
+	[65969.007092] DEBUG new_mini_sendrec:557: WLOCK_PROC ep=55 count=0
+	[65969.007093] DEBUG new_mini_sendrec:558: srcdst_nr=10 srcdst_ep=10
+	[65969.007094] DEBUG new_mini_sendrec:578: srcdst_ptr->p_usr.p_nodeid=0
+	[65969.007095] DEBUG new_mini_sendrec:582: RLOCK_DC dc=0 count=0
+	[65969.007096] DEBUG new_mini_sendrec:586: RUNLOCK_DC dc=0 count=0
+	[65969.007098] DEBUG new_mini_sendrec:601: dcid=0 caller_pid=9991 caller_nr=55 srcdst_ep=10 
+	[65969.007098] DEBUG new_mini_sendrec:606: SENDING HALF
+	[65969.007099] DEBUG new_mini_sendrec:687: destination is waiting. Copy the message and wakeup destination
+	[65969.007102] DEBUG copy_usr2usr:886: rqtr_ep=55 src_ep=55 src_lpid=9991 src_vpid=9991 src_addr=00da0000
+	[65969.007104] DEBUG copy_usr2usr:889: dst_ep=10 dst_lpid=9978 dst_vpid=912 dst_addr=80006000 bytes=76
+	[65969.007105] DEBUG copy_usr2usr:893: task_pid_nr(current)=9991
+	[65969.007106] DEBUG copy_usr2usr:896: WRITE
+	[65969.007107] DEBUG copy_usr2usr:901: task_pid_nr(dst_ptr->p_task)=9978
+	[65969.023185] DEBUG dvk_vm_rw:441: pid=9978 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+	[65969.023304] DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+	[65969.023306] DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+	[65969.023307] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+	[65969.023309] DEBUG dvk_vm_rw_core:277: pid=9978 riovcnt=1 flags=0 vm_write=1
+	[65969.029726] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+	[65969.029743] DEBUG dvk_vm_rw_core:349: rc=76
+	[65969.029744] DEBUG dvk_vm_rw_core:356: rc=76
+	[65969.029746] DEBUG copy_usr2usr:954: len=76
+	[65969.029748] DEBUG inherit_cpu:288: cpuid=0 vpid=ld
+	[65969.029751] ERROR: 9991:inherit_cpu:292: rcode=-3
+	[65969.029754] DEBUG inherit_cpu:296: nr=10 endp=10 dcid=0 lpid=9978 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+	[65969.029755] DEBUG new_mini_sendrec:693: BEFORE UP lpid=9978 p_sem=-1 rcode=76
+	[65969.029766] DEBUG new_mini_sendrec:701: WUNLOCK_PROC ep=10 count=0
+	[65969.029768] DEBUG sleep_proc:344: timeout=-1
+	[65969.029769] DEBUG sleep_proc:355: BEFORE DOWN lpid=9991 p_sem=0 timeout=-1
+	[65969.029771] DEBUG sleep_proc:357: endpoint=55 flags=8
+	[65969.029772] DEBUG sleep_proc:361: WUNLOCK_PROC ep=55 count=0
+	[65969.029778] DEBUG sleep_proc:368: endpoint=10 ret=0 p_rcode=76
+	[65969.029779] DEBUG sleep_proc:369: endpoint=10 flags=0 cpuid=0
+	[65969.029781] DEBUG sleep_proc:370: WLOCK_PROC ep=10 count=0
+	[65969.029783] DEBUG sleep_proc:417: nr=10 endp=10 dcid=0 lpid=9978 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+	[65969.029784] DEBUG sleep_proc:419: someone wakeups me: sem=0 p_rcode=0
+	[65969.029785] DEBUG new_mini_receive:488: WUNLOCK_PROC ep=10 count=0  <<< DESPERTO AL UML_SERVER 
+
+
+Si luego desde UML le envio un SIGCONT 
+
+root@node0:/usr/src/dvs/dvk-proxies/test# userspace - child stopped with signal 18
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:11
+[3]+  Segmentation fault      ./uml_server 0 10
+
+
+.....................................................................
+		FUNCIONO OK - UNICO PROBLEMA: EL UML_KERNEL QUEDA BLOQUEADO 
+		
+root@node0:/usr/src/dvs/dvk-proxies/test# 
+root@node0:/usr/src/dvs/dvk-proxies/test# ./uml_server 0 10
+DEBUG 681:dvk_open:91: Open dvk device file /dev/dvk
+DVK handle_dvk_enter MATCH __NR_open tracee_lpid=412 tracer_lpid=232 tmp_path=/dev/dvk flags=0 mode=4017CD5C
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=28
+DEBUG 681:dvk_getdvsinfo:193: 
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=8004E31B lpid=0 dvk_call=27 wait=1
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_getdvsinfo:195: ioctl ret=0 errno=0
+DEBUG 681:dvk_getdvsinfo:200: ioctl ret=0
+ copy_server.c:main:47:local_nodeid=0
+ copy_server.c:main:48:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 681:dvk_getdcinfo:263: dcid=0
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=8004E30E lpid=0 dvk_call=14 wait=1
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_getdcinfo:267: ioctl ret=0 errno=0
+DEBUG 681:dvk_getdcinfo:272: ioctl ret=0
+ copy_server.c:main:58:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ copy_server.c:main:59:flags=0 dc_nodes=3 dc_pid=574 dc_name=DC0
+DEBUG 681:dvk_bind_X:925: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+DVK handle_dvk_enter bind parm_cmd=0
+DVK handle_dvk_enter bind parm_dcid=0
+DVK handle_dvk_enter bind parm_pid=-1
+DVK handle_dvk_enter bind parm_ep=10
+DVK handle_dvk_enter bind parm_nodeid=-1
+DVK handle_dvk_enter DVK_IOCSDVKBIND BEFORE fd=28 cmd=4004E309 pid=-1
+DVK handle_dvk_enter DVK_IOCSDVKBIND AFTER  fd=28 cmd=4004E309 pid=0
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=10
+DEBUG 681:dvk_bind_X:934: ioctl ret=10 errno=0
+DEBUG 681:dvk_bind_X:946: ioctl ret=10
+ copy_server.c:main:76:BIND SERVER dcid=0 svr_pid=681 svr_ep=10
+DEBUG 681:dvk_getprocinfo:890: dcid=0 p_nr=10 
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=8004E30F lpid=0 dvk_call=15 wait=1
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_getprocinfo:895: ioctl ret=0 errno=0
+DEBUG 681:dvk_getprocinfo:900: ioctl ret=0
+ copy_server.c:main:85:nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=3768 vpid=412 nodeid=0 name=linux 
+ copy_server.c:main:93:SERVER m_ptr=0x80006000
+ copy_server.c:main:115:SERVER: buffer before=0123456789012345678901234567890123456789012345678901
+DEBUG 681:dvk_receive_T:683: endpoint=31438 timeout=-1
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=4004E303 lpid=0 dvk_call=3 wait=2
+DVK handle_dvk_wait pid=412
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_receive_T:688: ioctl ret=0 errno=0
+DEBUG 681:dvk_receive_T:698: ioctl ret=0
+ copy_server.c:main:119:SERVER: source=55 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0xd1b000 m1p2=(nil) m1p3=(nil) 
+DEBUG 681:dvk_getprocinfo:890: dcid=0 p_nr=55 
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=8004E30F lpid=0 dvk_call=15 wait=1
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=0
+DEBUG 681:dvk_getprocinfo:895: ioctl ret=0 errno=0
+DEBUG 681:dvk_getprocinfo:900: ioctl ret=0
+ copy_server.c:main:137:nr=55 endp=55 dcid=0 flags=8 misc=20 lpid=3770 vpid=3770 nodeid=0 name=copy_client 
+DEBUG 681:dvk_vcopy:108: src_ep=55 dst_ep=35534 bytes=1024
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=4004E30D lpid=0 dvk_call=13 wait=2
+DVK handle_dvk_wait pid=412
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=1024
+DEBUG 681:dvk_vcopy:116: ioctl ret=1024 errno=0
+DEBUG 681:dvk_vcopy:125: ioctl ret=1024
+ copy_server.c:main:144:SERVER: buffer received=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvw
+DEBUG 681:dvk_vcopy:108: src_ep=35534 dst_ep=55 bytes=1024
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=4004E30D lpid=0 dvk_call=13 wait=2
+DVK handle_dvk_wait pid=412
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=1024
+DEBUG 681:dvk_vcopy:116: ioctl ret=1024 errno=0
+DEBUG 681:dvk_vcopy:125: ioctl ret=1024
+ copy_server.c:main:154:SERVER: buffer sent=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEFGHIJKLMNOPQRSTUVWXYA
+DEBUG 681:dvk_send_T:658: endpoint=55 timeout=-1
+DVK handle_dvk_enter __NR_ioctl fd=28 cmd=4004E302 lpid=0 dvk_call=2 wait=2
+DVK handle_dvk_wait pid=412
+DVK handle_dvk_exit pid=412
+handle_dvk_exit dvk_retcode=76
+DEBUG 681:dvk_send_T:663: ioctl ret=76 errno=0
+DEBUG 681:dvk_send_T:672: ioctl ret=76
+ copy_server.c:main:163:SERVER END
+DVK: exit_unbind local_nodeid:0
+DVK: old_exit_unbind code:0
+
+root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  3574/232    0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   610/610    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  10    10  3768/412    0    8   20 31438 27342 27342 27342 linux     <<<<<<<<<<   
+ 0  30    30  3582/240    0    0   20 27342 27342 27342 27342 linux 
+ 
+ 
  
 ====================================  ULTIMO_LOG ===================================
 
@@ -6058,6 +6322,10 @@ SI NO FUNCINA NADA:
 								
 ================================== TODO ==================================================
 
+TODO:
+		PROBAR COMPILAR EL DVK CON  arch=UM 
+		NO FUNCIONA
+		
 Hacer que el UML-Kernel utilice M3-IPC no es problematico.
 Se crean hilos por cada driver o FS y se manejan sin ningun problema. 
 Proyecto1: uso de RDISK

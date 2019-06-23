@@ -2,7 +2,7 @@
  * Copyright (C) 2019 Pablo Pessolani
  * Licensed under the GPL
  * in linux-4.9.88/arch/um/drivers
- */
+ */ 
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/slab.h>
