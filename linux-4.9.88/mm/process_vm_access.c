@@ -426,7 +426,8 @@ free_iovecs:
  *  return less bytes than expected if an error occurs during the copying
  *  process.
  */
-static ssize_t dvk_vm_rw(struct task_struct *task,
+//static 
+ssize_t dvk_vm_rw(struct task_struct *task,
 			     const struct iovec *lvec,
 			     unsigned long liovcnt,
 			     const struct iovec *rvec,

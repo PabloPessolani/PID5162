@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
+#include <sys/ipc.h>
 #include <sys/time.h>
 #include <sys/syscall.h>    /* For SYS_xxx definitions */
 #include <fcntl.h>

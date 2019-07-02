@@ -3,7 +3,7 @@ BINS= 	dc_init
 			
 INCLUDE = ..
 		
-LIBS = 	/usr/src/dvs/dvk-lib/stub_dvkcall.o \
+LIBS = 	/usr/src/dvs/dvk-lib/libdvkipc.so \
 		/usr/local/lib/libspread.a \
 		/usr/src/dvs/lib/config/libconfig.so \
 		/usr/local/lib/libspread-util.a 

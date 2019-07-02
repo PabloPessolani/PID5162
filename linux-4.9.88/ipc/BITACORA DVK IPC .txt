@@ -1,0 +1,576 @@
+
+DVK COMO VARIANTE DE SYS V IPC 
+===============================
+
+
+Aprovechando la posibilidad que brinda la llamada al sistema 
+	int ipc(unsigned int call, int first, int second, int  third , void *ptr, long fifth);
+	
+donde call es:
+#define SEMOP		 1
+#define SEMGET		 2
+#define SEMCTL		 3
+#define SEMTIMEDOP	 4
+#define MSGSND		11
+#define MSGRCV		12
+#define MSGGET		13
+#define MSGCTL		14
+#define SHMAT		21
+#define SHMDT		22
+#define SHMGET		23
+#define SHMCTL		24
+#define DIPC        25
+
+Las dvk_call valdran de (1-DVK_NR_CALLS)*256 = (1-DVK_NR_CALLS) << 8 
+
+En el directorio linux/ipc puse los fuentes de DVK, pero ahora sin necesidad de utilizar
+IOCTL y por lo tanto sin necesidad de convertir los parametros en structure de parametros
+
+Esto permitira utilizar DVK en UML en forma interna, como si fuese un nodo diferente
+al nodo del HOST.
+
+UML_USER--(send)-->UML_SPROXY-(write)->UML_DRIVER======(msgq)====>HOST_RPROXY-->put2lcl-->HOST_DVK-(receive)->HOST_USER 
+HOST_USER--(send)-->HOST_DVK-(get2rmt)->HOST_SPROXY=====(msgq)===>UML_DRIVER--(read)-->UML_RPROXY--(receive)->UML_USER 
+
+Sería de utilidad disponer de una primitiva put2rmt de tal forma de que un RPROXY que recibe un mensaje con destino 
+a un endpoint de otro nodo pueda insertarlo en el kernel local para que el SPROXY a ese nodo lo envíe.
+
+PARA NO COMPLICAR: LA  MEJOR OPCION PARECE SER DARLE AL UML UN TRATAMIENTO IDENTICO TAL COMO SI FUESE UN NODO INDEPENDIENTE
+
+1) INSTALAR UML UTILITIES 
+		Package uml-utilities
+		https://github.com/malattia/uml-utilities
+		
+2) Configurar la red 
+http://user-mode-linux.sourceforge.net/network.html
+http://user-mode-linux.sourceforge.net/old/UserModeLinux-HOWTO-6.html
+
+
+PROBLEMA:
+		ES IMPORTANTE definir si los proceso que se ejecutan dentro de UML
+		son del NODO HOST o son del NODO UML ???
+
+		Como comunicar el nodo UML con el nodo del HOST.
+		1) Usando un proxy TCP o TIPC tal como si fuese un Nodo real
+			En este caso UML es el NODEu y el host es NODE0 
+			PROBLEMA: Hay que configurar la interface ethernet en UML
+			
+				NODEu
+			------------
+			|   UML    |
+			|  PROXY   |
+			|  UML-TCP |
+			------------				NODE0
+				|					-----------
+				--------------------| PROXY   |
+									| HOST-TCP|
+									-----------
+									
+		2) Utilizando un proceso proxy UML que utiliza un driver de UML que a su vez
+			es un proxy del HOST 
+			
+			UML_USER---->UML_SPROXY--(write)->RPROXY_DRIVER
+			send()----->get2rmt()
+						write(/dev/umlXX)--->read(/dev/umlXX) siendo XX el nodeid de UML 
+											  if(dest_node == local_nodeid)
+												put2lcl()
+											  else
+												funcionar como proxy SENDER 		
+			En este caso, el proceso UML_USER podrá comunicarse con procesos LOCALES externos
+			pero no con procesos REMOTOS.
+			A no ser que 
+			
+			
+		3) 	Utilizando un proceso proxy UML que utiliza un driver de UML que hace put2lcl
+			UML_USER--->UML_SPROXY  
+			send()----->get2rmt()	
+			
+			
+----------------------------------------------------------------------------------------
+20190629:
+		local_nodeid=0 Enter para continuar... 
+		DEBUG 968:dvk_open:102: 
+		Initializing DVS. Local node ID 0... 
+		DEBUG 968:dvk_dvs_init:510: nodeid=0
+		DEBUG 968:dvk_dvs_init:514: ipc ret=-1
+		ERROR: 968:dvk_dvs_init:527: rcode=-1
+		ERROR: test_dvs_init.c:main:171: rcode=-1
+		d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+		Get DVS info
+		DEBUG 968:dvk_getdvsinfo:238: 
+		DEBUG 968:dvk_getdvsinfo:242: ipc ret=-1
+		ERROR: 968:dvk_getdvsinfo:252: rcode=-1
+		local node ID -1... 
+		d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+
+
+root@node0:/usr/src/dvs/dvk-tests# dmesg 
+[14503.250259] ERROR: 968:ipc_dvs_init:44: rcode=-301
+[14503.250780] DEBUG ipc_getdvsinfo:1817: local_nodeid=-1
+
+BIEENNNNNNN AL MENOS CON ESTE MENSAJE SABEMOS QUE EL IPC SE EJECUTO.
+
+#define CHECK_NODEID(nodeid) 	if( nodeid < 0 || nodeid >= dvs.d_nr_nodes) 	ERROR_RETURN(EDVSBADNODEID);
+
+quiere decir que si nodeid == 0, entonces lo que esta fallando dvs.d_nr_nodes !!!!!?????
+
+sudo make -j 4 && sudo make modules_install -j 4 && sudo make install -j 4
+update-initramfs -c -k 4.9.88
+update-grub  
+update-grub2
+
+
+[   45.696904] DEBUG ipc_dvs_init:44: nodeid=4530272 !!!!!!!! 0x452060
+[   45.696909] DEBUG ipc_dvs_init:46: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[   45.696910] DEBUG ipc_dvs_init:47: d_max_copybuf=65536 d_max_copylen=1048576
+[   45.696913] DEBUG ipc_dvs_init:48: d_dbglvl=7F306 version=4.9 sizeof(proc)=0
+[   45.696914] ERROR: 574:ipc_dvs_init:50: rcode=-301
+[   45.697023] DEBUG ipc_getdvsinfo:1823: local_nodeid=-1 
+
+
+  	int ipc_op = ((1 )<<16 | (0x18 << 8));
+	              0x10000     0x1800  =  0x11800 
+				  
+				  
+
+root@node0:/usr/src/dvs/dvk-tests# dmesg 
+	ret = ipc(ipc_op, nodeid , 2L, 3L, dvsu_ptr, 5L);
+
+ long ipc_dvs_init(int nodeid, 
+							unsigned long second,
+							unsigned long third,  
+							dvs_usr_t __user *du_addr,
+							long fifth)
+							
+[   71.534150] DEBUG ipc_dvs_init:45: nodeid=5 second=-394174612 third=0 fifth=1
+[   71.534154] DEBUG ipc_dvs_init:47: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[   71.534156] DEBUG ipc_dvs_init:48: d_max_copybuf=65536 d_max_copylen=1048576
+[   71.534158] DEBUG ipc_dvs_init:49: d_dbglvl=7F306 version=4.9 sizeof(proc)=0
+[   71.534159] ERROR: 613:ipc_dvs_init:51: rcode=-301
+[   71.534292] DEBUG ipc_getdvsinfo:1824: local_nodeid=-1 
+
+NO ENTIENDO MUY BIEN PORQUE DA ERROR -301 DADO QUE nodeid=5 (aunque no fue el valor seteado)
+
+	ret = ipc(ipc_op, nodeid , 2222L, 3333L, dvsu_ptr, 1234L); // ALTERE LOS VALORES DE LOS PARAMETROS NO USADOS 
+
+Initializing DVS. Local node ID 0... 
+DEBUG 915:dvk_dvs_init:510: nodeid=0
+DEBUG 915:dvk_dvs_init:514: ipc ipc_op=71680 ret=-1  <<<< 0x11800
+ERROR: 915:dvk_dvs_init:527: rcode=-1
+ERROR: test_dvs_init.c:main:171: rcode=-1
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+Get DVS info
+DEBUG 915:dvk_getdvsinfo:238: 
+DEBUG 915:dvk_getdvsinfo:242: ipc ret=-1
+ERROR: 915:dvk_getdvsinfo:252: rcode=-1
+local node ID -1... 
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+
+
+root@node0:/usr/src/dvs/dvk-tests# dmesg 
+[  772.396051] DEBUG SYSC_ipc:157: dvs_init: call=6144 first=0 second=2222 third=3333 fifth=1234 <<<< ipc/syscall.c LOS VE CORRECTOS 
+[  772.396056] DEBUG ipc_dvs_init:45: nodeid=1234 second=157 third=6144 fifth=82
+[  772.396058] DEBUG ipc_dvs_init:47: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[  772.396060] DEBUG ipc_dvs_init:48: d_max_copybuf=65536 d_max_copylen=1048576
+[  772.396062] DEBUG ipc_dvs_init:49: d_dbglvl=7F306 version=4.9 sizeof(proc)=0
+[  772.396063] ERROR: 915:ipc_dvs_init:51: rcode=-301
+[  772.396178] DEBUG SYSC_ipc:157: getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+[  772.396180] DEBUG ipc_getdvsinfo:1824: local_nodeid=-1 
+
+
+EL PROBLEMA ESTA ACA 
+		DVKDEBUG(DBGPARAMS, "%s: call=%d first=%d second=%d third=%d fifth=%d \n", 
+			dvk_routine_names[dvk_call],
+			call, first, second, third, fifth); 
+		rcode = (*dvk_routine[dvk_call])(first, second, third, ptr, fifth);
+
+
+rroot@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+lcl_nodeid=0 dcid=0
+Enter para continuar... 
+Spread Enter para continuar... 
+partition 5
+mount Enter para continuar... 
+local_nodeid=0 Enter para continuar... 
+DEBUG 604:dvk_open:102: 
+Initializing DVS. Local node ID 0... 
+DEBUG 604:dvk_dvs_init:510: nodeid=0
+DEBUG 604:dvk_dvs_init:514: ipc ipc_op=71680 ret=-1
+ERROR: 604:dvk_dvs_init:527: rcode=-1
+ERROR: test_dvs_init.c:main:171: rcode=-1
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+Get DVS info
+DEBUG 604:dvk_getdvsinfo:238: 
+DEBUG 604:dvk_getdvsinfo:242: ipc ret=-1
+ERROR: 604:dvk_getdvsinfo:252: rcode=-1
+local node ID -1... 
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+DC0 Enter para continuar... ^C
+
+ANDUVO!!!!!!!!!!!!!!!!!!! era un problema del asmlinkage en el codigo del dvk 
+
+root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+lcl_nodeid=0 dcid=0
+Enter para continuar... 
+Spread Enter para continuar... 
+partition 5
+mount Enter para continuar... 
+local_nodeid=0 Enter para continuar... 
+DEBUG 610:dvk_open:102: 
+Initializing DVS. Local node ID 0... 
+DEBUG 610:dvk_dvs_init:510: nodeid=0
+DEBUG 610:dvk_dvs_init:514: ipc ipc_op=71680 ret=0
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+Get DVS info
+DEBUG 610:dvk_getdvsinfo:238: 
+DEBUG 610:dvk_getdvsinfo:242: ipc ret=0
+local node ID 0... 
+d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+d_max_copybuf=65536 d_max_copylen=1048576
+d_dbglvl=FFFFFF version=2.1 sizeof(proc)=512
+DC0 Enter para continuar... ^C
+root@node0:/usr/src/dvs/dvk-tests# dmesg
+[  513.228275] DEBUG SYSC_ipc:156: ipc_dvs_init: call=6144 first=0 second=2222 third=3333 fifth=1234 
+[  513.228281] DEBUG ipc_dvs_init:45: nodeid=2222 second=3333 third=1234 fifth=0
+[  513.228283] DEBUG ipc_dvs_init:47: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[  513.228284] DEBUG ipc_dvs_init:48: d_max_copybuf=65536 d_max_copylen=1048576
+[  513.228286] DEBUG ipc_dvs_init:49: d_dbglvl=7F306 version=4.9 sizeof(proc)=0
+[  513.228289] DEBUG ipc_dvs_init:62: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[  513.228290] DEBUG ipc_dvs_init:63: d_max_copybuf=65536 d_max_copylen=1048576
+[  513.228292] DEBUG ipc_dvs_init:64: d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+[  513.228293] DEBUG ipc_dvs_init:88: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[  513.228295] DEBUG ipc_dvs_init:89: d_max_copybuf=65536 d_max_copylen=1048576
+[  513.228296] DEBUG ipc_dvs_init:90: d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+[  513.228298] DEBUG ipc_dvs_init:92: CPU INFO: x86_cache_size=1024
+[  513.228299] DEBUG ipc_dvs_init:93: CPU INFO: x86_cache_alignment =64
+[  513.228300] DEBUG ipc_dvs_init:95: Initializing 32 DCs: dc=c5a73480
+[  513.228303] DEBUG ipc_dvs_init:104: Initializing 32 NODEs node=c5a72900
+[  513.228306] DEBUG ipc_dvs_init:109: Initializing 32 PROXIES
+[  513.228308] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228310] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228311] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228312] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228314] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228315] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228316] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228317] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228319] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228320] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228321] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228322] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228324] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228325] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228326] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228327] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228329] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228330] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228331] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228332] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228333] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228334] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228352] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228354] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228355] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228356] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228357] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228359] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228360] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228361] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228362] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228364] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228365] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228366] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228367] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228368] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228370] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228371] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228372] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228373] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228375] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228376] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228377] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228379] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228380] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228381] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228382] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228384] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228385] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228386] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228387] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228388] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228390] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228391] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228393] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228394] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228395] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228396] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228397] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228399] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228400] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228401] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228402] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228404] DEBUG init_proc_desc:25: p_name= dcid=-1
+[  513.228406] DEBUG ipc_dvs_init:122: sizeof_proc_aligned=512 log2_proc_size=9
+[  513.228420] DEBUG ipc_dvs_init:132: Creating dvs directory on debugfs
+[  513.228430] DEBUG ipc_dvs_init:153: /proc/dvs/nodes installed
+[  513.228433] DEBUG ipc_dvs_init:165: /proc/dvs/info installed
+[  513.228438] DEBUG ipc_dvs_init:186: /proc/dvs/proxies/info installed
+[  513.228440] DEBUG ipc_dvs_init:197: /proc/dvs/proxies/procs installed
+[  513.228441] DEBUG ipc_dvs_init:204: d_size_proc=512
+[  513.228442] DEBUG ipc_dvs_init:208: Initializing DVS. Local node ID 0
+[  513.228476] DEBUG SYSC_ipc:156: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+[  513.228477] DEBUG ipc_getdvsinfo:1824: local_nodeid=0 
+[  513.228539] DVK: exit_unbind local_nodeid:0
+[  513.228681] DVK: old_exit_unbind code:-981596224
+[  515.667431] DVK: exit_unbind local_nodeid:0
+[  515.667541] DVK: old_exit_unbind code:-981596224
+[  515.667630] DVK: exit_unbind local_nodeid:0
+[  515.667636] DVK: old_exit_unbind code:-981596224
+
+
+----------------------------------------------------------------------------------------
+PROBLEMA EN EL TIPC PROXY 
+
+[ 1223.511655] DEBUG SYSC_ipc:156: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+[ 1223.511659] DEBUG ipc_getdvsinfo:1824: local_nodeid=0 
+
+[ 1223.512538] DEBUG SYSC_ipc:156: ipc_wait4bind: call=7424 first=0 second=35534 third=2000 fifth=0 
+[ 1223.518872] DEBUG ipc_wait4bind:2126: oper=0 other_ep=35534 timeout_ms=2000
+[ 1223.518881] DEBUG SYSC_ipc:156: ipc_proxies_bind: call=4352 first=1 second=851 third=852 fifth=65536 
+[ 1223.518885] DEBUG SYSC_ipc:156: ipc_wait4bind: call=7424 first=0 second=35534 third=2000 fifth=0 
+
+[ 1223.518916] DEBUG ipc_proxies_bind:2653: px_nr=1 spid=851, rpid=852 maxbytes=65536
+[ 1223.518918] DEBUG check_caller:545: caller_pid=851 caller_tgid=851
+[ 1223.518921] DEBUG ipc_wait4bind:2126: oper=0 other_ep=35534 timeout_ms=2000
+[ 1223.518924] ERROR: 851:check_caller:579: rcode=-310
+[ 1223.518926] DEBUG ipc_wait4bind:2140: caller_pid=29 ret=-310
+[ 1223.518931] DEBUG check_caller:545: caller_pid=852 caller_tgid=852
+[ 1223.518936] ERROR: 852:check_caller:579: rcode=-310
+[ 1223.518943] DEBUG ipc_wait4bind:2140: caller_pid=29 ret=-310
+[ 1223.518976] DEBUG ipc_wait4bind:2214: WLOCK_TASK pid=852 count=0
+[ 1223.518977] DEBUG ipc_wait4bind:2227: WUNLOCK_TASK pid=852 count=0
+[ 1223.518979] DEBUG ipc_wait4bind:2231: Self process bind waiting
+[ 1223.519016] DEBUG ipc_wait4bind:2214: WLOCK_TASK pid=851 count=0
+[ 1223.519018] DEBUG ipc_wait4bind:2227: WUNLOCK_TASK pid=851 count=0
+[ 1223.519019] DEBUG ipc_wait4bind:2231: Self process bind waiting
+
+[ 1223.519030] BUG: unable to handle kernel NULL pointer dereference at   (null)
+[ 1223.520596] IP: [<c562b93d>] _raw_read_lock+0xd/0x30
+[ 1223.522136] *pdpt = 0000000028bae001 *pde = 0000000000000000 
+
+[ 1223.523639] Oops: 0002 [#1] SMP
+[ 1223.525081] Modules linked in: snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device snd_pcm snd_timer snd evdev fuse joydev soundcore iptable_filter pcspkr serio_raw sg vmw_balloon vmwgfx ttm shpchp drm_kms_helper drm vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sd_mod hid_generic usbhid hid ata_generic psmouse ehci_pci xhci_pci xhci_hcd uhci_hcd ehci_hcd mptspi pcnet32 scsi_transport_spi mii mptscsih mptbase usbcore ata_piix libata scsi_mod i2c_piix4
+[ 1223.535486] CPU: 1 PID: 849 Comm: tipc_proxy_bat Not tainted 4.9.88 #33
+[ 1223.537395] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/02/2015
+[ 1223.541375] task: e8ff8340 task.stack: e8b26000
+[ 1223.543337] EIP: 0060:[<c562b93d>] EFLAGS: 00010287 CPU: 1
+[ 1223.545510] EIP is at _raw_read_lock+0xd/0x30
+[ 1223.547589] EAX: 00000000 EBX: 00000001 ECX: 00000015 EDX: 00000100
+[ 1223.549752] ESI: 00000353 EDI: c5271a10 EBP: e8b27ed0 ESP: e8b27ed0
+[ 1223.551835]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+[ 1223.553916] CR0: 80050033 CR2: 00000000 CR3: 29909420 CR4: 000006f0
+[ 1223.556100] Stack:
+[ 1223.558169]  e8b27f40 c5271a95 c5803bf8 c564c000 00000a5d 00000001 00000353 00000354
+[ 1223.560365]  00010000 00000000 c5a29f20 00000059 00000246 00000000 007b6b40 00000001
+[ 1223.562560]  00000353 00000011 e8b27f38 c50c3337 00000000 00000004 00000000 00000354
+[ 1223.564785] Call Trace:
+[ 1223.567077]  [<c5271a95>] ? ipc_proxies_bind+0x85/0x8b0
+[ 1223.569460]  [<c50c3337>] ? vprintk_default+0x37/0x40
+[ 1223.571684]  [<c5271a10>] ? ipc_wakeup+0x850/0x850
+[ 1223.573888]  [<c5263bff>] ? SyS_ipc+0x9f/0x340
+[ 1223.576079]  [<c5003728>] ? do_fast_syscall_32+0x98/0x160
+[ 1223.578352]  [<c562bc42>] ? sysenter_past_esp+0x47/0x75
+[ 1223.580555] Code: 75 0c 5d c3 8d 76 00 8d bc 27 00 00 00 00 5d 89 d0 e9 38 b4 a8 ff 90 8d b4 26 00 00 00 00 55 89 e5 0f 1f 44 00 00 ba 00 01 00 00 <f0> 0f c1 10 81 c2 00 01 00 00 84 d2 75 05 5d c3 8d 76 00 5d e9
+[ 1223.587673] EIP: [<c562b93d>] 
+[ 1223.587714] _raw_read_lock+0xd/0x30
+[ 1223.590078]  SS:ESP 0068:e8b27ed0
+[ 1223.592471] CR2: 0000000000000000
+[ 1223.598522] ---[ end trace 784fee00aabcdcf4 ]---
+[
+----------------------------------------------------------------------------------------
+20190701:
+			los problemas de FAULTs y NULL se daba porque en la version de IOCTL habia funciones y variables
+			que no son visibles desde un modulo, pero en IPC y dentro del kernel, lo son.
+			Esas variables ahora no tienen sentido (y nunca fueron seteadas, por eso los errores)
+			Ahora se invoca directamente a las funciones y se referencias las variables.
+
+root@node0:/usr/src/dvs/dvk-proxies/test# ./copy_client 
+usage: ./copy_client <dcid> <svr_ep> <clt_ep>
+root@node0:/usr/src/dvs/dvk-proxies/test# ./copy_client 0 10 55
+DEBUG 651:dvk_open:102: 
+DEBUG 651:dvk_getdvsinfo:238: 
+DEBUG 651:dvk_getdvsinfo:242: ipc ret=0
+ copy_client.c:main:37:local_nodeid=0
+ copy_client.c:main:38:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 651:dvk_getdcinfo:331: dcid=0
+DEBUG 651:dvk_getdcinfo:335: ipc ret=0
+ copy_client.c:main:48:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ copy_client.c:main:49:flags=0 dc_nodes=3 dc_pid=615 dc_name=DC0
+DEBUG 651:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=55 nodeid=-1
+DEBUG 651:dvk_bind_X:1141: ipc ret=55
+ copy_client.c:main:78:BIND CLIENT dcid=0 clt_pid=651 clt_ep=55
+DEBUG 651:dvk_getprocinfo:1096: dcid=0 p_nr=55 
+DEBUG 651:dvk_getprocinfo:1100: ipc ret=0
+ copy_client.c:main:87:nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=651 vpid=651 nodeid=0 name=copy_client 
+DEBUG 651:dvk_wait4bindep_X:569: cmd=0 endpoint=10 timeout=30000
+DEBUG 651:dvk_wait4bindep_X:573: ipc ret=10
+ copy_client.c:main:91:dvk_wait4bindep_T ret=10
+DEBUG 651:dvk_getprocinfo:1096: dcid=0 p_nr=10 
+DEBUG 651:dvk_getprocinfo:1100: ipc ret=0
+ copy_client.c:main:99:nr=10 endp=10 dcid=0 flags=8 misc=20 lpid=649 vpid=649 nodeid=0 name=copy_server 
+ copy_client.c:main:107:CLIENT m_ptr=0x7e0000
+ copy_client.c:main:129:CLIENT: buffer before=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstu
+ copy_client.c:main:133:CLIENT SENT: source=0 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x7e1000 m1p2=(nil) m1p3=(nil) 
+DEBUG 651:dvk_sendrec_T:866: endpoint=10 timeout=-1
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.739664] CPU: 3 PID: 651 Comm: copy_client Not tainted 4.9.88 #34
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.741547] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/02/2015
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.746107] task: e885ea40 task.stack: e8bf2000
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.761722] Stack:
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.763896]  c6292b77 c6812c1c 0000028b c6659504 00000129 00000003 00000289 c60c3337
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.766270]  007e0000 0000004c 00d4c000 0000004c 00000008 379b2e23 0000004c e80a5800
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.768529]  e8bf3f44 c627bdbb e80a5800 00d4c000 0000004c 000002bf 00000000 0000028b
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.770927] Call Trace:
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.773123]  [<c6292b77>] ? inherit_cpu+0x47/0x140
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.775332]  [<c60c3337>] ? vprintk_default+0x37/0x40
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.777537]  [<c627bdbb>] ? ipc_mini_sendrec+0xa3b/0x1620
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.779816]  [<c627b380>] ? ipc_mini_receive+0x1940/0x1940
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.782038]  [<c6263bc1>] ? SyS_ipc+0x61/0x3a0
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.784437]  [<c6003728>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.786687]  [<c6638f82>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.788962] Code:  Bad EIP value.
+
+Message from syslogd@node0 at Jul  1 20:35:04 ...
+ kernel:[  183.791296] EIP: [<00000000>] 
+
+
+
+  183.720176] DEBUG 651:SYSC_ipc:156: ipc_mini_sendrec: call=1280 first=10 second=0 third=0 fifth=-1 
+[  183.720178] DEBUG 651:ipc_mini_sendrec:523: srcdst_ep=10
+[  183.720180] DEBUG 651:check_caller:545: caller_pid=651 caller_tgid=651
+[  183.720181] DEBUG 651:check_caller:581: WLOCK_PROC ep=55 count=0
+[  183.720183] DEBUG 651:check_caller:610: WUNLOCK_PROC ep=55 count=0
+[  183.720184] DEBUG 651:check_caller:613: dcid=0
+[  183.720186] DEBUG 651:check_caller:617: RLOCK_DC dc=0 count=0
+[  183.720187] DEBUG 651:check_caller:621: RUNLOCK_DC dc=0 count=0
+[  183.720189] DEBUG 651:check_caller:627: caller_pid=651 
+[  183.720191] DEBUG 651:ipc_mini_sendrec:534: RLOCK_PROC ep=55 count=0
+[  183.720192] DEBUG 651:ipc_mini_sendrec:539: caller_nr=55 caller_ep=55 srcdst_ep=10 
+[  183.720196] DEBUG 651:ipc_mini_sendrec:542: RUNLOCK_PROC ep=55 count=0
+[  183.720197] DEBUG 651:ipc_mini_sendrec:544: dcid=0
+[  183.720199] DEBUG 651:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[  183.720200] DEBUG 651:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[  183.720202] DEBUG 651:ipc_mini_sendrec:566: WLOCK_PROC ep=55 count=0
+[  183.720203] DEBUG 651:ipc_mini_sendrec:573: WUNLOCK_PROC ep=55 count=0
+[  183.720205] DEBUG 651:ipc_mini_sendrec:573: WLOCK_PROC ep=10 count=0
+[  183.720206] DEBUG 651:ipc_mini_sendrec:573: WLOCK_PROC ep=55 count=0
+[  183.720208] DEBUG 651:ipc_mini_sendrec:574: srcdst_nr=10 srcdst_ep=10
+[  183.720209] DEBUG 651:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[  183.720210] DEBUG 651:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[  183.720212] DEBUG 651:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[  183.720214] DEBUG 651:ipc_mini_sendrec:617: dcid=0 caller_pid=651 caller_nr=55 srcdst_ep=10 
+[  183.720215] DEBUG 651:ipc_mini_sendrec:622: SENDING HALF
+[  183.720216] DEBUG 651:ipc_mini_sendrec:703: destination is waiting. Copy the message and wakeup destination
+[  183.720219] DEBUG 651:copy_usr2usr:895: rqtr_ep=55 src_ep=55 src_lpid=651 src_vpid=651 src_addr=007e0000
+[  183.720222] DEBUG 651:copy_usr2usr:898: dst_ep=10 dst_lpid=649 dst_vpid=649 dst_addr=00d4c000 bytes=76
+[  183.720223] DEBUG 651:copy_usr2usr:902: task_pid_nr(current)=651
+[  183.720224] DEBUG 651:copy_usr2usr:905: WRITE
+[  183.720226] DEBUG 651:copy_usr2usr:910: task_pid_nr(dst_ptr->p_task)=649
+[  183.720228] DEBUG dvk_vm_rw:442: pid=649 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+[  183.720230] DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+[  183.720231] DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+[  183.720232] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+[  183.720234] DEBUG dvk_vm_rw_core:277: pid=649 riovcnt=1 flags=0 vm_write=1
+[  183.720240] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+[  183.720253] DEBUG dvk_vm_rw_core:349: rc=76
+[  183.720254] DEBUG dvk_vm_rw_core:356: rc=76
+[  183.720255] DEBUG 651:copy_usr2usr:963: len=76
+[  183.720257] DEBUG 651:inherit_cpu:297: cpuid=3 vpid=ld
+[  183.720284] BUG: unable to handle kernel NULL pointer dereference at   (null)
+[  183.721864] IP: [<  (null)>]   (null)
+[  183.723502] *pdpt = 0000000029a87001 *pde = 0000000000000000 
+
+[  183.725084] Oops: 0010 [#1] SMP
+[  183.726552] Modules linked in: snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi iptable_filter fuse snd_seq_device snd_pcm snd_timer snd vmw_balloon pcspkr evdev joydev serio_raw soundcore sg vmwgfx ttm drm_kms_helper drm shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sd_mod ata_generic hid_generic usbhid hid psmouse ehci_pci ata_piix mptspi scsi_transport_spi libata mptscsih mptbase xhci_pci uhci_hcd xhci_hcd scsi_mod ehci_hcd usbcore i2c_piix4 pcnet32 mii
+[  183.739664] CPU: 3 PID: 651 Comm: copy_client Not tainted 4.9.88 #34
+[  183.741547] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/02/2015
+[  183.746107] task: e885ea40 task.stack: e8bf2000
+[  183.748196] EIP: 0060:[<00000000>] EFLAGS: 00010296 CPU: 3
+[  183.751217] EIP is at 0x0
+[  183.753198] EAX: 00000289 EBX: e80a5800 ECX: 00000000 EDX: e8bf3eb8
+[  183.755264] ESI: 00000003 EDI: 0000000a EBP: e8bf3ec8 ESP: e8bf3e88
+[  183.757326]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+[  183.759489] CR0: 80050033 CR2: 00000000 CR3: 28cead60 CR4: 000006f0
+[  183.761722] Stack:
+[  183.763896]  c6292b77 c6812c1c 0000028b c6659504 00000129 00000003 00000289 c60c3337
+[  183.766270]  007e0000 0000004c 00d4c000 0000004c 00000008 379b2e23 0000004c e80a5800
+[  183.768529]  e8bf3f44 c627bdbb e80a5800 00d4c000 0000004c 000002bf 00000000 0000028b
+[  183.770927] Call Trace:
+[  183.773123]  [<c6292b77>] ? inherit_cpu+0x47/0x140
+[  183.775332]  [<c60c3337>] ? vprintk_default+0x37/0x40
+[  183.777537]  [<c627bdbb>] ? ipc_mini_sendrec+0xa3b/0x1620
+[  183.779816]  [<c627b380>] ? ipc_mini_receive+0x1940/0x1940
+[  183.782038]  [<c6263bc1>] ? SyS_ipc+0x61/0x3a0
+[  183.784437]  [<c6003728>] ? do_fast_syscall_32+0x98/0x160
+[  183.786687]  [<c6638f82>] ? sysenter_past_esp+0x47/0x75
+[  183.788962] Code:  Bad EIP value.
+[  183.791296] EIP: [<00000000>] 
+[  183.791335] 0x0
+[  183.793514]  SS:ESP 0068:e8bf3e88
+[  183.795695] CR2: 0000000000000000
+[  183.798075] ---[ end trace c510516b6a0e6b6a ]---
+[  183.800466] DVK: exit_unbind local_nodeid:0
+[  183.803073] DVK: old_exit_unbind code:-964765792
+
+
+
+
+
+
+			
+			

@@ -467,6 +467,9 @@ static void handle_dvk_exit(int pid, struct uml_pt_regs *regs)
 		fatal_sigsegv();
 	}
 
+	need_uml_resched();
+	pid = userspace_pid[0];
+	
 	// waits for the DVK_CALL exit  
 	CATCH_EINTR(err = waitpid(pid, &status, WUNTRACED | __WALL));
 

@@ -12,7 +12,7 @@ OBJS1 =  dvsd.o gcsd.o
 OBJS2 = dvscmd.o 
 #./libspread/libspread-core.a 
 
-LIBS = 	/usr/src/dvs/dvk-lib/stub_dvkcall.o \
+LIBS = 	/usr/src/dvs/dvk-lib/libdvkipc.so \
 		/usr/local/lib/libspread.a \
 		/usr/local/lib/libspread-util.a 		
 	

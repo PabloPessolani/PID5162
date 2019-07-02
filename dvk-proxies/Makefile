@@ -7,7 +7,7 @@ C++ = g++
 
 # Where are include files kept
 INCLUDE = ..
-LIBS =  ../dvk-lib/stub_dvkcall.o
+LIBS =  ../dvk-lib/libdvkipc.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic -Wall
 LZ4FLAGS = $(CFLAGS)  
 LZ4FLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wstrict-prototypes

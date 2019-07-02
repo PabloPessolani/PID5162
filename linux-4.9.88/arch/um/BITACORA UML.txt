@@ -6266,6 +6266,50 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  30    30  3582/240    0    0   20 27342 27342 27342 27342 linux 
  
  
+ PROBLEMA DE UML_KERNEL BLOQUEADO
+ ================================
+ Esto se debe a que cuando atiende un syscall UML,  se esta ejecutando el pseudo-kernel
+ de UML, y si el proceso de usuario hizo una syscall bloqueante, el kernel UML lo sabe
+ y hace el context switch.
+ 
+ 1) Ver si hay alguna forma de indicarle al UML_KERNEL de que bloquee al proceso UML_USER 
+ para luego hacer el context switch.
+	userspace(){
+		while(1){
+			// aqui el UML_USER deberia estar STOPEADO
+			ptrace( PTRACE_SYSCALL); 	// UML_USER COMIENZA A EJECUTAR 
+			ret = waitpid()				// UML_USER SE DETIENE AL INGRESAR 
+			rcode = handle_dvk_enter()
+			if( rcode == DVK_CMD_NOWAIT)
+				handle_dvk_exit( pid, regs);
+					continue;
+			else  if( rcode == DVK_CMD_WAIT) { 
+					handle_dvk_wait( pid, regs);
+					handle_dvk_exit( pid, regs);
+					continue;
+			switch(ret)
+				case TRAP+0X80:
+					handle_trap(); ===> syscall // EMULATED SYSCALL 
+			interrupt_end();		==========> schedule !!			
+		}
+	}	
+ 
+	Se podria hacer lo siguiente:
+		- detectada la DVK_CALL modificarla por algun syscall válido que espere
+			tal como si el proceso original hubiese solicitado esperarlo, como por ejemplo
+			semop(DOWN); con el semaforo en cero.
+		- Cuando la DVK_CALL finaliza, hace un semop(UP); 	
+ 
+ 2) Hacer el driver UML_DVK, pero el problema es que en UML no se dispone de las funciones
+ de kernel necesarias para implementarlo, por lo que se debería implementar como un modulo
+ o driver fijo de kernel. Seria equivalente a un NODO autonomo, por lo tanto se comunicaria 
+ con el exterior utilizando proxies. 
+ 
+ 3) Emular DVK usando pipes en UML. El UML_KERNEL/UML_DVK fuonaria en forma similar al kernel
+ de MOL como un HUB de mensajes, algunos de los cuales van a otros procesos dentro del UML 
+ y otro van al HOST via proxy. Problema: como van los mensajes a otros nodos??
+ 
+ 
  
 ====================================  ULTIMO_LOG ===================================
 

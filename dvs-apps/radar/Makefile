@@ -13,7 +13,7 @@ OBJ2 =  test_radar.o
 
 #LIBS = ../../lib/syslib/libsyslib.so ../../lib/timers/libtimers.so
 
-LIBS = 	/usr/src/dvs/dvk-lib/stub_dvkcall.o \
+LIBS = 	/usr/src/dvs/dvk-lib/libdvkipc.so \
 		/usr/local/lib/libspread.a \
 		/usr/src/dvs/lib/config/libconfig.so \
 		/usr/local/lib/libspread-util.a 

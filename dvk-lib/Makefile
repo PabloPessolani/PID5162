@@ -1,4 +1,4 @@
-all: stub_dvkcall.o libdvklib.so libuserdvk.so
+all: stub_dvkcall.o libdvklib.so libuserdvk.so libdvkipc.so
 
 # Which compiler
 CC = gcc
@@ -30,6 +30,18 @@ $(OBJS3): stub_dvkcall.c ../include/com/stub_dvkcall.h
 
 libuserdvk.so: $(OBJS3) 
 	$(CC) -g -shared -pthread -o libuserdvk.so $(OBJS3)  $(LIBS)
+
+
+################### FOR HOST USER PROCESSES USING SYS V IPC #############################
+OBJS4 =  stub_dvkipc.o   
+CFLAGS4 =  -g -c -fPIC -Wall -pthread -D CONFIG_DVKIPC
+
+$(OBJS4): stub_dvkcall.c ../include/com/stub_dvkcall.h 
+	$(CC) $(CFLAGS4) -pthread -o $(OBJS4) stub_dvkcall.c
+
+libdvkipc.so: $(OBJS4) 
+	$(CC) -g -shared -pthread -o libdvkipc.so $(OBJS4)  $(LIBS)
+
 	
 clean:
 	rm  *.o *.so
