@@ -69,6 +69,7 @@ struct file_operations proc_dbg_fops = {
 	mmap : proc_dbg_mmap,
 };
 
+#ifndef CONFIG_UML_DVK	
 dvs_usr_t dvs = {
 		NR_DCS,
 		NR_NODES,
@@ -84,6 +85,9 @@ dvs_usr_t dvs = {
 		DVS_VERSION,
 		DVS_SUBVER
 		};
+#else // CONFIG_UML_DVK	
+extern dvs_usr_t dvs;
+#endif // CONFIG_UML_DVK	
 
 #if LOCK_DVS_TYPE == USE_DVS_RWLOCK
 rwlock_t dvs_rwlock = RW_LOCK_UNLOCKED;		

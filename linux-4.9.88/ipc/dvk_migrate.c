@@ -16,7 +16,10 @@
 #include "dvk_ipc.h"
 
 extern int send_sig_info(int, struct siginfo *, struct task_struct *);
+
+#ifndef CONFIG_UML_DVK	
 extern struct cpuinfo_x86 boot_cpu_data;
+#endif // CONFIG_UML_DVK	
 
 /*------------------------------------------------------*/
 /* Searchs all processes at the MIGRATION list and*/

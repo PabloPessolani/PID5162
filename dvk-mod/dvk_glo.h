@@ -25,13 +25,16 @@ EXTERN long (*sys_wait4_ptr)(pid_t pid, int __user *stat_addr,
 				
 EXTERN  size_t (*scnprintf_ptr)(unsigned long *bitmap, int nbits, char *buf, size_t size);
 EXTERN long (*dvk_unbind_ptr)(long code);	 
+EXTERN long (*dvk_mod_ipc_ptr) (int call, int first, unsigned long second,unsigned long third, void __user *ptr, long fifth);
 EXTERN ssize_t dvk_vm_rw(struct task_struct *task,
 			     const struct iovec *lvec,
 			     unsigned long liovcnt,
 			     const struct iovec *rvec,
 			     unsigned long riovcnt,
 			     unsigned long flags, int vm_write);
-				 
+
+EXTERN int dvk_mod_loaded; 
+		 
 extern atomic_t	local_nodeid; 
 
 #ifdef DVK_GLOBAL_HERE

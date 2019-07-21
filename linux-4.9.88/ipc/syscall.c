@@ -13,7 +13,7 @@
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIPC
 
 #include "dvk_ipc.h"
 
@@ -131,12 +131,18 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
     ipc_wakeup,
 };
 
- long ipc_void0( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth)
+long ipc_void0( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth)
 {
 	return(ENOSYS);
 }
+int  dvk_mod_loaded = 0;
+EXPORT_SYMBOL(dvk_mod_loaded);
+long sc_dvk_ipc(int call, int first, unsigned long second,unsigned long third, void __user *ptr, long fifth)
+{	
+	return(-ENOSYS);
+}
+EXPORT_SYMBOL(sc_dvk_ipc);
 #endif //CONFIG_DVKIPC 
-
 
 SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		unsigned long, third, void __user *, ptr, long, fifth)
@@ -149,6 +155,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 #ifdef  CONFIG_DVKIPC 
 	int rcode, dvk_call;
 	if( call > 0xFF) { // DVK_CALL are formed as call = NR00;
+//		if( dvk_mod_loaded == 0) ERROR_RETURN(EDVSNOSYS);
 		dvk_call = call >> 8;
 		if( dvk_call < 0 || dvk_call > DVK_NR_CALLS)
 			ERROR_RETURN(EDVSNOSYS);
@@ -156,7 +163,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 			dvk_routine_names[dvk_call],call, first, second, third, fifth); 
 		rcode = (*dvk_routine[dvk_call])(first, second, third, ptr, fifth);
 		return(rcode);
-	}
+	}	
 #endif //CONFIG_DVKIPC 
 	
 	switch (call) {

@@ -43,47 +43,180 @@ struct reljmp rj_exit_unbind = {
     .init_handler = exit_unbind_init_handler,
 };
 
+#ifdef  CONFIG_DVKIPC 
+static int dvk_ipc_init_handler(void)
+{
+	DVKDEBUG(DBGLVL0,"\n");
+	dvk_mod_loaded = 1;
+	return 0;
+}
+
+struct reljmp rj_dvk_mod_ipc = {
+	.from_symbol_name = "sc_dvk_ipc",
+    .to_symbol_name = "mod_dvk_ipc",
+    .init_handler = dvk_ipc_init_handler,
+};
+#endif //CONFIG_DVKIPC 
+
 /* List of functions to replace */
 struct reljmp *reljmp_func[] = {
 	&rj_exit_unbind,
+#ifdef  CONFIG_DVKIPC 
+	&rj_dvk_mod_ipc,
+#endif //CONFIG_DVKIPC 
 };
 
-char *dvk_routine_names[DVK_NR_CALLS] = {
-    "void0",
-    "dc_init",
-    "mini_send",
-    "mini_receive",
-    "mini_notify",
-    "mini_sendrec",
-    "mini_rcvrqst",
-    "mini_reply",
-    "dc_end",
-    "bind",
-    "unbind",
-    "getpriv",
-    "setpriv",
-    "vcopy",
-    "getdcinfo",
-    "getprocinfo",
-    "mini_relay",
-    "proxies_bind",
-    "proxies_unbind",
-    "getnodeinfo",
-    "put2lcl",
-    "get2rmt",
-    "add_node",
-    "del_node",
-    "dvs_init",
-    "dvs_end",
-    "getep",
-    "getdvsinfo",
-    "proxy_conn",
-    "wait4bind",
-    "migrate",   
-    "node_up",
-    "node_down",
-    "getproxyinfo",
-	"wakeup",
+char *dvk_ipc_names[DVK_NR_CALLS] = {
+    "ipc_void0",
+    "ipc_dc_init",
+    "ipc_mini_send",
+    "ipc_mini_receive",
+    "ipc_mini_notify",
+    "ipc_mini_sendrec",
+    "ipc_mini_rcvrqst",
+    "ipc_mini_reply",
+    "ipc_dc_end",
+    "ipc_bind",
+    "ipc_unbind",
+    "ipc_getpriv",
+    "ipc_setpriv",
+    "ipc_vcopy",
+    "ipc_getdcinfo",
+    "ipc_getprocinfo",
+    "ipc_mini_relay",
+    "ipc_proxies_bind",
+    "ipc_proxies_unbind",
+    "ipc_getnodeinfo",
+    "ipc_put2lcl",
+    "ipc_get2rmt",
+    "ipc_add_node",
+    "ipc_del_node",
+    "ipc_dvs_init",
+    "ipc_dvs_end",
+    "ipc_getep",
+    "ipc_getdvsinfo",
+    "ipc_proxy_conn",
+    "ipc_wait4bind",
+    "ipc_migrate",   
+    "ipc_node_up",
+    "ipc_node_down",
+    "ipc_getproxyinfo",
+	"ipc_wakeup",
+};   /* the ones we are gonna replace */
+
+  long ipc_void0( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_dc_init( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_send( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_receive( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_notify( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_sendrec( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_rcvrqst( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_reply( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_dc_end( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_bind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_unbind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getpriv( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_setpriv( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_vcopy( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getdcinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getprocinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_mini_relay( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_proxies_bind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_proxies_unbind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getnodeinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_put2lcl( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_get2rmt( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_add_node( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_del_node( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_dvs_init( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_dvs_end( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getep( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getdvsinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_proxy_conn( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_wait4bind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_migrate( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_node_up( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_node_down( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_getproxyinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_wakeup( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+	
+
+// int first, unsigned long second, unsigned long third, void __user * ptr, long fifth
+ long (*dvk_ipc_routine[DVK_NR_CALLS])( int first, unsigned long second,unsigned long third, void __user *ptr, long fifth) = {
+    ipc_void0,
+    ipc_dc_init,
+    ipc_mini_send,
+    ipc_mini_receive,
+    ipc_mini_notify,
+    ipc_mini_sendrec,
+    ipc_mini_rcvrqst,
+    ipc_mini_reply,
+    ipc_dc_end,
+    ipc_bind,
+    ipc_unbind,
+    ipc_getpriv,
+    ipc_setpriv,
+    ipc_vcopy,
+    ipc_getdcinfo,
+    ipc_getprocinfo,
+    ipc_mini_relay,
+    ipc_proxies_bind,
+    ipc_proxies_unbind,
+    ipc_getnodeinfo,
+    ipc_put2lcl,
+    ipc_get2rmt,
+    ipc_add_node,
+    ipc_del_node,
+    ipc_dvs_init,
+    ipc_dvs_end,
+    ipc_getep,
+    ipc_getdvsinfo,
+    ipc_proxy_conn,
+    ipc_wait4bind,
+    ipc_migrate,
+    ipc_node_up,
+    ipc_node_down,
+    ipc_getproxyinfo,
+    ipc_wakeup,
+};
+
+
+char *dvk_io_names[DVK_NR_CALLS] = {
+    "io_void0",
+    "io_dc_init",
+    "io_mini_send",
+    "io_mini_receive",
+    "io_mini_notify",
+    "io_mini_sendrec",
+    "io_mini_rcvrqst",
+    "io_mini_reply",
+    "io_dc_end",
+    "io_bind",
+    "io_unbind",
+    "io_getpriv",
+    "io_setpriv",
+    "io_vcopy",
+    "io_getdcinfo",
+    "io_getprocinfo",
+    "io_mini_relay",
+    "io_proxies_bind",
+    "io_proxies_unbind",
+    "io_getnodeinfo",
+    "io_put2lcl",
+    "io_get2rmt",
+    "io_add_node",
+    "io_del_node",
+    "io_dvs_init",
+    "io_dvs_end",
+    "io_getep",
+    "io_getdvsinfo",
+    "io_proxy_conn",
+    "io_wait4bind",
+    "io_migrate",   
+    "io_node_up",
+    "io_node_down",
+    "io_getproxyinfo",
+	"io_wakeup",
 };   /* the ones we are gonna replace */
 
 long (*dvk_io_routine[DVK_NR_CALLS])(unsigned long arg) = {
@@ -218,7 +351,7 @@ long dvk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	if (err) return -EFAULT;
 
 	dvk_call = _IOC_NR(cmd);
-	DVKDEBUG(DBGLVL0,"DVK_CALL=%d (%s) \n", dvk_call, dvk_routine_names[dvk_call] );
+	DVKDEBUG(DBGLVL0,"DVK_CALL=%d (%s) \n", dvk_call, dvk_io_names[dvk_call] );
 
 	rcode = (*dvk_io_routine[dvk_call])(arg);
 
@@ -248,6 +381,7 @@ static	char *free_nsproxy_name = "free_nsproxy";
 static	char *sys_wait4_name = "sys_wait4";
 static	char *scnprintf_name = "bitmap_scnprintf";
 static	char *exit_unbind_name = "exit_unbind_ptr";
+static	char *dvk_mod_ipc_name = "dvk_mod_ipc";
 	
 	unsigned long sym_addr = kallsyms_lookup_name(tasklist_name);
 	
@@ -276,6 +410,10 @@ static	char *exit_unbind_name = "exit_unbind_ptr";
 	dvk_unbind_ptr = (void *) sym_addr;
 	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_unbind_ptr=%X\n", dvk_unbind_ptr);
 	
+	sym_addr = kallsyms_lookup_name(dvk_mod_ipc_name);
+	dvk_mod_ipc_ptr = (void *) sym_addr;
+	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_mod_ipc_ptr=%X\n", dvk_mod_ipc_ptr);
+		
 	DVKDEBUG(DBGLVL0,"usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 \n");
 	DVKDEBUG(DBGLVL0,"parms:  dvk_major=%d dvk_minor=%d dvk_nr_devs=%d\n",
 				 dvk_major, dvk_minor, dvk_nr_devs);

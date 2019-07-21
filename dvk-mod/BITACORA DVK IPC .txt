@@ -408,14 +408,6 @@ PROBLEMA EN EL TIPC PROXY
 			Esas variables ahora no tienen sentido (y nunca fueron seteadas, por eso los errores)
 			Ahora se invoca directamente a las funciones y se referencias las variables.
 
-----------------------------------------------------------------------------------------
-20190720:	Hice pruebas LOCALES de transferencias IPC y COPY y funcionan bien linkeando con la library
-			LIBS = ../dvk-lib/libdvkipc.so
-
-			En teoria estaria en condiciones de compilar para UML 
-			
-			
-
 
 
 

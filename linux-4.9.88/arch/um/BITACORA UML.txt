@@ -6303,15 +6303,366 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  2) Hacer el driver UML_DVK, pero el problema es que en UML no se dispone de las funciones
  de kernel necesarias para implementarlo, por lo que se debería implementar como un modulo
  o driver fijo de kernel. Seria equivalente a un NODO autonomo, por lo tanto se comunicaria 
- con el exterior utilizando proxies. 
+ con el exterior utilizando proxies. SI SE PUEDE !!!!!!!!!!!!!!!!!
  
  3) Emular DVK usando pipes en UML. El UML_KERNEL/UML_DVK fuonaria en forma similar al kernel
  de MOL como un HUB de mensajes, algunos de los cuales van a otros procesos dentro del UML 
- y otro van al HOST via proxy. Problema: como van los mensajes a otros nodos??
+ y otro van al HOST via proxy. Problema: como van los mensajes a otros nodos?? DESCARTADO !!!!!!!!!!!!!!!!!
+ 
+ ==============================================================================================
+20190720:
+			Modifique el codigo el codigo de IPC en funcion de la compilacion de UML
+			#ifndef CONFIG_UML_DVK	
+
+			HAY VARIOS PROBLEMAS
+			Por lo pronto no funciona el /proc 
+			Pero al menos el dvk_dvsinit y dvk_getdvsinfo funcionan 
+			Aparentemente hay que modificar la forma en que se activa el DC 
+			
+			
+ 
+ ====================================  ULTIMO_LOG ===================================
+
+TAREAS A REALIZAR
+=================
+
+Hay que tener 3 versiones de DVK
+  1- Usando IOCTL cargando desde modulo
+  2- Usando IPC cargando desde modulo
+  3- Usando IPC embebido en el mismo kkernel para que pueda usarlo UML 
+  
+1) Probar el kernel normal usando IPC DVK
+2) Probar el UML usando IPC DVK
+3) Probar el proxy que usa IPC DVK 
+4) Probar modificar el DVK para que soporte SLEEP() en modo usuario y SIGNAL para despertarlo.
+3) Hacer el driver TAP remoto 
  
  
+La idea es que los procesos UML_USER se registren (bind) en el kernel del HOST.
+Las dvk_calls() no bloqueantes no representan hoy un problema.
+El problema se da con los bloqueantes. 
+Antes, un  ERESTARTSYS se enviaba a los procesos en espera. 
+Esto hoy se anulo,  bloqueando SIGALARM.
+Habria que hacer lo siguiente.
+
+- Crear un nuevo tipo de registración de proceso. Los tipos actuales son:
+Com.h 
+#define SELF_BIND		0
+#define LCL_BIND		1
+#define RMT_BIND		2
+#define BKUP_BIND		3
+#define REPLICA_BIND	4
+#define MAX_BIND_TYPE	REPLICA_BIND
+
+La idea seria utilizar 0x0F como máscara para el tipo de BIND
+Con 0x10 que indica que el proceso este bindeado en UML
+
+Com.h 
+#define    BIND_UMLBIT		5 
+#define    BIND_UMLMASK		( 1 << BIND_UMLBIT)
+Bind_type = BIND_UMLMASK | bind_orig;
+
+if( test_bit( BIND_UMLBIT, &bind_type )
+	set_bit(MIS_BIT_USERMODE, &proc_ptr->p_misc_flags); // proxy_sts.h 
+
+Para que esto sea transparente, en userspace() del UML al detectar la dvk_bind
+Deberia modificarse incorporando el BIND_UMLBIT al tipo.
+
+En
+int sleep_proc(struct proc *proc, long timeout) 
+int sleep_proc2(struct proc *proc, struct proc *other , long timeout)  
+int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , long timeout) 
+
+	if( test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
+		proc->p_rcode = EDVSAGAIN; 
+		return(EDVSAGAIN);
+	}
+
+Supongamos que el UML_USER hizo un dvk_receive(src_ep, &msg, timeout)
+Se podría hacer de  la  siguiente manera en la libreria.
+dvk_receive(src_ep, &msg, timeout)
+{
+	Ret = ipc_receive(src_ep, &msg, FOREVER)
+	if( ret != EDVSAGAIN) 	// es porque no habia ningun mensaje y el kernel DVK
+		return(ret)			// dejo los p_misc_flags MIS_BIT_USERWAIT del proceso 
+							// en espera. El proceso debe estar en estado RUNNING
+							// para que la contraparte se bloquee 
+	if( timeout = NOWAIT) return(ret);
+	if( timeout == FOREVER)  Timeout = 999999;
+	sleep(timeout/1000)
+	Ret = ipc_receive(src, &msg, NOWAIT)
+	return(ret);
+}
+
+A la salida del ipc_receive()
+
+	if( test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
+		set_bit(MIS_BIT_USERWAIT, &caller_ptr->p_usr.p_misc_flags);
+	}
+
+	set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+	clear_bit(MIS_BIT_NOTIFY, &caller_ptr->p_usr.p_misc_flags);
+	caller_ptr->p_usr.p_getfrom = src_ep;
+	caller_ptr->p_rcode			= OK;
+
+	DVKDEBUG(GENERIC,"Any suitable message from %d was not found.\n", src_ep);	
+	sleep_proc(caller_ptr, timeout_ms); <<< USERMODE retornara EDVSAGAIN
+
+	ret = caller_ptr->p_rcode;
+	if( ret != OK){
+		clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+		caller_ptr->p_usr.p_getfrom 	= NONE;
+	}else {
+		if(test_bit(MIS_BIT_NOTIFY,&caller_ptr->p_usr.p_misc_flags)){
+			COPY_TO_USER_PROC(ret, &caller_ptr->p_message, caller_ptr->p_umsg, sizeof(message) );
+			mptr = &caller_ptr->p_message;
+			DVKDEBUG(DBGMESSAGE, MSG9_FORMAT, MSG9_FIELDS(mptr));			
+		}
+	}
+	clear_bit(MIS_BIT_NOTIFY, &caller_ptr->p_usr.p_misc_flags);
+
+	WUNLOCK_PROC(caller_ptr);
+	if(ret < 0) ERROR_RETURN(ret);
+	return(ret);
+
+Cuando un proceso haga un send() o equivalente al receive correspondiente
+
+		} else { 
+			DVKDEBUG(GENERIC,"destination is not waiting dst_flags=%lX. Enqueue at the TAIL.\n"
+				,dst_ptr->p_usr.p_rts_flags);
+			/* The destination is not waiting for this message 			*/
+			/* Append the caller at the TAIL of the destination senders' queue	*/
+			/* blocked sending the message */
+			set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+			caller_ptr->p_usr.p_sendto 	= dst_ep;
+			caller_ptr->p_umsg		= m_ptr;
+			INIT_LIST_HEAD(&caller_ptr->p_link);
+			LIST_ADD_TAIL(&caller_ptr->p_link, &dst_ptr->p_list);
+
+if( test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
+If (test_bit(MIS_BIT_USERWAIT, &caller_ptr->p_usr.p_misc_flags)){
+rcode = send_sig_info(SIGCONT, SEND_SIG_NOINFO, proc_ptr->p_task);
+}
+}
+
+			sleep_proc2(caller_ptr, dst_ptr, timeout_ms);
+			WUNLOCK_PROC(dst_ptr);
+
+			ret = caller_ptr->p_rcode;
+			if( ret == OK){
+				caller_ptr->p_usr.p_lclsent++;
+			}else{
+				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
+					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", 
+						caller_ptr->p_usr.p_endpoint, dst_ep);
+					/* remove from queue ATENCION: HAY Q PROTEGER DESTINATION ?? */
+					LIST_DEL(&caller_ptr->p_link); 
+				}
+				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+				caller_ptr->p_usr.p_sendto 	= NONE;
+				if( ret == EDVSMIGRATE) 
+					goto send_replay;
+			}
+		}
+
+
+		En el receive, el proceso debe borrar los flags si es que encuentra un mensaje válido.
+
+	/*--------------------------------------*/
+	/* WAKE UP CONTROL 		*/
+	/*--------------------------------------*/
+	if( test_bit(MIS_BIT_WOKENUP, &caller_ptr->p_usr.p_misc_flags) && (src_ep == ANY)) {
+		clear_bit(MIS_BIT_WOKENUP, &caller_ptr->p_usr.p_misc_flags);
+		WUNLOCK_PROC(caller_ptr);
+		ERROR_RETURN(EDVSWOKENUP);
+	}
+		
+if( test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
+clr_bit(MIS_BIT_USERWAIT, &caller_ptr->p_usr.p_misc_flags);
+}
+
+	/*--------------------------------------*/
+	/* NOTIFY PENDING LOOP		*/
+	/*--------------------------------------*/
+
+
+PROBLEMA: El sendrec() , los procesos remotos, la migracion , etc !!!!!
+Puede que el  proceso se duerma en la parte send() o que se duerma en la parte de receive()
+Supongamos que el send() se hace perfectamente, y el receive queda en espera.
+El mensaje del send ya se envio, por lo que volver a hacer el sendrec seria un error, mas tratandose de un proceso remoto.
+
+Quizas se pueda subsanar creando un BIT miscelano por cada tipo de sleep_proc
+
+Por ejemplo:
+	MIS_BIT_SENDING
+	MIS_BIT_RECEIVING
+	MIS_BIT_WAITMIGR
+	MIS_BIT_ONCOPY
+	MIS_BIT_RMTOPER
+MIS_BIT_WAITBIND
+MIS_BIT_WAITUNBIND
+
+
+De tal modo que cuando el proceso vuelve a invocar al mismo dvk_call, verifica los parametros pero antes de hacer otra cosa, ya sabe en donde quedo bloqueado la ultima vez.
+NO,  ES UN KILOMBO !! HABRIA QUE CAMBIAR TODA LA LOGICA DE DVK 
+
+De que forma se puede engañar al userspace() para que la DVK_CALL se ejecute y se bloquee, pero que el userspace no lo vea asi y haga un sleep() el userspace() ???
+Y si al hacer un send(), receive() o alguno de esos se hace un clone() que ejecute le IPC, mientras el padre hace un sleep() o un wait() en UML?
+
+
+SEND:  Hace sleep_proc cuando:
+	Espera por migracion del destinatario:  Tranquilamente se puede volver a reejecutar
+	Espera enviar a un remoto (debe recibir ACK):  Cuando lo despiertan puede terminar.
+	Espera cuando el destinatario no esta esperando: Cuando lo despiertan puede terminar.
+
+RECEIVE: Hace sleep_proc cuando:
+	Espera por recibir mensajes:  Tranquilamente se puede volver a reejecutar
+
+
+SENDREC:
+	Espera por migracion del destinatario Tranquilamente se puede volver a reejecutar
+	Espera enviar y recibir de un remoto : Cuando lo despiertan puede terminar.
+	Espera cuando el destinatario no esta esperando:  Cuando lo despiertan puede terminar.
+	Espera por la respuesta: Cuando lo despiertan puede terminar.
+
+NOTIFY:  Hace sleep_proc cuando:
+	Espera por migracion del destinatario Tranquilamente se puede volver a reejecutar
+	Espera por el envio a un remoto:  Cuando lo despiertan puede terminar.
+
+COPY:  Hace sleep_proc cuando:
+	Espera por migracion del origen y/o del destinatario Tranquilamente se puede volver a reejecutar
+	Espera para realizar la copia:  Cuando lo despiertan puede terminar.
+
+WAIT4BIND/WAIT4UNBIND:  Hace sleep_proc cuando:
+	1- Espera el bind/unbind de un proceso:   Cuando lo despiertan puede terminar.
  
-====================================  ULTIMO_LOG ===================================
+POSIBILIDAD:
+    Cuando el proceso UML quiere realizar una operacion bloqueante, 
+	las operaciones interana del DVK se hacen en forma identica que cuando no es UML, 
+	pero el proceso no se bloquea sino que retorna EDVSAGAIN.
+	Cuando se cumple la condicion de espera,  el proceso desbloqueante ve que el que 
+	estaba esperando es un proceso UML Por lo que si corresponde, lo desbloquea 
+	con un OK para indicar que termino correctamente o con EDVSAGAIN para indicar 
+	que deber repetir la  operacion. Lo importante es que el descriptor del proceso 
+	bloqueado quedo tomado en forma identica a un proceso estandar, y luego es liberado 
+	para que pueda ejecutar nuevamente la funcion.
+	
+	El problema principal esta en SENDREC 
+	Si el proceso quiso enviar el mensaje y el destinatario no lo estaba esperando,  se encola el descriptor del UML_USER. 
+	Retorna en lugar de EDVSAGAIN un codigo EDVSSTOP . Luego,  cuando el proceso receptor hace un receive 
+	ve que el procesos es UML y que tiene las flags SENDING y RECEIVING prendidas,  entonces solo apaga SENDING y nada mas.  
+	Mas adelante cuando le responde con un send,  ve que tiene el flag RECEIVING y entonces lo despierta.
+	Si el proceso puede enviar el mensaje pero debe quedar esperando por la respuesta, solo prende el RECEIVING.
+
+Los codigos de error al despertar serian:
+	EDVSWOULDBLOCK indica que el proceso se deberia bloquear al retornar
+	EDVSAGAIN: Deberia reejecutar el dvk_call 
+	Error >= 0: TODO OK
+	Error < 0: ERROR
+
+Al mantener tomado en uso (p_rts_flags != 0) el descriptor, el proceso  UML_USER no puede hacer nada con el si es que no lo despiertan.
+
+PROBLEMA: Que pasa con los timeout ??? como resolverlo ?? 
+	Que sucede cuando UML_USER hace un send(dest_ep, &msg, timeout) y el timeout vence ??
+	
+SOLUCION POSIBLE:  Hacer una primitiva que sea algo asi como clear_user (algo de esto se hace en el unbind), en donde se bloquea el descriptor del proceso y se rastrea la razon por la que esta bloqueado.
+                  	Si estaba en un send() local, remueve de la cola del descriptor del destinatario
+		Si estaba en un send()/notify()/sendrec() remoto, remueve de la cola del sproxy
+		Se limpian todos los p_rts_flags y los p_misc_flags que correspondan
+	
+En las funciones de IPC que despiertan al otro proceso
+	if(srcdst_ptr->p_usr.p_rts_flags == 0) 
+		LOCAL_PROC_UP(srcdst_ptr, ret); 
+
+Deberia cambiarse a
+	Siginfo_t si;
+	if(srcdst_ptr->p_usr.p_rts_flags == 0) 
+	if( test_bit(MIS_BIT_USERMODE, &srcdst_ptr->p_usr.p_misc_flags)){
+		Si.si_signo = SIGALRM ;
+		Si.si_errno = ret;
+rcode = send_sig_info(SIGALRM , &si, proc_ptr->p_task);
+	}else{
+			LOCAL_PROC_UP(srcdst_ptr, ret); 
+		}
+
+
+Funcionaria de la siguiente forma:
+  El proceso UML_USER hace un bind 
+  El userspace() agrega el bit BIND_UMLBIT al BIND
+  El bind del dvk ahora distingue el BIND_UMLBIT y agrega el flag MIS_BIT_USERMODE al p_misc_flags del proceso.
+
+   Cuando el UML_USER hace un dvk_bloqueante,
+   El usermode() obtiene el timeout  y lo guarda
+      Caller_ep = dvk_getep(caller lpid)
+    Se ejecuta directamente en el kernel HOST el dvk_call() 
+    Cuando hace sleep_proc() para dormir, el DVK detecta que es un MIS_BIT_USERMODE 
+    Y Le retorna un error EDVSAGAIN
+     El usermode() entonces hace que se ejecuta la llamada al sistema
+left = nanosleep(timeout/1000);
+     Cuando otro proceso desbloquea al UML_user al detectar MIS_BIT_USERMODE  en lugar de hacer LOCAL_PROC_UP, le envía una señal send_sig_info(SIGALRM) 
+	Entonces 
+		if( left == 0) 
+// the timeout has been reached 
+		Else
+// other process wakeup the caller
+
+	El caller aun con el timeout vencido no debe retornar al modo usuario porque eventualmente puede haber un proceso contraparte que estará intentando despertarlo. 
+El UML_KERNEL hace:
+	Getprocinfo:  de aqui obtiene src_ep = p_get_from. (a menos que sea ANY)
+	dvk_src_notify(src_nr, caller_ep);
+En cualquier caso, si fue despertado por otro proceso o por el UML_KERNEL, el proceso debe reejecutar la llamada al sistema pero con TIMEOUT_NOWAIT.
+
+ALTERNATIVA:
+
+Habria  que hacer lo siguiente, poner un flag p_misc_flag 
+	MIS_BIT_USERMODE 
+	MIS_BIT_USERWAIT indicando q esta esperando en modo usuario.
+
+EN BIND 
+if( test_bit( BIND_UMLBIT, &bind_type )
+	set_bit(MIS_BIT_USERMODE, &proc_ptr->p_misc_flags); // proxy_sts.h 
+
+En
+int sleep_proc(struct proc *proc, long timeout) 
+int sleep_proc2(struct proc *proc, struct proc *other , long timeout)  
+int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , long timeout) 
+
+	if( test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
+		set_bit(MIS_BIT_USERWAIT , &proc->p_usr.p_misc_flags);
+		proc->p_rcode = EDVSAGAIN; 
+		return(EDVSAGAIN);
+	}
+
+Se podría hacer de  la  siguiente manera en la libreria.
+dvk_receive(src, &msg, timeout)
+{
+		Ret = ipc_receive(src, &msg, FOREVER)
+	if( ret != EDVSAGAIN) // es porque no habia nada y el kernel DVK
+return(ret)	// dejo los p_misc_flags MIS_BIT_USERWAIT del proceso 
+// en espera. El proceso debe estar en estado RUNNING
+// para que la contraparte se bloquee 
+	if( timeout = NOWAIT) return(ret);
+	if( timeout == FOREVER)  Timeout = 999999;
+	sleep(timeout/1000)
+	Ret = ipc_receive(src, &msg, NOWAIT)
+	return(ret);
+}
+
+El proceso que eventualmente le hace el UP, entonces le envia send_sig_info(), pero el proceso se bloquea.
+
+ALTERNATIVA
+	Se intercepta la llamada, por ejemplo dvk_receive(src, &msg, timeout)
+	Se guarda el timeout
+	Se cambia el timeout de la funcion a TIMEOUT_NOWAIT
+		Se invoca a dvk_receive()
+		Si se completa correctamente el dvk_call, regresa y todos contentos
+		Si no, si timeout = TIMEOUT_NOWAIT , retorna EDVSAGAIN 
+		Si no, si timeout = TIMEOUT_FOREVER, timeout = 3600 segundos
+		El proceso UML_USER se fuerza a invocar left = sleep(timeout);
+		Si left > 0 es porque algun proceso contraparte le hizo UP, por lo que habria que reejecutar el dvk_call. ERRONEO: No puede hacerle el UP dado que lo ve con las p_rts_flags=0.
+		Si left == 0 es porque vencio el timeout.  , retorna EDVSAGAIN 
+
+ 
 
 PROBLEMA:
 		VER SI CUANDO SE UTILIZA EL DVK LOS OTROS PROCESOS UML SIGUEN EJECUTANDO DADO QUE 

@@ -1,6 +1,8 @@
 
 #ifdef CONFIG_UML_DVK
 
+#include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
+
 #include "/usr/src/dvs/include/com/dvs_config.h"
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/include/com/const.h"

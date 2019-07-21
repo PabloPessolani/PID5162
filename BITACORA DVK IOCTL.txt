@@ -5989,6 +5989,7 @@ root@node0:/dev/shm# dmesg | grep fault
 		update-grub  
 		update-grub2
 		
+		NO ME FUNCIONO 
 		
 =======================================================================================
 ULTIMO_LOG

@@ -89,8 +89,10 @@ void dvk_init(void){
 	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(d_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_VER_FORMAT, DVS_VER_FIELDS(d_ptr));
 	
+#ifndef CONFIG_UML_DVK	
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_size=%d\n", boot_cpu_data.x86_cache_size);
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_alignment =%d\n", boot_cpu_data.x86_cache_alignment);
+#endif //  CONFIG_UML_DVK	
 
 	DVKDEBUG(INTERNAL,"Initializing %d DCs: dc=%p\n", dvs.d_nr_dcs, dc);
 	for( i = 0;  i < dvs.d_nr_dcs; i++) {
@@ -115,9 +117,13 @@ void dvk_init(void){
 	node[nodeid].n_usr.n_flags = (NODE_ATTACHED | NODE_SCONNECTED | NODE_SCONNECTED);
 	
 	/*Align every struct proc with the cache line */
+#ifndef CONFIG_UML_DVK	
 	sizeof_proc_aligned = boot_cpu_data.x86_cache_alignment;
 	while( sizeof(struct proc) > sizeof_proc_aligned)
 		sizeof_proc_aligned = (sizeof_proc_aligned << 1);
+#else //  CONFIG_UML_DVK	
+	sizeof_proc_aligned = sizeof(struct proc);	
+#endif CONFIG_UML_DVK	
 	log2_proc_size = ilog2(sizeof_proc_aligned);
 	DVKDEBUG(INTERNAL,"sizeof_proc_aligned=%d log2_proc_size=%d\n",sizeof_proc_aligned, log2_proc_size);
 		
@@ -555,7 +561,8 @@ void dvk_init(void){
 	}
 
 	/*creates "procs" file under /sys/kernel/debug/dvs/<DCname>/procs */
-	dc_ptr->dc_procs_dbg = debugfs_create_file_unsafe("procs", 0644, dc_ptr->dc_DC_dbg, NULL, &proc_dbg_fops);
+//	dc_ptr->dc_procs_dbg = debugfs_create_file_unsafe("procs", 0644, dc_ptr->dc_DC_dbg, NULL, &proc_dbg_fops);
+	dc_ptr->dc_procs_dbg = debugfs_create_file("procs", 0644, dc_ptr->dc_DC_dbg, NULL, &proc_dbg_fops);
 	
 	/*creates DC directory under /proc/dvs */
 	dc_ptr->dc_DC_dir = proc_mkdir(dc_ptr->dc_usr.dc_name, proc_dvs_dir);

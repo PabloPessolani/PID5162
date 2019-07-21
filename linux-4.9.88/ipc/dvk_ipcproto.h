@@ -169,7 +169,7 @@
 							unsigned long third, 
 							void __user * ptr, 
 							long fifth);
- long new_exit_unbind(long code);
+ long ipc_exit_unbind(long code);
 
 								
 	
