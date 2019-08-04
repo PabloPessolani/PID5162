@@ -1,0 +1,14 @@
+DVK LIBRARIES
+=============
+
+root@node0:/usr/src/dvs/dvk-lib# ls -l *.so
+libdvkipc.so  	<<<< It uses the DVK embedded into the Linux KERNEL as a new IPC system call 
+libdvklib.so	<<<< It uses the DVK as loadable kernel module. It uses IOCTL system call and the /dev/dvk device.
+libuserdvk.so	<<<< Used by UML user space processes 
+
+when new functions will be added, the stub_dvkcall.c must be modified to handle the three
+execution environments
+CONFIG_DVS_DVK 
+CONFIG_UML_DVK 
+CONFIG_UML_USER
+

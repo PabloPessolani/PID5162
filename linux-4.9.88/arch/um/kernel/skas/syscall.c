@@ -166,7 +166,13 @@ void handle_syscall(struct uml_pt_regs *r)
 	if (syscall >= 0 && syscall <= __NR_syscall_max)
 		PT_REGS_SET_SYSCALL_RETURN(regs,
 				EXECUTE_SYSCALL(syscall, regs));
+#ifdef 	CONFIG_UML_DVK
+	else {
+		printk("syscall=%d __NR_syscall_max=%d\n", syscall, __NR_syscall_max);
+	}	
+#endif // 	CONFIG_UML_DVK
 
+	
 out:
 	syscall_trace_leave(regs);
 }

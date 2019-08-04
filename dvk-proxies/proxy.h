@@ -106,6 +106,8 @@ extern "C" {
 #define _MINIX             1	/* tell headers to include MINIX stuff */
 #define _SYSTEM            1	/* tell headers that this is the kernel */
 
+#define PXYDBG		1
+
 extern int	dvk_fd;
 extern int h_errno;
 

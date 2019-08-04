@@ -1,0 +1,112 @@
+UML AS A DVS NODE
+=================
+
+
+The UML kernel must be built with  UML.config configuration file
+The HOST kernel must be built with config.4.9.88.config file 
+El filesystem debian para UML se encuentra en /dev/sdb6
+
+root@node0:/usr/src/dvs/dvk-tests# fdisk -l /dev/sdb
+Disco /dev/sdb: 20 GiB, 21474836480 bytes, 41943040 sectores
+Unidades: sectores de 1 * 512 = 512 bytes
+TamaÃ±o de sector (lÃ³gico/fÃ­sico): 512 bytes / 512 bytes
+TamaÃ±o de E/S (mÃ­nimo/Ã³ptimo): 512 bytes / 512 bytes
+Tipo de etiqueta de disco: dos
+Identificador del disco: 0x79c16f1c
+
+Disposit.  Inicio Comienzo    Final Sectores TamaÃ±o Id Tipo
+/dev/sdb1             2048 41943039 41940992    20G  5 Extendida
+/dev/sdb5             4096  2101247  2097152     1G 83 Linux
+/dev/sdb6          2103296  4200447  2097152     1G 83 Linux <<<<<<<<<<<<<<<<<<<<
+/dev/sdb7          4202496  6299647  2097152     1G 83 Linux 
+/dev/sdb8          6301696 41943039 35641344    17G 83 Linux
+
+
+root@node0:/usr/src/dvs/dvk-tests# df
+S.ficheros     bloques de 1K   Usados Disponibles Uso% Montado en
+udev                  916520        0      916520   0% /dev
+tmpfs                 206684     8920      197764   5% /run
+/dev/sda1           19994224 16212524     2743008  86% /
+tmpfs                1033416        0     1033416   0% /dev/shm
+tmpfs                   5120        0        5120   0% /run/lock
+tmpfs                1033416        0     1033416   0% /sys/fs/cgroup
+tmpfs                 206680        0      206680   0% /run/user/0
+/dev/sdb6            1032088   528636      451024  54% /mnt <<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+The UML (node1) will be connected only to the HOST (node0) through a TCP communication proxy.
+
+The HOST eth0 IP address is 192.168.1.100 
+And the DVS network will be 192.168.0.X as it is specified by the /etc/hosts in both nodes.
+
+In NODE0 on console or session(0)
+===================================
+		# create the bridge interface and the HTAP (ULM will be connected to it)
+		tunctl -u root -t HTAP
+		brctl addbr br0
+		echo 0 > /sys/devices/virtual/net/br0/bridge/multicast_snooping
+		ifconfig HTAP 0.0.0.0 up
+		brctl addif br0 HTAP	
+		ifconfig br0 192.168.0.100 netmask 255.255.255.0 promisc up 
+		
+In NODE0 other console or session(1)
+==================================
+		root@node0:~# cd /usr/src/dvs/dvk-tests/
+		root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0 		
+		STOP before TCP PROXY start
+		
+In NODE0 other console or session(2)
+==================================	
+		START UML 
+		cd /usr/src/linux
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+		Once UML has started 
+		mount -o remount,rw /dev/ubda /
+		ifconfig eth0 192.168.0.101 netmask 255.255.255.0 up
+		
+		NOW we can PING to node0 and reverse.
+		
+		Then on UML
+		cd /usr/src/dvs/dvk-tests/
+		./tests_uml.sh 1 0  
+	
+In NODE0 other console or session(1)
+==================================
+		RESUME the paused script tests.sh until it finishes.
+		
+		You can check proxy connectivity 
+		root@node0:/usr/src/dvs/dvk-proxies/test# netstat -nat
+		Active Internet connections (servers and established)
+		Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+		tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+		tcp        0      0 192.168.0.100:39908     192.168.0.101:3000      ESTABLISHED <<<<
+		tcp        0      0 192.168.0.100:3001      192.168.0.101:38162     ESTABLISHED <<<<
+		
+		Now we can set the remote client endpoint binding it as REMOTE
+		./test_rmtbind  0 55 1 client
+		cd /usr/src/dvs/dvk-proxies/test/
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./copy_server 0 10	
+
+In UML 
+=======
+		We can test proxy connectivity too.
+		Active Internet connections (servers and established)
+		Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+		tcp        0      0 192.168.0.101:38162     192.168.0.100:3001      ESTABLISHED
+		tcp        0      0 192.168.0.101:3000      192.168.0.100:39908     ESTABLISHED
+
+		./test_rmtbind 0 10 0 server
+		cd /usr/src/dvs/dvk-proxies/test/
+		./copy_client 0 10 55
+		
+		
+TODO:
+	1- Probar la conectividad de NODE1 con otro nodo diferente al HOST 
+	2- Probar los programas de dvs/dvk-loops 
+	
+			
+		
+		

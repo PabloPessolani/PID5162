@@ -622,7 +622,10 @@ static int __init rd_init(void)
 	return 0;
 }
 
+#ifndef CONFIG_DVKIPC
 late_initcall(rd_init);
+#endif // CONFIG_DVKIPC
+
 
 /* XXX - move this inside rd_intr. */
 /* Called without dev->lock held, and only in interrupt context. */
@@ -697,7 +700,9 @@ static int __init rd_driver_init(void)
 	return 0;
 }
 
+#ifndef CONFIG_DVKIPC
 device_initcall(rd_driver_init);
+#endif // CONFIG_DVKIPC
 
 static int rd_open(struct block_device *bdev, fmode_t mode)
 {
@@ -1012,10 +1017,19 @@ static int init_rdisk(void)
 	if( rcode < 0) ERROR_RETURN(rcode);
 	
 	dvsu_ptr = &dvs;
+
+#ifdef CONFIG_DVKIPC
+	int rdisk_nodeid;
+	rdisk_nodeid = dvk_getdvsinfo(dvsu_ptr);
+	if( rdisk_nodeid < 0) ERROR_RETURN(rdisk_nodeid);
+	DVKDEBUG(INTERNAL,"rdisk_nodeid=%d\n",rdisk_nodeid);	
+	DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
+#else  // CONFIG_DVKIPC
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
 	DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);	
 	DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
+#endif // CONFIG_DVKIPC
 	
 	dcu_ptr = &dcu;
 	rcode = dvk_getdcinfo(dcid, dcu_ptr);

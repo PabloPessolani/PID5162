@@ -12,7 +12,7 @@ void dvk_init(void){
 }
 
 /*--------------------------------------------------------------*/
-/*			ipc_dvs_init		reserva: 1451321	*/
+/*			ipc_dvs_init			*/
 /* Initialize the DVS system					*/
 /* du_addr = NULL => already loaded DVS parameters 	*/ 
 /* returns the local_node id if OK or negative on error	*/
@@ -34,13 +34,16 @@ void dvk_init(void){
 	if(get_current_cred()->euid.val != USER_ROOT) ERROR_RETURN(EDVSPRIVILEGES);
 #endif 
 	
-
+#ifdef  ANULADO
 	if (!try_module_get(THIS_MODULE)){
 		ERROR_RETURN(EDVSNODEV);
 	}
+#endif // ANULADO
 	
-	if( !DVS_NOT_INIT() )   ERROR_RETURN(EDVSDVSBUSY);
-	
+	if( !DVS_NOT_INIT() )  {
+		DVKDEBUG(DBGPARAMS,"local_nodeid=%d\n", local_nodeid);
+		ERROR_RETURN(EDVSDVSBUSY);
+	}
 	DVKDEBUG(DBGPARAMS,"nodeid=%d second=%d third=%d fifth=%d\n", 
 		second, third, fifth);
 	d_ptr = &dvs;

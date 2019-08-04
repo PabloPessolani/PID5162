@@ -6313,14 +6313,641 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 20190720:
 			Modifique el codigo el codigo de IPC en funcion de la compilacion de UML
 			#ifndef CONFIG_UML_DVK	
+		
+		INICIALIZO EL DVS 
+			root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_init -n 2 -V 3 -N 4 -P 200 -T 20
+			DEBUG 674:dvk_open:102: 
+			Initializing DVS. Local node ID 2... 
+			DEBUG 674:dvk_dvs_init:510: nodeid=2
+			DEBUG 674:SYSC_ipc:163: ipc_dvs_init: call=6144 first=2 second=0 third=0 fifth=0 
+			DEBUG 674:ipc_dvs_init:48: nodeid=0 second=0 third=0 fifth=0
+			DEBUG 674:ipc_dvs_init:50: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			DEBUG 674:ipc_dvs_init:51: d_max_copybuf=65536 d_max_copylen=1048576
+			DEBUG 674:ipc_dvs_init:52: d_dbglvl=7F306 version=4.9 sizeof(proc)=0
+			DEBUG 674:ipc_dvs_init:65: d_nr_dcs=3 d_nr_nodes=4 d_nr_procs=200 d_nr_tasks=20 d_nr_sysprocs=64 
+			DEBUG 674:ipc_dvs_init:66: d_max_copybuf=65536 d_max_copylen=1048576
+			DEBUG 674:ipc_dvs_init:67: d_dbglvl=0 version=2.1 sizeof(proc)=0
+			DEBUG 674:dvk_dvs_init:514: ipc ipc_op=71680 ret=2
+			d_nr_dcs=3 d_nr_nodes=4 d_nr_procs=200 d_nr_tasks=20 d_nr_sysprocs=64 
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=0 version=2.1 sizeof(proc)=0
+			Get DVS info
+			DEBUG 674:dvk_getdvsinfo:238: 
+			DEBUG 674:dvk_getdvsinfo:242: ipc ret=2
+			local node ID 2... 
+			d_nr_dcs=3 d_nr_nodes=4 d_nr_procs=200 d_nr_tasks=20 d_nr_sysprocs=64 
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=0 version=2.1 sizeof(proc)=488
+	VERIFICO CORRECTO 		
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/info
+			nodeid=2
+			nr_dcs=3
+			nr_nodes=4
+			max_nr_procs=200
+			max_nr_tasks=20
+			max_sys_procs=64
+			max_copy_buf=65536
+			max_copy_len=1048576
+			dbglvl=0
+			version=2.1
+			sizeof(proc)=488
+			sizeof(proc) aligned=488
+			sizeof(dc)=144
+			sizeof(node)=80
+			
+		INICILIZO EL DC 	
+			root@node0:/usr/src/dvs/dvk-tests# ./test_dc_init -d 0 -p 100 -t 20 -s 40 -n 2 -P 0 -N UMLDC0
+			dc_dcid=0 dc_nr_procs=100 dc_nr_tasks=20 dc_nr_sysprocs=40 dc_nr_nodes=2
+			flags=0 dc_nodes=0 dc_pid=0 dc_name=UMLDC0
+			dc_dcid=0 dc_warn2proc=0 dc_warnmsg=-1
+			DEBUG 676:dvk_open:102: 
+			before dc_dcid=0 dc_nr_procs=100 dc_nr_tasks=20 dc_nr_sysprocs=40 dc_nr_nodes=2
+			before flags=0 dc_nodes=0 dc_pid=0 dc_name=UMLDC0
+			before dc_dcid=0 dc_warn2proc=0 dc_warnmsg=-1
+			DEBUG 676:dvk_dc_init:175: 
+			DEBUG 676:dvk_dc_init:179: ipc ret=2
+			DC0 has been initialized on node 2
+			DEBUG 676:dvk_getnodeinfo:356: nodeid=2
+			ERROR: 676:check_caller:579: rcode=-310
+			DEBUG 676:dvk_getnodeinfo:360: ipc ret=0
+			n_nodeid=2 n_proxies=-1 n_flags=6 n_dcs=1 n_name=node2
+			DEBUG 676:dvk_getdcinfo:331: dcid=0
+			ERROR: 676:check_caller:579: rcode=-310
+			DEBUG 676:dvk_getdcinfo:335: ipc ret=0
+			after  dc_dcid=0 dc_nr_procs=100 dc_nr_tasks=20 dc_nr_sysprocs=40 dc_nr_nodes=2
+			after  flags=0 dc_nodes=4 dc_pid=676 dc_name=UMLDC0
+			after  dc_dcid=0 dc_warn2proc=0 dc_warnmsg=-1
 
-			HAY VARIOS PROBLEMAS
-			Por lo pronto no funciona el /proc 
-			Pero al menos el dvk_dvsinit y dvk_getdvsinfo funcionan 
-			Aparentemente hay que modificar la forma en que se activa el DC 
+	VERIFICO EL DC 
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/UMLDC0/info 
+			dcid=0
+			flags=0
+			nr_procs=100
+			nr_tasks=20
+			nr_sysprocs=40
+			nr_nodes=2
+			dc_nodes=4
+			dc_pid=676
+			warn2proc=0
+			warnmsg=-1
+			dc_name=UMLDC0
+			nodes 33222222222211111111110000000000
+				  10987654321098765432109876543210
+				  -----------------------------X--
+			cpumask=1 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ATENCION: 
+	RDISK usa la variable GLOBAL local_nodeid del HOST para poder acceder a el.
+	UML DVK IPC tambien tiene una variable GLOBAL local_nodeid !!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	
+SOLUCION:
+	SI SE USA RDISK , NO SE PUEDE UTILIZAR DVK_UML_IPC 
+	
+		#ifdef CONFIG_DVKIPC
+			int rdisk_nodeid;
+			rdisk_nodeid = dvk_getdvsinfo(dvsu_ptr);
+			if( rdisk_nodeid < 0) ERROR_RETURN(rdisk_nodeid);
+			DVKDEBUG(INTERNAL,"rdisk_nodeid=%d\n",rdisk_nodeid);	
+			DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
+		#else  // CONFIG_DVKIPC
+			local_nodeid = dvk_getdvsinfo(dvsu_ptr);
+			if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
+			DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);	
+			DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
+		#endif // CONFIG_DVKIPC	
+
+ANULANDO CONFIG_DVKIPC SE VE QUE PUEDE HACER EL BIND 
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  30    30  6031/215    0    0   20 27342 27342 27342 27342 linux 	
+
+
+#ifndef CONFIG_DVKIPC
+device_initcall(rd_driver_init);
+#endif // CONFIG_DVKIPC
+
+
+		ALGUNAS PRUEBAS DE TRANSFERNCIA FUNCIONAN BIEN OTRAS NO
+		root@node0:/usr/src/dvs/dvk-tests# ./test_sendrcv  0 10 55  
+DEBUG 839:dvk_open:102: 
+DEBUG 839:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+DEBUG 839:dvk_bind_X:1141: ipc ret=10
+PARENT BIND dcid=0 parent_pid=839 parent_nr=10 parent_ep=10 m_ptr=0x80004008
+PARENT pause before SEND
+DEBUG 840:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=55 nodeid=-1
+DEBUG 840:dvk_bind_X:1141: ipc ret=55
+CHILD BIND dcid=0 child_pid=840 child_nr=55 child_ep=55 m_ptr=0x80004008
+CHILD FIRST RECEIVE
+DEBUG 840:dvk_receive_T:834: endpoint=31438 timeout=-1
+PARENT FIRST SEND msg:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 839:dvk_send_T:803: endpoint=55 timeout=-1
+DEBUG dvk_vm_rw:442: pid=840 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+DEBUG dvk_vm_rw_core:277: pid=840 riovcnt=1 flags=0 vm_write=1
+DEBUG dvk_vm_rw_core:331: i=0 rc=0
+DEBUG dvk_vm_rw_core:349: rc=76
+DEBUG dvk_vm_rw_core:356: rc=76
+DEBUG 839:dvk_send_T:807: ipc ret=76
+PARENT SECOND SEND msg:source=10 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 839:dvk_send_T:803: endpoint=55 timeout=-1
+DEBUG 840:dvk_receive_T:838: ipc ret=0
+CHILD RECEIVE msg:source=10 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+CHILD SECOND RECEIVE
+DEBUG 840:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG dvk_vm_rw:442: pid=839 liovcnt=1 riovcnt=1 flags=0 vm_write=0
+DEBUG dvk_check_iovect:1280: type=0 nr_segs=1
+DEBUG dvk_rw_check_kvector:862: type=0 nr_segs=1
+DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+DEBUG dvk_vm_rw_core:277: pid=839 riovcnt=1 flags=0 vm_write=0
+DEBUG dvk_vm_rw_core:331: i=0 rc=0
+DEBUG dvk_vm_rw_core:349: rc=76
+DEBUG dvk_vm_rw_core:356: rc=76
+DEBUG 840:dvk_receive_T:838: ipc ret=0
+CHILD RECEIVE msg:source=10 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+DEBUG 839:dvk_send_T:807: ipc ret=0
+
+		Hay errores en /proc despues de ejecutar las pruebas 
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0     0/0      0    0    0     0     0 1205249580     0 ÿÿÿÿÿÿÿÿ       
+ 0   0     0     0/0      0    0    0     0     0 1205251628     0 ÿÿÿÿÿÿÿÿ       
+ 0   0     0     0/0      0    0    0     0     0 1205263148     0 ÿÿÿÿÿÿÿÿ 
+
+ ==============================================================================================
+20190722:
+		TRANTANDO DE PROBAR EL ACCESO A RED DE UML 
+		BASADO EN : POSIBILIDADES DE EXPERIMENTACION EN REDES TCPIP BAJO USER MODE LINUX
+		
+		HACER ESTOS COMANDO EN CONSOLA!! No en SSH porque luego se cae 
+		
+		EN EL HOST (node0):
+		tunctl -u root -t HTAP
+		brctl addbr bridge1
+		ifconfig HTAP 0.0.0.0 up
+		ifconfig eth0 0.0.0.0 up
+		brctl addif bridge1 HTAP
+		brctl addif bridge1 eth0
+		
+		EN OTRA SESION, ARRANCAR UML 
+		cd /usr/src/linux
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+		EN UML (node0)
+		ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
+		
+		EN EL HOST:
+		ifconfig eth0 192.168.1.100 netmask 255.255.255.0  up
+		ifconfig bridge1 192.168.1.10 netmask 255.255.255.0 up
+		route add -host 192.168.1.101 dev bridge1
+		
+		LUEGO PROBAR EL PING QUE FUNCIONA !!!
+		
+		Para montar el disco en RDWR
+		mount -o remount,rw /dev/ubda /
+	
+==============================================================================================
+20190727:
+			AGREGO A LA VM una 2da placa Ethernet (eth1) para conectar al UML 
+			Modifique el script dvk-tests/tests.sh para que levanten TCP PROXY. 
+			Tuve que modificar los archivos /etc/hosts para cambiar la direccion
+			de RED A 192.168.0.X porque el proxy TCP funciona con ese archivo
 			
+	EN EL HOST (node0):
+		tunctl -u root -t HTAP
+		brctl addbr bridge1
+		ifconfig HTAP 0.0.0.0 up
+		brctl addif bridge1 HTAP
+		
+	//	ifconfig eth1 0.0.0.0 up
+	//	brctl addif bridge1 eth1
+		
+	EN OTRA SESION, ARRANCAR UML 
+		cd /usr/src/linux
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+	EN UML (node0)
+		Para montar el disco en RDWR
+mount -o remount,rw /dev/ubda /
+ifconfig eth0 192.168.0.101 netmask 255.255.255.0 up
+route add -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.10   
+		 
+	EN EL HOST:
+	//	ifconfig eth1 192.168.0.100 netmask 255.255.255.0  up
+		ifconfig bridge1 192.168.0.10 netmask 255.255.255.0 up
+		route add -host 192.168.0.101 dev bridge1
+	
+		LUEGO PROBAR EL PING QUE FUNCIONA !!!
+		
+		
+	EN UML 
+		root@node1:~# cd /usr/src/dvs/dvk-tests/
+		root@node1:/usr/src/dvs/dvk-tests# ./tests.sh 1 0         
+		root@node1:/usr/src/dvs/dvk-tests# ./test_dc_init
+		
+
+	EN UML 
+root@node1:/usr/src/dvs/dvk-proxies/test# netstat -natp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN      706/./tcp_proxy     
+tcp        0      0 192.168.0.101:36730     192.168.0.100:3001      ESTABLISHED 705/./tcp_proxy  
+	EN HOST 
+root@node0:/usr/src/dvs/dvk-proxies/test# netstat -natp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN      838/./tcp_proxy     
+tcp        0      0 192.168.0.100:3001      192.168.0.101:36730     ESTABLISHED 838/./tcp_proxy     
+tcp        0      1 192.168.0.10:56492      192.168.0.101:3000      SYN_SENT    837/./tcp_proxy  <<< ENVIO SYC PERO NO LO ACEPTO 
+   
+
+	ESTO INDICA QUE ALGO ANDA MAL EN UML
+	
+	VOY A INSTALAR SSH EN UML 
+	
+	mount /dev/sdb6 /mnt
+	mount --bind /dev /mnt/dev
+	mount --bind /proc /mnt/proc
+	mount --bind /sys /mnt/sys
+	chroot /mnt
+	apt-get install ssh 
+	
+	
+	AL REBOOTEAR UML DUREANTE EL ARRANQUE TIRA 
+	TCP: request_sock_TCP: Possible SYN flooding on port 3000. Dropping request.  Check SNMP counters.
+		
+	echo "net.ipv4.tcp_syncookies = 0" >> /etc/sysctl.conf 
+	echo "net.ipv4.tcp_max_syn_backlog = 32765" >> /etc/sysctl.conf 
+	echo "net.ipv4.tcp_fin_timeout = 30" >> /etc/sysctl.conf 
+	echo "net.core.somaxconn = 4096" >> /etc/sysctl.conf 
+	 sysctl -p /etc/sysctl.conf
+	 
+	 
+	 root@node1:/usr/src/dvs/dvk-tests# netstat -natp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      656/sshd            
+tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN      681/./tcp_proxy     
+tcp        0      0 192.168.0.101:22        192.168.0.10:36036      ESTABLISHED 728/sshd: root@pts/  <<<< 
+tcp        0      0 192.168.0.101:55850     192.168.0.100:3001      ESTABLISHED 680/./tcp_proxy
+
+	COMO SE VE EN UML, EL NODO QUE ESTABLECE EL SSH ES EL DEL  bridge1!!! 
+	bridge1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.10  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::20c:29ff:fe9a:7aae  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:9a:7a:ae  txqueuelen 1000  (Ethernet)
+        RX packets 217  bytes 26991 (26.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 290  bytes 25452 (24.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+	en el HOST
+	root@node0:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.10:36036      192.168.0.101:22        ESTABLISHED 	SALE CON DIRECCION 10!!!
+tcp        0      1 192.168.0.10:52010 <<<<     192.168.0.101:3000      SYN_SENT   	SALE CON DIRECCION 10!!!
+tcp        0      0 192.168.0.100:3001      192.168.0.101:55850     ESTABLISHED		SALE OK
+
+
+	EN EL HOST 
+	root@node0:~# netstat -nat | grep :300
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+tcp        0      1 192.168.0.10:36422      192.168.0.101:3000      SYN_SENT   		SALE CON DIRECCION 10!!!
+tcp        0      0 192.168.1.100:3001      192.168.0.101:38446     ESTABLISHED		INGRESA CON DIRECCION 100
+
+	EN UML 
+root@node1:/usr/src/dvs/dvk-tests# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.101:38446     192.168.1.100:3001      ESTABLISHED 	CONECTADO A LA 100 
+
+POSIBLE SOLUCION:
+	HACER QUE EL PROXY SENDER SETEE LA DIRECCION DE LA INTERFACE ETH0=NODE0=192.168.1.100 y no la del bridge.
+	
+	#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+int getsockopt(int sockfd, int level, int optname, void *optval,socklen_t *optlen);
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+		 
+	SO_BINDTODEVICE
+Bind this socket to a particular device like "eth0", as specified in the passed interface name. If the name is an empty string or the option length is zero, the socket device binding is removed. The passed option is a variable-length null-terminated interface name string with the maximum size of IFNAMSIZ. If a socket is bound to an interface, only packets received from that particular interface are processed by the socket. Note that this only works for some socket types, particularly AF_INET sockets. It is not supported for packet sockets (use normal bind(2) there).
+Before Linux 3.8, this socket option could be set, but could not retrieved with getsockopt(2). Since Linux 3.8, it is readable. The optlen argument should contain the buffer size available to receive the device name and is recommended to be IFNAMSZ bytes. The real device name length is reported back in the optlen argument.
+
+  /* bind the socket to one network device */
+  const char device[] = MY_DEVICE;
+  rc=setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, device, sizeof(device));
+  if (rc != 0) 
+  {
+     printf ("%s: could not set SO_BINDTODEVICE (%s)\n",
+        argv[0], strerror(errno));
+     exit (EXIT_FAILURE);
+  }
+  printf ("SO_BINDTODEVICE set\n");
+  /* verify SO_BINDTODEVICE setting */
+  rc = getsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)buffer, &opt_length);
+  if (rc != 0) 
+  {
+     printf ("%s: could not get SO_BINDTODEVICE (%s)\n",
+        argv[0], strerror(errno));
+     exit (EXIT_FAILURE);
+  }
+  if (rc == 0) 
+  {
+    printf("SO_BINDTODEVICE is: %s\n", buffer);
+  }
+  
+		
+https://stackoverflow.com/questions/1207746/problems-with-so-bindtodevice-linux-socket-option
+		
+		
+CONFIG_INET_TCP_DIAG=y
+# CONFIG_TCP_CONG_ADVANCED is not set
+CONFIG_TCP_CONG_CUBIC=y
+CONFIG_DEFAULT_TCP_CONG="cubic"
+# CONFIG_TCP_MD5SIG is not set
+
+  x Type  : boolean                                                           x
+  x Prompt: IP: TCP syncookie support                                         x
+  x   Location:                                                               x
+  x     -> Networking support (NET [=y])                                      x
+  x       -> Networking options                                               x
+  x (1)     -> TCP/IP networking (INET [=y])                                  x
+  x   Defined at net/ipv4/Kconfig:263                                         x
+  x   Depends on: NET [=y] && INET [=y]                                       x
+  x   Selected by: IP_NF_TARGET_SYNPROXY [=n] && NET [=y] && INET [=y] && NET
+  
+
+==============================================================================================
+20190730: no funciona el proxy TCP aun cambiando parametros
+	
+	PROBAR CON TIPC que ahora esta habilitado.
+	root@node0:/usr/src/linux# grep TIPC .config
+		CONFIG_TIPC=y
+		CONFIG_TIPC_MEDIA_UDP=y
+
+	TAMPOCO FUNCION CON TIPC 
+		Puede ser porque no estan en la misma LAN 
+	
+=============================================================================================
+20190730: no funciona el proxy TIPC aun haciendo 
+
+As it turns out, it's a bug in the igmp snooping code in the kernel that's
+the problem with multicast traffic not being forwarded.
+This seems to affect recent versions. To check if it's turned on, run
+cat /sys/devices/virtual/net/<bridgename>/bridge/multicast_snooping
+
+If it's 1, it's highly this is the culprit causing the non-propagation of
+the multicast traffic. The solution is to turn it off by setting it 0.
+echo 0 > /sys/devices/virtual/net/<bridge name>/bridge/multicast_snooping
+
+
+TODO:
+		Volver a utilizar proxy TCP en tests.sh 
+		Habilitar el bridge pero sin ningun tipo de ruta.
+		echo 0 > /sys/devices/virtual/net/<bridge name>/bridge/multicast_snooping
+		cambiar el hosts para que las direcciones sean todas 192.168.0.X 
+				
+		tunctl -u root -t HTAP
+		brctl addbr br0
+		echo 0 > /sys/devices/virtual/net/br0/bridge/multicast_snooping
+		ifconfig HTAP 0.0.0.0 up
+		brctl addif br0 HTAP	
+		ifconfig br0 192.168.0.100 netmask 255.255.255.0 promisc up 
+		
+		EN LA CONSOLA DEL HOST (node0):
+		root@node0:~# cd /usr/src/dvs/dvk-tests/
+		root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0 		
+		DETENER ANTES DE EJECUTAR LOS PROXIES !!!!! 
+		
+		EN OTRA SESION, ARRANCAR UML 
+		cd /usr/src/linux
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+		EN UML (node0)
+		Para montar el disco en RDWR
+mount -o remount,rw /dev/ubda /
+ifconfig eth0 192.168.0.101 netmask 255.255.255.0 up
+		// route add -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.10   
+
+	
+		LUEGO PROBAR EL PING !!!
 			
- 
+		
+	EN UML 
+cd /usr/src/dvs/dvk-tests/
+./tests.sh 1 0      
+
+	CONTINUAR EN CONSOLA DE node0 HASTA TERMINAR 		
+	EN LA CONSOLA DEL HOST (node0):
+		cd /usr/src/dvs/dvk-tests/
+		./test_rmtbind  0 55 1 client
+		cd /usr/src/dvs/dvk-proxies/test/
+		. /dev/shm/DC0.sh
+		nsenter -p -t $DC0 ./copy_server 0 10
+		
+	EN UML 
+		./test_dc_init
+		./test_add_node 0 0
+		./test_rmtbind 0 10 0 server
+		cd /usr/src/dvs/dvk-proxies/test/
+		./copy_client 0 10 55
+				
+root@node0:/usr/src/dvs/dvk-proxies/test# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:39908     192.168.0.101:3000      ESTABLISHED
+tcp        0      0 192.168.0.100:3001      192.168.0.101:38162     ESTABLISHED
+
+en UML 
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.101:38162     192.168.0.100:3001      ESTABLISHED
+tcp        0      0 192.168.0.101:3000      192.168.0.100:39908     ESTABLISHED
+
+FUNCIONO CON PROXY TCP !!!!!
+
+
+CON PROXY TIPC DA LO SIGUIENTE
+root@node1:/usr/src/dvs/dvk-proxies/test# ./copy_client 0 10 55                
+DEBUG 701:dvk_open:102: 
+DEBUG 701:dvk_getdvsinfo:238: 
+DEBUG 701:SYSC_ipc:163: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+DEBUG 701:ipc_getdvsinfo:1834: local_nodeid=1 
+DEBUG 701:dvk_getdvsinfo:242: ipc ret=1
+ copy_client.c:main:37:local_nodeid=1
+ copy_client.c:main:38:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 701:dvk_getdcinfo:331: dcid=0
+DEBUG 701:SYSC_ipc:163: ipc_getdcinfo: call=3584 first=0 second=0 third=0 fifth=0 
+DEBUG 701:ipc_getdcinfo:1868: dcid=0 
+DEBUG 701:check_caller:545: caller_pid=701 caller_tgid=701
+ERROR: 701:check_caller:579: rcode=-310
+DEBUG 701:ipc_getdcinfo:1886: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_getdcinfo:1888: RUNLOCK_DC dc=0 count=0
+DEBUG 701:dvk_getdcinfo:335: ipc ret=0
+ copy_client.c:main:48:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=35 dc_nr_sysprocs=64 dc_nr_nodes=32
+ copy_client.c:main:49:flags=0 dc_nodes=3 dc_pid=692 dc_name=DC0
+DEBUG 701:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=55 nodeid=-1
+DEBUG 701:SYSC_ipc:163: ipc_bind: call=2304 first=0 second=0 third=-1 fifth=-1 
+DEBUG 701:ipc_bind:1407: oper=0 dcid=0 param_pid=-1 endpoint=55 nodeid=-1
+DEBUG 701:ipc_bind:1429: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_bind:1442: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:init_proc_desc:25: p_name=$noname dcid=0
+DEBUG 701:ipc_bind:1476: param_pid=-1 lpid=701 vpid=701 tid=701
+DEBUG 701:ipc_bind:1500: SELF_BIND param_pid=-1 lpid=701 vpid=701 tid=701
+DEBUG 701:ipc_bind:1522: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_bind:1525: WLOCK_TASK pid=701 count=0
+DEBUG 701:ipc_bind:1526: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_bind:1562: increment the reference count of the task struct=701 count=2
+DEBUG 701:ipc_bind:1573: process p_name=copy_client *p_name_ptr=copy_client
+DEBUG 701:ipc_bind:1630: nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:ipc_bind:1631: nr=55 endp=55 dcid=0 lpid=701 p_cpumask=1 nodemap=2 name=copy_client 
+DEBUG 701:ipc_bind:1645: WUNLOCK_TASK pid=701 count=0
+DEBUG 701:ipc_bind:1651: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_bind:1653: DC_INCREF counter=2
+DEBUG 701:ipc_bind:1654: RUNLOCK_DC dc=0 count=0
+DEBUG 701:dvk_bind_X:1141: ipc ret=55
+ copy_client.c:main:78:BIND CLIENT dcid=0 clt_pid=701 clt_ep=55
+DEBUG 701:dvk_getprocinfo:1096: dcid=0 p_nr=55 
+DEBUG 701:SYSC_ipc:163: ipc_getprocinfo: call=3840 first=0 second=55 third=0 fifth=0 
+DEBUG 701:ipc_getprocinfo:1958: dcid=0 p_nr=55
+DEBUG 701:check_caller:545: caller_pid=701 caller_tgid=701
+DEBUG 701:check_caller:581: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:610: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:613: dcid=0
+DEBUG 701:check_caller:617: RLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:621: RUNLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:627: caller_pid=701 
+DEBUG 701:ipc_getprocinfo:1975: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_getprocinfo:1980: RUNLOCK_DC dc=0 count=0
+DEBUG 701:ipc_getprocinfo:1982: RLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_getprocinfo:1983: lpid=701 name=copy_client
+DEBUG 701:ipc_getprocinfo:1985: RUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:dvk_getprocinfo:1100: ipc ret=0
+ copy_client.c:main:87:nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:dvk_wait4bindep_X:569: cmd=0 endpoint=10 timeout=30000
+DEBUG 701:SYSC_ipc:163: ipc_wait4bind: call=7424 first=0 second=10 third=30000 fifth=0 
+DEBUG 701:ipc_wait4bind:2136: oper=0 other_ep=10 timeout_ms=30000
+DEBUG 701:check_caller:545: caller_pid=701 caller_tgid=701
+DEBUG 701:check_caller:581: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:610: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:613: dcid=0
+DEBUG 701:check_caller:617: RLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:621: RUNLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:627: caller_pid=701 
+DEBUG 701:ipc_wait4bind:2150: caller_pid=701 ret=0
+DEBUG 701:ipc_wait4bind:2169: RLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_wait4bind:2173: caller_nr=55 caller_ep=55 other_ep=10 
+DEBUG 701:ipc_wait4bind:2178: RUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_wait4bind:2180: dcid=0
+DEBUG 701:ipc_wait4bind:2184: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_wait4bind:2196: RUNLOCK_DC dc=0 count=0
+DEBUG 701:ipc_wait4bind:2198: WLOCK_PROC ep=10 count=1223601875
+DEBUG 701:ipc_wait4bind:2198: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_wait4bind:2205: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_wait4bind:2205: WUNLOCK_PROC ep=10 count=1223601875
+DEBUG 701:dvk_wait4bindep_X:573: ipc ret=10
+ copy_client.c:main:91:dvk_wait4bindep_T ret=10
+DEBUG 701:dvk_getprocinfo:1096: dcid=0 p_nr=10 
+DEBUG 701:SYSC_ipc:163: ipc_getprocinfo: call=3840 first=0 second=10 third=0 fifth=0 
+DEBUG 701:ipc_getprocinfo:1958: dcid=0 p_nr=10
+DEBUG 701:check_caller:545: caller_pid=701 caller_tgid=701
+DEBUG 701:check_caller:581: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:610: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:613: dcid=0
+DEBUG 701:check_caller:617: RLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:621: RUNLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:627: caller_pid=701 
+DEBUG 701:ipc_getprocinfo:1975: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_getprocinfo:1980: RUNLOCK_DC dc=0 count=0
+DEBUG 701:ipc_getprocinfo:1982: RLOCK_PROC ep=10 count=1223601875
+DEBUG 701:ipc_getprocinfo:1983: lpid=-1 name=server
+DEBUG 701:ipc_getprocinfo:1985: RUNLOCK_PROC ep=10 count=1223601875
+DEBUG 701:dvk_getprocinfo:1100: ipc ret=0
+ copy_client.c:main:99:nr=10 endp=10 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=server 
+ copy_client.c:main:107:CLIENT m_ptr=0x80006000
+ copy_client.c:main:129:CLIENT: buffer before=abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstu
+ copy_client.c:main:133:CLIENT SENT: source=0 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x80007000 m1p2=(nil) m1p3=(nil) 
+DEBUG 701:dvk_sendrec_T:866: endpoint=10 timeout=-1
+DEBUG 701:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=10 second=0 third=0 fifth=-1 
+DEBUG 701:ipc_mini_sendrec:523: srcdst_ep=10
+DEBUG 701:check_caller:545: caller_pid=701 caller_tgid=701
+DEBUG 701:check_caller:581: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:610: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:check_caller:613: dcid=0
+DEBUG 701:check_caller:617: RLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:621: RUNLOCK_DC dc=0 count=0
+DEBUG 701:check_caller:627: caller_pid=701 
+DEBUG 701:ipc_mini_sendrec:534: RLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:539: caller_nr=55 caller_ep=55 srcdst_ep=10 
+DEBUG 701:ipc_mini_sendrec:542: RUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:544: dcid=0
+DEBUG 701:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+DEBUG 701:ipc_mini_sendrec:566: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:573: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:573: WLOCK_PROC ep=10 count=1223601875
+DEBUG 701:ipc_mini_sendrec:573: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:574: srcdst_nr=10 srcdst_ep=10
+DEBUG 701:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+DEBUG 701:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+DEBUG 701:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+DEBUG 701:ipc_mini_sendrec:617: dcid=0 caller_pid=701 caller_nr=55 srcdst_ep=10 
+DEBUG 701:ipc_mini_sendrec:622: SENDING HALF
+DEBUG 701:ipc_mini_sendrec:633: RLOCK_PROC ep=27342 count=0
+DEBUG 701:ipc_mini_sendrec:647: RUNLOCK_PROC ep=27342 count=0
+DEBUG 701:ipc_mini_sendrec:649: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_mini_sendrec:649: WUNLOCK_PROC ep=10 count=1223601875
+ERROR: 701:ipc_mini_sendrec:650: rcode=-64
+DEBUG 701:dvk_sendrec_T:870: ipc ret=-1
+ERROR: 701:dvk_sendrec_T:888: rcode=-1
+CLIENT: dvk_send ret=-1
+DEBUG 701:ipc_exit_unbind:240: code=256
+DEBUG 701:ipc_exit_unbind:244: WLOCK_TASK pid=701 count=0
+DEBUG 701:ipc_exit_unbind:250: RLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_exit_unbind:251: nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:ipc_exit_unbind:284:  Exiting endpoint=55 lpid=701
+DEBUG 701:ipc_exit_unbind:286: RUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_exit_unbind:287: WLOCK_DC dc=0 count=0
+DEBUG 701:ipc_exit_unbind:288: WLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_exit_unbind:295:  endpoint=55 lpid=701
+DEBUG 701:do_unbind:682: nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:do_unbind:711: Caller nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:do_unbind:750: wakeup with error those processes trying to send a message to the proc
+DEBUG 701:do_unbind:777: delete notify messages bits sent by the proc
+DEBUG 701:do_unbind:825: WUNLOCK_PROC ep=10 count=1223601875
+DEBUG 701:do_unbind:825: WUNLOCK_PROC ep=0 count=1223602131
+DEBUG 701:do_unbind:782: Skip, self process
+DEBUG 701:do_unbind:825: WUNLOCK_PROC ep=0 count=1223613651
+DEBUG 701:do_unbind:829: nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DEBUG 701:do_unbind:885: wakeup with error those processes waiting this process MIGRATION
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DEBUG 701:do_unbind:934: wakeup those processes waiting this process UNBINDING
+DEBUG 701:do_unbind:969: nr=55 endp=55 dcid=0 flags=0 misc=20 lpid=701 vpid=701 nodeid=1 name=copy_client 
+DEBUG 701:init_proc_desc:25: p_name=copy_client dcid=0
+DEBUG 701:do_unbind:971: initialized 
+DEBUG 701:do_unbind:972: DC_DECREF counter=2
+DEBUG 701:ipc_exit_unbind:359: WUNLOCK_PROC ep=55 count=1223613395
+DEBUG 701:ipc_exit_unbind:360: WUNLOCK_TASK pid=701 count=0
+DEBUG 701:ipc_exit_unbind:361: WUNLOCK_DC dc=0 count=0
+
+
+		
  ====================================  ULTIMO_LOG ===================================
 
 TAREAS A REALIZAR
@@ -6335,7 +6962,8 @@ Hay que tener 3 versiones de DVK
 2) Probar el UML usando IPC DVK
 3) Probar el proxy que usa IPC DVK 
 4) Probar modificar el DVK para que soporte SLEEP() en modo usuario y SIGNAL para despertarlo.
-3) Hacer el driver TAP remoto 
+5) Hacer el driver TAP remoto 
+6) Modificar el transporte de "remote" driver para que sea M3-IPC en lugar de UNIX SOCKET
  
  
 La idea es que los procesos UML_USER se registren (bind) en el kernel del HOST.

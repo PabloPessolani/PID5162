@@ -145,91 +145,18 @@ extern int optind, optopt, opterr;
 		sprintf(dcu_ptr->dc_name,"DC%d", dcu_ptr->dc_dcid);
 
 	dcu_ptr =&dcu;
-	printf("PARENT " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	printf("PARENT " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	printf("PARENT " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	printf( DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
+	printf( DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
+	printf( DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
 	
 	ret = dvk_open();
 	if (ret < 0)  ERROR_PRINT(ret);
 
-    /* Allocate stack for child */
-    stack = malloc(STACK_SIZE);
-    if (stack == NULL) ERROR_PRINT(-errno);
-    stack_top = stack + STACK_SIZE;  /* Assume stack grows downward */
-	
-	/* Establish handler to catch child termination signal */
-//    sigemptyset(&sa.sa_mask);
-//    sa.sa_flags = SA_RESTART;
-//    sa.sa_handler = grimReaper;
-//    if (sigaction(CHILD_SIG, &sa, NULL) == -1) {
-//		fprintf (stderr, "sigaction(errno=%d)\n", errno);
-//		exit(EXIT_FAILURE);
-//	}  
-
-	sprintf(file_name ,"../rootfs/%s",dcu_ptr->dc_name);
-	printf("CHILD chroot to:  %s\n", file_name);
-    if (chroot(file_name) == -1)
-		ERROR_PRINT(-errno);
-
-		
-    child_pid = clone(init_dc, stack_top, 
-					DC_CLONE_FLAGS|DC_NAMESPACES, dcu_ptr);
-	if(child_pid < 0) ERROR_PRINT(-errno);
+    ret = init_dc(dcu_ptr);
+	if(ret < 0) ERROR_PRINT(-errno);
 
 	sleep(5);
 
-	   /* Retrieve and display hostname */
-    if (uname(&uts) == -1) ERROR_PRINT(-errno);
-	printf("PARENT Sysname:  %s\n", uts.sysname);
-    printf("PARENT Nodename: %s\n", uts.nodename);
-    printf("PARENT Release:  %s\n", uts.release);
-    printf("PARENT Version:  %s\n", uts.version);
-    printf("PARENT Machine:  %s\n", uts.machine);
-			
-	sprintf(link_name,"/proc/%d/ns/pid",getpid());
-	if ((len = readlink(link_name, file_name, sizeof(file_name)-1)) != -1)
-		file_name[len] = '\0';
-    printf("PARENT link_name:%s file_name=%s\n", link_name, file_name);
-	
-	sprintf(link_name ,"/proc/%d/ns/pid",child_pid);
-	if ((len = readlink(link_name, file_name, sizeof(file_name)-1)) != -1)
-		file_name[len] = '\0';
-    printf("CHILD link_name:%s file_name=%s\n", link_name, file_name);
-
-	sprintf(link_name,"/proc/%d/ns/uts",getpid());
-	if ((len = readlink(link_name, file_name, sizeof(file_name)-1)) != -1)
-		file_name[len] = '\0';
-    printf("PARENT link_name:%s file_name=%s\n", link_name, file_name);
-	
-	sprintf(link_name ,"/proc/%d/ns/uts",child_pid);
-	if ((len = readlink(link_name, file_name, sizeof(file_name)-1)) != -1)
-		file_name[len] = '\0';
-    printf("CHILD link_name:%s file_name=%s\n", link_name, file_name);
-	
-#ifdef ANULADO
-#define  var_name 	link_name
-#define  val_name 	file_name
-
-	sprintf(var_name,"%s", dcu_ptr->dc_name);
-	sprintf(val_name,"%d", child_pid);	
-	rcode = setenv(var_name, val_name, 1);
-	if(rcode) ERROR_PRINT(-errno);
-	
-//#define  proc_filename 	link_name
-//#define  dc_filename 	file_name
-//	sprintf(dc_filename, "%s.pid",dcu_ptr->dc_name);
-//	printf("PARENT dc_file=%s\n", dc_filename);
-	
-	// WARING: the names 
-//	rcode = symlink(proc_filename, dc_filename);
-//	if(rcode){
-//		fprintf (stderr, "symlink(errno=%d)\n", errno);
-//		exit(EXIT_FAILURE);
-//	} 	
-#endif // ANULADO
-
-	rcode = dvk_open();
-	if (rcode < 0)  ERROR_PRINT(rcode);
 	local_nodeid = dvk_getdvsinfo(&dvs);
 	if(local_nodeid < 0 )
 		ERROR_EXIT(local_nodeid);
@@ -237,24 +164,6 @@ extern int optind, optopt, opterr;
 	printf(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
 	printf("local_nodeid=%d\n", local_nodeid);
 	
-#define  sh_filename 	link_name
-#define  dc_filename 	file_name
-	
-	sprintf(sh_filename,"%s.sh", dcu_ptr->dc_name);
-	fp = fopen(sh_filename,"w");
-	if(fp == NULL ) ERROR_PRINT(-errno);
-	fputs("#!/bin/bash\n",fp);
-	fprintf(fp,"NODEID=%d\n", local_nodeid); 
-	fprintf(fp,"%s=%d\n",dcu_ptr->dc_name,child_pid); 
-	fprintf(fp,"export NODEID\n"); 
-	fprintf(fp,"export %s\n",dcu_ptr->dc_name); 
-//	fprintf(fp,"exit 0\n"); 
-	fclose(fp);
-	
-	rcode = chmod(sh_filename, S_IRWXU);
-	if(rcode) ERROR_PRINT(-errno);
-		
-    printf("PARENT exiting - child_pid=%ld\n", (long) child_pid);
 	exit(0);
  }
 
@@ -267,25 +176,11 @@ static int init_dc(void *arg)
     node_usr_t node_usr, *node_usr_ptr;
 	sigset_t set_old,set_new;
 	 
-	
-	printf("CHILD  PID=%d PPID=%d\n", getpid(), getppid());
-	
 	dcu_ptr = (dc_usr_t *) arg;
-	printf("CHILD before " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	printf("CHILD before " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	printf("CHILD before " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	printf("before " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
+	printf("before " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
+	printf("before " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
 	
-    /* Become leader of new session */
-	if (setsid() == -1)  ERROR_PRINT(-errno);
-	sigemptyset(&set_old);
-	sigemptyset(&set_new);
-	sigfillset(&set_new);
-
-	// mask ALL SIGNALS
-	rcode = sigprocmask(SIG_SETMASK, &set_new, &set_old);
-	if (rcode) ERROR_PRINT(-errno);
-		
-	printf("CHILD I am a daemon\n");
 	// init DC 
 	nodeid = dvk_dc_init(dcu_ptr);
 	if( nodeid < 0) ERROR_PRINT(nodeid);
@@ -294,36 +189,14 @@ static int init_dc(void *arg)
 	node_usr_ptr = &node_usr;
 	rcode = dvk_getnodeinfo(nodeid, node_usr_ptr);
 	if( rcode < 0) ERROR_PRINT(rcode);
-	printf("CHILD " NODE_USR_FORMAT, NODE_USR_FIELDS(node_usr_ptr));
+	printf("" NODE_USR_FORMAT, NODE_USR_FIELDS(node_usr_ptr));
 	
-
 	rcode = dvk_getdcinfo(dcu_ptr->dc_dcid, dcu_ptr);
 	if( rcode < 0) ERROR_PRINT(rcode);
-	printf("CHILD after  " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
-	printf("CHILD after  " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
-	printf("CHILD after  " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
+	printf("after  " DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));
+	printf("after  " DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));
+	printf("after  " DC_WARN_FORMAT, DC_WARN_FIELDS(dcu_ptr));
 
-	/* Change hostname in UTS namespace of child */
-    if (sethostname(dcu_ptr->dc_name, strlen(dcu_ptr->dc_name)) == -1)
-		ERROR_PRINT(-errno);
-	
-    /* Retrieve and display hostname */
-    if (uname(&uts) == -1) ERROR_PRINT(-errno);
-	printf("CHILD Sysname:  %s\n", uts.sysname);
-    printf("CHILD Nodename: %s\n", uts.nodename);
-    printf("CHILD Release:  %s\n", uts.release);
-    printf("CHILD Version:  %s\n", uts.version);
-    printf("CHILD Machine:  %s\n", uts.machine);
-	
-//	sprintf(file_name ,"../rootfs/%s",dcu_ptr->dc_name);
-//	printf("CHILD chroot to:  %s\n", file_name);
-//    if (chroot(file_name) == -1)
-//		ERROR_PRINT(-errno);
-	
-	while(1) {
-//		printf("CHILD pid:%d\n", getpid());
-		sleep(60);
-	}
     exit(EXIT_SUCCESS);      /* Child terminates now */
 }
 

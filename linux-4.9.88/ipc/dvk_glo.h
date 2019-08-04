@@ -69,7 +69,7 @@ struct file_operations proc_dbg_fops = {
 	mmap : proc_dbg_mmap,
 };
 
-#ifndef CONFIG_UML_DVK	
+#ifdef CONFIG_UML_DVK	
 dvs_usr_t dvs = {
 		NR_DCS,
 		NR_NODES,

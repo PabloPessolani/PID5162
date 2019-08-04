@@ -67,7 +67,7 @@
 
 #define DVK_IOCTL(x, y, z)	ioctl(x, y, z)
 
-int local_nodeid;
+int local_nodeid = DVS_NO_INIT;
 
 #else  // ------------------------------- CONFIG_UML_DVK 
 
