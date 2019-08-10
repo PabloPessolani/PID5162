@@ -6953,18 +6953,34 @@ DEBUG 701:ipc_exit_unbind:361: WUNLOCK_DC dc=0 count=0
 TAREAS A REALIZAR
 =================
 
+TODO: Revisar el codigo de UML DVK para que los tipos de CONFIG_XXXXX sean los correctos
+CONFIG_DVKIPC=y
+CONFIG_UML_DVK=y
+CONFIG_UML_RDISK=y
+
 Hay que tener 3 versiones de DVK
   1- Usando IOCTL cargando desde modulo
   2- Usando IPC cargando desde modulo
-  3- Usando IPC embebido en el mismo kkernel para que pueda usarlo UML 
+  3- Usando IPC embebido en el mismo kernel para que pueda usarlo UML 
   
-1) Probar el kernel normal usando IPC DVK
-2) Probar el UML usando IPC DVK
-3) Probar el proxy que usa IPC DVK 
+1) Probar el kernel normal usando IPC DVK (LISTO)
+2) Probar el UML usando IPC DVK (LISTO)
+3) Probar el proxy que usa IPC DVK (PARCIAL) 
+		º probar IPC y VCOPY masivo de dvk-proxy/tests  
+		º probar la conexion con un nodo remoto al host 
 4) Probar modificar el DVK para que soporte SLEEP() en modo usuario y SIGNAL para despertarlo.
-5) Hacer el driver TAP remoto 
-6) Modificar el transporte de "remote" driver para que sea M3-IPC en lugar de UNIX SOCKET
- 
+5) Hacer el driver TAP remoto (CONSTANZA)
+6) UML_SWITCH: usar M3-IPC como transport en lugar de UNIX SOCKET (daemon driver)
+7) Hacer uso del FS REMOTO TIPO MSDOS O MINIX  
+
+segun jeff DIKE  
+It would be straightforward to put a network link
+between the kernel and usermode pieces of hostfs,
+allowing UML to directly mount remote filesystems.
+https://elixir.bootlin.com/linux/v4.9.88/source/fs/hostfs
+
+
+ATENCION: PARA LAS BENCHMARKS UTILIZAR TCP PROXY + BATCH + COMPRESSION + AUTOBIND 
  
 La idea es que los procesos UML_USER se registren (bind) en el kernel del HOST.
 Las dvk_calls() no bloqueantes no representan hoy un problema.

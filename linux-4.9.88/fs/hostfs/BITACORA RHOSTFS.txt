@@ -1,0 +1,55 @@
+REMOTE HOST FILESYSTEM FOR UML
+===============================
+
+Se remotizan las funciones del Filesystem HOST.
+
+Habria que implementar rmt_syscall() 
+
+El numero de SYSCALL deberia ser el mismo de LINUX.
+
+https://unix.superglobalmegacorp.com/Net2/newsrc/sys/syscall.h.html
+
+-------------------------------------------------------------------------------
+20190810:
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ARRANCO , AHORA HAY QUE PROBARLO 
+root@node1:~# dmesg | grep DEBUG
+[    0.110000] DEBUG uml_dvk_init_module:115: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+[    0.110000] DEBUG uml_dvk_init_module:120: UML-kernel PID=1109  UML-kernel TID=1109
+[    0.110000] DEBUG init_rh_client:1022: 
+[    0.110000] DEBUG 1109:dvk_open:102: 
+[    0.110000] DEBUG 1109:dvk_getdvsinfo:238: 
+[    0.110000] DEBUG 1109:dvk_getdvsinfo:242: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1033: rhclient_nodeid=0
+[    0.110000] DEBUG init_rh_client:1034: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[    0.110000] DEBUG 1109:dvk_getdcinfo:331: dcid=0
+[    0.110000] DEBUG 1109:dvk_getdcinfo:335: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1045: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+[    0.110000] DEBUG init_rh_client:1046: flags=0 dc_nodes=3 dc_pid=23446 dc_name=DC0
+[    0.110000] DEBUG 1109:dvk_bind_X:1137: cmd=0 dcid=0 pid=1109 endpoint=30 nodeid=-1
+[    0.110000] DEBUG 1109:dvk_bind_X:1141: ipc ret=30
+[    0.110000] DEBUG init_rh_client:1054: rhostfs bind rhc_ep=30
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1100: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1059: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=4189 vpid=1109 nodeid=0 name=linux 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1100: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1065: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=1 (<<<< SLOT_FREE) misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+
+root@node1:~# dmesg | grep ERROR
+[    0.000000] ERROR: 0:start_kernel_proc:97: rcode=-2
+[    0.000000] ERROR: 0:start_kernel_proc:109: rcode=-9
+[    0.110000] ERROR: 1:init_rh_client:1067: rcode=-310 
+[    0.110000] ERROR: 1:init_rhostfs:1078: rcode=-310    <<<<<<<<<<<<<<< EL SERVER ESTA CAIDO  
+
+
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  30    30  4189/1109   0    0   20 27342 27342 27342 27342 linux  <<<<<<<<<< CLIENTE RHOSTFS 
+
+
+TODO: OPTIMIZAR EL RHOSTFS para que tome el endpoint del server desde linea de comandos 
+TODO: HACER EL SERVER
+TODO: PROBAR LA COMUNICACION
+TODO: HABILITAR CONFIG_STATIC_LINK
+
