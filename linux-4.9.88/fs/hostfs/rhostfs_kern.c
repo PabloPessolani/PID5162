@@ -50,6 +50,8 @@ static const struct inode_operations rhostfs_iops;
 static const struct inode_operations rhostfs_dir_iops;
 static const struct inode_operations rhostfs_link_iops;
 
+#ifdef ANULADO 
+
 #ifndef MODULE
 static int __init rhostfs_args(char *options, int *add)
 {
@@ -88,6 +90,8 @@ __uml_setup("rhostfs=", rhostfs_args,
 "    files opened by rhostfs will be opened in rh_append mode.\n\n"
 );
 #endif
+#endif // ANULADO 
+
 
 static char *__dentry_name(struct dentry *dentry, char *name)
 {
@@ -1058,7 +1062,7 @@ static int init_rh_client(void)
 	if(rcode < 0) ERROR_RETURN(rcode);
 	RHDEBUG("rhostfs CLIENT: " PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
 	
-	rhs_ep = RHOSTFS_PROC_NR; 
+//	rhs_ep = RHOSTFS_PROC_NR; 
 	proc_ptr = &rhs_proc;
 	rcode = dvk_getprocinfo(dcid, rhs_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);

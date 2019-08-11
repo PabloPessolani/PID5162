@@ -209,6 +209,25 @@ __uml_setup("rd_ep=", uml_rd_ep,
 );
 #endif // CONFIG_UML_RDISK 
 
+#ifdef CONFIG_RHOSTFS 
+extern int rhs_ep;
+static int __init uml_rhs_ep(char *line, int *add)
+{
+	int rcode;
+	
+	rhs_ep= (-1);
+	rcode =  kstrtoint ( line, 10, &rhs_ep);
+	if( rcode < 0){
+		printf("kstrtoint rcode=%d\n", rcode);
+	}
+	printf("uml_rhs_ep: rhs_ep=%d\n", rhs_ep);
+	return 0;
+}
+
+__uml_setup("rhs_ep=", uml_rhs_ep,
+"rhs_ep=<RHOSTFS Server endpoint>\n"
+);
+#endif // CONFIG_RHOSTFS
 #endif // CONFIG_UML_DVK
 
 

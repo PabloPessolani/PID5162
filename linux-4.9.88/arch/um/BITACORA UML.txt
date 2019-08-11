@@ -1921,7 +1921,7 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 			
 			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
 		>>>>	uml_dcid: dcid=0
-		>>>>	uml_uml_ep: uml_ep=-2
+		>>>>	uml_ep: uml_ep=-2
 		>>>>	uml_rd_ep: rd_ep=3
 				Locating the bottom of the address space ... 0x0
 				Locating the top of the address space ... 0xc0000000

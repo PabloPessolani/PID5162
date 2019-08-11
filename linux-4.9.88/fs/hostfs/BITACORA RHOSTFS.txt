@@ -40,16 +40,62 @@ root@node1:~# dmesg | grep ERROR
 [    0.000000] ERROR: 0:start_kernel_proc:97: rcode=-2
 [    0.000000] ERROR: 0:start_kernel_proc:109: rcode=-9
 [    0.110000] ERROR: 1:init_rh_client:1067: rcode=-310 
-[    0.110000] ERROR: 1:init_rhostfs:1078: rcode=-310    <<<<<<<<<<<<<<< EL SERVER ESTA CAIDO  
+[    0.110000] ERROR: 1:init_rhostfs:1078: rcode=-310    <<<<<<<<<<<<<<< EL SERVER ESTA CAIDO  , PERFECTO 
 
 
 root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  30    30  4189/1109   0    0   20 27342 27342 27342 27342 linux  <<<<<<<<<< CLIENTE RHOSTFS 
 
+-------------------------------------------------------------------------------
+20190811:
+	OPTIMIZAR EL RHOSTFS para que tome el endpoint del server desde linea de comandos 
+	listo. se modifico el arch/um/kernel/um_arch.c 
+	
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sd
+b6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=22 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
-TODO: OPTIMIZAR EL RHOSTFS para que tome el endpoint del server desde linea de comandos 
+	uml_dcid: dcid=0
+	uml_uml_ep: uml_ep=-2
+	uml_rd_ep: rd_ep=3
+	uml_rhs_ep: rhs_ep=22
+
+	Initilizing Remote DVS HOSTFS
+	DEBUG init_rh_client:1026: 
+	DEBUG 2:dvk_open:102: 
+	DEBUG 2:dvk_getdvsinfo:238: 
+	DEBUG 2:dvk_getdvsinfo:242: ipc ret=0
+	DEBUG init_rh_client:1037: rhclient_nodeid=0
+	DEBUG init_rh_client:1038: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	DEBUG 2:dvk_getdcinfo:331: dcid=0
+	DEBUG 2:dvk_getdcinfo:335: ipc ret=0
+	DEBUG init_rh_client:1049: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	DEBUG init_rh_client:1050: flags=0 dc_nodes=3 dc_pid=3326 dc_name=DC0
+	DEBUG 2:dvk_bind_X:1137: cmd=0 dcid=0 pid=2 endpoint=30 nodeid=-1
+	DEBUG 2:dvk_bind_X:1141: ipc ret=30
+	DEBUG init_rh_client:1058: rhostfs bind rhc_ep=30
+	DEBUG 2:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+	DEBUG 2:dvk_getprocinfo:1100: ipc ret=0
+	DEBUG init_rh_client:1063: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=3357 vpid=2 nodeid=0 name=linux 
+	DEBUG 2:dvk_getprocinfo:1096: dcid=0 p_nr=22 
+	DEBUG 2:dvk_getprocinfo:1100: ipc ret=0
+	DEBUG init_rh_client:1069: rhostfs SERVER: nr=22 endp=22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+	ERROR: 1:init_rh_client:1071: rcode=-310
+	ERROR: 1:init_rhostfs:1082: rcode=-310
+
+-------------------------------------------------------------------------------
+	
+	
 TODO: HACER EL SERVER
 TODO: PROBAR LA COMUNICACION
 TODO: HABILITAR CONFIG_STATIC_LINK
+
+
+
+
+
+
+
+
+
 
