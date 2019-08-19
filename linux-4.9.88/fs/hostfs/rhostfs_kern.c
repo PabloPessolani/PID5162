@@ -28,22 +28,23 @@ static char *dentry_name(struct dentry *dentry);
 static char *inode_name(struct inode *ino);
 
 
-struct hostfs_inode_info {
+struct rhostfs_inode_info {
 	int fd;
 	fmode_t mode;
 	struct inode vfs_inode;
 	struct mutex open_mutex;
 };
 
-static inline struct hostfs_inode_info *HOSTFS_I(struct inode *inode)
+static inline struct rhostfs_inode_info *RHOSTFS_I(struct inode *inode)
 {
-	return list_entry(inode, struct hostfs_inode_info, vfs_inode);
+	RHDEBUG("\n");	
+	return list_entry(inode, struct rhostfs_inode_info, vfs_inode);
 }
 
-#define FILE_HOSTFS_I(file) HOSTFS_I(file_inode(file))
+#define FILE_RHOSTFS_I(file) RHOSTFS_I(file_inode(file))
 
 /* Changed in hostfs_args before the kernel starts running */
-static char *rh_root_ino;
+static char *rh_root_ino = "";
 static int rh_append;
 
 static const struct inode_operations rhostfs_iops;
@@ -154,6 +155,8 @@ static char *rhostfs_follow_link(char *link)
 	int len, n;
 	char *name, *resolved, *end;
 
+	RHDEBUG("\n");	
+
 	name = __getname();
 	if (!name) {
 		n = -ENOMEM;
@@ -196,6 +199,8 @@ static char *rhostfs_follow_link(char *link)
 
 static struct inode *rhostfs_iget(struct super_block *sb)
 {
+	RHDEBUG("\n");	
+
 	struct inode *inode = new_inode(sb);
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
@@ -205,7 +210,7 @@ static struct inode *rhostfs_iget(struct super_block *sb)
 static int rhostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
 {
 	/*
-	 * do_statfs uses struct statfs64 internally, but the linux kernel
+	 * rh_do_statfs uses struct statfs64 internally, but the linux kernel
 	 * struct statfs still has 32-bit versions for most of these fields,
 	 * so we convert them here
 	 */
@@ -216,7 +221,9 @@ static int rhostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
 	long long f_files;
 	long long f_ffree;
 
-	err = do_statfs(dentry->d_sb->s_fs_info,
+	RHDEBUG("\n");	
+
+	err = rh_do_statfs(dentry->d_sb->s_fs_info,
 			&sf->f_bsize, &f_blocks, &f_bfree, &f_bavail, &f_files,
 			&f_ffree, &sf->f_fsid, sizeof(sf->f_fsid),
 			&sf->f_namelen);
@@ -233,7 +240,9 @@ static int rhostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
 
 static struct inode *rhostfs_alloc_inode(struct super_block *sb)
 {
-	struct hostfs_inode_info *hi;
+	struct rhostfs_inode_info *hi;
+
+	RHDEBUG("\n");	
 
 	hi = kmalloc(sizeof(*hi), GFP_KERNEL_ACCOUNT);
 	if (hi == NULL)
@@ -247,27 +256,33 @@ static struct inode *rhostfs_alloc_inode(struct super_block *sb)
 
 static void rhostfs_evict_inode(struct inode *inode)
 {
+	RHDEBUG("\n");	
+
 	truncate_inode_pages_final(&inode->i_data);
 	clear_inode(inode);
-	if (HOSTFS_I(inode)->fd != -1) {
-		close_file(&HOSTFS_I(inode)->fd);
-		HOSTFS_I(inode)->fd = -1;
+	if (RHOSTFS_I(inode)->fd != -1) {
+		rh_close_file(&RHOSTFS_I(inode)->fd);
+		RHOSTFS_I(inode)->fd = -1;
 	}
 }
 
 static void rhostfs_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kfree(HOSTFS_I(inode));
+	kfree(RHOSTFS_I(inode));
 }
 
 static void rhostfs_destroy_inode(struct inode *inode)
 {
+	RHDEBUG("\n");	
+
 	call_rcu(&inode->i_rcu, rhostfs_i_callback);
 }
 
 static int rhostfs_show_options(struct seq_file *seq, struct dentry *root)
 {
+	RHDEBUG("\n");	
+
 	const char *root_path = root->d_sb->s_fs_info;
 	size_t offset = strlen(rh_root_ino) + 1;
 
@@ -296,21 +311,23 @@ static int rhostfs_readdir(struct file *file, struct dir_context *ctx)
 	int error, len;
 	unsigned int type;
 
+	RHDEBUG("\n");	
+
 	name = dentry_name(file->f_path.dentry);
 	if (name == NULL)
 		return -ENOMEM;
-	dir = open_dir(name, &error);
+	dir = rh_open_dir(name, &error);
 	__putname(name);
 	if (dir == NULL)
 		return -error;
 	next = ctx->pos;
-	seek_dir(dir, next);
-	while ((name = read_dir(dir, &next, &ino, &len, &type)) != NULL) {
+	rh_seek_dir(dir, next);
+	while ((name = rh_read_dir(dir, &next, &ino, &len, &type)) != NULL) {
 		if (!dir_emit(ctx, name, len, ino, type))
 			break;
 		ctx->pos = next;
 	}
-	close_dir(dir);
+	rh_close_dir(dir);
 	return 0;
 }
 
@@ -321,11 +338,13 @@ static int rhostfs_open(struct inode *ino, struct file *file)
 	int err;
 	int r, w, fd;
 
+	RHDEBUG("\n");	
+
 	mode = file->f_mode & (FMODE_READ | FMODE_WRITE);
-	if ((mode & HOSTFS_I(ino)->mode) == mode)
+	if ((mode & RHOSTFS_I(ino)->mode) == mode)
 		return 0;
 
-	mode |= HOSTFS_I(ino)->mode;
+	mode |= RHOSTFS_I(ino)->mode;
 
 retry:
 	r = w = 0;
@@ -339,42 +358,44 @@ retry:
 	if (name == NULL)
 		return -ENOMEM;
 
-	fd = open_file(name, r, w, rh_append);
+	fd = rh_open_file(name, r, w, rh_append);
 	__putname(name);
 	if (fd < 0)
 		return fd;
 
-	mutex_lock(&HOSTFS_I(ino)->open_mutex);
+	mutex_lock(&RHOSTFS_I(ino)->open_mutex);
 	/* somebody else had handled it first? */
-	if ((mode & HOSTFS_I(ino)->mode) == mode) {
-		mutex_unlock(&HOSTFS_I(ino)->open_mutex);
-		close_file(&fd);
+	if ((mode & RHOSTFS_I(ino)->mode) == mode) {
+		mutex_unlock(&RHOSTFS_I(ino)->open_mutex);
+		rh_close_file(&fd);
 		return 0;
 	}
-	if ((mode | HOSTFS_I(ino)->mode) != mode) {
-		mode |= HOSTFS_I(ino)->mode;
-		mutex_unlock(&HOSTFS_I(ino)->open_mutex);
-		close_file(&fd);
+	if ((mode | RHOSTFS_I(ino)->mode) != mode) {
+		mode |= RHOSTFS_I(ino)->mode;
+		mutex_unlock(&RHOSTFS_I(ino)->open_mutex);
+		rh_close_file(&fd);
 		goto retry;
 	}
-	if (HOSTFS_I(ino)->fd == -1) {
-		HOSTFS_I(ino)->fd = fd;
+	if (RHOSTFS_I(ino)->fd == -1) {
+		RHOSTFS_I(ino)->fd = fd;
 	} else {
-		err = replace_file(fd, HOSTFS_I(ino)->fd);
-		close_file(&fd);
+		err = rh_replace_file(fd, RHOSTFS_I(ino)->fd);
+		rh_close_file(&fd);
 		if (err < 0) {
-			mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+			mutex_unlock(&RHOSTFS_I(ino)->open_mutex);
 			return err;
 		}
 	}
-	HOSTFS_I(ino)->mode = mode;
-	mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+	RHOSTFS_I(ino)->mode = mode;
+	mutex_unlock(&RHOSTFS_I(ino)->open_mutex);
 
 	return 0;
 }
 
 static int rhostfs_file_release(struct inode *inode, struct file *file)
 {
+	RHDEBUG("\n");	
+
 	filemap_write_and_wait(inode->i_mapping);
 
 	return 0;
@@ -386,12 +407,14 @@ static int rhostfs_fsync(struct file *file, loff_t start, loff_t end,
 	struct inode *inode = file->f_mapping->host;
 	int ret;
 
+	RHDEBUG("\n");	
+
 	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (ret)
 		return ret;
 
 	inode_lock(inode);
-	ret = fsync_file(HOSTFS_I(inode)->fd, datasync);
+	ret = rh_fsync_file(RHOSTFS_I(inode)->fd, datasync);
 	inode_unlock(inode);
 
 	return ret;
@@ -418,6 +441,8 @@ static const struct file_operations rhostfs_dir_fops = {
 
 static int rhostfs_writepage(struct page *page, struct writeback_control *wbc)
 {
+	RHDEBUG("\n");	
+
 	struct address_space *mapping = page->mapping;
 	struct inode *inode = mapping->host;
 	char *buffer;
@@ -431,7 +456,7 @@ static int rhostfs_writepage(struct page *page, struct writeback_control *wbc)
 
 	buffer = kmap(page);
 
-	err = write_file(HOSTFS_I(inode)->fd, &base, buffer, count);
+	err = rh_write_file(RHOSTFS_I(inode)->fd, &base, buffer, count);
 	if (err != count) {
 		ClearPageUptodate(page);
 		goto out;
@@ -453,12 +478,14 @@ static int rhostfs_writepage(struct page *page, struct writeback_control *wbc)
 
 static int rhostfs_readpage(struct file *file, struct page *page)
 {
+	RHDEBUG("\n");	
+
 	char *buffer;
 	loff_t start = page_offset(page);
 	int bytes_read, ret = 0;
 
 	buffer = kmap(page);
-	bytes_read = read_file(FILE_HOSTFS_I(file)->fd, &start, buffer,
+	bytes_read = rh_read_file(FILE_RHOSTFS_I(file)->fd, &start, buffer,
 			PAGE_SIZE);
 	if (bytes_read < 0) {
 		ClearPageUptodate(page);
@@ -483,6 +510,8 @@ static int rhostfs_write_begin(struct file *file, struct address_space *mapping,
 			      loff_t pos, unsigned len, unsigned flags,
 			      struct page **pagep, void **fsdata)
 {
+	RHDEBUG("\n");	
+
 	pgoff_t index = pos >> PAGE_SHIFT;
 
 	*pagep = grab_cache_page_write_begin(mapping, index, flags);
@@ -495,20 +524,22 @@ static int rhostfs_write_end(struct file *file, struct address_space *mapping,
 			    loff_t pos, unsigned len, unsigned copied,
 			    struct page *page, void *fsdata)
 {
+	RHDEBUG("\n");	
+
 	struct inode *inode = mapping->host;
 	void *buffer;
 	unsigned from = pos & (PAGE_SIZE - 1);
 	int err;
 
 	buffer = kmap(page);
-	err = write_file(FILE_HOSTFS_I(file)->fd, &pos, buffer + from, copied);
+	err = rh_write_file(FILE_RHOSTFS_I(file)->fd, &pos, buffer + from, copied);
 	kunmap(page);
 
 	if (!PageUptodate(page) && err == PAGE_SIZE)
 		SetPageUptodate(page);
 
 	/*
-	 * If err > 0, write_file has added err to pos, so we are comparing
+	 * If err > 0, rh_write_file has added err to pos, so we are comparing
 	 * i_size against the last byte written.
 	 */
 	if (err > 0 && (pos > inode->i_size))
@@ -527,10 +558,67 @@ static const struct address_space_operations rhostfs_aops = {
 	.write_end	= rhostfs_write_end,
 };
 
+static int rh_read_name(struct inode *ino, char *name)
+{
+	dev_t rdev;
+	struct rh_hostfs_stat st;
+
+	RHDEBUG("name=%s\n",name);	
+
+	int err = rh_stat_file(name, &st, -1);
+	if (err)
+		return err;
+
+	/* Reencode maj and min with the kernel encoding.*/
+	rdev = MKDEV(st.maj, st.min);
+
+	RHDEBUG("rdev=%d st.maj=%d st.min=%d st.mode=%X\n",rdev,st.maj,st.min, st.mode);	
+
+	switch (st.mode & S_IFMT) {
+	case S_IFLNK:
+		RHDEBUG("S_IFLNK\n");	
+		ino->i_op = &rhostfs_link_iops;
+		break;
+	case S_IFDIR:
+		RHDEBUG("S_IFDIR\n");	
+		ino->i_op = &rhostfs_dir_iops;
+		ino->i_fop = &rhostfs_dir_fops;
+		break;
+	case S_IFCHR:
+	case S_IFBLK:
+	case S_IFIFO:
+	case S_IFSOCK:
+		RHDEBUG("S_DEVICE\n");	
+		init_special_inode(ino, st.mode & S_IFMT, rdev);
+		ino->i_op = &rhostfs_iops;
+		break;
+	case S_IFREG:
+		RHDEBUG("S_IFREG\n");	
+		ino->i_op = &rhostfs_iops;
+		ino->i_fop = &rhostfs_file_fops;
+		ino->i_mapping->a_ops = &rhostfs_aops;
+		break;
+	default:
+		ERROR_RETURN(-EIO);
+	}
+
+	ino->i_ino = st.ino;
+	ino->i_mode = st.mode;
+	set_nlink(ino, st.nlink);
+	i_uid_write(ino, st.uid);
+	i_gid_write(ino, st.gid);
+	ino->i_atime = st.atime;
+	ino->i_mtime = st.mtime;
+	ino->i_ctime = st.ctime;
+	ino->i_size = st.size;
+	ino->i_blocks = st.blocks;
+	return 0;
+}
+
 static int read_name(struct inode *ino, char *name)
 {
 	dev_t rdev;
-	struct hostfs_stat st;
+	struct rh_hostfs_stat st;
 	int err = stat_file(name, &st, -1);
 	if (err)
 		return err;
@@ -582,6 +670,8 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 	char *name;
 	int error, fd;
 
+	RHDEBUG("\n");	
+
 	inode = rhostfs_iget(dir->i_sb);
 	if (IS_ERR(inode)) {
 		error = PTR_ERR(inode);
@@ -593,7 +683,7 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 	if (name == NULL)
 		goto out_put;
 
-	fd = file_create(name, mode & 0777);
+	fd = rh_file_create(name, mode & 0777);
 	if (fd < 0)
 		error = fd;
 	else
@@ -603,8 +693,8 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 	if (error)
 		goto out_put;
 
-	HOSTFS_I(inode)->fd = fd;
-	HOSTFS_I(inode)->mode = FMODE_READ | FMODE_WRITE;
+	RHOSTFS_I(inode)->fd = fd;
+	RHOSTFS_I(inode)->mode = FMODE_READ | FMODE_WRITE;
 	d_instantiate(dentry, inode);
 	return 0;
 
@@ -620,6 +710,8 @@ static struct dentry *rhostfs_lookup(struct inode *ino, struct dentry *dentry,
 	struct inode *inode;
 	char *name;
 	int err;
+
+	RHDEBUG("\n");	
 
 	inode = rhostfs_iget(ino->i_sb);
 	if (IS_ERR(inode)) {
@@ -657,6 +749,8 @@ static int rhostfs_link(struct dentry *to, struct inode *ino,
 	char *from_name, *to_name;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if ((from_name = dentry_name(from)) == NULL)
 		return -ENOMEM;
 	to_name = dentry_name(to);
@@ -664,7 +758,7 @@ static int rhostfs_link(struct dentry *to, struct inode *ino,
 		__putname(from_name);
 		return -ENOMEM;
 	}
-	err = link_file(to_name, from_name);
+	err = rh_link_file(to_name, from_name);
 	__putname(from_name);
 	__putname(to_name);
 	return err;
@@ -675,13 +769,15 @@ static int rhostfs_unlink(struct inode *ino, struct dentry *dentry)
 	char *file;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if (rh_append)
 		return -EPERM;
 
 	if ((file = dentry_name(dentry)) == NULL)
 		return -ENOMEM;
 
-	err = unlink_file(file);
+	err = rh_unlink_file(file);
 	__putname(file);
 	return err;
 }
@@ -692,9 +788,11 @@ static int rhostfs_symlink(struct inode *ino, struct dentry *dentry,
 	char *file;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if ((file = dentry_name(dentry)) == NULL)
 		return -ENOMEM;
-	err = make_symlink(file, to);
+	err = rh_make_symlink(file, to);
 	__putname(file);
 	return err;
 }
@@ -704,9 +802,11 @@ static int rhostfs_mkdir(struct inode *ino, struct dentry *dentry, umode_t mode)
 	char *file;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if ((file = dentry_name(dentry)) == NULL)
 		return -ENOMEM;
-	err = do_mkdir(file, mode);
+	err = rh_do_mkdir(file, mode);
 	__putname(file);
 	return err;
 }
@@ -716,9 +816,11 @@ static int rhostfs_rmdir(struct inode *ino, struct dentry *dentry)
 	char *file;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if ((file = dentry_name(dentry)) == NULL)
 		return -ENOMEM;
-	err = do_rmdir(file);
+	err = rh_do_rmdir(file);
 	__putname(file);
 	return err;
 }
@@ -728,6 +830,8 @@ static int rhostfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,
 	struct inode *inode;
 	char *name;
 	int err;
+
+	RHDEBUG("\n");	
 
 	inode = rhostfs_iget(dir->i_sb);
 	if (IS_ERR(inode)) {
@@ -741,7 +845,7 @@ static int rhostfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode,
 		goto out_put;
 
 	init_special_inode(inode, mode, dev);
-	err = do_mknod(name, mode, MAJOR(dev), MINOR(dev));
+	err = rh_do_mknod(name, mode, MAJOR(dev), MINOR(dev));
 	if (err)
 		goto out_free;
 
@@ -768,6 +872,8 @@ static int rhostfs_rename2(struct inode *old_dir, struct dentry *old_dentry,
 	char *old_name, *new_name;
 	int err;
 
+	RHDEBUG("\n");	
+
 	if (flags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE))
 		return -EINVAL;
 
@@ -780,9 +886,9 @@ static int rhostfs_rename2(struct inode *old_dir, struct dentry *old_dentry,
 		return -ENOMEM;
 	}
 	if (!flags)
-		err = rename_file(old_name, new_name);
+		err = rh_rename_file(old_name, new_name);
 	else
-		err = rename2_file(old_name, new_name, flags);
+		err = rh_rename2_file(old_name, new_name, flags);
 
 	__putname(old_name);
 	__putname(new_name);
@@ -793,6 +899,8 @@ static int rhostfs_permission(struct inode *ino, int desired)
 {
 	char *name;
 	int r = 0, w = 0, x = 0, err;
+
+	RHDEBUG("\n");	
 
 	if (desired & MAY_NOT_BLOCK)
 		return -ECHILD;
@@ -808,7 +916,7 @@ static int rhostfs_permission(struct inode *ino, int desired)
 	    S_ISFIFO(ino->i_mode) || S_ISSOCK(ino->i_mode))
 		err = 0;
 	else
-		err = access_file(name, r, w, x);
+		err = rh_access_file(name, r, w, x);
 	__putname(name);
 	if (!err)
 		err = generic_permission(ino, desired);
@@ -818,11 +926,13 @@ static int rhostfs_permission(struct inode *ino, int desired)
 static int rhostfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	struct inode *inode = d_inode(dentry);
-	struct hostfs_iattr attrs;
+	struct rh_hostfs_iattr attrs;
 	char *name;
 	int err;
 
-	int fd = HOSTFS_I(inode)->fd;
+	RHDEBUG("\n");	
+
+	int fd = RHOSTFS_I(inode)->fd;
 
 	err = setattr_prepare(dentry, attr);
 	if (err)
@@ -869,7 +979,7 @@ static int rhostfs_setattr(struct dentry *dentry, struct iattr *attr)
 	name = dentry_name(dentry);
 	if (name == NULL)
 		return -ENOMEM;
-	err = set_attr(name, &attrs, fd);
+	err = rh_set_attr(name, &attrs, fd);
 	__putname(name);
 	if (err)
 		return err;
@@ -942,6 +1052,8 @@ static int rhostfs_fill_sb_common(struct super_block *sb, void *d, int silent)
 	char *host_root_path, *req_root = d;
 	int err;
 
+	RHDEBUG("req_root=%s\n", req_root);	
+
 	sb->s_blocksize = 1024;
 	sb->s_blocksize_bits = 10;
 	sb->s_magic = HOSTFS_SUPER_MAGIC;
@@ -998,11 +1110,21 @@ static struct dentry *rhostfs_read_sb(struct file_system_type *type,
 			  int flags, const char *dev_name,
 			  void *data)
 {
-	return mount_nodev(type, flags, data, rhostfs_fill_sb_common);
+	int rcode;
+	RHDEBUG("\n");
+
+	rcode = rh_get_rootpath(rootpath);
+//	data  = rootpath;
+	
+	rcode = mount_nodev(type, flags, data, rhostfs_fill_sb_common);
+	if( rcode < 0) ERROR_RETURN(rcode);
+	return(rcode);
 }
 
 static void rhostfs_kill_sb(struct super_block *s)
 {
+	RHDEBUG("\n");	
+
 	kill_anon_super(s);
 	kfree(s->s_fs_info);
 }
@@ -1080,8 +1202,10 @@ static int __init init_rhostfs(void)
 	printk("Initilizing Remote DVS HOSTFS\n");
 	rcode = init_rh_client();
 	if(rcode < 0) ERROR_RETURN(rcode);
-	RHDEBUG("Remote DVS HOSTFS server is bound ond endpoint:%d\n", rhs_ep);
-	return register_filesystem(&rhostfs_type);
+	RHDEBUG("Remote DVS HOSTFS server is bound on endpoint:%d\n", rhs_ep);
+	rcode = register_filesystem(&rhostfs_type);
+	RHDEBUG("register_filesystem rhostfs_type rcode:%d\n", rcode);
+	return(rcode);
 }
 
 static void __exit exit_rhostfs(void)

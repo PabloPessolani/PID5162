@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
-#ifdef CONFIG_RHOSTFS
+//#ifdef CONFIG_RHOSTFS
 
 #include <stdio.h>
 #include <stddef.h>
@@ -17,12 +17,13 @@
 #include <sys/vfs.h>
 #include <sys/syscall.h>
 
+#define DVS_USERSPACE	1
+
 #include "rhostfs.h"
 #include <utime.h>
 
-#ifdef ANULADO 
-// ESTA FUNCION YA ESTA EN hostfs_user.c
-static void stat64_to_hostfs(const struct stat64 *buf, struct hostfs_stat *p)
+
+static void rh_stat64_to_hostfs(const struct stat64 *buf, struct rh_hostfs_stat *p)
 {
 	p->ino = buf->st_ino;
 	p->mode = buf->st_mode;
@@ -41,9 +42,9 @@ static void stat64_to_hostfs(const struct stat64 *buf, struct hostfs_stat *p)
 	p->maj = os_major(buf->st_rdev);
 	p->min = os_minor(buf->st_rdev);
 }
-#endif // ANULADO 
 
-int stat_file(const char *path, struct hostfs_stat *p, int fd)
+
+int rh_stat_file(const char *path, struct rh_hostfs_stat *p, int fd)
 {
 	struct stat64 buf;
 
@@ -53,11 +54,11 @@ int stat_file(const char *path, struct hostfs_stat *p, int fd)
 	} else if (rmt_lstat64(path, &buf) < 0) {
 		return -errno;
 	}
-	stat64_to_hostfs(&buf, p);
+	rh_stat64_to_hostfs(&buf, p);
 	return 0;
 }
 
-int access_file(char *path, int r, int w, int x)
+int rh_access_file(char *path, int r, int w, int x)
 {
 	int mode = 0;
 
@@ -72,9 +73,9 @@ int access_file(char *path, int r, int w, int x)
 	else return 0;
 }
 
-int open_file(char *path, int r, int w, int append)
+int rh_open_file(char *path, int r, int w, int append)
 {
-	int mode = 0, fd;
+	int mode = 0, flags = 0 , fd;
 
 	if (r && !w)
 		mode = O_RDONLY;
@@ -82,17 +83,17 @@ int open_file(char *path, int r, int w, int append)
 		mode = O_WRONLY;
 	else if (r && w)
 		mode = O_RDWR;
-	else panic("Impossible mode in open_file");
+	else panic("Impossible mode in rh_open_file");
 
 	if (append)
 		mode |= O_APPEND;
-	fd = rmt_open64(path, mode);
+	fd = rmt_open64(path, flags, mode);
 	if (fd < 0)
 		return -errno;
 	else return fd;
 }
 
-void *open_dir(char *path, int *err_out)
+void *rh_open_dir(char *path, int *err_out)
 {
 	DIR *dir;
 
@@ -102,14 +103,14 @@ void *open_dir(char *path, int *err_out)
 	return dir;
 }
 
-void seek_dir(void *stream, unsigned long long pos)
+void rh_seek_dir(void *stream, unsigned long long pos)
 {
 	DIR *dir = stream;
 
 	rmt_seekdir(dir, pos);
 }
 
-char *read_dir(void *stream, unsigned long long *pos_out,
+char *rh_read_dir(void *stream, unsigned long long *pos_out,
 	       unsigned long long *ino_out, int *len_out,
 	       unsigned int *type_out)
 {
@@ -126,7 +127,7 @@ char *read_dir(void *stream, unsigned long long *pos_out,
 	return ent->d_name;
 }
 
-int read_file(int fd, unsigned long long *offset, char *buf, int len)
+int rh_read_file(int fd, unsigned long long *offset, char *buf, int len)
 {
 	int n;
 
@@ -137,7 +138,7 @@ int read_file(int fd, unsigned long long *offset, char *buf, int len)
 	return n;
 }
 
-int write_file(int fd, unsigned long long *offset, const char *buf, int len)
+int rh_write_file(int fd, unsigned long long *offset, const char *buf, int len)
 {
 	int n;
 
@@ -148,7 +149,7 @@ int write_file(int fd, unsigned long long *offset, const char *buf, int len)
 	return n;
 }
 
-int lseek_file(int fd, long long offset, int whence)
+int rh_lseek_file(int fd, long long offset, int whence)
 {
 	int ret;
 
@@ -158,7 +159,7 @@ int lseek_file(int fd, long long offset, int whence)
 	return 0;
 }
 
-int fsync_file(int fd, int datasync)
+int rh_fsync_file(int fd, int datasync)
 {
 	int ret;
 	if (datasync)
@@ -171,22 +172,22 @@ int fsync_file(int fd, int datasync)
 	return 0;
 }
 
-int replace_file(int oldfd, int fd)
+int rh_replace_file(int oldfd, int fd)
 {
 	return rmt_dup2(oldfd, fd);
 }
 
-void close_file(void *stream)
+void rh_close_file(void *stream)
 {
 	rmt_close(*((int *) stream));
 }
 
-void close_dir(void *stream)
+void rh_close_dir(void *stream)
 {
 	rmt_closedir(stream);
 }
 
-int file_create(char *name, int mode)
+int rh_file_create(char *name, int mode)
 {
 	int fd;
 
@@ -196,9 +197,9 @@ int file_create(char *name, int mode)
 	return fd;
 }
 
-int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
+int rh_set_attr(const char *file, struct rh_hostfs_iattr *attrs, int fd)
 {
-	struct hostfs_stat st;
+	struct rh_hostfs_stat st;
 	struct timeval times[2];
 	int err, ma;
 
@@ -242,7 +243,7 @@ int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 	 */
 	ma = (HOSTFS_ATTR_ATIME_SET | HOSTFS_ATTR_MTIME_SET);
 	if (attrs->ia_valid & ma) {
-		err = stat_file(file, &st, fd);
+		err = rh_stat_file(file, &st, fd);
 		if (err != 0)
 			return err;
 
@@ -270,7 +271,7 @@ int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 
 	/* Note: ctime is not handled */
 	if (attrs->ia_valid & (HOSTFS_ATTR_ATIME | HOSTFS_ATTR_MTIME)) {
-		err = stat_file(file, &st, fd);
+		err = rh_stat_file(file, &st, fd);
 		attrs->ia_atime = st.atime;
 		attrs->ia_mtime = st.mtime;
 		if (err != 0)
@@ -279,7 +280,7 @@ int set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 	return 0;
 }
 
-int make_symlink(const char *from, const char *to)
+int rh_make_symlink(const char *from, const char *to)
 {
 	int err;
 
@@ -289,7 +290,7 @@ int make_symlink(const char *from, const char *to)
 	return 0;
 }
 
-int unlink_file(const char *file)
+int rh_unlink_file(const char *file)
 {
 	int err;
 
@@ -299,7 +300,7 @@ int unlink_file(const char *file)
 	return 0;
 }
 
-int do_mkdir(const char *file, int mode)
+int rh_do_mkdir(const char *file, int mode)
 {
 	int err;
 
@@ -309,7 +310,7 @@ int do_mkdir(const char *file, int mode)
 	return 0;
 }
 
-int do_rmdir(const char *file)
+int rh_do_rmdir(const char *file)
 {
 	int err;
 
@@ -319,7 +320,7 @@ int do_rmdir(const char *file)
 	return 0;
 }
 
-int do_mknod(const char *file, int mode, unsigned int major, unsigned int minor)
+int rh_do_mknod(const char *file, int mode, unsigned int major, unsigned int minor)
 {
 	int err;
 
@@ -329,7 +330,7 @@ int do_mknod(const char *file, int mode, unsigned int major, unsigned int minor)
 	return 0;
 }
 
-int link_file(const char *to, const char *from)
+int rh_link_file(const char *to, const char *from)
 {
 	int err;
 
@@ -339,7 +340,7 @@ int link_file(const char *to, const char *from)
 	return 0;
 }
 
-int hostfs_do_readlink(char *file, char *buf, int size)
+int rh_do_readlink(char *file, char *buf, int size)
 {
 	int n;
 
@@ -351,7 +352,7 @@ int hostfs_do_readlink(char *file, char *buf, int size)
 	return n;
 }
 
-int rename_file(char *from, char *to)
+int rh_rename_file(char *from, char *to)
 {
 	int err;
 
@@ -361,7 +362,7 @@ int rename_file(char *from, char *to)
 	return 0;
 }
 
-int rename2_file(char *from, char *to, unsigned int flags)
+int rh_rename2_file(char *from, char *to, unsigned int flags)
 {
 	int err;
 
@@ -375,7 +376,7 @@ int rename2_file(char *from, char *to, unsigned int flags)
 #endif
 
 #ifdef SYS_renameat2
-	err = rmt_syscall(SYS_renameat2, AT_FDCWD, from, AT_FDCWD, to, flags);
+	err = rmt_renameat2(AT_FDCWD, from, AT_FDCWD, to, flags);
 	if (err < 0) {
 		if (errno != ENOSYS)
 			return -errno;
@@ -388,7 +389,7 @@ int rename2_file(char *from, char *to, unsigned int flags)
 #endif
 }
 
-int do_statfs(char *root, long *bsize_out, long long *blocks_out,
+int rh_do_statfs(char *root, long *bsize_out, long long *blocks_out,
 	      long long *bfree_out, long long *bavail_out,
 	      long long *files_out, long long *ffree_out,
 	      void *fsid_out, int fsid_size, long *namelen_out)
@@ -413,4 +414,4 @@ int do_statfs(char *root, long *bsize_out, long long *blocks_out,
 
 	return 0;
 }
-#endif // CONFIG_RHOSTFS
+// #endif // CONFIG_RHOSTFS

@@ -1,4 +1,4 @@
-all: rhostfs_svr
+all: rhostfsd
 # Which compiler
 CC = gcc
 
@@ -13,11 +13,11 @@ OBJS = rhostfs_svr.o rhostfs_cfg.o rhostfs_lib.o
 LIBS = 	/usr/src/dvs/dvk-lib/libdvkipc.so \
 		/usr/src/dvs/lib/config/libconfig.so 
 		
-rhostfs_svr: $(OBJS)    
-	$(CC)  $(CFLAGS) -MMD -MP -ldl -pthread -o rhostfs_svr $(OBJS)  $(LIBS) -I$(INCLUDE)
+rhostfsd: $(OBJS)    
+	$(CC)  $(CFLAGS) -MMD -MP -ldl -pthread -o rhostfsd $(OBJS)  $(LIBS) -I$(INCLUDE)
 	
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 clean:
-	rm rhostfs_svr  *.o
+	rm rhostfsd  *.o

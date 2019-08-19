@@ -10,9 +10,9 @@ rhs SERVER1 {
 **************************************************/
 
 #include "rhs.h"
-#undef EXTERN
-#define EXTERN	extern
-#include "./glo.h"
+#include "rhostfs_glo.h"
+
+int rhs_mandatory = 0; 
 
 #define EXIT_CODE		1
 #define NEXT_CODE		2
@@ -20,6 +20,7 @@ rhs SERVER1 {
 #define TKN_DCID		0
 #define TKN_RHS_EP		1
 #define TKN_RHS_DIR		2
+#define NR_IDENT		3
 
 char *rhs_cfg_ident[] = {
 	"dcid",
@@ -159,7 +160,9 @@ int rhs_search_config(config_t *cfg)
 	RHSDEBUG("\n");
 
 	SET_BIT(rhs_mandatory, TKN_DCID);
-	
+	SET_BIT(rhs_mandatory, TKN_RHS_EP);
+	SET_BIT(rhs_mandatory, TKN_RHS_DIR);
+
     for( i=0; cfg != nil; i++) {
 		if (!config_issub(cfg)) {
 			fprintf(stderr, "Cell at \"%s\", line %u is not a sublist\n", cfg->word, cfg->line);

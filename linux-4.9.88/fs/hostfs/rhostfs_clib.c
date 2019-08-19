@@ -1,5 +1,5 @@
 
-#ifdef CONFIG_RHOSTFS
+// #ifdef CONFIG_RHOSTFS
 
 #include <linux/fs.h>
 #include <linux/magic.h>
@@ -20,8 +20,9 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 {
 	int rcode;
 
+	RHDEBUG("who=%d syscallnr=%d\n", who, syscallnr);
 	mptr->m_type = syscallnr;
-	rcode = dvk_sendrec_T(who, mptr, TIMEOUT_RMTCALL);
+	rcode = dvk_sendrec(who, mptr); // TIMEOUT_RMTCALL);
 	if (rcode < 0) ERROR_RETURN(rcode);
 	if (mptr->m_type < 0) {
 		rmt_errno = -mptr->m_type;
@@ -31,7 +32,7 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 	return (mptr->m_type);
 }
 
-long rmt_open(const char __user *filename, int flags, umode_t mode)
+long rmt_open64(const char  *filename, int flags, umode_t mode)
 {
 	message m;
 
@@ -43,7 +44,7 @@ long rmt_open(const char __user *filename, int flags, umode_t mode)
 	return (rmt_syscall(rhs_ep, __NR_open, &m));	
 }
 
-long rmt_access(const char __user *filename, umode_t mode)
+long rmt_access(const char  *filename, umode_t mode)
 {
 	message m;
 
@@ -54,7 +55,7 @@ long rmt_access(const char __user *filename, umode_t mode)
 	return (rmt_syscall(rhs_ep, __NR_access, &m));	
 }
 
-long rmt_pread64(unsigned int fd, char __user *buf, size_t count, loff_t pos)
+long rmt_pread64(unsigned int fd, char  *buf, size_t count, loff_t pos)
 {
 	message m;
 	long long *ptr;
@@ -70,7 +71,7 @@ long rmt_pread64(unsigned int fd, char __user *buf, size_t count, loff_t pos)
 	return (rmt_syscall(rhs_ep, __NR_pread64, &m));	
 }
 
-long rmt_pwrite64(unsigned int fd, char __user *buf, size_t count, loff_t pos)
+long rmt_pwrite64(unsigned int fd, char  *buf, size_t count, loff_t pos)
 {
 	message m;
 	long long *ptr;
@@ -86,7 +87,7 @@ long rmt_pwrite64(unsigned int fd, char __user *buf, size_t count, loff_t pos)
 }
 
 long rmt_llseek(unsigned int fd, unsigned long offset_high,	unsigned long offset_low, 
-				loff_t __user *result, unsigned int whence)
+				loff_t  *result, unsigned int whence)
 {
 	message m;
 
@@ -95,6 +96,17 @@ long rmt_llseek(unsigned int fd, unsigned long offset_high,	unsigned long offset
 	m.m2_i2 = whence;
 	m.m2_l1 = offset_high;
 	m.m2_l2 = offset_low;
+	m.m2_p1 = (char *) result;
+	return (rmt_syscall(rhs_ep, __NR_lseek, &m));	
+}
+
+long rmt_lseek64(unsigned int fd, loff_t *result, unsigned int whence)
+{
+	message m;
+
+	RHDEBUG("fd=%d whence=%d\n" , fd, whence);
+	m.m2_i1 = fd;
+	m.m2_i2 = whence;
 	m.m2_p1 = (char *) result;
 	return (rmt_syscall(rhs_ep, __NR_lseek, &m));	
 }
@@ -128,7 +140,7 @@ long rmt_fchmod(unsigned int fd, umode_t mode)
 	return (rmt_syscall(rhs_ep, __NR_fchmod, &m));	
 }
 
-long rmt_chmod(const char __user *filename, umode_t mode)
+long rmt_chmod(const char  *filename, umode_t mode)
 {
 	message m;
 
@@ -150,7 +162,7 @@ long rmt_fchown(unsigned int fd, uid_t user, gid_t group)
 	return (rmt_syscall(rhs_ep, __NR_fchown, &m));
 }
 
-long rmt_chown(const char __user *filename, uid_t user, gid_t group)
+long rmt_chown(const char  *filename, uid_t user, gid_t group)
 {
 	message m;
 
@@ -172,7 +184,7 @@ long rmt_ftruncate(unsigned int fd, unsigned long length)
 	return (rmt_syscall(rhs_ep, __NR_ftruncate, &m));
 }
 
-long rmt_truncate(const char __user *filename, long length)
+long rmt_truncate(const char  *filename, long length)
 {
 	message m;
 
@@ -201,7 +213,7 @@ long rmt_close(unsigned int fd)
 	return (rmt_syscall(rhs_ep, __NR_close, &m));
 }
 
-long rmt_symlink(const char __user *old, const char __user *new)
+long rmt_symlink(const char  *old, const char  *new)
 {
 	message m;
 
@@ -213,7 +225,7 @@ long rmt_symlink(const char __user *old, const char __user *new)
 	return (rmt_syscall(rhs_ep, __NR_symlink, &m));
 }
 
-long rmt_unlink(const char __user *filename)
+long rmt_unlink(const char  *filename)
 {
 	message m;
 
@@ -223,7 +235,7 @@ long rmt_unlink(const char __user *filename)
 	return (rmt_syscall(rhs_ep, __NR_unlink, &m));
 }
 
-long rmt_link(const char __user *old, const char __user *new)
+long rmt_link(const char  *old, const char  *new)
 {
 	message m;
 
@@ -235,7 +247,7 @@ long rmt_link(const char __user *old, const char __user *new)
 	return (rmt_syscall(rhs_ep, __NR_link, &m));
 }
 
-long rmt_readlink(const char __user *filename, char __user *buf, int bufsiz)
+long rmt_readlink(const char  *filename, char  *buf, int bufsiz)
 {
 	message m;
 
@@ -246,7 +258,7 @@ long rmt_readlink(const char __user *filename, char __user *buf, int bufsiz)
 	return (rmt_syscall(rhs_ep, __NR_readlink, &m));
 }
 
-long rmt_rename(const char __user *old, const char __user *new)
+long rmt_rename(const char  *old, const char  *new)
 {
 	message m;
 
@@ -258,7 +270,7 @@ long rmt_rename(const char __user *old, const char __user *new)
 	return (rmt_syscall(rhs_ep, __NR_rename, &m));
 }
 
-long rmt_rmdir(const char __user *filename)
+long rmt_rmdir(const char  *filename)
 {
 	message m;
 
@@ -268,7 +280,7 @@ long rmt_rmdir(const char __user *filename)
 	return (rmt_syscall(rhs_ep, __NR_rmdir, &m));
 }
 
-long rmt_mkdir(const char __user *filename, umode_t mode)
+long rmt_mkdir(const char  *filename, umode_t mode)
 {
 	message m;
 
@@ -279,7 +291,7 @@ long rmt_mkdir(const char __user *filename, umode_t mode)
 	return (rmt_syscall(rhs_ep, __NR_mkdir, &m));
 }
 
-long rmt_mknod(const char __user *filename, umode_t mode,unsigned dev)
+long rmt_mknod(const char  *filename, umode_t mode,unsigned dev)
 {
 	message m;
 
@@ -291,19 +303,17 @@ long rmt_mknod(const char __user *filename, umode_t mode,unsigned dev)
 	return (rmt_syscall(rhs_ep, __NR_mknod, &m));
 }
 
-long rmt_futimes(int fd, const char __user *filename, struct timeval __user *utimes)
+long rmt_futimes(int fd,  struct timeval  *utimes)
 {
 	message m;
 
-	RHDEBUG("filename=%s fd=%d\n" , filename, fd);
-	m.m1_i1 = strlen(filename) + 1;
-	m.m1_i2 = fd;
-	m.m1_p1 = (char *) filename;
-	m.m1_p2 = (char *) utimes;
+	RHDEBUG("fd=%d\n", fd);
+	m.m1_i1 = fd;
+	m.m1_p1 = (char *) utimes;
 	return (rmt_syscall(rhs_ep, __NR_futimesat, &m));
 }
 
-long rmt_utimes(char __user *filename, struct timeval __user *utimes)
+long rmt_utimes(char  *filename, struct timeval  *utimes)
 {
 	message m;
 
@@ -314,7 +324,7 @@ long rmt_utimes(char __user *filename, struct timeval __user *utimes)
 	return (rmt_syscall(rhs_ep, __NR_utimes, &m));
 }
 
-long rmt_fstat64(unsigned long fd, struct stat64 __user *statbuf)
+long rmt_fstat64(unsigned long fd, struct stat64  *statbuf)
 {
 	message m;
 
@@ -324,7 +334,7 @@ long rmt_fstat64(unsigned long fd, struct stat64 __user *statbuf)
 	return (rmt_syscall(rhs_ep, __NR_fstat64, &m));
 }
 
-long rmt_statfs64(const char __user *filename, struct statfs64 __user *buf)
+long rmt_statfs64(const char  *filename, struct statfs64  *buf)
 {
 	message m;
 
@@ -335,7 +345,7 @@ long rmt_statfs64(const char __user *filename, struct statfs64 __user *buf)
 	return (rmt_syscall(rhs_ep, __NR_statfs64, &m));
 }
 
-long rmt_lstat64(const char __user *filename, struct stat64 __user *statbuf)
+long rmt_lstat64(const char  *filename, struct stat64  *statbuf)
 {
 	message m;
 
@@ -347,8 +357,8 @@ long rmt_lstat64(const char __user *filename, struct stat64 __user *statbuf)
 }
 
 // typedef struct {int m7i1, m7i2, m7i3, m7i4; char *m7p1, *m7p2;} mess_7;
-long rmt_renameat2(int olddfd, const char __user *oldname,
-			      int newdfd, const char __user *newname,
+long rmt_renameat2(int olddfd, const char  *oldname,
+			      int newdfd, const char  *newname,
 			      unsigned int flags)
 {
 	message m;
@@ -366,7 +376,6 @@ long rmt_renameat2(int olddfd, const char __user *oldname,
 	// two parameters in the same message field 
 	olddfd  = olddfd << sizeof(short int);
 	m.m7_i3 = oldfd | newfd; 
-	
 	m.m7_i4 = flags;
 
 	return (rmt_syscall(rhs_ep, __NR_renameat2, &m));
@@ -423,7 +432,22 @@ int rmt_closedir(void *dirp)
 	return(rmt_syscall(rhs_ep, RMT_closedir, &m));
 }
 
-#endif // CONFIG_RHOSTFS
+
+int rh_get_rootpath(char *dirp)
+{
+	message m;
+	int rcode;
+
+	RHDEBUG("\n");
+	m.m1_p1 = (char *) dirp;
+	rcode = rmt_syscall(rhs_ep, RMT_get_rootpath, &m);
+	if (rcode < 0) return(rcode);
+	RHDEBUG("dirp=%s\n", dirp);
+	return(rcode);
+}
+
+
+// #endif // CONFIG_RHOSTFS
 
 
 		

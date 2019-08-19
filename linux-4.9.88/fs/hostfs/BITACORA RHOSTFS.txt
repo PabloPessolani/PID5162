@@ -7,7 +7,23 @@ Habria que implementar rmt_syscall()
 
 El numero de SYSCALL deberia ser el mismo de LINUX.
 
-https://unix.superglobalmegacorp.com/Net2/newsrc/sys/syscall.h.html
+/usr/include/i386-linux-gnu/bits/syscall.h
+	definiciones
+	#define SYS__llseek __NR__llseek
+	#define SYS__newselect __NR__newselect
+	#define SYS__sysctl __NR__sysctl
+	#define SYS_accept4 __NR_accept4 
+
+/usr/include/i386-linux-gnu/asm/unistd_32.h
+#define __NR_exit 1
+#define __NR_fork 2
+#define __NR_read 3
+#define __NR_write 4
+#define __NR_open 5
+#define __NR_close 6
+#define __NR_waitpid 7
+
+
 
 -------------------------------------------------------------------------------
 20190810:
@@ -82,10 +98,477 @@ b6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=22 eth0=tuntap,HTAP,fe:fd:c0:a8:00:
 	DEBUG init_rh_client:1069: rhostfs SERVER: nr=22 endp=22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
 	ERROR: 1:init_rh_client:1071: rcode=-310
 	ERROR: 1:init_rhostfs:1082: rcode=-310
+	
+-------------------------------------------------------------------------------
+20190817:
+		Se hizo levantar el server pero aun sin ninguna funcion habilitada 
+		
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# ./rhostfsd rhostfs.cfg 
+				DEBUG 1115:dvk_open:102: 
+				 rhostfs_svr.c:get_dvs_params:16:
+				DEBUG 1115:dvk_getdvsinfo:238: 
+				DEBUG 1115:dvk_getdvsinfo:242: ipc ret=0
+				 rhostfs_svr.c:get_dvs_params:18:local_nodeid=0
+				 rhostfs_svr.c:get_dvs_params:21:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+				 rhostfs_svr.c:main:100:cfg_file=rhostfs.cfg
+				 configfile.c:config_read:459:file=rhostfs.cfg flags=400
+				 configfile.c:read_file:412:file=rhostfs.cfg
+				 rhostfs_svr.c:main:103:before rhs_search_config
+				 rhostfs_cfg.c:rhs_search_config:160:
+				 rhostfs_cfg.c:rhs_search_token:121:
+				 rhostfs_cfg.c:rhs_search_token:129:rhs: SERVER1
+				 rhostfs_cfg.c:rhs_read_lines:106:
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=7 cfg=0x6ae628
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=3
+				 rhostfs_cfg.c:rhs_search_ident:40:line=3 word=dcid
+				 rhostfs_cfg.c:rhs_search_ident:57:      TKN_DCID=0
+				 rhostfs_cfg.c:rhs_search_ident:62:dcid=0
+				 rhostfs_svr.c:get_dc_params:32:dcid=0
+				DEBUG 1115:dvk_getdcinfo:331: dcid=0
+				DEBUG 1115:dvk_getdcinfo:335: ipc ret=0
+				 rhostfs_svr.c:get_dc_params:40:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+				 rhostfs_svr.c:get_dc_params:41:flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=6 cfg=0x6ae6c0
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=4
+				 rhostfs_cfg.c:rhs_search_ident:40:line=4 word=rhs_ep
+				 rhostfs_cfg.c:rhs_search_ident:70:      TKN_RHS_EP=1
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=4 cfg=0x6ae758
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=5
+				 rhostfs_cfg.c:rhs_search_ident:40:line=5 word=rhs_dir
+				 rhostfs_cfg.c:rhs_search_ident:82:rhs_dir=/usr/src/dvs/vos/rootfs/
+				 rhostfs_svr.c:get_dc_params:32:dcid=0
+				DEBUG 1115:dvk_getdcinfo:331: dcid=0
+				DEBUG 1115:dvk_getdcinfo:335: ipc ret=0
+				 rhostfs_svr.c:get_dc_params:40:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+				 rhostfs_svr.c:get_dc_params:41:flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+				 rhostfs_svr.c:init_rhostfsd:51:rhs_ep=1
+				DEBUG 1115:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=1 nodeid=-1
+				DEBUG 1115:dvk_bind_X:1141: ipc ret=1
+				DEBUG 1115:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+				DEBUG 1115:dvk_getprocinfo:1100: ipc ret=0
+				 rhostfs_svr.c:init_rhostfsd:58:nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1115 vpid=1115 nodeid=0 name=rhostfsd 
+				 rhostfs_svr.c:main:113:Initialize the call vector to a safe default handler.
+				...............................................................................................................................................................................................................................................................................................................................................................................................
+				 rhostfs_svr.c:main:132:RHOSTFSD is waiting for requests
+				DEBUG 1115:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+		
+		Se hicieron algunos cambios en fs/hostfs/rhostfs_kern.c		
+		
+		Para poder escribir el root filesystem de UML 
+		mount -o remount,rw /dev/ubda /
+
+
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+	
+	
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu 
+			uml_dcid: dcid=0
+			uml_uml_ep: uml_ep=-2
+			uml_rd_ep: rd_ep=3
+			uml_rhs_ep: rhs_ep=1
+			Locating the bottom of the address space ... 0x0
+			Locating the top of the address space ... 0xc0000000
+			Core dump limits :
+				soft - 0
+				hard - NONE
+			Checking that ptrace can change system call numbers...OK
+			Checking syscall emulation patch for ptrace...OK
+			Checking advanced syscall emulation patch for ptrace...OK
+			Checking environment variables for a tempdir...none found
+			Checking if /dev/shm is on tmpfs...OK
+			Checking PROT_EXEC mmap in /dev/shm...OK
+			Adding 22433792 bytes to physical memory to account for exec-shield gap
+			DEBUG start_kernel_proc:90: UML-kernel PID=232 TID=232 uml_ep=-2
+			DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=232 endpoint=-2 nodeid=-1
+			DEBUG uml_bind_X:69: os_ioctl_generic ret=-9
+			ERROR: 0:start_kernel_proc:97: rcode=-2
+			ERROR: 0:start_kernel_proc:109: rcode=-9
+			Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #15 Sat Aug 17 20:28:26 -03 2019
+			Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 265530
+			Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu root=98:0
+			PID hash table entries: 4096 (order: 2, 16384 bytes)
+			Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+			Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+			Memory: 1033664K/1070484K available (2972K kernel code, 829K rwdata, 832K rodata, 87K init, 175K bss, 36820K reserved, 0K cma-reserved)
+			NR_IRQS:16
+			clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+			Calibrating delay loop... 1777.66 BogoMIPS (lpj=8888320)
+			pid_max: default: 32768 minimum: 301
+			Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+			Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+			Checking for host processor cmov support...Yes
+			Checking that host ptys support output SIGIO...Yes
+			Checking that host ptys support SIGIO on close...No, enabling workaround
+			devtmpfs: initialized
+			Using 2.6 host AIO
+			clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+			futex hash table entries: 256 (order: -1, 3072 bytes)
+			NET: Registered protocol family 16
+			clocksource: Switched to clocksource timer
+			NET: Registered protocol family 2
+			TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+			TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+			TCP: Hash tables configured (established 16384 bind 16384)
+			UDP hash table entries: 1024 (order: 2, 16384 bytes)
+			UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+			NET: Registered protocol family 1
+			RPC: Registered named UNIX socket transport module.
+			RPC: Registered udp transport module.
+			RPC: Registered tcp transport module.
+			RPC: Registered tcp NFSv4.1 backchannel transport module.
+			console [stderr0] disabled
+			mconsole (version 2) initialized on /root/.uml/node1/mconsole
+			Checking host MADV_REMOVE support...OK
+			UML Audio Relay (host dsp = /dev/sound/dsp, host mixer = /dev/sound/mixer)
+			UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+			DEBUG uml_dvk_init_module:115: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+			DEBUG uml_dvk_init_module:120: UML-kernel PID=232  UML-kernel TID=232
+			Host TLS support detected
+			Detected host type: i386 (GDT indexes 6 to 9)
+			workingset: timestamp_bits=30 max_order=18 bucket_order=0
+			NFS: Registering the id_resolver key type
+			Key type id_resolver registered
+			Key type id_legacy registered
+			nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+			nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+			Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+			fuse init (API version 7.26)
+			Initilizing Remote DVS HOSTFS
+			DEBUG init_rh_client:1026: 
+			DEBUG 232:dvk_open:102: 
+			DEBUG 232:dvk_getdvsinfo:238: 
+			DEBUG 232:dvk_getdvsinfo:242: ipc ret=0
+			DEBUG init_rh_client:1037: rhclient_nodeid=0
+			DEBUG init_rh_client:1038: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			DEBUG 232:dvk_getdcinfo:331: dcid=0
+			DEBUG 232:dvk_getdcinfo:335: ipc ret=0
+			DEBUG init_rh_client:1049: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			DEBUG init_rh_client:1050: flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+			DEBUG 232:dvk_bind_X:1137: cmd=0 dcid=0 pid=232 endpoint=30 nodeid=-1
+			DEBUG 232:dvk_bind_X:1141: ipc ret=30
+			DEBUG init_rh_client:1058: rhostfs bind rhc_ep=30
+			DEBUG 232:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+			DEBUG 232:dvk_getprocinfo:1100: ipc ret=0
+			DEBUG init_rh_client:1063: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=4046 vpid=232 nodeid=0 name=linux 
+			DEBUG 232:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+			DEBUG 232:dvk_getprocinfo:1100: ipc ret=0
+			DEBUG init_rh_client:1069: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=1115 vpid=1115 nodeid=0 name=rhostfsd 
+			DEBUG init_rhostfs:1083: Remote DVS HOSTFS server is bound on endpoint:1
+			DEBUG init_rhostfs:1085: register_filesystem rhostfs_type rcode:0
+			io scheduler noop registered
+			io scheduler deadline registered (default)
+			io scheduler cfq registered
+			loop: module loaded
+			nbd: registered device at major 43
+			tun: Universal TUN/TAP device driver, 1.6
+			tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+			PPP generic driver version 2.4.2
+			SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+			NET: Registered protocol family 17
+			tipc: Activated (version 2.0.0)
+			NET: Registered protocol family 30
+			tipc: Started in single node mode
+			Key type dns_resolver registered
+			Initialized stdio console driver
+			Console initialized on /dev/tty0
+			console [tty0] enabled
+			Initializing software serial port version 1
+			console [mc-1] enabled
+			Netdevice 0 (fe:fd:c0:a8:00:fd) : TUN/TAP backend - 
+			winch_thread : TIOCSCTTY failed on fd 2 err = 1
+			EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+			EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+			VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+			devtmpfs: mounted
+			This architecture does not have kernel memory protection.
+			random: fast init done
+			systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+			cgroup: cgroup2: unknown option "nsdelegate"
+			systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+			systemd[1]: Detected virtualization vmware.
+			systemd[1]: Detected architecture x86.
+
+			Welcome to Debian GNU/Linux 10 (buster)!
+
+			systemd[1]: Set hostname to <node1>.
+			systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+			systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+			systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+			systemd[1]: Listening on Journal Socket (/dev/log).
+			[  OK  ] Listening on Journal Socket (/dev/log).
+			systemd[1]: Created slice system-getty.slice.
+			[  OK  ] Created slice system-getty.slice.
+			systemd[1]: Reached target Swap.
+			[  OK  ] Reached target Swap.
+			systemd[1]: Reached target Remote File Systems.
+			[  OK  ] Reached target Remote File Systems.
+			systemd[1]: Listening on udev Control Socket.
+			[  OK  ] Listening on udev Control Socket.
+			systemd[1]: Listening on Journal Socket.
+			[  OK  ] Listening on Journal Socket.
+			systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+			systemd[1]: Condition check resulted in Kernel Debug File System being skipped.
+				 Mounting POSIX Message Queue File System...
+			[  OK  ] Listening on udev Kernel Socket.
+				 Starting Load Kernel Modules...
+			[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+			[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+			[  OK  ] Reached target Local Encrypted Volumes.
+			[  OK  ] Reached target Paths.
+			random: crng init done
+				 Starting Remount Root and Kernel File Systems...
+			[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+			[  OK  ] Listening on Syslog Socket.
+				 Starting Journal Service...
+			[  OK  ] Listening on initctl Compatibility Named Pipe.
+			[  OK  ] Created slice User and Session Slice.
+			[  OK  ] Reached target Slices.
+			[  OK  ] Mounted POSIX Message Queue File System.
+			[  OK  ] Started Load Kernel Modules.
+				 Mounting FUSE Control File System...
+				 Starting Apply Kernel Variables...
+			systemd[1]: Started Remount Root and Kernel File Systems.
+			[  OK  ] Started Remount Root and Kernel File Systems.
+			systemd[1]: Condition check resulted in Create System Users being skipped.
+			systemd[1]: Starting Create Static Device Nodes in /dev...
+				 Starting Create Static Device Nodes in /dev...
+			systemd[1]: Condition check resulted in Rebuild Hardware Database being skipped.
+			systemd[1]: Starting udev Coldplug all Devices...
+				 Starting udev Coldplug all Devices...
+			systemd[1]: Starting Load/Save Random Seed...
+				 Starting Load/Save Random Seed...
+			systemd[1]: Started Journal Service.
+			[  OK  ] Started Journal Service.
+			[  OK  ] Started Apply Kernel Variables.
+				 Starting Flush Journal to Persistent Storage...
+			[  OK  ] Started Create Static Device Nodes in /dev.
+				 Starting udev Kernel Device Manager...
+			[  OK  ] Reached target Local File Systems (Pre).
+			[  OK  ] Reached target Local File Systems.
+				 Starting Raise network interfaces...
+			systemd-journald[406]: Received request to flush runtime journal from PID 1
+			[  OK  ] Started Flush Journal to Persistent Storage.
+				 Starting Create Volatile Files and Directories...
+			[  OK  ] Started udev Kernel Device Manager.
+			[  OK  ] Mounted FUSE Control File System.
+			[  OK  ] Started Load/Save Random Seed.
+			[  OK  ] Started Create Volatile Files and Directories.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Reached target System Time Synchronized.
+				 Starting Update UTMP about System Boot/Shutdown...
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+			See 'systemctl status systemd-update-utmp.service' for details.
+			[DEPEND] Dependency failed for Updaâ¦about System Runlevel Changes.
+			[  OK  ] Started udev Coldplug all Devices.
+			[  OK  ] Reached target System Initialization.
+			[  OK  ] Listening on D-Bus System Message Bus Socket.
+			[  OK  ] Reached target Sockets.
+			[  OK  ] Reached target Basic System.
+				 Starting System Logging Service...
+			[  OK  ] Started D-Bus System Message Bus.
+			[  OK  ] Started Regular background program processing daemon.
+				 Starting Login Service...
+			[  OK  ] Started Daily apt download activities.
+			[  OK  ] Started Daily apt upgrade and clean activities.
+			[  OK  ] Started Daily Cleanup of Temporary Directories.
+			[  OK  ] Reached target Timers.
+			[  OK  ] Started System Logging Service.
+			[  OK  ] Started Raise network interfaces.
+			[  OK  ] Started Login Service.
+			[  OK  ] Reached target Network.
+				 Starting Permit User Sessions...
+				 Starting OpenBSD Secure Shell server...
+			[  OK  ] Started Permit User Sessions.
+			[  OK  ] Started Getty on tty1.
+			[  OK  ] Reached target Login Prompts.
+			[  OK  ] Started OpenBSD Secure Shell server.
+			[  OK  ] Reached target Multi-User System.
+			[  OK  ] Reached target Graphical Interface.
+			winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+			Debian GNU/Linux 10 node1 tty1
+
+			node1 login: 
+
+			Cuando 
+
+root@node1:/# mount none /rhost -t rhostfs
+mount: special device none does not exist
+
+pero sin embargo esta registrado el tipo de filesystem 
+[    0.070000] DEBUG init_rhostfs:1083: Remote DVS HOSTFS server is bound on endpoint:1
+[    0.070000] DEBUG init_rhostfs:1085: register_filesystem rhostfs_type rcode:0
+
+root@node1:~# mount none /rhost -t rhostfs
+DEBUG rhostfs_read_sb:1060: 
+DEBUG rhostfs_fill_sb_common:1002: 
+DEBUG rhostfs_alloc_inode:246: 
+DEBUG read_name:567: name=(null)/ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DEBUG rhostfs_evict_inode:260: 
+DEBUG RHOSTFS_I:40: 
+DEBUG rhostfs_destroy_inode:278: 
+DEBUG rhostfs_kill_sb:1066: 
+mount: special device none does not exist
+DEBUG RHOSTFS_I:40: 
+
+
+Esta fallando en rhostfs_fill_sb_common que llena el superblocke
+	err = read_name(root_inode, host_root_path);
+
+Aca esta leyendo el contenidode host_root_path pero en nuestro caso
+es nulo y hay que traerlo desde el remoto.
 
 -------------------------------------------------------------------------------
+20190818: SE COMBIO TANTO EL SERVER COMO EL RHOSTFS EN LINUX 
+
+ARRANCO SERVER 
+root@node0:/usr/src/dvs/vos/uml/rhostfsd# ./rhostfsd rhostfs.cfg 
+
+ARRANCO CLIENT
+root@node0:/usr/src/linux# 
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+ 
+root@node0:/tmp# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1 13986/13986  0    8   20 31438 27342 27342 27342 rhostfsd       
+ 0  30    30 24222/1342   0    0   20 27342 27342 27342 27342 linux
 	
-	
+MONTAJE 
+=======	
+		EN UML
+		root@node1:~# mount none /rhost -t rhostfs
+		DEBUG rhostfs_read_sb:1114: 
+		DEBUG rh_get_rootpath:441: 
+		DEBUG rmt_syscall:23: who=1 syscallnr=4100
+		DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rh_get_rootpath:445: dirp=/usr/src/dvs/vos/rootfs/
+		DEBUG rhostfs_fill_sb_common:1055: req_root=(null)
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_show_options:284: 
+
+		DEBUG rhostfs_show_options:284: 
+		root@node1:~# mount | grep rhost
+		DEBUG rhostfs_show_options:284: 
+		none on /rhost type rhostfs (rw,relatime) <<<<<<<<<<<< MONTADO 
+
+		EN SERVER 
+		DEBUG 13986:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:154:dvk_receive rcode=0
+		 rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=4100 m4l1=1 m4l2=1212792236 m4l3=440741 m4l4=139473824 m4l5=1212792276
+		 rhostfs_svr.c:main:166:call_nr=4100 rhs_who_e=30
+		 rhostfs_svr.c:main:177:RHOSTFS Calling vector 4
+		 rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs/
+		DEBUG 13986:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=25
+		DEBUG 13986:dvk_vcopy:126: ipc ret=25
+		 rhostfs_svr.c:main:189:REPLY msg:source=30 type=0 m1i1=1 m1i2=1212792236 m1i3=440741 m1p1=0x85033a0 m1p2=0x4849bdd4 m1p3=0x8438d60 
+		DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 13986:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+		DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+CAMBIO DE CURRENT DIRECTORY 
+===========================
+
+		EN UML
+		root@node1:~# cd /rhost/
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33 <<<<<<<<<<<<<< __NR_access
+		DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+		ERROR: 712:rmt_syscall:29: rcode=107  
+
+		EN HOST
+		DEBUG 13986:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:154:dvk_receive rcode=0
+		 rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1204883456 m4l5=1206885940
+		 rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+		 rhostfs_svr.c:main:180:LINUX Calling vector 33  <<<<<<<<<<<<<< __NR_access
+		RHOSTFSD: got unused request 33 from 30
+		 rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47d11000 m1p2=0x47ef9e34 m1p3=0x80eeb56 
+		DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 13986:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+		DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+LISTADO DIRECTORY 
+==================
+
+EN UML 
+root@node1:/rhost# ls -l
+DEBUG rhostfs_permission:903: 
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=1
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+ERROR: 712:rmt_syscall:29: rcode=107
+DEBUG rhostfs_permission:903: 
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=1
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+ERROR: 723:rmt_syscall:29: rcode=107
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=4
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+
+EN HOST
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1205972992 m4l5=1206885552
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47e1b000 m1p2=0x47ef9cb0 m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13986:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1205972992 m4l5=1212751052
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47e1b000 m1p2=0x48491ccc m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13986:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=4 m4l4=1205972992 m4l5=1212751080
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=4 m1p1=0x47e1b000 m1p2=0x48491ce8 m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+
+
+
+
 TODO: HACER EL SERVER
 TODO: PROBAR LA COMUNICACION
 TODO: HABILITAR CONFIG_STATIC_LINK
