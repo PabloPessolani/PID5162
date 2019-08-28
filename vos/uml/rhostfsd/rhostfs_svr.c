@@ -120,15 +120,15 @@ int main ( int argc, char *argv[] )
   	}
 	putchar('\n');
 
-	map(SYS_lstat64, lcl_lstat64);
+	map(SYS_lstat, lcl_lstat);
+	map(SYS_lstat64, lcl_lstat);
+	map(SYS_access,  lcl_access);
+	map(SYS_open,	 lcl_open);
+	map(SYS_unlink,  lcl_unlink);
+	map(SYS_close,   lcl_close);
+	map(SYS_pwrite64, lcl_pwrite);
 	
-#ifdef ANULADO
-    map(SYS_FORK, rhs_fork); 		/* a process forked a new process */
-    map(SYS_EXIT, rhs_exit);		/* clean up after process exit */
-    map(SYS_NICE, rhs_nice);		/* set scheduling priority */
-    map(SYS_PRIVCTL, rhs_privctl);	/* system privileges control */
-#endif // ANULADO
-
+	
 	RHSDEBUG( "Initialize the RHOSTFS own call vector to a safe default handler.\n");
   	for (i=0; i < RH_MAX_CALL; i++) {
 		putchar('#');
@@ -137,12 +137,12 @@ int main ( int argc, char *argv[] )
 	putchar('\n');
 
     rh_map(RMT_get_rootpath, lcl_get_rootpath); 	
-
-#ifdef ANULADO
-    rh_map(SYS_EXIT, rhs_exit);		
-	rh_map(SYS_NICE, rhs_nice);		
-    rh_map(SYS_PRIVCTL, rhs_privctl);
-#endif // ANULADO
+    rh_map(RMT_readdir , lcl_readdir); 	
+    rh_map(RMT_opendir , lcl_opendir); 	
+	
+	
+	rcode = chroot(rhs_dir);
+	if(rcode < 0 ) ERROR_EXIT(rcode);
 	
 	while(TRUE) {
 

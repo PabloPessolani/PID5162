@@ -36,13 +36,13 @@ long lcl_gethostname(message *mptr)
 	RHSDEBUG("len=%d\n", len);
 	rcode = gethostname(hname, len);
 	if( rcode < 0) ERROR_RETURN(-errno);
-	RHSDEBUG("hname=%d\n", hname);
+	RHSDEBUG("hname=%s\n", hname);
 	rcode = dvk_vcopy(SELF, hname, mptr->m_source, mptr->m1_p1, strlen(hname)+1);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	return(OK);
 }
 
-long lcl_open64(message *mptr)
+long lcl_open(message *mptr)
 {
 	int rcode;
 	char *name[PATH_MAX+1]; 
@@ -54,7 +54,7 @@ long lcl_open64(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, mptr->m1_i1);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("name=%d\n", name);
+	RHSDEBUG("name=%s\n", name);
 
 	rcode = open(name, flags, mode);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -72,7 +72,7 @@ long lcl_access(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, mptr->m1_i1);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("name=%d\n", name);
+	RHSDEBUG("name=%s\n", name);
 
 	rcode = access(name, mode);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -80,7 +80,7 @@ long lcl_access(message *mptr)
 }
 
 
-long lcl_pread64(message *mptr)
+long lcl_pread(message *mptr)
 {
 	int rcode;
 	char *buf;
@@ -113,7 +113,7 @@ free_buf:
 	return(rcode);
 }
 
-long lcl_pwrite64(message *mptr)
+long lcl_pwrite(message *mptr)
 {
 	int rcode;
 	char *buf;
@@ -216,7 +216,7 @@ long lcl_chmod(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 
 	rcode = chmod(pathname, mode);	
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -249,7 +249,7 @@ long lcl_chown(message *mptr)
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);	
+	RHSDEBUG("pathname=%s\n", pathname);	
 	
 	rcode = chown(pathname, user, group);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -280,7 +280,7 @@ long lcl_truncate(message *mptr)
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m2_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);	
+	RHSDEBUG("pathname=%s\n", pathname);	
 	
 	rcode =  truncate(pathname, length);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -323,11 +323,11 @@ long lcl_symlink(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("oldname=%d\n", oldname);
+	RHSDEBUG("oldname=%s\n", oldname);
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, SELF, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("newname=%d\n", newname);
+	RHSDEBUG("newname=%s\n", newname);
 
 	rcode = symlink(oldname, newname);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -344,7 +344,7 @@ long lcl_unlink(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("name=%d\n", name);
+	RHSDEBUG("name=%s\n", name);
 
 	rcode = unlink(name);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -362,11 +362,11 @@ long lcl_link(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("oldname=%d\n", oldname);
+	RHSDEBUG("oldname=%s\n", oldname);
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, SELF, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("newname=%d\n", newname);
+	RHSDEBUG("newname=%s\n", newname);
 
 	rcode = link(oldname, newname);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -386,7 +386,7 @@ long lcl_readlink(message *mptr)
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, filename, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("filename=%d\n", filename);
+	RHSDEBUG("filename=%s\n", filename);
 		
 	buf = calloc( 1, bufsiz);
 	if (buf == NULL) ERROR_RETURN(-errno);
@@ -417,11 +417,11 @@ long lcl_rename(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("oldname=%d\n", oldname);
+	RHSDEBUG("oldname=%s\n", oldname);
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("newname=%d\n", newname);
+	RHSDEBUG("newname=%s\n", newname);
 
 	rcode = rename(oldname, newname);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -438,7 +438,7 @@ long lcl_rmdir(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 
 	rcode = rmdir(pathname);	
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -456,7 +456,7 @@ long lcl_mkdir(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 
 	rcode = mkdir(pathname, mode);	
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -475,7 +475,7 @@ long lcl_mknod(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 
 	rcode = mknod(pathname, mode, dev);	
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -510,7 +510,7 @@ long lcl_utimes(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 	
 	rcode = lutimes(pathname, tv);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -521,10 +521,28 @@ long lcl_utimes(message *mptr)
 	return(OK);
 }
 
-long lcl_fstat64(message *mptr)
+/* 
+struct stat {
+    dev_t     st_dev;     		     
+    ino_t     st_ino;     
+    mode_t    st_mode;    
+    nlink_t   st_nlink;   
+    uid_t     st_uid;     
+    gid_t     st_gid;     
+    dev_t     st_rdev;    
+    off_t     st_size;    
+    blksize_t st_blksize; 
+    blkcnt_t  st_blocks;  
+    time_t    st_atime;   
+    time_t    st_mtime;   
+    time_t    st_ctime;   
+};
+*/ 
+
+long lcl_fstat(message *mptr)
 {
 	int rcode;
-	struct statfs statbuf;
+	struct stat statbuf;
 	
 	int fd 	= mptr->m1_i1;
 	RHSDEBUG("fd=%d\n", fd);
@@ -538,7 +556,7 @@ long lcl_fstat64(message *mptr)
 	return(OK);
 }
 
-long lcl_statfs64(message *mptr)
+long lcl_statfs(message *mptr)
 {
 	int rcode;
 	char pathname[PATH_MAX+1]; 
@@ -549,7 +567,7 @@ long lcl_statfs64(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 	
 	rcode = statfs(pathname, &statbuf);
 	if( rcode < 0) ERROR_RETURN(-errno);
@@ -560,12 +578,11 @@ long lcl_statfs64(message *mptr)
 	return(OK);
 }
 
-long lcl_lstat64(message *mptr)
+long lcl_lstat(message *mptr)
 {
 	int rcode;
 	char pathname[PATH_MAX+1]; 
-	struct statfs lcl_stat;
-	struct rh_hostfs_stat rh_stat
+	struct stat lcl_stat;
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
@@ -573,29 +590,10 @@ long lcl_lstat64(message *mptr)
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 	
-	rcode = statfs(pathname, &lcl_stat);
+	rcode = lstat(pathname, &lcl_stat);
 	if( rcode < 0) ERROR_RETURN(-errno);
-	
-	           struct statfs {
-               __fsword_t f_type;    /* Type of filesystem (see below) */
-               __fsword_t f_bsize;   /* Optimal transfer block size */
-               fsblkcnt_t f_blocks;  /* Total data blocks in filesystem */
-               fsblkcnt_t f_bfree;   /* Free blocks in filesystem */
-               fsblkcnt_t f_bavail;  /* Free blocks available to
-                                        unprivileged user */
-               fsfilcnt_t f_files;   /* Total file nodes in filesystem */
-               fsfilcnt_t f_ffree;   /* Free file nodes in filesystem */
-               fsid_t     f_fsid;    /* Filesystem ID */
-               __fsword_t f_namelen; /* Maximum length of filenames */
-               __fsword_t f_frsize;  /* Fragment size (since Linux 2.6) */
-               __fsword_t f_flags;   /* Mount flags of filesystem
-                                        (since Linux 2.6.36) */
-               __fsword_t f_spare[xxx];
-                               /* Padding bytes reserved for future use */
-           };
-	
 		
-	rcode = dvk_vcopy(SELF, &buf, mptr->m_source, mptr->m1_p2, sizeof(struct statfs));
+	rcode = dvk_vcopy(SELF, &lcl_stat, mptr->m_source, mptr->m1_p2, sizeof(struct stat));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -618,11 +616,11 @@ long lcl_renameat2(message *mptr)
 		
 	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p1, SELF, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("oldname=%d\n", oldname);
+	RHSDEBUG("oldname=%s\n", oldname);
 
 	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p2, SELF, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("newname=%d\n", newname);
+	RHSDEBUG("newname=%s\n", newname);
 	
 //	rcode = renameat2(oldfd, oldname, newfd, newname, flags);
 	rcode = syscall(SYS_renameat2,oldfd, oldname, newfd, newname, flags);
@@ -640,7 +638,7 @@ int lcl_opendir(message *mptr)
 	
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
-	RHSDEBUG("pathname=%d\n", pathname);
+	RHSDEBUG("pathname=%s\n", pathname);
 
 	DIR *dir_ptr = opendir(pathname);
 	if( dir_ptr == NULL) ERROR_RETURN(-errno);

@@ -16,15 +16,37 @@
 #include <sys/types.h>
 #include <sys/vfs.h>
 #include <sys/syscall.h>
+#include <signal.h>
 
 #define DVS_USERSPACE	1
 
 #include "rhostfs.h"
 #include <utime.h>
 
-
-static void rh_stat64_to_hostfs(const struct stat64 *buf, struct rh_hostfs_stat *p)
+void print_sigset(void)
 {
+    int sig, cnt, rcode;
+	sigset_t sigset;
+
+	rcode =  sigpending(&sigset);
+	if(rcode == 0) {
+		ERROR_PRINT(rcode);
+		return;
+	}
+    cnt = 0;
+    for (sig = 1; sig < sizeof(sigset)*8; sig++) {
+        if (sigismember(&sigset, sig)) {
+            cnt++;
+            printf("%d:%s\n", sig, strsignal(sig));
+        }
+    }
+    if (cnt == 0)
+        printf("<empty signal set>\n");
+}
+
+static void rh_statfs_to_hostfs( struct stat *buf, struct hostfs_stat *p)
+{
+	RHDEBUG("ino=%lld\n",buf->st_ino);	
 	p->ino = buf->st_ino;
 	p->mode = buf->st_mode;
 	p->nlink = buf->st_nlink;
@@ -41,20 +63,21 @@ static void rh_stat64_to_hostfs(const struct stat64 *buf, struct rh_hostfs_stat 
 	p->blocks = buf->st_blocks;
 	p->maj = os_major(buf->st_rdev);
 	p->min = os_minor(buf->st_rdev);
+	RHDEBUG("ino=%lld maj=%d min=%d\n",p->ino, p->maj, p->min);	
 }
 
 
-int rh_stat_file(const char *path, struct rh_hostfs_stat *p, int fd)
+int rh_stat_file(const char *path, struct hostfs_stat *p, int fd)
 {
-	struct stat64 buf;
+	struct stat statbuf;
 
 	if (fd >= 0) {
-		if (rmt_fstat64(fd, &buf) < 0)
-			return -errno;
-	} else if (rmt_lstat64(path, &buf) < 0) {
-		return -errno;
+		if (rmt_fstat64(fd, &statbuf) < 0)
+			ERROR_RETURN(-errno);
+	} else if (rmt_lstat64(path, &statbuf) < 0) {
+		ERROR_RETURN(-errno);
 	}
-	rh_stat64_to_hostfs(&buf, p);
+	rh_statfs_to_hostfs(&statbuf, p);
 	return 0;
 }
 
@@ -62,6 +85,9 @@ int rh_access_file(char *path, int r, int w, int x)
 {
 	int mode = 0;
 
+	RHDEBUG("path=%s r=%d w=%d x=%d\n",path, r, w, x);	
+
+//	if( strcmp(path,"//") == 0) return(access_file(path, r, w, x));
 	if (r)
 		mode = R_OK;
 	if (w)
@@ -96,6 +122,8 @@ int rh_open_file(char *path, int r, int w, int append)
 void *rh_open_dir(char *path, int *err_out)
 {
 	DIR *dir;
+
+	RHDEBUG("path=%s\n",path);	
 
 	dir = rmt_opendir(path);
 	*err_out = errno;
@@ -191,15 +219,17 @@ int rh_file_create(char *name, int mode)
 {
 	int fd;
 
+	RHDEBUG("name=%s mode=%X\n", name, mode);	
+
 	fd = rmt_open64(name, O_CREAT | O_RDWR, mode);
-	if (fd < 0)
-		return -errno;
+	if (fd < 0) ERROR_RETURN(-errno);
+	RHDEBUG("returned fd=%d\n", fd);	
 	return fd;
 }
 
-int rh_set_attr(const char *file, struct rh_hostfs_iattr *attrs, int fd)
+int rh_set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 {
-	struct rh_hostfs_stat st;
+	struct hostfs_stat st;
 	struct timeval times[2];
 	int err, ma;
 

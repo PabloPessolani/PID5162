@@ -37,7 +37,7 @@ struct rhostfs_inode_info {
 
 static inline struct rhostfs_inode_info *RHOSTFS_I(struct inode *inode)
 {
-	RHDEBUG("\n");	
+	RHDEBUG("i_ino=%ld\n",inode->i_ino);	
 	return list_entry(inode, struct rhostfs_inode_info, vfs_inode);
 }
 
@@ -286,6 +286,8 @@ static int rhostfs_show_options(struct seq_file *seq, struct dentry *root)
 	const char *root_path = root->d_sb->s_fs_info;
 	size_t offset = strlen(rh_root_ino) + 1;
 
+	RHDEBUG("root_path=%s\n",root_path);	
+
 	if (strlen(root_path) > offset)
 		seq_show_option(seq, root_path + offset, NULL);
 
@@ -312,14 +314,12 @@ static int rhostfs_readdir(struct file *file, struct dir_context *ctx)
 	unsigned int type;
 
 	RHDEBUG("\n");	
-
 	name = dentry_name(file->f_path.dentry);
-	if (name == NULL)
-		return -ENOMEM;
+	RHDEBUG("name=%s\n", name);	
+	if (name == NULL) ERROR_RETURN(-ENOMEM);
 	dir = rh_open_dir(name, &error);
 	__putname(name);
-	if (dir == NULL)
-		return -error;
+	if (dir == NULL) ERROR_RETURN(-error);
 	next = ctx->pos;
 	rh_seek_dir(dir, next);
 	while ((name = rh_read_dir(dir, &next, &ino, &len, &type)) != NULL) {
@@ -338,7 +338,7 @@ static int rhostfs_open(struct inode *ino, struct file *file)
 	int err;
 	int r, w, fd;
 
-	RHDEBUG("\n");	
+	RHDEBUG("i_ino=%ld\n", ino->i_ino);	
 
 	mode = file->f_mode & (FMODE_READ | FMODE_WRITE);
 	if ((mode & RHOSTFS_I(ino)->mode) == mode)
@@ -356,7 +356,7 @@ retry:
 
 	name = dentry_name(file->f_path.dentry);
 	if (name == NULL)
-		return -ENOMEM;
+		ERROR_RETURN(-ENOMEM);
 
 	fd = rh_open_file(name, r, w, rh_append);
 	__putname(name);
@@ -383,7 +383,7 @@ retry:
 		rh_close_file(&fd);
 		if (err < 0) {
 			mutex_unlock(&RHOSTFS_I(ino)->open_mutex);
-			return err;
+			ERROR_RETURN(err);
 		}
 	}
 	RHOSTFS_I(ino)->mode = mode;
@@ -561,14 +561,13 @@ static const struct address_space_operations rhostfs_aops = {
 static int rh_read_name(struct inode *ino, char *name)
 {
 	dev_t rdev;
-	struct rh_hostfs_stat st;
+	struct hostfs_stat st;
 
 	RHDEBUG("name=%s\n",name);	
 
 	int err = rh_stat_file(name, &st, -1);
-	if (err)
-		return err;
-
+	if (err) ERROR_RETURN(err);
+	
 	/* Reencode maj and min with the kernel encoding.*/
 	rdev = MKDEV(st.maj, st.min);
 
@@ -618,7 +617,7 @@ static int rh_read_name(struct inode *ino, char *name)
 static int read_name(struct inode *ino, char *name)
 {
 	dev_t rdev;
-	struct rh_hostfs_stat st;
+	struct hostfs_stat st;
 	int err = stat_file(name, &st, -1);
 	if (err)
 		return err;
@@ -680,14 +679,13 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 
 	error = -ENOMEM;
 	name = dentry_name(dentry);
-	if (name == NULL)
-		goto out_put;
+	if (name == NULL) goto out_put;
 
 	fd = rh_file_create(name, mode & 0777);
 	if (fd < 0)
 		error = fd;
 	else
-		error = read_name(inode, name);
+		error = rh_read_name(inode, name);
 
 	__putname(name);
 	if (error)
@@ -701,7 +699,7 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
  out_put:
 	iput(inode);
  out:
-	return error;
+	ERROR_RETURN(error);
 }
 
 static struct dentry *rhostfs_lookup(struct inode *ino, struct dentry *dentry,
@@ -926,7 +924,7 @@ static int rhostfs_permission(struct inode *ino, int desired)
 static int rhostfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	struct inode *inode = d_inode(dentry);
-	struct rh_hostfs_iattr attrs;
+	struct hostfs_iattr attrs;
 	char *name;
 	int err;
 

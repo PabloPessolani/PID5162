@@ -16,19 +16,27 @@
 #include <kern.h>
 #include "rhostfs.h"
 
+
+void print_sigset(void);
+
+
 long rmt_syscall(int who, int syscallnr, message *mptr)
 {
 	int rcode;
-
+	
 	RHDEBUG("who=%d syscallnr=%d\n", who, syscallnr);
 	mptr->m_type = syscallnr;
 	rcode = dvk_sendrec(who, mptr); // TIMEOUT_RMTCALL);
+	if( rcode == (-ERESTARTSYS)) {
+		print_sigset();
+	} 
 	if (rcode < 0) ERROR_RETURN(rcode);
 	if (mptr->m_type < 0) {
 		rmt_errno = -mptr->m_type;
 		ERROR_PRINT(rmt_errno);
 		return (-1);
 	}
+	RHDEBUG("m_type=%d\n", mptr->m_type);
 	return (mptr->m_type);
 }
 
@@ -50,7 +58,7 @@ long rmt_access(const char  *filename, umode_t mode)
 
 	RHDEBUG("filename=%s mode=%X\n" , filename, mode);
 	m.m1_i1 = strlen(filename) + 1;
-	m.m1_i3 = mode;
+	m.m1_i2 = mode;
 	m.m1_p1 = (char *) filename;
 	return (rmt_syscall(rhs_ep, __NR_access, &m));	
 }
@@ -82,7 +90,7 @@ long rmt_pwrite64(unsigned int fd, char  *buf, size_t count, loff_t pos)
 	m.m2_p1 = buf;
 		
 	ptr = (long long*) &m.m2_l1;  // using m2_l2 Too !!!!
-	*ptr = pos;;
+	*ptr = pos;
 	return (rmt_syscall(rhs_ep, __NR_pwrite64, &m));	
 }
 
@@ -324,7 +332,7 @@ long rmt_utimes(char  *filename, struct timeval  *utimes)
 	return (rmt_syscall(rhs_ep, __NR_utimes, &m));
 }
 
-long rmt_fstat64(unsigned long fd, struct stat64  *statbuf)
+long rmt_fstat64(unsigned long fd, 	struct stat *statbuf)
 {
 	message m;
 
@@ -345,7 +353,7 @@ long rmt_statfs64(const char  *filename, struct statfs64  *buf)
 	return (rmt_syscall(rhs_ep, __NR_statfs64, &m));
 }
 
-long rmt_lstat64(const char  *filename, struct stat64  *statbuf)
+long rmt_lstat64(const char  *filename, struct stat  *statbuf)
 {
 	message m;
 

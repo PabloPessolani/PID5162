@@ -27,9 +27,9 @@ long rmt_mkdir(const char  *pathname, mode_t mode);
 long rmt_mknod(const char  *filename, mode_t mode,unsigned dev);
 long rmt_futimes(int dfd, struct timeval  *utimes);
 long rmt_utimes(char  *filename, struct timeval  *utimes);
-long rmt_fstat64(unsigned long fd, struct stat64  *statbuf);
+long rmt_fstat64(unsigned long fd, struct stat  *statbuf);
 long rmt_statfs64(const char  *path, struct statfs64  *buf);
-long rmt_lstat64(const char  *filename, struct stat64  *statbuf);
+long rmt_lstat64(const char  *filename, struct stat  *statbuf);
 long rmt_renameat2(int olddfd, const char  *oldname,
 			      int newdfd, const char  *newname,
 			      unsigned int flags);

@@ -26,6 +26,8 @@
 
 #include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
 
+#include "hostfs.h"
+
 #include "rh_debug.h"
 #include "rh_macros.h"
 
@@ -66,9 +68,8 @@
 
 
 		   
-extern int stat_file(const char *path, struct rh_hostfs_stat *p, int fd);
-  
-extern int rh_stat_file(const char *path, struct rh_hostfs_stat *p, int fd);
+
+extern int rh_stat_file(const char *path, struct hostfs_stat *p, int fd);
 extern int rh_access_file(char *path, int r, int w, int x);
 extern int rh_open_file(char *path, int r, int w, int append);
 extern void *rh_open_dir(char *path, int *err_out);
@@ -85,7 +86,7 @@ extern int rh_write_file(int fd, unsigned long long *offset, const char *buf,
 extern int rh_lseek_file(int fd, long long offset, int whence);
 extern int rh_fsync_file(int fd, int datasync);
 extern int rh_file_create(char *name, int mode);
-extern int rh_set_attr(const char *file, struct rh_hostfs_iattr *attrs, int fd);
+extern int rh_set_attr(const char *file, struct hostfs_iattr *attrs, int fd);
 extern int rh_make_symlink(const char *from, const char *to);
 extern int rh_unlink_file(const char *file);
 extern int rh_do_mkdir(const char *file, int mode);
