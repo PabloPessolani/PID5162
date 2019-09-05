@@ -99,6 +99,8 @@ static char *__dentry_name(struct dentry *dentry, char *name)
 	char *p = dentry_path_raw(dentry, name, PATH_MAX);
 	char *root;
 	size_t len;
+	
+	RHDEBUG("\n");	
 
 	root = dentry->d_sb->s_fs_info;
 	len = strlen(root);
@@ -127,10 +129,13 @@ static char *__dentry_name(struct dentry *dentry, char *name)
 
 static char *dentry_name(struct dentry *dentry)
 {
+	RHDEBUG("\n");	
 	char *name = __getname();
-	if (!name)
+	if (!name) {
+		ERROR_PRINT(EDVSNOENT);
 		return NULL;
-
+	}
+	RHDEBUG("name=%s\n", name);	
 	return __dentry_name(dentry, name);
 }
 
@@ -138,6 +143,8 @@ static char *inode_name(struct inode *ino)
 {
 	struct dentry *dentry;
 	char *name;
+
+	RHDEBUG("\n");	
 
 	dentry = d_find_alias(ino);
 	if (!dentry)
@@ -202,8 +209,10 @@ static struct inode *rhostfs_iget(struct super_block *sb)
 	RHDEBUG("\n");	
 
 	struct inode *inode = new_inode(sb);
-	if (!inode)
+	if (!inode){
+		ERROR_PRINT(EDVSNOMEM);
 		return ERR_PTR(-ENOMEM);
+	}
 	return inode;
 }
 
@@ -245,8 +254,10 @@ static struct inode *rhostfs_alloc_inode(struct super_block *sb)
 	RHDEBUG("\n");	
 
 	hi = kmalloc(sizeof(*hi), GFP_KERNEL_ACCOUNT);
-	if (hi == NULL)
+	if (hi == NULL) {
+		ERROR_PRINT(EDVSNOMEM);
 		return NULL;
+	}
 	hi->fd = -1;
 	hi->mode = 0;
 	inode_init_once(&hi->vfs_inode);
@@ -674,13 +685,17 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 	inode = rhostfs_iget(dir->i_sb);
 	if (IS_ERR(inode)) {
 		error = PTR_ERR(inode);
+		ERROR_PRINT(EDVSNOMEM);
 		goto out;
 	}
 
 	error = -ENOMEM;
 	name = dentry_name(dentry);
-	if (name == NULL) goto out_put;
-
+	if (name == NULL){
+		ERROR_PRINT(EDVSNOENT);
+		goto out_put;
+	}
+	
 	fd = rh_file_create(name, mode & 0777);
 	if (fd < 0)
 		error = fd;
@@ -688,9 +703,11 @@ static int rhostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode
 		error = rh_read_name(inode, name);
 
 	__putname(name);
-	if (error)
+	if (error) {
+		ERROR_PRINT(error);
 		goto out_put;
-
+	}
+	
 	RHOSTFS_I(inode)->fd = fd;
 	RHOSTFS_I(inode)->mode = FMODE_READ | FMODE_WRITE;
 	d_instantiate(dentry, inode);
@@ -714,30 +731,36 @@ static struct dentry *rhostfs_lookup(struct inode *ino, struct dentry *dentry,
 	inode = rhostfs_iget(ino->i_sb);
 	if (IS_ERR(inode)) {
 		err = PTR_ERR(inode);
+		ERROR_PRINT(err);
 		goto out;
 	}
 
 	err = -ENOMEM;
 	name = dentry_name(dentry);
-	if (name == NULL)
+	if (name == NULL){
+		ERROR_PRINT(err);
 		goto out_put;
-
-	err = read_name(inode, name);
+	}
+	
+	err = rh_read_name(inode, name);
 
 	__putname(name);
 	if (err == -ENOENT) {
 		iput(inode);
 		inode = NULL;
+		ERROR_PRINT(err);
 	}
-	else if (err)
+	else if (err) {
+		ERROR_PRINT(err);
 		goto out_put;
-
+	}
 	d_add(dentry, inode);
 	return NULL;
 
  out_put:
 	iput(inode);
  out:
+	ERROR_PRINT(err);
 	return ERR_PTR(err);
 }
 

@@ -13,6 +13,7 @@ extern int 			local_nodeid;
 extern dc_usr_t 	dcu;
 extern int 			dcid; 
 extern char 		*dvk_dev;
+extern int 			kernel_errno;
 
 EXTERN proc_usr_t 	rhc_proc;
 EXTERN proc_usr_t 	rhs_proc;

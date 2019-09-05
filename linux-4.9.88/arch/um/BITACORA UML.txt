@@ -1,7 +1,6 @@
 
-RECLAMO MERCE - 3WI5K06
 
-AJE EL .CONFIG DE 
+BAJE EL .CONFIG DE 
 https://uml.devloop.org.uk/kernels.html
 Y UN FS ROOT DEBIAN
 http://fs.devloop.org.uk/

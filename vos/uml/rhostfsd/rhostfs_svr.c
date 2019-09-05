@@ -81,7 +81,7 @@ int rhs_unused(message *m)
  *===========================================================================*/
 int main ( int argc, char *argv[] )
 {
-	int rcode, i , call_nr, result;
+	int rcode, i , call_nr, result, last_nr;
     config_t *cfg;
 	message *m_ptr;
 
@@ -127,7 +127,13 @@ int main ( int argc, char *argv[] )
 	map(SYS_unlink,  lcl_unlink);
 	map(SYS_close,   lcl_close);
 	map(SYS_pwrite64, lcl_pwrite);
-	
+	map(SYS_pread64, lcl_pread);
+	map(SYS_link, 	 lcl_link);
+	map(SYS_mkdir, 	lcl_mkdir);
+	map(SYS_rmdir, 	lcl_rmdir);
+	map(SYS_chown, 	lcl_chown);
+	map(SYS_chmod, 	lcl_chmod);
+
 	
 	RHSDEBUG( "Initialize the RHOSTFS own call vector to a safe default handler.\n");
   	for (i=0; i < RH_MAX_CALL; i++) {
@@ -143,6 +149,8 @@ int main ( int argc, char *argv[] )
 	
 	rcode = chroot(rhs_dir);
 	if(rcode < 0 ) ERROR_EXIT(rcode);
+	
+	last_nr = SYS_restart_syscall;
 	
 	while(TRUE) {
 
@@ -161,13 +169,13 @@ int main ( int argc, char *argv[] )
 		* Process the Request 
 	 	*------------------------------------*/
 		call_nr = (unsigned) m_ptr->m_type;	
-      	rhs_who_e = m_ptr->m_source;
+		rhs_who_e = m_ptr->m_source;
 		rhs_who_p = _ENDPOINT_P(rhs_who_e);
 		RHSDEBUG("call_nr=%d rhs_who_e=%d\n", call_nr, rhs_who_e);
 		if (call_nr < 0) {	/* check call number 	*/
 			ERROR_PRINT(EDVSBADREQUEST);
 			result = EDVSBADREQUEST;		/* illegal message type */
-      	} if(call_nr >= NR_syscalls){
+		} else if(call_nr >= NR_syscalls){
 			if( (call_nr < RH_SYS_CALL) 
 				|| call_nr >= (RH_MAX_CALL + RH_SYS_CALL)){
 				ERROR_PRINT(EDVSBADREQUEST);
@@ -175,12 +183,15 @@ int main ( int argc, char *argv[] )
 			}
 			call_nr -= RH_SYS_CALL;
 			RHSDEBUG("RHOSTFS Calling vector %d\n",call_nr);
-        	result = (*rh_call_vec[call_nr])(&rhs_m);	/* handle the system call*/				
+			result = (*rh_call_vec[call_nr])(&rhs_m);	/* handle the system call*/				
 		}else {	
+			if( call_nr == SYS_restart_syscall)
+				call_nr = last_nr;	// restore interrupted system call 
 			RHSDEBUG("LINUX Calling vector %d\n",call_nr);
-        	result = (*call_vec[call_nr])(&rhs_m);	/* handle the system call*/
-      	}
-			
+			result = (*call_vec[call_nr])(&rhs_m);	/* handle the system call*/
+			last_nr = call_nr; 		// save last system call 
+		}
+		
 		/*------------------------------------
 	 	* Send Reply 
  		*------------------------------------*/

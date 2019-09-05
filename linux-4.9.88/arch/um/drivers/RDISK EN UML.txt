@@ -1,0 +1,123 @@
+INCORPORACION DE RDISK COMO DRIVER DE UML
+=========================================
+
+https://elixir.bootlin.com/linux/v4.9.88/source/arch/um/drivers
+
+Esto funciona de la siguiente forma 
+   -----------------                    -----------
+   |  UML DRIVER   |     M3-IPC         | RDISK   |
+   |     RDISK     |--------------------| SERVER  |
+   |     CLIENT    |                    | ep=3    |
+   -----------------                    -----------
+
+EN /usr/src/linux/arch/um/drivers
+Se copiaron:
+	ubd_kern.c => rdisk_kern.c 
+	ubd_user.c => rdisk_user.c 
+	udb.h => rdisk.h 
+	
+Se modifico el codigo reemplazando el texto "udb" por "rd"
+y todas las referencias a "udb" se cambiaron a "rdisk"
+
+rdisk_user.c : Es muy sencillo y solo crea el thread "rd_thread" y asocia un par de pipes por donde el driver 
+	RDISK recibira los comandos desde el UML Kernel.
+
+rdisk_kernel.c: es el autentico driver que debe respetar un formato de estructura
+	El thread rd_thread hace un loop infinito
+		- leyendo el comando desde el pipe
+		- ejecutando el comando 
+		- respondiendo el resultado por otro pipe  
+	
+
+por ejemplo, esta es la estructura que permite controlar a RDISK desde la aplicacion de UML "mconsole"
+	static struct mc_device rd_mc = {
+		.list		= LIST_HEAD_INIT(rd_mc.list),
+		.name		= "rdisk",
+		.config		= rd_config,          <<<<<<<<< funciones que deber resolverse 
+		.get_config	= rd_get_config,
+		.id			= rd_id,
+		.remove		= rd_remove,
+	};
+
+Estas son las operaciones que se hacen sobre dispositivos de bloques
+	static const struct block_device_operations rd_blops = {
+			.owner		= THIS_MODULE,
+			.open		= rd_open,
+			.release	= rd_release,
+			.ioctl		= rd_ioctl,
+			.getgeo		= rd_getgeo,
+	};
+
+El valor del endpoint de RDISK lo toma de la linea de comandos de um_arch.c 
+	#ifdef CONFIG_UML_RDISK 
+	extern int rd_ep;
+	static int __init uml_rd_ep(char *line, int *add)
+	{
+		int rcode;
+		
+		rd_ep= (-1);
+		rcode =  kstrtoint ( line, 10, &rd_ep);
+		if( rcode < 0){
+			printf("kstrtoint rcode=%d\n", rcode);
+		}
+		printf("uml_rd_ep: rd_ep=%d\n", rd_ep);
+		return 0;
+	}
+
+	__uml_setup("rd_ep=", uml_rd_ep,
+	"rd_ep=<RDISK endpoint>\n"
+	);
+	#endif // CONFIG_UML_RDISK 
+
+El valor del endpoint del CLIENTE RDISK lo busca entre los endpoints de usuarios sin uso
+	for( i = dcu_ptr->dc_nr_sysprocs - dcu_ptr->dc_nr_tasks;
+		i < dcu_ptr->dc_nr_procs - dcu_ptr->dc_nr_tasks; i++){
+		rdc_ep = dvk_tbind(dcid, i);
+		if( rdc_ep == i ) break; 
+	}
+	
+	
+Las funciones de lectura y escritura se encuentran en rdisk_rw que se transforman en un RPC
+al server RDISK 
+	int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
+	{
+		message dev_mess, *m_ptr;
+		int rcode;
+		
+		/* Set up the message passed to task. */
+		m_ptr= &dev_mess;
+		m_ptr->m_type   = oper;
+		m_ptr->DEVICE   = minor;
+		m_ptr->POSITION = (int) off;
+		m_ptr->IO_ENDPT = rdc_ep;
+		m_ptr->ADDRESS  = buf;
+		m_ptr->COUNT    = len;
+		m_ptr->TTY_FLAGS = 0;
+		DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+		rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
+		if(rcode < 0) ERROR_RETURN(rcode);
+		DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+			
+		return(m_ptr->REP_STATUS);
+}
+
+PARA HABILITAR LA COMPILACION DE UML_RDISK (mendiante la constante CONFIG_UML_RDISK)
+Se modifico el archivo Kconfig.char 
+
+		menu "UML Character Devices"
+
+		config UML_RDISK 
+			bool "UML Replicated Disk proxy"
+			default y
+			help
+			This options enable RDISK proxy to the host RDISK.
+			
+			
+		config UML_DVK 
+			bool "UML Distributed Virtualization Kernel (DVK) pseudo character device"
+			default y
+			help
+			This options enable DVK pseudo device driver as a pass-through to the host-DVK.
+ 
+ 
+ 

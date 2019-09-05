@@ -12,7 +12,7 @@ long lcl_get_rootpath(message *mptr)
 	int len; 
 
 	RHSDEBUG("rhs_dir=%s\n",rhs_dir);
-	rcode = dvk_vcopy(SELF, rhs_dir, mptr->m_source, mptr->m1_p1, strlen(rhs_dir)+1);
+	rcode = dvk_vcopy(rhs_ep, rhs_dir, mptr->m_source, mptr->m1_p1, strlen(rhs_dir)+1);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	return(OK);
 }
@@ -37,7 +37,7 @@ long lcl_gethostname(message *mptr)
 	rcode = gethostname(hname, len);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	RHSDEBUG("hname=%s\n", hname);
-	rcode = dvk_vcopy(SELF, hname, mptr->m_source, mptr->m1_p1, strlen(hname)+1);
+	rcode = dvk_vcopy(rhs_ep, hname, mptr->m_source, mptr->m1_p1, strlen(hname)+1);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	return(OK);
 }
@@ -52,7 +52,7 @@ long lcl_open(message *mptr)
 	int mode 	= mptr->m1_i3;
 	RHSDEBUG("len=%d flags=%X mode=%X\n" , len, flags, mode);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, mptr->m1_i1);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, name, mptr->m1_i1);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("name=%s\n", name);
 
@@ -70,7 +70,7 @@ long lcl_access(message *mptr)
 	int mode 	= mptr->m1_i2;
 	RHSDEBUG("len=%d mode=%X\n" , len, mode);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, mptr->m1_i1);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, name, mptr->m1_i1);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("name=%s\n", name);
 
@@ -104,7 +104,7 @@ long lcl_pread(message *mptr)
 		goto free_buf;
 	} 
 
-	rcode = dvk_vcopy(SELF, buf, mptr->m_source, mptr->m2_p1, count);
+	rcode = dvk_vcopy(rhs_ep, buf, mptr->m_source, mptr->m2_p1, count);
 	if( rcode < 0) goto free_buf;
 	
 free_buf:	
@@ -131,7 +131,7 @@ long lcl_pwrite(message *mptr)
 	buf = calloc( 1, count);
 	if (buf == NULL) ERROR_RETURN(-errno);
 
-	rcode = dvk_vcopy( mptr->m_source, mptr->m2_p1, SELF, buf,  count);
+	rcode = dvk_vcopy( mptr->m_source, mptr->m2_p1, rhs_ep, buf,  count);
 	if( rcode < 0) goto free_buf;
 	if(rcode != count) RHSDEBUG("WARNING: (rcode=%d) != (count=%d)\n",rcode, count);
 	if(rcode < count) count = rcode;
@@ -214,7 +214,7 @@ long lcl_chmod(message *mptr)
 	int mode 	= mptr->m1_i2;
 	RHSDEBUG("len=%d mode=%X\n" , len, mode);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
@@ -247,7 +247,7 @@ long lcl_chown(message *mptr)
 	int group = mptr->m1_i3;
 	RHSDEBUG("len=%d user=%d group=%d\n" , len, user, group);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);	
 	
@@ -278,7 +278,7 @@ long lcl_truncate(message *mptr)
 	long length = mptr->m2_l1;
 	RHSDEBUG("len=%d length=%uld\n", len, length);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m2_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m2_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);	
 	
@@ -321,11 +321,11 @@ long lcl_symlink(message *mptr)
 	int olen = mptr->m1_i1;
 	int nlen = mptr->m1_i2;
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("oldname=%s\n", oldname);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, SELF, newname, nlen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, rhs_ep, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("newname=%s\n", newname);
 
@@ -342,7 +342,7 @@ long lcl_unlink(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, name, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, name, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("name=%s\n", name);
 
@@ -360,11 +360,11 @@ long lcl_link(message *mptr)
 	int olen = mptr->m1_i1;
 	int nlen = mptr->m1_i2;
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("oldname=%s\n", oldname);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, SELF, newname, nlen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p2, rhs_ep, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("newname=%s\n", newname);
 
@@ -384,7 +384,7 @@ long lcl_readlink(message *mptr)
 	int bufsiz = mptr->m1_i2;
 	RHSDEBUG("len=%D bufsiz=%d\n", len, bufsiz);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, filename, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, filename, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("filename=%s\n", filename);
 		
@@ -397,7 +397,7 @@ long lcl_readlink(message *mptr)
 		goto free_buf;
 	} 
 
-	rcode = dvk_vcopy(SELF, buf, mptr->m_source, mptr->m1_p2, rcode+1);
+	rcode = dvk_vcopy(rhs_ep, buf, mptr->m_source, mptr->m1_p2, rcode+1);
 	if( rcode < 0) goto free_buf;
 	
 free_buf:	
@@ -415,11 +415,11 @@ long lcl_rename(message *mptr)
 	int olen = mptr->m1_i1;
 	int nlen = mptr->m1_i2;
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, oldname, olen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("oldname=%s\n", oldname);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, newname, nlen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("newname=%s\n", newname);
 
@@ -436,7 +436,7 @@ long lcl_rmdir(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
@@ -454,7 +454,7 @@ long lcl_mkdir(message *mptr)
 	int mode 	= mptr->m1_i2;
 	RHSDEBUG("len=%d mode=%X\n" , len, mode);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
@@ -473,7 +473,7 @@ long lcl_mknod(message *mptr)
 	int dev 	= mptr->m1_i3;
 	RHSDEBUG("len=%d mode=%X dev=%d\n" , len, mode, dev);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
@@ -493,7 +493,7 @@ long lcl_futimes(message *mptr)
 	rcode = futimes(fd, tv);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	
-	rcode = dvk_vcopy(SELF, tv, mptr->m_source, mptr->m1_p1, sizeof(struct timeval));
+	rcode = dvk_vcopy(rhs_ep, tv, mptr->m_source, mptr->m1_p1, sizeof(struct timeval));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -508,14 +508,14 @@ long lcl_utimes(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 	
 	rcode = lutimes(pathname, tv);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	
-	rcode = dvk_vcopy(SELF, tv, mptr->m_source, mptr->m1_p2, sizeof(struct timeval));
+	rcode = dvk_vcopy(rhs_ep, tv, mptr->m_source, mptr->m1_p2, sizeof(struct timeval));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -550,7 +550,7 @@ long lcl_fstat(message *mptr)
 	rcode = fstat(fd, &statbuf);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	
-	rcode = dvk_vcopy(SELF, &statbuf, mptr->m_source, mptr->m1_p1, sizeof(struct statfs));
+	rcode = dvk_vcopy(rhs_ep, &statbuf, mptr->m_source, mptr->m1_p1, sizeof(struct statfs));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -565,14 +565,14 @@ long lcl_statfs(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 	
 	rcode = statfs(pathname, &statbuf);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	
-	rcode = dvk_vcopy(SELF, &statbuf, mptr->m_source, mptr->m1_p2, sizeof(struct statfs));
+	rcode = dvk_vcopy(rhs_ep, &statbuf, mptr->m_source, mptr->m1_p2, sizeof(struct statfs));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -586,14 +586,14 @@ long lcl_lstat(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 	
 	rcode = lstat(pathname, &lcl_stat);
 	if( rcode < 0) ERROR_RETURN(-errno);
 		
-	rcode = dvk_vcopy(SELF, &lcl_stat, mptr->m_source, mptr->m1_p2, sizeof(struct stat));
+	rcode = dvk_vcopy(rhs_ep, &lcl_stat, mptr->m_source, mptr->m1_p2, sizeof(struct stat));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);
@@ -614,11 +614,11 @@ long lcl_renameat2(message *mptr)
 	RHSDEBUG(" olen=%d nlen=%d oldfd=%d newfd=%d flags=%X\n",
 		olen, nlen, oldfd, newfd, flags);
 		
-	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p1, SELF, oldname, olen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p1, rhs_ep, oldname, olen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("oldname=%s\n", oldname);
 
-	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p2, SELF, newname, nlen);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m7_p2, rhs_ep, newname, nlen);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("newname=%s\n", newname);
 	
@@ -636,7 +636,7 @@ int lcl_opendir(message *mptr)
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
-	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, SELF, pathname, len);
+	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
@@ -673,7 +673,7 @@ int lcl_readdir(message *mptr)
 	int len = memcpy(&dire, dire_ptr, sizeof(struct dirent));
 	RHSDEBUG("memcpy len=%d\n", len);
 	
-	rcode = dvk_vcopy(SELF, &dire, mptr->m_source, mptr->m1_p2, sizeof(struct dirent));
+	rcode = dvk_vcopy(rhs_ep, &dire, mptr->m_source, mptr->m1_p2, sizeof(struct dirent));
 	if( rcode < 0) ERROR_RETURN(rcode);
 	mptr->m1_p3 = dire_ptr;
 	return(rcode);

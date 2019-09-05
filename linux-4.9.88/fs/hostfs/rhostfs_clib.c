@@ -36,6 +36,7 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 		ERROR_PRINT(rmt_errno);
 		return (-1);
 	}
+	rmt_errno = 0;
 	RHDEBUG("m_type=%d\n", mptr->m_type);
 	return (mptr->m_type);
 }

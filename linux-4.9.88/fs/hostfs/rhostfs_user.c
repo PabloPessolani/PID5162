@@ -20,6 +20,7 @@
 
 #define DVS_USERSPACE	1
 
+#define CONFIG_RHOSTFS	1 
 #include "rhostfs.h"
 #include <utime.h>
 
@@ -73,9 +74,9 @@ int rh_stat_file(const char *path, struct hostfs_stat *p, int fd)
 
 	if (fd >= 0) {
 		if (rmt_fstat64(fd, &statbuf) < 0)
-			ERROR_RETURN(-errno);
+			ERROR_RETURN(-rmt_errno);
 	} else if (rmt_lstat64(path, &statbuf) < 0) {
-		ERROR_RETURN(-errno);
+		ERROR_RETURN(-rmt_errno);
 	}
 	rh_statfs_to_hostfs(&statbuf, p);
 	return 0;
@@ -94,9 +95,10 @@ int rh_access_file(char *path, int r, int w, int x)
 		mode |= W_OK;
 	if (x)
 		mode |= X_OK;
-	if (rmt_access(path, mode) != 0)
-		return -errno;
-	else return 0;
+	if (rmt_access(path, mode) != 0) {
+		ERROR_RETURN(-rmt_errno);
+	}else 
+		return 0;
 }
 
 int rh_open_file(char *path, int r, int w, int append)
@@ -114,9 +116,10 @@ int rh_open_file(char *path, int r, int w, int append)
 	if (append)
 		mode |= O_APPEND;
 	fd = rmt_open64(path, flags, mode);
-	if (fd < 0)
-		return -errno;
-	else return fd;
+	if (fd < 0){
+		ERROR_RETURN(-rmt_errno);
+	} else 
+		return fd;
 }
 
 void *rh_open_dir(char *path, int *err_out)
@@ -126,7 +129,7 @@ void *rh_open_dir(char *path, int *err_out)
 	RHDEBUG("path=%s\n",path);	
 
 	dir = rmt_opendir(path);
-	*err_out = errno;
+	*err_out = -rmt_errno;
 
 	return dir;
 }
@@ -134,7 +137,7 @@ void *rh_open_dir(char *path, int *err_out)
 void rh_seek_dir(void *stream, unsigned long long pos)
 {
 	DIR *dir = stream;
-
+	RHDEBUG("\n");	
 	rmt_seekdir(dir, pos);
 }
 
@@ -145,8 +148,10 @@ char *rh_read_dir(void *stream, unsigned long long *pos_out,
 	DIR *dir = stream;
 	struct dirent *ent;
 
+	RHDEBUG("\n");	
+
 	ent = rmt_readdir(dir);
-	if (ent == NULL)
+	if (ent == NULL) 
 		return NULL;
 	*len_out = strlen(ent->d_name);
 	*ino_out = ent->d_ino;
@@ -159,9 +164,11 @@ int rh_read_file(int fd, unsigned long long *offset, char *buf, int len)
 {
 	int n;
 
+	RHDEBUG("\n");	
+
 	n = rmt_pread64(fd, buf, len, *offset);
 	if (n < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	*offset += n;
 	return n;
 }
@@ -170,9 +177,11 @@ int rh_write_file(int fd, unsigned long long *offset, const char *buf, int len)
 {
 	int n;
 
+	RHDEBUG("\n");	
+
 	n = rmt_pwrite64(fd, buf, len, *offset);
 	if (n < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	*offset += n;
 	return n;
 }
@@ -181,37 +190,46 @@ int rh_lseek_file(int fd, long long offset, int whence)
 {
 	int ret;
 
+	RHDEBUG("\n");	
+
 	ret = rmt_lseek64(fd, offset, whence);
 	if (ret < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
 int rh_fsync_file(int fd, int datasync)
 {
 	int ret;
+	RHDEBUG("\n");	
+
 	if (datasync)
 		ret = rmt_fdatasync(fd);
 	else
 		ret = rmt_fsync(fd);
 
 	if (ret < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
 int rh_replace_file(int oldfd, int fd)
 {
+	RHDEBUG("\n");	
+
 	return rmt_dup2(oldfd, fd);
 }
 
 void rh_close_file(void *stream)
 {
+	RHDEBUG("\n");	
+
 	rmt_close(*((int *) stream));
 }
 
 void rh_close_dir(void *stream)
 {
+	RHDEBUG("\n");	
 	rmt_closedir(stream);
 }
 
@@ -222,7 +240,7 @@ int rh_file_create(char *name, int mode)
 	RHDEBUG("name=%s mode=%X\n", name, mode);	
 
 	fd = rmt_open64(name, O_CREAT | O_RDWR, mode);
-	if (fd < 0) ERROR_RETURN(-errno);
+	if (fd < 0) ERROR_RETURN(-rmt_errno);
 	RHDEBUG("returned fd=%d\n", fd);	
 	return fd;
 }
@@ -233,36 +251,38 @@ int rh_set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 	struct timeval times[2];
 	int err, ma;
 
+	RHDEBUG("file=%s fd=%d\n", file, fd);	
+
 	if (attrs->ia_valid & HOSTFS_ATTR_MODE) {
 		if (fd >= 0) {
 			if (rmt_fchmod(fd, attrs->ia_mode) != 0)
-				return -errno;
+				ERROR_RETURN(-rmt_errno);
 		} else if (rmt_chmod(file, attrs->ia_mode) != 0) {
-			return -errno;
+			ERROR_RETURN(-rmt_errno);
 		}
 	}
 	if (attrs->ia_valid & HOSTFS_ATTR_UID) {
 		if (fd >= 0) {
 			if (rmt_fchown(fd, attrs->ia_uid, -1))
-				return -errno;
+				ERROR_RETURN(-rmt_errno);
 		} else if (rmt_chown(file, attrs->ia_uid, -1)) {
-			return -errno;
+			ERROR_RETURN(-rmt_errno);
 		}
 	}
 	if (attrs->ia_valid & HOSTFS_ATTR_GID) {
 		if (fd >= 0) {
 			if (rmt_fchown(fd, -1, attrs->ia_gid))
-				return -errno;
+				ERROR_RETURN(-rmt_errno);
 		} else if (rmt_chown(file, -1, attrs->ia_gid)) {
-			return -errno;
+			ERROR_RETURN(-rmt_errno);
 		}
 	}
 	if (attrs->ia_valid & HOSTFS_ATTR_SIZE) {
 		if (fd >= 0) {
 			if (rmt_ftruncate(fd, attrs->ia_size))
-				return -errno;
+				ERROR_RETURN(-rmt_errno);
 		} else if (rmt_truncate(file, attrs->ia_size)) {
-			return -errno;
+			ERROR_RETURN(-rmt_errno);
 		}
 	}
 
@@ -293,9 +313,9 @@ int rh_set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 
 		if (fd >= 0) {
 			if (rmt_futimes(fd, times) != 0)
-				return -errno;
+				ERROR_RETURN(-rmt_errno);
 		} else if (rmt_utimes(file, times) != 0) {
-			return -errno;
+			ERROR_RETURN(-rmt_errno);
 		}
 	}
 
@@ -305,7 +325,7 @@ int rh_set_attr(const char *file, struct hostfs_iattr *attrs, int fd)
 		attrs->ia_atime = st.atime;
 		attrs->ia_mtime = st.mtime;
 		if (err != 0)
-			return err;
+			ERROR_RETURN(err);
 	}
 	return 0;
 }
@@ -314,19 +334,22 @@ int rh_make_symlink(const char *from, const char *to)
 {
 	int err;
 
+	RHDEBUG("from=%s to=%s\n", from, to);	
+
 	err = rmt_symlink(to, from);
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
 int rh_unlink_file(const char *file)
 {
 	int err;
+	RHDEBUG("file=%s\n", file);	
 
 	err = rmt_unlink(file);
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
@@ -334,19 +357,22 @@ int rh_do_mkdir(const char *file, int mode)
 {
 	int err;
 
+	RHDEBUG("file=%s mode=%X\n", file, mode);	
+
 	err = rmt_mkdir(file, mode);
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
 int rh_do_rmdir(const char *file)
 {
 	int err;
+	RHDEBUG("file=%s\n", file);	
 
 	err = rmt_rmdir(file);
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
@@ -354,9 +380,11 @@ int rh_do_mknod(const char *file, int mode, unsigned int major, unsigned int min
 {
 	int err;
 
+	RHDEBUG("file=%s mode=%X major=%d minor=%d \n", file, mode, major, minor );	
+
 	err = rmt_mknod(file, mode, os_makedev(major, minor));
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
@@ -364,9 +392,11 @@ int rh_link_file(const char *to, const char *from)
 {
 	int err;
 
+	RHDEBUG("from=%s to=%s\n", from, to);	
+
 	err = rmt_link(to, from);
 	if (err)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
@@ -376,7 +406,7 @@ int rh_do_readlink(char *file, char *buf, int size)
 
 	n = rmt_readlink(file, buf, size);
 	if (n < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	if (n < size)
 		buf[n] = '\0';
 	return n;
@@ -388,7 +418,7 @@ int rh_rename_file(char *from, char *to)
 
 	err = rmt_rename(from, to);
 	if (err < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 	return 0;
 }
 
@@ -408,14 +438,15 @@ int rh_rename2_file(char *from, char *to, unsigned int flags)
 #ifdef SYS_renameat2
 	err = rmt_renameat2(AT_FDCWD, from, AT_FDCWD, to, flags);
 	if (err < 0) {
-		if (errno != ENOSYS)
-			return -errno;
-		else
-			return -EINVAL;
+		if (errno != ENOSYS){
+			ERROR_RETURN(-rmt_errno);
+		}else{
+			ERROR_RETURN(-EINVAL);
+		}
 	}
 	return 0;
 #else
-	return -EINVAL;
+	ERROR_RETURN(-EINVAL);
 #endif
 }
 
@@ -429,7 +460,7 @@ int rh_do_statfs(char *root, long *bsize_out, long long *blocks_out,
 
 	err = rmt_statfs64(root, &buf);
 	if (err < 0)
-		return -errno;
+		ERROR_RETURN(-rmt_errno);
 
 	*bsize_out = buf.f_bsize;
 	*blocks_out = buf.f_blocks;
