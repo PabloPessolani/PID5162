@@ -45,41 +45,43 @@ void print_sigset(void)
         printf("<empty signal set>\n");
 }
 
-static void rh_statfs_to_hostfs( struct stat *buf, struct hostfs_stat *p)
+static void rh_ustat_to_hostfs( struct USR_stat *buf, struct hostfs_stat *p)
 {
-	RHDEBUG("st_ino=%ld\n",buf->st_ino);	
-	p->ino = buf->st_ino;
-	p->mode = buf->st_mode;
-	p->nlink = buf->st_nlink;
-	p->uid = buf->st_uid;
-	p->gid = buf->st_gid;
-	RHDEBUG("st_size=%ld\n",buf->st_size);	
-	p->size = buf->st_size;
-	p->atime.tv_sec = buf->st_atime;
+	RHDEBUG("st_ino=%ld\n",buf->ust_ino);	
+	p->ino = buf->ust_ino;
+	p->mode = buf->ust_mode;
+	p->nlink = buf->ust_nlink;
+	p->uid = buf->ust_uid;
+	p->gid = buf->ust_gid;
+	RHDEBUG("st_size=%ld\n",buf->ust_size);	
+	p->size = buf->ust_size;
+	p->atime.tv_sec = buf->ust_atime;
 	p->atime.tv_nsec = 0;
-	p->ctime.tv_sec = buf->st_ctime;
+	p->ctime.tv_sec = buf->ust_ctime;
 	p->ctime.tv_nsec = 0;
-	p->mtime.tv_sec = buf->st_mtime;
+	p->mtime.tv_sec = buf->ust_mtime;
 	p->mtime.tv_nsec = 0;
-	p->blksize = buf->st_blksize;
-	p->blocks = buf->st_blocks;
-	p->maj = os_major(buf->st_rdev);
-	p->min = os_minor(buf->st_rdev);
+	p->blksize = buf->ust_blksize;
+	p->blocks = buf->ust_blocks;
+	p->maj = os_major(buf->ust_rdev);
+	p->min = os_minor(buf->ust_rdev);
 	RHDEBUG("ino=%ld maj=%d min=%d\n",p->ino, p->maj, p->min);	
 }
 
 
 int rh_stat_file(const char *path, struct hostfs_stat *p, int fd)
 {
-	struct stat statbuf;
+	struct USR_stat statbuf, *usb_ptr;
 
+	usb_ptr = &statbuf;
+	
 	if (fd >= 0) {
-		if (rmt_fstat64(fd, &statbuf) < 0)
+		if (rmt_fstat64(fd, usb_ptr) < 0)
 			ERROR_RETURN(-rmt_errno);
-	} else if (rmt_lstat64(path, &statbuf) < 0) {
+	} else if (rmt_lstat64(path, usb_ptr) < 0) {
 		ERROR_RETURN(-rmt_errno);
 	}
-	rh_statfs_to_hostfs(&statbuf, p);
+	rh_ustat_to_hostfs(&statbuf, p);
 	return 0;
 }
 

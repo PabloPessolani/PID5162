@@ -333,19 +333,38 @@ long rmt_utimes(char  *filename, struct timeval  *utimes)
 	return (rmt_syscall(rhs_ep, __NR_utimes, &m));
 }
 
-long rmt_fstat64(unsigned long fd, 	struct stat *statbuf)
+long rmt_fstat64(unsigned long fd, 	struct USR_stat *usb_ptr)
+{
+	message m;
+	int rcode; 
+	
+	RHDEBUG("fd=%d\n", fd);
+	m.m1_i1 = fd;
+	m.m1_p1 = (char *) usb_ptr;
+	rcode = rmt_syscall(rhs_ep, __NR_fstat64, &m);
+	if( rcode < 0) ERROR_RETURN(rcode);
+
+	RHDEBUG(USTAT_FORMAT, USTAT_FIELDS(usb_ptr));
+	RHDEBUG(USTAT2_FORMAT, USTAT2_FIELDS(usb_ptr));
+	return(rcode);
+}
+
+long rmt_lstat64(const char  *filename, struct USR_stat  *usb_ptr)
 {
 	message m;
 	int rcode; 
 
-	RHDEBUG("fd=%d\n", fd);
-	m.m1_i1 = fd;
-	m.m1_p1 = (char *) statbuf;
-	rcode = rmt_syscall(rhs_ep, __NR_fstat64, &m);
+	RHDEBUG("filename=%s\n" , filename);
+
+	m.m1_i1 = strlen(filename) + 1;
+	m.m1_p1 = (char *) filename;
+	m.m1_p2 = (char *) usb_ptr;
+	rcode = rmt_syscall(rhs_ep, __NR_lstat64, &m);
 	if( rcode < 0) ERROR_RETURN(rcode);
 
-	RHDEBUG(STAT_FORMAT, STAT_FIELDS(statbuf));
-	RHDEBUG(STAT2_FORMAT, STAT2_FIELDS(statbuf));
+	RHDEBUG(USTAT_FORMAT, USTAT_FIELDS(usb_ptr));
+	RHDEBUG(USTAT2_FORMAT, USTAT2_FIELDS(usb_ptr));
+	
 	return(rcode);
 }
 
@@ -360,22 +379,7 @@ long rmt_statfs64(const char  *filename, struct statfs64  *buf)
 	return (rmt_syscall(rhs_ep, __NR_statfs64, &m));
 }
 
-long rmt_lstat64(const char  *filename, struct stat  *statbuf)
-{
-	message m;
-	int rcode; 
-	
-	RHDEBUG("filename=%s\n" , filename);
-	m.m1_i1 = strlen(filename) + 1;
-	m.m1_p1 = (char *) filename;
-	m.m1_p2 = (char *) statbuf;
-	rcode = rmt_syscall(rhs_ep, __NR_lstat64, &m);
-	if( rcode < 0) ERROR_RETURN(rcode);
 
-	RHDEBUG(STAT_FORMAT, STAT_FIELDS(statbuf));
-	RHDEBUG(STAT2_FORMAT, STAT2_FIELDS(statbuf));
-	return(rcode);
-}
 
 // typedef struct {int m7i1, m7i2, m7i3, m7i4; char *m7p1, *m7p2;} mess_7;
 long rmt_renameat2(int olddfd, const char  *oldname,

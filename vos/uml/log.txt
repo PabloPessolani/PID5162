@@ -1,0 +1,94 @@
+
+<<< Log from 192.168.1.100 started septiembre 07, 2019, 11:09:15 >>>
+DEBUG 762:dvk_send_T:807: ipc ret=-1                                  
+ERROR: 762:dvk_send_T:825: rcode=-1                                   
+ERROR: rhostfs_svr.c:main:227: rcode=-1                               
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+DEBUG 762:dvk_receive_T:834: endpoint=31438 timeout=-1                
+DEBUG 762:dvk_receive_T:838: ipc ret=0                                
+ rhostfs_svr.c:main:187:dvk_receive rcode=0                           
+ rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=5 m2i1=3 m2i2=0 m2i
+3=0 m2l1=1221300224 m2l2=0 m2p1=0x4                                   
+ rhostfs_svr.c:main:199:call_nr=5 rhs_who_e=30                        
+ rhostfs_svr.c:main:215:LINUX Calling vector 5                        
+ rhostfs_lib.c:lcl_open:53:len=3 flags=0 mode=0                       
+DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=3                   
+DEBUG 762:dvk_vcopy:126: ipc ret=3                                    
+ rhostfs_lib.c:lcl_open:57:name=//                                    
+ rhostfs_svr.c:main:225:REPLY msg:source=30 type=4 m2i1=3 m2i2=0 m2i3=
+0 m2l1=1221300224 m2l2=0 m2p1=0x4                                     
+DEBUG 762:dvk_send_T:803: endpoint=30 timeout=30000                   
+DEBUG 762:dvk_send_T:807: ipc ret=76                                  
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+DEBUG 762:dvk_receive_T:834: endpoint=31438 timeout=-1                
+DEBUG 762:dvk_receive_T:838: ipc ret=0                                
+ rhostfs_svr.c:main:187:dvk_receive rcode=0                           
+ rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=4096 m2i1=3 m2i2=1 
+m2i3=0 m2l1=1221500928 m2l2=1221500928 m2p1=0x4903eae0                
+ rhostfs_svr.c:main:199:call_nr=4096 rhs_who_e=30                     
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 0                      
+ rhostfs_lib.c:lcl_opendir:640:len=3                                  
+DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=3                   
+DEBUG 762:dvk_vcopy:126: ipc ret=3                                    
+ rhostfs_lib.c:lcl_opendir:644:pathname=//                            
+ rhostfs_lib.c:lcl_opendir:647:dirp=0x1914818                         
+ rhostfs_svr.c:main:225:REPLY msg:source=30 type=3 m2i1=3 m2i2=1 m2i3=
+0 m2l1=1221500928 m2l2=26298392 m2p1=0x4903eae0                       
+DEBUG 762:dvk_send_T:803: endpoint=30 timeout=30000                   
+DEBUG 762:dvk_send_T:807: ipc ret=-1                                  
+ERROR: 762:dvk_send_T:825: rcode=-1                                   
+ERROR: rhostfs_svr.c:main:227: rcode=-1                               
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+DEBUG 762:dvk_receive_T:834: endpoint=31438 timeout=-1                
+DEBUG 762:dvk_receive_T:838: ipc ret=0                                
+ rhostfs_svr.c:main:187:dvk_receive rcode=0                           
+ rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=4096 m2i1=3 m2i2=1 
+m2i3=0 m2l1=1221500928 m2l2=1221500928 m2p1=0x4903eae0                
+ rhostfs_svr.c:main:199:call_nr=4096 rhs_who_e=30                     
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 0                      
+ rhostfs_lib.c:lcl_opendir:640:len=3                                  
+DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=3                   
+DEBUG 762:dvk_vcopy:126: ipc ret=3                                    
+ rhostfs_lib.c:lcl_opendir:644:pathname=//                            
+ rhostfs_lib.c:lcl_opendir:647:dirp=0x191c838                         
+ rhostfs_svr.c:main:225:REPLY msg:source=30 type=3 m2i1=3 m2i2=1 m2i3=
+0 m2l1=1221500928 m2l2=26331192 m2p1=0x4903eae0                       
+DEBUG 762:dvk_send_T:803: endpoint=30 timeout=30000                   
+DEBUG 762:dvk_send_T:807: ipc ret=-1                                  
+ERROR: 762:dvk_send_T:825: rcode=-1                                   
+ERROR: rhostfs_svr.c:main:227: rcode=-1                               
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+DEBUG 762:dvk_receive_T:834: endpoint=31438 timeout=-1                
+DEBUG 762:dvk_receive_T:838: ipc ret=0                                
+ rhostfs_svr.c:main:187:dvk_receive rcode=0                           
+ rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=4096 m2i1=3 m2i2=1 
+m2i3=0 m2l1=1221500928 m2l2=1221500928 m2p1=0x4903eae0                
+ rhostfs_svr.c:main:199:call_nr=4096 rhs_who_e=30                     
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 0                      
+ rhostfs_lib.c:lcl_opendir:640:len=3                                  
+DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=3                   
+DEBUG 762:dvk_vcopy:126: ipc ret=3                                    
+ rhostfs_lib.c:lcl_opendir:644:pathname=//                            
+ rhostfs_lib.c:lcl_opendir:647:dirp=0x1924858                         
+ rhostfs_svr.c:main:225:REPLY msg:source=30 type=3 m2i1=3 m2i2=1 m2i3=
+0 m2l1=1221500928 m2l2=26363992 m2p1=0x4903eae0                       
+DEBUG 762:dvk_send_T:803: endpoint=30 timeout=30000                   
+DEBUG 762:dvk_send_T:807: ipc ret=76                                  
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+DEBUG 762:dvk_receive_T:834: endpoint=31438 timeout=-1                
+DEBUG 762:dvk_receive_T:838: ipc ret=0                                
+ rhostfs_svr.c:main:187:dvk_receive rcode=0                           
+ rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=4097 m2i1=1 m2i2=3 
+m2i3=1 m2l1=0 m2l2=1221500928 m2p1=0x1924858                          
+ rhostfs_svr.c:main:199:call_nr=4097 rhs_who_e=30                     
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 1                      
+ rhostfs_lib.c:lcl_seekdir:660:dirp=0x1924858                         
+ rhostfs_lib.c:lcl_seekdir:662:loc=0                                  
+ rhostfs_svr.c:main:225:REPLY msg:source=30 type=0 m2i1=1 m2i2=3 m2i3=
+1 m2l1=0 m2l2=1221500928 m2p1=0x1924858                               
+DEBUG 762:dvk_send_T:803: endpoint=30 timeout=30000                   
+DEBUG 762:dvk_send_T:807: ipc ret=76                                  
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests              
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 2                      
+ rhostfs_lib.c:lcl_readdir:674:                                       
+ rhostfs_lib.c:lcl_readdir:676:dirp=0x1924858                         

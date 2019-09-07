@@ -581,8 +581,10 @@ long lcl_statfs(message *mptr)
 long lcl_lstat(message *mptr)
 {
 	int rcode;
+	struct stat lcl_stat, *ls_ptr;
+	struct USR_stat usb, *usb_ptr;
 	char pathname[PATH_MAX+1]; 
-	struct stat lcl_stat;
+
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
 	
@@ -592,8 +594,30 @@ long lcl_lstat(message *mptr)
 	
 	rcode = lstat(pathname, &lcl_stat);
 	if( rcode < 0) ERROR_RETURN(-errno);
-		
-	rcode = dvk_vcopy(rhs_ep, &lcl_stat, mptr->m_source, mptr->m1_p2, sizeof(struct stat));
+	ls_ptr = &lcl_stat;
+	RHSDEBUG(STAT_FORMAT, STAT_FIELDS(ls_ptr));
+	RHSDEBUG(STAT2_FORMAT, STAT2_FIELDS(ls_ptr));
+	
+	usb_ptr = &usb;
+	usb_ptr->ust_dev= ls_ptr->st_dev;     /* ID of device containing file */
+    usb_ptr->ust_ino= ls_ptr->st_ino;     /* inode number */
+    usb_ptr->ust_mode= ls_ptr->st_mode;    /* protection */
+    usb_ptr->ust_nlink= ls_ptr->st_nlink;  /* number of hard links */
+    usb_ptr->ust_uid= ls_ptr->st_uid;     /* user ID of owner */
+    usb_ptr->ust_gid= ls_ptr->st_gid;     /* group ID of owner */
+
+    usb_ptr->ust_rdev= ls_ptr->st_rdev;    /* device ID (if special file) */
+    usb_ptr->ust_size= ls_ptr->st_size;   /* total size, in bytes */
+	usb_ptr->ust_blksize= ls_ptr->st_blksize;/* blocksize for file system I/O */
+    usb_ptr->ust_blocks= ls_ptr->st_blocks;  /* number of 512B blocks allocated */
+    usb_ptr->ust_atime= ls_ptr->st_atime;   /* time of last access */
+	usb_ptr->ust_mtime= ls_ptr->st_mtime;   /* time of last modification */
+    usb_ptr->ust_ctime= ls_ptr->st_ctime;   /* time of last status change */
+
+	RHSDEBUG(USTAT_FORMAT, USTAT_FIELDS(usb_ptr));
+	RHSDEBUG(USTAT2_FORMAT, USTAT2_FIELDS(usb_ptr));
+	
+	rcode = dvk_vcopy(rhs_ep, &usb, mptr->m_source, mptr->m1_p2, sizeof(struct USR_stat));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);

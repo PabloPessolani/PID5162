@@ -2464,6 +2464,519 @@ drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 dvs
 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:19 teta.txt
 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:01 vomito.txt
 
+LA PRIMERA COLUMNA ES EL INODE QUE OBIVAMENTE ESTA MAL !!!
+total 679630225012993237
+138158515 drwxr-xr-x 7 root root 17592186048512 Mar  5  2019 DC0
+138158515 drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 DC1
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 21 01:42 borrar.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 20:06 chau.txt
+138158515 drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 dvs
+138158515 -rw-r--r-- 1 root root 17592186054033 Sep  5 21:41 error.txt
+138158515 -rw-r--r-- 1 root root 17592186044423 Sep  5 23:05 fideos.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 19 13:28 hola.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 23:05 papito.txt
+138158515 -rw-r--r-- 1 root root 17592186044423 Sep  5 21:36 pesado.txt
+138158515 -rw-r--r-- 1 root root 17592186044424 Sep  5 21:37 pesado1.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:11 pirulo.txt
+138158515 -rw-r--r-- 1 root root 17592186044424 Sep  5 18:08 puchero.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:19 teta.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:01 vomito.txt
+
+
+-------------------------------------------------------------------------------
+20190907:  ERRORES EN LSTAT 
+
+EN UML 
+	DEBUG rh_read_name:577: name=//hola.txt
+	DEBUG rmt_lstat64:368: filename=//hola.txt
+	DEBUG rmt_syscall:28: who=1 syscallnr=196
+	DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:40: m_type=0
+	DEBUG rmt_lstat64:375: st_ino=0 st_mode=0 st_nlink=0 st_uid=7781 st_gid=16 <<<<<<<<<<<<<< MAL 
+	DEBUG rmt_lstat64:376: st_size=1 st_blksize=1000 st_blocks=0				<<<<<<<<<<<<<< MAL 
+	DEBUG rh_statfs_to_hostfs:50: st_ino=138158515
+	DEBUG rh_statfs_to_hostfs:56: st_size=5
+	DEBUG rh_statfs_to_hostfs:68: ino=138158515 maj=1213168764 min=0
+	DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+	DEBUG rh_read_name:606: S_IFREG
+
+
+EN HOST 
+	 rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=196 m2i1=11 m2i2=139432512 m2i3=40 m2l1=1221300224 m2l2=1213168640 m2p1=0x28
+	 rhostfs_svr.c:main:199:call_nr=196 rhs_who_e=30
+	 rhostfs_svr.c:main:215:LINUX Calling vector 196
+	 rhostfs_lib.c:lcl_lstat:587:len=11
+	DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=11
+	DEBUG 762:dvk_vcopy:126: ipc ret=11
+	 rhostfs_lib.c:lcl_lstat:591:pathname=//hola.txt
+	 rhostfs_lib.c:lcl_lstat:596:st_ino=1056357 st_mode=81A4 st_nlink=1 st_uid=1000 st_gid=0 <<<<<<<<<<< TODO OK 
+	 rhostfs_lib.c:lcl_lstat:597:st_size=5 st_blksize=4096 st_blocks=8					   	  <<<<<<<<<<< TODO OK 
+	DEBUG 762:dvk_vcopy:122: src_ep=1 dst_ep=30 bytes=88
+	DEBUG 762:dvk_vcopy:126: ipc ret=88
+	 rhostfs_svr.c:main:225:REPLY msg:source=30 type=0 m2i1=11 m2i2=139432512 m2i3=40 m2l1=1221300224 m2l2=1213168640 m2p1=0x28
+
+LINEA DE COMANDO 
+
+root@node0:/usr/src/dvs/vos/rootfs# ls -li
+total 16
+1173488 drwxr-xr-x 7 root root 4096 mar  4  2019 DC0
+1173487 drwxr-xr-x 2 root root 4096 sep 22  2018 DC1
+1173489 drwxr-xr-x 2 root root 4096 sep 22  2018 dvs
+1056357 -rw-r--r-- 1 pap  root    5 sep  7 11:07 hola.txt
+
+root@node0:/usr/src/dvs/vos/rootfs# stat hola.txt 
+  Fichero: hola.txt
+  TamaÃ±o: 5            Bloques: 8          Bloque E/S: 4096   fichero regular
+Dispositivo: 801h/2049d Nodo-i: 1056357     Enlaces: 1
+Acceso: (0644/-rw-r--r--)  Uid: ( 1000/     pap)   Gid: (    0/    root)
+      Acceso: 2019-09-07 11:07:41.319770682 -0300
+ModificaciÃ³n: 2019-09-07 11:07:41.319770682 -0300
+      Cambio: 2019-09-07 11:08:10.430628907 -0300
+    CreaciÃ³n: -
+
+
+USAR LAS ESTRUCTURAS PROPIAS TANTO EN UML COMO EN RHOSTFSD 
+Luego hacer la conversion en UML
+
+FUNCIONO EL STAT 
+root@node1:/rhost# stat hola.txt                                              
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//hola.txt
+DEBUG rmt_lstat64:357: filename=//hola.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1056357 ust_mode=81A4 ust_nlink=1 ust_uid=1000 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=5 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1056357
+DEBUG rh_ustat_to_hostfs:56: st_size=5
+DEBUG rh_ustat_to_hostfs:68: ino=1056357 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+  File: hola.txt
+  Size: 5               Blocks: 8          IO Block: 1024   regular file
+Device: 1ah/26d Inode: 1056357     Links: 1
+Access: (0644/-rw-r--r--)  Uid: ( 1000/ UNKNOWN)   Gid: (    0/    root)
+Access: 2019-09-07 14:07:41.000000000 +0000
+Modify: 2019-09-07 14:07:41.000000000 +0000
+Change: 2019-09-07 14:08:10.000000000 +0000
+ Birth: -
+root@node1:/rhost# 
+
+FUNCIONO EL LS !!!!
+root@node1:/rhost# ls -li
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH0Ë
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=1 w=0 x=0
+DEBUG rmt_access:60: filename=// mode=4
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_open:352: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rmt_open64:48: filename=// flags=0 mode=0
+DEBUG rmt_syscall:28: who=1 syscallnr=5
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG rhostfs_readdir:327: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=
+DEBUG __dentry_name:103: 
+DEBUG rhostfs_readdir:329: name=//
+DEBUG rh_open_dir:132: path=//
+DEBUG rmt_opendir:414: name=//
+DEBUG rmt_syscall:28: who=1 syscallnr=4096
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG rh_seek_dir:143: 
+DEBUG rmt_seekdir:430: loc=0
+DEBUG rmt_syscall:28: who=1 syscallnr=4097
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173487 d_off=685728586 d_reclen=16 d_type=4 d_name=DC1
+DEBUG rmt_readdir:465: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+DEBUG rh_read_dir:166: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1056357 d_off=992853236 d_reclen=20 d_type=8 d_name=hola.txt
+DEBUG rmt_readdir:465: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+DEBUG rh_read_dir:166: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173490 d_off=1195081311 d_reclen=16 d_type=4 d_name=..
+DEBUG rmt_readdir:465: ino_dire=1173490 pos_dire=1195081311 len_dire=16 type_dire=4 name_dire=..
+DEBUG rh_read_dir:166: ino_dire=1173490 pos_dire=1195081311 len_dire=16 type_dire=4 name_dire=..
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173489 d_off=1310449570 d_reclen=16 d_type=4 d_name=dvs
+DEBUG rmt_readdir:465: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+DEBUG rh_read_dir:166: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173481 d_off=1779754718 d_reclen=16 d_type=4 d_name=.
+DEBUG rmt_readdir:465: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+DEBUG rh_read_dir:166: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173488 d_off=2147483647 d_reclen=16 d_type=4 d_name=DC0
+DEBUG rmt_readdir:465: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+DEBUG rh_read_dir:166: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:37: rcode=61
+ERROR: rmt_readdir:454: rcode=-1
+ERROR: rh_read_dir:160: rcode=-2
+DEBUG rh_close_dir:245: 
+DEBUG rmt_closedir:475: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//hola.txt
+DEBUG rmt_lstat64:357: filename=//hola.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1056357 ust_mode=81A4 ust_nlink=1 ust_uid=1000 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=5 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1056357
+DEBUG rh_ustat_to_hostfs:56: st_size=5
+DEBUG rh_ustat_to_hostfs:68: ino=1056357 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//hola.txt
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//dvs
+DEBUG rmt_lstat64:357: filename=//dvs
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173489 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173489
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173489 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173489
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173489
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//dvs
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC0
+DEBUG rmt_lstat64:357: filename=//DC0
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173488 ust_mode=41ED ust_nlink=7 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173488
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173488 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173488
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173488
+DEBUG rhostfs_readdir:327: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=
+DEBUG __dentry_name:103: 
+DEBUG rhostfs_readdir:329: name=//
+DEBUG rh_open_dir:132: path=//
+DEBUG rmt_opendir:414: name=//
+DEBUG rmt_syscall:28: who=1 syscallnr=4096
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG rh_seek_dir:143: 
+DEBUG rmt_seekdir:430: loc=2147483647
+DEBUG rmt_syscall:28: who=1 syscallnr=4097
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:37: rcode=61
+ERROR: rmt_readdir:454: rcode=-1
+ERROR: rh_read_dir:160: rcode=-2
+DEBUG rh_close_dir:245: 
+DEBUG rmt_closedir:475: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+total 16
+1173488 drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+1173487 drwxr-xr-x 2 root root 4096 Sep 22  2018 DC1
+1173489 drwxr-xr-x 2 root root 4096 Sep 22  2018 dvs
+1056357 -rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+
+
+
+
 
 
 -------------------------------------------------------------------------------

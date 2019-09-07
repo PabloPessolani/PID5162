@@ -37,9 +37,9 @@
 #define UML_DVK_DEV "/dev/dvk"
 #define DEVICE_NAME "dvk"
 
-#include "rhostfs_proto.h"
 #include "rhostfs_glo.h"
 #include "rh_syscall.h"
+#include "rhostfs_proto.h"
 
 #define HOSTNAME_MAX	64
 #define	TIMEOUT_RMTCALL	TIMEOUT_MOLCALL
