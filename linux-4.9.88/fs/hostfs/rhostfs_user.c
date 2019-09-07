@@ -47,12 +47,13 @@ void print_sigset(void)
 
 static void rh_statfs_to_hostfs( struct stat *buf, struct hostfs_stat *p)
 {
-	RHDEBUG("ino=%lld\n",buf->st_ino);	
+	RHDEBUG("st_ino=%ld\n",buf->st_ino);	
 	p->ino = buf->st_ino;
 	p->mode = buf->st_mode;
 	p->nlink = buf->st_nlink;
 	p->uid = buf->st_uid;
 	p->gid = buf->st_gid;
+	RHDEBUG("st_size=%ld\n",buf->st_size);	
 	p->size = buf->st_size;
 	p->atime.tv_sec = buf->st_atime;
 	p->atime.tv_nsec = 0;
@@ -64,7 +65,7 @@ static void rh_statfs_to_hostfs( struct stat *buf, struct hostfs_stat *p)
 	p->blocks = buf->st_blocks;
 	p->maj = os_major(buf->st_rdev);
 	p->min = os_minor(buf->st_rdev);
-	RHDEBUG("ino=%lld maj=%d min=%d\n",p->ino, p->maj, p->min);	
+	RHDEBUG("ino=%ld maj=%d min=%d\n",p->ino, p->maj, p->min);	
 }
 
 
@@ -146,18 +147,28 @@ char *rh_read_dir(void *stream, unsigned long long *pos_out,
 	       unsigned int *type_out)
 {
 	DIR *dir = stream;
-	struct dirent *ent;
-
+//	struct dirent *dire_ptr;
+	static	struct UML_dire_info UML_di;
+	struct UML_dire_info *udi_ptr;
+	
 	RHDEBUG("\n");	
 
-	ent = rmt_readdir(dir);
-	if (ent == NULL) 
+ 	udi_ptr = (struct UML_dire_info *) rmt_readdir(dir);
+	if (udi_ptr == NULL) {
+		ERROR_PRINT(EDVSNOENT);
 		return NULL;
-	*len_out = strlen(ent->d_name);
-	*ino_out = ent->d_ino;
-	*type_out = ent->d_type;
-	*pos_out = ent->d_off;
-	return ent->d_name;
+	}
+	
+	memcpy(&UML_di, udi_ptr, sizeof(struct USR_dirent));
+	udi_ptr = &UML_di;
+	RHDEBUG(UDIRE_FORMAT, UDIRE_FIELDS(udi_ptr));
+	
+	*ino_out  = udi_ptr->ino_dire;
+	*pos_out  = udi_ptr->pos_dire;
+	*type_out = udi_ptr->type_dire;
+	*len_out = strlen(udi_ptr->name_dire);	
+		
+	return udi_ptr->name_dire;
 }
 
 int rh_read_file(int fd, unsigned long long *offset, char *buf, int len)

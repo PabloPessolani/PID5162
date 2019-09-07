@@ -24,6 +24,7 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 {
 	int rcode;
 	
+	rmt_errno = 0;
 	RHDEBUG("who=%d syscallnr=%d\n", who, syscallnr);
 	mptr->m_type = syscallnr;
 	rcode = dvk_sendrec(who, mptr); // TIMEOUT_RMTCALL);
@@ -36,7 +37,6 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 		ERROR_PRINT(rmt_errno);
 		return (-1);
 	}
-	rmt_errno = 0;
 	RHDEBUG("m_type=%d\n", mptr->m_type);
 	return (mptr->m_type);
 }
@@ -336,11 +336,17 @@ long rmt_utimes(char  *filename, struct timeval  *utimes)
 long rmt_fstat64(unsigned long fd, 	struct stat *statbuf)
 {
 	message m;
+	int rcode; 
 
 	RHDEBUG("fd=%d\n", fd);
 	m.m1_i1 = fd;
 	m.m1_p1 = (char *) statbuf;
-	return (rmt_syscall(rhs_ep, __NR_fstat64, &m));
+	rcode = rmt_syscall(rhs_ep, __NR_fstat64, &m);
+	if( rcode < 0) ERROR_RETURN(rcode);
+
+	RHDEBUG(STAT_FORMAT, STAT_FIELDS(statbuf));
+	RHDEBUG(STAT2_FORMAT, STAT2_FIELDS(statbuf));
+	return(rcode);
 }
 
 long rmt_statfs64(const char  *filename, struct statfs64  *buf)
@@ -357,12 +363,18 @@ long rmt_statfs64(const char  *filename, struct statfs64  *buf)
 long rmt_lstat64(const char  *filename, struct stat  *statbuf)
 {
 	message m;
-
+	int rcode; 
+	
 	RHDEBUG("filename=%s\n" , filename);
 	m.m1_i1 = strlen(filename) + 1;
 	m.m1_p1 = (char *) filename;
 	m.m1_p2 = (char *) statbuf;
-	return (rmt_syscall(rhs_ep, __NR_lstat64, &m));
+	rcode = rmt_syscall(rhs_ep, __NR_lstat64, &m);
+	if( rcode < 0) ERROR_RETURN(rcode);
+
+	RHDEBUG(STAT_FORMAT, STAT_FIELDS(statbuf));
+	RHDEBUG(STAT2_FORMAT, STAT2_FIELDS(statbuf));
+	return(rcode);
 }
 
 // typedef struct {int m7i1, m7i2, m7i3, m7i4; char *m7p1, *m7p2;} mess_7;
@@ -399,8 +411,11 @@ void *rmt_opendir(const char *name)
 	m.m1_i1 = strlen(name) + 1;
 	m.m1_p1 = (char *) name;
 	rcode = rmt_syscall(rhs_ep, RMT_opendir, &m);
-	if (rcode < 0) return(NULL);
-	return (&m.m1_p2);
+	if (rcode < 0) {
+		ERROR_PRINT(rcode);
+		return(NULL);
+	}
+	return (m.m1_p2);
 }
 
 void rmt_seekdir(void *dirp, long loc)
@@ -421,14 +436,31 @@ struct dirent *rmt_readdir(void *dirp)
 {
 	message m;
 	int rcode;
-	static struct UML_dirent dire;
-
+	static	struct USR_dirent USR_dire;
+	struct USR_dirent *udire_ptr;
+	static	struct UML_dire_info UML_di;
+	struct UML_dire_info *udi_ptr;
+	
 	RHDEBUG("\n");
+	udire_ptr =  &USR_dire;
 	m.m1_p1 = (char *) dirp;
-	m.m1_p2 = (char *) &dire;
+	m.m1_p2 = (char *) udire_ptr;
 	rcode = rmt_syscall(rhs_ep, RMT_readdir, &m);
-	if (rcode < 0) return(NULL);
-	return ((struct dirent *)&dire);
+	if (rcode < 0) {
+		ERROR_PRINT(rcode);
+		return(NULL);
+	}
+	RHDEBUG(DIRE_FORMAT, DIRE_FIELDS(udire_ptr));
+
+	udi_ptr =  &UML_di;
+	udi_ptr->ino_dire  = udire_ptr->d_ino;
+	udi_ptr->pos_dire  = udire_ptr->d_off;
+	udi_ptr->len_dire  = udire_ptr->d_reclen;
+	udi_ptr->type_dire = udire_ptr->d_type;
+	memcpy(udi_ptr->name_dire, udire_ptr->d_name, 256);
+	RHDEBUG(UDIRE_FORMAT, UDIRE_FIELDS(udi_ptr));
+	
+	return ((struct dirent *)udi_ptr);
 }
 
 int rmt_closedir(void *dirp)
@@ -438,7 +470,9 @@ int rmt_closedir(void *dirp)
 
 	RHDEBUG("\n");
 	m.m1_p1 = (char *) dirp;
-	return(rmt_syscall(rhs_ep, RMT_closedir, &m));
+	rcode = rmt_syscall(rhs_ep, RMT_closedir, &m);
+	if( rcode < 0) ERROR_RETURN(rcode);
+	return(rcode);
 }
 
 
@@ -450,7 +484,7 @@ int rh_get_rootpath(char *dirp)
 	RHDEBUG("\n");
 	m.m1_p1 = (char *) dirp;
 	rcode = rmt_syscall(rhs_ep, RMT_get_rootpath, &m);
-	if (rcode < 0) return(rcode);
+	if (rcode < 0) ERROR_RETURN(rcode);
 	RHDEBUG("dirp=%s\n", dirp);
 	return(rcode);
 }

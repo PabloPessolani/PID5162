@@ -640,10 +640,11 @@ int lcl_opendir(message *mptr)
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
 
-	DIR *dir_ptr = opendir(pathname);
-	if( dir_ptr == NULL) ERROR_RETURN(-errno);
+	DIR *dirp = opendir(pathname);
+	RHSDEBUG("dirp=%p\n", dirp);
+	if( dirp == NULL) ERROR_RETURN(-errno);
 
-	mptr->m1_p2 = dir_ptr; // must be returned for future operations on DIR
+	mptr->m1_p2 = dirp; // must be returned for future operations on DIR
 	
 	return(rcode);
 }
@@ -653,6 +654,8 @@ int lcl_seekdir(message *mptr)
 {
 	long loc = mptr->m2_l1;
 	DIR *dirp= mptr->m2_p1;
+	RHSDEBUG("dirp=%p\n", dirp);
+
 	RHSDEBUG("loc=%ld\n", loc);
 
 	seekdir(dirp, loc);
@@ -663,17 +666,17 @@ int lcl_readdir(message *mptr)
 {
 	message m;
 	int rcode;
-	static struct dirent dire, *dire_ptr;
+	static struct dirent *dire_ptr;
 
 	RHSDEBUG("\n");
 	DIR *dirp = mptr->m1_p1;
-	dire_ptr = readdir(&dire);
-	if( dire_ptr == NULL) ERROR_RETURN(-errno);
+	RHSDEBUG("dirp=%p\n", dirp);
 
-	int len = memcpy(&dire, dire_ptr, sizeof(struct dirent));
-	RHSDEBUG("memcpy len=%d\n", len);
-	
-	rcode = dvk_vcopy(rhs_ep, &dire, mptr->m_source, mptr->m1_p2, sizeof(struct dirent));
+	dire_ptr = readdir(dirp);
+	if( dire_ptr == NULL) ERROR_RETURN(-errno);
+	RHSDEBUG(DIRE_FORMAT, DIRE_FIELDS(dire_ptr));
+
+	rcode = dvk_vcopy(rhs_ep, dire_ptr, mptr->m_source, mptr->m1_p2, sizeof(struct dirent));
 	if( rcode < 0) ERROR_RETURN(rcode);
 	mptr->m1_p3 = dire_ptr;
 	return(rcode);
@@ -684,7 +687,8 @@ int lcl_closedir(message *mptr)
 	int rcode;
 	RHSDEBUG("\n");
 	DIR *dirp= mptr->m1_p1;
-	closedir(dirp);
+	RHSDEBUG("dirp=%p\n", dirp);
+	rcode = closedir(dirp);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	return(rcode);
 }

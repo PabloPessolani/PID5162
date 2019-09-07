@@ -2314,14 +2314,166 @@ ERROR: 13574:dvk_receive_T:857: rcode=-1
  rhostfs_svr.c:main:157:dvk_receive rcode=-1
 ERROR: rhostfs_svr.c:main:158: rcode=-1
 
+SE IMPLEMENTARON TODAS LA FUNCIONES 
+ rhostfs_svr.c:main:123:Initialize the LINUX call vector to a safe default handler.
+...............................................................................................................................................................................................................................................................................................................................................................................................
+ rhostfs_svr.c:main:130:SYS_lstat->lcl_lstat
+ rhostfs_svr.c:main:131:SYS_lstat64->lcl_lstat
+ rhostfs_svr.c:main:132:SYS_fstat->lcl_fstat
+ rhostfs_svr.c:main:133:SYS_access->lcl_access
+ rhostfs_svr.c:main:134:SYS_open->lcl_open
+ rhostfs_svr.c:main:135:SYS_unlink->lcl_unlink
+ rhostfs_svr.c:main:136:SYS_close->lcl_close
+ rhostfs_svr.c:main:137:SYS_pwrite64->lcl_pwrite
+ rhostfs_svr.c:main:138:SYS_pread64->lcl_pread
+ rhostfs_svr.c:main:139:SYS_link->lcl_link
+ rhostfs_svr.c:main:140:SYS_symlink->lcl_symlink
+ rhostfs_svr.c:main:141:SYS_mkdir->lcl_mkdir
+ rhostfs_svr.c:main:142:SYS_rmdir->lcl_rmdir
+ rhostfs_svr.c:main:143:SYS_fchown->lcl_fchown
+ rhostfs_svr.c:main:144:SYS_chown->lcl_chown
+ rhostfs_svr.c:main:145:SYS_fchmod->lcl_fchmod
+ rhostfs_svr.c:main:146:SYS_chmod->lcl_chmod
+ rhostfs_svr.c:main:147:SYS_ftruncate->lcl_ftruncate
+ rhostfs_svr.c:main:148:SYS_truncate->lcl_truncate
+ rhostfs_svr.c:main:149:SYS_renameat2->lcl_renameat2
+ rhostfs_svr.c:main:150:SYS__llseek->lcl_llseek
+ rhostfs_svr.c:main:151:SYS_fsync->lcl_fsync
+ rhostfs_svr.c:main:152:SYS_dup2->lcl_dup2
+ rhostfs_svr.c:main:153:SYS_fdatasync->lcl_fdatasync
+ rhostfs_svr.c:main:154:SYS_readlink->lcl_readlink
+ rhostfs_svr.c:main:155:SYS_rename->lcl_rename
+ rhostfs_svr.c:main:156:SYS_mknod->lcl_mknod
+ rhostfs_svr.c:main:157:SYS_futimesat->lcl_futimes
+ rhostfs_svr.c:main:158:SYS_utimes->lcl_utimes
+ rhostfs_svr.c:main:159:SYS_statfs->lcl_statfs
+ rhostfs_svr.c:main:161:Initialize the RHOSTFS own call vector to a safe default handler.
+#####
+ rhostfs_svr.c:main:168:RMT_get_rootpath->lcl_get_rootpath
+ rhostfs_svr.c:main:169:RMT_readdir->lcl_readdir
+ rhostfs_svr.c:main:170:RMT_opendir->lcl_opendir
+ rhostfs_svr.c:main:171:RMT_seekdir->lcl_seekdir
+ rhostfs_svr.c:main:172:RMT_closedir->lcl_closedir
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 14292:dvk_receive_T:834: endpoint=31438 timeout=-1
 
 
 
+-------------------------------------------------------------------------------
+20190905:
+
+PROBLEMA : NO FUNCIONA EL LS 
+
+
+DEBUG rh_read_dir:151: 
+DEBUG rmt_readdir:429: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 2867:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2867:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:438: d_ino=1056387 d_off=422242064 d_reclen=24 d_type=8 d_name=fideos.txt <<<<<<<<<< BIEN LEIDO 
+DEBUG rh_read_dir:163: d_name=xt <<<<<<<<<<<<<< MAL LEIDO 
+DEBUG rh_close_dir:236: 
+DEBUG rmt_closedir:447: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 2867:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2867:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+
+DEBUG rmt_readdir:439: sizeof(struct USR_dirent)=268 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DIFERENTES !!!! 
+DEBUG rmt_readdir:440: d_ino=1173481 d_off=1411523919 d_reclen=16 d_type=4 d_name=.
+DEBUG rmt_readdir:441: dire_ptr=08504680
+DEBUG rh_read_dir:156: dire_ptr=08504680
+DEBUG rh_read_dir:162: sizeof(struct USR_dirent)=276<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DIFERENTES !!!! 
+
+
+struct USR_dirent {
+   ino_t          d_ino;       /* Inode number */
+   off_t          d_off;       /* Not an offset; see below */
+   unsigned short d_reclen;    /* Length of this record */
+   unsigned char  d_type;      /* Type of file; not supported
+								  by all filesystem types */
+   char           d_name[256]; /* Null-terminated filename */
+};
+
+EN EL KERNEL ES DIFERENTE !!!! 
+struct dirent {
+	unsigned long	d_fileno;	/* file number of entry */
+	unsigned short	d_reclen;	/* length of this record */
+	unsigned char	d_type; 	/* file type, see below */
+	unsigned char	d_namlen;	/* length of string in d_name */
+#ifdef _POSIX_SOURCE
+	char	d_name[255 + 1];	/* name must be no longer than this */
+#else
+#define	MAXNAMLEN	255
+	char	d_name[MAXNAMLEN + 1];	/* name must be no longer than this */
+#endif
+};
+
+-------------------------------------------------------------------------------
+20190906:  FUNCIONO EL LS !!!!!!!
+
+
+DEBUG rmt_readdir:461: ino_dire=1056391 pos_dire=1779754718 len_dire=24 type_dire=8 name_dire=pizza.txt  <<<<<< ACA EL INODE ESTA BIEN 
+DEBUG rh_read_dir:164: ino_dire=1056391 pos_dire=1779754718 len_dire=24 type_dire=8 name_dire=pizza.txt
+
+root@node0:/usr/src/dvs/vos/rootfs# stat pizza.txt 
+  Fichero: pizza.txt
+  TamaÃ±o: 9617         Bloques: 24         Bloque E/S: 4096   fichero regular
+Dispositivo: 801h/2049d Nodo-i: 1056391     Enlaces: 1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< AQUI SE COMPRUEBA 
+Acceso: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+      Acceso: 2019-09-05 12:17:55.896096881 -0300
+ModificaciÃ³n: 2019-09-05 12:17:52.284135489 -0300
+      Cambio: 2019-09-05 12:17:52.284135489 -0300
+    CreaciÃ³n: -
+
+
+DEBUG rh_read_name:577: name=//pirulo.txt
+DEBUG rmt_lstat64:368: filename=//pirulo.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 2783:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2783:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:375: st_ino=0 st_mode=0 st_nlink=46961 st_uid=7803 st_gid=16 <<<<<<<<<<< HUEVADAS 
+DEBUG rmt_lstat64:376: st_size=1 st_blksize=0 st_blocks=0						<<<<<<<<<<< HUEVADAS 
+DEBUG rh_statfs_to_hostfs:50: st_ino=138158515
+DEBUG rh_statfs_to_hostfs:56: st_size=0
+DEBUG rh_statfs_to_hostfs:68: ino=138158515 maj=1209793660 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=138158515
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=138158515
+DEBUG RHOSTFS_I:40: i_ino=138158515
+
+
+total 6472471551520036264
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+drwxr-xr-x 7 root root 17592186048512 Mar  5  2019 DC0
+-rw-r--r-- 1 root root 17592186044416 Aug 21 01:42 borrar.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 20:06 chau.txt
+drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 dvs
+-rw-r--r-- 1 root root 17592186054033 Sep  5 21:41 error.txt
+-rw-r--r-- 1 root root 17592186044423 Sep  5 23:05 fideos.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 19 13:28 hola.txt
+-rw-r--r-- 1 root root 17592186044423 Sep  5 21:36 pesado.txt
+-rw-r--r-- 1 root root 17592186044424 Sep  5 21:37 pesado1.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:11 pirulo.txt
+-rw-r--r-- 1 root root 17592186054033 Sep  5 15:17 pizza.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:19 teta.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:01 vomito.txt
 
 
 
 -------------------------------------------------------------------------------
 ULTIMO_LOG 
+
+PROBLEMA: ERROR EN EL TAMAÑO DEL ARCHIVO, PERO ESO ESTA EN EL INODE, NO EN LA ENTRADA DE DIRECTORIO 
+			ERROR EN EL INODE 
+			
+PROBLEMA: LENTITUD EN EL INTERCAMBIO DE MENSAJES
+PROBLEMA: ERROR EN EL RECEIVE VER ABAJO 
 
 root@node1:~# mount none /rhost -t rhostfs
 

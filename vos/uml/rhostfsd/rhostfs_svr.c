@@ -6,10 +6,17 @@
 #include "rhostfs_proto.h"
 
 int (*call_vec[NR_syscalls])(message *m_ptr);
-#define map(call_nr, handler) call_vec[call_nr] = (handler)
-
+#define map(call_nr, handler)  do { \
+	RHSDEBUG("%s->%s\n", #call_nr, #handler);\
+	call_vec[call_nr] = (handler); \
+	}while(0)
+	
 int (*rh_call_vec[RH_MAX_CALL])(message *m_ptr);
-#define rh_map(call_nr, handler) rh_call_vec[call_nr-RH_SYS_CALL] = (handler)
+#define rh_map(call_nr, handler) do { \
+	RHSDEBUG("%s->%s\n", #call_nr, #handler);\
+	rh_call_vec[call_nr-RH_SYS_CALL] = (handler);\
+	}while(0)
+
 
 /*===========================================================================*
  *				get_dvs_params				     *
@@ -120,8 +127,9 @@ int main ( int argc, char *argv[] )
   	}
 	putchar('\n');
 
-	map(SYS_lstat, lcl_lstat);
+	map(SYS_lstat, 	 lcl_lstat);
 	map(SYS_lstat64, lcl_lstat);
+	map(SYS_fstat, 	 lcl_fstat);
 	map(SYS_access,  lcl_access);
 	map(SYS_open,	 lcl_open);
 	map(SYS_unlink,  lcl_unlink);
@@ -129,11 +137,26 @@ int main ( int argc, char *argv[] )
 	map(SYS_pwrite64, lcl_pwrite);
 	map(SYS_pread64, lcl_pread);
 	map(SYS_link, 	 lcl_link);
+	map(SYS_symlink, lcl_symlink);
 	map(SYS_mkdir, 	lcl_mkdir);
 	map(SYS_rmdir, 	lcl_rmdir);
+	map(SYS_fchown, lcl_fchown);
 	map(SYS_chown, 	lcl_chown);
+	map(SYS_fchmod, lcl_fchmod);
 	map(SYS_chmod, 	lcl_chmod);
-
+	map(SYS_ftruncate, lcl_ftruncate);
+	map(SYS_truncate, lcl_truncate);
+	map(SYS_renameat2, lcl_renameat2);
+	map(SYS__llseek, lcl_llseek);
+	map(SYS_fsync, lcl_fsync);
+	map(SYS_dup2, lcl_dup2);
+	map(SYS_fdatasync, lcl_fdatasync);
+	map(SYS_readlink, lcl_readlink);
+	map(SYS_rename, lcl_rename);
+	map(SYS_mknod, lcl_mknod);
+	map(SYS_futimesat, lcl_futimes);
+	map(SYS_utimes, lcl_utimes);
+	map(SYS_statfs, lcl_statfs);
 	
 	RHSDEBUG( "Initialize the RHOSTFS own call vector to a safe default handler.\n");
   	for (i=0; i < RH_MAX_CALL; i++) {
@@ -145,6 +168,8 @@ int main ( int argc, char *argv[] )
     rh_map(RMT_get_rootpath, lcl_get_rootpath); 	
     rh_map(RMT_readdir , lcl_readdir); 	
     rh_map(RMT_opendir , lcl_opendir); 	
+    rh_map(RMT_seekdir , lcl_seekdir); 	
+    rh_map(RMT_closedir , lcl_closedir); 	
 	
 	
 	rcode = chroot(rhs_dir);
@@ -163,7 +188,7 @@ int main ( int argc, char *argv[] )
 		if(rcode < 0 ) ERROR_EXIT(rcode);
 
 		m_ptr = &rhs_m;
-   		RHSDEBUG("RECEIVE msg:"MSG4_FORMAT,MSG4_FIELDS(m_ptr));
+   		RHSDEBUG("RECEIVE msg:"MSG2_FORMAT,MSG2_FIELDS(m_ptr));
 		
 		/*------------------------------------
 		* Process the Request 
@@ -197,7 +222,7 @@ int main ( int argc, char *argv[] )
  		*------------------------------------*/
 		if (result != EDVSDONTREPLY) {
   	  		m_ptr->m_type = result;		/* report status of call */
-			RHSDEBUG("REPLY msg:"MSG1_FORMAT,MSG1_FIELDS(m_ptr));
+			RHSDEBUG("REPLY msg:"MSG2_FORMAT,MSG2_FIELDS(m_ptr));
     		rcode = dvk_send_T(rhs_m.m_source, (long) &rhs_m, TIMEOUT_RMTCALL);
 			if( rcode < 0) ERROR_PRINT(rcode);
 		}
