@@ -92,3 +92,5 @@ DEBUG 762:dvk_send_T:807: ipc ret=76
  rhostfs_svr.c:main:210:RHOSTFS Calling vector 2                      
  rhostfs_lib.c:lcl_readdir:674:                                       
  rhostfs_lib.c:lcl_readdir:676:dirp=0x1924858                         
+                                                                                                      
+<<< Log from 192.168.1.100 ended septiembre 07, 2019, 17:59:02 >>>

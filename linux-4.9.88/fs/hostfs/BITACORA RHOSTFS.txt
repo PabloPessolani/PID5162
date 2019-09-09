@@ -68,8 +68,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 	OPTIMIZAR EL RHOSTFS para que tome el endpoint del server desde linea de comandos 
 	listo. se modifico el arch/um/kernel/um_arch.c 
 	
-	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sd
-b6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=22 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=22 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
 	uml_dcid: dcid=0
 	uml_uml_ep: uml_ep=-2
@@ -2974,6 +2973,222 @@ total 16
 1056357 -rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
 
 
+DESPUES DE COPIAR UN ARCHIVO DESDE ROOTFS->RHOSTFSD 
+
+POR FUERA 
+	root@node0:/usr/src/dvs/vos/rootfs# ls -l
+	total 28
+	drwxr-xr-x 7 root root 4096 mar  4  2019 DC0
+	drwxr-xr-x 2 root root 4096 sep 22  2018 DC1
+	drwxr-xr-x 2 root root 4096 sep 22  2018 dvs <<<<<<<<<<<<<< ESTE NO APERECE ABAJO
+	-rw-r--r-- 1 root root 9617 sep  7 17:16 error.txt
+	-rw-r--r-- 1 pap  root    5 sep  7 11:07 hola.txt
+
+
+DEBUG RHOSTFS_I:40: i_ino=1173488
+	total 24
+	drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+	drwxr-xr-x 2 root root 4096 Sep 22  2018 DC1
+	-rw-r--r-- 1 root root 9617 Sep  7 20:16 error.txt
+	-rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+AQUI VALTA DC1 
+	DEBUG rmt_syscall:40: m_type=0
+	total 24
+	drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+	drwxr-xr-x 2 root root 4096 Sep 22  2018 dvs
+	-rw-r--r-- 1 root root 9617 Sep  7 20:16 error.txt
+	-rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+SEGURAMENTE ES PRODUCTO DE LA DEMORA EN IPC 
+
+
+-------------------------------------------------------------------------------
+20190908:  PROBLEMA DE LENTITUD: Sin duda esta recibiendo un SIGNAL cada 1 segundo.
+			
+root@node0:~# grep someone dmesg.txt 
+[  309.959563] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.969580] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.980165] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.990178] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.000496] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.010469] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.019606] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.030151] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.039981] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.050504] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.060494] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.069829] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.079843] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.089848] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.099845] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.109855] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.120538] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.130533] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.139555] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.149894] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+			
+
+[  310.130614] DEBUG 760:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  310.130616] DEBUG 760:ipc_mini_sendrec:523: srcdst_ep=1
+[  310.130619] DEBUG 760:check_caller:545: caller_pid=760 caller_tgid=760
+[  310.130621] DEBUG 760:check_caller:581: WLOCK_PROC ep=30 count=0
+[  310.130624] DEBUG 760:check_caller:610: WUNLOCK_PROC ep=30 count=0
+[  310.130626] DEBUG 760:check_caller:613: dcid=0
+[  310.130629] DEBUG 760:check_caller:617: RLOCK_DC dc=0 count=0
+[  310.130631] DEBUG 760:check_caller:621: RUNLOCK_DC dc=0 count=0
+[  310.130633] DEBUG 760:check_caller:627: caller_pid=760 
+[  310.130636] DEBUG 760:ipc_mini_sendrec:534: RLOCK_PROC ep=30 count=0
+[  310.130639] DEBUG 760:ipc_mini_sendrec:539: caller_nr=30 caller_ep=30 srcdst_ep=1 
+[  310.130641] DEBUG 760:ipc_mini_sendrec:542: RUNLOCK_PROC ep=30 count=0
+[  310.130643] DEBUG 760:ipc_mini_sendrec:544: dcid=0
+[  310.130645] DEBUG 760:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[  310.130648] DEBUG 760:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[  310.130651] DEBUG 760:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
+[  310.130653] DEBUG 760:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
+[  310.130655] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
+[  310.130658] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
+[  310.130660] DEBUG 760:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
+[  310.130662] DEBUG 760:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[  310.130664] DEBUG 760:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[  310.130667] DEBUG 760:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[  310.130670] DEBUG 760:ipc_mini_sendrec:617: dcid=0 caller_pid=760 caller_nr=30 srcdst_ep=1 
+[  310.130672] DEBUG 760:ipc_mini_sendrec:622: SENDING HALF
+[  310.130674] DEBUG 760:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[  310.130677] DEBUG 760:sleep_proc2:729: BEFORE DOWN lpid=760 p_sem=0 timeout=-1
+[  310.130679] DEBUG 760:sleep_proc2:731: endpoint=30 flags=C
+[  310.130682] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
+[  310.130684] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=1 count=0
+[  310.130686] DEBUG 760:sleep_proc2:736: endpoint=30 flags=C
+[  310.139527] DEBUG 760:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
+[  310.139534] DEBUG 760:sleep_proc2:745: endpoint=30 flags=C cpuid=2
+[  310.139538] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=1 count=0
+[  310.139541] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=30 count=0
+[  310.139545] DEBUG 760:sleep_proc2:769: pid=760 ret=-512
+[  310.139551] DEBUG 760:sleep_proc2:794: nr=30 endp=30 dcid=0 lpid=760 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  310.139555] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.139559] DEBUG 760:ipc_mini_sendrec:743: WUNLOCK_PROC ep=1 count=0
+[  310.139562] DEBUG 760:ipc_mini_sendrec:747: removing 30 link from 1 list.
+[  310.139565] DEBUG 760:ipc_mini_sendrec:748: LIST_DEL
+[  310.139569] DEBUG 760:ipc_mini_sendrec:764: WUNLOCK_PROC ep=30 count=0
+[  310.139572] ERROR: 760:ipc_mini_sendrec:765: rcode=-512
+[  310.139625] DEBUG 760:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  310.139626] DEBUG 760:ipc_mini_sendrec:523: srcdst_ep=1
+[  310.139628] DEBUG 760:check_caller:545: caller_pid=760 caller_tgid=760
+[  310.139629] DEBUG 760:check_caller:581: WLOCK_PROC ep=30 count=0
+[  310.139631] DEBUG 760:check_caller:610: WUNLOCK_PROC ep=30 count=0
+[  310.139632] DEBUG 760:check_caller:613: dcid=0
+[  310.139634] DEBUG 760:check_caller:617: RLOCK_DC dc=0 count=0
+[  310.139635] DEBUG 760:check_caller:621: RUNLOCK_DC dc=0 count=0
+[  310.139637] DEBUG 760:check_caller:627: caller_pid=760 
+[  310.139638] DEBUG 760:ipc_mini_sendrec:534: RLOCK_PROC ep=30 count=0
+[  310.139640] DEBUG 760:ipc_mini_sendrec:539: caller_nr=30 caller_ep=30 srcdst_ep=1 
+[  310.139641] DEBUG 760:ipc_mini_sendrec:542: RUNLOCK_PROC ep=30 count=0
+[  310.139643] DEBUG 760:ipc_mini_sendrec:544: dcid=0
+[  310.139644] DEBUG 760:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[  310.139645] DEBUG 760:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[  310.139647] DEBUG 760:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
+[  310.139649] DEBUG 760:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
+[  310.139650] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
+[  310.139652] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
+[  310.139653] DEBUG 760:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
+[  310.139654] DEBUG 760:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[  310.139656] DEBUG 760:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[  310.139657] DEBUG 760:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[  310.139659] DEBUG 760:ipc_mini_sendrec:617: dcid=0 caller_pid=760 caller_nr=30 srcdst_ep=1 
+[  310.139660] DEBUG 760:ipc_mini_sendrec:622: SENDING HALF
+[  310.139662] DEBUG 760:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[  310.139664] DEBUG 760:sleep_proc2:729: BEFORE DOWN lpid=760 p_sem=0 timeout=-1
+[  310.139665] DEBUG 760:sleep_proc2:731: endpoint=30 flags=C
+[  310.139666] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
+[  310.139668] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=1 count=0
+[  310.139669] DEBUG 760:sleep_proc2:736: endpoint=30 flags=C
+[  310.149868] DEBUG 760:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
+[  310.149874] DEBUG 760:sleep_proc2:745: endpoint=30 flags=C cpuid=2
+[  310.149877] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=1 count=0
+[  310.149881] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=30 count=0
+[  310.149884] DEBUG 760:sleep_proc2:769: pid=760 ret=-512
+
+ESTRATEGIA: 
+	1) modificar sleep_proc, sleep_proc2, sleep_proc3 
+	2) si es un proceso UML marcarlo en p_misc_flags ???? me olvide para que 
+	3) en el driver UML setear evitar que se produzcan SIGNALs !! 
+		
+int sleep_proc(struct proc *proc, long timeout) 
+
+	do {
+		proc->p_rcode = OK; 
+		WUNLOCK_PROC(proc); 
+		do {
+			if( timeout < 0) {
+				ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			} else {
+				ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+					(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
+			}
+			DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+			DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());
+			if( ret == ERESTARTSYS) {
+#define MSECBYSEC	1000
+				if( timeout > 0){
+					timeout-= MSECBYSEC;
+				}
+			}
+		}while ( ret == ERESTARTSYS);
+		WLOCK_PROC(proc); 
+		if( proc->p_rcode != EDVSUSR2USR &&
+			proc->p_rcode != EDVSKRN2USR && 
+			proc->p_rcode != EDVSUSR2KRN ) break;
+		ret = copy_trampoline(proc);
+		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
+		if ( ret < 0) break;
+	}while(1);
+	
+DE ESTA FORMA SE PUEDE VER CUAL FUE LA SIGNAL QUE SE PRODUJO 	
+	https://linux-arm-kernel.infradead.narkive.com/dyyDPFcI/signal-in-the-kernel-for-wait-event-interruptible
+	
+	if (wait_event_interruptible(my_queue, myCondition) ==
+	-ERESTARTSYS)
+	{
+	printk(KERN_ERR "sig[0] is 0x%08x, sig[1] is
+	0x%08x\n",
+	current->pending.signal.sig[0],
+	current->pending.signal.sig[1]);
+	return -ERESTARTSYS;
+	}		
+		
+PROBLEMA DE LIST_DEL
+=====================
+
+Se modifico dvk_ipc tanto del modulo como de IPC.
+Se modificaron new_mini_sendrec, new_mini_send y  ipc_mini_sendrec y ipc_mini_send, pretegiendo al dueño de la lista.
+El dueño de la lista es 1) el proceso destinatario del mensaje (LOCAL) o 2) el SPROXY  para procesos remotos.
+ 
+			sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms); 
+			ret = caller_ptr->p_rcode;
+//			WUNLOCK_PROC(srcdst_ptr);   /* moved below 2019-09-08  <<<<<<<<<<<<<<<<<<<<<<<<< DESDE AQUI 
+			if( ret) {
+				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
+					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
+					LIST_DEL(&caller_ptr->p_link); /* remove from queue */
+				} else {
+					caller_ptr->p_usr.p_lclsent++;
+				}
+				WUNLOCK_PROC(srcdst_ptr); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< HASTA AQUI 
+				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
+				caller_ptr->p_usr.p_getfrom    	= NONE;
+				caller_ptr->p_usr.p_sendto 	= NONE;
+				if( ret == EDVSMIGRATE) 
+					goto sendrec_replay;
+			} else {
+				WUNLOCK_PROC(srcdst_ptr); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Y AQUI
+				caller_ptr->p_usr.p_lclsent++;
+			}
+		}
+	}
+	
+HAY QUE PROBAR RECOMPILARLO 
 
 
 
@@ -2987,6 +3202,10 @@ PROBLEMA: ERROR EN EL TAMAÑO DEL ARCHIVO, PERO ESO ESTA EN EL INODE, NO EN LA E
 			
 PROBLEMA: LENTITUD EN EL INTERCAMBIO DE MENSAJES
 PROBLEMA: ERROR EN EL RECEIVE VER ABAJO 
+
+
+PROBLEMA DE LENTI
+
 
 root@node1:~# mount none /rhost -t rhostfs
 

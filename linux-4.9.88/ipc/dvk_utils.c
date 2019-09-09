@@ -367,15 +367,23 @@ int sleep_proc(struct proc *proc, long timeout)
 
 	do {
 		proc->p_rcode = OK; 
-		WUNLOCK_PROC(proc); 	
-		if( timeout < 0) {
-			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
-		} else {
-			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
-				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
-		}
-		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
-		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
+		WUNLOCK_PROC(proc); 
+		do {
+			if( timeout < 0) {
+				ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			} else {
+				ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+					(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
+			}
+			DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+			DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());
+			if( ret == ERESTARTSYS) {
+#define MSECBYSEC	1000
+				if( timeout > 0){
+					timeout-= MSECBYSEC;
+				}
+			}
+		}while ( ret == ERESTARTSYS && timeout > 0 );
 		WLOCK_PROC(proc); 
 		if( proc->p_rcode != EDVSUSR2USR &&
 			proc->p_rcode != EDVSKRN2USR && 
@@ -734,16 +742,21 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 		proc->p_rcode = OK; 
 		WUNLOCK_PROC2(proc, other); 
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
-
-		if( timeout < 0) {
-			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
-		} else {
-			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
-				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
-		}
-		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
-		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
-
+		do {
+			if( timeout < 0) {
+				ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			} else {
+				ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+					(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
+			}
+			DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+			DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
+			if( ret == ERESTARTSYS) {
+				if( timeout > 0){
+					timeout-= MSECBYSEC;
+				}
+			}
+		}while ( ret == ERESTARTSYS && timeout > 0 );
 		WLOCK_PROC2(proc, other); 
 		if( proc->p_rcode != EDVSUSR2USR &&
 			proc->p_rcode != EDVSKRN2USR && 
@@ -823,16 +836,22 @@ DVKDEBUG(INTERNAL,"BEFORE DOWN lpid=%d p_sem=%d\n",proc->p_usr.p_lpid,proc->p_ps
 	proc->p_rcode = OK; 
 	WUNLOCK_PROC3(proc, other1, other2); 
 DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags);  
-	if( timeout < 0) {
-		ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
-	} else {
-		ret = wait_event_interruptible_timeout(proc->p_wqhead, 
-			(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
-	}
-	DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
-	
-	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
-
+	do {
+		if( timeout < 0) {
+			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+		} else {
+			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
+		}
+		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);		
+		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
+		if( ret == ERESTARTSYS) {
+			if( timeout > 0){
+				timeout-= MSECBYSEC;
+			}
+		}
+	}while ( ret == ERESTARTSYS && timeout > 0 );
+		
 	WLOCK_PROC3(proc, other1, other2); 
 	if( proc->p_rcode < 0) {
 		ret = proc->p_rcode;

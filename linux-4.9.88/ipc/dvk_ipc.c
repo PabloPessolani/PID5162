@@ -196,7 +196,9 @@ send_replay: /* Return point for a migrated destination process */
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
+				RLOCK_PROC(sproxy_ptr);
 				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				RUNLOCK_PROC(sproxy_ptr);
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;
@@ -240,10 +242,10 @@ send_replay: /* Return point for a migrated destination process */
 			LIST_ADD_TAIL(&caller_ptr->p_link, &dst_ptr->p_list);
 
 			sleep_proc2(caller_ptr, dst_ptr, timeout_ms);
-			WUNLOCK_PROC(dst_ptr);
-
+//			WUNLOCK_PROC(dst_ptr); /* Moved below 2019-09-08
 			ret = caller_ptr->p_rcode;
 			if( ret == OK){
+				WUNLOCK_PROC(dst_ptr);
 				caller_ptr->p_usr.p_lclsent++;
 			}else{
 				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
@@ -252,6 +254,7 @@ send_replay: /* Return point for a migrated destination process */
 					/* remove from queue ATENCION: HAY Q PROTEGER DESTINATION ?? */
 					LIST_DEL(&caller_ptr->p_link); 
 				}
+				WUNLOCK_PROC(dst_ptr);
 				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_sendto 	= NONE;
 				if( ret == EDVSMIGRATE) 
@@ -740,8 +743,7 @@ sendrec_replay:
 			LIST_ADD_TAIL(&caller_ptr->p_link, &srcdst_ptr->p_list);
 			sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms); 
 			ret = caller_ptr->p_rcode;
-			WUNLOCK_PROC(srcdst_ptr);
-
+//			WUNLOCK_PROC(srcdst_ptr);   /* moved below 2019-09-08 
 			if( ret) {
 				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
@@ -749,6 +751,7 @@ sendrec_replay:
 				} else {
 					caller_ptr->p_usr.p_lclsent++;
 				}
+				WUNLOCK_PROC(srcdst_ptr);
 				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_getfrom    	= NONE;
@@ -756,6 +759,7 @@ sendrec_replay:
 				if( ret == EDVSMIGRATE) 
 					goto sendrec_replay;
 			} else {
+				WUNLOCK_PROC(srcdst_ptr);
 				caller_ptr->p_usr.p_lclsent++;
 			}
 		}
