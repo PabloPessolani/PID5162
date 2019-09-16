@@ -82,9 +82,9 @@ int get_task(int p_nr)
 	MUKDEBUG("p_nr=%d\n", p_nr);
 	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
 		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr] == NULL) 
+	if( pproc[p_nr+NR_TASKS] == NULL) 
 		ERROR_EXIT(EDVSBADPROC);
-	return(pproc[p_nr]);
+	return(pproc[p_nr+NR_TASKS]);
 }
 
 int task_bind( Task* t, int p_nr, char *name)
@@ -93,9 +93,10 @@ int task_bind( Task* t, int p_nr, char *name)
 	MUKDEBUG("id=%d p_nr=%d\n", t->id, p_nr);
 	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
 		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr] != NULL) 
+	if( pproc[p_nr+NR_TASKS] != NULL) 
 		ERROR_EXIT(EDVSBUSY);			
-	pproc[p_nr] = t;
+	pproc[p_nr+NR_TASKS] = t;
+	t->p_nr = p_nr;
 	taskname("%s(%d)",name, p_nr);
 }
 
@@ -105,9 +106,10 @@ int task_unbind( Task* t, int p_nr)
 	MUKDEBUG("id=%d p_nr=%d\n", t->id, p_nr);
 	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
 		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr] == NULL) 
-		ERROR_RETURN(EDVSBADPROC);			
-	pproc[p_nr] = NULL;	
+	if( pproc[p_nr+NR_TASKS] == NULL) 
+		ERROR_RETURN(EDVSBADPROC);	
+	t->p_nr = NONE;	
+	pproc[p_nr+NR_TASKS] = NULL;	
 }
 
 static Task*
@@ -139,7 +141,9 @@ taskalloc(void (*fn)(void*), void *arg, uint stack)
 	t->p_caller_q	= NULL; 			/* head list of trying to send task to this task */
 	t->p_q_link		= NULL; 			/* pointer to the next trying to send task    	*/
 	t->p_msg		= NULL; 			/* pointer to application message buffer 	*/ 
-
+	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
+	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
+	
 	/* do a reasonable initialization */
 	memset(&t->context.uc, 0, sizeof t->context.uc);
 	sigemptyset(&zero);

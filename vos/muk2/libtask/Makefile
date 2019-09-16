@@ -14,7 +14,7 @@ OFILES=\
 	task.o\
 	mukipc.o\
 
-all: $(LIB) primes tcpproxy testdelay
+all: $(LIB) primes tcpproxy testdelay muk2
 
 $(OFILES): taskimpl.h task.h 386-ucontext.h power-ucontext.h
 
@@ -46,8 +46,11 @@ testdelay: testdelay.o $(LIB)
 testdelay1: testdelay1.o $(LIB)
 	$(CC) -o testdelay1 testdelay1.o $(LIB)
 
+muk2: muk2.o $(LIB)
+	$(CC) -o muk2 muk2.o $(LIB)
+	
 clean:
-	rm -f *.o primes tcpproxy testdelay testdelay1 httpload $(LIB)
+	rm -f *.o primes tcpproxy testdelay testdelay1 httpload muk2 $(LIB)
 
 install: $(LIB)
 	cp $(LIB) /usr/local/lib

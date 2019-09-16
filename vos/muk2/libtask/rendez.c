@@ -6,6 +6,7 @@
 void
 tasksleep(Rendez *r)
 {
+	MUKDEBUG("\n");
 	addtask(&r->waiting, taskrunning);
 	if(r->l)
 		qunlock(r->l);
@@ -21,6 +22,7 @@ _taskwakeup(Rendez *r, int all)
 	int i;
 	Task *t;
 
+	MUKDEBUG("\n");
 	for(i=0;; i++){
 		if(i==1 && !all)
 			break;
@@ -29,6 +31,7 @@ _taskwakeup(Rendez *r, int all)
 		deltask(&r->waiting, t);
 		taskready(t);
 	}
+	MUKDEBUG("i=%d\n", i);
 	return i;
 }
 

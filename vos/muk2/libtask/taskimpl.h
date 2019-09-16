@@ -178,8 +178,9 @@ struct Task
 	int p_sendto;						/* to whom does process want to send? 	*/
 	Task	*p_caller_q; 				/* head list of trying to send task to this task */
 	Task	*p_q_link; 					/* pointer to the next trying to send task    	*/
-	Rendez	*p_rendez;
+	Rendez	p_rendez;
 	int		p_error;
+	unsigned long	p_pending;			/* bitmap of pending notifies 			*/
 	message	*p_msg;  
 };
 

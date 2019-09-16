@@ -97,6 +97,6 @@
 #define NOTIFY_TYPE		m_type
 #define NOTIFY_FLAGS	m9_i1
 #define NOTIFY_ARG		m9_l1
-#define NOTIFY_TIMESTAMP	m9_t1  
+#define NOTIFY_TIMESTAMP m9_t1  
 
 #endif /* _COM_COM_H */ 
