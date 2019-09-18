@@ -1,0 +1,299 @@
+MINIX AS A UNIKERNEL (MUK) SIN THREADS 
+=======================================
+
+
+http://man7.org/linux/man-pages/man3/insque.3.html
+http://man7.org/linux/man-pages/man3/SLIST_HEAD.3.html
+
+https://www.geeksforgeeks.org/g-fact22-concept-of-setjump-and-longjump/
+https://publications.gbdirect.co.uk/c_book/chapter9/nonlocal_jumps.html
+
+       The functions described on this page are used for performing
+       "nonlocal gotos": transferring execution from one function to a
+       predetermined location in another function.
+
+La idea es implementar un scheduler que invoque a funciones 
+
+main ()
+{
+	main_init();
+	while(true) {
+		next_funct = get_from_queue(); // obtiene la proxima funcion a ejecutar de una cola de funciones.
+		if( next_funct == NULL)
+			mnx_receive(ANY, msg);
+		else
+			next_funct();
+	}
+}
+
+Como se implementaria un servidor tipico
+========================================
+	
+server (where)
+{
+	goto where; 
+	svr_init();
+	while( TRUE){
+		rcode = receive(ANY, &msg);
+to_switch:
+		switch(msg.type){
+			case SERVICE1:
+				rcode = call_service1();
+				break;
+			case SERVICE2:
+				rcode = call_service2();
+				break;				
+		}
+to_send:
+		rcode = send(msg.source, rply_msg);
+to_receive:
+	}
+}	
+
+Las funciones bloqueantes son las de IPC.
+	Por lo tanto, supongamos receive(ANY, &msg)
+	
+	sender = search(p_list);
+	if( sender == NULL) 
+		// no hay mensajes
+	else {
+		server->p_rts_flags = RECEIVING;
+		server->p_getfrom   = ANY;
+		server->p_mptr		= &msg;
+		return();
+	}
+	
+	
+receive()
+{
+	buscar en la cola del proceso si hay alguien queriendo envier
+		si hay alguien	
+			es el que espero?
+				si, copiar el mensaje, poner en cola al sender, cambiarle los flags
+				no, setear los flags, sacar de cola al receiver, return()
+							
+}
+	
+linked list 
+https://www.includehelp.com/ds/implementation-of-priority-queue-using-linked-list.aspx
+
+fijarse tambien en MINIX4RT
+
+
+QUE HACER CUANDO UN PROCESO INTERNO SE COMUNICA CON UN EXTERNO.
+Como el INTERNO se puede bloquear, debe crear un thread para esperar.
+
+
+Se podria realizar el mismo tratamiento que con interrupciones.
+Es decir. tener un thread por cada endpoint que recibe o envia mensajes
+y cuando recibe un mensaje, pone una marca en el descriptor del proceso (similar al notify)
+y activa el proceso.
+
+CADA PROCESO deberia armarce como bloques. Supongamos
+
+
+MINIX AS A UNIKERNEL (MUK) SIN THREADS 
+=======================================
+
+La idea es implementar un scheduler que invoque a funciones 
+
+main ()
+{
+	main_init();
+	while(true) {
+		next_funct = get_from_queue(); // obtiene la proxima funcion a ejecutar de una cola de funciones.
+		if( next_funct == NULL)
+			mnx_receive(ANY, msg);
+		else
+			next_funct();
+	}
+}
+
+Como se implementaria un servidor tipico
+========================================
+	
+server (where)
+{
+	goto where; 
+	svr_init();
+	while( TRUE){
+		rcode = receive(ANY, &msg);
+to_switch:
+		switch(msg.type){
+			case SERVICE1:
+				rcode = call_service1();
+				break;
+			case SERVICE2:
+				rcode = call_service2();
+				break;				
+		}
+to_send:
+		rcode = send(msg.source, rply_msg);
+to_receive:
+	}
+}	
+
+Las funciones bloqueantes son las de IPC.
+	Por lo tanto, supongamos receive(ANY, &msg)
+	
+	sender = search(p_list);
+	if( sender == NULL) 
+		// no hay mensajes
+	else {
+		server->p_rts_flags = RECEIVING;
+		server->p_getfrom   = ANY;
+		server->p_mptr		= &msg;
+		return();
+	}
+	
+	
+receive()
+{
+	buscar en la cola del proceso si hay alguien queriendo envier
+		si hay alguien	
+			es el que espero?
+				si, copiar el mensaje, poner en cola al sender, cambiarle los flags
+				no, setear los flags, sacar de cola al receiver, return()
+							
+}
+	
+linked list 
+https://www.includehelp.com/ds/implementation-of-priority-queue-using-linked-list.aspx
+https://linux.die.net/man/3/queue
+
+fijarse tambien en MINIX4RT
+
+QUE HACER CUANDO UN PROCESO INTERNO SE COMUNICA CON UN EXTERNO.
+Como el INTERNO se puede bloquear, debe crear un thread para esperar.
+
+
+Se podria realizar el mismo tratamiento que con interrupciones.
+Es decir. tener un thread por cada endpoint que recibe o envia mensajes
+y cuando recibe un mensaje, pone una marca en el descriptor del proceso (similar al notify)
+y activa el proceso.
+
+CADA PROCESO deberia armarce como bloques. Supongamos
+
+=====================================================================================================
+20190914:
+	cree un programa de prueba muk2.c 
+	
+SECUENCIA DE EJECUCION DE CLIENT 
+
+	root@node0:/usr/src/dvs/vos/muk2# ./muk2 | grep client
+	 muk2.c:init_client:97:
+	 muk2.c:init_client:110:nr=1 endp=1 flags=0 misc=0 name=CLIENT
+	 muk2.c:muk_client:170:
+	 muk2.c:muk_client:177:stop 1
+	 muk2.c:muk_client:179:stop 1a
+	 muk2.c:muk_client:182:return 1
+	 muk2.c:muk_client:179:stop 1a
+	 muk2.c:muk_client:187:stop 2
+	 muk2.c:muk_client:189:stop 2a
+	 muk2.c:muk_client:192:return 2
+	 muk2.c:muk_client:189:stop 2a
+	 muk2.c:muk_client:197:stop 3
+	 muk2.c:muk_client:199:stop 3a
+	 muk2.c:muk_client:202:return 3
+	 muk2.c:muk_client:199:stop 3a
+	 muk2.c:muk_client:177:stop 1
+	 muk2.c:muk_client:179:stop 1a
+	 muk2.c:muk_client:182:return 1
+	 muk2.c:muk_client:179:stop 1a
+	 muk2.c:muk_client:187:stop 2
+	 muk2.c:muk_client:189:stop 2a
+	 muk2.c:muk_client:192:return 2
+	 muk2.c:muk_client:189:stop 2a
+	 muk2.c:muk_client:197:stop 3
+	 muk2.c:muk_client:199:stop 3a
+	 muk2.c:muk_client:202:return 3
+	 muk2.c:muk_client:199:stop 3a
+	 muk2.c:muk_client:177:stop 1
+	 muk2.c:muk_client:179:stop 1a
+	 muk2.c:muk_client:182:return 1
+
+
+SECUENCIA DE EJECUCION DEL SERVER 
+root@node0:/usr/src/dvs/vos/muk2# ./muk2 | grep server
+ muk2.c:init_server:75:
+ muk2.c:init_server:87:nr=0 endp=0 flags=0 misc=0 name=SERVER
+ muk2.c:muk_server:121:
+ muk2.c:muk_server:128:stop 1
+ muk2.c:muk_server:130:stop 1a
+ muk2.c:muk_server:133:return 1
+ muk2.c:muk_server:130:stop 1a
+ muk2.c:muk_server:138:stop 2
+ muk2.c:muk_server:140:stop 2a
+ muk2.c:muk_server:143:return 2
+ muk2.c:muk_server:140:stop 2a
+ muk2.c:muk_server:148:stop 3
+ muk2.c:muk_server:150:stop 3a
+ muk2.c:muk_server:153:return 3
+ muk2.c:muk_server:150:stop 3a
+ muk2.c:muk_server:128:stop 1
+ muk2.c:muk_server:130:stop 1a
+ muk2.c:muk_server:133:return 1
+ muk2.c:muk_server:130:stop 1a
+ muk2.c:muk_server:138:stop 2
+ muk2.c:muk_server:140:stop 2a
+ muk2.c:muk_server:143:return 2
+ muk2.c:muk_server:140:stop 2a
+ muk2.c:muk_server:148:stop 3
+ muk2.c:muk_server:150:stop 3a
+ muk2.c:muk_server:153:return 3
+ muk2.c:muk_server:150:stop 3a
+ muk2.c:muk_server:128:stop 1
+ muk2.c:muk_server:130:stop 1a
+ muk2.c:muk_server:133:return 1
+ muk2.c:muk_server:130:stop 1a
+
+ 
+DESPUES DE MOFICADO EL CODIGO
+
+root@node0:/usr/src/dvs/vos/muk2# ./muk2 
+ muk2.c:init_main:142:
+ muk2.c:init_server:153:
+ muk2.c:init_server:165:nr=0 flags=0 misc=0 name=SERVER
+ muk2.c:init_client:175:
+ muk2.c:init_client:188:nr=1 flags=0 misc=0 name=CLIENT
+ muk2.c:muk_sched:299:stage=0
+ muk2.c:muk_client:243:stage=0
+MUK2_RETURN: muk2.c:muk_client:246: rcode=2
+ muk2.c:pick_proc:285:
+ muk2.c:pick_proc:288:p_nr=0
+ muk2.c:muk_sched:305:current_nr=0
+ muk2.c:muk_sched:314:before longjmp current_nr=0
+ViolaciÃ³n de segmento
+
+
+=====================================================================================================
+20190915:
+		SE BAJA LA LIBRERIA libtask 
+		
+		
+TODO: Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
+
+ATENCION: libtask utiliza funciones propias para sustituir PRINTF y otras
+		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
+		
+		
+		
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+	
+
+

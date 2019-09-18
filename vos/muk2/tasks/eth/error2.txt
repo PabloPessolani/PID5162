@@ -1,0 +1,291 @@
+In file included from eth.h:237:0,
+                 from eth.c:95:
+glo.h:3:0: warning: "EXTERN" redefined
+ #define EXTERN
+ 
+In file included from eth.h:49:0,
+                 from eth.c:95:
+../../../../include/com/const.h:17:0: note: this is the location of the previous definition
+ #define EXTERN extern
+ 
+In file included from eth.h:80:0,
+                 from eth.c:95:
+eth.c: In function ‘M3IPC_send’:
+../../../../include/com/stub_dvkcall.h:35:49: warning: passing argument 2 of ‘muk_send_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_send(dst_ep,m)   muk_send_T(dst_ep, (int) m, TIMEOUT_FOREVER)
+                                                 ^
+eth.c:247:8: note: in expansion of macro ‘muk_send’
+  ret = muk_send(dst_ep, m_ptr);
+        ^~~~~~~~
+../../../../include/com/stub_dvkcall.h:36:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long muk_send_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~
+eth.c: In function ‘M3IPC_sendrec’:
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘muk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_sendrec(srcdst_ep,m)  muk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+eth.c:289:8: note: in expansion of macro ‘muk_sendrec’
+  ret = muk_sendrec(srcdst_ep, m_ptr);
+        ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long muk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+eth.c: In function ‘get_userdata’:
+eth.c:304:31: warning: passing argument 2 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+  cps = M3IPC_vcopy(user_proc, user_addr, SELF, (vir_bytes) loc_addr, count);
+                               ^~~~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+eth.c:304:48: warning: passing argument 4 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+  cps = M3IPC_vcopy(user_proc, user_addr, SELF, (vir_bytes) loc_addr, count);
+                                                ^
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘long unsigned int’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘ec_nic2user’:
+../debug.h:8:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 7 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:357:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("ec_port=%d nic_addr=%X  offset=%X count=%ld\n",
+  ^~~~~~~~~
+eth.c:383:30: warning: passing argument 2 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+   if ( (r=M3IPC_vcopy( SELF, nic_addr, iov_addr->iod_proc_nr,
+                              ^~~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘int’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+eth.c:384:5: warning: passing argument 4 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+     iov_addr->iod_iovec[i].iov_addr + offset, bytes )) != OK )
+     ^~~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘ec_recv’:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:419:4: note: in expansion of macro ‘TASKDEBUG’
+    TASKDEBUG("i=%d rx_slot_nr=%d length=%d\n", i, rx_slot_nr, length);
+    ^~~~~~~~~
+eth.c:431:14: warning: operation on ‘rx_slot_nr’ may be undefined [-Wsequence-point]
+   rx_slot_nr = (++rx_slot_nr) & RX_RING_MOD_MASK;
+               
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘ec_user2nic’:
+../debug.h:8:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 6 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:445:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("ec_port=%d offset=%X nic_addr=%X count=%ld\n",
+  ^~~~~~~~~
+eth.c:464:52: warning: passing argument 2 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+   if ( (rcode = M3IPC_vcopy(iov_addr->iod_proc_nr, iov_addr->iod_iovec[i].iov_addr + offset,
+                                                    ^~~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+eth.c:465:11: warning: passing argument 4 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+     SELF, nic_addr, count )) != OK )
+           ^~~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘int’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+eth.c: In function ‘do_vwrite’:
+eth.c:499:3: warning: implicit declaration of function ‘mess_reply’ [-Wimplicit-function-declaration]
+   mess_reply(mp, mo_ptr);
+   ^~~~~~~~~~
+eth.c:548:13: warning: operation on ‘tx_slot_nr’ may be undefined [-Wsequence-point]
+  tx_slot_nr = (++tx_slot_nr) & TX_RING_MOD_MASK;
+              
+eth.c:482:6: warning: variable ‘port’ set but not used [-Wunused-but-set-variable]
+  int port, count;
+      ^~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘do_int’:
+../debug.h:8:13: warning: format ‘%lX’ expects argument of type ‘long unsigned int’, but argument 6 has type ‘int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:628:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("if_name=%s flags=0x%8lX\n", ec_ptr->if_name, ec_ptr->flags);
+  ^~~~~~~~~
+eth.c: In function ‘low_level_probe’:
+eth.c:639:6: warning: variable ‘rcode’ set but not used [-Wunused-but-set-variable]
+  int rcode;
+      ^~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘low_level_input’:
+../debug.h:8:13: warning: format ‘%lX’ expects argument of type ‘long unsigned int’, but argument 6 has type ‘int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:696:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("if_name=%s flags=0x%8lX\n", ec_ptr->if_name, ec_ptr->flags);
+  ^~~~~~~~~
+eth.c: In function ‘tapif_input’:
+eth.c:759:8: warning: variable ‘ptr’ set but not used [-Wunused-but-set-variable]
+  char *ptr;
+        ^~~
+eth.c:758:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+  int ret;
+      ^~~
+eth.c: In function ‘send_thread’:
+eth.c:790:9: warning: assignment from incompatible pointer type [-Wincompatible-pointer-types]
+  ec_ptr = (struct netif *)arg;
+         ^
+eth.c:804:9: warning: assignment from incompatible pointer type [-Wincompatible-pointer-types]
+  ec_ptr = (struct netif *)arg;
+         ^
+In file included from eth.h:92:0,
+                 from eth.c:95:
+../debug.h:8:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 6 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:817:4: note: in expansion of macro ‘TASKDEBUG’
+    TASKDEBUG("\t i=%d iov_addr=%X iov_size=%d\n",
+    ^~~~~~~~~
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:817:4: note: in expansion of macro ‘TASKDEBUG’
+    TASKDEBUG("\t i=%d iov_addr=%X iov_size=%d\n",
+    ^~~~~~~~~
+eth.c:821:46: warning: passing argument 2 of ‘M3IPC_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+    rcode = M3IPC_vcopy(iov_ptr->iod_proc_nr, iov_ptr->iod_iovec[i].iov_addr,
+                                              ^~~~~~~
+eth.c:268:13: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ static long M3IPC_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, long bytes)
+             ^~~~~~~~~~~
+eth.c:197:24: warning: passing argument 1 of ‘pthread_mutex_unlock’ from incompatible pointer type [-Wincompatible-pointer-types]
+   pthread_mutex_unlock(&x);\
+                        ^
+eth.c:858:4: note: in expansion of macro ‘MTX_UNLOCK’
+    MTX_UNLOCK(send_mutex);
+    ^~~~~~~~~~
+In file included from eth.h:14:0,
+                 from eth.c:95:
+/usr/include/pthread.h:773:12: note: expected ‘pthread_mutex_t * {aka union <anonymous> *}’ but argument is of type ‘pthread_mutex_t (*)[1] {aka union <anonymous> (*)[1]}’
+ extern int pthread_mutex_unlock (pthread_mutex_t *__mutex)
+            ^~~~~~~~~~~~~~~~~~~~
+eth.c: In function ‘receive_thread’:
+eth.c:880:9: warning: assignment from incompatible pointer type [-Wincompatible-pointer-types]
+  ec_ptr = (struct netif *)arg;
+         ^
+eth.c: In function ‘init_rings’:
+eth.c:919:9: warning: assignment from incompatible pointer type [-Wincompatible-pointer-types]
+  ei_ptr = eth_iface;
+         ^
+eth.c:926:31: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+   ei_ptr->rx_ring[i].u.base   = ei_ptr->rbuf[i];
+                               ^
+eth.c: In function ‘init_cards’:
+eth.c:975:56: warning: passing argument 3 of ‘pthread_create’ from incompatible pointer type [-Wincompatible-pointer-types]
+   rcode = pthread_create( &eth_rx_thread[ec_nr], NULL, receive_thread, &ec_table[ec_nr] );
+                                                        ^~~~~~~~~~~~~~
+In file included from eth.h:14:0,
+                 from eth.c:95:
+/usr/include/pthread.h:233:12: note: expected ‘void * (*)(void *)’ but argument is of type ‘void (*)(void *)’
+ extern int pthread_create (pthread_t *__restrict __newthread,
+            ^~~~~~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘pthread_t {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:977:3: note: in expansion of macro ‘TASKDEBUG’
+   TASKDEBUG("Receiver thread ec_nr=%d thread_id=%d\n",ec_nr,  eth_rx_thread[ec_nr]);
+   ^~~~~~~~~
+eth.c:984:56: warning: passing argument 3 of ‘pthread_create’ from incompatible pointer type [-Wincompatible-pointer-types]
+   rcode = pthread_create( &eth_tx_thread[ec_nr], NULL, send_thread, &ec_table[ec_nr] );
+                                                        ^~~~~~~~~~~
+In file included from eth.h:14:0,
+                 from eth.c:95:
+/usr/include/pthread.h:233:12: note: expected ‘void * (*)(void *)’ but argument is of type ‘void (*)(void *)’
+ extern int pthread_create (pthread_t *__restrict __newthread,
+            ^~~~~~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘pthread_t {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:986:3: note: in expansion of macro ‘TASKDEBUG’
+   TASKDEBUG("Sender thread ec_nr=%d thread_id=%d\n",ec_nr, eth_tx_thread[ec_nr]);
+   ^~~~~~~~~
+eth.c: In function ‘eth_init’:
+../debug.h:8:13: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 5 has type ‘pid_t {aka int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:1020:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("eth_lpid=%lu\n", eth_lpid);
+  ^~~~~~~~~
+In file included from eth.h:91:0,
+                 from eth.c:95:
+eth.c: In function ‘main_init’:
+../macros.h:3:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘void (*)(int)’ [-Wformat=]
+       fprintf(stderr,"ERROR: %s:%s:%u: rcode=%d\n",__FILE__, __FUNCTION__ ,__LINE__,rcode); \
+                      ^
+eth.c:1127:3: note: in expansion of macro ‘ERROR_EXIT’
+   ERROR_EXIT(SIG_ERR);
+   ^~~~~~~~~~
+eth.c:1127:3: warning: passing argument 1 of ‘exit’ makes integer from pointer without a cast [-Wint-conversion]
+In file included from eth.h:8:0,
+                 from eth.c:95:
+/usr/include/stdlib.h:504:13: note: expected ‘int’ but argument is of type ‘void (*)(int)’
+ extern void exit (int __status) __THROW __attribute__ ((__noreturn__));
+             ^~~~
+eth.c:1134:50: warning: passing argument 3 of ‘pthread_create’ from incompatible pointer type [-Wincompatible-pointer-types]
+  rcode = pthread_create( &eth_inet_thread, NULL, eth_thread, 0 );
+                                                  ^~~~~~~~~~
+In file included from eth.h:14:0,
+                 from eth.c:95:
+/usr/include/pthread.h:233:12: note: expected ‘void * (*)(void *)’ but argument is of type ‘void (*)(void *)’
+ extern int pthread_create (pthread_t *__restrict __newthread,
+            ^~~~~~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 5 has type ‘pthread_t {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:1136:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("INET requests thread  thread_id=%d\n",eth_inet_thread);
+  ^~~~~~~~~
+eth.c: At top level:
+eth.c:1149:6: warning: conflicting types for ‘mess_reply’
+ void mess_reply(message *req, message *reply_mess)
+      ^~~~~~~~~~
+eth.c:499:3: note: previous implicit declaration of ‘mess_reply’ was here
+   mess_reply(mp, mo_ptr);
+   ^~~~~~~~~~
+In file included from eth.h:92:0,
+                 from eth.c:95:
+eth.c: In function ‘reply’:
+../debug.h:8:13: warning: format ‘%lX’ expects argument of type ‘long unsigned int’, but argument 8 has type ‘int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+eth.c:1168:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("if_name=%s err=%d may_block=%d flags=0x%8lX\n",
+  ^~~~~~~~~
+eth.c: In function ‘do_vread’:
+eth.c:1209:18: warning: variable ‘size’ set but not used [-Wunused-but-set-variable]
+  int port, count,size;
+                  ^~~~
+At top level:
+eth.c:351:13: warning: ‘ec_nic2user’ defined but not used [-Wunused-function]
+ static void ec_nic2user(eth_card_t *ec_ptr, int nic_addr,
+             ^~~~~~~~~~~
+eth.c:282:13: warning: ‘M3IPC_sendrec’ defined but not used [-Wunused-function]
+ static long M3IPC_sendrec(int srcdst_ep, message *m_ptr)
+             ^~~~~~~~~~~~~
+eth.c:254:13: warning: ‘M3IPC_receive_T’ defined but not used [-Wunused-function]
+ static long M3IPC_receive_T(int src_ep, message *m_ptr, long timeout)
+             ^~~~~~~~~~~~~~~
+eth.c:212:13: warning: ‘M3IPC_hdw_notify’ defined but not used [-Wunused-function]
+ static long M3IPC_hdw_notify(int dcid, int endpoint)
+             ^~~~~~~~~~~~~~~~

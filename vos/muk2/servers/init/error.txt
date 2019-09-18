@@ -1,0 +1,40 @@
+make: Atención: El archivo 'init.c' tiene una hora de modificación 2,9 s en el futuro
+init.c: In function ‘do_fork’:
+init.c:44:11: warning: implicit declaration of function ‘mol_wait4fork’ [-Wimplicit-function-declaration]
+   rcode = mol_wait4fork();
+           ^~~~~~~~~~~~~
+init.c:53:18: warning: implicit declaration of function ‘_mol_fork’ [-Wimplicit-function-declaration]
+ #define mol_fork _mol_fork
+                  ^
+init.c:54:14: note: in expansion of macro ‘mol_fork’
+  child_pid = mol_fork(child_lpid, ANY);
+              ^~~~~~~~
+init.c: In function ‘main’:
+init.c:149:10: warning: implicit declaration of function ‘mol_getpid’ [-Wimplicit-function-declaration]
+    pid = mol_getpid();
+          ^~~~~~~~~~
+init.c:152:4: warning: implicit declaration of function ‘mol_gettimeofday’ [-Wimplicit-function-declaration]
+    mol_gettimeofday(&tv, &tzp);
+    ^~~~~~~~~~~~~~~~
+init.c:159:4: warning: implicit declaration of function ‘mol_stime’ [-Wimplicit-function-declaration]
+    mol_stime(&newtime);
+    ^~~~~~~~~
+init.c:161:15: warning: implicit declaration of function ‘mol_getprocnr’ [-Wimplicit-function-declaration]
+    child_ep = mol_getprocnr();
+               ^~~~~~~~~~~~~
+init.c:164:16: warning: implicit declaration of function ‘mol_getpprocnr’ [-Wimplicit-function-declaration]
+    parent_ep = mol_getpprocnr();
+                ^~~~~~~~~~~~~~
+init.c:167:10: warning: implicit declaration of function ‘mol_getnprocnr’ [-Wimplicit-function-declaration]
+    ep  = mol_getnprocnr(pid);
+          ^~~~~~~~~~~~~~
+init.c:170:12: warning: implicit declaration of function ‘mol_pm_findproc’ [-Wimplicit-function-declaration]
+    rcode = mol_pm_findproc(iname, &ep);
+            ^~~~~~~~~~~~~~~
+init.c:221:4: warning: implicit declaration of function ‘mol_exit’ [-Wimplicit-function-declaration]
+    mol_exit(-7);
+    ^~~~~~~~
+init.c:238:19: warning: implicit declaration of function ‘wait’ [-Wimplicit-function-declaration]
+      child_lpid = wait(&child_lsts);
+                   ^~~~
+make: atención: Se ha detectado una desviación en el reloj. La construcción podría estar incompleta.

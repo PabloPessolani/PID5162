@@ -1,0 +1,372 @@
+tap.c:97:6: warning: return type of ‘main’ is not ‘int’ [-Wmain]
+ void main( int argc, char **argv )
+      ^~~~
+tap.c: In function ‘main’:
+tap.c:110:10: warning: implicit declaration of function ‘tap_init’ [-Wimplicit-function-declaration]
+  rcode = tap_init();
+          ^~~~~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:37:56: warning: passing argument 2 of ‘muk_receive_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_receive(src_ep,m)    muk_receive_T(src_ep, (int) m, TIMEOUT_FOREVER)
+                                                        ^
+tap.c:122:16: note: in expansion of macro ‘muk_receive’
+   if ((rcode = muk_receive(ANY, &m)) != OK){
+                ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:38:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long muk_receive_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+tap.c:132:21: warning: implicit declaration of function ‘do_vwrite’ [-Wimplicit-function-declaration]
+    case DL_WRITE:   do_vwrite(&m);    break;
+                     ^~~~~~~~~
+tap.c:134:21: warning: implicit declaration of function ‘do_vread’ [-Wimplicit-function-declaration]
+    case DL_READ:    do_vread(&m);      break;
+                     ^~~~~~~~
+tap.c:136:21: warning: implicit declaration of function ‘do_init’ [-Wimplicit-function-declaration]
+    case DL_INIT:    do_init(&m);       break;
+                     ^~~~~~~
+tap.c:137:21: warning: implicit declaration of function ‘do_getstat’ [-Wimplicit-function-declaration]
+    case DL_GETSTAT: do_getstat(&m);    break;
+                     ^~~~~~~~~~
+tap.c:138:21: warning: implicit declaration of function ‘do_stop’ [-Wimplicit-function-declaration]
+    case DL_STOP:    do_stop(&m);       break;
+                     ^~~~~~~
+tap.c:139:21: warning: implicit declaration of function ‘do_getname’ [-Wimplicit-function-declaration]
+    case DL_GETNAME: do_getname(&m);  break;
+                     ^~~~~~~~~~
+tap.c: At top level:
+tap.c:154:7: warning: conflicting types for ‘do_vwrite’
+  void do_vwrite(message *mp){
+       ^~~~~~~~~
+tap.c:132:21: note: previous implicit declaration of ‘do_vwrite’ was here
+    case DL_WRITE:   do_vwrite(&m);    break;
+                     ^~~~~~~~~
+tap.c: In function ‘do_vwrite’:
+tap.c:168:4: warning: implicit declaration of function ‘get_userdata’ [-Wimplicit-function-declaration]
+    get_userdata(mp->DL_PROC, (vir_bytes) mp->DL_ADDR,
+    ^~~~~~~~~~~~
+tap.c:177:18: warning: implicit declaration of function ‘calc_iovec_size’ [-Wimplicit-function-declaration]
+    tc->write_s = calc_iovec_size(&tc->tmp_iovec);
+                  ^~~~~~~~~~~~~~~
+tap.c:190:3: warning: implicit declaration of function ‘tc_user2tap’ [-Wimplicit-function-declaration]
+   tc_user2tap(tc, &tc->write_iovec, 0, tc->write_s);
+   ^~~~~~~~~~~
+tap.c:194:3: warning: implicit declaration of function ‘reply’ [-Wimplicit-function-declaration]
+   reply(tc, OK, FALSE);
+   ^~~~~
+tap.c: In function ‘calc_iovec_size’:
+tap.c:210:4: warning: implicit declaration of function ‘tc_next_iovec’ [-Wimplicit-function-declaration]
+    tc_next_iovec(iovp);
+    ^~~~~~~~~~~~~
+tap.c: At top level:
+tap.c:224:6: warning: conflicting types for ‘tc_next_iovec’
+ void tc_next_iovec(iovec_dat_t *iovp)
+      ^~~~~~~~~~~~~
+tap.c:210:4: note: previous implicit declaration of ‘tc_next_iovec’ was here
+    tc_next_iovec(iovp);
+    ^~~~~~~~~~~~~
+tap.c:240:6: warning: conflicting types for ‘tc_user2tap’
+ void tc_user2tap (tap_card_t *tc, iovec_dat_t *iovp,
+      ^~~~~~~~~~~
+tap.c:190:3: note: previous implicit declaration of ‘tc_user2tap’ was here
+   tc_user2tap(tc, &tc->write_iovec, 0, tc->write_s);
+   ^~~~~~~~~~~
+In file included from tap.h:78:0,
+                 from tap.c:44:
+tap.c: In function ‘tc_user2tap’:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+tap.c:246:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("%s count=%d \n", tc->port_name, count);
+  ^~~~~~~~~
+tap.c:264:41: warning: passing argument 2 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+   if ( (r= muk_vcopy(iovp->iod_proc_nr, iovp->iod_iovec[i].iov_addr + offset,
+                                         ^~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c:265:11: warning: passing argument 4 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+     SELF, tap_addr, count )) != OK )
+           ^~~~~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c: At top level:
+tap.c:278:6: warning: conflicting types for ‘reply’
+ void reply(tap_card_t *tc, int err, int may_block)
+      ^~~~~
+tap.c:194:3: note: previous implicit declaration of ‘reply’ was here
+   reply(tc, OK, FALSE);
+   ^~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+tap.c: In function ‘reply’:
+../../../../include/com/stub_dvkcall.h:35:49: warning: passing argument 2 of ‘muk_send_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_send(dst_ep,m)   muk_send_T(dst_ep, (int) m, TIMEOUT_FOREVER)
+                                                 ^
+tap.c:303:6: note: in expansion of macro ‘muk_send’
+  r = muk_send(tc->client, &reply);
+      ^~~~~~~~
+../../../../include/com/stub_dvkcall.h:36:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long muk_send_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~
+tap.c: At top level:
+tap.c:318:6: warning: conflicting types for ‘get_userdata’
+ void get_userdata(int user_proc, vir_bytes user_addr, vir_bytes count, void *loc_addr)
+      ^~~~~~~~~~~~
+tap.c:168:4: note: previous implicit declaration of ‘get_userdata’ was here
+    get_userdata(mp->DL_PROC, (vir_bytes) mp->DL_ADDR,
+    ^~~~~~~~~~~~
+In file included from tap.h:78:0,
+                 from tap.c:44:
+tap.c: In function ‘get_userdata’:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+tap.c:321:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("user_proc=%d count=%d \n", user_proc, count);
+  ^~~~~~~~~
+tap.c:323:29: warning: passing argument 2 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+  cps = muk_vcopy(user_proc, user_addr, SELF, (vir_bytes) loc_addr, count);
+                             ^~~~~~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c:323:46: warning: passing argument 4 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+  cps = muk_vcopy(user_proc, user_addr, SELF, (vir_bytes) loc_addr, count);
+                                              ^
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘long unsigned int’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c: At top level:
+tap.c:333:7: warning: conflicting types for ‘do_vread’
+  void do_vread(message *mp)
+       ^~~~~~~~
+tap.c:134:21: note: previous implicit declaration of ‘do_vread’ was here
+    case DL_READ:    do_vread(&m);      break;
+                     ^~~~~~~~
+tap.c: In function ‘do_vread’:
+tap.c:364:2: warning: implicit declaration of function ‘tc_recv’ [-Wimplicit-function-declaration]
+  tc_recv(tc);
+  ^~~~~~~
+tap.c:367:3: warning: implicit declaration of function ‘tc_reset’ [-Wimplicit-function-declaration]
+   tc_reset(tc);
+   ^~~~~~~~
+tap.c:335:19: warning: variable ‘size’ set but not used [-Wunused-but-set-variable]
+  int port, count, size;
+                   ^~~~
+tap.c: At top level:
+tap.c:374:6: warning: conflicting types for ‘tc_reset’
+ void tc_reset(tap_card_t *tc)
+      ^~~~~~~~
+tap.c:367:3: note: previous implicit declaration of ‘tc_reset’ was here
+   tc_reset(tc);
+   ^~~~~~~~
+tap.c: In function ‘tc_reset’:
+tap.c:379:2: warning: implicit declaration of function ‘tc_send’ [-Wimplicit-function-declaration]
+  tc_send(tc);
+  ^~~~~~~
+tap.c:376:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i;
+      ^
+tap.c: At top level:
+tap.c:386:6: warning: conflicting types for ‘tc_send’
+ void tc_send(tap_card_t *tc)
+      ^~~~~~~
+tap.c:379:2: note: previous implicit declaration of ‘tc_send’ was here
+  tc_send(tc);
+  ^~~~~~~
+tap.c:406:6: warning: conflicting types for ‘tc_recv’
+ void tc_recv(tap_card_t *tc)
+      ^~~~~~~
+tap.c:364:2: note: previous implicit declaration of ‘tc_recv’ was here
+  tc_recv(tc);
+  ^~~~~~~
+tap.c: In function ‘tc_recv’:
+tap.c:423:4: warning: implicit declaration of function ‘tc_tap2user’ [-Wimplicit-function-declaration]
+    tc_tap2user(tc, &tc->read_iovec, 0, length);
+    ^~~~~~~~~~~
+tap.c:410:6: warning: unused variable ‘status’ [-Wunused-variable]
+  int status;
+      ^~~~~~
+tap.c: At top level:
+tap.c:436:6: warning: conflicting types for ‘tc_tap2user’
+ void tc_tap2user(tap_card_t *tc, int tap_addr, iovec_dat_t *iovp,
+      ^~~~~~~~~~~
+tap.c:423:4: note: previous implicit declaration of ‘tc_tap2user’ was here
+    tc_tap2user(tc, &tc->read_iovec, 0, length);
+    ^~~~~~~~~~~
+In file included from tap.h:78:0,
+                 from tap.c:44:
+tap.c: In function ‘tc_tap2user’:
+../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘vir_bytes {aka long unsigned int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+tap.c:442:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG("%s count=%d\n", tc->port_name, count);
+  ^~~~~~~~~
+tap.c:460:29: warning: passing argument 2 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+   if ( (r= muk_vcopy( SELF, tap_addr, iovp->iod_proc_nr, iovp->iod_iovec[i].iov_addr + offset, bytes )) != OK )
+                             ^~~~~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘int’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c:460:58: warning: passing argument 4 of ‘muk_vcopy’ makes pointer from integer without a cast [-Wint-conversion]
+   if ( (r= muk_vcopy( SELF, tap_addr, iovp->iod_proc_nr, iovp->iod_iovec[i].iov_addr + offset, bytes )) != OK )
+                                                          ^~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+../../../../include/com/stub_dvkcall.h:66:6: note: expected ‘void *’ but argument is of type ‘vir_bytes {aka long unsigned int}’
+ long muk_vcopy(int src_ep, void *src_addr, int dst_ep, void *dst_addr, int bytes);
+      ^~~~~~~~~
+tap.c: At top level:
+tap.c:473:6: warning: conflicting types for ‘do_init’
+ void do_init(message *mp)
+      ^~~~~~~
+tap.c:136:21: note: previous implicit declaration of ‘do_init’ was here
+    case DL_INIT:    do_init(&m);       break;
+                     ^~~~~~~
+tap.c: In function ‘do_init’:
+tap.c:487:3: warning: implicit declaration of function ‘mess_reply’ [-Wimplicit-function-declaration]
+   mess_reply(mp, &reply_mess);
+   ^~~~~~~~~~
+tap.c:503:3: warning: implicit declaration of function ‘tc_init’ [-Wimplicit-function-declaration]
+   tc_init(tc);
+   ^~~~~~~
+tap.c:513:3: warning: implicit declaration of function ‘tc_confaddr’ [-Wimplicit-function-declaration]
+   tc_confaddr(tc);
+   ^~~~~~~~~~~
+tap.c:534:2: warning: implicit declaration of function ‘tc_reinit’ [-Wimplicit-function-declaration]
+  tc_reinit(tc);
+  ^~~~~~~~~
+tap.c: At top level:
+tap.c:549:6: warning: conflicting types for ‘mess_reply’
+ void mess_reply(message *req, message *reply_mess)
+      ^~~~~~~~~~
+tap.c:487:3: note: previous implicit declaration of ‘mess_reply’ was here
+   mess_reply(mp, &reply_mess);
+   ^~~~~~~~~~
+In file included from tap.h:72:0,
+                 from tap.c:44:
+tap.c: In function ‘mess_reply’:
+../../../../include/com/stub_dvkcall.h:35:49: warning: passing argument 2 of ‘muk_send_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_send(dst_ep,m)   muk_send_T(dst_ep, (int) m, TIMEOUT_FOREVER)
+                                                 ^
+tap.c:552:16: note: in expansion of macro ‘muk_send’
+  if ( (rcode = muk_send(req->m_source, reply_mess)) != OK)
+                ^~~~~~~~
+../../../../include/com/stub_dvkcall.h:36:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long muk_send_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~
+tap.c: At top level:
+tap.c:559:6: warning: conflicting types for ‘tc_confaddr’
+ void tc_confaddr(tap_card_t *tc)
+      ^~~~~~~~~~~
+tap.c:513:3: note: previous implicit declaration of ‘tc_confaddr’ was here
+   tc_confaddr(tc);
+   ^~~~~~~~~~~
+tap.c: In function ‘tc_confaddr’:
+tap.c:564:7: warning: unused variable ‘v’ [-Wunused-variable]
+  long v;
+       ^
+tap.c:563:14: warning: unused variable ‘eafmt’ [-Wunused-variable]
+  static char eafmt[]= "x:x:x:x:x:x";
+              ^~~~~
+tap.c:562:7: warning: unused variable ‘eakey’ [-Wunused-variable]
+  char eakey[16];
+       ^~~~~
+tap.c:561:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i;
+      ^
+tap.c: At top level:
+tap.c:573:6: warning: conflicting types for ‘tc_reinit’
+ void tc_reinit(tap_card_t *tc)
+      ^~~~~~~~~
+tap.c:534:2: note: previous implicit declaration of ‘tc_reinit’ was here
+  tc_reinit(tc);
+  ^~~~~~~~~
+tap.c:580:6: warning: conflicting types for ‘do_getstat’
+ void do_getstat(message *m){
+      ^~~~~~~~~~
+tap.c:137:21: note: previous implicit declaration of ‘do_getstat’ was here
+    case DL_GETSTAT: do_getstat(&m);    break;
+                     ^~~~~~~~~~
+tap.c:584:6: warning: conflicting types for ‘do_stop’
+ void do_stop(message *m){
+      ^~~~~~~
+tap.c:138:21: note: previous implicit declaration of ‘do_stop’ was here
+    case DL_STOP:    do_stop(&m);       break;
+                     ^~~~~~~
+tap.c:588:6: warning: conflicting types for ‘do_getname’
+ void do_getname(message *m){
+      ^~~~~~~~~~
+tap.c:139:21: note: previous implicit declaration of ‘do_getname’ was here
+    case DL_GETNAME: do_getname(&m);  break;
+                     ^~~~~~~~~~
+In file included from tap.h:78:0,
+                 from tap.c:44:
+tap.c: In function ‘tap_init’:
+../debug.h:8:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 7 has type ‘pid_t {aka int}’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+tap.c:630:2: note: in expansion of macro ‘TASKDEBUG’
+  TASKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
+  ^~~~~~~~~
+tap.c: At top level:
+tap.c:667:6: warning: conflicting types for ‘tc_init’
+ void tc_init(tap_card_t *tc)
+      ^~~~~~~
+tap.c:503:3: note: previous implicit declaration of ‘tc_init’ was here
+   tc_init(tc);
+   ^~~~~~~
+tap.c: In function ‘tc_init’:
+tap.c:675:2: warning: implicit declaration of function ‘tapif_init’ [-Wimplicit-function-declaration]
+  tapif_init(tc);
+  ^~~~~~~~~~
+tap.c: In function ‘tapif_init’:
+tap.c:725:2: warning: implicit declaration of function ‘low_level_init’ [-Wimplicit-function-declaration]
+  low_level_init(tc,name);
+  ^~~~~~~~~~~~~~
+tap.c: At top level:
+tap.c:734:6: warning: conflicting types for ‘low_level_init’
+ void low_level_init(tap_card_t *tc, const char *name)
+      ^~~~~~~~~~~~~~
+tap.c:725:2: note: previous implicit declaration of ‘low_level_init’ was here
+  low_level_init(tc,name);
+  ^~~~~~~~~~~~~~
+tap.c: In function ‘low_level_init’:
+tap.c:785:26: warning: passing argument 1 of ‘pthread_create’ from incompatible pointer type [-Wincompatible-pointer-types]
+  rcode = pthread_create( &tc->thread, NULL, tapif_main, tc );
+                          ^
+In file included from tap.h:14:0,
+                 from tap.c:44:
+/usr/include/pthread.h:233:12: note: expected ‘pthread_t * restrict {aka long unsigned int * restrict}’ but argument is of type ‘pthread_t ** {aka long unsigned int **}’
+ extern int pthread_create (pthread_t *__restrict __newthread,
+            ^~~~~~~~~~~~~~
+tap.c: In function ‘low_level_probe’:
+tap.c:594:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+tap.c: In function ‘tapif_main’:
+tap.c:598:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+At top level:
+tap.c:563:14: warning: ‘eafmt’ defined but not used [-Wunused-variable]
+  static char eafmt[]= "x:x:x:x:x:x";
+              ^~~~~
+tap.c: In function ‘tc_recv’:
+tap.c:422:6: warning: ‘length’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   if (length > 0) {
+      ^
