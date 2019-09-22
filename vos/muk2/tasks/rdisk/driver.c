@@ -198,7 +198,7 @@ struct driver *dp;	/* Device dependent entry points. */
 				//}
 				//continue;
 			case HARD_INT:		MUKDEBUG("m_type: %d - HARD_INT\n", rd_mess.m_type);	break;	
-	
+#ifdef ANULADO 	
 			case PROC_EVENT:
 	//case SYS_SIG:		(*dp->dr_signal)(dp, &rd_mess);
 	//			continue;	/* don't reply */
@@ -211,6 +211,8 @@ struct driver *dp;	/* Device dependent entry points. */
 	//case DEV_PING:		notify(rd_mess.m_source);
 	//			continue;
 			case DEV_PING:		MUKDEBUG("m_type: %d - DEV_PING\n", rd_mess.m_type);	break;				
+#endif // ANULADO 	
+
 			case DEV_DUMP:		
 				MUKDEBUG("m_type: %d - DEV_DUMP\n", rd_mess.m_type);	
 				r = (*dp->dr_dump)(dp, &rd_mess);	

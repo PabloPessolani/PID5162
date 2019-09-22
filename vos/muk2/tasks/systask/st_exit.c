@@ -25,7 +25,6 @@ int st_exit(message *m_ptr)			/* pointer to request message */
  * process table fields to the default values.
  */
 	Task *proc_ptr;		/* exiting process pointer */
-	priv_usr_t  *priv_ptr;
 	int proc_nr, proc_ep;
   	int rcode, flags;
 
@@ -50,10 +49,6 @@ int st_exit(message *m_ptr)			/* pointer to request message */
 //	if( proc_ptr->p_nodeid != local_nodeid) 
 //		ERROR_RETURN(EDVSBADNODEID);	
 
-	/* save flags before destructive unbind */
-	priv_ptr = PROC2PRIV(proc_nr);
-
-
 	/* Did proc_ptr be killed by a signal sent by another process? */
 	if( !TEST_BIT(proc_ptr->p_misc_flags, MIS_BIT_KILLED)){ /* NO, it exits by itself */
 		SET_BIT(proc_ptr->p_misc_flags, MIS_BIT_KILLED);
@@ -62,26 +57,10 @@ int st_exit(message *m_ptr)			/* pointer to request message */
 		if( rcode < 0 && rcode != EDVSNOTBIND) 	ERROR_RETURN(rcode);
 	}else{
 		MUKDEBUG("NOTIFY proc_ep=%d\n",proc_ep);
-		rcode = muk_ntfy_value(pm_ep, proc_ep, pm_ep);
+		rcode = muk_src_notify(pm_ep, proc_ep);
 		if( rcode < 0) 	ERROR_RETURN(rcode);		
-#define TO_WAIT4UNBIND	100 /* miliseconds */
-		MUKDEBUG("muk_wait4unbind_T\n");
-		do { 
-			rcode = muk_wait4unbind_T(proc_ep, TO_WAIT4UNBIND);
-			MUKDEBUG("muk_wait4unbind_T  rcode=%d\n", rcode);
-			if (rcode == EDVSTIMEDOUT) {
-				MUKDEBUG("muk_wait4unbind_T TIMEOUT\n");
-				continue ;
-			}else if( rcode < 0) 
-				ERROR_EXIT(EXIT_FAILURE);
-		} while	(rcode < OK); 
 	}
 	MUKDEBUG("endpoint %d unbound\n", proc_ep);
-	
-		
-	if( !TEST_BIT(flags, BIT_REMOTE)){	/* Local Process */	
-	  	reset_timer(&priv_ptr->priv_alarm_timer);
-	}
 
 #ifdef ALLOC_LOCAL_TABLE 			
 	rcode = muk_getprocinfo(dc_ptr->dc_dcid, proc_nr, &proc_table[proc_nr+dc_ptr->dc_nr_tasks]);

@@ -28,14 +28,14 @@ int st_nice(message *m_ptr)
 	prio =  m_ptr->PR_PRIORITY;
 
 	proc_nr = _ENDPOINT_P(proc_ep);
-	proc_ptr = get_task(proc_nr);
+	proc_ptr = get_task(proc_ep);
 	MUKDEBUG("proc_ep=%d prio=%d id=%d\n", proc_ep, prio, proc_ptr->id);
 
 #ifdef ALLOC_LOCAL_TABLE 			
 	rcode = muk_getprocinfo(dc_ptr->dc_dcid, proc_nr, &proc_table[proc_nr+dc_ptr->dc_nr_tasks]);
 	if( rcode < 0) 	ERROR_RETURN(rcode);
 #else /* ALLOC_LOCAL_TABLE */			
-	proc_ptr = (Task *) get_task(proc_nr);
+	proc_ptr = (Task *) get_task(proc_ep);
 	rcode = OK;	
 #endif /* ALLOC_LOCAL_TABLE */
 	MUKDEBUG("before " PROC_MUK_FORMAT,PROC_MUK_FIELDS(proc_ptr));
@@ -60,7 +60,7 @@ int st_nice(message *m_ptr)
 	rcode = muk_getprocinfo(dc_ptr->dc_dcid, proc_nr, &proc_table[proc_nr+dc_ptr->dc_nr_tasks]);
 	if( rcode < 0) 	ERROR_RETURN(rcode);
 #else /* ALLOC_LOCAL_TABLE */			
-	proc_ptr = (Task *) get_task(proc_nr);
+	proc_ptr = (Task *) get_task(proc_ep);
 	rcode = OK;	
 #endif /* ALLOC_LOCAL_TABLE */
 	MUKDEBUG("after " PROC_MUK_FORMAT,PROC_MUK_FIELDS(proc_ptr));

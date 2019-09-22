@@ -31,7 +31,7 @@ int pm_set_timer(moltimer_t *tp, int ticks, tmr_func_t watchdog, int arg)
 MUKDEBUG("now=%ld ticks=%ld\n",now, ticks);
 
 	/* Set timer argument and add timer to the list. */
-	muk_tmr_arg(tp)->ta_int = arg;
+	dvk_tmr_arg(tp)->ta_int = arg;
 	prev_time = tmrs_settimer(&pm_timers,tp,now+ticks,watchdog,&next_time);
 
 	/* Reschedule our synchronous alarm if necessary. */

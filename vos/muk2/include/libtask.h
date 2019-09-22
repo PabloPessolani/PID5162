@@ -27,6 +27,7 @@ extern "C" {
 #include <inttypes.h>
 #include "/usr/src/dvs/vos/muk2/lib/libtask/task.h"
 
+typedef long unsigned int update_t;
 	
 /*
  * basic procs and threads
@@ -59,11 +60,6 @@ unsigned int	taskid(void);
 Task * 		current_task(void);
 
 
-int task_bind( Task* t, int p_ep, char *name);
-int task_unbind( Task* t, int p_ep);
-int muk_tbind(int dcid, int p_ep, char name);
-int muk_unbind(int dcid, int p_ep);
-Task *get_task(int p_ep);
 
 struct Tasklist	/* used internally */
 {
@@ -245,7 +241,7 @@ struct Task
 	int p_endpoint;						/* process endpoint					*/
 	int p_nr;							/* process number					*/
 	volatile unsigned long p_rts_flags;	/* process is runnable only if zero 		*/
-	volatile unsigned long  p_misc_flags;	/* miselaneous flags			*/
+	volatile unsigned long p_misc_flags;	/* miselaneous flags			*/
 	int p_getfrom;						/* from whom does process want to receive?	*/
 	int p_sendto;						/* to whom does process want to send? 	*/
 	Task	*p_caller_q; 				/* head list of trying to send task to this task */
@@ -253,13 +249,46 @@ struct Task
 	Rendez	p_rendez;
 	int		p_error;
 	unsigned long	p_pending;			/* bitmap of pending notifies 			*/
+	
+	long	p_next_timeout;
+	Task	*p_t_link;
+	
+	dvktimer_t p_alarm_timer;
 	message	*p_msg;  
 };
 
-#define PROC_MUK_FORMAT "nr=%d id=%d flags=%lX misc=%lX name=%s \n"
-#define PROC_MUK_FIELDS(p) p->p_nr,p->id, p->p_rts_flags, p->p_misc_flags, p->name
+#define PROC_MUK_FORMAT "nr=%d id=%d flags=%0.8lX misc=%0.8lX p_getfrom=%d p_sendto=%d name=%s \n"
+#define PROC_MUK_FIELDS(p) p->p_nr,p->id, p->p_rts_flags, p->p_misc_flags, p->p_getfrom, p->p_sendto, p->name
+
+#define PROC_TO_FORMAT "id=%d p_next_timeout=%ld link=%d\n"
+#define PROC_TO_FIELDS(p) p->id, p->p_next_timeout, ((p->p_t_link == NULL)?(-1):p->p_t_link->id)
 			 
 typedef struct Task muk_proc_t;
+
+int task_bind( Task* t, int p_ep, char *name);
+int task_unbind( Task* t, int p_ep);
+int muk_tbind(int dcid, int p_ep, char *name);
+int muk_unbind(int dcid, int p_ep);
+Task *get_task(int p_ep);
+int muk_send(int dst_ep, message *mptr);
+int muk_receive(int src_ep, message *mptr);
+
+int muk_notify_X(int src_nr, int dst_ep);
+#define muk_notify(dst_ep)						muk_notify_X(SELF, dst_ep)
+#define muk_src_notify(src_nr, dst_ep)			muk_notify_X(src_nr, dst_ep)
+
+int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms);
+#define muk_sendrec(srcdst_ep, m_ptr)		muk_sendrec_T(srcdst_ep, m_ptr, TIMEOUT_FOREVER)
+
+
+#define muk_wait4bind()						muk_wait4bind_X(WAIT_BIND,  SELF,  TIMEOUT_FOREVER)
+#define muk_wait4bindep(endpoint)			muk_wait4bind_X(WAIT_BIND,  endpoint,  TIMEOUT_FOREVER)
+#define muk_wait4unbind(endpoint)			muk_wait4bind_X(WAIT_UNBIND, endpoint, TIMEOUT_FOREVER)
+#define muk_wait4bind_T(to_ms)				muk_wait4bind_X(WAIT_BIND, SELF, to_ms)
+#define muk_wait4bindep_T(endpoint, to_ms)	muk_wait4bind_X(WAIT_BIND,  endpoint, to_ms)
+#define muk_wait4unbind_T(endpoint, to_ms)	muk_wait4bind_X(WAIT_UNBIND, endpoint, to_ms)
+
+int muk_timeout_task(void );
 
 #ifdef __cplusplus
 }

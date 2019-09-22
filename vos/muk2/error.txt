@@ -1,3 +1,46 @@
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ./include/libtask.h:28,
+                 from muk2.h:79,
+                 from muk2.c:2:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:21:29: warning: backslash-newline at end of file
+  #define ERROR_PRINT(rcode) \
+                              
+In file included from muk2.h:82:0,
+                 from muk2.c:2:
+macros.h:20:0: warning: "ERROR_EXIT" redefined
+ #define ERROR_EXIT(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ./include/libtask.h:28,
+                 from muk2.h:79,
+                 from muk2.c:2:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:1:0: note: this is the location of the previous definition
+ #define ERROR_EXIT(rcode) \
+ 
+In file included from muk2.h:82:0,
+                 from muk2.c:2:
+macros.h:41:0: warning: "SYSERR" redefined
+ #define SYSERR(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ./include/libtask.h:28,
+                 from muk2.h:79,
+                 from muk2.c:2:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:8:0: note: this is the location of the previous definition
+ #define SYSERR(rcode) \
+ 
+In file included from muk2.h:82:0,
+                 from muk2.c:2:
+macros.h:47:0: warning: "ERROR_RETURN" redefined
+ #define ERROR_RETURN(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ./include/libtask.h:28,
+                 from muk2.h:79,
+                 from muk2.c:2:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:14:0: note: this is the location of the previous definition
+ #define ERROR_RETURN(rcode) \
+ 
 In file included from muk2.h:81:0,
                  from muk2.c:2:
 muk2.c: In function ‘get_dc_params’:
@@ -30,6 +73,49 @@ muk2.c:388:10: warning: implicit declaration of function ‘muk_search_config’
 muk2.c:354:15: warning: unused variable ‘mukproc_ptr’ [-Wunused-variable]
    proc_usr_t *mukproc_ptr;  /*  process pointer */
                ^~~~~~~~~~~
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ././include/libtask.h:28,
+                 from ./muk2.h:79,
+                 from mukcfg.c:32:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:21:29: warning: backslash-newline at end of file
+  #define ERROR_PRINT(rcode) \
+                              
+In file included from ./muk2.h:82:0,
+                 from mukcfg.c:32:
+./macros.h:20:0: warning: "ERROR_EXIT" redefined
+ #define ERROR_EXIT(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ././include/libtask.h:28,
+                 from ./muk2.h:79,
+                 from mukcfg.c:32:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:1:0: note: this is the location of the previous definition
+ #define ERROR_EXIT(rcode) \
+ 
+In file included from ./muk2.h:82:0,
+                 from mukcfg.c:32:
+./macros.h:41:0: warning: "SYSERR" redefined
+ #define SYSERR(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ././include/libtask.h:28,
+                 from ./muk2.h:79,
+                 from mukcfg.c:32:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:8:0: note: this is the location of the previous definition
+ #define SYSERR(rcode) \
+ 
+In file included from ./muk2.h:82:0,
+                 from mukcfg.c:32:
+./macros.h:47:0: warning: "ERROR_RETURN" redefined
+ #define ERROR_RETURN(rcode) \
+ 
+In file included from /usr/src/dvs/vos/muk2/lib/libtask/task.h:25:0,
+                 from ././include/libtask.h:28,
+                 from ./muk2.h:79,
+                 from mukcfg.c:32:
+/usr/src/dvs/vos/muk2/lib/libtask/../macros.h:14:0: note: this is the location of the previous definition
+ #define ERROR_RETURN(rcode) \
+ 
 mukcfg.c: In function ‘muk_search_ident’:
 mukcfg.c:110:8: warning: implicit declaration of function ‘get_dc_params’ [-Wimplicit-function-declaration]
         get_dc_params(dcid);
@@ -50,16 +136,8 @@ mukcfg.c: In function ‘muk_search_token’:
 mukcfg.c:263:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
        muk_name = cfg->word;
                 ^
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_ntfy_value' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_wait4unbind_T' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `tmrs_settimer' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_src_notify' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_getpriv' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_setpriv' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_unbind' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `tmrs_clrtimer' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `PROC2PRIV' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `muk_lclbind' sin definir
-/usr/src/dvs/vos/muk2/tasks/systask/libsystask.so: referencia a `tmrs_exptimers' sin definir
+/usr/src/dvs/vos/muk2/lib/mollib/libmollib.so: referencia a `muk_getep' sin definir
+/usr/src/dvs/vos/muk2/lib/syslib/libsyslib.so: referencia a `muk_sendrec' sin definir
+/usr/src/dvs/vos/muk2/tasks/rdisk/librdisk.so: referencia a `get_task' sin definir
 collect2: error: ld returned 1 exit status
 make: *** [muk2] Error 1

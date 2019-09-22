@@ -108,7 +108,7 @@ int check_PM(void)
 	if (pm_ptr->p_rts_flags == SLOT_FREE){
 		rcode = EDVSDEADSRCDST;
 	} 
-	SVRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(pm_ptr));
+	SVRDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(pm_ptr));
 	return (rcode);
 }	
 /*===========================================================================*
@@ -139,7 +139,7 @@ int rs_init(int dcid)
 			rrs_ptr = &rrs;
 			rcode = muk_getprocinfo(dcid, RS_PROC_NR, rrs_ptr);
 			if(rcode < 0) ERROR_EXIT(rcode);
-			SVRDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rrs_ptr));
+			SVRDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rrs_ptr));
 			if( (TEST_BIT(rrs_ptr->p_rts_flags, BIT_REMOTE)) 
 			 && (!TEST_BIT(rrs_ptr->p_misc_flags , MIS_BIT_RMTBACKUP))) {
 				rcode = muk_migr_start(dcid, RS_PROC_NR);
@@ -344,7 +344,7 @@ static char *arg_v[MNX_MAX_ARGS];
 		deamon_ptr = &deamon_usr;
 		rcode = sys_getproc(deamon_ptr,pm_ep);
 		if(rcode < 0) ERROR_RETURN(rcode);
-		SVRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(deamon_ptr));
+		SVRDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(deamon_ptr));
 			
 		SVRDEBUG("CHILD: arg_len=%d/%d execvpe >%s< \n", arg_len,
 					strlen(av_ptr), av_ptr);

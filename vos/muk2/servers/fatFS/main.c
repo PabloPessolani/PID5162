@@ -193,7 +193,7 @@ SVRDEBUG("call_nr = %d \n", call_nr);
 	rcode = sys_getproc(&proc_fs, fs_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	fs_ptr = &proc_fs;
-	SVRDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(fs_ptr));
+	SVRDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_ptr));
 	if( TEST_BIT(fs_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		fprintf(stderr,"FS task not started\n");
 		fflush(stderr);		

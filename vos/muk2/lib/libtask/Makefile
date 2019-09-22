@@ -14,7 +14,8 @@ OFILES=\
 	task.o\
 	mukipc.o\
 
-all: $(LIB) primes tcpproxy testdelay 
+all: $(LIB)
+# primes tcpproxy testdelay 
 
 $(OFILES): taskimpl.h task.h 386-ucontext.h power-ucontext.h
 

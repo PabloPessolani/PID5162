@@ -140,13 +140,12 @@ int  main_systask ( int argc, char *argv[] )
  *===========================================================================*/
 int init_systask(int dcid)
 {
-	priv_usr_t *priv_ptr;
 	Task *proc_ptr;
 	int i, rcode;
 static char debug_path[MNX_PATH_MAX];
 
 	sys_id = taskid();
-	MUKDEBUG("sys_id=%d\n", sys_id);
+	MUKDEBUG("sys_id=%d sys_ep=%d\n", sys_id, SYSTASK(local_nodeid));
 	
 	sys_ep = muk_tbind(dcid,SYSTASK(local_nodeid),"systask");
 	MUKDEBUG("sys_ep=%d\n", sys_ep);

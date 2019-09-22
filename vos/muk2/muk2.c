@@ -346,15 +346,15 @@ static void tsk_ftp(void *str_arg)
  *===========================================================================*/
 void taskmain(int argc, char **argv)
 {
-	MUKDEBUG("\n");
-
-	
-	int rcode;
+	int rcode, to_id, i;
+	Task *t;
 	static char muk_cmd[_POSIX_ARG_MAX];
  	proc_usr_t *mukproc_ptr;		/*  process pointer */
     config_t *cfg;
 	double t_start, t_stop, t_total; 
-	
+
+	MUKDEBUG("\n");
+
 	t_start =  dwalltime();
 	if ( argc != 2) {
 		print_usage(argv[0]);
@@ -389,8 +389,11 @@ void taskmain(int argc, char **argv)
 	if(rcode) ERROR_TSK_EXIT(rcode);
 
 	if( dcid == HARDWARE)  ERROR_EXIT(EDVSBADDCID);
+	get_dc_params(dcid);
 	
 	muk_mutex = 1; // initialize pseudo-mutex 
+
+	to_id = taskcreate(muk_timeout_task, 0, 32768);
 
 #if 	ENABLE_SYSTASK
 	/*Create SYSTASK Task  */
@@ -427,7 +430,7 @@ void taskmain(int argc, char **argv)
 		MUKDEBUG("pm_id=%d\n",pm_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
-		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(pm_ep);
+		mukproc_ptr = (proc_usr_t *) get_task(pm_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
 		COND_SIGNAL(pm_cond);
 		MTX_UNLOCK(muk_mutex);
@@ -496,6 +499,13 @@ void taskmain(int argc, char **argv)
 	t_total = (t_stop-t_start);
  	printf("BOOT TIME: t_start=%.2f t_stop=%.2f t_total=%.2f [s]\n",t_start, t_stop, t_total);
 	MUKDEBUG("JOINING ALL TASKS -------------------------------------\n");
+	
+	for( i = -dc_ptr->dc_nr_tasks; i < (dc_ptr->dc_nr_procs); i++) {
+		t = get_task(i);
+		if( t == NULL) continue;
+		LIBDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(t));
+	} 
+	
     fflush(stdout);
 }
 

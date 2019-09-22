@@ -79,6 +79,8 @@
 #include "../../../../include/com/stub_dvkcall.h"
 // #include "../../include/stdarg.h"
 
+#include "../../include/libtask.h"
+
 #include "../debug.h"
 #include "../macros.h"
 

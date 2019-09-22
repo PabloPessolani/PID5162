@@ -6,7 +6,7 @@
 #endif
 
 
-EXTERN proc_usr_t *kp;	/* Kernel process table (in userspace)	*/
+EXTERN muk_proc_t *kp;	/* Kernel process table (in userspace)	*/
 EXTERN mproc_t *mp;		/* PM process table			*/
 EXTERN mproc_t *pm_proc_table;		/* PM process table			*/
 
@@ -26,14 +26,14 @@ extern char core_name[];	/* file name where core images are produced */
 EXTERN sigset_t core_sset;	/* which signals cause core images */
 EXTERN sigset_t ign_sset;	/* which signals are by default ignored */
 
-EXTERN proc_usr_t *pm_kproc;	/* Kernel process table (in userspace)	*/
+EXTERN muk_proc_t *pm_kproc;	/* Kernel process table (in userspace)	*/
 EXTERN priv_usr_t *pm_kpriv;	/* Kernel priviledge table (in userspace)*/
 
-EXTERN int pm_lpid;		
+EXTERN int pm_id;		
 EXTERN int pm_ep;		
 EXTERN int pm_nr;	
 
-EXTERN proc_usr_t *pm_proc_ptr;
+EXTERN muk_proc_t *pm_proc_ptr;
 EXTERN priv_usr_t *pm_priv_ptr;
 
 EXTERN struct sysinfo pm_info;

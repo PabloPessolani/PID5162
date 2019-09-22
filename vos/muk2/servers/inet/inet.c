@@ -207,7 +207,7 @@ void inet_init(void)
 	rcode = sys_getproc(&eth, ETH_PROC_NR);
 	if(rcode) ERROR_EXIT(rcode);
 	eth_ptr = &eth;
-	SVRDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(eth_ptr));
+	SVRDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(eth_ptr));
 	if( TEST_BIT(eth_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		fprintf(stderr,"ETH task not started\n");
 		fflush(stderr);		
@@ -218,7 +218,7 @@ void inet_init(void)
 	rcode = sys_getproc(&inet, SELF);
 	if(rcode) ERROR_EXIT(rcode);
 	inet_ptr = &inet;
-	SVRDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(inet_ptr));
+	SVRDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(inet_ptr));
 	
 	/*---------------- Allocate memory for message  ---------------*/
 	posix_memalign( (void **) &m_ptr, getpagesize(), sizeof(message) );

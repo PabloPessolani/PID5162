@@ -22,7 +22,7 @@ int pm_getset(void)
  */
 
 	mproc_t *rmp = mp;
-	proc_usr_t *rkp = kp;
+	muk_proc_t *rkp = kp;
 	int ret, proc;
 	
 MUKDEBUG("pm_call_nr=%d\n", pm_call_nr);
@@ -85,18 +85,18 @@ MUKDEBUG("pm_call_nr=%d\n", pm_call_nr);
 		break;
 	case MOLSETPNAME:
 		proc = _ENDPOINT_P(pm_m_in.M3_ENDPT);
-		rkp =  (proc_usr_t *) PM_KPROC(proc);
+		rkp =  (muk_proc_t *) get_task(proc);
 		/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
 		if((ret =sys_procinfo(pm_who_p)) != OK) 
 			ERROR_EXIT(ret);
-		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkp));
+		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
 
 		if((ret =sys_setpname(pm_m_in.M3_ENDPT,pm_m_in.M3_NAME)) != OK) 
 			ERROR_EXIT(ret);
 
 		if((ret =sys_procinfo(pm_who_p)) != OK) 
 			ERROR_EXIT(ret);
-		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkp));
+		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
 		
 		break;
 	default:

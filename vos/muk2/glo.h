@@ -1,7 +1,7 @@
 
 #define 	ENABLE_SYSTASK	1
-#define 	ENABLE_PM  		0
-#define 	ENABLE_RDISK  	0
+#define 	ENABLE_PM  		1
+#define 	ENABLE_RDISK  	1
 #define 	ENABLE_FS	  	0
 #define 	ENABLE_IS	  	0
 #define		ENABLE_NW		0

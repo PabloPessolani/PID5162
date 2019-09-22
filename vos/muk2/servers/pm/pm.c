@@ -29,7 +29,7 @@ int main_pm ( int argc, char *argv[] )
 	int rcode, result, proc_nr;
 	mnxsigset_t sigset;
 	mproc_t *rmp;	
-	proc_usr_t *rkp;	
+	muk_proc_t *rkp;	
 	struct timespec t; 
 	long long tt, td;
 
@@ -86,7 +86,7 @@ MUKDEBUG("pm_call_nr=%d result=%d\n", pm_call_nr, result);
 			proc_nr < dc_ptr->dc_nr_procs; 
 			proc_nr++, rmp++) {
 
-			rkp= PM_KPROC(proc_nr);
+			rkp= get_task(proc_nr);
 
 			/* In the meantime, the process may have been killed by a
 			 * signal (e.g. if a lethal pending signal was unblocked)
@@ -96,7 +96,7 @@ MUKDEBUG("pm_call_nr=%d result=%d\n", pm_call_nr, result);
 			if ((rmp->mp_flags & (REPLYPENDING | IN_USE | ZOMBIE)) == (REPLYPENDING | IN_USE)) {
 				MUKDEBUG("Replying to %d\n",rkp->p_endpoint);		   
 				if ((rcode = muk_send(rkp->p_endpoint, &rmp->mp_reply)) != OK) {
-					MUKDEBUG("PM can't reply to %d (%s)\n",rkp->p_endpoint, rkp->p_name);
+					MUKDEBUG("PM can't reply to %d (%s)\n",rkp->p_endpoint, rkp->name);
 					switch(rcode){  /* Auto Unbind the failed process */
 						case	EDVSSRCDIED:
 						case	EDVSDSTDIED:
@@ -149,7 +149,7 @@ void pm_get_work(void)
 		* calling. This can happen in case of synchronous alarms (CLOCK) or or 
 		* event like pending kernel signals (SYSTASK(local_nodeid)).
 		*/
-		kp = PM_KPROC((pm_who_p < 0 ? pm_ep : pm_who_p));
+		kp = get_task((pm_who_p < 0 ? pm_ep : pm_who_p));
 		mp = &pm_proc_table[pm_who_p < 0 ? pm_ep : pm_who_p];
 		MUKDEBUG(PM_PROC_FORMAT, PM_PROC_FIELDS(mp));
 
@@ -179,10 +179,10 @@ void pm_init(void)
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 	
-	pm_pid = syscall (SYS_gettid);
-	MUKDEBUG("pm_pid=%d\n", pm_pid);
+	pm_id = taskid();
+	MUKDEBUG("pm_id=%d\n", pm_id);
 	
-	rcode = muk_tbind(dcid,pm_ep);
+	rcode = muk_tbind(dcid, pm_ep, "pm");
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode != pm_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
@@ -192,8 +192,8 @@ void pm_init(void)
 	pm_msg_ptr = &pm_m_in;
 	
 	/* Register into SYSTASK (as an autofork) */
-	MUKDEBUG("Register PM into SYSTASK pm_lpid=%d\n",pm_lpid);
-	pm_ep = sys_bindproc(pm_ep, pm_lpid, LCL_BIND);
+	MUKDEBUG("Register PM into SYSTASK pm_id=%d\n",pm_id);
+	pm_ep = sys_bindproc(pm_ep, pm_id, LCL_BIND);
 	if(pm_ep < 0) ERROR_TSK_EXIT(pm_ep);
 	
 	// set the name of PM 
@@ -211,11 +211,11 @@ void pm_init(void)
 #ifdef ALLOC_LOCAL_TABLE 			
 	/* alloc dynamic memory for the KERNEL process table */
 	MUKDEBUG("Alloc dynamic memory for the Kernel process table nr_procs+nr_tasks=%d\n", (dc_ptr->dc_nr_tasks + dc_ptr->dc_nr_procs));
-//	pm_kproc = malloc((dc_ptr->dc_nr_tasks + dc_ptr->dc_nr_procs)*sizeof(proc_usr_t));
+//	pm_kproc = malloc((dc_ptr->dc_nr_tasks + dc_ptr->dc_nr_procs)*sizeof(muk_proc_t));
 	posix_memalign( (void**) &pm_kproc, getpagesize(), (dc_ptr->dc_nr_tasks + dc_ptr->dc_nr_procs) * dvs_ptr->d_size_proc);
 	if(pm_kproc == NULL) ERROR_TSK_EXIT(rcode);
 #else // ALLOC_LOCAL_TABLE 		
-	pm_kproc = kproc_map; 
+//	pm_kproc = kproc_map; 
 #endif // ALLOC_LOCAL_TABLE 			
 
 	/* alloc dynamic memory for the PM process table */
@@ -266,9 +266,9 @@ void pm_init(void)
 	pm_next_child = dc_ptr->dc_nr_sysprocs; 
 
 	/* change PRIVILEGES of PM */
-	MUKDEBUG("change PRIVILEGES of PM\n");
-	rcode = sys_privctl(pm_ep, SERVER_PRIV);
-	if(rcode < 0 ) ERROR_TSK_EXIT(rcode);
+//	MUKDEBUG("change PRIVILEGES of PM\n");
+//	rcode = sys_privctl(pm_ep, SERVER_PRIV);
+//	if(rcode < 0 ) ERROR_TSK_EXIT(rcode);
 
 //	rcode = sys_proctab(pm_kproc, tab_len);
 //	if(rcode < 0) ERROR_TSK_EXIT(rcode);
@@ -410,7 +410,7 @@ MUKDEBUG("proc_nr=%d result=%d\n",proc_nr, result);
   printf(".\n");				/* last process done */
 
   /* Override some details. INIT, PM, FS and RS are somewhat special. */
-  pm_proc_table[pm_ep].mp_pid = pm_lpid;		/* PM has magic pid */
+  pm_proc_table[pm_ep].mp_pid = pm_id;		/* PM has magic pid */
 //  pm_proc_table[RS_PROC_NR].mp_parent = INIT_PROC_NR;	/* INIT is root */
   sigfillset(&pm_proc_table[pm_ep].mp_ignore); 	/* guard against signals */
 

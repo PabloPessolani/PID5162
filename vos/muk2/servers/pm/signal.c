@@ -63,7 +63,7 @@ MUKDEBUG("proc_nr_e=%d proc_nr_n=%d sec=%d\n",proc_nr_e ,proc_nr_n, sec);
   	if (pm_proc_table[proc_nr_n].mp_flags & ALARM_ON) {
   		ret = sys_getuptime(&uptime);
 		if(ret < 0) ERROR_RETURN(ret); 
-	  	exptime = *muk_tmr_exp_time(&pm_proc_table[proc_nr_n].mp_timer);
+	  	exptime = *dvk_tmr_exp_time(&pm_proc_table[proc_nr_n].mp_timer);
   		remaining = (int) (exptime - ((uptime + (clockTicks-1))/clockTicks));
 		MUKDEBUG("clockTicks=%d uptime/clockTicks=%ld exptime=%ld remaining=%ld\n",
 			clockTicks, ((uptime + (clockTicks-1))/clockTicks), exptime, remaining);
@@ -116,12 +116,12 @@ void cause_sigalrm(moltimer_t *tp)
   	int proc_nr_n;
   	mproc_t *rmp;
 
-MUKDEBUG("muk_tmr_arg(tp)->ta_int=%d\n",muk_tmr_arg(tp)->ta_int);
+MUKDEBUG("dvk_tmr_arg(tp)->ta_int=%d\n",dvk_tmr_arg(tp)->ta_int);
 
   	/* get process from timer */
- 	if(pm_isokendpt(muk_tmr_arg(tp)->ta_int, &proc_nr_n) != OK) {
+ 	if(pm_isokendpt(dvk_tmr_arg(tp)->ta_int, &proc_nr_n) != OK) {
 	     	fprintf(stderr,"ERROR: %s:%u: PM: ignoring timer for invalid endpoint %d\n", 
-			__FUNCTION__ ,__LINE__,muk_tmr_arg(tp)->ta_int);
+			__FUNCTION__ ,__LINE__,dvk_tmr_arg(tp)->ta_int);
 		ERROR_PRINT(EDVSENDPOINT);
 		return;
   	}

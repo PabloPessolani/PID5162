@@ -72,6 +72,8 @@
 #include "../../../../include/com/stub_dvkcall.h"
 #include "../../../../include/generic/configfile.h"
 
+#include "../../include/libtask.h"
+
 #include <getopt.h>
 
 #define BUFF_SIZE		MAXCOPYBUF

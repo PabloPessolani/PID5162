@@ -412,8 +412,8 @@ void init_is(void)
 	}
 		
 	MUKDEBUG("Get is_ep info\n");
-	is_ptr = (proc_usr_t *) PROC_MAPPED(is_ep);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(is_ptr));
+	is_ptr = (proc_usr_t *) get_task(is_ep);
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(is_ptr));
 	
 	/* Register into SYSTASK(local_nodeid) (as an autofork) */
 //	MUKDEBUG("Register IS into SYSTASK(local_nodeid) is_pid=%d\n",is_pid);

@@ -6,7 +6,7 @@
 void
 tasksleep(Rendez *r)
 {
-	LIBDEBUG("\n");
+	LIBDEBUG("id=%d\n", taskrunning->id);
 	addtask(&r->waiting, taskrunning);
 	if(r->l)
 		qunlock(r->l);
@@ -29,6 +29,7 @@ _taskwakeup(Rendez *r, int all)
 		if((t = r->waiting.head) == nil)
 			break;
 		deltask(&r->waiting, t);
+		LIBDEBUG("ep=%d\n", t->p_endpoint);
 		taskready(t);
 	}
 	LIBDEBUG("i=%d\n", i);

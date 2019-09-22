@@ -77,21 +77,41 @@ taskstart(uint y, uint x)
 
 static int taskidgen;
 
+int muk_getep(int id)
+{
+	int i; 
+	
+	for( i = 0; i < (dc_ptr->dc_nr_procs+dc_ptr->dc_nr_tasks); i++) {
+		if( pproc[i] == NULL) continue;
+		if( pproc[i]->id != id) continue;
+		return(pproc[i]->p_endpoint);
+	}
+	return(EDVSNOTBIND);
+}
 
 Task *get_task(int p_ep)
 {
 	int p_nr;
+	Task *tptr;
 	
 	p_nr = _ENDPOINT_P(p_ep);
 	LIBDEBUG("p_ep=%d p_nr=%d\n", p_ep, p_nr);
-	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
-		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr+NR_TASKS] == NULL) 
-		ERROR_EXIT(EDVSBADPROC);
-	return(pproc[p_nr+NR_TASKS]);
+	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs)){
+		ERROR_PRINT(EDVSBADVALUE);
+		return(NULL);
+	}
+	if( pproc[p_nr+dc_ptr->dc_nr_tasks] == NULL) {
+		ERROR_PRINT(EDVSBADPROC);
+		return(NULL);
+	}
+	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);
+
+	tptr = pproc[p_nr+dc_ptr->dc_nr_tasks];
+	assert(tptr->p_nr == p_nr);
+	return(tptr);
 }
 
-int muk_tbind(int dcid, int p_ep, char name)
+int muk_tbind(int dcid, int p_ep, char *name)
 {
 	int rcode;
 	
@@ -107,25 +127,27 @@ int task_bind( Task* t, int p_ep, char *name)
 	assert(t != NULL);
 	p_nr = _ENDPOINT_P(p_ep);
 	LIBDEBUG("id=%d p_nr=%d p_ep=%d\n", t->id, p_nr, p_ep);
-	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
+	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs))
 		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr+NR_TASKS] != NULL) 
+	if( pproc[p_nr+dc_ptr->dc_nr_tasks] != NULL) 
 		ERROR_EXIT(EDVSBUSY);			
-	pproc[p_nr+NR_TASKS] = t;
+	pproc[p_nr+dc_ptr->dc_nr_tasks] = t;
 	t->p_nr		  = p_nr;	
 	t->p_endpoint = p_ep;	
-	taskname("%s(%d)",name, p_ep);
+	taskname("%s",name, p_ep);
+	LIBDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(t));
+	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);
 	return(p_ep);
 }
 
-int muk_ubind(int dcid, int p_ep)
+int muk_unbind(int dcid, int p_ep)
 {
 	Task *t_ptr;
 	int p_nr;
 	
 	int rcode;
 	p_nr = _ENDPOINT_P(p_ep);
-	t_ptr = pproc[p_nr+NR_TASKS];
+	t_ptr = pproc[p_nr+dc_ptr->dc_nr_tasks];
 	LIBDEBUG("dcid=%d p_ep=%d\n", p_ep);
 	rcode = task_unbind(t_ptr, p_ep);
 	return(rcode);
@@ -133,18 +155,45 @@ int muk_ubind(int dcid, int p_ep)
 
 int task_unbind( Task* t, int p_ep)
 {
-	int p_nr;
+	int p_nr, i;
 	
 	p_nr = _ENDPOINT_P(p_ep);
 	assert(t != NULL);
 	LIBDEBUG("id=%d p_nr=%d p_ep=%d\n", t->id, p_nr, p_ep);
-	if( p_nr < (-NR_TASKS) || p_nr >= (NR_PROCS))
+	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs))
 		ERROR_EXIT(EDVSBADVALUE);
-	if( pproc[p_nr+NR_TASKS] == NULL) 
+	if( pproc[p_nr+dc_ptr->dc_nr_tasks] == NULL) 
 		ERROR_RETURN(EDVSBADPROC);	
-	t->p_nr = NONE;	
-	t->p_endpoint = NONE;	
-	pproc[p_nr+NR_TASKS] = NULL;
+
+	// wakeup all receivers waiting a message from the unbounding task	
+	for( i = 0; i < (dc_ptr->dc_nr_procs+dc_ptr->dc_nr_tasks); i++) {
+		if( pproc[i] == NULL) continue;
+		if( pproc[i]->p_endpoint == p_ep) continue;
+		if( TEST_BIT(pproc[i]->p_rts_flags, BIT_RECEIVING) == 0) continue;
+		if( pproc[i]->p_getfrom == p_ep) {
+			pproc[i]->p_getfrom = NONE;
+			CLR_BIT(pproc[i]->p_rts_flags, BIT_RECEIVING);
+			if(pproc[i]->p_rts_flags == 0) {
+				taskwakeup(&pproc[i]->p_rendez);
+			}
+		}
+	}
+	
+	t->p_endpoint	= NONE;				/* process number					*/
+	t->p_nr			= NONE;				/* process number					*/
+	t->p_rts_flags 	= PROC_RUNNING;		/* process is runnable only if zero 		*/
+	t->p_misc_flags = MIS_UNIKERNEL;	/* miselaneous flags				*/
+	t->p_getfrom	= NONE;				/* from whom does process want to receive?	*/
+	t->p_sendto		= NONE;				/* to whom does process want to send? 	*/
+	t->p_caller_q	= NULL; 			/* head list of trying to send task to this task */
+	t->p_q_link		= NULL; 			/* pointer to the next trying to send task    	*/
+	t->p_msg		= NULL; 			/* pointer to application message buffer 	*/ 
+	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
+	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
+	t->p_next_timeout = TIMEOUT_FOREVER;
+	t->p_t_link 	= NULL;
+		
+	pproc[p_nr+dc_ptr->dc_nr_tasks] = NULL;
 	return(OK);
 }
 
@@ -180,6 +229,8 @@ taskalloc(void (*fn)(void*), void *arg, uint stack)
 	t->p_msg		= NULL; 			/* pointer to application message buffer 	*/ 
 	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
 	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
+	t->p_next_timeout 	= TIMEOUT_FOREVER;
+	t->p_t_link 	= NULL;
 	
 	/* do a reasonable initialization */
 	memset(&t->context.uc, 0, sizeof t->context.uc);
@@ -452,7 +503,7 @@ main(int argc, char **argv)
 	argv0 = argv[0];
 	taskargc = argc;
 	taskargv = argv;
-
+	
 	for( i = 0; i < (NR_PROCS+NR_TASKS); i++) {
 		pproc[i] = NULL;
 	}

@@ -10,24 +10,24 @@ molclock_t tmrs_clrtimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t *next_tim
   	molclock_t prev_time;
 
   	if(*tmrs)
-  		prev_time = (*tmrs)->muk_tmr_exp_time;
+  		prev_time = (*tmrs)->dvk_tmr_exp_time;
   	else
   		prev_time = 0;
 
 LIBDEBUG("prev_time=%ld\n",prev_time);
 
-  	tp->muk_tmr_exp_time = TMR_NEVER;
+  	tp->dvk_tmr_exp_time = TMR_NEVER;
 
-  	for (atp = tmrs; *atp != NULL; atp = &(*atp)->muk_tmr_next) {
+  	for (atp = tmrs; *atp != NULL; atp = &(*atp)->dvk_tmr_next) {
 		if (*atp == tp) {
-			*atp = tp->muk_tmr_next;
+			*atp = tp->dvk_tmr_next;
 			break;
 		}
   	}
 
   	if(next_time) {
   		if(*tmrs)
-  			*next_time = (*tmrs)->muk_tmr_exp_time;
+  			*next_time = (*tmrs)->dvk_tmr_exp_time;
   		else	
   			*next_time = 0;
 		LIBDEBUG("next_time=%ld\n",*next_time);
@@ -51,15 +51,15 @@ void tmrs_exptimers(moltimer_t **tmrs, molclock_t now, molclock_t *new_head)
 
 LIBDEBUG("now=%ld\n", now);
 
-  	while ((tp = *tmrs) != NULL && tp->muk_tmr_exp_time <= now) {
-		*tmrs = tp->muk_tmr_next;
-		tp->muk_tmr_exp_time = TMR_NEVER;
-		(*tp->muk_tmr_func)(tp);
+  	while ((tp = *tmrs) != NULL && tp->dvk_tmr_exp_time <= now) {
+		*tmrs = tp->dvk_tmr_next;
+		tp->dvk_tmr_exp_time = TMR_NEVER;
+		(*tp->dvk_tmr_func)(tp);
   	}
 
   	if(new_head) {
   		if(*tmrs)
-  			*new_head = (*tmrs)->muk_tmr_exp_time;
+  			*new_head = (*tmrs)->dvk_tmr_exp_time;
   		else
   			*new_head = 0;
 		LIBDEBUG("new_head=%ld\n",*new_head);
@@ -70,7 +70,7 @@ LIBDEBUG("now=%ld\n", now);
 /*===========================================================================*
  *				tmrs_settimer				     *
  *===========================================================================*/
-molclock_t tmrs_settimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t exp_time, muk_tmr_func_t watchdog, molclock_t *new_head)
+molclock_t tmrs_settimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t exp_time, dvk_tmr_func_t watchdog, molclock_t *new_head)
 {
 /* Activate a timer to run function 'fp' at time 'exp_time'. If the timer is
  * already in use it is first removed from the timers queue. Then, it is put
@@ -83,21 +83,21 @@ molclock_t tmrs_settimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t exp_time,
 LIBDEBUG("exp_time=%ld\n",exp_time);
 
  	if(*tmrs != NULL )
-  		old_head = (*tmrs)->muk_tmr_exp_time;
+  		old_head = (*tmrs)->dvk_tmr_exp_time;
 
   	/* Set the timer's variables. */
   	(void) tmrs_clrtimer(tmrs, tp, NULL);
-  	tp->muk_tmr_exp_time = exp_time;
-  	tp->muk_tmr_func = watchdog;
+  	tp->dvk_tmr_exp_time = exp_time;
+  	tp->dvk_tmr_func = watchdog;
 
   	/* Add the timer to the active timers. The next timer due is in front. */
- 	for (atp = tmrs; *atp != NULL; atp = &(*atp)->muk_tmr_next) {
-		if (exp_time < (*atp)->muk_tmr_exp_time) break;
+ 	for (atp = tmrs; *atp != NULL; atp = &(*atp)->dvk_tmr_next) {
+		if (exp_time < (*atp)->dvk_tmr_exp_time) break;
   	}
-  	tp->muk_tmr_next = *atp;
+  	tp->dvk_tmr_next = *atp;
   	*atp = tp;
   	if(new_head != NULL) {
-  		(*new_head) = (*tmrs)->muk_tmr_exp_time;
+  		(*new_head) = (*tmrs)->dvk_tmr_exp_time;
 		LIBDEBUG("new_head=%ld\n",*new_head);
 	}
 

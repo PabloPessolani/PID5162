@@ -98,13 +98,13 @@ void ftp_init(void)
 	rcode = sys_getproc(&m3ftp, ftp_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	m3ftp_ptr = &m3ftp;
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(m3ftp_ptr));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(m3ftp_ptr));
 	
 	MUKDEBUG("Get M3FTPD endpoint=%d info from SYSTASK\n", ftpd_ep);
 	rcode = sys_getproc(&m3ftpd, ftpd_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	m3ftpd_ptr = &m3ftpd;
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(m3ftpd_ptr));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(m3ftpd_ptr));
 	if( TEST_BIT(m3ftpd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		fprintf(stderr, "m3ftpd not started\n");	
 	}

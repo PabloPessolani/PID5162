@@ -270,11 +270,49 @@ ViolaciÃ³n de segmento
 20190915:
 		SE BAJA LA LIBRERIA libtask 
 		
+=====================================================================================================
+20190917:	ya compilo PM, RDISK y SYSTASK 
+		Faltan compilar las librerias syslib, mollib 
 		
+=====================================================================================================
+20190919:		
+		Se implmento muk_sendrec 
+
+		
+
+ULTIMO_LOG 		
+=====================================================================================================
+Hacer lo siguiente:
+	Desarrollar una tarea que funcione similar al clock que utilize los timers ya definidos en MINIX 
+	para implementar los TIMEOUTs de SEND, SENDREC, RECEIVE, WAIT4BIND 
+
+	enqueue_alarm(taskrunning, 1000);
+	While(TRUE){
+		do {
+			next_deadline = dequeue_alarm(&task);
+			taskdelay(next_deadline);
+			enqueue_alarm(taskrunning, 1000);
+		} while ( task == taskrunning);
+		wakeup(task);
+	}	
+	
+PROBLEMA DE TIMEOUTS:
+		1) Cuando una IPC temporizada recibe o envia un mensaje antes del vencimiento del timeout
+			debe remover el timeout de la lista.
+		2) Hacer que timeout_task haga ciclos de 1000 ms no es garantia de que esos tiempos sean precisos
+			porque <----1000--->ejecutan otros procesos<-----1000----> 
+			y esto contabilizaria como 2000 ms, cuando en realidad fueron mucho mas.
+			Se debería tener una fuente de tiempo mas precisa u obtener el tiempo restante.
+		
+	
+TODO: Convertir todas las librerias de .so a  .a (estaticas)
+	
 TODO: Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
 
 ATENCION: libtask utiliza funciones propias para sustituir PRINTF y otras
 		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
+		
+
 		
 		
 		

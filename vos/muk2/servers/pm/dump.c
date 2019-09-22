@@ -39,7 +39,7 @@ int pm_dump(void)
 int dmp_pm_proc(void)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	mproc_t *mp_ptr;
 	
 	fprintf(dump_fd, "\n");
@@ -50,11 +50,11 @@ int dmp_pm_proc(void)
 	fprintf(dump_fd, "-endp- -pid- -ppid flags nice pgroup -ruid -euid -rgid -egid name\n");	
 
 	assert(pm_proc_table != NULL);
-	assert(kproc_map != NULL);
+//	assert(kproc_map != NULL);
 
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		mp_ptr = &pm_proc_table[i];
-		proc_ptr = (proc_usr_t *) PROC_MAPPED(i);
+		proc_ptr = (muk_proc_t *) get_task(i);
 		if ( !(mp_ptr->mp_flags & IN_USE)){
 			continue;
 		}
@@ -69,7 +69,7 @@ int dmp_pm_proc(void)
 				mp_ptr->mp_effuid,
 				mp_ptr->mp_realgid,
 				mp_ptr->mp_effgid,
-				proc_ptr->p_name);
+				proc_ptr->name);
 	}
 	fprintf(dump_fd, "\n");
 
@@ -81,7 +81,7 @@ int dmp_pm_proc(void)
 int wdmp_pm_proc(message *m_ptr)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	mproc_t *mp_ptr;
 	char *page_ptr;
 
@@ -107,11 +107,11 @@ int wdmp_pm_proc(message *m_ptr)
 	(void)strcat(page_ptr,"<tbody>\n");
 	
 	assert(pm_proc_table != NULL);
-	assert(kproc_map != NULL);
+//	assert(kproc_map != NULL);
 
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		mp_ptr = &pm_proc_table[i];
-		proc_ptr = (proc_usr_t *) PROC_MAPPED(i);
+		proc_ptr = (muk_proc_t *) get_task(i);
 		if ( !(mp_ptr->mp_flags & IN_USE)){
 			continue;
 		}
@@ -128,7 +128,7 @@ int wdmp_pm_proc(message *m_ptr)
 				mp_ptr->mp_effuid,
 				mp_ptr->mp_realgid,
 				mp_ptr->mp_effgid,
-				proc_ptr->p_name);
+				proc_ptr->name);
 		(void)strcat(page_ptr,is_buffer);
 		(void)strcat(page_ptr,"</tr>\n");
 	}

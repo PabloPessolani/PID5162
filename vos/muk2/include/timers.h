@@ -12,8 +12,8 @@
  *    Last modified: September 30, 2004.
  */
 
-#ifndef _COM_TIMERS_H
-#define _COM_TIMERS_H
+#ifndef _INC_TIMERS_H
+#define _INC_TIMERS_H
 
 #define molclock_t	dvkclock_t
 #define moltimer 	dvktimer
@@ -24,5 +24,5 @@ molclock_t tmrs_clrtimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t *next_tim
 void tmrs_exptimers(moltimer_t **tmrs, molclock_t now, molclock_t *new_head);
 molclock_t tmrs_settimer(moltimer_t **tmrs, moltimer_t *tp, molclock_t exp_time, tmr_func_t watchdog, molclock_t *new_head);
 
-#endif /* _COM_TIMERS_H */
+#endif /* _INC_TIMERS_H */
 

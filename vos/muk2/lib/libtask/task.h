@@ -12,16 +12,24 @@ extern "C" {
 #include <time.h>
 #include <stdio.h>
 
+#define DVS_USERSPACE	1
+#define _GNU_SOURCE
+#include <sched.h>
+#define cpumask_t cpu_set_t
+
 #include "/usr/src/dvs/include/com/com.h"
 #include "/usr/src/dvs/include/com/ipc.h"
 #include "/usr/src/dvs/include/com/proc_sts.h"
 #include "/usr/src/dvs/include/com/proxy_sts.h"
+#include "/usr/src/dvs/include/com/dc_usr.h"
 #include "/usr/src/dvs/include/com/dvs_config.h"
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/include/com/dvs_errno.h"
 #include "/usr/src/dvs/include/com/endpoint.h"
+#include "/usr/src/dvs/include/com/timers.h"
 
-
+#include "../macros.h"
+#include "../debug.h"
 
 #define TRUE	1
 #define FALSE	0

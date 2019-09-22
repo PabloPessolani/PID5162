@@ -14,13 +14,13 @@
  *	 RMT_BIND		2
  * 	BKUP_BIND		3
  *===========================================================================*/
-char* get_process_name_by_pid( int pid, char *name);
+char* get_process_name_by_pid( int pid);
  
 int sys_rbindproc(int sysproc_ep, int lpid, int oper, int st_nodeid)
 {
-	message m __attribute__((aligned(0x1000)));
-	message *m_ptr;
-	int rcode;
+	int rcode, i;
+	message m, *m_ptr;
+	char *name; 
 	
 	LIBDEBUG("SYS_BINDPROC request to SYSTEM(%d) sysproc_ep=%d lpid=%d oper=%X\n",
 		st_nodeid, sysproc_ep, lpid, oper);
@@ -29,9 +29,7 @@ int sys_rbindproc(int sysproc_ep, int lpid, int oper, int st_nodeid)
 	m_ptr->M3_LPID  = lpid;
 	m_ptr->M3_OPER  = (char *) oper;
 	if( st_nodeid == local_nodeid && (oper != RMT_BIND) ){
-		char* name = (char*)calloc(_POSIX_PATH_MAX+1,sizeof(char));
-		strncpy(m_ptr->m3_ca1,basename(get_process_name_by_pid(lpid, name)), (M3_STRING-1));
-		free(name);
+		strncpy(m_ptr->m3_ca1,get_process_name_by_pid(lpid), (M3_STRING-1));
 	}
 	
 	rcode = _taskcall(SYSTASK(st_nodeid), SYS_BINDPROC, &m);
@@ -40,19 +38,18 @@ int sys_rbindproc(int sysproc_ep, int lpid, int oper, int st_nodeid)
 	return(m_ptr->PR_ENDPT);
 }
 
- char* get_process_name_by_pid( int pid, char *name)
+extern Task *pproc[];
+
+ char* get_process_name_by_pid( int pid)
 {
-	sprintf(name, "/proc/%d/cmdline",pid);
-    FILE* f = fopen(name,"r");
-    if(f){
-        size_t size;
-		size = fread(name, sizeof(char), 1024, f);
-        if(size>0){
-            if('\n'==name[size-1])
-                name[size-1]='\0';
-        }
-        fclose(f);
-    }
-	LIBDEBUG("name=[%s]\n",name);
-    return name;
+	int i;
+	
+	LIBDEBUG("pid=%d\n",pid);
+	for( i = 0; i < (NR_PROCS+NR_TASKS); i++){
+		if( pproc[i] == NULL) continue;
+		if( pproc[i]->id != pid) continue;
+		LIBDEBUG("name=[%s]\n",pproc[i]->name);
+		return(pproc[i]->name);
+	}
+    return NULL;
 }

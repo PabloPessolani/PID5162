@@ -104,8 +104,8 @@ void nw_usage(char* errmsg, ...) {
 	}
 	
 	MUKDEBUG("Get web_ep info\n");
-	web_ptr = (proc_usr_t *) PROC_MAPPED(web_ep);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(web_ptr));
+	web_ptr = (proc_usr_t *) get_task(web_ep);
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(web_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
 	MUKDEBUG("Register NWEB into SYSTASK web_pid=%d\n",web_pid);
@@ -353,8 +353,8 @@ int main_nweb (int argc, char *argv[] )
 	}
 
 	MUKDEBUG("Get web_ep info\n");
-	nw_ptr = (proc_usr_t *) PROC_MAPPED(web_ep);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(nw_ptr));
+	nw_ptr = (proc_usr_t *) get_task(web_ep);
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(nw_ptr));
 
 #endif // ANULADO 	
 	

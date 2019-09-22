@@ -40,12 +40,12 @@ MUKDEBUG("A system call number not implemented by PM has been requested from %d\
  *===========================================================================*/
 int pm_isokendpt(int endpoint, int *proc)
 {
-  	proc_usr_t *rkp;	
+  	muk_proc_t *rkp;	
 
 MUKDEBUG("endpoint=%d \n", endpoint);
 	*proc = _ENDPOINT_P(endpoint);
 MUKDEBUG("*proc=%d\n", *proc);
-	rkp =  (proc_usr_t *) PM_KPROC(*proc);
+	rkp =  (muk_proc_t *) get_task(*proc);
 MUKDEBUG("rkp->p_endpoint=%d\n", rkp->p_endpoint);
 	
 	CHECK_P_NR(*proc);
@@ -64,7 +64,7 @@ MUKDEBUG("rkp->p_endpoint=%d\n", rkp->p_endpoint);
 /*===========================================================================*
  *				sys_proctab				     *
  *===========================================================================*/
-int sys_proctab(proc_usr_t *kp, int tab_len)
+int sys_proctab(muk_proc_t *kp, int tab_len)
 {
 	int rcode;
 
@@ -106,17 +106,17 @@ MUKDEBUG("Sending SYS_GETINFO request %d to SYSTASK(local_nodeid)\n", GET_PRIVTA
 int sys_procinfo(int p_nr)
 {
 	int rcode;
-	proc_usr_t *pm_proc_ptr;
+	muk_proc_t *pm_proc_ptr;
 
-	pm_proc_ptr =  (proc_usr_t *) PM_KPROC(p_nr);
+	pm_proc_ptr =  (muk_proc_t *) get_task(p_nr);
 	
 #ifdef ALLOC_LOCAL_TABLE 			
 	MUKDEBUG("Sending SYS_GETINFO request %d to SYSTASK(local_nodeid) for p_nr=%d\n", GET_PROC, p_nr);
-	rcode = sys_getinfo(GET_PROC, (void *) pm_proc_ptr, sizeof(proc_usr_t), NULL, p_nr);
+	rcode = sys_getinfo(GET_PROC, (void *) pm_proc_ptr, sizeof(muk_proc_t), NULL, p_nr);
 	if(rcode) ERROR_RETURN(rcode);
 #endif // ALLOC_LOCAL_TABLE 			
 	
-   	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(pm_proc_ptr));
+   	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(pm_proc_ptr));
 
 	return(OK);
 }
@@ -126,7 +126,7 @@ int sys_procinfo(int p_nr)
  *===========================================================================*/
 void mproc_init(int p_nr)
 {
-	proc_usr_t *pm_proc_ptr;
+	muk_proc_t *pm_proc_ptr;
 	
 	MUKDEBUG("p_nr=%d\n", p_nr);
 
@@ -153,16 +153,16 @@ void mproc_init(int p_nr)
 	mp->mp_flags		= 0;
 	mp->mp_nice 		= PRIO_USERPROC;
 	
-	pm_proc_ptr =  (proc_usr_t *) PM_KPROC(p_nr);
-	if( !TEST_BIT(pm_proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
-		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(pm_proc_ptr));
+	pm_proc_ptr =  (muk_proc_t *) get_task(p_nr);
+	if ( pm_proc_ptr != NULL) {
+		assert( !TEST_BIT(pm_proc_ptr->p_rts_flags, BIT_SLOT_FREE));
+		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(pm_proc_ptr));
 		mp->mp_endpoint	= pm_proc_ptr->p_endpoint;
 		mp->mp_flags	= IN_USE;
 		mp->mp_pid		= 0;
 		mp->mp_procgrp	= 0;
 		mp->mp_parent	= 0;
 	}
-	
 }
 
 

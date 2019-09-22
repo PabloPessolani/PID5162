@@ -45,7 +45,6 @@ The kernel call implemented in this file:
 int st_bindproc(message *m_ptr)	
 {
   Task *sysproc_ptr;		/* sysproc process pointer */
-  priv_usr_t *sppriv_ptr;		/* sysproc privileges pointer */
   int sysproc_nr, sysproc_lpid, sysproc_ep, sysproc_oper, sysproc_nodeid;
   int rcode;
 
@@ -61,7 +60,7 @@ int st_bindproc(message *m_ptr)
 		ERROR_RETURN(EDVSBADRANGE);
 	
 	CHECK_P_NR(sysproc_nr);		
-	sysproc_ptr 	= get_task(sysproc_nr);
+	sysproc_ptr = get_task(sysproc_nr);
 	
 	/* GET process information from kernel */
 #ifdef ALLOC_LOCAL_TABLE 			
@@ -74,6 +73,7 @@ int st_bindproc(message *m_ptr)
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(sysproc_ptr));
 	
 	/* REMOTE USER PROCESSES */
+#ifdef SUPPORT_REMOTE	
 	if( (sysproc_nr+dc_ptr->dc_nr_tasks) >= dc_ptr->dc_nr_sysprocs) {
 		/* user processes can be bound only if they are REMOTE */
 		if( sysproc_oper != RMT_BIND )
@@ -134,6 +134,8 @@ int st_bindproc(message *m_ptr)
 		return(OK);
 	}
 
+#endif // SUPPORT_REMOTE	
+
 #ifdef ALLOC_LOCAL_TABLE 			
 	rcode = muk_getprocinfo(dc_ptr->dc_dcid, sysproc_nr, sysproc_ptr);
 	if( rcode < 0) ERROR_RETURN(rcode);
@@ -146,28 +148,15 @@ int st_bindproc(message *m_ptr)
 	if(  TEST_BIT(sysproc_ptr->p_rts_flags, BIT_SLOT_FREE)) 
 		ERROR_RETURN(EDVSNOTBIND);
 		
-	if( sysproc_ptr->p_nodeid == local_nodeid) 
-		strncpy(sysproc_ptr->p_name, basename(m_ptr->M3_NAME),(M3_STRING-1));
+//	if( sysproc_ptr->p_nodeid == local_nodeid) 
+//		strncpy(sysproc_ptr->p_name, basename(m_ptr->M3_NAME),(M3_STRING-1));
 
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(sysproc_ptr));
-	
-	/* Get privileges information from kernel */
-	sysproc_ep = sysproc_ptr->p_endpoint;
-	sppriv_ptr =  PROC2PRIV(sysproc_nr);
-	rcode = muk_getpriv(dc_ptr->dc_dcid, sysproc_ep, sppriv_ptr);
-	if( rcode < 0) ERROR_RETURN(rcode);
-	MUKDEBUG(PRIV_USR_FORMAT,PRIV_USR_FIELDS(sppriv_ptr));
-	
+		
 	m_ptr->M1_ENDPT = sysproc_ep;
 	m_ptr->M1_OPER  = sysproc_oper;
 
-#ifdef ANULADO	
-	if(sysproc_ptr->p_nodeid != local_nodeid) {
-		return(OK);
-	}
-#endif //  ANULADO	
-
-  return(OK);
+	return(OK);
 }
 
 #endif /* USE_BINDPROC */
@@ -211,7 +200,6 @@ int st_unbind(message *m_ptr)			/* pointer to request message */
 {
 
 	Task *proc_ptr;		/* exiting process pointer */
-	priv_usr_t  *priv_ptr;
 	int proc_nr, proc_ep;
   	int rcode, flags;
 
@@ -235,7 +223,6 @@ int st_unbind(message *m_ptr)			/* pointer to request message */
 	
 	/* save flags before destructive unbind */
 	flags = proc_ptr->p_rts_flags;
-	priv_ptr = PROC2PRIV(proc_nr);
 
 	/* Did proc_ptr be killed by a signal sent by another process? */
 	if( !TEST_BIT(proc_ptr->p_misc_flags, MIS_BIT_KILLED)){ /* NO, it exits by itself */
@@ -245,7 +232,7 @@ int st_unbind(message *m_ptr)			/* pointer to request message */
 		if( rcode < 0) 	ERROR_RETURN(rcode);
 	}else{
 		MUKDEBUG("NOTIFY proc_ep=%d\n",proc_ep);
-		rcode = muk_ntfy_value(pm_ep, proc_ep, pm_ep);
+		rcode = muk_src_notify(pm_ep, proc_ep);
 		if( rcode < 0) 	ERROR_RETURN(rcode);		
 #define TO_WAIT4UNBIND	100 /* miliseconds */
 		MUKDEBUG("muk_wait4unbind_T\n");
@@ -262,7 +249,7 @@ int st_unbind(message *m_ptr)			/* pointer to request message */
 	MUKDEBUG("endpoint %d unbound\n", proc_ep);
 			
 	if( !TEST_BIT(flags, BIT_REMOTE)){	/* Local Process */	
-	  	reset_timer(&priv_ptr->priv_alarm_timer);
+	  	reset_timer(&proc_ptr->p_alarm_timer);
 	}
 
 #ifdef ALLOC_LOCAL_TABLE 			

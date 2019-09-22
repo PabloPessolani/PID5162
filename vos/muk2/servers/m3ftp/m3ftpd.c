@@ -87,8 +87,8 @@ void ftpd_init(void)
 	MUKDEBUG("ftp_pid=%d\n", ftp_pid);
 	
 	MUKDEBUG("Get ftp_ep info\n");
-	ftp_ptr = (proc_usr_t *) PROC_MAPPED(ftp_ep);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(ftp_ptr));
+	ftp_ptr = (proc_usr_t *) get_task(ftp_ep);
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(ftp_ptr));
 	
 	// set the name of FTP 
 	rcode = sys_rsetpname(ftp_ep, "m3ftp", local_nodeid);

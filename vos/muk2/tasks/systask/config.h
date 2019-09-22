@@ -34,7 +34,7 @@
 #define USE_SDEVIO     	   0	/* perform I/O request on a buffer */
 #define USE_IRQCTL     	   0	/* set an interrupt policy */
 #define USE_SEGCTL     	   0	/* set up a remote segment */
-#define USE_PRIVCTL    	   1	/* system privileges control */
+#define USE_PRIVCTL    	   0	/* system privileges control */
 #define USE_NICE 	   	   0	/* change scheduling priority */
 #define USE_UMAP       	   0	/* map virtual to physical address */
 #define USE_VIRCOPY   	   1	/* copy using virtual addressing */ 
@@ -43,7 +43,7 @@
 #define USE_PHYSVCOPY  	   0	/* vector with physical copy requests */
 #define USE_MEMSET  	   1	/* write char to a given memory area */
 #define USE_KILLED  	   0	/* a process has been killed without knowing  */
-#define USE_BINDPROC  	   0	/* a system process need to be binded with PM and SYSTASK  */
+#define USE_BINDPROC  	   1	/* a system process need to be binded with PM and SYSTASK  */
 #define USE_REXEC	   	   0	/* a remote process execute in LOCAL node */
 #define USE_MIGRPROC  	   0	/* a system process has migrated to local node  */
 #define USE_SETPNAME  	   1	/* change the name of a exec() process  */

@@ -213,8 +213,8 @@ extern mproc_t *mp;		/* PM process table			*/
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
 	MUKDEBUG("Get fs_ep info\n");
-	fs_proc_ptr = (proc_usr_t *) PROC_MAPPED(fs_ep);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(fs_proc_ptr));
+	fs_proc_ptr = (proc_usr_t *) get_task(fs_ep);
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_proc_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
 	MUKDEBUG("Register FS into SYSTASK fs_pid=%d\n",fs_pid);

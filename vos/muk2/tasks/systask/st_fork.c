@@ -63,7 +63,7 @@ int st_fork(message *m_ptr)
 	child_ep = _ENDPOINT(child_gen, child_ptr->p_nr);
 	MUKDEBUG("bind dcid=%d child_lpid=%d, child_nr=%d  child_ep=%d child_gen=%d\n", 
 		dc_ptr->dc_dcid, child_lpid, child_nr, child_ep, child_gen);
-	rcode  = muk_lclbind(dc_ptr->dc_dcid, child_lpid, child_ep);
+	rcode = task_bind( child_ptr, child_ep, child_ptr->name);
 	MUKDEBUG("child_ep=%d rcode=%d\n", child_ep, rcode);
 	if(child_ep != rcode) ERROR_RETURN(rcode);
 	
@@ -77,14 +77,6 @@ int st_fork(message *m_ptr)
 #endif /* ALLOC_LOCAL_TABLE */
 	
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(child_ptr));
-
-	/* Get process privileges from kernel */
-	child_ep = child_ptr->p_endpoint;
-	MUKDEBUG("child_ep=%d\n", child_ep);
-	cpriv_ptr =  PROC2PRIV(child_nr);
-	rcode = muk_getpriv(dc_ptr->dc_dcid, child_ep, cpriv_ptr);
-	if( rcode < 0) ERROR_RETURN(rcode);
-	MUKDEBUG(PRIV_USR_FORMAT,PRIV_USR_FIELDS(cpriv_ptr));
 
 	m_ptr->PR_ENDPT = child_ep;
 	m_ptr->PR_SLOT  = child_nr;

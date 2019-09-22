@@ -58,7 +58,7 @@ int dmp_fs_proc(void)
 
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		fp_ptr = &fs_proc_table[i];
-		proc_ptr = (proc_usr_t *) PROC_MAPPED(i);
+		proc_ptr = (proc_usr_t *) get_task(i);
 		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
@@ -154,7 +154,7 @@ int wdmp_fs_proc(void)
 	
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		fp_ptr = &fs_proc_table[i];
-		proc_ptr = (proc_usr_t *) PROC_MAPPED(i);
+		proc_ptr = (proc_usr_t *) get_task(i);
 		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}

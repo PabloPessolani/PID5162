@@ -23,7 +23,7 @@ int main ( int argc, char *argv[] )
 	int vmid, rcode, result, proc_nr, ds_lpid;
 	mnxsigset_t sigset;
 	mproc_t *rmp;	
-	proc_usr_t *rkp;	
+	muk_proc_t *rkp;	
 	struct timespec t; 
 	long long tt, td;
 
@@ -160,11 +160,11 @@ void pm_init(int vmid)
 	/*testing*/
 	int ds_lpid, ds_ep;
 	
-	pm_lpid = getpid();
+	pm_id = getpid();
 	m_ptr = &pm_m_in;
 
 	/* Bind PM to the kernel */
-SVRDEBUG("Binding process %d to VM%d with pm_nr=%d\n",pm_lpid,vmid,pm_ep);
+SVRDEBUG("Binding process %d to VM%d with pm_nr=%d\n",pm_id,vmid,pm_ep);
 	pm_ep = mnx_bind(vmid, pm_ep);
 	if(pm_ep < 0) ERROR_EXIT(pm_ep);
 
@@ -173,8 +173,8 @@ SVRDEBUG("Binding process %d to VM%d with pm_nr=%d\n",pm_lpid,vmid,pm_ep);
 SVRDEBUG("local_nodeid=%d\n",local_nodeid);
 
 	/* Register into SYSTASK (as an autofork) */
-SVRDEBUG("Register PM into SYSTASK pm_lpid=%d\n",pm_lpid);
-	pm_ep = sys_bindproc(pm_ep, pm_lpid);
+SVRDEBUG("Register PM into SYSTASK pm_id=%d\n",pm_id);
+	pm_ep = sys_bindproc(pm_ep, pm_id);
 	if(pm_ep < 0) ERROR_EXIT(pm_ep);
 	
 SVRDEBUG("Get the DRVS pm_info from SYSTASK\n");
@@ -192,7 +192,7 @@ SVRDEBUG(VM_USR_FORMAT,VM_USR_FIELDS(vm_ptr));
 
 	/* alloc dynamic memory for the KERNEL process table */
 SVRDEBUG("Alloc dynamic memory for the Kernel process table nr_procs+nr_tasks=%d\n", (vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs));
-	kproc = malloc((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(proc_usr_t));
+	kproc = malloc((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(muk_proc_t));
 	if(kproc == NULL) ERROR_EXIT(rcode);
 
 	/* alloc dynamic memory for the PM process table */
@@ -243,7 +243,7 @@ SVRDEBUG("change PRIVILEGES of PM\n");
 	if(rcode) ERROR_EXIT(rcode);
 
 	/* get kernel PROC TABLE */
-	tab_len =  ((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(proc_usr_t));
+	tab_len =  ((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(muk_proc_t));
 	rcode = sys_proctab(kproc, tab_len);
 
 	/* Fetch clock ticks */
@@ -385,7 +385,7 @@ SVRDEBUG("proc_nr=%d result=%d\n",proc_nr, result);
   printf(".\n");				/* last process done */
 
   /* Override some details. INIT, PM, FS and RS are somewhat special. */
-  mproc[pm_ep].mp_pid = pm_lpid;		/* PM has magic pid */
+  mproc[pm_ep].mp_pid = pm_id;		/* PM has magic pid */
   mproc[RS_PROC_NR].mp_parent = INIT_PROC_NR;	/* INIT is root */
   sigfillset(&mproc[pm_ep].mp_ignore); 	/* guard against signals */
 

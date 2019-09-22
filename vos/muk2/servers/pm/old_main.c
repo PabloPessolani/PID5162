@@ -23,7 +23,7 @@ int main ( int argc, char *argv[] )
 	int vmid, rcode, result, proc_nr, ds_lpid;
 	mnxsigset_t sigset;
 	mproc_t *rmp;	
-	proc_usr_t *rkp;	
+	muk_proc_t *rkp;	
 	struct timespec t; 
 	long long tt, td;
 
@@ -192,7 +192,7 @@ SVRDEBUG(VM_USR_FORMAT,VM_USR_FIELDS(vm_ptr));
 
 	/* alloc dynamic memory for the KERNEL process table */
 SVRDEBUG("Alloc dynamic memory for the Kernel process table nr_procs+nr_tasks=%d\n", (vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs));
-	kproc = malloc((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(proc_usr_t));
+	kproc = malloc((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(muk_proc_t));
 	if(kproc == NULL) ERROR_EXIT(rcode);
 
 	/* alloc dynamic memory for the PM process table */
@@ -243,7 +243,7 @@ SVRDEBUG("change PRIVILEGES of PM\n");
 	if(rcode) ERROR_EXIT(rcode);
 
 	/* get kernel PROC TABLE */
-	tab_len =  ((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(proc_usr_t));
+	tab_len =  ((vm_ptr->vm_nr_tasks + vm_ptr->vm_nr_procs)*sizeof(muk_proc_t));
 	rcode = sys_proctab(kproc, tab_len);
 
 	/* Fetch clock ticks */

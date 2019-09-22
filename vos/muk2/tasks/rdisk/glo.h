@@ -29,7 +29,7 @@ EXTERN int mayor_dev;
 EXTERN int rd_dev_nr;
 EXTERN long nr_optrans;
 
-EXTERN proc_usr_t proc_rd, *rd_ptr;	
+EXTERN muk_proc_t proc_rd, *rd_task;	
 
 EXTERN int rd_rcode;		/* temporary storage for error number */
 //EXTERN char user_path[PATH_MAX];/* storage for user path name */

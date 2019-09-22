@@ -885,7 +885,7 @@ static void  eth_init(void)
 	rcode = sys_getproc(&eth, SELF);
 	if(rcode) ERROR_EXIT(rcode);
 	eth_ptr = &eth;
-	TASKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(eth_ptr));
+	TASKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(eth_ptr));
 	
 }
 

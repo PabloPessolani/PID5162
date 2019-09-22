@@ -105,37 +105,25 @@ int pm_fork(void)
 {
 	/* The process pointed to by 'mp' has forked.  Create a child process. */
   	mproc_t *rmp, *rmc;
-  	proc_usr_t *rkp, *rkc;	
+  	muk_proc_t *rkp, *rkc;	
 	int  child_lpid, new_pid, child_nr, child_ep;
 	int rcode;
 	message *pm_msg_ptr;
 	
-	rkp = (proc_usr_t *) PM_KPROC(pm_who_p);
+	rkp = (muk_proc_t *) get_task(pm_who_p);
 	/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
   	if((rcode =sys_procinfo(pm_who_p)) != OK) 
 		ERROR_EXIT(rcode);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkp));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
 	pm_msg_ptr  = &pm_m_in;
 	MUKDEBUG(MSG3_FORMAT,MSG3_FIELDS(pm_msg_ptr));
 	child_lpid = pm_m_in.M3_LPID;
 	
 	MUKDEBUG("pm_who_p=%d child_lpid=%d M3_ENDPT=%d\n", pm_who_p, child_lpid, pm_m_in.M3_ENDPT);
-	if(!TEST_BIT( rkp->p_rts_flags,BIT_REMOTE)) {
-		/* Tell SYSTASK  about the (now successful) FORK, waiting endpoint */
-		child_ep = sys_fork(child_lpid);
-		MUKDEBUG("child_ep=%d child_lpid=%d \n", child_ep, child_lpid);
-		if(child_ep < 0) ERROR_RETURN(child_ep);
-	}else{	
-		/* Request REMOTE SYSTASK to LOCALLY bind the process an allocate an endpoint */
-		child_ep = sys_rfork(child_lpid, rkp->p_nodeid);
-		if( child_ep < OK) ERROR_RETURN(child_ep);
-		/* Request LOCAL SYSTASK to REMOTE bind the process with the allocated endpoint */
-		MUKDEBUG("child_ep=%d p_nodeid=%d \n", child_ep, rkp->p_nodeid);
-		rcode = sys_bindproc(child_ep, rkp->p_nodeid, RMT_BIND);
-		if(rcode < 0) ERROR_RETURN(rcode);
-		rcode = sys_rsetpname(child_ep, pm_m_in.M3_NAME, local_nodeid);
-		if(rcode < 0) ERROR_RETURN(rcode);
-	}
+	/* Tell SYSTASK  about the (now successful) FORK, waiting endpoint */
+	child_ep = sys_fork(child_lpid);
+	MUKDEBUG("child_ep=%d child_lpid=%d \n", child_ep, child_lpid);
+	if(child_ep < 0) ERROR_RETURN(child_ep);
 
 	child_nr = _ENDPOINT_P(child_ep);	
 		
@@ -148,7 +136,7 @@ int pm_fork(void)
 		rmp = mp;	
 	}
 	rmc = &pm_proc_table[child_nr];
-	rkc =  (proc_usr_t *) PM_KPROC(child_nr);
+	rkc =  (muk_proc_t *) get_task(child_nr);
 	
   	/* Set up the child ; copy its 'pm_proc_table' slot from parent. */
   	*rmc = *rmp;			/* copy parent's process slot to child's */
@@ -198,16 +186,16 @@ int pm_wait4fork(void)
 {
 	/* The process pointed to by 'mp' has forked.  Create a child process. */
   	mproc_t  *rmc;
-  	proc_usr_t *rkc;	
+  	muk_proc_t *rkc;	
 	int  child_lpid, child_nr, child_ep;
 	int rcode;
 	message *pm_msg_ptr;
 	
-	rkc =  (proc_usr_t *) PM_KPROC(pm_who_p);
+	rkc =  (muk_proc_t *) get_task(pm_who_p);
 	/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
   	if((rcode =sys_procinfo(pm_who_p)) != OK) 
 		ERROR_EXIT(rcode);
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkc));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkc));
 	pm_msg_ptr  = &pm_m_in;
 	MUKDEBUG(MSG3_FORMAT,MSG3_FIELDS(pm_msg_ptr));
 	child_lpid = pm_m_in.M3_LPID;
@@ -237,7 +225,7 @@ int pm_pm_exit(void)
 /* Perform the taskexit(status) system call. The real work is done by pm_exit(),
  * which is also called when a process is killed by a signal.
  */
-  	proc_usr_t *rkp;	
+  	muk_proc_t *rkp;	
  	int i, ret;
 
 	MUKDEBUG("pm_who_p=%d pm_who_e=%d lnx_pid=%d status=%d\n",
@@ -248,8 +236,8 @@ int pm_pm_exit(void)
 
 	if( pm_m_in.lnx_pid != (-1) ) { /*  OTHER PROCESS */
 		for ( i = 0; i < (dc_ptr->dc_nr_procs); i++) {
-			rkp =  (proc_usr_t *) PM_KPROC(i);
-			if(rkp->p_lpid == pm_m_in.lnx_pid) {
+			rkp =  (muk_proc_t *) get_task(i);
+			if(rkp->id == pm_m_in.lnx_pid) {
 				ret = pm_exit(&pm_proc_table[i], pm_m_in.status, MOLEXIT);
 				if(ret != OK)
 					ERROR_RETURN(ret);
@@ -275,7 +263,7 @@ int pm_unbind(void)
 /* Perform the taskexit(status) system call. The real work is done by pm_exit(),
  * which is also called when a process is killed by a signal.
  */
-  	proc_usr_t *rkp;	
+  	muk_proc_t *rkp;	
  	int  ret;
 
 	MUKDEBUG("pm_who_p=%d pm_who_e=%d p_ep=%d\n",
@@ -286,7 +274,7 @@ int pm_unbind(void)
 
 	ret = 0;
 	if( pm_m_in.m1_i1 != SELF ) { /*  OTHER PROCESS */
-		rkp =  (proc_usr_t *) PM_KPROC(_ENDPOINT_P(pm_m_in.m1_i1));
+		rkp =  (muk_proc_t *) get_task(_ENDPOINT_P(pm_m_in.m1_i1));
 		ret = pm_exit(&pm_proc_table[rkp->p_nr], 0, MOLUNBIND);
 		if(ret != OK)
 			ERROR_RETURN(ret);
@@ -315,11 +303,11 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
   	int parent_waiting, right_child, rcode;
  	int pidarg, procgrp;
   	mproc_t *p_mp, *rcp;
-  	proc_usr_t *rkp;
+  	muk_proc_t *rkp;
   	molclock_t t[5];
 
   	proc_nr = (int) (rmp - pm_proc_table);	/* get process slot number */
-	rkp =  (proc_usr_t *) PM_KPROC(proc_nr);
+	rkp =  (muk_proc_t *) get_task(proc_nr);
   	proc_ep = rkp->p_endpoint;
 	MUKDEBUG("mnx_pid=%d status=%d proc_nr=%d proc_ep=%d oper=%d\n", 
 		rmp->mp_pid, exit_status, proc_nr, proc_ep, oper);
@@ -353,9 +341,9 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
 //	tell_fs(MOLEXIT, proc_ep, 0, 0);  		/* tell FS to free the slot */
 
 	/* Tell SYSTASK to unbind the exiting process	*/
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkp));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
 	
-	rcode = _sys_exit(rkp->p_endpoint, rkp->p_nodeid);
+	rcode = _sys_exit(rkp->p_endpoint, local_nodeid);
 			
 	if(rcode < 0 && rcode != EDVSNOTBIND  && rcode != EDVSDSTDIED)		
   		ERROR_EXIT(rcode);
@@ -364,7 +352,7 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
   	if((rcode =sys_procinfo(proc_nr)) != OK) 
 		ERROR_EXIT(rcode);
 		
-	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(rkp));
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
 	
 	if( TEST_BIT( rkp->p_rts_flags,BIT_SLOT_FREE)) {
 		rmp->mp_flags &= ~REPLYPENDING;
@@ -466,7 +454,7 @@ int pm_bindproc(void)
 	PM and SYSTASK.  Register the process (sysproc) into PM */
 	message *pm_msg_ptr;
   	mproc_t *msp;
-  	proc_usr_t *ksp, *psp;	
+  	muk_proc_t *ksp, *psp;	
 	char *sig_ptr;
 	static char mess_sigs[] = { SIGTERM, SIGHUP, SIGABRT, SIGQUIT };
 	int  lpid, new_pid, sysproc_nr, sysproc_ep, rcode, oper;
@@ -491,12 +479,12 @@ int pm_bindproc(void)
 		ERROR_EXIT(rcode);
 	
 	msp = &pm_proc_table[sysproc_nr];
-	ksp =  (proc_usr_t *) PM_KPROC(sysproc_nr);
+	ksp =  (muk_proc_t *) get_task(sysproc_nr);
 	if( ksp->p_rts_flags != SLOT_FREE) {
-		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(ksp));
+		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(ksp));
 		MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(msp));
 		if(! (ksp->p_rts_flags & BIT_REMOTE)){
-			if(ksp->p_lpid != lpid) {
+			if(ksp->id != lpid) {
 				ERROR_RETURN(EDVSEXIST);
 			}else{
 				assert( !(msp->mp_flags & IN_USE));
@@ -519,7 +507,7 @@ int pm_bindproc(void)
 	MUKDEBUG("sysproc_nr=%d\n", sysproc_nr);
 	
   	/* Set up the sysproc */
-	psp = (proc_usr_t *) PM_KPROC(pm_ep);
+	psp = (muk_proc_t *) get_task(pm_ep);
   	msp->mp_parent = psp->p_endpoint;	/* PM is the parent of all sysprocs */
   	/* inherit only these flags */
  	msp->mp_flags 		= (IN_USE|PRIV_PROC);

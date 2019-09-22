@@ -79,5 +79,5 @@ typedef struct mproc mproc_t;
 			
 #define NIL_MPROC ((struct mproc *) 0)
 
-#define PM_KPROC(p_nr) ((( p_nr + dc_ptr->dc_nr_tasks ) * dvs_ptr->d_size_proc) + kproc_map)
+
 

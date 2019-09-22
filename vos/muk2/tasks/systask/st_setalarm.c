@@ -22,7 +22,6 @@ int st_setalarm(message *m_ptr)		/* pointer to request message */
 {
 	/* A process requests a synchronous alarm, or wants to cancel its alarm. */
   	Task *caller_ptr;
-	priv_usr_t  *priv_ptr;
   	long exp_time;			/* expiration time for this alarm */
   	int use_abs_time;		/* use absolute or relative time */
   	moltimer_t *tp;			/* the process' timer structure */
@@ -35,16 +34,8 @@ int st_setalarm(message *m_ptr)		/* pointer to request message */
   	caller_ptr = get_task(sys_who_p);
 MUKDEBUG("sys_who_p=%d sys_who_e=%d exp_time=%d, use_abs_time=%d\n",sys_who_p,sys_who_e,exp_time,use_abs_time);
 
-	priv_ptr = PROC2PRIV(sys_who_p);
-	rcode = muk_getpriv(dc_ptr->dc_dcid, caller_ptr->p_endpoint, priv_ptr);
-	if( rcode ) ERROR_RETURN(rcode);
-
-//  	if (priv_ptr->s_level == USER_PRIV) ERROR_RETURN(EDVSPERM);
-
-MUKDEBUG("PRIV "PRIV_USR_FORMAT, PRIV_USR_FIELDS(priv_ptr));
-
   	/* Get the timer structure and set the parameters for this alarm. */
-  	tp = &priv_ptr->priv_alarm_timer;	
+  	tp = &caller_ptr->p_alarm_timer;	
   	tp->dvk_tmr_arg.ta_int = sys_who_e;
   	tp->dvk_tmr_func = cause_alarm; 
 

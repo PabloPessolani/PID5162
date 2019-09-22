@@ -44,10 +44,7 @@
 #include <sys/utsname.h>
 #include <inttypes.h>
 #include "task.h"
-
 #include "macros.h"
-#include "../macros.h"
-#include "../debug.h"
 
 #define nil ((void*)0)
 #define nelem(x) (sizeof(x)/sizeof((x)[0]))
@@ -145,6 +142,8 @@ void	deltask(Tasklist*, Task*);
 
 extern Task	*taskrunning;
 extern int	taskcount;
+
+extern dc_usr_t *dc_ptr;
 
 #endif //  _TASKIMPL_H_
 

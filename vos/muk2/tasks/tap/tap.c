@@ -634,7 +634,7 @@ int tap_init(void )
 	
 	if(rcode ) ERROR_EXIT(rcode);
 	tap_ptr = &tap_proc;
-	TASKDEBUG("BEFORE " PROC_USR_FORMAT,PROC_USR_FIELDS(tap_ptr));
+	TASKDEBUG("BEFORE " PROC_MUK_FORMAT,PROC_MUK_FIELDS(tap_ptr));
 	
 	if( TEST_BIT(tap_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		TASKDEBUG("Starting single TAP\n");
@@ -648,7 +648,7 @@ int tap_init(void )
 
 	rcode = muk_getprocinfo(DCID, tap_ep, &tap_proc);
 	if(rcode) ERROR_EXIT(rcode);
-	TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(tap_ptr));	
+	TASKDEBUG("AFTER  " PROC_MUK_FORMAT,PROC_MUK_FIELDS(tap_ptr));	
 	
 	for (i=0;i< TAP_PORT_NR_MAX;++i)	{
 		tc = &tap_table[i];

@@ -12,7 +12,7 @@ void setreply(int proc_nr, int result);
 
 /* utility.c */
 void mproc_init(int p_nr);
-int sys_proctab(proc_usr_t *kp, int tab_len);
+int sys_proctab(muk_proc_t *kp, int tab_len);
 int sys_privtab(priv_usr_t *kp, int tab_len);
 int sys_slotstab(slot_t *slots, int tab_len);
 void mproc_init(int p_nr);

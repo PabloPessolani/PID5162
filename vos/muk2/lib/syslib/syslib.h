@@ -69,6 +69,8 @@
 #include "../../include/slots.h"
 #include "../../../../include/com/stub_dvkcall.h"
 
+#include "../../include/libtask.h"
+
 #include "../debug.h"
 #include "../macros.h"
 
