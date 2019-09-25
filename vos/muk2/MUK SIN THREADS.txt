@@ -278,10 +278,38 @@ ViolaciÃ³n de segmento
 20190919:		
 		Se implmento muk_sendrec 
 
-		
+	
+=====================================================================================================
+20190922:	 SYSTASK+RDISK+PM 
+
+=====================================================================================================
+20190924:	 SYSTASK+RDISK+PM+FS+IS+NWEB+FTP 
 
 ULTIMO_LOG 		
 =====================================================================================================
+
+
+TODO: Convertir todas las librerias de .so a  .a (estaticas)
+
+TODO:	Idem para MUK 
+
+TODO: Adaptar M3NWEB para que use los sockets como usa tcpproxy.c 
+
+TODO: Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
+		1) o se usa un hilo especifico que espera 
+		
+ATENCION: libtask utiliza funciones propias para sustituir PRINTF y otras
+		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
+
+
+
+Se podria hacer una especie de whatdog.
+Cada Tarea tiene un contador que se va decrementando una vez por segundo si no ha tenido actividad.
+Cuando hay actividad (en el receive, por ejemplo) vuelve el contador a su valor inicial.
+Para el caso del web server que espera en el socket, entonces no deberia implementarse.
+para ello habria que poner un MISC-FLAG que indique que se quiere controlar si esta dormido.
+
+
 Hacer lo siguiente:
 	Desarrollar una tarea que funcione similar al clock que utilize los timers ya definidos en MINIX 
 	para implementar los TIMEOUTs de SEND, SENDREC, RECEIVE, WAIT4BIND 
@@ -305,12 +333,7 @@ PROBLEMA DE TIMEOUTS:
 			Se debería tener una fuente de tiempo mas precisa u obtener el tiempo restante.
 		
 	
-TODO: Convertir todas las librerias de .so a  .a (estaticas)
 	
-TODO: Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
-
-ATENCION: libtask utiliza funciones propias para sustituir PRINTF y otras
-		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
 		
 
 		

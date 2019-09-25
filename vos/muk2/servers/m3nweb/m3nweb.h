@@ -76,6 +76,8 @@
 
 #include "../../../../include/generic/configfile.h"
 
+#include "../../include/libtask.h"
+
 #include "../../debug.h"
 #include "../../macros.h"
 

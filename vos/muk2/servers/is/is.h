@@ -77,6 +77,8 @@
 extern int	dvk_fd;
 extern int local_nodeid;
 
+#include "../../include/libtask.h"
+
 #include "../../debug.h"
 #include "../../macros.h"
 #include "../pm/mproc.h"

@@ -97,11 +97,11 @@ Task *get_task(int p_ep)
 	p_nr = _ENDPOINT_P(p_ep);
 	LIBDEBUG("p_ep=%d p_nr=%d\n", p_ep, p_nr);
 	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs)){
-		ERROR_PRINT(EDVSBADVALUE);
+//		ERROR_PRINT(EDVSBADVALUE);
 		return(NULL);
 	}
 	if( pproc[p_nr+dc_ptr->dc_nr_tasks] == NULL) {
-		ERROR_PRINT(EDVSBADPROC);
+//		ERROR_PRINT(EDVSBADPROC);
 		return(NULL);
 	}
 	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);

@@ -198,10 +198,10 @@ extern mproc_t *mp;		/* PM process table			*/
 
 	MUKDEBUG("dcid=%d fs_ep=%d\n",dcid, fs_ep);
 	
-	fs_pid = syscall (SYS_gettid);
-	MUKDEBUG("fs_pid=%d\n", fs_pid);
+	fs_id = taskid();
+	MUKDEBUG("fs_id=%d\n", fs_id);
 	
-	fs_ep = muk_tbind(dcid, fs_ep);
+	fs_ep = muk_tbind(dcid, fs_ep, "fs");
 	MUKDEBUG("fs_ep=%d\n", fs_ep);
 	if( fs_ep != fs_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
@@ -213,15 +213,15 @@ extern mproc_t *mp;		/* PM process table			*/
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
 	MUKDEBUG("Get fs_ep info\n");
-	fs_proc_ptr = (proc_usr_t *) get_task(fs_ep);
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_proc_ptr));
+	fs_proc_ptr = (muk_proc_t *) get_task(fs_ep);
+//	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_proc_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
-	MUKDEBUG("Register FS into SYSTASK fs_pid=%d\n",fs_pid);
-	fs_ep = sys_bindproc(fs_ep, fs_pid, LCL_BIND);
+	MUKDEBUG("Register FS into SYSTASK fs_id=%d\n",fs_id);
+	fs_ep = sys_bindproc(fs_ep, fs_id, LCL_BIND);
 	if(fs_ep < 0) ERROR_TSK_EXIT(fs_ep);
 
-	rcode = mol_bindproc(fs_ep, fs_ep, fs_pid, LCL_BIND);
+	rcode = mol_bindproc(fs_ep, fs_ep, fs_id, LCL_BIND);
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode < 0) {
 		ERROR_PRINT(rcode);

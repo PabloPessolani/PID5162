@@ -271,6 +271,7 @@ int muk_tbind(int dcid, int p_ep, char *name);
 int muk_unbind(int dcid, int p_ep);
 Task *get_task(int p_ep);
 int muk_send(int dst_ep, message *mptr);
+
 int muk_receive(int src_ep, message *mptr);
 
 int muk_notify_X(int src_nr, int dst_ep);

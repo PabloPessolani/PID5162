@@ -93,10 +93,10 @@ void nw_usage(char* errmsg, ...) {
 	rcode = nw_search_config(cfg);
 	if(rcode) ERROR_TSK_EXIT(rcode);
 	
-	web_pid = syscall (SYS_gettid);
-	MUKDEBUG("web_pid=%d\n", web_pid);
+	web_id = taskid();
+	MUKDEBUG("web_id=%d\n", web_id);
 	
-	lcl_ep = muk_tbind(dcid, web_ep);
+	lcl_ep = muk_tbind(dcid, web_ep, "nweb");
 	MUKDEBUG("web_ep=%d\n", web_ep);
 	if( lcl_ep != web_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
@@ -108,11 +108,11 @@ void nw_usage(char* errmsg, ...) {
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(web_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
-	MUKDEBUG("Register NWEB into SYSTASK web_pid=%d\n",web_pid);
-	lcl_ep = sys_bindproc(web_ep, fs_pid, LCL_BIND);
+	MUKDEBUG("Register NWEB into SYSTASK web_id=%d\n",web_id);
+	lcl_ep = sys_bindproc(web_ep, web_id, LCL_BIND);
 	if(lcl_ep < 0) ERROR_TSK_EXIT(lcl_ep);
 	
-	rcode = mol_bindproc(web_ep, web_ep, web_pid, LCL_BIND);
+	rcode = mol_bindproc(web_ep, web_ep, web_id, LCL_BIND);
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode < 0) {
 		ERROR_PRINT(rcode);
@@ -162,8 +162,8 @@ int nweb_server(int socket_fd)
   	FILE *log_fp;
 
 	/* Register into SYSTASK (as an autofork) */
-//	MUKDEBUG("Register NW into SYSTASK web_pid=%d\n",web_pid);
-//	nw_ep = sys_bindproc(NW_PROC_NR, web_pid, LOCAL_BIND);
+//	MUKDEBUG("Register NW into SYSTASK web_id=%d\n",web_id);
+//	nw_ep = sys_bindproc(NW_PROC_NR, web_id, LOCAL_BIND);
 //	if(nw_ep < 0) ERROR_TSK_EXIT(nw_ep);
 	
 	// set the name of FS 
@@ -327,7 +327,7 @@ int main_nweb (int argc, char *argv[] )
 	int length, pid, rcode, sts;
 	int web_sfd;
 	pthread_t my_pth;
-	int web_pid, lcl_ep;
+	int web_id, lcl_ep;
 	
 	if ( argc != 2) {
 		nw_usage( "%s <config_file>", argv[0]);
@@ -342,8 +342,8 @@ int main_nweb (int argc, char *argv[] )
 	my_pth = pthread_self();
 	MUKDEBUG("my_pth=%u\n", my_pth);
 	
-	web_pid = syscall (SYS_gettid);
-	MUKDEBUG("web_pid=%d\n", web_pid);
+	web_id = syscall (SYS_gettid);
+	MUKDEBUG("web_id=%d\n", web_id);
 	
 	lcl_ep = muk_tbind(dcid, web_ep);
 	MUKDEBUG("web_ep=%d\n", web_ep);

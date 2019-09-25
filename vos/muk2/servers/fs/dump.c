@@ -43,7 +43,7 @@ int fs_dump(void)
 int dmp_fs_proc(void)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	fproc_t *fp_ptr;
 	
 	fprintf(dump_fd, "\n");
@@ -54,15 +54,15 @@ int dmp_fs_proc(void)
 	fprintf(dump_fd, "-endp- -pid- -tty- -task -ruid -euid -rgid -egid name\n");	
 
 	assert(fs_proc_table != NULL);
-	assert(kproc_map != NULL);
 
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		fp_ptr = &fs_proc_table[i];
-		proc_ptr = (proc_usr_t *) get_task(i);
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		proc_ptr = (muk_proc_t *) get_task(i);
+		if (proc_ptr == NULL) {
 			continue;
 		}
-		fprintf(dump_fd, "%6d %5d %5d %5d %5d %5d %5d %5d %-15.15s\n",
+//		fprintf(dump_fd, "%6d %5d %5d %5d %5d %5d %5d %5d %-15.15s\n",
+		fprintf(dump_fd, "%6d %5d %5d %5d %5d %5d %5d %5d\n",
 				fp_ptr->fp_endpoint,
 				fp_ptr->fp_pid,
 				fp_ptr->fp_tty,
@@ -70,8 +70,8 @@ int dmp_fs_proc(void)
 				fp_ptr->fp_realuid,
 				fp_ptr->fp_effuid,
 				fp_ptr->fp_realgid,
-				fp_ptr->fp_effgid,
-				proc_ptr->p_name);
+				fp_ptr->fp_effgid);
+//				,proc_ptr->name);
 	}
 	fprintf(dump_fd, "\n");
 
@@ -124,7 +124,7 @@ int dmp_fs_super(void)
 int wdmp_fs_proc(void)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	fproc_t *fp_ptr;
 	char *page_ptr;
 	
@@ -154,7 +154,7 @@ int wdmp_fs_proc(void)
 	
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		fp_ptr = &fs_proc_table[i];
-		proc_ptr = (proc_usr_t *) get_task(i);
+		proc_ptr = (muk_proc_t *) get_task(i);
 		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
@@ -169,7 +169,8 @@ int wdmp_fs_proc(void)
 				fp_ptr->fp_effuid,
 				fp_ptr->fp_realgid,
 				fp_ptr->fp_effgid,
-				proc_ptr->p_name);
+				"name");
+//				proc_ptr->name);
 		(void)strcat(page_ptr,is_buffer);
 		(void)strcat(page_ptr,"</tr>\n");				
 	}

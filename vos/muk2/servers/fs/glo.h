@@ -67,7 +67,7 @@ extern _PROTOTYPE (int (*fs_call_vec[]), (void) ); /* sys call table */
 extern char dot1[2];   /* dot1 (&dot1[0]) and dot2 (&dot2[0]) have a special */
 extern char dot2[3];   /* meaning to search_dir: no access permission check. */
 
-EXTERN proc_usr_t *fs_proc_ptr;
+EXTERN muk_proc_t *fs_proc_ptr;
 EXTERN priv_usr_t *fs_priv_ptr;
 
 

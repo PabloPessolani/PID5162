@@ -16,6 +16,8 @@ int oper;
 
 #define SEND_RECV_MS 	10000
 
+#define muk_send_T(a,b,c) 		muk_send(a,b)
+#define muk_receive_T(a,b,c) 	muk_receive(a,b)
 
 /*===========================================================================*
  *				ftpd_reply					     *
@@ -50,17 +52,17 @@ void ftpd_init(void)
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 	
-	ftp_pid = syscall (SYS_gettid);
-	MUKDEBUG("ftp_pid=%d\n", ftp_pid);
+	ftp_id = taskid();
+	MUKDEBUG("ftp_id=%d\n", ftp_id);
 	
-	rcode = muk_tbind(dcid, ftp_ep);
+	rcode = muk_tbind(dcid, ftp_ep, "ftpd");
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode != ftp_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
 		taskexit(&rcode);
 	}
 
-	rcode = mol_bindproc(ftp_ep, ftp_ep, ftp_pid, LCL_BIND);
+	rcode = mol_bindproc(ftp_ep, ftp_ep, ftp_id, LCL_BIND);
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode < 0) {
 		ERROR_PRINT(rcode);
@@ -83,8 +85,8 @@ void ftpd_init(void)
 	}
 	MUKDEBUG("M3FTPD ftp_data_ptr=%p\n",ftp_data_ptr);	
 
-	ftp_pid = syscall (SYS_gettid);
-	MUKDEBUG("ftp_pid=%d\n", ftp_pid);
+	ftp_id = syscall (SYS_gettid);
+	MUKDEBUG("ftp_id=%d\n", ftp_id);
 	
 	MUKDEBUG("Get ftp_ep info\n");
 	ftp_ptr = (proc_usr_t *) get_task(ftp_ep);

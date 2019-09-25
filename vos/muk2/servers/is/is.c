@@ -401,10 +401,10 @@ void init_is(void)
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
-	is_pid = syscall (SYS_gettid);
-	MUKDEBUG("is_pid=%d\n", is_pid);
+	is_id = taskid();
+	MUKDEBUG("is_id=%d\n", is_id);
 	
-	rcode = muk_tbind(dcid,is_ep);
+	rcode = muk_tbind(dcid,is_ep, "is");
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode != is_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
@@ -412,16 +412,16 @@ void init_is(void)
 	}
 		
 	MUKDEBUG("Get is_ep info\n");
-	is_ptr = (proc_usr_t *) get_task(is_ep);
+	is_ptr = (muk_proc_t *) get_task(is_ep);
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(is_ptr));
 	
 	/* Register into SYSTASK(local_nodeid) (as an autofork) */
-//	MUKDEBUG("Register IS into SYSTASK(local_nodeid) is_pid=%d\n",is_pid);
-//	is_ep = sys_bindproc(is_ep, is_pid, LCL_BIND);
+//	MUKDEBUG("Register IS into SYSTASK(local_nodeid) is_id=%d\n",is_id);
+//	is_ep = sys_bindproc(is_ep, is_id, LCL_BIND);
 //	if(is_ep < 0) ERROR_TSK_EXIT(is_ep);
 	
-	MUKDEBUG("Register IS into PM is_pid=%d\n",is_pid);
-	rcode = mol_bindproc(is_ep, is_ep, is_pid, LCL_BIND);
+	MUKDEBUG("Register IS into PM is_id=%d\n",is_id);
+	rcode = mol_bindproc(is_ep, is_ep, is_id, LCL_BIND);
 	if(rcode < 0) ERROR_TSK_EXIT(rcode);
 	
 	// set the name of IS 

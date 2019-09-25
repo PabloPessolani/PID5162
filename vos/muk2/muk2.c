@@ -446,6 +446,8 @@ void taskmain(int argc, char **argv)
 		MUKDEBUG("fs_id=%d\n",fs_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
+		mukproc_ptr = (proc_usr_t *) get_task(fs_ep);
+		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
 		COND_SIGNAL(fs_cond);
 		MTX_UNLOCK(muk_mutex);
 	}
