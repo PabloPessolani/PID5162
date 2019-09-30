@@ -13,6 +13,10 @@
 
 #include "fs.h"
 
+#undef EXTERN
+#define EXTERN	extern
+#include "../../glo.h"
+
 #define offset m2_l1
 
 char mode_map[] = {R_BIT, W_BIT, R_BIT | W_BIT, 0};
@@ -545,7 +549,7 @@ int fs_slink()
   //      r = (bp = new_block(sip, (mnx_off_t) 0)) == NIL_BUF
   //          ? fs_err_code
   //          : sys_vircopy(fs_who_e, D, (vir_bytes) fs_m_in.name1,
-  //                      SELF, D, (vir_bytes) bp->b_data,
+  //                      fs_ep, D, (vir_bytes) bp->b_data,
   //          (vir_bytes) fs_m_in.name1_length-1);
   //
   if ((r = fs_err_code) == OK) {
@@ -553,12 +557,12 @@ int fs_slink()
 			r = fs_err_code;
 	}else{
 			MUK_vcopy( r, fs_who_e,  fs_m_in.name1,
-				SELF, bp->b_data, fs_m_in.name1_length - 1);
+				fs_ep, bp->b_data, fs_m_in.name1_length - 1);
 	}
 //    r = (bp = new_block(sip, (mnx_off_t) 0)) == NIL_BUF
 //        ? fs_err_code
 //        : muk_vcopy(fs_who_e,  fs_m_in.name1,
-//                    SELF,  bp->b_data,
+//                    fs_ep,  bp->b_data,
 //                    fs_m_in.name1_length - 1);
 					
 	 if (r >= 0) r=OK;

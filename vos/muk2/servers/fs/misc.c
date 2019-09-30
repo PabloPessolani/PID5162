@@ -53,8 +53,8 @@ int fs_getsysinfo()
   }
 
   dst_addr = fs_m_in.info_where;
-  // if (OK != (s=sys_datacopy(SELF, src_addr, fs_who_e, dst_addr, len)))
-  MUK_vcopy(s,SELF, src_addr, fs_who_e, dst_addr, len);
+  // if (OK != (s=sys_datacopy(fs_ep, src_addr, fs_who_e, dst_addr, len)))
+  MUK_vcopy(s,fs_ep, src_addr, fs_who_e, dst_addr, len);
   if ( s < 0) ERROR_RETURN(s);
   return (OK);
 
@@ -168,9 +168,9 @@ int fs_fcntl()
 
 			/* Copy fs_flock data from userspace. */
 			// if((r = sys_datacopy(fs_who_e, (vir_bytes) fs_m_in.name1,
-			//   SELF, (vir_bytes) &flock_arg,
+			//   fs_ep, (vir_bytes) &flock_arg,
 			//   (phys_bytes) sizeof(flock_arg))) != OK)
-			MUK_vcopy(r, fs_who_e, fs_m_in.name1, SELF, &flock_arg, sizeof(flock_arg))
+			MUK_vcopy(r, fs_who_e, fs_m_in.name1, fs_ep, &flock_arg, sizeof(flock_arg))
 			if (r < 0) ERROR_RETURN(r);
 
 			/* Convert starting offset to signed. */

@@ -1,4 +1,4 @@
-all: libconfig.so 
+all: libconfig.so libconfig.a
 
 # Which compiler
 CC = gcc
@@ -15,12 +15,15 @@ OBJS =  configfile.o
 libconfig.so: $(OBJS) 
 	$(CC) -g -shared -pthread -o libconfig.so $(OBJS)  
 
+libconfig.a: $(OBJS) 
+	ar rvc -o libconfig.a $(OBJS)
+	
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 
 clean:
-	rm libconfig.so *.o
+	rm libconfig.so libconfig.a *.o
 
 .PHONY: all clean 
 .SECONDARY:

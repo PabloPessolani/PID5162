@@ -65,7 +65,7 @@ int write_map(struct inode *rip, mnx_off_t position, mnx_zone_t new_zone, int op
 struct buf *new_block(struct inode *rip, mnx_off_t position);
 
 /* utility.c */
-int no_sys(void);
+int fs_no_sys(void);
 void fproc_init(int p_nr);
 int load_image(char *img_name);
 int fetch_name(char *path, int len, int flag);

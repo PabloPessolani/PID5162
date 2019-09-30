@@ -102,9 +102,9 @@ int muk_timeout_task(void )
 
 
 /*===========================================================================*
- *				muk_send				     *
+ *				muk_send_T				     *
  *===========================================================================*/
-int muk_send(int dst_ep, message *mptr)
+int muk_send_T(int dst_ep, message *mptr, long timeout)
 {
 	muk_proc_t *dst_ptr, *src_ptr;
 	muk_proc_t **xpp;
@@ -141,6 +141,7 @@ int muk_send(int dst_ep, message *mptr)
 		}		
 	} else { // not receiving 
 		LIBDEBUG("dst_ep:%d NOT RECEIVING\n", dst_ep);
+		if(timeout == TIMEOUT_NOWAIT) ERROR_RETURN(EDVSAGAIN);
 		current_ptr->p_sendto = dst_ep;
 		SET_BIT(current_ptr->p_rts_flags, BIT_SENDING);
 		current_ptr->p_msg = mptr;
@@ -173,9 +174,9 @@ int muk_send(int dst_ep, message *mptr)
 }			
 
 /*===========================================================================*
- *				muk_receive				     *
+ *				muk_receive_T				     *
  *===========================================================================*/
-int muk_receive(int src_ep, message *mptr)
+int muk_receive_T(int src_ep, message *mptr, long timeout)
 {
 	muk_proc_t *src_ptr, *dst_ptr;
 	muk_proc_t **xpp;
@@ -242,6 +243,8 @@ int muk_receive(int src_ep, message *mptr)
     }
 
 	LIBDEBUG("Valid message was not found\n");
+	if(timeout == TIMEOUT_NOWAIT) ERROR_RETURN(EDVSAGAIN);
+
 	SET_BIT(current_ptr->p_rts_flags, BIT_RECEIVING);
 	current_ptr->p_getfrom = src_ep;
 	LIBDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(current_ptr));
@@ -473,7 +476,7 @@ int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms)
 	rcode = OK;
 	current_ptr = current_task();
 	current_nr = current_ptr->p_nr;
-	assert( current_nr != NONE);
+	assert(current_nr != NONE);
  	current_ep = current_ptr->p_endpoint;
 	assert( get_task(current_ep) != NULL);
 	current_id   = current_ptr->id;
@@ -519,8 +522,10 @@ int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms)
 			current_ptr->p_sendto 	= NONE;
 		}
 	} else { 
-		LIBDEBUG("destination is not waiting srcdst_ptr-flags=%lX. Enqueue at TAIL.\n"
+		LIBDEBUG("destination is not waiting srcdst_ptr-flags=%lX\n"
 			,srcdst_ptr->p_rts_flags);
+		if(timeout_ms == TIMEOUT_NOWAIT) ERROR_RETURN(EDVSAGAIN);
+		LIBDEBUG("Enqueue at TAIL.\n");
 		/* The destination is not waiting for this message 			*/
 		/* Append the caller at the TAIL of the destination senders' queue	*/
 		/* blocked sending the message */

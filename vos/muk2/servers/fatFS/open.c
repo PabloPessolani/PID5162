@@ -358,7 +358,7 @@ int do_slink()
   //      r = (bp = new_block(sip, (mnx_off_t) 0)) == NIL_BUF
   //          ? err_code
   //          : sys_vircopy(who_e, D, (vir_bytes) m_in.name1,
-  //                      SELF, D, (vir_bytes) bp->b_data,
+  //                      fs_ep, D, (vir_bytes) bp->b_data,
   //          (vir_bytes) m_in.name1_length-1);
   //
   // if ((r = err_code) == OK)
@@ -366,7 +366,7 @@ int do_slink()
   //   r = (bp = new_block(sip, (mnx_off_t)0)) == NIL_BUF
   //           ? err_code
   //           : mnx_vcopy(who_e, m_in.name1,
-  //                       SELF, bp->b_data,
+  //                       fs_ep, bp->b_data,
   //                       m_in.name1_length - 1);
 
   //   if (r == OK)

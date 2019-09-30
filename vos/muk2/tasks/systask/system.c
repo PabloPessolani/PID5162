@@ -153,7 +153,9 @@ static char debug_path[MNX_PATH_MAX];
 		ERROR_PRINT(EDVSENDPOINT);
 		taskexit(&sys_ep);
 	}
-	
+	sys_ptr = current_task();
+	MUKDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(sys_ptr));
+
 	last_rqst = time(NULL);
 
   /* Initialize the call vector to a safe default handler. Some system calls 

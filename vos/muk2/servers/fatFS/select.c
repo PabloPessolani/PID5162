@@ -28,11 +28,11 @@
 	timer_t timer;	/* if expiry > 0 */
 } selecttab[MAXSELECTS];
 
-#define SELFD_FILE	0
-#define SELFD_PIPE	1
-#define SELFD_TTY	2
-#define SELFD_INET	3
-#define SELFD_LOG	4
+#define fs_epD_FILE	0
+#define fs_epD_PIPE	1
+#define fs_epD_TTY	2
+#define fs_epD_INET	3
+#define fs_epD_LOG	4
 #define SEL_FDS		5
 
 int select_reevaluate(struct filp *fp);
@@ -58,15 +58,15 @@ struct fdtype {
 	int (*select_match)(struct filp *);
 	int select_major;
 } fdtypes[SEL_FDS] = {
-		/* SELFD_FILE */
+		/* fs_epD_FILE */
 	{ select_request_file, select_match_file, 0 },
-		/* SELFD_TTY (also PTY) */
+		/* fs_epD_TTY (also PTY) */
 	{ select_request_general, NULL, TTY_MAJOR },
-		/* SELFD_INET */
+		/* fs_epD_INET */
 	{ select_request_general, NULL, INET_MAJOR },
-		/* SELFD_PIPE (pipe(2) pipes and FS FIFOs) */
+		/* fs_epD_PIPE (pipe(2) pipes and FS FIFOs) */
 	// { select_request_pipe, select_match_pipe, 0 }, //Commented for later implementation
-		/* SELFD_LOG (/dev/klog) */
+		/* fs_epD_LOG (/dev/klog) */
 	{ select_request_general, NULL, LOG_MAJOR },
 };
 
@@ -157,11 +157,11 @@ void ops2tab(int ops, int fid, struct selectentry *e)
 void copy_fdsets(struct selectentry *e)
 {
 	if (e->vir_readfds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_readfds, e->req_endpt, D, (vir_bytes) e->vir_readfds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_readfds, e->req_endpt, D, (vir_bytes) e->vir_readfds, sizeof(fd_set));
 	if (e->vir_writefds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_writefds,e->req_endpt, D, (vir_bytes) e->vir_writefds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_writefds,e->req_endpt, D, (vir_bytes) e->vir_writefds, sizeof(fd_set));
 	if (e->vir_errorfds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_errorfds,e->req_endpt, D, (vir_bytes) e->vir_errorfds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_errorfds,e->req_endpt, D, (vir_bytes) e->vir_errorfds, sizeof(fd_set));
 
 	return;
 }
@@ -206,24 +206,24 @@ int do_select(void)
 	/* copy args */
 	if (selecttab[s].vir_readfds
 	 && (r=sys_vircopy(who_e, D, (vir_bytes) m_in.SEL_READFDS,
-		SELF, D, (vir_bytes) &selecttab[s].readfds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].readfds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (selecttab[s].vir_writefds
 	 && (r=sys_vircopy(who_e, D, (vir_bytes) m_in.SEL_WRITEFDS,
-		SELF, D, (vir_bytes) &selecttab[s].writefds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].writefds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (selecttab[s].vir_errorfds
 	 && (r=sys_vircopy(who_e, D, (vir_bytes) m_in.SEL_ERRORFDS,
-		SELF, D, (vir_bytes) &selecttab[s].errorfds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].errorfds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (!m_in.SEL_TIMEOUT)
 		is_timeout = nonzero_timeout = 0;
 	else
 		if ((r=sys_vircopy(who_e, D, (vir_bytes) m_in.SEL_TIMEOUT,
-			SELF, D, (vir_bytes) &timeout, sizeof(timeout))) != OK)
+			fs_ep, D, (vir_bytes) &timeout, sizeof(timeout))) != OK)
 			return r;
 
 	/* No nonsense in the timeval please. */

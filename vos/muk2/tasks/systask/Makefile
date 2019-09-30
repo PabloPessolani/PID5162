@@ -1,4 +1,6 @@
-all: libsystask.so
+all: libsystask.a
+
+LIB=libsystask.a 
 
 # Which compiler
 CC = gcc
@@ -20,9 +22,8 @@ OBJS =  system.o clock.o  \
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 	
-libsystask.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libsystask.so $(OBJS)  $(LIBS)
-	
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS) 
 
 clean:
-	rm  libsystask.so *.o
+	rm  $(LIB) *.o

@@ -1,4 +1,7 @@
-all: librdisk.so
+all: librdisk.a
+
+LIB=librdisk.a 
+
 
 # Which compiler
 CC = gcc
@@ -10,14 +13,13 @@ INCLUDE = .
 # CFLAGS = -v -O3 -Wall -ansi
 CFLAGS =  -g -c -fPIC -Wall -pthread 
 
-
 OBJS =  rdisk.o utility.o parse_config.o driver.o 
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
-librdisk.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o librdisk.so $(OBJS) 
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS) 
 
 clean:
-	rm  librdisk.so *.o
+	rm  $(LIB) *.o

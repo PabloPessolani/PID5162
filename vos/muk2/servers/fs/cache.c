@@ -247,6 +247,7 @@ return OK;
   int block_size;
 
   block_size = get_block_size(dev);
+  MUKDEBUG("block_size=%d bufqsize=%d\n", block_size, bufqsize);
 
   /* (Shell) sort buffers on b_blocknr. */
   gap = 1;
@@ -283,10 +284,11 @@ return OK;
       //iop->iov_addr = (vir_bytes) bp->b_data;
       iop->iov_addr = bp->b_data;
       iop->iov_size = block_size;
+		MUKDEBUG("request iovec[%d] block_size=%d\n", j, block_size);
     }
 
 // MUKDEBUG("llamada a dev_io bufqsize %d\n", bufqsize);
-MUKDEBUG(" dev_io -> op=%d, dev=%d, POS=%d, BYTES=%d\n",  rw_flag == WRITING ? DEV_SCATTER : DEV_GATHER, dev, (mnx_off_t) bufq[0]->b_blocknr * block_size, j);   
+MUKDEBUG(" dev_io -> op=%d, dev=%d, POS=%d, nr_ioreqs=%d\n",  rw_flag == WRITING ? DEV_SCATTER : DEV_GATHER, dev, (mnx_off_t) bufq[0]->b_blocknr * block_size, j);   
     r = dev_io(rw_flag == WRITING ? DEV_SCATTER : DEV_GATHER,
       dev, fs_ep, iovec,
       (mnx_off_t) bufq[0]->b_blocknr * block_size, j, 0);
@@ -296,28 +298,28 @@ MUKDEBUG(" dev_io -> op=%d, dev=%d, POS=%d, BYTES=%d\n",  rw_flag == WRITING ? D
 	 */
   MUKDEBUG("RESULT of dev_io r=%d, \n", r);
   for (i = 0, iop = iovec; i < j; i++, iop++) {
-    bp = bufq[i];
-    // MUKDEBUG("iop->iov_size =%d\n", iop->iov_size);
-    if (iop->iov_size != 0) {
-			/* Transfer failed. An error? Do we care? */
-     if (r != OK && i == 0) {
-      printf(
-        "fs: I/O error on device %d/%d, block %lu\n",
-        (dev>>MNX_MAJOR)&BYTE, (dev>>MNX_MINOR)&BYTE,
-        bp->b_blocknr);
-				bp->b_dev = NO_DEV;	/* invalidate block */
-    }
-    break;
-  }
-  if (rw_flag == READING) {
+		bp = bufq[i];
+		// MUKDEBUG("iop->iov_size =%d\n", iop->iov_size);
+		if (iop->iov_size != 0) {
+					/* Transfer failed. An error? Do we care? */	
+			if (r != OK && i == 0) {
+			  printf(
+				"fs: I/O error on device %d/%d, block %lu\n",
+				(dev>>MNX_MAJOR)&BYTE, (dev>>MNX_MINOR)&BYTE,
+				bp->b_blocknr);
+						bp->b_dev = NO_DEV;	/* invalidate block */
+			}
+			break;
+		}
+		if (rw_flag == READING) {
 			bp->b_dev = dev;	/* validate block */
-   put_block(bp, PARTIAL_DATA_BLOCK);
- } else {
-   bp->b_dirt = CLEAN;
- }
-}
-bufq += i;
-bufqsize -= i;
+		   put_block(bp, PARTIAL_DATA_BLOCK);
+		} else {
+			bp->b_dirt = CLEAN;
+		}
+	}
+	bufq += i;
+	bufqsize -= i;
 // MUKDEBUG("Iteracion bufqsize %d\n", bufqsize);
 // MUKDEBUG("bufq %d\n", bufq);
 // MUKDEBUG("i = %d\n", i);

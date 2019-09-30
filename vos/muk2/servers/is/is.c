@@ -16,7 +16,7 @@
 
 /* Declare some local functions. */
 void is_handler(int signo, siginfo_t *info, void *extra);
-pthread_t wis_pth;
+int wis_id;
 
 /*===========================================================================*
  *				main_is                                         *
@@ -60,10 +60,9 @@ int main_is(int argc, char **argv)
 
 #if	ENABLE_SYSTASK
 
-
 		// Request INFO DUMP to SYSTASK(local_nodeid) in text mode 
 		if( TEST_BIT( dump_type, DMP_SYS_DC)){
-			MUKDEBUG("Request DC DUMP to SYSTASK in TEXT mode\n");
+			MUKDEBUG("Request DC DUMP to SYSTASK(%d) in TEXT mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = DMP_SYS_DC;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
@@ -71,23 +70,25 @@ int main_is(int argc, char **argv)
 		}
 		
 		if( TEST_BIT( dump_type, DMP_SYS_PROC)){
-			MUKDEBUG("Request PROC DUMP to SYSTASK in TEXT mode\n");
+			MUKDEBUG("Request PROC DUMP to SYSTASK(%d) in TEXT mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = DMP_SYS_PROC;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
 			if( rcode < 0) ERROR_PRINT(rcode);
 		}
-		
+
+#ifdef ENABLE_DMP_SYS_STATS	
 		if( TEST_BIT( dump_type, DMP_SYS_STATS)){
-			MUKDEBUG("Request STATS DUMP to SYSTASK in TEXT mode\n");
+			MUKDEBUG("Request STATS DUMP to SYSTASK(%d) in TEXT mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = DMP_SYS_STATS;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
 			if( rcode < 0) ERROR_PRINT(rcode);
 		}
+#endif // ENABLE_DMP_SYS_STATS
 
 		if( TEST_BIT( dump_type, WDMP_SYS_DC)){
-			MUKDEBUG("Request DC DUMP to SYSTASK in HTML mode\n");
+			MUKDEBUG("Request DC DUMP to SYSTASK(%d) in HTML mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = WDMP_SYS_DC;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
@@ -97,7 +98,7 @@ int main_is(int argc, char **argv)
 		}
 		
 		if( TEST_BIT( dump_type, WDMP_SYS_PROC)){
-			MUKDEBUG("Request PROC DUMP to SYSTASK in HTML mode\n");
+			MUKDEBUG("Request PROC DUMP to SYSTASK(%d) in HTML mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = WDMP_SYS_PROC;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
@@ -105,9 +106,9 @@ int main_is(int argc, char **argv)
 			COND_SIGNAL(www_cond);
 			continue;
 		}
-		
+#ifdef ENABLE_DMP_SYS_STATS	
 		if( TEST_BIT( dump_type, WDMP_SYS_STATS)){
-			MUKDEBUG("Request STATS DUMP to SYSTASK in HTML mode\n");
+			MUKDEBUG("Request STATS DUMP to SYSTASK(%d) in HTML mode\n", SYSTASK(local_nodeid));
 			m_ptr->m_type = SYS_DUMP;
 			m_ptr->m1_i1 = WDMP_SYS_STATS;
 			rcode = muk_sendrec(SYSTASK(local_nodeid), m_ptr);
@@ -115,12 +116,11 @@ int main_is(int argc, char **argv)
 			COND_SIGNAL(www_cond);
 			continue;
 		}
+#endif // ENABLE_DMP_SYS_STATS
 		
 #endif // ENABLE_SYSTASK
 
 #if	ENABLE_RDISK 
-
-		if( TEST_BIT(rd_ptr->p_misc_flags, MIS_BIT_UNIKERNEL)) {	
 			// Request INFO DUMP to RDISK in TEXT mode 
 			if( TEST_BIT( dump_type, DMP_RD_DEV)){
 				MUKDEBUG("Request INFO DUMP to RDISK in TEXT mode\n");
@@ -140,7 +140,6 @@ int main_is(int argc, char **argv)
 				COND_SIGNAL(www_cond);
 				continue;
 			}
-		}
 #endif // ENABLE_RDISK
 		
 #if	ENABLE_PM
@@ -239,17 +238,19 @@ void build_html( int bit_nr)
 /*===========================================================================*
  *				WIS web server					     *
  *===========================================================================*/
-void wis_server(int fd, int hit)
+void wis_server(int fd)
 {
 	int j, file_fd, buflen, len;
 	long i, ret;
 	char * fstr;
 
-	MUKDEBUG("fd:%d hit:%d\n", fd, hit);
+	MUKDEBUG("fd:%d\n", fd);
+	
+	dump_fd = fd; 
 
-	ret =read(fd, wis_buffer,WISBUFSIZE); 	/* read Web request in one go */
-	if(ret == 0 || ret == -1) {	/* read failure stop now */
-		MUKDEBUG("Failed to read browser request: %s",fd);
+	ret = fdread(fd, wis_buffer,WISBUFSIZE); 	/* fdread Web request in one go */
+	if(ret == 0 || ret == -1) {	/* fdread failure stop now */
+		MUKDEBUG("Failed to fdread browser request: %s",fd);
 	}
 	if(ret > 0 && ret < WISBUFSIZE)	/* return code is valid chars */
 		wis_buffer[ret]=0;		/* terminate the wis_buffer */
@@ -278,7 +279,9 @@ void wis_server(int fd, int hit)
 	/* System call according to GET argument */
 	if ( !strcmp(&wis_buffer[5],      "sys_dc_dmp") ) 		build_html(WDMP_SYS_DC);
 	else if ( !strcmp(&wis_buffer[5], "sys_proc_dmp") ) 	build_html(WDMP_SYS_PROC);
+#ifdef ENABLE_DMP_SYS_STATS
 	else if ( !strcmp(&wis_buffer[5], "sys_stats_dmp") ) 	build_html(WDMP_SYS_STATS);
+#endif // ENABLE_DMP_SYS_STATS
 //	else if ( !strcmp(&wis_buffer[5], "sys_priv_dmp") ) 	build_html(wis_html);
 	else if ( !strcmp(&wis_buffer[5], "rd_dev_dmp") ) 		build_html(WDMP_RD_DEV);
 	else if ( !strcmp(&wis_buffer[5], "pm_proc_dmp") ) 		build_html(WDMP_PM_PROC);
@@ -288,7 +291,7 @@ void wis_server(int fd, int hit)
 	/* Start building the HTTP response */
 	memset(wis_buffer, 0, WISBUFSIZE);
 	(void)strcat(wis_buffer,"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n");
-//	(void)write(fd,wis_buffer,strlen(wis_buffer));
+//	(void)fdwrite(fd,wis_buffer,strlen(wis_buffer));
 
 	/* Start building the HTML page */
 	(void)strcat(wis_buffer,"<html><head><title>WIS - Web Information Server</title>");
@@ -320,12 +323,12 @@ void wis_server(int fd, int hit)
 	(void)strcat(wis_buffer,"<th><a href=\"/fs_super_dmp\" >fs_super_dmp (F9)</a></th>\n");
 
 	(void)strcat(wis_buffer,"</tr></tbody></table><br />");
-// (void)write(fd,wis_buffer,strlen(wis_buffer));
+// (void)fdwrite(fd,wis_buffer,strlen(wis_buffer));
 
 	/* Write the HTML generated in functions to network socket */
 	if( strlen(wis_html) != 0){
 		(void)strcat(wis_buffer,wis_html);
-//		(void)write(fd,wis_html,strlen(wis_html));
+//		(void)fdwrite(fd,wis_html,strlen(wis_html));
 		MUKDEBUG("%s\n",wis_buffer);	
 		MUKDEBUG("strlen(wis_buffer)=%d\n", strlen(wis_buffer));
 	}
@@ -333,7 +336,9 @@ void wis_server(int fd, int hit)
 	/* Finish HTML code */
 	(void)strcat(wis_buffer,"</body></html>");
 // (void)sprintf(wis_buffer,"</body></html>");
-	(void)write(fd,wis_buffer,strlen(wis_buffer));
+	(void)fdwrite(fd,wis_buffer,strlen(wis_buffer));
+
+	close(fd);
 		
 }
 
@@ -342,22 +347,27 @@ void wis_server(int fd, int hit)
  *===========================================================================*/
  static void main_wis(void *str_arg)
 {
-	int i, wis_port, wis_pid, wis_listenfd, wis_sfd, wis_hit;
+	int i, wis_port, wis_id, wis_listenfd, wis_sfd, wis_hit;
 	size_t length;
 	int rcode;
+	int rport;
+	char remote[16];
 	static struct sockaddr_in wis_cli_addr; /* static = initialised to zeros */
 	static struct sockaddr_in serv_addr; /* static = initialised to zeros */
 	
 	MUKDEBUG("WIS service starting.\n");
-	wis_pid = syscall (SYS_gettid);
-	MUKDEBUG("wis_pid=%d\n", wis_pid);
+	wis_id = taskid();
+	MUKDEBUG("wis_id=%d\n", wis_id);
 	
-			/* Setup the network socket */
-	if((wis_listenfd = socket(AF_INET, SOCK_STREAM,0)) <0)
-			ERROR_TSK_EXIT(errno);
+	/* Setup the network socket */
+	wis_port = WIS_PORT+dcid;
+	if((wis_listenfd = netannounce(TCP, 0, wis_port)) < 0){
+		rcode = -errno;
+		ERROR_TSK_EXIT(rcode);
+	}
+	MUKDEBUG("netannounce on TCP port=%d\n", wis_port);
 		
-	/* WIS service Web server wis_port */
-	wis_port = WIS_PORT;
+/*
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(wis_port);
@@ -369,18 +379,20 @@ void wis_server(int fd, int hit)
 	if( listen(wis_listenfd,64) <0){
 		ERROR_TSK_EXIT(errno);
 	}
+*/
 			
 	MUKDEBUG("Starting WIS server main loop\n");
 	for(wis_hit=1; ;wis_hit++) {
 		length = sizeof(wis_cli_addr);
 		MUKDEBUG("Conection accept\n");
-		wis_sfd = accept(wis_listenfd, (struct sockaddr *)&wis_cli_addr, &length);
+//		wis_sfd = accept(wis_listenfd, (struct sockaddr *)&wis_cli_addr, &length);
+		wis_sfd = netaccept(wis_listenfd, remote, &rport);
 		if (wis_sfd < 0){
 			rcode = -errno;
 			ERROR_TSK_EXIT(rcode);
 		}
-		wis_server(wis_sfd, wis_hit);
-		close(wis_sfd);
+		MUKDEBUG("hit %d - connection from %s:%d\n", wis_hit, remote, rport);
+		taskcreate(wis_server, (void*)wis_sfd, MUK_STACK_SIZE);
 	}
 	
 	return(OK);		/* shouldn't come here */
@@ -412,7 +424,7 @@ void init_is(void)
 	}
 		
 	MUKDEBUG("Get is_ep info\n");
-	is_ptr = (muk_proc_t *) get_task(is_ep);
+	is_ptr = current_task();
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(is_ptr));
 	
 	/* Register into SYSTASK(local_nodeid) (as an autofork) */
@@ -427,10 +439,11 @@ void init_is(void)
 	// set the name of IS 
 	rcode = sys_rsetpname(is_ep, "is", local_nodeid);
 	if(rcode < 0) ERROR_TSK_EXIT(rcode);
-	
-	rcode = pthread_create( &wis_pth, NULL, main_wis, "wis\n" );
-	if(rcode) ERROR_EXIT(rcode);
-	MUKDEBUG("wis_pth=%u\n",wis_pth);
+		
+//	rcode = pthread_create( &wis_pth, NULL, main_wis, "wis\n" );
+	sprintf(wis_cmd,"wis\n");
+	wis_id = taskcreate(main_wis, wis_cmd, MUK_STACK_SIZE);
+	MUKDEBUG("wis_id=%d\n",wis_id);
 	
 	action.sa_flags = SA_SIGINFO; 
     action.sa_sigaction = is_handler;

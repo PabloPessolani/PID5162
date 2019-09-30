@@ -158,7 +158,7 @@ int fetch_name(char *path, int len, int flag)
 	} else {
 		/* String is not contained in the message.  Get it from user space. */
 		//r = mnx_vcopy(who_e, path, fs_ep, user_path, (len+1)); Ver si se hace del lado de OPEN.
-		r = mnx_vcopy(who_e, path, SELF, user_path, (phys_bytes) len);
+		r = mnx_vcopy(who_e, path, fs_ep, user_path, (phys_bytes) len);
 	}
 	// SVRDEBUG("user_path=%s\n", user_path);
 	// SVRDEBUG("r =%d\n", r);
@@ -213,8 +213,8 @@ void panic(char *who, char *mess, int num)
   INFODEBUG("FS panic (%s): %s ", who, mess);
   if (num != NO_NUM) INFODEBUG("%d",num);
   (void) do_sync();		/* flush everything to the disk */
-//   sys_exit(SELF);
-	ERROR_EXIT(SELF);
+//   sys_exit(fs_ep);
+	ERROR_EXIT(fs_ep);
 }
 
 /*===========================================================================*

@@ -33,6 +33,9 @@ typedef long unsigned int update_t;
  * basic procs and threads
  */
 
+#define MUK_STACK_SIZE	32768
+
+
 #define USE_UCONTEXT 1
 
 #if USE_UCONTEXT
@@ -270,17 +273,18 @@ int task_unbind( Task* t, int p_ep);
 int muk_tbind(int dcid, int p_ep, char *name);
 int muk_unbind(int dcid, int p_ep);
 Task *get_task(int p_ep);
-int muk_send(int dst_ep, message *mptr);
 
-int muk_receive(int src_ep, message *mptr);
-
+int muk_send_T(int dst_ep, message *mptr, long timeout);
+int muk_receive_T(int src_ep, message *mptr, long timeout);
+int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms);
 int muk_notify_X(int src_nr, int dst_ep);
+
+#define muk_sendrec(srcdst_ep, m_ptr)		muk_sendrec_T(srcdst_ep, m_ptr, TIMEOUT_FOREVER)
+#define muk_send(dst_ep, m_ptr)				muk_send_T(dst_ep, m_ptr, TIMEOUT_FOREVER)
+#define muk_receive(src_ep, m_ptr)			muk_receive_T(src_ep, m_ptr, TIMEOUT_FOREVER)
+
 #define muk_notify(dst_ep)						muk_notify_X(SELF, dst_ep)
 #define muk_src_notify(src_nr, dst_ep)			muk_notify_X(src_nr, dst_ep)
-
-int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms);
-#define muk_sendrec(srcdst_ep, m_ptr)		muk_sendrec_T(srcdst_ep, m_ptr, TIMEOUT_FOREVER)
-
 
 #define muk_wait4bind()						muk_wait4bind_X(WAIT_BIND,  SELF,  TIMEOUT_FOREVER)
 #define muk_wait4bindep(endpoint)			muk_wait4bind_X(WAIT_BIND,  endpoint,  TIMEOUT_FOREVER)

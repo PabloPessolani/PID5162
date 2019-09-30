@@ -26,11 +26,11 @@ struct inode *init_root(void);
 void buf_pool(void);
 int get_root_major(void); 
 
-// void print_usage(char *argv[]) {
+// void fs_print_usage(char *argv[]) {
 //   printf( "Usage: %s --dcid vmIdNumber --cfgFile cfgFilename [--buffSize=sizeBufferInBytes]\n", argv[0] );
 // }
 
-void print_usage(char* errmsg, ...) {
+void fs_print_usage(char* errmsg, ...) {
   if(errmsg) {
       printf("ERROR: %s\n", errmsg);  
     }

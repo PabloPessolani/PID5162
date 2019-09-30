@@ -1,7 +1,7 @@
 /* Function prototypes. */
 /* Function prototypes. */
 
-int no_sys(void);
+int pm_no_sys(void);
 int pm_getset(void);
 int pm_isokendpt(int ep, int *proc);
 int tell_fs(int what, int p1, int p2, int p3);
@@ -16,7 +16,7 @@ int sys_proctab(proc_usr_t *kp, int tab_len);
 int sys_privtab(priv_usr_t *kp, int tab_len);
 int sys_slotstab(slot_t *slots, int tab_len);
 void mproc_init(int p_nr);
-molclock_t get_uptime(void);
+molclock_t pm_get_uptime(void);
 // void get_dvs_params(void);
 //void get_dc_params(int vmid);
 
@@ -151,7 +151,7 @@ _PROTOTYPE( void stop_proc, (struct mproc *rmp, int sig_nr)		);
 /* utility.c */
 _PROTOTYPE( pid_t get_free_pid, (void)					);
 _PROTOTYPE( int allowed, (char *name_buf, struct stat *s_buf, int mask)	);
-_PROTOTYPE( int no_sys, (void)						);
+_PROTOTYPE( int pm_no_sys, (void)						);
 _PROTOTYPE( void panic, (char *who, char *mess, int num)		);
 _PROTOTYPE( int get_stack_ptr, (int proc_nr, vir_bytes *sp)		);
 _PROTOTYPE( int get_mem_map, (int proc_nr, struct mem_map *mem_map)	);

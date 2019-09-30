@@ -159,11 +159,11 @@ void copy_fdsets(struct selectentry *e)
 	int r;
 #ifdef SYS_VCOPY_FUNCTION
 	if (e->vir_readfds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_readfds, e->req_endpt, D, (vir_bytes) e->vir_readfds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_readfds, e->req_endpt, D, (vir_bytes) e->vir_readfds, sizeof(fd_set));
 	if (e->vir_writefds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_writefds,e->req_endpt, D, (vir_bytes) e->vir_writefds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_writefds,e->req_endpt, D, (vir_bytes) e->vir_writefds, sizeof(fd_set));
 	if (e->vir_errorfds)
-		sys_vircopy(SELF, D, (vir_bytes) &e->ready_errorfds,e->req_endpt, D, (vir_bytes) e->vir_errorfds, sizeof(fd_set));
+		sys_vircopy(fs_ep, D, (vir_bytes) &e->ready_errorfds,e->req_endpt, D, (vir_bytes) e->vir_errorfds, sizeof(fd_set));
 #else // SYS_VCOPY_FUNCTION
 	if (e->vir_readfds)
 		MUK_vcopy(r, e->vir_readfds, &e->ready_readfds,sizeof(fd_set));
@@ -217,24 +217,24 @@ int fs_select(void)
 #ifdef DVK_VCOPY_FUNCTION
 	if (selecttab[s].vir_readfds
 	 && (r=sys_vircopy(fs_who_e, D, (vir_bytes) fs_m_in.SEL_READFDS,
-		SELF, D, (vir_bytes) &selecttab[s].readfds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].readfds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (selecttab[s].vir_writefds
 	 && (r=sys_vircopy(fs_who_e, D, (vir_bytes) fs_m_in.SEL_WRITEFDS,
-		SELF, D, (vir_bytes) &selecttab[s].writefds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].writefds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (selecttab[s].vir_errorfds
 	 && (r=sys_vircopy(fs_who_e, D, (vir_bytes) fs_m_in.SEL_ERRORFDS,
-		SELF, D, (vir_bytes) &selecttab[s].errorfds, sizeof(fd_set))) != OK)
+		fs_ep, D, (vir_bytes) &selecttab[s].errorfds, sizeof(fd_set))) != OK)
 		return r;
 
 	if (!fs_m_in.SEL_TIMEOUT)
 		is_timeout = nonzero_timeout = 0;
 	else
 		if ((r=sys_vircopy(fs_who_e, D, (vir_bytes) fs_m_in.SEL_TIMEOUT,
-			SELF, D, (vir_bytes) &timeout, sizeof(timeout))) != OK)
+			fs_ep, D, (vir_bytes) &timeout, sizeof(timeout))) != OK)
 			return r;
 
 #else // DVK_VCOPY_FUNCTION

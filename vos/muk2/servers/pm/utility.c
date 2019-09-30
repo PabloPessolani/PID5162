@@ -10,9 +10,9 @@
 #include "../../glo.h"
 
 /*===========================================================================*
- *				get_uptime				     *
+ *				pm_get_uptime				     *
  *===========================================================================*/
-molclock_t get_uptime(void)
+molclock_t pm_get_uptime(void)
 {
 	int rcode;
 
@@ -23,9 +23,9 @@ molclock_t get_uptime(void)
 
 
 /*===========================================================================*
- *				no_sys					     *
+ *				pm_no_sys					     *
  *===========================================================================*/
-int no_sys(void)
+int pm_no_sys(void)
 {
 	
 MUKDEBUG("A system call number not implemented by PM has been requested from %d\n", pm_who_e);

@@ -215,7 +215,7 @@ void inet_init(void)
 	}
 	
 	SVRDEBUG("Get INET_PROC_NR info from SYSTASK\n");
-	rcode = sys_getproc(&inet, SELF);
+	rcode = sys_getproc(&inet, fs_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	inet_ptr = &inet;
 	SVRDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(inet_ptr));

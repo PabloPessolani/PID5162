@@ -514,13 +514,13 @@ int rd_init(void )
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
 	MUKDEBUG("Get RDISK info\n");
-	rd_task = get_task(rd_ep);
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rd_task));
+	
+	rd_ptr = current_task();
+	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rd_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
-	rd_lpid = taskid();
-	MUKDEBUG("Register RDISK into SYSTASK rd_lpid=%d\n",rd_lpid);
-	rd_ep = sys_bindproc(rd_ep, rd_lpid, LCL_BIND);
+	MUKDEBUG("Register RDISK into SYSTASK rd_id=%d\n",rd_id);
+	rd_ep = sys_bindproc(rd_ep, rd_id, LCL_BIND);
 	if(rd_ep < 0) ERROR_TSK_EXIT(rd_ep);
 			
 	// set the name of RDISK 

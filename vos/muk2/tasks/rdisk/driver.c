@@ -354,9 +354,11 @@ phys_bytes iovec_size;
 int nr_req;
 int r, ret;
 
-  nr_req = mp->COUNT;	/* Length of I/O vector */
-  MUKDEBUG("nr_req: %d, NR_IOREQS=%d\n", nr_req, NR_IOREQS);
-  
+	 MUKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));
+
+	 nr_req = mp->COUNT;	/* Length of I/O vector */
+	 MUKDEBUG("nr_req=%d, NR_IOREQS=%d\n", nr_req, NR_IOREQS);
+	 
     /* Copy the vector from the caller to kernel space. */
 	/*copio el vector desde el ps que llama al espacio del kernerl:sería del server*/
     if (NR_IOREQS < nr_req) {
@@ -366,13 +368,16 @@ int r, ret;
     iovec_size = (phys_bytes) (nr_req * sizeof(iovec[0]));
 
 	//MUK_vcopy(src_ep,src_addr,dst_ep, dst_addr, bytes) 
-	MUKDEBUG("proc_nr: %d - driver_ep: %d\n", mp->IO_ENDPT, rd_ptr->p_endpoint);
-	MUK_vcopy(ret, mp->IO_ENDPT, mp->ADDRESS, SELF, iovec, iovec_size);
+	MUKDEBUG("proc_nr=%d - driver_ep=%d iovec_size=%d\n", 
+		mp->IO_ENDPT, rd_ep, iovec_size);
+
+	MUK_vcopy(ret, mp->IO_ENDPT, mp->ADDRESS, rd_ep, iovec, iovec_size);
 	//muk_copy proc_nr -> server	
 	if( ret < 0 ){
 		fprintf( stderr,"VCOPY (vector) ret=%d\n",ret);	
 		exit(1);
 	}	
+
     iov = iovec;
 	
 	MUKDEBUG("iovec[0].iov_addr %u\n", iovec[0].iov_addr); 
@@ -399,7 +404,7 @@ int r, ret;
   //sys_datacopy(SELF, (vir_bytes) iovec, 
   //	mp->m_source, (vir_bytes) mp->ADDRESS, iovec_size);
 		
-	MUK_vcopy(ret, SELF, iovec, mp->IO_ENDPT, mp->ADDRESS, iovec_size);
+	MUK_vcopy(ret, rd_ep, iovec, mp->IO_ENDPT, mp->ADDRESS, iovec_size);
 	//muk_copy server -> proc_nr	
 	if( ret < 0 ) {
 		fprintf( stderr,"VCOPY (vector) ret=%d\n",ret);		

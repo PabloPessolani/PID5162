@@ -285,22 +285,129 @@ ViolaciÃ³n de segmento
 =====================================================================================================
 20190924:	 SYSTASK+RDISK+PM+FS+IS+NWEB+FTP 
 
+=====================================================================================================
+20190925:	
+		Se convirtieron todas las librerias de .so a  .a (estaticas)
+
+		Se adaptaron M3NWEB y WIS para que use los sockets como usa tcpproxy.c 
+
+=====================================================================================================
+20190928:	NO FUNCIONAN CORRECTAMENTE NI WIS NI M3NWEB
+
+	WIS: Cada peticion crea una nueva tarea y funciona perfecto.
+	Probando WIS ANDAN TODOS 
+	    
+	Se convirtieron todas las librerias de .so a  .a (estaticas) en MUK !!!
+			
+
+=====================================================================================================
+20190929:	
+			NO FUNCIONA EL M3NWEB 
+			LA IMAGEN DE DISKETTE PARECE ESTAR CORRECTA COMPROBADA CON fuse-mfs
+			
+			SOLUCION: CREAR UNA TASK NUEVA POR CADA PETICION  TAL COMO LO HACE EL ftpproxy.c DE EJEMPLO DE LIBTASK 
+				RESPUESTA: NO SE PUEDE PORQUE CADA TAREA REQUIRE BINDEARSE PARA PODER COMUNICARSE CON FS 
+							EL BIND NO SOLO SE HACE CONTRA EL MUK SINO TAMBIEN CONTRA SYSTASK Y PM 
+							
+			FUNCIONO M3NWEB Y  WIS PERFECTAMENTE
+			
+			El problema era que en los MUK_vcopy() se estaba utilizando SELF.
+			
+
+			
 ULTIMO_LOG 		
 =====================================================================================================
 
+TODO: 			Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
+				Quizas se puede crear un hilo 
+							hilo {
+								Escucha por DVK el pedido (dvk_receive)
+								notifica a la tarea (muk_notify)
+								espera la respuesta( muk_receive)
+								envia la respuesta al cliente (dvk_send)
+							}
+				RESPUESTA: NO FUNCIONARIA PORQUE EL HILO ESTA FUERA DEL CONTROL DE LIBTASK POR LO QUE SE PUEDEN
+						PRODUCIR CONDICIONES DE COMPETENCIA. NO PODRIA USAR LAS FUNCIONES muk_receive, muk_xxxx 
+							
+				SOLUCION:
+						DVK_receive_T(src_ep, msg, timeout){
+							do {
+								rcode = dvk_receive_T(ANY, msg, TIMOUT_NOWAIT);
+								if( rcode == EDVSTIMEDOUT) {
+									if( timeout > 0) {
+										timeout -= MUK_DVK_INTERVAL;
+										taskdelay((MUK_DVK_INTERVAL);
+									}
+								}
+							}while(rcode != EDVSTIMEDOUT);
+				
+				
+TODO:  ADAPTAR M3FTP PARA QUE ESCUCHE POR DVK (al cliente) Y OPERE SOBRE MUK 
 
-TODO: Convertir todas las librerias de .so a  .a (estaticas)
+ERROR:	DE VEZ EN CUANDO SE CUELGA EL M3NWEB
+		 m3nweb.c:nweb_server:256:total_bytes=103730
+		 m3nweb.c:main_nweb:333:Conection accept
+		./muk2.sh: lÃ­nea 6:  6732 ViolaciÃ³n de segmento  ./muk2 muk.cfg
 
-TODO:	Idem para MUK 
+ERROR:	ANDA MAL EL REGISTRO DE TIEMPOS 
+		t_start=796533.00 t_stop=693299.00 t_total=-103234.00
+		total_bytes = 103730
+		Throuhput = -1.004805 [bytes/s]
+		t_start=860439.00 t_stop=665281.00 t_total=-195158.00
+		total_bytes = 103730
+		Throuhput = -0.531518 [bytes/s]
+		t_start=344936.00 t_stop=164486.00 t_total=-180450.00
+		total_bytes = 103730
+		Throuhput = -0.574841 [bytes/s]
+		t_start=549012.00 t_stop=375500.00 t_total=-173512.00
+		total_bytes = 103730
+		Throuhput = -0.597826 [bytes/s]
+		t_start=684145.00 t_stop=637770.00 t_total=-46375.00
+		total_bytes = 103730
+		Throuhput = -2.236765 [bytes/s]
+		t_start=639695.00 t_stop=535057.00 t_total=-104638.00
+		total_bytes = 0
+		t_start=-nan t_stop=508960.00 t_total=226458.00
+		total_bytes = 103730
+		Throuhput = 0.458054 [bytes/s]
+		t_start=-nan t_stop=513242.00 t_total=3794.00
+		total_bytes = 0
+		t_start=-nan t_stop=326901.00 t_total=-472027.00
+		total_bytes = 0
+		t_start=179644.00 t_stop=119667.00 t_total=-59977.00
+		total_bytes = 103730
+		Throuhput = -1.729496 [bytes/s]
+		t_start=119930.00 t_stop=951194.00 t_total=831264.00
+		total_bytes = 0
+		t_start=-nan t_stop=951985.00 t_total=572299.00
+		total_bytes = 0
 
-TODO: Adaptar M3NWEB para que use los sockets como usa tcpproxy.c 
+TODO:	PROBAR MUK con la libreria convertidas
 
-TODO: Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
-		1) o se usa un hilo especifico que espera 
-		
-ATENCION: libtask utiliza funciones propias para sustituir PRINTF y otras
+TODO: 	PROBAR CREAR EN MUK UN THREAD PARA wis_server A VER SI TRABAJA MERJOR 
+
+ATENCION: libtask brinda funciones propias para sustituir PRINTF y otras
 		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
+		NO PARECEN SER USADAS ??
 
+
+
+TODO: Se podria hacer una consola externa para controlar ciertas cosas en forma similar a UML
+		por ejemplo agregando al IS un nuevo servidor que se llame con_server que estaria 
+		escuchando en algun socket UDP, para que sea remotizable.
+		luego, un comando externo haria 
+					# muk2cmd	<command>
+					<command>:
+							help 
+							dc
+							sys_proc
+							rd 
+							pm_proc
+							fs_proc
+							fs_super
+							
+
+Ver makefile de  https://github.com/jbleners/Falcon
 
 
 Se podria hacer una especie de whatdog.

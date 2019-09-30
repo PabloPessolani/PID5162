@@ -1,4 +1,8 @@
-all: libfs.so
+all: libfs.a
+
+LIB=libfs.a 
+
+
 # Which compiler
 CC = gcc
 
@@ -21,8 +25,8 @@ CFLAGS =  -g -c -fPIC -Wall -pthread  -v -O0 -D_FILE_OFFSET_BITS=64
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 	
-libfs.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libfs.so $(OBJS)  $(LIBS)
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS)
 	
 clean:
-	rm libfs.so  *.o
+	rm $(LIB)  *.o

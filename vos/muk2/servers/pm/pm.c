@@ -188,7 +188,9 @@ void pm_init(void)
 		ERROR_PRINT(EDVSENDPOINT);
 		taskexit(&rcode);
 	}
-	
+	pm_ptr = current_task();
+	MUKDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(pm_ptr));
+
 	pm_msg_ptr = &pm_m_in;
 	
 	/* Register into SYSTASK (as an autofork) */

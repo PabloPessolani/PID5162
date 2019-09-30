@@ -1,4 +1,7 @@
-all: libpm.so
+all: libpm.a
+
+LIB=libpm.a 
+
 # Which compiler
 CC = gcc
 
@@ -9,14 +12,14 @@ INCLUDE = .
 CFLAGS =  -g -c -fPIC -Wall -pthread 
 
 OBJS = pm.o table.o utility.o getset.o forkexit.o \
-	timers.o signal.o misc.c time.c dump.c
+	timers.o signal.o misc.o time.o dump.o
 	
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 	
-libpm.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libpm.so $(OBJS)  $(LIBS)
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS)
 
 clean:
-	rm libpm.so  *.o
+	rm $(LIB)  *.o

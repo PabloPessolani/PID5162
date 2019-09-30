@@ -1150,10 +1150,19 @@ b77b8000      4K r---- ld-2.24.so
 b77b9000      4K rw--- ld-2.24.so
 bfec7000    132K rw---   [ stack ]
  total    76188K <<<<<<<<<<<<<<<<<<<<<<<<<<< 76 MBYTES !!!! 
-		        		
+		 
+=======================================================================================
+20190928:	
+		SE CAMBIARON TODOS LOS MAKEFILES para compilar librerias ESTATICAS 
+		
+		NO SE PROBARON AUN 
+				 
 =======================================================================================
 =======================================================================================
 =======================================================================================
+
+TODO: 	PROBAR CREAR UN THREAD PARA wis_server A VER SI TRABAJA MERJOR VER "IS" DE MUK2
+
 OJO!!! 
 Cambie el archivo de configuracion/script rdisk.sh de mol/drivers/rdisk  para que no soporte replicacion
 

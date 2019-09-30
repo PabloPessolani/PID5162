@@ -1,6 +1,6 @@
 /* 
 		HTTP WEB SERVER using MOL-FS
-		but LINUX SOCKETS
+		but LIBTASK SOCKETS
  */
 
 #define MUKDBG		1
@@ -34,7 +34,7 @@ const static char http_forbidden[] = "HTTP/1.1 403 Forbidden\nContent-Length: 18
 const static char http_not_found[] = "HTTP/1.1 404 Not Found\nContent-Length: 136\nConnection: close\nContent-Type: text/html\n\n<html><head>\n<title>404 Not Found</title>\n</head><body>\n<h1>Not Found</h1>\nThe requested URL was not found on this server.\n</body></html>\n";
   
 void nweb_init(char *cfg_file);
-int nweb_server(int socket_fd);
+int nweb_server(int nw_fd);
 int nw_search_config(config_t *cfg);
 int nw_read_config(char *file_conf);
 
@@ -44,15 +44,15 @@ void nw_usage(char* errmsg, ...) {
 	} 
 	fprintf(stderr, "Usage: m3nweb <config_file>\n");
 }
-
+ 
 /*===========================================================================*
  *				nweb_init					     *
  *===========================================================================*/
  void nweb_init(char *cfg_file)
  {
  	int rcode;
-    config_t *cfg;
 	int  lcl_ep;
+    config_t *cfg;
 	
 	MUKDEBUG(DVS_USR_FORMAT,DVS_USR_FIELDS(dvs_ptr));
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
@@ -92,7 +92,7 @@ void nw_usage(char* errmsg, ...) {
 	MUKDEBUG("before nw_search_config\n");	
 	rcode = nw_search_config(cfg);
 	if(rcode) ERROR_TSK_EXIT(rcode);
-	
+		
 	web_id = taskid();
 	MUKDEBUG("web_id=%d\n", web_id);
 	
@@ -100,11 +100,11 @@ void nw_usage(char* errmsg, ...) {
 	MUKDEBUG("web_ep=%d\n", web_ep);
 	if( lcl_ep != web_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
-		taskexit(&lcl_ep);
+		taskexit(lcl_ep);
 	}
 	
 	MUKDEBUG("Get web_ep info\n");
-	web_ptr = (proc_usr_t *) get_task(web_ep);
+	web_ptr = current_task();
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(web_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
@@ -122,55 +122,31 @@ void nw_usage(char* errmsg, ...) {
 	// set the name of NWEB 
 	rcode = sys_rsetpname(web_ep, "nweb", local_nodeid);
 	if(rcode < 0) ERROR_TSK_EXIT(rcode);
-		
-	if((nw_listenfd = socket(AF_INET, SOCK_STREAM,0)) <0){
+	
+	if((nw_listenfd = netannounce(TCP, 0, web_port)) < 0){
 		rcode = -errno;
 		ERROR_TSK_EXIT(rcode);
 	}
-	
-	nw_svr_addr.sin_family = AF_INET;
-	nw_svr_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	nw_svr_addr.sin_port = htons(web_port);
-	
-	rcode = bind(nw_listenfd, (struct sockaddr *)&nw_svr_addr,sizeof(nw_svr_addr));
-	if (rcode <0){
-		rcode = -errno;
-		ERROR_TSK_EXIT(rcode);
-	}
-	rcode = listen(nw_listenfd,64);
-	if ( rcode <0){
-		rcode = -errno;
-		ERROR_TSK_EXIT(rcode);
-	}
-	
-
+	MUKDEBUG("netannounce on TCP port=%d\n", web_port);
 }
 
 /*===========================================================================*
  *				nweb_server					     *
  *===========================================================================*/
 /* this is a child nw_web_child server process, so we can exit on errors */
-int nweb_server(int socket_fd)
+int nweb_server(int nw_fd)
 {
 	u16_t in_len;
 	int rcode;
 	int j, file_fd;
 	long i, ret, len, rbytes;
-	double t_start, t_stop, t_total;
-	long total_bytes;
+static	double t_start, t_stop, t_total;
+static	long total_bytes;
 	char *fstr;
   	FILE *log_fp;
 
-	/* Register into SYSTASK (as an autofork) */
-//	MUKDEBUG("Register NW into SYSTASK web_id=%d\n",web_id);
-//	nw_ep = sys_bindproc(NW_PROC_NR, web_id, LOCAL_BIND);
-//	if(nw_ep < 0) ERROR_TSK_EXIT(nw_ep);
-	
-	// set the name of FS 
-//	rcode = sys_rsetpname(nw_ep, "nweb", local_nodeid);
-//	if(rcode < 0) ERROR_TSK_EXIT(rcode);
-	
-	MUKDEBUG("request socket_fd=%d\n", socket_fd);
+
+	MUKDEBUG("request nw_fd=%d\n", nw_fd);
 	total_bytes = 0;
 
 	/* Read the data from the port, blocking if nothing yet there. 
@@ -179,8 +155,12 @@ int nweb_server(int socket_fd)
 	rcode = OK;
 	while(rcode == OK) {
 			
-		ret =read(socket_fd, nw_in_buf, WEBMAXBUF);
-		
+	//		ret = read(nw_fd, nw_in_buf, WEBMAXBUF);
+		ret = fdread(nw_fd, nw_in_buf, WEBMAXBUF);
+		if( ret <= 0) {
+			ERROR_PRINT(EDVSNOSYS);
+			break;
+		}
 		in_len=strlen(nw_in_buf);
 		/* remove CF and LF characters */
 		for(i=0;i<in_len;i++)  
@@ -192,8 +172,8 @@ int nweb_server(int socket_fd)
 		if( strncmp(nw_in_buf,"GET ",4) 
 		 && strncmp(nw_in_buf,"get ",4) ) {
 			ERROR_PRINT(EDVSNOSYS);
-			write(socket_fd,http_forbidden, strlen(http_forbidden));
-			ERROR_RETURN(EDVSNOSYS);
+			fdwrite(nw_fd,http_forbidden, strlen(http_forbidden));
+	//			ERROR_RETURN(EDVSNOSYS);
 			break;
 		}  
 		
@@ -209,8 +189,8 @@ int nweb_server(int socket_fd)
 		for(j=0;j<i-1;j++) {  
 			if(nw_in_buf[j] == '.' && nw_in_buf[j+1] == '.') {
 				ERROR_PRINT(EDVSACCES);
-				write(socket_fd,http_forbidden, strlen(http_forbidden));
-				ERROR_RETURN(EDVSACCES);
+				fdwrite(nw_fd,http_forbidden, strlen(http_forbidden));
+	//				ERROR_RETURN(EDVSACCES);
 				break;
 			}
 		}
@@ -233,8 +213,8 @@ int nweb_server(int socket_fd)
 		}
 		if(fstr == 0) {
 			ERROR_PRINT(EDVSACCES);
-			write(socket_fd,http_forbidden, strlen(http_forbidden));
-			ERROR_RETURN(EDVSACCES);
+			fdwrite(nw_fd,http_forbidden, strlen(http_forbidden));
+	//			ERROR_RETURN(EDVSACCES);
 			break;
 		}
 		
@@ -242,8 +222,8 @@ int nweb_server(int socket_fd)
 		MUKDEBUG("filename:%s\n",&nw_in_buf[5]);
 		if(( file_fd = mol_open(&nw_in_buf[5],O_RDONLY)) == -1) {  
 			ERROR_PRINT(-errno);
-			write(socket_fd,http_not_found, strlen(http_not_found));
-			ERROR_RETURN(rcode);
+			fdwrite(nw_fd,http_not_found, strlen(http_not_found));
+	//			ERROR_RETURN(rcode);
 			break;
 		}
 		
@@ -251,39 +231,41 @@ int nweb_server(int socket_fd)
 		rcode = mol_fstat(file_fd, nw_fstat_ptr);
 		if( rcode < 0)  {
 			ERROR_PRINT(-errno);
-			write(socket_fd,http_not_found, strlen(http_not_found));
-			ERROR_RETURN(rcode);
+			fdwrite(nw_fd,http_not_found, strlen(http_not_found));
+	//			ERROR_RETURN(rcode);
+			break;
 		}
 		
 		/* Send the HTML header */
 		(void)sprintf(nw_out_buf,"HTTP/1.1 200 OK\nServer: nweb/%d.0\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", 
 			VERSION, nw_fstat_ptr->mnx_st_size, fstr); /* Header + a blank line */
-		write(socket_fd,nw_out_buf, strlen(nw_out_buf));
+		fdwrite(nw_fd,nw_out_buf, strlen(nw_out_buf));
 		total_bytes += strlen(nw_out_buf);
 		/* send file in WEBMAXBUF block - last block may be smaller */
 		while (  (rbytes = mol_read(file_fd, nw_out_buf, WEBMAXBUF)) > 0 ) {
 			MUKDEBUG("rbytes:%d\n",rbytes);
-			write(socket_fd,nw_out_buf, rbytes);
+			fdwrite(nw_fd,nw_out_buf, rbytes);
 			total_bytes += rbytes;
 			MUKDEBUG("total_bytes:%d\n",total_bytes);
 		}
+		ret = mol_close(file_fd); 
+		if(ret < 0)	ERROR_PRINT(-errno);
 		break;
 	}
-	
+
 	MUKDEBUG("total_bytes=%ld\n", total_bytes);
 
-	ret = mol_close(file_fd); 
-	if(ret < 0)	ERROR_PRINT(-errno);
+
 
 	t_stop = dwalltime();
 	t_total = (t_stop-t_start);
 	log_fp = fopen("m3nweb.log","a+");
 	fprintf(log_fp, "t_start=%.2f t_stop=%.2f t_total=%.2f\n",t_start, t_stop, t_total);
 	fprintf(log_fp, "total_bytes = %ld\n", total_bytes);
-	fprintf(log_fp, "Throuhput = %f [bytes/s]\n", (double)(total_bytes)/t_total);
+	if( total_bytes > 0)
+		fprintf(log_fp, "Throuhput = %f [bytes/s]\n", (double)(total_bytes)/t_total);
 	fclose(log_fp);
 
-	return(OK);
 }
 
 void be_a_daemon(void)
@@ -310,7 +292,7 @@ void be_a_daemon(void)
 //	if (lockf(lfp,F_TLOCK,0)<0) exit(0); /* can not lock */
 	/* first instance continues */
 //	sprintf(str,"%d\n",getpid());
-//	write(lfp,str,strlen(str)); /* record pid to lockfile */
+//	fdwrite(lfp,str,strlen(str)); /* record pid to lockfile */
 	signal(SIGCHLD,SIG_IGN); /* ignore child */
 	signal(SIGTSTP,SIG_IGN); /* ignore tty signals */
 	signal(SIGTTOU,SIG_IGN);
@@ -328,37 +310,16 @@ int main_nweb (int argc, char *argv[] )
 	int web_sfd;
 	pthread_t my_pth;
 	int web_id, lcl_ep;
+	int rport;
+	char remote[16];
 	
 	if ( argc != 2) {
 		nw_usage( "%s <config_file>", argv[0]);
 		ERROR_TSK_EXIT(rcode);
 	}
 	
-//	be_a_daemon();
-		
 	nweb_init(argv[1]);
 
-#ifdef ANULADO 	
-	my_pth = pthread_self();
-	MUKDEBUG("my_pth=%u\n", my_pth);
-	
-	web_id = syscall (SYS_gettid);
-	MUKDEBUG("web_id=%d\n", web_id);
-	
-	lcl_ep = muk_tbind(dcid, web_ep);
-	MUKDEBUG("web_ep=%d\n", web_ep);
-	if( lcl_ep != web_ep) {
-		ERROR_PRINT(EDVSENDPOINT);
-		taskexit(&lcl_ep);
-	}
-
-	MUKDEBUG("Get web_ep info\n");
-	nw_ptr = (proc_usr_t *) get_task(web_ep);
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(nw_ptr));
-
-#endif // ANULADO 	
-	
-	
 	MUKDEBUG("SYNCHRONIZE WITH MUK \n");
 	// SYNCHRONIZE WITH MUK
 	MTX_LOCK(muk_mutex);
@@ -370,11 +331,13 @@ int main_nweb (int argc, char *argv[] )
 	for(web_hit=1; ;web_hit++) {
 		length = sizeof(nw_cli_addr);
 		MUKDEBUG("Conection accept\n");
-		web_sfd = accept(nw_listenfd, (struct sockaddr *)&nw_cli_addr, &length);
+		web_sfd = netaccept(nw_listenfd, remote, &rport);
+//		web_sfd = accept(nw_listenfd, (struct sockaddr *)&nw_cli_addr, &length);
 		if (web_sfd < 0){
 			rcode = -errno;
 			ERROR_TSK_EXIT(rcode);
 		}
+		MUKDEBUG("connection from %s:%d\n", remote, rport);
 		rcode = nweb_server(web_sfd);
 		if(rcode < 0)
 			ERROR_PRINT(rcode);

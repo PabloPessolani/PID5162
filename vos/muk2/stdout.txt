@@ -1,7 +1,7 @@
  muk2.c:taskmain:356:
  muk2.c:get_dvs_params:26:
-DEBUG 1939:dvk_getdvsinfo:238: 
-DEBUG 1939:dvk_getdvsinfo:242: ipc ret=0
+DEBUG 2534:dvk_getdvsinfo:238: 
+DEBUG 2534:dvk_getdvsinfo:242: ipc ret=0
  muk2.c:get_dvs_params:28:local_nodeid=0
  muk2.c:get_dvs_params:31:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
  muk2.c:taskmain:384:cfg_file=muk.cfg
@@ -115,61 +115,61 @@ DEBUG 1939:dvk_getdvsinfo:242: ipc ret=0
  mukcfg.c:muk_search_token:254:
  mukcfg.c:muk_search_token:262:muk: SERVER1
  mukcfg.c:muk_read_lines:239:
- mukcfg.c:muk_search_ident:82:muk_mandatory=1 cfg=0x1e83330
+ mukcfg.c:muk_search_ident:82:muk_mandatory=1 cfg=0x56b8330
  mukcfg.c:muk_search_ident:85:cfg->line=3
  mukcfg.c:muk_search_ident:87:line=3 word=dcid
  mukcfg.c:muk_search_ident:104:	 TKN_DCID=0
  mukcfg.c:muk_search_ident:109:dcid=0
  muk2.c:get_dc_params:42:dcid=0
-DEBUG 1939:dvk_getdcinfo:331: dcid=0
-DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
+DEBUG 2534:dvk_getdcinfo:331: dcid=0
+DEBUG 2534:dvk_getdcinfo:335: ipc ret=0
  muk2.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- muk2.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
- mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x1e833c8
+ muk2.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
+ mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x56b83c8
  mukcfg.c:muk_search_ident:85:cfg->line=4
  mukcfg.c:muk_search_ident:87:line=4 word=pm_ep
  mukcfg.c:muk_search_ident:117:	 TKN_PM_EP=0
- mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x1e83460
+ mukcfg.c:muk_search_ident:82:muk_mandatory=0 cfg=0x56b8460
  mukcfg.c:muk_search_ident:85:cfg->line=5
  mukcfg.c:muk_search_ident:87:line=5 word=fs_ep
  mukcfg.c:muk_search_ident:128:	 TKN_FS_EP=1
- mukcfg.c:muk_search_ident:82:muk_mandatory=1000 cfg=0x1e834f8
+ mukcfg.c:muk_search_ident:82:muk_mandatory=1000 cfg=0x56b84f8
  mukcfg.c:muk_search_ident:85:cfg->line=6
  mukcfg.c:muk_search_ident:87:line=6 word=is_ep
  mukcfg.c:muk_search_ident:152:	 TKN_IS_EP=8
- mukcfg.c:muk_search_ident:82:muk_mandatory=1000 cfg=0x1e83590
+ mukcfg.c:muk_search_ident:82:muk_mandatory=1000 cfg=0x56b8590
  mukcfg.c:muk_search_ident:85:cfg->line=7
  mukcfg.c:muk_search_ident:87:line=7 word=rd_ep
  mukcfg.c:muk_search_ident:140:	 TKN_RD_EP=3
- mukcfg.c:muk_search_ident:82:muk_mandatory=3000 cfg=0x1e83628
+ mukcfg.c:muk_search_ident:82:muk_mandatory=3000 cfg=0x56b8628
  mukcfg.c:muk_search_ident:85:cfg->line=8
  mukcfg.c:muk_search_ident:87:line=8 word=nweb_ep
  mukcfg.c:muk_search_ident:163:	 TKN_NWEB_EP=22
- mukcfg.c:muk_search_ident:82:muk_mandatory=7000 cfg=0x1e836c0
+ mukcfg.c:muk_search_ident:82:muk_mandatory=7000 cfg=0x56b86c0
  mukcfg.c:muk_search_ident:85:cfg->line=9
  mukcfg.c:muk_search_ident:87:line=9 word=ftp_ep
  mukcfg.c:muk_search_ident:175:	 TKN_FTP_EP=14
- mukcfg.c:muk_search_ident:82:muk_mandatory=F000 cfg=0x1e83758
+ mukcfg.c:muk_search_ident:82:muk_mandatory=F000 cfg=0x56b8758
  mukcfg.c:muk_search_ident:85:cfg->line=10
  mukcfg.c:muk_search_ident:87:line=10 word=fs_cfg
  mukcfg.c:muk_search_ident:188:fs_cfg=/dev/shm/molfs.cfg
- mukcfg.c:muk_search_ident:82:muk_mandatory=E000 cfg=0x1e837f0
+ mukcfg.c:muk_search_ident:82:muk_mandatory=E000 cfg=0x56b87f0
  mukcfg.c:muk_search_ident:85:cfg->line=11
  mukcfg.c:muk_search_ident:87:line=11 word=rd_cfg
  mukcfg.c:muk_search_ident:197:rd_cfg=/dev/shm/rdisk.cfg
- mukcfg.c:muk_search_ident:82:muk_mandatory=C000 cfg=0x1e83888
+ mukcfg.c:muk_search_ident:82:muk_mandatory=C000 cfg=0x56b8888
  mukcfg.c:muk_search_ident:85:cfg->line=12
  mukcfg.c:muk_search_ident:87:line=12 word=web_cfg
  mukcfg.c:muk_search_ident:206:web_cfg=/dev/shm/m3nweb.cfg
- mukcfg.c:muk_search_ident:82:muk_mandatory=8000 cfg=0x1e83920
+ mukcfg.c:muk_search_ident:82:muk_mandatory=8000 cfg=0x56b8920
  mukcfg.c:muk_search_ident:85:cfg->line=13
  mukcfg.c:muk_search_ident:87:line=13 word=ftp_cfg
  mukcfg.c:muk_search_ident:215:ftp_cfg=/dev/shm/m3ftp.cfg
  muk2.c:get_dc_params:42:dcid=0
-DEBUG 1939:dvk_getdcinfo:331: dcid=0
-DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
+DEBUG 2534:dvk_getdcinfo:331: dcid=0
+DEBUG 2534:dvk_getdcinfo:335: ipc ret=0
  muk2.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- muk2.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
+ muk2.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
  muk2.c:taskmain:400:Starting SYSTASK task -----------------------------------
  muk2.c:taskmain:403:sys_id=3
  muk2.c:taskmain:404:MTX_LOCK muk_mutex:1
@@ -186,7 +186,7 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  task.c:muk_tbind:118:dcid=0 p_ep=-2 name=systask
  task.c:task_bind:129:id=3 p_nr=-2 p_ep=-2
  task.c:task_bind:138:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
- task.c:task_bind:139:pproc=521200
+ task.c:task_bind:139:pproc=50018E0
  system.c:init_systask:151:sys_ep=-2
  system.c:init_systask:164:Initialize the call vector to a safe default handler.
  clock.c:init_clock:75:clockTicks =100
@@ -217,7 +217,7 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  system.c:main_systask:54:MTX_UNLOCK muk_mutex:1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -359,26 +359,26 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  task.c:muk_tbind:118:dcid=0 p_ep=3 name=rdisk
  task.c:task_bind:129:id=5 p_nr=3 p_ep=3
  task.c:task_bind:138:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
- task.c:task_bind:139:pproc=521214
+ task.c:task_bind:139:pproc=50018F4
  rdisk.c:rd_init:504:rd_ep=3
  rdisk.c:rd_init:510:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
  rdisk.c:rd_init:511:local_nodeid=0
  rdisk.c:rd_init:513:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- rdisk.c:rd_init:514:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
+ rdisk.c:rd_init:514:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
  rdisk.c:rd_init:516:Get RDISK info
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  rdisk.c:rd_init:518:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  rdisk.c:rd_init:522:Register RDISK into SYSTASK rd_lpid=5
  sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=3 lpid=5 oper=1
  sys_bindproc.c:get_process_name_by_pid:47:pid=5
  sys_bindproc.c:get_process_name_by_pid:51:name=[rdisk]
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:480:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -396,21 +396,21 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  st_bindproc.c:st_bindproc:52:source=3 type=1568 m3i1=5 m3i2=3 m3p1=0x1 m3ca1=[rdisk]
  st_bindproc.c:st_bindproc:58:sysproc_lpid=5, sysproc_ep=3 sysproc_nr=3 sysproc_oper=1 
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  st_bindproc.c:st_bindproc:73:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  st_bindproc.c:st_bindproc:146:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  st_bindproc.c:st_bindproc:154:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  system.c:main_systask:99:REPLY msg:source=3 type=0 m1i1=3 m1i2=1 m1i3=1 m1p1=0x73696472 m1p2=0x6b m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:3 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:128:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  mukipc.c:muk_send:132:dst_ep:3 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -419,7 +419,7 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -432,11 +432,11 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  sys_bindproc.c:sys_rbindproc:37:endpoint=3
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=3 p_name=rdisk
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:480:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -453,17 +453,17 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=3 type=1571 m3i1=0 m3i2=3 m3p1=(nil) m3ca1=[rdisk]
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  st_bindproc.c:st_setpname:184:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  system.c:main_systask:99:REPLY msg:source=3 type=0 m1i1=0 m1i2=3 m1i3=0 m1p1=0x73696472 m1p2=0x6b m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:3 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:128:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  mukipc.c:muk_send:132:dst_ep:3 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -472,7 +472,7 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -482,9 +482,9 @@ DEBUG 1939:dvk_getdcinfo:335: ipc ret=0
  mukipc.c:muk_receive:248:before tasksleep -2
  rendez.c:tasksleep:9:id=3
  mukipc.c:muk_sendrec_T:513:after tasksleep 3, p_error=0 
- rdisk.c:rd_init:532:Byte offset to the partition start (Device = 0 - img_ptr): 1EA4BF4
- utility.c:cvul64:19:f_cvul64: 32132084:0 32132084
-Byte offset to the partition start (rd_geom[DEV=0].dv_base): 1EA4BF4
+ rdisk.c:rd_init:532:Byte offset to the partition start (Device = 0 - img_ptr): 56D9BF4
+ utility.c:cvul64:19:f_cvul64: 91069428:0 91069428
+Byte offset to the partition start (rd_geom[DEV=0].dv_base): 56D9BF4
  rdisk.c:rd_init:537:Number of bytes in the partition (Device = 0 - img_size): 1474560
  utility.c:cvul64:19:f_cvul64: 1474560:0 1474560
 Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
@@ -493,11 +493,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
 ---Init_buffer---
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=3 p_name=rdisk
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:480:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -514,17 +514,17 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=3 type=1571 m3i1=0 m3i2=3 m3p1=(nil) m3ca1=[rdisk]
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  st_bindproc.c:st_setpname:184:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  system.c:main_systask:99:REPLY msg:source=3 type=0 m1i1=0 m1i2=3 m1i3=0 m1p1=0x73696472 m1p2=0x6b m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:3 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:128:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=rdisk 
  mukipc.c:muk_send:132:dst_ep:3 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -533,7 +533,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -567,7 +567,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  driver.c:driver_task:114:MTX_UNLOCK muk_mutex:1
  driver.c:driver_task:116:This is RDISK's main loop-  get work and do it, forever and forever.
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_receive:192:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=3
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -584,23 +584,23 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  pm.c:pm_init:176:dcid=0 pm_ep=0
  pm.c:pm_init:178:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
  pm.c:pm_init:179:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- pm.c:pm_init:180:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
+ pm.c:pm_init:180:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
  pm.c:pm_init:183:pm_id=6
  task.c:muk_tbind:118:dcid=0 p_ep=0 name=pm
  task.c:task_bind:129:id=6 p_nr=0 p_ep=0
  task.c:task_bind:138:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
- task.c:task_bind:139:pproc=521208
+ task.c:task_bind:139:pproc=50018E8
  pm.c:pm_init:186:rcode=0
  pm.c:pm_init:195:Register PM into SYSTASK pm_id=6
  sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=0 lpid=6 oper=1
  sys_bindproc.c:get_process_name_by_pid:47:pid=6
  sys_bindproc.c:get_process_name_by_pid:51:name=[pm]
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -618,21 +618,21 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=6 m3i2=0 m3p1=0x1 m3ca1=[pm]
  st_bindproc.c:st_bindproc:58:sysproc_lpid=6, sysproc_ep=0 sysproc_nr=0 sysproc_oper=1 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  st_bindproc.c:st_bindproc:73:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  st_bindproc.c:st_bindproc:146:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  st_bindproc.c:st_bindproc:154:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=0 m1i2=1 m1i3=1 m1p1=0x6d70 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -641,7 +641,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -654,11 +654,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  sys_bindproc.c:sys_rbindproc:37:endpoint=0
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=0 p_name=pm
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -675,17 +675,17 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=0 type=1571 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[pm]
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  st_bindproc.c:st_setpname:184:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=0x6d70 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -694,7 +694,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -706,11 +706,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  mukipc.c:muk_sendrec_T:513:after tasksleep 0, p_error=0 
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=-2 p_name=systask
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -727,17 +727,17 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=0 type=1571 m3i1=0 m3i2=-2 m3p1=(nil) m3ca1=[systask]
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  st_bindproc.c:st_setpname:184:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=0 m1i2=-2 m1i3=0 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -746,7 +746,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -762,7 +762,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  pm.c:pm_init:241:Initialize the PM's process table
  utility.c:mproc_init:131:p_nr=0
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  utility.c:mproc_init:159:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  utility.c:mproc_init:131:p_nr=1
  task.c:get_task:98:p_ep=1 p_nr=1
@@ -770,7 +770,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  task.c:get_task:98:p_ep=2 p_nr=2
  utility.c:mproc_init:131:p_nr=3
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  utility.c:mproc_init:159:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
  utility.c:mproc_init:131:p_nr=4
  task.c:get_task:98:p_ep=4 p_nr=4
@@ -1210,11 +1210,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  pm.c:pm_init:263:mp_endpoint=0 mp_pid=0 mp_parent=0 mp_flags=3001 mp_nice=-10 
  pm.c:pm_init:279:clockTicks =100
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1231,11 +1231,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  system.c:main_systask:88:Calling vector 25
  system.c:main_systask:99:REPLY msg:source=0 type=2 m1i1=27342 m1i2=-2 m1i3=0 m1p1=0x74737973 m1p2=0x6b7361 m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1244,7 +1244,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1265,7 +1265,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:tasksleep:9:id=6
  muk2.c:taskmain:432:MTX_LOCK muk_mutex:1
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=0
  rendez.c:_taskwakeup:35:i=1
@@ -1282,7 +1282,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  pm.c:main_pm:49:This is PM's main loop-  get work and do it, forever and forever.
  pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_receive:192:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=0
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1302,24 +1302,24 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  task.c:muk_tbind:118:dcid=0 p_ep=1 name=fs
  task.c:task_bind:129:id=7 p_nr=1 p_ep=1
  task.c:task_bind:138:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
- task.c:task_bind:139:pproc=52120C
+ task.c:task_bind:139:pproc=50018EC
  fs.c:fs_init:205:fs_ep=1
  fs.c:fs_init:211:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
  fs.c:fs_init:212:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- fs.c:fs_init:213:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
+ fs.c:fs_init:213:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
  fs.c:fs_init:215:Get fs_ep info
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  fs.c:fs_init:220:Register FS into SYSTASK fs_id=7
  sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=1 lpid=7 oper=1
  sys_bindproc.c:get_process_name_by_pid:47:pid=7
  sys_bindproc.c:get_process_name_by_pid:51:name=[fs]
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1337,21 +1337,21 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  st_bindproc.c:st_bindproc:52:source=1 type=1568 m3i1=7 m3i2=1 m3p1=0x1 m3ca1=[fs]
  st_bindproc.c:st_bindproc:58:sysproc_lpid=7, sysproc_ep=1 sysproc_nr=1 sysproc_oper=1 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  st_bindproc.c:st_bindproc:73:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  st_bindproc.c:st_bindproc:146:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  st_bindproc.c:st_bindproc:154:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  system.c:main_systask:99:REPLY msg:source=1 type=0 m1i1=1 m1i2=1 m1i3=1 m1p1=0x7366 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:1 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1360,7 +1360,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1373,11 +1373,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  sys_bindproc.c:sys_rbindproc:37:endpoint=1
  mol_bindproc.c:mol_bindproc:19:p_endpoint=1 pid=1 lpid=7 oper=1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:0
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:488:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1392,29 +1392,29 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  utility.c:pm_isokendpt:45:endpoint=1 
  utility.c:pm_isokendpt:47:*proc=1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  utility.c:pm_isokendpt:49:rkp->p_endpoint=1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
  forkexit.c:pm_bindproc:462:
  forkexit.c:pm_bindproc:469:source=1 type=96 m7i1=1 m7i2=7 m7i3=1 m7i4=1 m7p1=(nil) m7p2=(nil)
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  utility.c:sys_procinfo:119:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  forkexit.c:pm_bindproc:484:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  forkexit.c:pm_bindproc:485:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
  sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=1 lpid=7 oper=1
  sys_bindproc.c:get_process_name_by_pid:47:pid=7
  sys_bindproc.c:get_process_name_by_pid:51:name=[fs]
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1432,21 +1432,21 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=7 m3i2=1 m3p1=0x1 m3ca1=[fs]
  st_bindproc.c:st_bindproc:58:sysproc_lpid=7, sysproc_ep=1 sysproc_nr=1 sysproc_oper=1 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  st_bindproc.c:st_bindproc:73:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  st_bindproc.c:st_bindproc:146:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  st_bindproc.c:st_bindproc:154:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=1 m1i2=1 m1i3=1 m1p1=0x7366 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1455,7 +1455,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1468,26 +1468,26 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  sys_bindproc.c:sys_rbindproc:37:endpoint=1
  forkexit.c:pm_bindproc:500:sysproc_nr=1 sysproc_ep=1 new_pid=1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  utility.c:sys_procinfo:119:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  forkexit.c:pm_bindproc:507:sysproc_nr=1
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  forkexit.c:pm_bindproc:531:mp_endpoint=1 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
  pm.c:main_pm:74:pm_call_nr=96 result=1
  pm.c:setreply:303:proc_nr=1 result=1
  pm.c:main_pm:84:Send out all pending reply messages
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  pm.c:main_pm:97:Replying to 1
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:120:dst_ep:1 current_ep=0
  mukipc.c:muk_send:121:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1496,7 +1496,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  task.c:get_task:98:p_ep=2 p_nr=2
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=4 p_nr=4
  task.c:get_task:98:p_ep=5 p_nr=5
  task.c:get_task:98:p_ep=6 p_nr=6
@@ -1716,7 +1716,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  task.c:get_task:98:p_ep=220 p_nr=220
  pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_receive:192:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=0
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1729,11 +1729,11 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  fs.c:fs_init:225:rcode=1
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=1 p_name=fs
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1750,17 +1750,17 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=1 type=1571 m3i1=1 m3i2=1 m3p1=(nil) m3ca1=[fs]
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  st_bindproc.c:st_setpname:184:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  system.c:main_systask:99:REPLY msg:source=1 type=0 m1i1=1 m1i2=1 m1i3=0 m1p1=0x7366 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:1 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1769,7 +1769,7 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1854,27 +1854,27 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  moldevcfg.c:fs_search_device:321:
  moldevcfg.c:fs_search_device:335:DEVICE: MY_RDISK_IMG
  moldevcfg.c:fs_read_lines:440:
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=7 cfg=0x1eb9840
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=7 cfg=0x56ee840
  moldevcfg.c:fs_search_ident:123:cfg->line=3
  moldevcfg.c:fs_search_ident:125:line=3 word=major
  moldevcfg.c:fs_search_ident:138:	major=3
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=6 cfg=0x1eb98d8
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=6 cfg=0x56ee8d8
  moldevcfg.c:fs_search_ident:123:cfg->line=4
  moldevcfg.c:fs_search_ident:125:line=4 word=minor
  moldevcfg.c:fs_search_ident:151:	minor=0
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x1eb9970
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x56ee970
  moldevcfg.c:fs_search_ident:123:cfg->line=5
  moldevcfg.c:fs_search_ident:125:line=5 word=type
  moldevcfg.c:fs_search_ident:172:	TYPE=RDISK_IMG, VALUE(hex)=0x0300, VALUE(int)=768
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x1eb99f0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x56ee9f0
  moldevcfg.c:fs_search_ident:123:cfg->line=6
  moldevcfg.c:fs_search_ident:125:line=6 word=volatile
  moldevcfg.c:fs_search_ident:224:	VOLATILE=NO, VALUE=0
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x1eb9a70
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x56eea70
  moldevcfg.c:fs_search_ident:123:cfg->line=7
  moldevcfg.c:fs_search_ident:125:line=7 word=root_dev
  moldevcfg.c:fs_search_ident:238:	ROOT_DEV=YES, VALUE=1
- moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x1eb9af0
+ moldevcfg.c:fs_search_ident:119:fs_cfg_dev_nr=1 mandatory=4 cfg=0x56eeaf0
  moldevcfg.c:fs_search_ident:123:cfg->line=8
  moldevcfg.c:fs_search_ident:125:line=8 word=buffer_size
  moldevcfg.c:fs_search_ident:246:	minor=16384
@@ -1910,14 +1910,14 @@ Number of bytes in the partition (rd_geom[DEV=0].dv_size): 1474560
  device.c:dev_open:62:_MAX_BLOCK_SIZE=65536
  device.c:dev_open:65:REAL buffer_size=16384
  device.c:r_gen_opcl:228:op=406 dev=768 major=3 minor=0 proc_e=1 flags=6
- device.c:r_gen_io:435:task_nr=3 source=-1296511648 type=1030 m2i1=0 m2i2=1 m2i3=6 m2l1=876098358 m2l2=0 m2p1=0x300
+ device.c:r_gen_io:435:task_nr=3 source=-1217057440 type=1030 m2i1=0 m2i2=1 m2i3=6 m2l1=876098358 m2l2=0 m2p1=0x300
  device.c:r_gen_io:474: m_type=1030, COUNT/FLAGS=6
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:3
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:488:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1935,20 +1935,20 @@ RECEIVE: m_source=1, m_type=1030, DEVICE=0, IO_ENDPT=1, POSITION=34383336, COUNT
  rdisk.c:rd_do_open:438:rd_do_open - device number: 0 - OK to open
  rdisk.c:rd_do_open:441:rcode 0
  rdisk.c:rd_do_open:451:Open imagen FD=3
- rdisk.c:rd_do_open:469:Aligned Buffer size=16384 on address 1ECB000, device=0
- rdisk.c:rd_do_open:470:Local Buffer 1ECB000
+ rdisk.c:rd_do_open:469:Aligned Buffer size=16384 on address 5700000, device=0
+ rdisk.c:rd_do_open:470:Local Buffer 5700000
  rdisk.c:rd_do_open:471:Buffer size 16384
  rdisk.c:rd_do_open:474:Device 0 is active 1
  rdisk.c:rd_prepare:228:device = 0 (rd_device = 0)
- rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (1EA4BF4;0), (1474560;0)
- rdisk.c:rd_do_open:486:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=1ECB000 buff_size=16384 active=1 available=1
+ rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (56D9BF4;0), (1474560;0)
+ rdisk.c:rd_do_open:486:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=5700000 buff_size=16384 active=1 available=1
  driver.c:driver_task:249:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=0
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:120:dst_ep:1 current_ep=3
  mukipc.c:muk_send:121:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -1956,7 +1956,7 @@ RECEIVE: m_source=1, m_type=1030, DEVICE=0, IO_ENDPT=1, POSITION=34383336, COUNT
  rendez.c:_taskwakeup:32:ep=1
  rendez.c:_taskwakeup:35:i=1
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_receive:192:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=3
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -1968,18 +1968,18 @@ RECEIVE: m_source=1, m_type=1030, DEVICE=0, IO_ENDPT=1, POSITION=34383336, COUNT
  mukipc.c:muk_sendrec_T:513:after tasksleep 1, p_error=0 
  device.c:dev_open:71:r=0
  super.c:read_super:207:Read the Superblock 
- super.c:read_super:213: dev_io -> op=1027, dev=768, POS=32216696, BYTES=1024
+ super.c:read_super:213: dev_io -> op=1027, dev=768, POS=0, BYTES=1024
  device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=1024 bytes=1024 flags=0
  device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=1024, IO_ENDPT=1, COUNT=1024
- device.c:dev_io:175:dmap_driver=3 source=-1217056862 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb2bf8860
- device.c:r_gen_io:435:task_nr=3 source=-1217056862 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0xb2bf8860
+ device.c:dev_io:175:dmap_driver=3 source=91153752 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0x4d7620
+ device.c:r_gen_io:435:task_nr=3 source=91153752 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=0x4d7620
  device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=1024
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:3
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:488:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -1991,13 +1991,13 @@ RECEIVE: m_source=1, m_type=1030, DEVICE=0, IO_ENDPT=1, POSITION=34383336, COUNT
  rendez.c:tasksleep:9:id=7
  mukipc.c:muk_receive:250:after tasksleep 3, p_error=0 
  driver.c:driver_task:143:
-RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024, ADDRESS:B2BF8860, compress(m2_l2):0
+RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024, ADDRESS:4D7620, compress(m2_l2):0
  driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
  driver.c:driver_task:177:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
  driver.c:do_rdwt:287:mp->COUNT=1024
- driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:B2BF8860 - mp->COUNT=1024
+ driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:4D7620 - mp->COUNT=1024
  rdisk.c:rd_prepare:228:device = 0 (rd_device = 0)
- rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (1EA4BF4;0), (1474560;0)
+ rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (56D9BF4;0), (1474560;0)
  driver.c:do_rdwt:303:mp->m_type: 1027
  driver.c:do_rdwt:323:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
  rdisk.c:rd_transfer:259:rd_device: 0
@@ -2006,21 +2006,21 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024
  rdisk.c:rd_transfer:272:posit: 400
  rdisk.c:rd_transfer:273:nr_req: 1
  rdisk.c:rd_transfer:279:count: 1024
- rdisk.c:rd_transfer:283:user_vir B2BF8860
- utility.c:cv64ul:31:f_cv64ul: 32132084
- rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 1EA4FF4
+ rdisk.c:rd_transfer:283:user_vir 4D7620
+ utility.c:cv64ul:31:f_cv64ul: 91069428
+ rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 56D9FF4
  rdisk.c:rd_transfer:300:
 <DEV_GATHER>
  rdisk.c:rd_transfer:306:bytes: 1024
- rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=1ECB000 buff_size=16384 active=1 available=1
+ rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=5700000 buff_size=16384 active=1 available=1
  rdisk.c:rd_transfer:313:pread: bytes=1024
  rdisk.c:rd_transfer:318:MUK_vcopy 3->1 bytes=1024 
  rdisk.c:rd_transfer:322:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=0
  rdisk.c:rd_transfer:323:bytes= 1024
- rdisk.c:rd_transfer:324:DRIVER - Offset (read) 1ECB000
- rdisk.c:rd_transfer:325:mem_phys: 1ECB000 (in DRIVER)
- rdisk.c:rd_transfer:326:user_vir: B2BF8860 (in proc_nr 1)
- rdisk.c:rd_transfer:339:user_vir (do-buffer) B2BF8C60
+ rdisk.c:rd_transfer:324:DRIVER - Offset (read) 5700000
+ rdisk.c:rd_transfer:325:mem_phys: 5700000 (in DRIVER)
+ rdisk.c:rd_transfer:326:user_vir: 4D7620 (in proc_nr 1)
+ rdisk.c:rd_transfer:339:user_vir (do-buffer) 4D7A20
  rdisk.c:rd_transfer:342:count=0 stbytes=1024 position=2048
  rdisk.c:rd_transfer:421:subtotal de bytes
  rdisk.c:rd_transfer:423:subtotal de bytes tbytes=0 nr_req=0
@@ -2028,11 +2028,11 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024
  driver.c:do_rdwt:331:dr_trasnfer = (r) 1024
  driver.c:driver_task:249:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=1024
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:120:dst_ep:1 current_ep=3
  mukipc.c:muk_send:121:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2040,7 +2040,7 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024
  rendez.c:_taskwakeup:32:ep=1
  rendez.c:_taskwakeup:35:i=1
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_receive:192:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=3
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2060,15 +2060,15 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024
  cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=16384, BYTES=4096
  device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=16384 bytes=4096 flags=0
  device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=16384, IO_ENDPT=1, COUNT=4096
- device.c:dev_io:175:dmap_driver=3 source=-1296196072 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0xb2c04fa0
- device.c:r_gen_io:435:task_nr=3 source=-1296196072 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0xb2c04fa0
+ device.c:dev_io:175:dmap_driver=3 source=4753332 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0x4f7be0
+ device.c:r_gen_io:435:task_nr=3 source=4753332 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=16384 m2l2=0 m2p1=0x4f7be0
  device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=4096
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:3
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_sendrec_T:488:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -2080,13 +2080,13 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=400, COUNT=1024
  rendez.c:tasksleep:9:id=7
  mukipc.c:muk_receive:250:after tasksleep 3, p_error=0 
  driver.c:driver_task:143:
-RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=4000, COUNT=4096, ADDRESS:B2C04FA0, compress(m2_l2):0
+RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=4000, COUNT=4096, ADDRESS:4F7BE0, compress(m2_l2):0
  driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
  driver.c:driver_task:177:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
  driver.c:do_rdwt:287:mp->COUNT=4096
- driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:B2C04FA0 - mp->COUNT=4096
+ driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:4F7BE0 - mp->COUNT=4096
  rdisk.c:rd_prepare:228:device = 0 (rd_device = 0)
- rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (1EA4BF4;0), (1474560;0)
+ rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (56D9BF4;0), (1474560;0)
  driver.c:do_rdwt:303:mp->m_type: 1027
  driver.c:do_rdwt:323:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
  rdisk.c:rd_transfer:259:rd_device: 0
@@ -2095,21 +2095,21 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=4000, COUNT=409
  rdisk.c:rd_transfer:272:posit: 4000
  rdisk.c:rd_transfer:273:nr_req: 1
  rdisk.c:rd_transfer:279:count: 4096
- rdisk.c:rd_transfer:283:user_vir B2C04FA0
- utility.c:cv64ul:31:f_cv64ul: 32132084
- rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 1EA8BF4
+ rdisk.c:rd_transfer:283:user_vir 4F7BE0
+ utility.c:cv64ul:31:f_cv64ul: 91069428
+ rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 56DDBF4
  rdisk.c:rd_transfer:300:
 <DEV_GATHER>
  rdisk.c:rd_transfer:306:bytes: 4096
- rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=1ECB000 buff_size=16384 active=1 available=1
+ rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=5700000 buff_size=16384 active=1 available=1
  rdisk.c:rd_transfer:313:pread: bytes=4096
  rdisk.c:rd_transfer:318:MUK_vcopy 3->1 bytes=4096 
  rdisk.c:rd_transfer:322:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=0
  rdisk.c:rd_transfer:323:bytes= 4096
- rdisk.c:rd_transfer:324:DRIVER - Offset (read) 1ECB000
- rdisk.c:rd_transfer:325:mem_phys: 1ECB000 (in DRIVER)
- rdisk.c:rd_transfer:326:user_vir: B2C04FA0 (in proc_nr 1)
- rdisk.c:rd_transfer:339:user_vir (do-buffer) B2C05FA0
+ rdisk.c:rd_transfer:324:DRIVER - Offset (read) 5700000
+ rdisk.c:rd_transfer:325:mem_phys: 5700000 (in DRIVER)
+ rdisk.c:rd_transfer:326:user_vir: 4F7BE0 (in proc_nr 1)
+ rdisk.c:rd_transfer:339:user_vir (do-buffer) 4F8BE0
  rdisk.c:rd_transfer:342:count=0 stbytes=4096 position=20480
  rdisk.c:rd_transfer:421:subtotal de bytes
  rdisk.c:rd_transfer:423:subtotal de bytes tbytes=0 nr_req=0
@@ -2117,11 +2117,11 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=4000, COUNT=409
  driver.c:do_rdwt:331:dr_trasnfer = (r) 4096
  driver.c:driver_task:249:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=4096
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_send:120:dst_ep:1 current_ep=3
  mukipc.c:muk_send:121:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
  mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2129,7 +2129,7 @@ RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=4000, COUNT=409
  rendez.c:_taskwakeup:32:ep=1
  rendez.c:_taskwakeup:35:i=1
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  mukipc.c:muk_receive:192:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=3
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2405,7 +2405,7 @@ i_nindirs=1024
  rendez.c:tasksleep:9:id=7
  muk2.c:taskmain:448:MTX_LOCK muk_mutex:1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=1
  rendez.c:_taskwakeup:35:i=1
@@ -2422,7 +2422,7 @@ i_nindirs=1024
  fs.c:main_fs:66:FS(0) main loop that gets work
  fs.c:fs_get_work:155: LISTENING . 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2437,28 +2437,28 @@ i_nindirs=1024
  muk2.c:tsk_is:270:argv[0]=is
  muk2.c:tsk_is:274:my_tsk->id=8
  is.c:main_is:37:IS: Starting with endpoint is_ep=8...
- is.c:init_is:398:dcid=0 is_ep=8
- is.c:init_is:400:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
- is.c:init_is:401:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- is.c:init_is:402:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
- is.c:init_is:405:is_id=8
+ is.c:init_is:404:dcid=0 is_ep=8
+ is.c:init_is:406:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ is.c:init_is:407:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ is.c:init_is:408:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
+ is.c:init_is:411:is_id=8
  task.c:muk_tbind:118:dcid=0 p_ep=8 name=is
  task.c:task_bind:129:id=8 p_nr=8 p_ep=8
  task.c:task_bind:138:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
- task.c:task_bind:139:pproc=521228
- is.c:init_is:408:rcode=8
- is.c:init_is:414:Get is_ep info
+ task.c:task_bind:139:pproc=5001908
+ is.c:init_is:414:rcode=8
+ is.c:init_is:420:Get is_ep info
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
- is.c:init_is:416:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
- is.c:init_is:423:Register IS into PM is_id=8
+ task.c:get_task:107:pproc=5001908
+ is.c:init_is:422:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
+ is.c:init_is:429:Register IS into PM is_id=8
  mol_bindproc.c:mol_bindproc:19:p_endpoint=8 pid=8 lpid=8 oper=1
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  mukipc.c:muk_sendrec_T:480:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:0
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:488:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -2473,29 +2473,29 @@ i_nindirs=1024
  utility.c:pm_isokendpt:45:endpoint=8 
  utility.c:pm_isokendpt:47:*proc=8
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  utility.c:pm_isokendpt:49:rkp->p_endpoint=8
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
  forkexit.c:pm_bindproc:462:
  forkexit.c:pm_bindproc:469:source=8 type=96 m7i1=8 m7i2=8 m7i3=8 m7i4=1 m7p1=(nil) m7p2=(nil)
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  utility.c:sys_procinfo:119:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  forkexit.c:pm_bindproc:484:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  forkexit.c:pm_bindproc:485:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
  sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=8 lpid=8 oper=1
  sys_bindproc.c:get_process_name_by_pid:47:pid=8
  sys_bindproc.c:get_process_name_by_pid:51:name=[is]
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -2513,21 +2513,21 @@ i_nindirs=1024
  st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=8 m3i2=8 m3p1=0x1 m3ca1=[is]
  st_bindproc.c:st_bindproc:58:sysproc_lpid=8, sysproc_ep=8 sysproc_nr=8 sysproc_oper=1 
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  st_bindproc.c:st_bindproc:73:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  st_bindproc.c:st_bindproc:146:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  st_bindproc.c:st_bindproc:154:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=8 m1i2=1 m1i3=1 m1p1=0x7369 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2536,7 +2536,7 @@ i_nindirs=1024
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2549,19 +2549,19 @@ i_nindirs=1024
  sys_bindproc.c:sys_rbindproc:37:endpoint=8
  forkexit.c:pm_bindproc:500:sysproc_nr=8 sysproc_ep=8 new_pid=8
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  utility.c:sys_procinfo:119:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  forkexit.c:pm_bindproc:507:sysproc_nr=8
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  forkexit.c:pm_bindproc:531:mp_endpoint=8 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
  utility.c:tell_fs:191:what=2 p1=0 p2=8 p3=8
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -2572,8 +2572,8 @@ i_nindirs=1024
  mukipc.c:muk_sendrec_T:511:before tasksleep 0
  rendez.c:tasksleep:9:id=6
  mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
- fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=8 m1i3=8 m1p1=0xb770bc00 m1p2=0xb2a402f9 m1p3=0xb2b8a960 
- fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=8 m3p1=0x8 m3ca1=[]
+ fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=8 m1i3=8 m1p1=0xfffffff6 m1p2=0xb76062f9 m1p3=0xb7750960 
+ fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=8 m3p1=0x8 m3ca1=[öÿÿÿùb`·`	u·`-u·]
  fs.c:fs_get_work:182:fs_call_nr = 2 
  misc.c:fs_fork:373:parent_endpt=0 parent_endpt=8 pid=8
  utility.c:isokendpt_f:241:endpoint 0
@@ -2585,11 +2585,11 @@ i_nindirs=1024
  fs.c:fs_reply:415:Send a fs_reply to a user process.
  fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:120:dst_ep:0 current_ep=1
  mukipc.c:muk_send:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2599,7 +2599,7 @@ i_nindirs=1024
  fs.c:fs_reply:422:rcode=0
  fs.c:fs_get_work:155: LISTENING . 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2613,25 +2613,25 @@ i_nindirs=1024
  pm.c:setreply:303:proc_nr=8 result=8
  pm.c:main_pm:84:Send out all pending reply messages
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  task.c:get_task:98:p_ep=2 p_nr=2
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=4 p_nr=4
  task.c:get_task:98:p_ep=5 p_nr=5
  task.c:get_task:98:p_ep=6 p_nr=6
  task.c:get_task:98:p_ep=7 p_nr=7
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  pm.c:main_pm:97:Replying to 8
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:120:dst_ep:8 current_ep=0
  mukipc.c:muk_send:121:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  mukipc.c:muk_send:128:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=is 
  mukipc.c:muk_send:132:dst_ep:8 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2852,7 +2852,7 @@ i_nindirs=1024
  task.c:get_task:98:p_ep=220 p_nr=220
  pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_receive:192:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=0
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2864,11 +2864,11 @@ i_nindirs=1024
  mukipc.c:muk_sendrec_T:513:after tasksleep 8, p_error=0 
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=8 p_name=is
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  mukipc.c:muk_sendrec_T:480:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -2885,17 +2885,17 @@ i_nindirs=1024
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=8 type=1571 m3i1=8 m3i2=8 m3p1=(nil) m3ca1=[is]
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  st_bindproc.c:st_setpname:184:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=is 
  system.c:main_systask:99:REPLY msg:source=8 type=0 m1i1=8 m1i2=8 m1i3=0 m1p1=0x7369 m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:8 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  mukipc.c:muk_send:128:nr=8 id=8 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=is 
  mukipc.c:muk_send:132:dst_ep:8 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -2904,7 +2904,7 @@ i_nindirs=1024
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -2914,7 +2914,7 @@ i_nindirs=1024
  mukipc.c:muk_receive:248:before tasksleep -2
  rendez.c:tasksleep:9:id=3
  mukipc.c:muk_sendrec_T:513:after tasksleep 8, p_error=0 
- is.c:init_is:433:wis_pth=2996034368
+ is.c:init_is:440:wis_id=9
  is.c:main_is:42:MTX_LOCK muk_mutex:1
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=27342
@@ -2923,6 +2923,11 @@ i_nindirs=1024
  is.c:main_is:44:COND_WAIT is_cond muk_mutex
  is.c:main_is:44:MTX_UNLOCK muk_mutex:1
  rendez.c:tasksleep:9:id=8
+ is.c:main_wis:352:WIS service starting.
+ is.c:main_wis:354:wis_id=9
+ is.c:main_wis:362:netannounce on TCP port=8080
+ is.c:main_wis:378:Starting WIS server main loop
+ is.c:main_wis:381:Conection accept
  muk2.c:taskmain:464:MTX_LOCK muk_mutex:1
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=8
@@ -2930,16 +2935,12 @@ i_nindirs=1024
  muk2.c:taskmain:465:COND_SIGNAL is_cond
  muk2.c:taskmain:466:MTX_UNLOCK muk_mutex:1
  muk2.c:taskmain:473:Starting NW Task--------------------------------------
- muk2.c:taskmain:478:web_id=9
- is.c:main_wis:351:WIS service starting.
- is.c:main_wis:353:wis_pid=1940
+ muk2.c:taskmain:478:web_id=10
  muk2.c:taskmain:479:MTX_LOCK muk_mutex:1
  muk2.c:taskmain:480:COND_WAIT muk_cond muk_mutex
  muk2.c:taskmain:480:MTX_UNLOCK muk_mutex:1
  rendez.c:tasksleep:9:id=1
  is.c:main_is:44:MTX_LOCK muk_mutex:1
- is.c:main_wis:373:Starting WIS server main loop
- is.c:main_wis:376:Conection accept
  is.c:main_is:45:MTX_UNLOCK muk_mutex:1
  is.c:main_is:48:IS(0) main loop that gets work
  is.c:main_is:53:MTX_LOCK wis_mutex:1
@@ -2951,73 +2952,122 @@ i_nindirs=1024
  muk2.c:tsk_web:300:len=24 argc=2
  muk2.c:tsk_web:302:argv[0]=nw
  muk2.c:tsk_web:302:argv[1]=/dev/shm/m3nweb.cfg
- muk2.c:tsk_web:306:my_tsk->id=9
+ muk2.c:tsk_web:306:my_tsk->id=10
  m3nweb.c:nweb_init:57:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
  m3nweb.c:nweb_init:58:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
- m3nweb.c:nweb_init:59:flags=0 dc_nodes=3 dc_pid=705 dc_name=DC0
+ m3nweb.c:nweb_init:59:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
  m3nweb.c:nweb_init:89:cfg_file=/dev/shm/m3nweb.cfg
  configfile.c:config_read:459:file=/dev/shm/m3nweb.cfg flags=400
  configfile.c:read_file:412:file=/dev/shm/m3nweb.cfg
  configfile.c:allocate:65:size=28
  configfile.c:read_list:357:
  configfile.c:read_line:315:
- configfile.c:delete_filelist:81:
- configfile.c:delete_config:94:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=31
  m3nweb.c:nweb_init:92:before nw_search_config
  m3nwebcfg.c:nw_search_config:162:
- m3nweb.c:nweb_init:97:web_id=9
+ m3nwebcfg.c:nw_search_token:120:
+ m3nwebcfg.c:nw_search_token:131:websrv: SERVER1
+ m3nwebcfg.c:nw_read_lines:105:
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=7 cfg=0x571cc70
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=3
+ m3nwebcfg.c:nw_search_ident:42:line=3 word=port
+ m3nwebcfg.c:nw_search_ident:77:	PORT=8800 htons(PORT)=24610
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=6 cfg=0x571cd08
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=4
+ m3nwebcfg.c:nw_search_ident:42:line=4 word=endpoint
+ m3nwebcfg.c:nw_search_ident:64:	ENDPOINT=22
+ m3nwebcfg.c:nw_search_ident:37:nw_mandatory=4 cfg=0x571cd88
+ m3nwebcfg.c:nw_search_ident:40:cfg->line=5
+ m3nwebcfg.c:nw_search_ident:42:line=5 word=rootdir
+ m3nwebcfg.c:nw_search_ident:55:	ROOTDIR=/
+ m3nweb.c:nweb_init:97:web_id=10
  task.c:muk_tbind:118:dcid=0 p_ep=22 name=nweb
- task.c:task_bind:129:id=9 p_nr=22 p_ep=22
- task.c:task_bind:138:nr=22 id=9 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
- task.c:task_bind:139:pproc=521260
+ task.c:task_bind:129:id=10 p_nr=22 p_ep=22
+ task.c:task_bind:138:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ task.c:task_bind:139:pproc=5001940
  m3nweb.c:nweb_init:100:web_ep=22
  m3nweb.c:nweb_init:106:Get web_ep info
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- m3nweb.c:nweb_init:108:nr=22 id=9 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
- m3nweb.c:nweb_init:111:Register NWEB into SYSTASK web_id=9
- sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=9 oper=1
- sys_bindproc.c:get_process_name_by_pid:47:pid=9
+ task.c:get_task:107:pproc=5001940
+ m3nweb.c:nweb_init:108:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ m3nweb.c:nweb_init:111:Register NWEB into SYSTASK web_id=10
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=10 oper=1
+ sys_bindproc.c:get_process_name_by_pid:47:pid=10
  sys_bindproc.c:get_process_name_by_pid:51:name=[nweb]
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_sendrec_T:480:nr=22 id=9 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=-2
  rendez.c:_taskwakeup:35:i=1
- mukipc.c:muk_sendrec_T:510:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:511:before tasksleep 22
- rendez.c:tasksleep:9:id=9
+ rendez.c:tasksleep:9:id=10
  mukipc.c:muk_receive:250:after tasksleep -2, p_error=0 
  system.c:main_systask:67:muk_receive rcode=0
- system.c:main_systask:74:RECEIVE msg:source=22 type=1568 m4l1=9 m4l2=22 m4l3=1 m4l4=1650816878 m4l5=0
+ system.c:main_systask:74:RECEIVE msg:source=22 type=1568 m4l1=10 m4l2=22 m4l3=1 m4l4=1650816878 m4l5=0
  system.c:main_systask:83:call_nr=32 sys_who_e=22
  system.c:main_systask:88:Calling vector 32
- st_bindproc.c:st_bindproc:52:source=22 type=1568 m3i1=9 m3i2=22 m3p1=0x1 m3ca1=[nweb]
- st_bindproc.c:st_bindproc:58:sysproc_lpid=9, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:52:source=22 type=1568 m3i1=10 m3i2=22 m3p1=0x1 m3ca1=[nweb]
+ st_bindproc.c:st_bindproc:58:sysproc_lpid=10, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- st_bindproc.c:st_bindproc:73:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ st_bindproc.c:st_bindproc:73:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- st_bindproc.c:st_bindproc:146:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
- st_bindproc.c:st_bindproc:154:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ st_bindproc.c:st_bindproc:146:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ st_bindproc.c:st_bindproc:154:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  system.c:main_systask:99:REPLY msg:source=22 type=0 m1i1=22 m1i2=1 m1i3=1 m1p1=0x6265776e m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:22 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_send:128:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_send:128:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  mukipc.c:muk_send:132:dst_ep:22 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
  rendez.c:_taskwakeup:25:
@@ -3025,7 +3075,7 @@ i_nindirs=1024
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -3036,50 +3086,50 @@ i_nindirs=1024
  rendez.c:tasksleep:9:id=3
  mukipc.c:muk_sendrec_T:513:after tasksleep 22, p_error=0 
  sys_bindproc.c:sys_rbindproc:37:endpoint=22
- mol_bindproc.c:mol_bindproc:19:p_endpoint=22 pid=22 lpid=9 oper=1
+ mol_bindproc.c:mol_bindproc:19:p_endpoint=22 pid=22 lpid=10 oper=1
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_sendrec_T:480:nr=22 id=9 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:0
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:488:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=0
  rendez.c:_taskwakeup:35:i=1
- mukipc.c:muk_sendrec_T:510:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:511:before tasksleep 22
- rendez.c:tasksleep:9:id=9
+ rendez.c:tasksleep:9:id=10
  mukipc.c:muk_receive:250:after tasksleep 0, p_error=0 
  pm.c:pm_get_work:137:Request received from pm_who_e=22, pm_call_nr=96
  utility.c:pm_isokendpt:45:endpoint=22 
  utility.c:pm_isokendpt:47:*proc=22
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  utility.c:pm_isokendpt:49:rkp->p_endpoint=22
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
  forkexit.c:pm_bindproc:462:
- forkexit.c:pm_bindproc:469:source=22 type=96 m7i1=22 m7i2=9 m7i3=22 m7i4=1 m7p1=(nil) m7p2=(nil)
+ forkexit.c:pm_bindproc:469:source=22 type=96 m7i1=22 m7i2=10 m7i3=22 m7i4=1 m7p1=(nil) m7p2=(nil)
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- utility.c:sys_procinfo:119:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ utility.c:sys_procinfo:119:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- forkexit.c:pm_bindproc:484:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ forkexit.c:pm_bindproc:484:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  forkexit.c:pm_bindproc:485:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
- sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=9 oper=1
- sys_bindproc.c:get_process_name_by_pid:47:pid=9
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=22 lpid=10 oper=1
+ sys_bindproc.c:get_process_name_by_pid:47:pid=10
  sys_bindproc.c:get_process_name_by_pid:51:name=[nweb]
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -3091,27 +3141,27 @@ i_nindirs=1024
  rendez.c:tasksleep:9:id=6
  mukipc.c:muk_receive:250:after tasksleep -2, p_error=0 
  system.c:main_systask:67:muk_receive rcode=0
- system.c:main_systask:74:RECEIVE msg:source=0 type=1568 m4l1=9 m4l2=22 m4l3=1 m4l4=1650816878 m4l5=0
+ system.c:main_systask:74:RECEIVE msg:source=0 type=1568 m4l1=10 m4l2=22 m4l3=1 m4l4=1650816878 m4l5=0
  system.c:main_systask:83:call_nr=32 sys_who_e=0
  system.c:main_systask:88:Calling vector 32
- st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=9 m3i2=22 m3p1=0x1 m3ca1=[nweb]
- st_bindproc.c:st_bindproc:58:sysproc_lpid=9, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
+ st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=10 m3i2=22 m3p1=0x1 m3ca1=[nweb]
+ st_bindproc.c:st_bindproc:58:sysproc_lpid=10, sysproc_ep=22 sysproc_nr=22 sysproc_oper=1 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- st_bindproc.c:st_bindproc:73:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ st_bindproc.c:st_bindproc:73:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- st_bindproc.c:st_bindproc:146:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
- st_bindproc.c:st_bindproc:154:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ st_bindproc.c:st_bindproc:146:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ st_bindproc.c:st_bindproc:154:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=22 m1i2=1 m1i3=1 m1p1=0x6265776e m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -3120,7 +3170,7 @@ i_nindirs=1024
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -3133,19 +3183,19 @@ i_nindirs=1024
  sys_bindproc.c:sys_rbindproc:37:endpoint=22
  forkexit.c:pm_bindproc:500:sysproc_nr=22 sysproc_ep=22 new_pid=22
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- utility.c:sys_procinfo:119:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ utility.c:sys_procinfo:119:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  forkexit.c:pm_bindproc:507:sysproc_nr=22
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  forkexit.c:pm_bindproc:531:mp_endpoint=22 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
  utility.c:tell_fs:191:what=2 p1=0 p2=22 p3=22
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:1
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
@@ -3156,8 +3206,8 @@ i_nindirs=1024
  mukipc.c:muk_sendrec_T:511:before tasksleep 0
  rendez.c:tasksleep:9:id=6
  mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
- fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=22 m1i3=22 m1p1=0xfffffff6 m1p2=0xb2a402f9 m1p3=0xb2b8a960 
- fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=22 m3p1=0x16 m3ca1=[öÿÿÿù¤²`©¸²`Í¸²]
+ fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=22 m1i3=22 m1p1=0xfffffff6 m1p2=0xb76062f9 m1p3=0xb7750960 
+ fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=22 m3p1=0x16 m3ca1=[öÿÿÿùb`·`	u·`-u·]
  fs.c:fs_get_work:182:fs_call_nr = 2 
  misc.c:fs_fork:373:parent_endpt=0 parent_endpt=22 pid=22
  utility.c:isokendpt_f:241:endpoint 0
@@ -3169,11 +3219,11 @@ i_nindirs=1024
  fs.c:fs_reply:415:Send a fs_reply to a user process.
  fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_send:120:dst_ep:0 current_ep=1
  mukipc.c:muk_send:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=pm 
  mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
@@ -3183,7 +3233,7 @@ i_nindirs=1024
  fs.c:fs_reply:422:rcode=0
  fs.c:fs_get_work:155: LISTENING . 
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -3197,18 +3247,18 @@ i_nindirs=1024
  pm.c:setreply:303:proc_nr=22 result=22
  pm.c:main_pm:84:Send out all pending reply messages
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  task.c:get_task:98:p_ep=1 p_nr=1
- task.c:get_task:107:pproc=52120C
+ task.c:get_task:107:pproc=50018EC
  task.c:get_task:98:p_ep=2 p_nr=2
  task.c:get_task:98:p_ep=3 p_nr=3
- task.c:get_task:107:pproc=521214
+ task.c:get_task:107:pproc=50018F4
  task.c:get_task:98:p_ep=4 p_nr=4
  task.c:get_task:98:p_ep=5 p_nr=5
  task.c:get_task:98:p_ep=6 p_nr=6
  task.c:get_task:98:p_ep=7 p_nr=7
  task.c:get_task:98:p_ep=8 p_nr=8
- task.c:get_task:107:pproc=521228
+ task.c:get_task:107:pproc=5001908
  task.c:get_task:98:p_ep=9 p_nr=9
  task.c:get_task:98:p_ep=10 p_nr=10
  task.c:get_task:98:p_ep=11 p_nr=11
@@ -3223,15 +3273,15 @@ i_nindirs=1024
  task.c:get_task:98:p_ep=20 p_nr=20
  task.c:get_task:98:p_ep=21 p_nr=21
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  pm.c:main_pm:97:Replying to 22
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_send:120:dst_ep:22 current_ep=0
  mukipc.c:muk_send:121:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_send:128:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_send:128:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=nweb 
  mukipc.c:muk_send:132:dst_ep:22 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
  rendez.c:_taskwakeup:25:
@@ -3437,7 +3487,7 @@ i_nindirs=1024
  task.c:get_task:98:p_ep=220 p_nr=220
  pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
  task.c:get_task:98:p_ep=0 p_nr=0
- task.c:get_task:107:pproc=521208
+ task.c:get_task:107:pproc=50018E8
  mukipc.c:muk_receive:192:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=0
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -3450,20 +3500,20 @@ i_nindirs=1024
  m3nweb.c:nweb_init:116:rcode=22
  sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=22 p_name=nweb
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_sendrec_T:480:nr=22 id=9 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
  mukipc.c:muk_sendrec_T:495:SENDING HALF
  mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=-2
  rendez.c:_taskwakeup:35:i=1
- mukipc.c:muk_sendrec_T:510:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  mukipc.c:muk_sendrec_T:511:before tasksleep 22
- rendez.c:tasksleep:9:id=9
+ rendez.c:tasksleep:9:id=10
  mukipc.c:muk_receive:250:after tasksleep -2, p_error=0 
  system.c:main_systask:67:muk_receive rcode=0
  system.c:main_systask:74:RECEIVE msg:source=22 type=1571 m4l1=22 m4l2=22 m4l3=0 m4l4=1650816878 m4l5=0
@@ -3471,18 +3521,18 @@ i_nindirs=1024
  system.c:main_systask:88:Calling vector 35
  st_bindproc.c:st_setpname:170:source=22 type=1571 m3i1=22 m3i2=22 m3p1=(nil) m3ca1=[nweb]
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
+ task.c:get_task:107:pproc=5001940
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- st_bindproc.c:st_setpname:184:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ st_bindproc.c:st_setpname:184:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  system.c:main_systask:99:REPLY msg:source=22 type=0 m1i1=22 m1i2=22 m1i3=0 m1p1=0x6265776e m1p2=(nil) m1p3=(nil) 
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_send:120:dst_ep:22 current_ep=-2
  mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  task.c:get_task:98:p_ep=22 p_nr=22
- task.c:get_task:107:pproc=521260
- mukipc.c:muk_send:128:nr=22 id=9 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_send:128:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=nweb 
  mukipc.c:muk_send:132:dst_ep:22 WAITING FOR THIS MESSAGE
  mukipc.c:muk_send:138:p_rts_flags:0
  rendez.c:_taskwakeup:25:
@@ -3490,7 +3540,7 @@ i_nindirs=1024
  rendez.c:_taskwakeup:35:i=1
  system.c:main_systask:64:SYSTASK is waiting for requests
  task.c:get_task:98:p_ep=-2 p_nr=-2
- task.c:get_task:107:pproc=521200
+ task.c:get_task:107:pproc=50018E0
  mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
  mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
  mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
@@ -3500,15 +3550,16 @@ i_nindirs=1024
  mukipc.c:muk_receive:248:before tasksleep -2
  rendez.c:tasksleep:9:id=3
  mukipc.c:muk_sendrec_T:513:after tasksleep 22, p_error=0 
- m3nweb.c:main_nweb:362:SYNCHRONIZE WITH MUK 
- m3nweb.c:main_nweb:364:MTX_LOCK muk_mutex:1
+ m3nweb.c:nweb_init:131:netannounce on TCP port=8800
+ m3nweb.c:main_nweb:346:SYNCHRONIZE WITH MUK 
+ m3nweb.c:main_nweb:348:MTX_LOCK muk_mutex:1
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=27342
  rendez.c:_taskwakeup:35:i=1
- m3nweb.c:main_nweb:365:COND_SIGNAL muk_cond
- m3nweb.c:main_nweb:366:COND_WAIT nw_cond muk_mutex
- m3nweb.c:main_nweb:366:MTX_UNLOCK muk_mutex:1
- rendez.c:tasksleep:9:id=9
+ m3nweb.c:main_nweb:349:COND_SIGNAL muk_cond
+ m3nweb.c:main_nweb:350:COND_WAIT nw_cond muk_mutex
+ m3nweb.c:main_nweb:350:MTX_UNLOCK muk_mutex:1
+ rendez.c:tasksleep:9:id=10
  muk2.c:taskmain:480:MTX_LOCK muk_mutex:1
  rendez.c:_taskwakeup:25:
  rendez.c:_taskwakeup:32:ep=22
@@ -3516,12 +3567,1085 @@ i_nindirs=1024
  muk2.c:taskmain:481:COND_SIGNAL nw_cond
  muk2.c:taskmain:482:MTX_UNLOCK muk_mutex:1
  muk2.c:taskmain:489:Starting FTP Task--------------------------------------
- muk2.c:taskmain:492:ftp_id=10
+ muk2.c:taskmain:492:ftp_id=11
  muk2.c:taskmain:493:MTX_LOCK muk_mutex:1
  muk2.c:taskmain:494:COND_WAIT muk_cond muk_mutex
  muk2.c:taskmain:494:MTX_UNLOCK muk_mutex:1
  rendez.c:tasksleep:9:id=1
- m3nweb.c:main_nweb:366:MTX_LOCK muk_mutex:1
- m3nweb.c:main_nweb:367:MTX_UNLOCK muk_mutex:1
- m3nweb.c:main_nweb:369:Starting Web server main loop
- m3nweb.c:main_nweb:372:Conection accept
+ m3nweb.c:main_nweb:350:MTX_LOCK muk_mutex:1
+ m3nweb.c:main_nweb:351:MTX_UNLOCK muk_mutex:1
+ m3nweb.c:main_nweb:353:Starting Web server main loop
+ m3nweb.c:main_nweb:356:Conection accept
+ muk2.c:tsk_ftp:328:str_arg=m3ftp
+
+ muk2.c:tsk_ftp:330:len=7 argc=1
+ muk2.c:tsk_ftp:332:argv[0]=m3ftp
+ muk2.c:tsk_ftp:336:my_tsk->id=11
+ m3ftpd.c:ftpd_init:49:dcid=0 ftp_ep=14
+ m3ftpd.c:ftpd_init:51:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ m3ftpd.c:ftpd_init:52:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ m3ftpd.c:ftpd_init:53:flags=0 dc_nodes=3 dc_pid=718 dc_name=DC0
+ m3ftpd.c:ftpd_init:56:ftp_id=11
+ task.c:muk_tbind:118:dcid=0 p_ep=14 name=ftpd
+ task.c:task_bind:129:id=11 p_nr=14 p_ep=14
+ task.c:task_bind:138:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=ftpd 
+ task.c:task_bind:139:pproc=5001920
+ m3ftpd.c:ftpd_init:59:rcode=14
+ mol_bindproc.c:mol_bindproc:19:p_endpoint=14 pid=14 lpid=11 oper=1
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ mukipc.c:muk_sendrec_T:480:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=ftpd 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:0
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_sendrec_T:488:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=0
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ mukipc.c:muk_receive:250:after tasksleep 0, p_error=0 
+ pm.c:pm_get_work:137:Request received from pm_who_e=14, pm_call_nr=96
+ utility.c:pm_isokendpt:45:endpoint=14 
+ utility.c:pm_isokendpt:47:*proc=14
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ utility.c:pm_isokendpt:49:rkp->p_endpoint=14
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ pm.c:pm_get_work:154:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ forkexit.c:pm_bindproc:462:
+ forkexit.c:pm_bindproc:469:source=14 type=96 m7i1=14 m7i2=11 m7i3=14 m7i4=1 m7p1=(nil) m7p2=(nil)
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ utility.c:sys_procinfo:119:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ forkexit.c:pm_bindproc:484:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ forkexit.c:pm_bindproc:485:mp_endpoint=27342 mp_pid=-1 mp_parent=-1 mp_flags=0 mp_nice=0 
+ sys_bindproc.c:sys_rbindproc:26:SYS_BINDPROC request to SYSTEM(0) sysproc_ep=14 lpid=11 oper=1
+ sys_bindproc.c:get_process_name_by_pid:47:pid=11
+ sys_bindproc.c:get_process_name_by_pid:51:name=[ftpd]
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=-2
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 0
+ rendez.c:tasksleep:9:id=6
+ mukipc.c:muk_receive:250:after tasksleep -2, p_error=0 
+ system.c:main_systask:67:muk_receive rcode=0
+ system.c:main_systask:74:RECEIVE msg:source=0 type=1568 m4l1=11 m4l2=14 m4l3=1 m4l4=1685091430 m4l5=0
+ system.c:main_systask:83:call_nr=32 sys_who_e=0
+ system.c:main_systask:88:Calling vector 32
+ st_bindproc.c:st_bindproc:52:source=0 type=1568 m3i1=11 m3i2=14 m3p1=0x1 m3ca1=[ftpd]
+ st_bindproc.c:st_bindproc:58:sysproc_lpid=11, sysproc_ep=14 sysproc_nr=14 sysproc_oper=1 
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ st_bindproc.c:st_bindproc:73:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ st_bindproc.c:st_bindproc:146:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ st_bindproc.c:st_bindproc:154:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ system.c:main_systask:99:REPLY msg:source=0 type=0 m1i1=14 m1i2=1 m1i3=1 m1p1=0x64707466 m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_send:120:dst_ep:0 current_ep=-2
+ mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=pm 
+ mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=0
+ rendez.c:_taskwakeup:35:i=1
+ system.c:main_systask:64:SYSTASK is waiting for requests
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
+ mukipc.c:muk_receive:248:before tasksleep -2
+ rendez.c:tasksleep:9:id=3
+ mukipc.c:muk_sendrec_T:513:after tasksleep 0, p_error=0 
+ sys_bindproc.c:sys_rbindproc:37:endpoint=14
+ forkexit.c:pm_bindproc:500:sysproc_nr=14 sysproc_ep=14 new_pid=14
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ utility.c:sys_procinfo:119:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ forkexit.c:pm_bindproc:507:sysproc_nr=14
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ forkexit.c:pm_bindproc:531:mp_endpoint=14 mp_pid=-1 mp_parent=0 mp_flags=2001 mp_nice=-10 
+ utility.c:tell_fs:191:what=2 p1=0 p2=14 p3=14
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_sendrec_T:480:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:1
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=pm 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 0
+ rendez.c:tasksleep:9:id=6
+ mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=0 type=2 m1i1=0 m1i2=14 m1i3=14 m1p1=0xfffffff6 m1p2=0xb76062f9 m1p3=0xb7750960 
+ fs.c:fs_get_work:160:source=0 type=2 m3i1=0 m3i2=14 m3p1=0xe m3ca1=[öÿÿÿùb`·`	u·`-u·]
+ fs.c:fs_get_work:182:fs_call_nr = 2 
+ misc.c:fs_fork:373:parent_endpt=0 parent_endpt=14 pid=14
+ utility.c:isokendpt_f:241:endpoint 0
+ utility.c:isokendpt_f:242:*proc 0
+ misc.c:fs_fork:387:fs_proc_table[14].fp_pid=0
+ inode.c:dup_inode:380:
+ inode.c:dup_inode:380:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_send:120:dst_ep:0 current_ep=1
+ mukipc.c:muk_send:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_send:128:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=pm 
+ mukipc.c:muk_send:132:dst_ep:0 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=0
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:248:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:513:after tasksleep 0, p_error=0 
+ pm.c:main_pm:74:pm_call_nr=96 result=14
+ pm.c:setreply:303:proc_nr=14 result=14
+ pm.c:main_pm:84:Send out all pending reply messages
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ task.c:get_task:98:p_ep=2 p_nr=2
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ task.c:get_task:98:p_ep=4 p_nr=4
+ task.c:get_task:98:p_ep=5 p_nr=5
+ task.c:get_task:98:p_ep=6 p_nr=6
+ task.c:get_task:98:p_ep=7 p_nr=7
+ task.c:get_task:98:p_ep=8 p_nr=8
+ task.c:get_task:107:pproc=5001908
+ task.c:get_task:98:p_ep=9 p_nr=9
+ task.c:get_task:98:p_ep=10 p_nr=10
+ task.c:get_task:98:p_ep=11 p_nr=11
+ task.c:get_task:98:p_ep=12 p_nr=12
+ task.c:get_task:98:p_ep=13 p_nr=13
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ pm.c:main_pm:97:Replying to 14
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_send:120:dst_ep:14 current_ep=0
+ mukipc.c:muk_send:121:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ mukipc.c:muk_send:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=0 p_sendto=27342 name=ftpd 
+ mukipc.c:muk_send:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ task.c:get_task:98:p_ep=15 p_nr=15
+ task.c:get_task:98:p_ep=16 p_nr=16
+ task.c:get_task:98:p_ep=17 p_nr=17
+ task.c:get_task:98:p_ep=18 p_nr=18
+ task.c:get_task:98:p_ep=19 p_nr=19
+ task.c:get_task:98:p_ep=20 p_nr=20
+ task.c:get_task:98:p_ep=21 p_nr=21
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ task.c:get_task:98:p_ep=23 p_nr=23
+ task.c:get_task:98:p_ep=24 p_nr=24
+ task.c:get_task:98:p_ep=25 p_nr=25
+ task.c:get_task:98:p_ep=26 p_nr=26
+ task.c:get_task:98:p_ep=27 p_nr=27
+ task.c:get_task:98:p_ep=28 p_nr=28
+ task.c:get_task:98:p_ep=29 p_nr=29
+ task.c:get_task:98:p_ep=30 p_nr=30
+ task.c:get_task:98:p_ep=31 p_nr=31
+ task.c:get_task:98:p_ep=32 p_nr=32
+ task.c:get_task:98:p_ep=33 p_nr=33
+ task.c:get_task:98:p_ep=34 p_nr=34
+ task.c:get_task:98:p_ep=35 p_nr=35
+ task.c:get_task:98:p_ep=36 p_nr=36
+ task.c:get_task:98:p_ep=37 p_nr=37
+ task.c:get_task:98:p_ep=38 p_nr=38
+ task.c:get_task:98:p_ep=39 p_nr=39
+ task.c:get_task:98:p_ep=40 p_nr=40
+ task.c:get_task:98:p_ep=41 p_nr=41
+ task.c:get_task:98:p_ep=42 p_nr=42
+ task.c:get_task:98:p_ep=43 p_nr=43
+ task.c:get_task:98:p_ep=44 p_nr=44
+ task.c:get_task:98:p_ep=45 p_nr=45
+ task.c:get_task:98:p_ep=46 p_nr=46
+ task.c:get_task:98:p_ep=47 p_nr=47
+ task.c:get_task:98:p_ep=48 p_nr=48
+ task.c:get_task:98:p_ep=49 p_nr=49
+ task.c:get_task:98:p_ep=50 p_nr=50
+ task.c:get_task:98:p_ep=51 p_nr=51
+ task.c:get_task:98:p_ep=52 p_nr=52
+ task.c:get_task:98:p_ep=53 p_nr=53
+ task.c:get_task:98:p_ep=54 p_nr=54
+ task.c:get_task:98:p_ep=55 p_nr=55
+ task.c:get_task:98:p_ep=56 p_nr=56
+ task.c:get_task:98:p_ep=57 p_nr=57
+ task.c:get_task:98:p_ep=58 p_nr=58
+ task.c:get_task:98:p_ep=59 p_nr=59
+ task.c:get_task:98:p_ep=60 p_nr=60
+ task.c:get_task:98:p_ep=61 p_nr=61
+ task.c:get_task:98:p_ep=62 p_nr=62
+ task.c:get_task:98:p_ep=63 p_nr=63
+ task.c:get_task:98:p_ep=64 p_nr=64
+ task.c:get_task:98:p_ep=65 p_nr=65
+ task.c:get_task:98:p_ep=66 p_nr=66
+ task.c:get_task:98:p_ep=67 p_nr=67
+ task.c:get_task:98:p_ep=68 p_nr=68
+ task.c:get_task:98:p_ep=69 p_nr=69
+ task.c:get_task:98:p_ep=70 p_nr=70
+ task.c:get_task:98:p_ep=71 p_nr=71
+ task.c:get_task:98:p_ep=72 p_nr=72
+ task.c:get_task:98:p_ep=73 p_nr=73
+ task.c:get_task:98:p_ep=74 p_nr=74
+ task.c:get_task:98:p_ep=75 p_nr=75
+ task.c:get_task:98:p_ep=76 p_nr=76
+ task.c:get_task:98:p_ep=77 p_nr=77
+ task.c:get_task:98:p_ep=78 p_nr=78
+ task.c:get_task:98:p_ep=79 p_nr=79
+ task.c:get_task:98:p_ep=80 p_nr=80
+ task.c:get_task:98:p_ep=81 p_nr=81
+ task.c:get_task:98:p_ep=82 p_nr=82
+ task.c:get_task:98:p_ep=83 p_nr=83
+ task.c:get_task:98:p_ep=84 p_nr=84
+ task.c:get_task:98:p_ep=85 p_nr=85
+ task.c:get_task:98:p_ep=86 p_nr=86
+ task.c:get_task:98:p_ep=87 p_nr=87
+ task.c:get_task:98:p_ep=88 p_nr=88
+ task.c:get_task:98:p_ep=89 p_nr=89
+ task.c:get_task:98:p_ep=90 p_nr=90
+ task.c:get_task:98:p_ep=91 p_nr=91
+ task.c:get_task:98:p_ep=92 p_nr=92
+ task.c:get_task:98:p_ep=93 p_nr=93
+ task.c:get_task:98:p_ep=94 p_nr=94
+ task.c:get_task:98:p_ep=95 p_nr=95
+ task.c:get_task:98:p_ep=96 p_nr=96
+ task.c:get_task:98:p_ep=97 p_nr=97
+ task.c:get_task:98:p_ep=98 p_nr=98
+ task.c:get_task:98:p_ep=99 p_nr=99
+ task.c:get_task:98:p_ep=100 p_nr=100
+ task.c:get_task:98:p_ep=101 p_nr=101
+ task.c:get_task:98:p_ep=102 p_nr=102
+ task.c:get_task:98:p_ep=103 p_nr=103
+ task.c:get_task:98:p_ep=104 p_nr=104
+ task.c:get_task:98:p_ep=105 p_nr=105
+ task.c:get_task:98:p_ep=106 p_nr=106
+ task.c:get_task:98:p_ep=107 p_nr=107
+ task.c:get_task:98:p_ep=108 p_nr=108
+ task.c:get_task:98:p_ep=109 p_nr=109
+ task.c:get_task:98:p_ep=110 p_nr=110
+ task.c:get_task:98:p_ep=111 p_nr=111
+ task.c:get_task:98:p_ep=112 p_nr=112
+ task.c:get_task:98:p_ep=113 p_nr=113
+ task.c:get_task:98:p_ep=114 p_nr=114
+ task.c:get_task:98:p_ep=115 p_nr=115
+ task.c:get_task:98:p_ep=116 p_nr=116
+ task.c:get_task:98:p_ep=117 p_nr=117
+ task.c:get_task:98:p_ep=118 p_nr=118
+ task.c:get_task:98:p_ep=119 p_nr=119
+ task.c:get_task:98:p_ep=120 p_nr=120
+ task.c:get_task:98:p_ep=121 p_nr=121
+ task.c:get_task:98:p_ep=122 p_nr=122
+ task.c:get_task:98:p_ep=123 p_nr=123
+ task.c:get_task:98:p_ep=124 p_nr=124
+ task.c:get_task:98:p_ep=125 p_nr=125
+ task.c:get_task:98:p_ep=126 p_nr=126
+ task.c:get_task:98:p_ep=127 p_nr=127
+ task.c:get_task:98:p_ep=128 p_nr=128
+ task.c:get_task:98:p_ep=129 p_nr=129
+ task.c:get_task:98:p_ep=130 p_nr=130
+ task.c:get_task:98:p_ep=131 p_nr=131
+ task.c:get_task:98:p_ep=132 p_nr=132
+ task.c:get_task:98:p_ep=133 p_nr=133
+ task.c:get_task:98:p_ep=134 p_nr=134
+ task.c:get_task:98:p_ep=135 p_nr=135
+ task.c:get_task:98:p_ep=136 p_nr=136
+ task.c:get_task:98:p_ep=137 p_nr=137
+ task.c:get_task:98:p_ep=138 p_nr=138
+ task.c:get_task:98:p_ep=139 p_nr=139
+ task.c:get_task:98:p_ep=140 p_nr=140
+ task.c:get_task:98:p_ep=141 p_nr=141
+ task.c:get_task:98:p_ep=142 p_nr=142
+ task.c:get_task:98:p_ep=143 p_nr=143
+ task.c:get_task:98:p_ep=144 p_nr=144
+ task.c:get_task:98:p_ep=145 p_nr=145
+ task.c:get_task:98:p_ep=146 p_nr=146
+ task.c:get_task:98:p_ep=147 p_nr=147
+ task.c:get_task:98:p_ep=148 p_nr=148
+ task.c:get_task:98:p_ep=149 p_nr=149
+ task.c:get_task:98:p_ep=150 p_nr=150
+ task.c:get_task:98:p_ep=151 p_nr=151
+ task.c:get_task:98:p_ep=152 p_nr=152
+ task.c:get_task:98:p_ep=153 p_nr=153
+ task.c:get_task:98:p_ep=154 p_nr=154
+ task.c:get_task:98:p_ep=155 p_nr=155
+ task.c:get_task:98:p_ep=156 p_nr=156
+ task.c:get_task:98:p_ep=157 p_nr=157
+ task.c:get_task:98:p_ep=158 p_nr=158
+ task.c:get_task:98:p_ep=159 p_nr=159
+ task.c:get_task:98:p_ep=160 p_nr=160
+ task.c:get_task:98:p_ep=161 p_nr=161
+ task.c:get_task:98:p_ep=162 p_nr=162
+ task.c:get_task:98:p_ep=163 p_nr=163
+ task.c:get_task:98:p_ep=164 p_nr=164
+ task.c:get_task:98:p_ep=165 p_nr=165
+ task.c:get_task:98:p_ep=166 p_nr=166
+ task.c:get_task:98:p_ep=167 p_nr=167
+ task.c:get_task:98:p_ep=168 p_nr=168
+ task.c:get_task:98:p_ep=169 p_nr=169
+ task.c:get_task:98:p_ep=170 p_nr=170
+ task.c:get_task:98:p_ep=171 p_nr=171
+ task.c:get_task:98:p_ep=172 p_nr=172
+ task.c:get_task:98:p_ep=173 p_nr=173
+ task.c:get_task:98:p_ep=174 p_nr=174
+ task.c:get_task:98:p_ep=175 p_nr=175
+ task.c:get_task:98:p_ep=176 p_nr=176
+ task.c:get_task:98:p_ep=177 p_nr=177
+ task.c:get_task:98:p_ep=178 p_nr=178
+ task.c:get_task:98:p_ep=179 p_nr=179
+ task.c:get_task:98:p_ep=180 p_nr=180
+ task.c:get_task:98:p_ep=181 p_nr=181
+ task.c:get_task:98:p_ep=182 p_nr=182
+ task.c:get_task:98:p_ep=183 p_nr=183
+ task.c:get_task:98:p_ep=184 p_nr=184
+ task.c:get_task:98:p_ep=185 p_nr=185
+ task.c:get_task:98:p_ep=186 p_nr=186
+ task.c:get_task:98:p_ep=187 p_nr=187
+ task.c:get_task:98:p_ep=188 p_nr=188
+ task.c:get_task:98:p_ep=189 p_nr=189
+ task.c:get_task:98:p_ep=190 p_nr=190
+ task.c:get_task:98:p_ep=191 p_nr=191
+ task.c:get_task:98:p_ep=192 p_nr=192
+ task.c:get_task:98:p_ep=193 p_nr=193
+ task.c:get_task:98:p_ep=194 p_nr=194
+ task.c:get_task:98:p_ep=195 p_nr=195
+ task.c:get_task:98:p_ep=196 p_nr=196
+ task.c:get_task:98:p_ep=197 p_nr=197
+ task.c:get_task:98:p_ep=198 p_nr=198
+ task.c:get_task:98:p_ep=199 p_nr=199
+ task.c:get_task:98:p_ep=200 p_nr=200
+ task.c:get_task:98:p_ep=201 p_nr=201
+ task.c:get_task:98:p_ep=202 p_nr=202
+ task.c:get_task:98:p_ep=203 p_nr=203
+ task.c:get_task:98:p_ep=204 p_nr=204
+ task.c:get_task:98:p_ep=205 p_nr=205
+ task.c:get_task:98:p_ep=206 p_nr=206
+ task.c:get_task:98:p_ep=207 p_nr=207
+ task.c:get_task:98:p_ep=208 p_nr=208
+ task.c:get_task:98:p_ep=209 p_nr=209
+ task.c:get_task:98:p_ep=210 p_nr=210
+ task.c:get_task:98:p_ep=211 p_nr=211
+ task.c:get_task:98:p_ep=212 p_nr=212
+ task.c:get_task:98:p_ep=213 p_nr=213
+ task.c:get_task:98:p_ep=214 p_nr=214
+ task.c:get_task:98:p_ep=215 p_nr=215
+ task.c:get_task:98:p_ep=216 p_nr=216
+ task.c:get_task:98:p_ep=217 p_nr=217
+ task.c:get_task:98:p_ep=218 p_nr=218
+ task.c:get_task:98:p_ep=219 p_nr=219
+ task.c:get_task:98:p_ep=220 p_nr=220
+ pm.c:pm_get_work:130:Wait for the next message and extract useful information from it.
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ mukipc.c:muk_receive:192:nr=0 id=6 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=pm 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=0
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
+ mukipc.c:muk_receive:248:before tasksleep 0
+ rendez.c:tasksleep:9:id=6
+ mukipc.c:muk_sendrec_T:513:after tasksleep 14, p_error=0 
+ m3ftpd.c:ftpd_init:66:rcode=14
+ m3ftpd.c:ftpd_init:79:M3FTPD ftp_path_ptr=0x5748000
+ m3ftpd.c:ftpd_init:86:M3FTPD ftp_data_ptr=0x5749000
+ m3ftpd.c:ftpd_init:89:ftp_id=2534
+ m3ftpd.c:ftpd_init:91:Get ftp_ep info
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ m3ftpd.c:ftpd_init:93:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=ftpd 
+ sys_setpname.c:sys_rsetpname:16:Sending SYS_SETPNAME request to SYSTEM p_ep=14 p_name=m3ftp
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ mukipc.c:muk_sendrec_T:480:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=ftpd 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:-2
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_sendrec_T:488:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=-2
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=ftpd 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ mukipc.c:muk_receive:250:after tasksleep -2, p_error=0 
+ system.c:main_systask:67:muk_receive rcode=0
+ system.c:main_systask:74:RECEIVE msg:source=14 type=1571 m4l1=14 m4l2=14 m4l3=0 m4l4=1952854893 m4l5=112
+ system.c:main_systask:83:call_nr=35 sys_who_e=14
+ system.c:main_systask:88:Calling vector 35
+ st_bindproc.c:st_setpname:170:source=14 type=1571 m3i1=14 m3i2=14 m3p1=(nil) m3ca1=[m3ftp]
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ st_bindproc.c:st_setpname:184:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=ftpd 
+ system.c:main_systask:99:REPLY msg:source=14 type=0 m1i1=14 m1i2=14 m1i3=0 m1p1=0x7466336d m1p2=0x70 m1p3=(nil) 
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_send:120:dst_ep:14 current_ep=-2
+ mukipc.c:muk_send:121:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ mukipc.c:muk_send:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=-2 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_send:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ system.c:main_systask:64:SYSTASK is waiting for requests
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ mukipc.c:muk_receive:192:nr=-2 id=3 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=systask 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=-2
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
+ mukipc.c:muk_receive:248:before tasksleep -2
+ rendez.c:tasksleep:9:id=3
+ mukipc.c:muk_sendrec_T:513:after tasksleep 14, p_error=0 
+ m3ftpd.c:main_ftpd:129:MTX_LOCK muk_mutex:1
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=27342
+ rendez.c:_taskwakeup:35:i=1
+ m3ftpd.c:main_ftpd:130:COND_SIGNAL muk_cond
+ m3ftpd.c:main_ftpd:131:COND_WAIT ftp_cond muk_mutex
+ m3ftpd.c:main_ftpd:131:MTX_UNLOCK muk_mutex:1
+ rendez.c:tasksleep:9:id=11
+ muk2.c:taskmain:494:MTX_LOCK muk_mutex:1
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ muk2.c:taskmain:495:COND_SIGNAL ftp_cond
+ muk2.c:taskmain:496:MTX_UNLOCK muk_mutex:1
+BOOT TIME: t_start=1569553201.30 t_stop=1569553201.43 t_total=0.13 [s]
+ muk2.c:taskmain:503:JOINING ALL TASKS -------------------------------------
+ task.c:get_task:98:p_ep=-34 p_nr=-34
+ task.c:get_task:98:p_ep=-33 p_nr=-33
+ task.c:get_task:98:p_ep=-32 p_nr=-32
+ task.c:get_task:98:p_ep=-31 p_nr=-31
+ task.c:get_task:98:p_ep=-30 p_nr=-30
+ task.c:get_task:98:p_ep=-29 p_nr=-29
+ task.c:get_task:98:p_ep=-28 p_nr=-28
+ task.c:get_task:98:p_ep=-27 p_nr=-27
+ task.c:get_task:98:p_ep=-26 p_nr=-26
+ task.c:get_task:98:p_ep=-25 p_nr=-25
+ task.c:get_task:98:p_ep=-24 p_nr=-24
+ task.c:get_task:98:p_ep=-23 p_nr=-23
+ task.c:get_task:98:p_ep=-22 p_nr=-22
+ task.c:get_task:98:p_ep=-21 p_nr=-21
+ task.c:get_task:98:p_ep=-20 p_nr=-20
+ task.c:get_task:98:p_ep=-19 p_nr=-19
+ task.c:get_task:98:p_ep=-18 p_nr=-18
+ task.c:get_task:98:p_ep=-17 p_nr=-17
+ task.c:get_task:98:p_ep=-16 p_nr=-16
+ task.c:get_task:98:p_ep=-15 p_nr=-15
+ task.c:get_task:98:p_ep=-14 p_nr=-14
+ task.c:get_task:98:p_ep=-13 p_nr=-13
+ task.c:get_task:98:p_ep=-12 p_nr=-12
+ task.c:get_task:98:p_ep=-11 p_nr=-11
+ task.c:get_task:98:p_ep=-10 p_nr=-10
+ task.c:get_task:98:p_ep=-9 p_nr=-9
+ task.c:get_task:98:p_ep=-8 p_nr=-8
+ task.c:get_task:98:p_ep=-7 p_nr=-7
+ task.c:get_task:98:p_ep=-6 p_nr=-6
+ task.c:get_task:98:p_ep=-5 p_nr=-5
+ task.c:get_task:98:p_ep=-4 p_nr=-4
+ task.c:get_task:98:p_ep=-3 p_nr=-3
+ task.c:get_task:98:p_ep=-2 p_nr=-2
+ task.c:get_task:107:pproc=50018E0
+ muk2.c:taskmain:508:nr=-2 id=3 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=systask 
+ task.c:get_task:98:p_ep=-1 p_nr=-1
+ task.c:get_task:98:p_ep=0 p_nr=0
+ task.c:get_task:107:pproc=50018E8
+ muk2.c:taskmain:508:nr=0 id=6 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=pm 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ muk2.c:taskmain:508:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ task.c:get_task:98:p_ep=2 p_nr=2
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ muk2.c:taskmain:508:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ task.c:get_task:98:p_ep=4 p_nr=4
+ task.c:get_task:98:p_ep=5 p_nr=5
+ task.c:get_task:98:p_ep=6 p_nr=6
+ task.c:get_task:98:p_ep=7 p_nr=7
+ task.c:get_task:98:p_ep=8 p_nr=8
+ task.c:get_task:107:pproc=5001908
+ muk2.c:taskmain:508:nr=8 id=8 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=is 
+ task.c:get_task:98:p_ep=9 p_nr=9
+ task.c:get_task:98:p_ep=10 p_nr=10
+ task.c:get_task:98:p_ep=11 p_nr=11
+ task.c:get_task:98:p_ep=12 p_nr=12
+ task.c:get_task:98:p_ep=13 p_nr=13
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ muk2.c:taskmain:508:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ task.c:get_task:98:p_ep=15 p_nr=15
+ task.c:get_task:98:p_ep=16 p_nr=16
+ task.c:get_task:98:p_ep=17 p_nr=17
+ task.c:get_task:98:p_ep=18 p_nr=18
+ task.c:get_task:98:p_ep=19 p_nr=19
+ task.c:get_task:98:p_ep=20 p_nr=20
+ task.c:get_task:98:p_ep=21 p_nr=21
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ muk2.c:taskmain:508:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ task.c:get_task:98:p_ep=23 p_nr=23
+ task.c:get_task:98:p_ep=24 p_nr=24
+ task.c:get_task:98:p_ep=25 p_nr=25
+ task.c:get_task:98:p_ep=26 p_nr=26
+ task.c:get_task:98:p_ep=27 p_nr=27
+ task.c:get_task:98:p_ep=28 p_nr=28
+ task.c:get_task:98:p_ep=29 p_nr=29
+ task.c:get_task:98:p_ep=30 p_nr=30
+ task.c:get_task:98:p_ep=31 p_nr=31
+ task.c:get_task:98:p_ep=32 p_nr=32
+ task.c:get_task:98:p_ep=33 p_nr=33
+ task.c:get_task:98:p_ep=34 p_nr=34
+ task.c:get_task:98:p_ep=35 p_nr=35
+ task.c:get_task:98:p_ep=36 p_nr=36
+ task.c:get_task:98:p_ep=37 p_nr=37
+ task.c:get_task:98:p_ep=38 p_nr=38
+ task.c:get_task:98:p_ep=39 p_nr=39
+ task.c:get_task:98:p_ep=40 p_nr=40
+ task.c:get_task:98:p_ep=41 p_nr=41
+ task.c:get_task:98:p_ep=42 p_nr=42
+ task.c:get_task:98:p_ep=43 p_nr=43
+ task.c:get_task:98:p_ep=44 p_nr=44
+ task.c:get_task:98:p_ep=45 p_nr=45
+ task.c:get_task:98:p_ep=46 p_nr=46
+ task.c:get_task:98:p_ep=47 p_nr=47
+ task.c:get_task:98:p_ep=48 p_nr=48
+ task.c:get_task:98:p_ep=49 p_nr=49
+ task.c:get_task:98:p_ep=50 p_nr=50
+ task.c:get_task:98:p_ep=51 p_nr=51
+ task.c:get_task:98:p_ep=52 p_nr=52
+ task.c:get_task:98:p_ep=53 p_nr=53
+ task.c:get_task:98:p_ep=54 p_nr=54
+ task.c:get_task:98:p_ep=55 p_nr=55
+ task.c:get_task:98:p_ep=56 p_nr=56
+ task.c:get_task:98:p_ep=57 p_nr=57
+ task.c:get_task:98:p_ep=58 p_nr=58
+ task.c:get_task:98:p_ep=59 p_nr=59
+ task.c:get_task:98:p_ep=60 p_nr=60
+ task.c:get_task:98:p_ep=61 p_nr=61
+ task.c:get_task:98:p_ep=62 p_nr=62
+ task.c:get_task:98:p_ep=63 p_nr=63
+ task.c:get_task:98:p_ep=64 p_nr=64
+ task.c:get_task:98:p_ep=65 p_nr=65
+ task.c:get_task:98:p_ep=66 p_nr=66
+ task.c:get_task:98:p_ep=67 p_nr=67
+ task.c:get_task:98:p_ep=68 p_nr=68
+ task.c:get_task:98:p_ep=69 p_nr=69
+ task.c:get_task:98:p_ep=70 p_nr=70
+ task.c:get_task:98:p_ep=71 p_nr=71
+ task.c:get_task:98:p_ep=72 p_nr=72
+ task.c:get_task:98:p_ep=73 p_nr=73
+ task.c:get_task:98:p_ep=74 p_nr=74
+ task.c:get_task:98:p_ep=75 p_nr=75
+ task.c:get_task:98:p_ep=76 p_nr=76
+ task.c:get_task:98:p_ep=77 p_nr=77
+ task.c:get_task:98:p_ep=78 p_nr=78
+ task.c:get_task:98:p_ep=79 p_nr=79
+ task.c:get_task:98:p_ep=80 p_nr=80
+ task.c:get_task:98:p_ep=81 p_nr=81
+ task.c:get_task:98:p_ep=82 p_nr=82
+ task.c:get_task:98:p_ep=83 p_nr=83
+ task.c:get_task:98:p_ep=84 p_nr=84
+ task.c:get_task:98:p_ep=85 p_nr=85
+ task.c:get_task:98:p_ep=86 p_nr=86
+ task.c:get_task:98:p_ep=87 p_nr=87
+ task.c:get_task:98:p_ep=88 p_nr=88
+ task.c:get_task:98:p_ep=89 p_nr=89
+ task.c:get_task:98:p_ep=90 p_nr=90
+ task.c:get_task:98:p_ep=91 p_nr=91
+ task.c:get_task:98:p_ep=92 p_nr=92
+ task.c:get_task:98:p_ep=93 p_nr=93
+ task.c:get_task:98:p_ep=94 p_nr=94
+ task.c:get_task:98:p_ep=95 p_nr=95
+ task.c:get_task:98:p_ep=96 p_nr=96
+ task.c:get_task:98:p_ep=97 p_nr=97
+ task.c:get_task:98:p_ep=98 p_nr=98
+ task.c:get_task:98:p_ep=99 p_nr=99
+ task.c:get_task:98:p_ep=100 p_nr=100
+ task.c:get_task:98:p_ep=101 p_nr=101
+ task.c:get_task:98:p_ep=102 p_nr=102
+ task.c:get_task:98:p_ep=103 p_nr=103
+ task.c:get_task:98:p_ep=104 p_nr=104
+ task.c:get_task:98:p_ep=105 p_nr=105
+ task.c:get_task:98:p_ep=106 p_nr=106
+ task.c:get_task:98:p_ep=107 p_nr=107
+ task.c:get_task:98:p_ep=108 p_nr=108
+ task.c:get_task:98:p_ep=109 p_nr=109
+ task.c:get_task:98:p_ep=110 p_nr=110
+ task.c:get_task:98:p_ep=111 p_nr=111
+ task.c:get_task:98:p_ep=112 p_nr=112
+ task.c:get_task:98:p_ep=113 p_nr=113
+ task.c:get_task:98:p_ep=114 p_nr=114
+ task.c:get_task:98:p_ep=115 p_nr=115
+ task.c:get_task:98:p_ep=116 p_nr=116
+ task.c:get_task:98:p_ep=117 p_nr=117
+ task.c:get_task:98:p_ep=118 p_nr=118
+ task.c:get_task:98:p_ep=119 p_nr=119
+ task.c:get_task:98:p_ep=120 p_nr=120
+ task.c:get_task:98:p_ep=121 p_nr=121
+ task.c:get_task:98:p_ep=122 p_nr=122
+ task.c:get_task:98:p_ep=123 p_nr=123
+ task.c:get_task:98:p_ep=124 p_nr=124
+ task.c:get_task:98:p_ep=125 p_nr=125
+ task.c:get_task:98:p_ep=126 p_nr=126
+ task.c:get_task:98:p_ep=127 p_nr=127
+ task.c:get_task:98:p_ep=128 p_nr=128
+ task.c:get_task:98:p_ep=129 p_nr=129
+ task.c:get_task:98:p_ep=130 p_nr=130
+ task.c:get_task:98:p_ep=131 p_nr=131
+ task.c:get_task:98:p_ep=132 p_nr=132
+ task.c:get_task:98:p_ep=133 p_nr=133
+ task.c:get_task:98:p_ep=134 p_nr=134
+ task.c:get_task:98:p_ep=135 p_nr=135
+ task.c:get_task:98:p_ep=136 p_nr=136
+ task.c:get_task:98:p_ep=137 p_nr=137
+ task.c:get_task:98:p_ep=138 p_nr=138
+ task.c:get_task:98:p_ep=139 p_nr=139
+ task.c:get_task:98:p_ep=140 p_nr=140
+ task.c:get_task:98:p_ep=141 p_nr=141
+ task.c:get_task:98:p_ep=142 p_nr=142
+ task.c:get_task:98:p_ep=143 p_nr=143
+ task.c:get_task:98:p_ep=144 p_nr=144
+ task.c:get_task:98:p_ep=145 p_nr=145
+ task.c:get_task:98:p_ep=146 p_nr=146
+ task.c:get_task:98:p_ep=147 p_nr=147
+ task.c:get_task:98:p_ep=148 p_nr=148
+ task.c:get_task:98:p_ep=149 p_nr=149
+ task.c:get_task:98:p_ep=150 p_nr=150
+ task.c:get_task:98:p_ep=151 p_nr=151
+ task.c:get_task:98:p_ep=152 p_nr=152
+ task.c:get_task:98:p_ep=153 p_nr=153
+ task.c:get_task:98:p_ep=154 p_nr=154
+ task.c:get_task:98:p_ep=155 p_nr=155
+ task.c:get_task:98:p_ep=156 p_nr=156
+ task.c:get_task:98:p_ep=157 p_nr=157
+ task.c:get_task:98:p_ep=158 p_nr=158
+ task.c:get_task:98:p_ep=159 p_nr=159
+ task.c:get_task:98:p_ep=160 p_nr=160
+ task.c:get_task:98:p_ep=161 p_nr=161
+ task.c:get_task:98:p_ep=162 p_nr=162
+ task.c:get_task:98:p_ep=163 p_nr=163
+ task.c:get_task:98:p_ep=164 p_nr=164
+ task.c:get_task:98:p_ep=165 p_nr=165
+ task.c:get_task:98:p_ep=166 p_nr=166
+ task.c:get_task:98:p_ep=167 p_nr=167
+ task.c:get_task:98:p_ep=168 p_nr=168
+ task.c:get_task:98:p_ep=169 p_nr=169
+ task.c:get_task:98:p_ep=170 p_nr=170
+ task.c:get_task:98:p_ep=171 p_nr=171
+ task.c:get_task:98:p_ep=172 p_nr=172
+ task.c:get_task:98:p_ep=173 p_nr=173
+ task.c:get_task:98:p_ep=174 p_nr=174
+ task.c:get_task:98:p_ep=175 p_nr=175
+ task.c:get_task:98:p_ep=176 p_nr=176
+ task.c:get_task:98:p_ep=177 p_nr=177
+ task.c:get_task:98:p_ep=178 p_nr=178
+ task.c:get_task:98:p_ep=179 p_nr=179
+ task.c:get_task:98:p_ep=180 p_nr=180
+ task.c:get_task:98:p_ep=181 p_nr=181
+ task.c:get_task:98:p_ep=182 p_nr=182
+ task.c:get_task:98:p_ep=183 p_nr=183
+ task.c:get_task:98:p_ep=184 p_nr=184
+ task.c:get_task:98:p_ep=185 p_nr=185
+ task.c:get_task:98:p_ep=186 p_nr=186
+ task.c:get_task:98:p_ep=187 p_nr=187
+ task.c:get_task:98:p_ep=188 p_nr=188
+ task.c:get_task:98:p_ep=189 p_nr=189
+ task.c:get_task:98:p_ep=190 p_nr=190
+ task.c:get_task:98:p_ep=191 p_nr=191
+ task.c:get_task:98:p_ep=192 p_nr=192
+ task.c:get_task:98:p_ep=193 p_nr=193
+ task.c:get_task:98:p_ep=194 p_nr=194
+ task.c:get_task:98:p_ep=195 p_nr=195
+ task.c:get_task:98:p_ep=196 p_nr=196
+ task.c:get_task:98:p_ep=197 p_nr=197
+ task.c:get_task:98:p_ep=198 p_nr=198
+ task.c:get_task:98:p_ep=199 p_nr=199
+ task.c:get_task:98:p_ep=200 p_nr=200
+ task.c:get_task:98:p_ep=201 p_nr=201
+ task.c:get_task:98:p_ep=202 p_nr=202
+ task.c:get_task:98:p_ep=203 p_nr=203
+ task.c:get_task:98:p_ep=204 p_nr=204
+ task.c:get_task:98:p_ep=205 p_nr=205
+ task.c:get_task:98:p_ep=206 p_nr=206
+ task.c:get_task:98:p_ep=207 p_nr=207
+ task.c:get_task:98:p_ep=208 p_nr=208
+ task.c:get_task:98:p_ep=209 p_nr=209
+ task.c:get_task:98:p_ep=210 p_nr=210
+ task.c:get_task:98:p_ep=211 p_nr=211
+ task.c:get_task:98:p_ep=212 p_nr=212
+ task.c:get_task:98:p_ep=213 p_nr=213
+ task.c:get_task:98:p_ep=214 p_nr=214
+ task.c:get_task:98:p_ep=215 p_nr=215
+ task.c:get_task:98:p_ep=216 p_nr=216
+ task.c:get_task:98:p_ep=217 p_nr=217
+ task.c:get_task:98:p_ep=218 p_nr=218
+ task.c:get_task:98:p_ep=219 p_nr=219
+ task.c:get_task:98:p_ep=220 p_nr=220
+ m3ftpd.c:main_ftpd:131:MTX_LOCK muk_mutex:1
+ m3ftpd.c:main_ftpd:132:MTX_UNLOCK muk_mutex:1
+ task.c:get_task:98:p_ep=14 p_nr=14
+ task.c:get_task:107:pproc=5001920
+ mukipc.c:muk_receive:192:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=14
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_receive:248:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ m3nweb.c:main_nweb:363:connection from 192.168.1.11:53654
+ m3nweb.c:nweb_server:177:request socket_fd=6
+ m3nweb.c:nweb_server:195:HTTP request:
+ m3nweb.c:main_nweb:356:Conection accept
+ m3nweb.c:main_nweb:363:connection from 192.168.1.11:53655
+ m3nweb.c:nweb_server:177:request socket_fd=6
+ m3nweb.c:nweb_server:195:HTTP request:GET / HTTP/1.1**Host: 192.168.1.100:8800**Connection: keep-alive**Upgrade-Insecure-Requests: 1**User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36**Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3**Accept-Encoding: gzip, deflate**Accept-Language: es-ES,es;q=0.9****
+ m3nweb.c:nweb_server:247:filename:index.html
+ mol_open.c:mol_open:8:name=index.html flags=0
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:1
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 22
+ rendez.c:tasksleep:9:id=10
+ mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=22 type=5 m1i1=11 m1i2=0 m1i3=91418629 m1p1=0x65646e69 m1p2=0x74682e78 m1p3=0x6c6d 
+ fs.c:fs_get_work:160:source=22 type=5 m3i1=11 m3i2=0 m3p1=0x572f005 m3ca1=[index.html]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:63:M3
+ utility.c:fetch_name:130:fs_who_e=22 path=572F005 len=11 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=index.html
+ open.c:common_open:92:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:98:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:114:user_path=index.html
+ path.c:parse_path:47:path=index.html string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = index.html
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:396:position=0
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 16 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=65536, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=65536 bytes=4096 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=65536, IO_ENDPT=1, COUNT=4096
+ device.c:dev_io:175:dmap_driver=3 source=90923280 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=65536 m2l2=0 m2p1=0x507bf4
+ device.c:r_gen_io:435:task_nr=3 source=90923280 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=65536 m2l2=0 m2p1=0x507bf4
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=4096
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:3
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ mukipc.c:muk_sendrec_T:488:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=3
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_receive:250:after tasksleep 3, p_error=0 
+ driver.c:driver_task:143:
+RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=10000, COUNT=4096, ADDRESS:507BF4, compress(m2_l2):0
+ driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
+ driver.c:driver_task:177:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:287:mp->COUNT=4096
+ driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:507BF4 - mp->COUNT=4096
+ rdisk.c:rd_prepare:228:device = 0 (rd_device = 0)
+ rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (56D9BF4;0), (1474560;0)
+ driver.c:do_rdwt:303:mp->m_type: 1027
+ driver.c:do_rdwt:323:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:rd_transfer:259:rd_device: 0
+ rdisk.c:rd_transfer:260:proc_nr=1 opcode=1033 nr_req=1
+ utility.c:cv64ul:31:f_cv64ul: 1474560
+ rdisk.c:rd_transfer:272:posit: 10000
+ rdisk.c:rd_transfer:273:nr_req: 1
+ rdisk.c:rd_transfer:279:count: 4096
+ rdisk.c:rd_transfer:283:user_vir 507BF4
+ utility.c:cv64ul:31:f_cv64ul: 91069428
+ rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 56E9BF4
+ rdisk.c:rd_transfer:300:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:306:bytes: 4096
+ rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=1474560 st_blksize=4096 localbuff=5700000 buff_size=16384 active=1 available=1
+ rdisk.c:rd_transfer:313:pread: bytes=4096
+ rdisk.c:rd_transfer:318:MUK_vcopy 3->1 bytes=4096 
+ rdisk.c:rd_transfer:322:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=0
+ rdisk.c:rd_transfer:323:bytes= 4096
+ rdisk.c:rd_transfer:324:DRIVER - Offset (read) 5700000
+ rdisk.c:rd_transfer:325:mem_phys: 5700000 (in DRIVER)
+ rdisk.c:rd_transfer:326:user_vir: 507BF4 (in proc_nr 1)
+ rdisk.c:rd_transfer:339:user_vir (do-buffer) 508BF4
+ rdisk.c:rd_transfer:342:count=0 stbytes=4096 position=69632
+ rdisk.c:rd_transfer:421:subtotal de bytes
+ rdisk.c:rd_transfer:423:subtotal de bytes tbytes=0 nr_req=0
+ driver.c:do_rdwt:330:mp->m2_l2 =0, buffer_size=0
+ driver.c:do_rdwt:331:dr_trasnfer = (r) 4096
+ driver.c:driver_task:249:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=4096
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ mukipc.c:muk_send:120:dst_ep:1 current_ep=3
+ mukipc.c:muk_send:121:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_send:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
+ mukipc.c:muk_send:132:dst_ep:1 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ mukipc.c:muk_receive:192:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=3
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_receive:248:before tasksleep 3
+ rendez.c:tasksleep:9:id=5
+ mukipc.c:muk_sendrec_T:513:after tasksleep 1, p_error=0 
+ device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=4096 
+ cache.c:rw_block:119:dev_io r=4096, 
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=2
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=2
+i_mode=8180
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:127:FD: fs_m_in.fd=0 
+ open.c:common_open:128:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:130:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:136:r forbidden = 0
+ open.c:common_open:141: I_REGULAR
+ open.c:common_open:221:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_send:120:dst_ep:22 current_ep=1
+ mukipc.c:muk_send:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_send:128:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=nweb 
+ mukipc.c:muk_send:132:dst_ep:22 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=22
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:248:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:513:after tasksleep 22, p_error=0 
+ mol_fstat.c:mol_fstat:7:fd=0
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:1
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 22
+ rendez.c:tasksleep:9:id=10
+ mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=22 type=28 m1i1=0 m1i2=0 m1i3=0 m1p1=0x571d000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=28 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 28 
+ filedes.c:get_filp:75:fild is=0
+ stadir.c:stat_inode:219:MUK_vcopy 1->22 bytes=36 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_send:120:dst_ep:22 current_ep=1
+ mukipc.c:muk_send:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_send:128:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=nweb 
+ mukipc.c:muk_send:132:dst_ep:22 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=22
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_receive:192:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:194:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive:209:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive:224:Searching for a message
+ mukipc.c:muk_receive:244:Valid message was not found
+ mukipc.c:muk_receive:247:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive:248:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:513:after tasksleep 22, p_error=0 
+ mol_read.c:mol_read:8:fd=0 nbytes=65536
+ task.c:get_task:98:p_ep=22 p_nr=22
+ task.c:get_task:107:pproc=5001940
+ mukipc.c:muk_sendrec_T:480:nr=22 id=10 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:1
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:488:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=22 id=10 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=nweb 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 22
+ rendez.c:tasksleep:9:id=10
+ mukipc.c:muk_receive:250:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=22 type=3 m1i1=0 m1i2=65536 m1i3=0 m1p1=0x571e000 m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=22 type=3 m3i1=0 m3i2=65536 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 3 
+ filedes.c:get_filp:75:fild is=0
+ read.c:read_write:115:block_size4096
+ read.c:read_write:173:fs_m_in.nbytes=65536
+ read.c:rw_chunk:294:chunk4096
+ read.c:read_map:396:position=0
+ read.c:rahead:543:position=0, bytes_ahead=65536
+ super.c:get_block_size:28:
+ super.c:get_block_size:28:
+ cache.c:rw_scattered:289: dev_io -> op=1033, dev=768, POS=69632, BYTES=27
+ device.c:dev_io:120:op=409 dev=768 major=3 minor=0 proc_e=1 pos=69632 bytes=27 flags=0
+ device.c:dev_io:151: DEV_GATHER -> m_type=1033, dev=768, POS=69632, IO_ENDPT=1, COUNT=27
+ device.c:dev_io:175:dmap_driver=3 source=90923280 type=1033 m2i1=0 m2i2=1 m2i3=27 m2l1=69632 m2l2=0 m2p1=0x4d7a20
+ device.c:r_gen_io:435:task_nr=3 source=90923280 type=1033 m2i1=0 m2i2=1 m2i3=27 m2l1=69632 m2l2=0 m2p1=0x4d7a20
+ device.c:r_gen_io:474: m_type=1033, COUNT/FLAGS=27
+ task.c:get_task:98:p_ep=1 p_nr=1
+ task.c:get_task:107:pproc=50018EC
+ mukipc.c:muk_sendrec_T:480:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:482:srcdst_ep:3
+ task.c:get_task:98:p_ep=3 p_nr=3
+ task.c:get_task:107:pproc=50018F4
+ mukipc.c:muk_sendrec_T:488:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_sendrec_T:495:SENDING HALF
+ mukipc.c:muk_sendrec_T:501:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=3
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:510:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:511:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_receive:250:after tasksleep 3, p_error=0 
+ driver.c:driver_task:143:
+RECEIVE: m_source=1, m_type=1033, DEVICE=0, IO_ENDPT=1, POSITION=11000, COUNT=27, ADDRESS:4D7A20, compress(m2_l2):0
+ driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
+ driver.c:driver_task:187:m_type: 1033 - (DEV_GATHER= 1033 ? DEV_SCATTER=1032)
+ driver.c:do_vrdwt:358:nr_req: 27, NR_IOREQS=64

@@ -26,11 +26,11 @@ struct inode *init_root(void);
 void buf_pool(void);
 int get_root_major(void); 
 
-// void print_usage(char *argv[]) {
+// void fs_print_usage(char *argv[]) {
 //   printf( "Usage: %s --dcid vmIdNumber --cfgFile cfgFilename [--buffSize=sizeBufferInBytes]\n", argv[0] );
 // }
 
-void print_usage(char* errmsg, ...) {
+void fs_print_usage(char* errmsg, ...) {
   if(errmsg) {
       printf("ERROR: %s\n", errmsg);  
     }
@@ -212,9 +212,9 @@ extern mproc_t *mp;		/* PM process table			*/
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
-	MUKDEBUG("Get fs_ep info\n");
-	fs_proc_ptr = (muk_proc_t *) get_task(fs_ep);
-//	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_proc_ptr));
+	MUKDEBUG("Get fs_ep	info\n");
+	fs_ptr = current_task();
+//	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(fs_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
 	MUKDEBUG("Register FS into SYSTASK fs_id=%d\n",fs_id);

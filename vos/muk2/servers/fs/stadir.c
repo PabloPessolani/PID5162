@@ -294,12 +294,12 @@ int fs_rdlink()
          if(rip->i_size < copylen) copylen = rip->i_size;
                bp = get_block(rip->i_dev, b, NORMAL);
                // MUKDEBUG("DESPUES get_block\n");
-    //            r = sys_vircopy(SELF, D, (vir_bytes) bp->b_data,
+    //            r = sys_vircopy(fs_ep, D, (vir_bytes) bp->b_data,
     // fs_who_e, D, (vir_bytes) fs_m_in.name2, (vir_bytes) copylen);
                // MUKDEBUG("ANTES muk_vcopy\n");     
                // MUKDEBUG("bp->b_data=%s, \n", bp->b_data);
                // MUKDEBUG("fs_m_in.name2=%s, \n", fs_m_in.name2);
-               MUK_vcopy(r, SELF, bp->b_data, fs_who_e, fs_m_in.name2, copylen);                
+               MUK_vcopy(r, fs_ep, bp->b_data, fs_who_e, fs_m_in.name2, copylen);                
 			   if( r < 0) ERROR_RETURN(r);
                r = copylen;
                put_block(bp, DIRECTORY_BLOCK);

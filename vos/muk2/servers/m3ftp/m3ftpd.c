@@ -12,12 +12,14 @@ char *ftp_path_ptr;
 char *ftp_data_ptr;
 int clt_ep;
 int oper;
-
+int ftp_pid;
 
 #define SEND_RECV_MS 	10000
 
-#define muk_send_T(a,b,c) 		muk_send(a,b)
-#define muk_receive_T(a,b,c) 	muk_receive(a,b)
+////////////////// SOLO TEMPORARIO 
+#define dvk_receive_T			muk_receive_T
+#define dvk_send_T				muk_send_T
+#define dvk_vcopy				MUK_vcopy
 
 /*===========================================================================*
  *				ftpd_reply					     *
@@ -55,6 +57,10 @@ void ftpd_init(void)
 	ftp_id = taskid();
 	MUKDEBUG("ftp_id=%d\n", ftp_id);
 	
+	ftp_pid = syscall (SYS_gettid);
+	MUKDEBUG("ftp_pid=%d\n", ftp_pid);
+	
+	// BIND to MUK 
 	rcode = muk_tbind(dcid, ftp_ep, "ftpd");
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode != ftp_ep) {
@@ -62,6 +68,17 @@ void ftpd_init(void)
 		taskexit(&rcode);
 	}
 
+// TEMPORARIAMENTE ANULADO 
+#ifdef ANULADO 
+	// BIND to the DVK 
+	rcode = dvk_tbind(dcid, ftp_ep);
+	MUKDEBUG("rcode=%d\n", rcode);
+	if( rcode != ftp_ep) {
+		ERROR_PRINT(EDVSENDPOINT);
+		taskexit(&rcode);
+	}
+#endif ANULADO 
+	
 	rcode = mol_bindproc(ftp_ep, ftp_ep, ftp_id, LCL_BIND);
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode < 0) {
@@ -84,12 +101,9 @@ void ftpd_init(void)
    		ERROR_EXIT(-errno);
 	}
 	MUKDEBUG("M3FTPD ftp_data_ptr=%p\n",ftp_data_ptr);	
-
-	ftp_id = syscall (SYS_gettid);
-	MUKDEBUG("ftp_id=%d\n", ftp_id);
 	
 	MUKDEBUG("Get ftp_ep info\n");
-	ftp_ptr = (proc_usr_t *) get_task(ftp_ep);
+	ftp_ptr = current_task();
 	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(ftp_ptr));
 	
 	// set the name of FTP 
@@ -134,7 +148,7 @@ int  main_ftpd ( int argc, char *argv[] )
 	while(TRUE){
 		// Wait for file request 
 		do { 
-			rcode = muk_receive_T(ANY,ftp_mptr, SEND_RECV_MS);
+			rcode = dvk_receive_T(ANY,ftp_mptr, SEND_RECV_MS);
 			MUKDEBUG("M3FTPD: muk_receive_T  rcode=%d\n", rcode);
 			if (rcode == EDVSTIMEDOUT) {
 				MUKDEBUG("M3FTPD: muk_receive_T TIMEOUT\n");
@@ -164,15 +178,15 @@ int  main_ftpd ( int argc, char *argv[] )
 		clt_ep = ftp_mptr->m_source;
 		oper = ftp_mptr->FTPOPER;
 		
-		MUK_vcopy(rcode,clt_ep, ftp_mptr->FTPPATH,
-							SELF, ftp_path_ptr, ftp_mptr->FTPPLEN);
+		dvk_vcopy(rcode,clt_ep, ftp_mptr->FTPPATH,
+							ftp_ep, ftp_path_ptr, ftp_mptr->FTPPLEN);
 		if( rcode < 0) break;
 		ftp_path_ptr[ftp_mptr->FTPPLEN] = 0;
 		MUKDEBUG("M3FTPD: path >%s<\n", ftp_path_ptr);
 			
 		ftp_mptr->m_type = OK;	
 		
-		rcode = muk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
+		rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
 		if(rcode < 0) {
 			ERROR_PRINT(rcode); 
 			break;
@@ -199,7 +213,7 @@ int  main_ftpd ( int argc, char *argv[] )
 					oper = ftp_mptr->FTPOPER;		
 					if ( (rlen = mol_read(ftpd_fd, ftp_data_ptr, ftp_mptr->FTPDLEN)) > 0) {
 						MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);			
-						MUK_vcopy(rcode, SELF, ftp_data_ptr
+						MUK_vcopy(rcode, ftp_ep, ftp_data_ptr
 								,clt_ep, ftp_mptr->FTPDATA ,rlen);
 						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
@@ -207,7 +221,7 @@ int  main_ftpd ( int argc, char *argv[] )
 						}
 						ftp_mptr->FTPDLEN = rlen;
 						ftp_mptr->m_type = OK;					
-						rcode = muk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
+						rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
 						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
 							break;
@@ -260,8 +274,8 @@ int  main_ftpd ( int argc, char *argv[] )
 					}
 					if (ftp_mptr->FTPDATA == 0) // EOF 
 						break; 
-					MUK_vcopy(rcode, clt_ep, ftp_mptr->FTPDATA
-									, SELF, ftp_data_ptr,rlen);
+					dvk_vcopy(rcode, clt_ep, ftp_mptr->FTPDATA
+									, ftp_ep, ftp_data_ptr,rlen);
 					if(rcode < 0) {
 						ERROR_PRINT(rcode); 
 						break;
@@ -271,7 +285,7 @@ int  main_ftpd ( int argc, char *argv[] )
 						MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);			
 						ftp_mptr->FTPDLEN = rlen;
 						ftp_mptr->m_type = OK;					
-						rcode = muk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
+						rcode = dvk_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
 						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
 							break;

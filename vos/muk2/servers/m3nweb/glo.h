@@ -6,7 +6,8 @@
 #endif
 
 EXTERN unsigned int nw_mandatory;
-EXTERN int nw_listenfd;
+EXTERN int 	nw_listenfd;
+
 EXTERN struct sockaddr_in nw_cli_addr; /* static = initialised to zeros */
 EXTERN struct sockaddr_in nw_svr_addr; /* static = initialised to zeros */
 EXTERN struct mnx_stat *nw_fstat_ptr;

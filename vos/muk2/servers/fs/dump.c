@@ -51,7 +51,7 @@ int dmp_fs_proc(void)
 	fprintf(dump_fd,"====================== dmp_fs_proc =======================================\n");
 	fprintf(dump_fd,"===========================================================================\n");
 	fprintf(dump_fd, "\n");
-	fprintf(dump_fd, "-endp- -pid- -tty- -task -ruid -euid -rgid -egid name\n");	
+	fprintf(dump_fd, "-endp- -pid- -tty- -task -ruid -euid -rgid -egid\n");	
 
 	assert(fs_proc_table != NULL);
 
@@ -71,7 +71,6 @@ int dmp_fs_proc(void)
 				fp_ptr->fp_effuid,
 				fp_ptr->fp_realgid,
 				fp_ptr->fp_effgid);
-//				,proc_ptr->name);
 	}
 	fprintf(dump_fd, "\n");
 
@@ -155,7 +154,7 @@ int wdmp_fs_proc(void)
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		fp_ptr = &fs_proc_table[i];
 		proc_ptr = (muk_proc_t *) get_task(i);
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		if (proc_ptr == NULL) {
 			continue;
 		}
 		(void)strcat(page_ptr,"<tr>\n");
@@ -170,7 +169,6 @@ int wdmp_fs_proc(void)
 				fp_ptr->fp_realgid,
 				fp_ptr->fp_effgid,
 				"name");
-//				proc_ptr->name);
 		(void)strcat(page_ptr,is_buffer);
 		(void)strcat(page_ptr,"</tr>\n");				
 	}

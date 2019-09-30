@@ -123,14 +123,12 @@ int tokenize(char *string, int *argc, char **argv, char *args)
 	return(arg_len);
 }
 	
-#if	ENABLE_SYSTASK	
-	
+#if	ENABLE_SYSTASK
 /*===========================================================================*
  *                          TASK SYSTASK					                                     *
  *===========================================================================*/
 static void tsk_systask(void *str_arg)
 {
-	Task *my_tsk;
 #define MAX_ARG_NR 20
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
@@ -145,10 +143,7 @@ static void tsk_systask(void *str_arg)
 	for(i = 0; i < argc; i++){
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
-	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-	
+
 	// call SYSTASK !!
 	rcode = main_systask(argc, argv);
 
@@ -163,7 +158,6 @@ static void tsk_systask(void *str_arg)
  *===========================================================================*/
 static void tsk_pm(void *str_arg)
 {
-	Task *my_tsk;
 #define MAX_ARG_NR 20
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
@@ -179,9 +173,6 @@ static void tsk_pm(void *str_arg)
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
 	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-	
 	rcode = main_pm(argc, argv);
 
 	taskexit(rcode);
@@ -194,7 +185,6 @@ static void tsk_pm(void *str_arg)
  *===========================================================================*/
 static void tsk_rd(void *str_arg)
 {
-	Task *my_tsk;
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
 	int argc;
@@ -209,9 +199,6 @@ static void tsk_rd(void *str_arg)
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
 	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-	
 	rcode = main_rdisk(argc, argv);
 
 	taskexit(rcode);
@@ -224,7 +211,6 @@ static void tsk_rd(void *str_arg)
  *===========================================================================*/
 static void tsk_fs(void *str_arg)
 {
-	Task *my_tsk;
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
 	int argc;
@@ -240,9 +226,6 @@ static void tsk_fs(void *str_arg)
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
 	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-
 	rcode = main_fs(argc, argv);
 
 	taskexit(rcode);
@@ -255,7 +238,6 @@ static void tsk_fs(void *str_arg)
  *===========================================================================*/
 static void tsk_is(void *str_arg)
 {
-	Task *my_tsk;
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
 	int argc;
@@ -270,9 +252,6 @@ static void tsk_is(void *str_arg)
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
 	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-	
 	rcode = main_is(argc, argv);
 
 	taskexit(rcode);
@@ -285,7 +264,6 @@ static void tsk_is(void *str_arg)
  *===========================================================================*/
 static void tsk_web(void *str_arg)
 {
-	Task *my_tsk;
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
 	int argc;
@@ -301,10 +279,7 @@ static void tsk_web(void *str_arg)
 	for(i = 0; i < argc; i++){
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
-	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
-			
+		
 	rcode = main_nweb(argc, argv);
 
 	taskexit(rcode);
@@ -317,7 +292,6 @@ static void tsk_web(void *str_arg)
  *===========================================================================*/
 static void tsk_ftp(void *str_arg)
 {
-	Task *my_tsk;
 	static char *argv[MAX_ARG_NR];
 	static char args[ARG_MAX];
 	int argc;
@@ -332,8 +306,6 @@ static void tsk_ftp(void *str_arg)
 		MUKDEBUG("argv[%d]=%s\n", i,  argv[i]);
 	}
 	
-	my_tsk = current_task();
-	MUKDEBUG("my_tsk->id=%u\n", my_tsk->id);
 	rcode = main_ftpd(argc, argv);
 
 	taskexit(rcode);
@@ -393,13 +365,13 @@ void taskmain(int argc, char **argv)
 	
 	muk_mutex = 1; // initialize pseudo-mutex 
 
-	to_id = taskcreate(muk_timeout_task, 0, 32768);
+	to_id = taskcreate(muk_timeout_task, 0, MUK_STACK_SIZE);
 
 #if 	ENABLE_SYSTASK
 	/*Create SYSTASK Task  */
 	MUKDEBUG("Starting SYSTASK task -----------------------------------\n");
 	sprintf(muk_cmd,"systask\n");
-	sys_id = taskcreate(tsk_systask, muk_cmd, 32768);
+	sys_id = taskcreate(tsk_systask, muk_cmd, MUK_STACK_SIZE);
 	MUKDEBUG("sys_id=%d\n",sys_id);
 	MTX_LOCK(muk_mutex);
 	COND_WAIT(muk_cond, muk_mutex);
@@ -412,7 +384,7 @@ void taskmain(int argc, char **argv)
 	if( rd_ep != HARDWARE) {
 		MUKDEBUG("Starting RDISK Task--------------------------------------\n");
 		sprintf(muk_cmd,"rdisk -c %s\n", rd_cfg);
-		rd_id = taskcreate(tsk_rd, muk_cmd, 32768);
+		rd_id = taskcreate(tsk_rd, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("rd_id=%d\n",rd_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -426,7 +398,7 @@ void taskmain(int argc, char **argv)
 	if( pm_ep != HARDWARE) {
 		MUKDEBUG("Starting PM Task ---------------------------------------\n");
 		sprintf(muk_cmd,"pm\n");
-		pm_id = taskcreate(tsk_pm, muk_cmd, 32768);
+		pm_id = taskcreate(tsk_pm, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("pm_id=%d\n",pm_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -442,7 +414,7 @@ void taskmain(int argc, char **argv)
 	if( fs_ep != HARDWARE) {
 		MUKDEBUG("Starting FS Task--------------------------------------\n");
 		sprintf(muk_cmd,"fs %s\n", fs_cfg);
-		fs_id = taskcreate(tsk_fs, muk_cmd, 32768);
+		fs_id = taskcreate(tsk_fs, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("fs_id=%d\n",fs_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -458,7 +430,7 @@ void taskmain(int argc, char **argv)
 	if( is_ep != HARDWARE) {
 		MUKDEBUG("Starting IS Task--------------------------------------\n");
 		sprintf(muk_cmd,"is\n");
-		is_id = taskcreate(tsk_is, muk_cmd, 32768);
+		is_id = taskcreate(tsk_is, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("is_id=%d\n",is_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -474,7 +446,7 @@ void taskmain(int argc, char **argv)
 	//	pthread_attr_init(&attrs);
 	//	pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_JOINABLE);
 		sprintf(muk_cmd,"nw %s\n", web_cfg);
-		web_id = taskcreate(tsk_web, muk_cmd, 32768);
+		web_id = taskcreate(tsk_web, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("web_id=%d\n",web_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -488,7 +460,7 @@ void taskmain(int argc, char **argv)
 		/*Create FTP Task  */
 		MUKDEBUG("Starting FTP Task--------------------------------------\n");
 		sprintf(muk_cmd,"m3ftp\n");
-		ftp_id = taskcreate(tsk_ftp, muk_cmd, 32768);
+		ftp_id = taskcreate(tsk_ftp, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("ftp_id=%d\n",ftp_id);
 		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
@@ -505,7 +477,7 @@ void taskmain(int argc, char **argv)
 	for( i = -dc_ptr->dc_nr_tasks; i < (dc_ptr->dc_nr_procs); i++) {
 		t = get_task(i);
 		if( t == NULL) continue;
-		LIBDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(t));
+		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(t));
 	} 
 	
     fflush(stdout);

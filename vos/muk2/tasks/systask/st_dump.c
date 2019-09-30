@@ -27,10 +27,13 @@ int st_dump(message *m_ptr)
 			break;
 		case DMP_SYS_PROC:
 			dmp_sys_proc();
-			break;		
+			break;	
+#ifdef ENABLE_DMP_SYS_STATS 				
 		case DMP_SYS_STATS:
 			dmp_sys_stats();
 			break;		
+#endif // ENABLE_DMP_SYS_STATS 		
+
 #ifdef ENABLE_DMP_SYS_PRIV 		
 		case DMP_SYS_PRIV:
 			dmp_sys_priv();
@@ -43,9 +46,12 @@ int st_dump(message *m_ptr)
 		case WDMP_SYS_PROC:
 			wdmp_sys_proc(m_ptr);
 			break;		
+#ifdef ENABLE_DMP_SYS_STATS 				
 		case WDMP_SYS_STATS:
 			wdmp_sys_stats(m_ptr);
 			break;		
+#endif // ENABLE_DMP_SYS_STATS 		
+
 #ifdef ENABLE_WDMP_SYS_PRIV 		
 		case WDMP_SYS_PRIV:
 			wdmp_sys_priv(m_ptr);
@@ -92,13 +98,14 @@ void dmp_sys_dc(void)
 	fprintf(dump_fd, "\n");
 }
 
+#ifdef ENABLE_DMP_SYS_STATS 		
 /*===========================================================================*
  *				dmp_sys_stats  					    				     *
  *===========================================================================*/
 void dmp_sys_stats(void)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===========================================================================\n");
@@ -131,6 +138,7 @@ void dmp_sys_stats(void)
 	fprintf(dump_fd, "\n");
 
 }
+#endif // ENABLE_DMP_SYS_STATS 		
 
 /*===========================================================================*
  *				dmp_sys_proc					    				     *
@@ -142,17 +150,15 @@ void dmp_sys_proc(void)
 	static char mis_str[20];
 	static char getf_str[10];
 	static char send_str[10];
-	static char migr_str[10];
-	static char pxy_str[10];
 	
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===============================================================================\n");
 	fprintf(dump_fd,"====================== dmp_sys_proc ===========================================\n");
 	fprintf(dump_fd,"===============================================================================\n");
 	fprintf(dump_fd, "\n");
-	fprintf(dump_fd, "DC pnr -endp -lpid/vpid- nd ------flag------ ----misc--- -getf -sndt -wmig -prxy name\n");	
+	fprintf(dump_fd, "DC pnr -endp -id- ---state--- nd ------flag------ ----misc--- -getf -sndt name\n");	
 
 //	assert(kproc_map != NULL);
 
@@ -165,23 +171,19 @@ void dmp_sys_proc(void)
 	    p_rts_flags_str(proc_ptr->p_rts_flags, rts_str);		
 	    p_misc_flags_str(proc_ptr->p_misc_flags, mis_str);	
 	    p_endpoint_str(proc_ptr->p_getfrom,	getf_str);		
-	    p_endpoint_str(proc_ptr->p_sendto,  send_str);		
-	    p_endpoint_str(proc_ptr->p_waitmigr,migr_str);		
-	    p_endpoint_str(proc_ptr->p_proxy,   pxy_str);		
-		fprintf(dump_fd, "%2d %3d %5d %5ld/%-5ld %2d %16s %11s %5s %5s %5s %5s %-15.15s\n",
-				proc_ptr->p_dcid,
+	    p_endpoint_str(proc_ptr->p_sendto,  send_str);			
+		fprintf(dump_fd, "%2d %3d %5d %4d %11s %2d %16s %11s %5s %5s %-15.15s\n",
+				dc_ptr->dc_dcid,
 				proc_ptr->p_nr,
 				proc_ptr->p_endpoint,
-				proc_ptr->p_lpid,
-				proc_ptr->p_vpid,
-				proc_ptr->p_nodeid,
+				proc_ptr->id,
+				proc_ptr->state,
+				local_nodeid,
 				rts_str,
 				mis_str,
 				getf_str,
 				send_str,
-				migr_str,
-				pxy_str,
-				proc_ptr->p_name);
+				proc_ptr->name);
 	}
 	fprintf(dump_fd, "\n");
 }
@@ -193,7 +195,7 @@ void dmp_sys_proc(void)
 void dmp_sys_priv(void)
 {
 	int i;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===========================================================================\n");
@@ -297,7 +299,7 @@ void wdmp_sys_proc(message *m_ptr)
 	static char send_str[10];
 	static char migr_str[10];
 	static char pxy_str[10];
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	char *page_ptr;
 	
 	MUKDEBUG("\n");
@@ -309,15 +311,13 @@ void wdmp_sys_proc(message *m_ptr)
 	(void)strcat(page_ptr,"<th>DC</th>\n");
 	(void)strcat(page_ptr,"<th>pnr</th>\n");
 	(void)strcat(page_ptr,"<th>-endp</th>\n");
-	(void)strcat(page_ptr,"<th>-lpid</th>\n");
-	(void)strcat(page_ptr,"<th>-vpid</th>\n");
+	(void)strcat(page_ptr,"<th>-id-</th>\n");
+	(void)strcat(page_ptr,"<th>---state---</th>\n");
 	(void)strcat(page_ptr,"<th>nd</th>\n");
 	(void)strcat(page_ptr,"<th>------flags-----</th>\n");
 	(void)strcat(page_ptr,"<th>----misc---</th>\n");
 	(void)strcat(page_ptr,"<th>-getf</th>\n");
 	(void)strcat(page_ptr,"<th>-sndt</th>\n");
-	(void)strcat(page_ptr,"<th>-wmig</th>\n");
-	(void)strcat(page_ptr,"<th>-prxy</th>\n");
 	(void)strcat(page_ptr,"<th>name</th>\n");
 
 	(void)strcat(page_ptr,"</tr>\n");
@@ -337,24 +337,21 @@ void wdmp_sys_proc(message *m_ptr)
 	    p_misc_flags_str(proc_ptr->p_misc_flags, mis_str);	
 	    p_endpoint_str(proc_ptr->p_getfrom,	getf_str);		
 	    p_endpoint_str(proc_ptr->p_sendto,  send_str);		
-	    p_endpoint_str(proc_ptr->p_waitmigr,migr_str);		
-	    p_endpoint_str(proc_ptr->p_proxy,   pxy_str);
-		sprintf(is_buffer, "<td>%2d</td> <td>%3d</td> <td>%5d</td> <td>%5ld</td> <td>%5ld</td> "
-			"<td>%2d</td> <td>%16s</td> <td>%11s</td> <td>%5s</td> <td>%5s</td> <td>%5s</td> "
-			"<td>%5s</td> <td>%-15.15s</td> \n",
-			proc_ptr->p_dcid,
+		sprintf(is_buffer, "<td>%2d</td> <td>%3d</td> <td>%5d</td> <td>%5ld</td>"
+			"<td>%11s</td> <td>%2d</td> <td>%16s</td> <td>%11s</td> <td>%5s</td> <td>%5s</td> "
+			"<td>%-15.15s</td> \n",
+			dc_ptr->dc_dcid,
 			proc_ptr->p_nr,
 			proc_ptr->p_endpoint,
-			proc_ptr->p_lpid,
-			proc_ptr->p_vpid,
-			proc_ptr->p_nodeid,
+			proc_ptr->id,
+			
+			proc_ptr->state,
+			local_nodeid,
 			rts_str,
 			mis_str,
 			getf_str,
 			send_str,
-			migr_str,
-			pxy_str,
-			proc_ptr->p_name);
+			proc_ptr->name);
 		
 		(void)strcat(page_ptr,is_buffer);
 		(void)strcat(page_ptr,"</tr>\n");
@@ -409,6 +406,8 @@ void wdmp_sys_proc(message *m_ptr)
 
 }
 
+#ifdef ENABLE_DMP_SYS_STATS 		
+
 /*===========================================================================*
  *				wdmp_sys_stats  					    				     *
  *===========================================================================*/
@@ -416,7 +415,7 @@ void wdmp_sys_stats(message *m_ptr)
 {
 	int i;
 	char *page_ptr;
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 
 	MUKDEBUG("\n");
 	page_ptr = m_ptr->m1_p1;
@@ -469,6 +468,7 @@ void wdmp_sys_stats(message *m_ptr)
   	MUKDEBUG("%s\n",page_ptr);	
 	MUKDEBUG("strlen(page_ptr)=%d\n", strlen(page_ptr));	
 }
+#endif // ENABLE_DMP_SYS_STATS 		
 
 
 #ifdef ENABLE_WDMP_SYS_PRIV 		
@@ -554,7 +554,7 @@ void p_misc_flags_str(int flags, char *str )
  *===========================================================================*/
 void p_endpoint_str(int endpoint, char *str)
 {
-	proc_usr_t	*proc_ptr;
+	muk_proc_t	*proc_ptr;
 	int i;
 	
 	if( endpoint == NONE) {
@@ -570,7 +570,7 @@ void p_endpoint_str(int endpoint, char *str)
 				continue;
 			}
 			if( proc_ptr->p_endpoint == endpoint){
-				strncpy(str,proc_ptr->p_name,5);
+				strncpy(str,proc_ptr->name,5);
 				break;
 			}
 		}

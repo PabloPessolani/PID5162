@@ -421,12 +421,12 @@ int do_rdlink()
         copylen = rip->i_size;
       bp = get_block(rip->i_dev, b, NORMAL);
       // SVRDEBUG("DESPUES get_block\n");
-      //            r = sys_vircopy(SELF, D, (vir_bytes) bp->b_data,
+      //            r = sys_vircopy(fs_ep, D, (vir_bytes) bp->b_data,
       // who_e, D, (vir_bytes) m_in.name2, (vir_bytes) copylen);
       // SVRDEBUG("ANTES mnx_vcopy\n");
       // SVRDEBUG("bp->b_data=%s, \n", bp->b_data);
       // SVRDEBUG("m_in.name2=%s, \n", m_in.name2);
-      r = mnx_vcopy(SELF, bp->b_data, who_e, m_in.name2, copylen);
+      r = mnx_vcopy(fs_ep, bp->b_data, who_e, m_in.name2, copylen);
       // SVRDEBUG("DESPUES mnx_vcopy\n");
 
       if (r == OK)

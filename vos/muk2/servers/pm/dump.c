@@ -55,6 +55,9 @@ int dmp_pm_proc(void)
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		mp_ptr = &pm_proc_table[i];
 		proc_ptr = (muk_proc_t *) get_task(i);
+		if (proc_ptr == NULL) {
+			continue;
+		}
 		if ( !(mp_ptr->mp_flags & IN_USE)){
 			continue;
 		}
@@ -112,6 +115,9 @@ int wdmp_pm_proc(message *m_ptr)
 	for(i = 0 ; i < dc_ptr->dc_nr_procs; i++) {
 		mp_ptr = &pm_proc_table[i];
 		proc_ptr = (muk_proc_t *) get_task(i);
+		if (proc_ptr == NULL) {
+			continue;
+		}
 		if ( !(mp_ptr->mp_flags & IN_USE)){
 			continue;
 		}

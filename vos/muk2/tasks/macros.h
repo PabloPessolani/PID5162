@@ -27,6 +27,9 @@ do {\
 	}\
 }while(0)
 
+/////////////////////////////// ANULADO 
+#ifdef ANULADO 
+
 #define MTX_LOCK(x) do{ \
 		MUKDEBUG("MTX_LOCK %s:%d\n", #x, x);\
 		x--;\
@@ -48,4 +51,5 @@ do {\
 		taskwakeup(&x);\
 		MUKDEBUG("COND_SIGNAL %s\n", #x);\
 		}while(0)
+#endif //  ANULADO 
 			

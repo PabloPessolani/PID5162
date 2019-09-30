@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+
 int	taskdebuglevel;
 int	taskcount;
 int	tasknswitch;
@@ -79,14 +80,19 @@ static int taskidgen;
 
 int muk_getep(int id)
 {
+	Task *t;
 	int i; 
-	
-	for( i = 0; i < (dc_ptr->dc_nr_procs+dc_ptr->dc_nr_tasks); i++) {
-		if( pproc[i] == NULL) continue;
-		if( pproc[i]->id != id) continue;
-		return(pproc[i]->p_endpoint);
+	for( i=0; i < nalltask; i++) {
+		t = alltask[i];
+		if( t->id == id) {
+			if(t->p_endpoint != NONE) {
+				return(t->p_endpoint);
+			} else {
+				ERROR_RETURN(EDVSNOTBIND);
+			}
+		}
 	}
-	return(EDVSNOTBIND);
+	ERROR_RETURN(EDVSBADPID);
 }
 
 Task *get_task(int p_ep)
