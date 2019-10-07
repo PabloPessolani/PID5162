@@ -19,7 +19,7 @@ char *data_ptr;
 #define WAIT4BIND_MS 		1000
 #define SEND_RECV_MS 		10000
 
-
+#define taskexitall		exit
 
 double dwalltime()
 {
@@ -39,7 +39,7 @@ void ftp_reply(int rcode)
 	int ret;
 	
 	m_ptr->m_type = rcode;
-	ret = muk_send_T(m_ptr->m_source, m_ptr, SEND_RECV_MS);
+	ret = dvk_send_T(m_ptr->m_source, m_ptr, SEND_RECV_MS);
 	if (rcode == EDVSTIMEDOUT) {
 		MUKDEBUG("M3FTP: ftp_reply rcode=%d\n", rcode);
 		return;
@@ -57,29 +57,32 @@ void ftp_init(void)
 	ftp_lpid = getpid();
 	MUKDEBUG("ftp_lpid=%d\n", ftp_lpid);
 
-	rcode = muk_open();
+	rcode = dvk_open();
 	if (rcode < 0)  ERROR_EXIT(rcode);
 
 #ifdef DEMONIZE	
 	do { 
-		rcode = muk_wait4bind_T(WAIT4BIND_MS);
-		MUKDEBUG("M3FTP: muk_wait4bind_T  rcode=%d\n", rcode);
+		rcode = dvk_wait4bind_T(WAIT4BIND_MS);
+		MUKDEBUG("M3FTP: dvk_wait4bind_T  rcode=%d\n", rcode);
 		if (rcode == EDVSTIMEDOUT) {
-			MUKDEBUG("M3FTP: muk_wait4bind_T TIMEOUT\n");
+			MUKDEBUG("M3FTP: dvk_wait4bind_T TIMEOUT\n");
 			continue ;
 		}else if( rcode < 0) 
 			ERROR_EXIT(EXIT_FAILURE);
 	} while	(rcode < OK);
 #else // DEMONIZE	
 	ftp_ep = FTP_CLT_EP;
-	rcode = muk_bind(dcid, ftp_ep);
+	rcode = dvk_bind(dcid, ftp_ep);
 	MUKDEBUG("rcode=%d\n", rcode);
 	if( rcode != ftp_ep) {
 		ERROR_PRINT(EDVSENDPOINT);
 		exit(-1);
 	}
 #endif // DEMONIZE	
+
+	ftp_ep = dvk_getep(ftp_lpid);
 	
+#ifdef ANULADO 	
 	MUKDEBUG("Get the DVS info from SYSTASK\n");
     rcode = sys_getkinfo(&dvs);
 	if(rcode) ERROR_EXIT(rcode);
@@ -93,21 +96,21 @@ void ftp_init(void)
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
 	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
-	ftp_ep = muk_getep(ftp_lpid);
 	MUKDEBUG("Get M3FTP endpoint=%d info from SYSTASK\n", ftp_ep);
 	rcode = sys_getproc(&m3ftp, ftp_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	m3ftp_ptr = &m3ftp;
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(m3ftp_ptr));
-	
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(m3ftp_ptr));
+
 	MUKDEBUG("Get M3FTPD endpoint=%d info from SYSTASK\n", ftpd_ep);
 	rcode = sys_getproc(&m3ftpd, ftpd_ep);
 	if(rcode) ERROR_EXIT(rcode);
 	m3ftpd_ptr = &m3ftpd;
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(m3ftpd_ptr));
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(m3ftpd_ptr));
 	if( TEST_BIT(m3ftpd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		fprintf(stderr, "m3ftpd not started\n");	
 	}
+#endif // ANULADO 	
 	
 	/*---------------- Allocate memory for message  ---------------*/
 	posix_memalign( (void **) &m_ptr, getpagesize(), sizeof(message) );
@@ -130,7 +133,7 @@ void ftp_init(void)
 	}
 	MUKDEBUG("M3FTP data_ptr=%p\n",data_ptr);	
 
-	if(rcode) ERROR_EXIT(rcode);
+	if(rcode < 0) ERROR_EXIT(rcode);
 	
 }
 
@@ -196,7 +199,7 @@ int main ( int argc, char *argv[] )
 	// SEND PATHNAME 
 	MUKDEBUG("M3FTP: %s\n", argv[3]);
 	MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-	rcode = muk_sendrec(ftpd_ep, m_ptr);
+	rcode = dvk_sendrec(ftpd_ep, m_ptr);
 	if( rcode < 0 ) ERROR_EXIT(rcode);
 	MUKDEBUG("M3FTP: reply " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 	if (m_ptr->m_type < 0 ) {
@@ -207,15 +210,15 @@ int main ( int argc, char *argv[] )
 			MUKDEBUG("M3FTP FTP_PUT %s->%s\n", argv[4], argv[3]);
 			fp = fopen(argv[4], "r");
 			if(fp == NULL) ERROR_EXIT(-errno);
-			m_ptr->FTPOPER = FTP_GET;
+			m_ptr->FTPOPER = FTP_PUT;
 			do {
-				rcode = fread(data_ptr, 1, m_ptr->FTPDLEN, fp);
+				rcode = fread(data_ptr, 1, MAXCOPYBUF, fp);
 				if(rcode < 0 ) {ERROR_PRINT(rcode); break;};
 				m_ptr->FTPOPER = FTP_NEXT;
 				m_ptr->FTPDATA = data_ptr;
-				m_ptr->FTPDLEN = MAXCOPYBUF;
+				m_ptr->FTPDLEN = rcode;
 				MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-				rcode = muk_sendrec(ftpd_ep, m_ptr);
+				rcode = dvk_sendrec(ftpd_ep, m_ptr);
 				if ( rcode < 0) {ERROR_PRINT(rcode); break;}
 				MUKDEBUG("M3FTP: reply   " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 				if (m_ptr->m_type != OK) {
@@ -240,7 +243,7 @@ int main ( int argc, char *argv[] )
 				m_ptr->FTPDATA = data_ptr;
 				m_ptr->FTPDLEN = MAXCOPYBUF;
 				MUKDEBUG("M3FTP: request " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-				rcode = muk_sendrec(ftpd_ep, m_ptr);
+				rcode = dvk_sendrec(ftpd_ep, m_ptr);
 				if ( rcode < 0) {ERROR_PRINT(rcode); break;}
 				MUKDEBUG("M3FTP: reply   " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 				if (m_ptr->m_type != OK) {

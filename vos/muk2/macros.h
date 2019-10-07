@@ -16,7 +16,57 @@ do{ \
 }while(0);
 #endif // DVK_VCOPY_FUNCTION
 		
+#define  DVK_sendrec_T(r, d, m, timeout) \
+do {\
+	long t;\
+	t = timeout;\
+	do {\
+		r = dvk_sendrec_T(d, m, TIMEOUT_NOWAIT); \
+		if( r >= 0) break;\
+		r = (-errno);\
+		if( r == EDVSAGAIN) {\
+			if( t > 0) {\
+				t -= MUK_DVK_INTERVAL;\
+				taskdelay(MUK_DVK_INTERVAL);\
+			}\
+		}\
+	}while( r == EDVSAGAIN);\
+}while(0);
 
+#define  DVK_send_T(r, d, m, timeout) \
+do {\
+	long t;\
+	t = timeout;\
+	do {\
+		r = dvk_send_T(d, m, TIMEOUT_NOWAIT); \
+		if( r >= 0) break;\
+		r = (-errno);\
+		if( r == EDVSAGAIN) {\
+			if( t > 0) {\
+				t -= MUK_DVK_INTERVAL;\
+				taskdelay(MUK_DVK_INTERVAL);\
+			}\
+		}\
+	}while(r == EDVSAGAIN);\
+}while(0);
+								
+#define  DVK_receive_T(r, s, m, timeout) \
+do {\
+	long t;\
+	t = timeout;\
+	do {\
+		r = dvk_receive_T(s, m, TIMEOUT_NOWAIT); \
+		if( r >= 0) break;\
+		r = (-errno);\
+		if( r == EDVSAGAIN) {\
+			if( t > 0) {\
+				t -= MUK_DVK_INTERVAL;\
+				taskdelay(MUK_DVK_INTERVAL);\
+			}else{break;}\
+		}\
+	}while(r == EDVSAGAIN);\
+}while(0);
+	
 #define ERROR_EXIT(rcode) \
  do { \
      	printf("ERROR: %s:%s:%u: rcode=%d\n",__FILE__ , __FUNCTION__ ,__LINE__,rcode); \

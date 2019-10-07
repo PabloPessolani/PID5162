@@ -269,6 +269,7 @@ ViolaciÃ³n de segmento
 =====================================================================================================
 20190915:
 		SE BAJA LA LIBRERIA libtask 
+		https://swtch.com/libtask/
 		
 =====================================================================================================
 20190917:	ya compilo PM, RDISK y SYSTASK 
@@ -314,11 +315,708 @@ ViolaciÃ³n de segmento
 			El problema era que en los MUK_vcopy() se estaba utilizando SELF.
 			
 
+=====================================================================================================
+20190930:		
+		SE CREARON MACROS PARA UTILIZAR DVK IPC SIN ESPERA (POOLING CON TIMEOUT)
+
+		Se cambio M3FTP para que utilice estas primitivas
+		
+		se intento ejecutar:
+			nsenter -p -t $DC0 ./m3ftp g 0 file10M.txt file10M.out
+		
+		SERVER MIENTRAS ESPERA 
+			[ 7078.953708] DEBUG 1642:SYSC_ipc:163: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=0 
+			[ 7078.962221] DEBUG 1642:ipc_mini_receive:299: src_ep=31438
+			[ 7078.965600] DEBUG 1642:check_caller:545: caller_pid=1642 caller_tgid=1642
+			[ 7078.967614] DEBUG 1642:check_caller:581: WLOCK_PROC ep=14 count=0
+			[ 7078.969549] DEBUG 1642:check_caller:610: WUNLOCK_PROC ep=14 count=0
+			[ 7078.972089] DEBUG 1642:check_caller:613: dcid=0
+			[ 7078.974633] DEBUG 1642:check_caller:617: RLOCK_DC dc=0 count=0
+			[ 7078.976446] DEBUG 1642:check_caller:621: RUNLOCK_DC dc=0 count=0
+			[ 7078.978367] DEBUG 1642:check_caller:627: caller_pid=1642 
+			[ 7078.980196] DEBUG 1642:ipc_mini_receive:310: RLOCK_PROC ep=14 count=0
+			[ 7078.982172] DEBUG 1642:ipc_mini_receive:314: caller_nr=14 caller_ep=14 src_ep=31438 
+			[ 7078.984184] DEBUG 1642:ipc_mini_receive:318: dcid=0
+			[ 7078.986140] DEBUG 1642:ipc_mini_receive:322: RUNLOCK_PROC ep=14 count=0
+			[ 7078.987998] DEBUG 1642:ipc_mini_receive:324: RLOCK_DC dc=0 count=0
+			[ 7078.990741] DEBUG 1642:ipc_mini_receive:327: RUNLOCK_DC dc=0 count=0
+			[ 7078.993871] DEBUG 1642:ipc_mini_receive:377: WLOCK_PROC ep=14 count=0
+			[ 7078.995612] DEBUG 1642:ipc_mini_receive:482: Any suitable message from 31438 was not found.
+			[ 7078.997400] DEBUG 1642:sleep_proc:353: timeout=0
+			[ 7078.999035] DEBUG 1642:ipc_mini_receive:499: WUNLOCK_PROC ep=14 count=0
+			[ 7079.002013] ERROR: 1642:ipc_mini_receive:500: rcode=-11
 			
+			root@node0:~# cat /proc/dvs/DC0/procs 
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0  14    14  1642/19     0    0   20 27342 27342 27342 27342 muk2           
+			 0  15    15  1656/20     0    8   20    14 27342 27342 27342 m3ft
+			
+		SERVER 
+ task.c:get_task:104:p_ep=30 p_nr=30
+ task.c:get_task:104:p_ep=31 p_nr=31
+ task.c:get_task:104:p_ep=32 p_nr=32
+ task.c:get_task:104:p_ep=33 p_nr=33
+ task.c:get_task:104:p_ep=34 p_nr=34
+ task.c:get_task:104:p_ep=35 p_nr=35
+ task.c:get_task:104:p_ep=36 p_nr=36
+ task.c:get_task:104:p_ep=37 p_nr=37
+ task.c:get_task:104:p_ep=38 p_nr=38
+ task.c:get_task:104:p_ep=39 p_nr=39
+ task.c:get_task:104:p_ep=40 p_nr=40
+ task.c:get_task:104:p_ep=41 p_nr=41
+ task.c:get_task:104:p_ep=42 p_nr=42
+ task.c:get_task:104:p_ep=43 p_nr=43
+ task.c:get_task:104:p_ep=44 p_nr=44
+ task.c:get_task:104:p_ep=45 p_nr=45
+ task.c:get_task:104:p_ep=46 p_nr=46
+ task.c:get_task:104:p_ep=47 p_nr=47
+ task.c:get_task:104:p_ep=48 p_nr=48
+ task.c:get_task:104:p_ep=49 p_nr=49
+ task.c:get_task:104:p_ep=50 p_nr=50
+ task.c:get_task:104:p_ep=51 p_nr=51
+ task.c:get_task:104:p_ep=52 p_nr=52
+ task.c:get_task:104:p_ep=53 p_nr=53
+ task.c:get_task:104:p_ep=54 p_nr=54
+ task.c:get_task:104:p_ep=55 p_nr=55
+ task.c:get_task:104:p_ep=56 p_nr=56
+ task.c:get_task:104:p_ep=57 p_nr=57
+ task.c:get_task:104:p_ep=58 p_nr=58
+ task.c:get_task:104:p_ep=59 p_nr=59
+ task.c:get_task:104:p_ep=60 p_nr=60
+ task.c:get_task:104:p_ep=61 p_nr=61
+ task.c:get_task:104:p_ep=62 p_nr=62
+ task.c:get_task:104:p_ep=63 p_nr=63
+ task.c:get_task:104:p_ep=64 p_nr=64
+ task.c:get_task:104:p_ep=65 p_nr=65
+ task.c:get_task:104:p_ep=66 p_nr=66
+ task.c:get_task:104:p_ep=67 p_nr=67
+ task.c:get_task:104:p_ep=68 p_nr=68
+ task.c:get_task:104:p_ep=69 p_nr=69
+ task.c:get_task:104:p_ep=70 p_nr=70
+ task.c:get_task:104:p_ep=71 p_nr=71
+ task.c:get_task:104:p_ep=72 p_nr=72
+ task.c:get_task:104:p_ep=73 p_nr=73
+ task.c:get_task:104:p_ep=74 p_nr=74
+ task.c:get_task:104:p_ep=75 p_nr=75
+ task.c:get_task:104:p_ep=76 p_nr=76
+ task.c:get_task:104:p_ep=77 p_nr=77
+ task.c:get_task:104:p_ep=78 p_nr=78
+ task.c:get_task:104:p_ep=79 p_nr=79
+ task.c:get_task:104:p_ep=80 p_nr=80
+ task.c:get_task:104:p_ep=81 p_nr=81
+ task.c:get_task:104:p_ep=82 p_nr=82
+ task.c:get_task:104:p_ep=83 p_nr=83
+ task.c:get_task:104:p_ep=84 p_nr=84
+ task.c:get_task:104:p_ep=85 p_nr=85
+ task.c:get_task:104:p_ep=86 p_nr=86
+ task.c:get_task:104:p_ep=87 p_nr=87
+ task.c:get_task:104:p_ep=88 p_nr=88
+ task.c:get_task:104:p_ep=89 p_nr=89
+ task.c:get_task:104:p_ep=90 p_nr=90
+ task.c:get_task:104:p_ep=91 p_nr=91
+ task.c:get_task:104:p_ep=92 p_nr=92
+ task.c:get_task:104:p_ep=93 p_nr=93
+ task.c:get_task:104:p_ep=94 p_nr=94
+ task.c:get_task:104:p_ep=95 p_nr=95
+ task.c:get_task:104:p_ep=96 p_nr=96
+ task.c:get_task:104:p_ep=97 p_nr=97
+ task.c:get_task:104:p_ep=98 p_nr=98
+ task.c:get_task:104:p_ep=99 p_nr=99
+ task.c:get_task:104:p_ep=100 p_nr=100
+ task.c:get_task:104:p_ep=101 p_nr=101
+ task.c:get_task:104:p_ep=102 p_nr=102
+ task.c:get_task:104:p_ep=103 p_nr=103
+ task.c:get_task:104:p_ep=104 p_nr=104
+ task.c:get_task:104:p_ep=105 p_nr=105
+ task.c:get_task:104:p_ep=106 p_nr=106
+ task.c:get_task:104:p_ep=107 p_nr=107
+ task.c:get_task:104:p_ep=108 p_nr=108
+ task.c:get_task:104:p_ep=109 p_nr=109
+ task.c:get_task:104:p_ep=110 p_nr=110
+ task.c:get_task:104:p_ep=111 p_nr=111
+ task.c:get_task:104:p_ep=112 p_nr=112
+ task.c:get_task:104:p_ep=113 p_nr=113
+ task.c:get_task:104:p_ep=114 p_nr=114
+ task.c:get_task:104:p_ep=115 p_nr=115
+ task.c:get_task:104:p_ep=116 p_nr=116
+ task.c:get_task:104:p_ep=117 p_nr=117
+ task.c:get_task:104:p_ep=118 p_nr=118
+ task.c:get_task:104:p_ep=119 p_nr=119
+ task.c:get_task:104:p_ep=120 p_nr=120
+ task.c:get_task:104:p_ep=121 p_nr=121
+ task.c:get_task:104:p_ep=122 p_nr=122
+ task.c:get_task:104:p_ep=123 p_nr=123
+ task.c:get_task:104:p_ep=124 p_nr=124
+ task.c:get_task:104:p_ep=125 p_nr=125
+ task.c:get_task:104:p_ep=126 p_nr=126
+ task.c:get_task:104:p_ep=127 p_nr=127
+ task.c:get_task:104:p_ep=128 p_nr=128
+ task.c:get_task:104:p_ep=129 p_nr=129
+ task.c:get_task:104:p_ep=130 p_nr=130
+ task.c:get_task:104:p_ep=131 p_nr=131
+ task.c:get_task:104:p_ep=132 p_nr=132
+ task.c:get_task:104:p_ep=133 p_nr=133
+ task.c:get_task:104:p_ep=134 p_nr=134
+ task.c:get_task:104:p_ep=135 p_nr=135
+ task.c:get_task:104:p_ep=136 p_nr=136
+ task.c:get_task:104:p_ep=137 p_nr=137
+ task.c:get_task:104:p_ep=138 p_nr=138
+ task.c:get_task:104:p_ep=139 p_nr=139
+ task.c:get_task:104:p_ep=140 p_nr=140
+ task.c:get_task:104:p_ep=141 p_nr=141
+ task.c:get_task:104:p_ep=142 p_nr=142
+ task.c:get_task:104:p_ep=143 p_nr=143
+ task.c:get_task:104:p_ep=144 p_nr=144
+ task.c:get_task:104:p_ep=145 p_nr=145
+ task.c:get_task:104:p_ep=146 p_nr=146
+ task.c:get_task:104:p_ep=147 p_nr=147
+ task.c:get_task:104:p_ep=148 p_nr=148
+ task.c:get_task:104:p_ep=149 p_nr=149
+ task.c:get_task:104:p_ep=150 p_nr=150
+ task.c:get_task:104:p_ep=151 p_nr=151
+ task.c:get_task:104:p_ep=152 p_nr=152
+ task.c:get_task:104:p_ep=153 p_nr=153
+ task.c:get_task:104:p_ep=154 p_nr=154
+ task.c:get_task:104:p_ep=155 p_nr=155
+ task.c:get_task:104:p_ep=156 p_nr=156
+ task.c:get_task:104:p_ep=157 p_nr=157
+ task.c:get_task:104:p_ep=158 p_nr=158
+ task.c:get_task:104:p_ep=159 p_nr=159
+ task.c:get_task:104:p_ep=160 p_nr=160
+ task.c:get_task:104:p_ep=161 p_nr=161
+ task.c:get_task:104:p_ep=162 p_nr=162
+ task.c:get_task:104:p_ep=163 p_nr=163
+ task.c:get_task:104:p_ep=164 p_nr=164
+ task.c:get_task:104:p_ep=165 p_nr=165
+ task.c:get_task:104:p_ep=166 p_nr=166
+ task.c:get_task:104:p_ep=167 p_nr=167
+ task.c:get_task:104:p_ep=168 p_nr=168
+ task.c:get_task:104:p_ep=169 p_nr=169
+ task.c:get_task:104:p_ep=170 p_nr=170
+ task.c:get_task:104:p_ep=171 p_nr=171
+ task.c:get_task:104:p_ep=172 p_nr=172
+ task.c:get_task:104:p_ep=173 p_nr=173
+ task.c:get_task:104:p_ep=174 p_nr=174
+ task.c:get_task:104:p_ep=175 p_nr=175
+ task.c:get_task:104:p_ep=176 p_nr=176
+ task.c:get_task:104:p_ep=177 p_nr=177
+ task.c:get_task:104:p_ep=178 p_nr=178
+ task.c:get_task:104:p_ep=179 p_nr=179
+ task.c:get_task:104:p_ep=180 p_nr=180
+ task.c:get_task:104:p_ep=181 p_nr=181
+ task.c:get_task:104:p_ep=182 p_nr=182
+ task.c:get_task:104:p_ep=183 p_nr=183
+ task.c:get_task:104:p_ep=184 p_nr=184
+ task.c:get_task:104:p_ep=185 p_nr=185
+ task.c:get_task:104:p_ep=186 p_nr=186
+ task.c:get_task:104:p_ep=187 p_nr=187
+ task.c:get_task:104:p_ep=188 p_nr=188
+ task.c:get_task:104:p_ep=189 p_nr=189
+ task.c:get_task:104:p_ep=190 p_nr=190
+ task.c:get_task:104:p_ep=191 p_nr=191
+ task.c:get_task:104:p_ep=192 p_nr=192
+ task.c:get_task:104:p_ep=193 p_nr=193
+ task.c:get_task:104:p_ep=194 p_nr=194
+ task.c:get_task:104:p_ep=195 p_nr=195
+ task.c:get_task:104:p_ep=196 p_nr=196
+ task.c:get_task:104:p_ep=197 p_nr=197
+ task.c:get_task:104:p_ep=198 p_nr=198
+ task.c:get_task:104:p_ep=199 p_nr=199
+ task.c:get_task:104:p_ep=200 p_nr=200
+ task.c:get_task:104:p_ep=201 p_nr=201
+ task.c:get_task:104:p_ep=202 p_nr=202
+ task.c:get_task:104:p_ep=203 p_nr=203
+ task.c:get_task:104:p_ep=204 p_nr=204
+ task.c:get_task:104:p_ep=205 p_nr=205
+ task.c:get_task:104:p_ep=206 p_nr=206
+ task.c:get_task:104:p_ep=207 p_nr=207
+ task.c:get_task:104:p_ep=208 p_nr=208
+ task.c:get_task:104:p_ep=209 p_nr=209
+ task.c:get_task:104:p_ep=210 p_nr=210
+ task.c:get_task:104:p_ep=211 p_nr=211
+ task.c:get_task:104:p_ep=212 p_nr=212
+ task.c:get_task:104:p_ep=213 p_nr=213
+ task.c:get_task:104:p_ep=214 p_nr=214
+ task.c:get_task:104:p_ep=215 p_nr=215
+ task.c:get_task:104:p_ep=216 p_nr=216
+ task.c:get_task:104:p_ep=217 p_nr=217
+ task.c:get_task:104:p_ep=218 p_nr=218
+ task.c:get_task:104:p_ep=219 p_nr=219
+ task.c:get_task:104:p_ep=220 p_nr=220
+ m3ftpd.c:main_ftpd:140:MTX_LOCK muk_mutex:1
+ m3ftpd.c:main_ftpd:141:MTX_UNLOCK muk_mutex:1
+DEBUG 21:dvk_receive_T:834: endpoint=31438 timeout=0
+DEBUG 21:dvk_receive_T:838: ipc ret=-1
+ERROR: 21:dvk_receive_T:857: rcode=-1
+ m3ftpd.c:main_ftpd:147:M3FTPD: muk_receive_T  rcode=-11
+ m3ftpd.c:main_ftpd:149:M3FTPD: muk_receive_T TIMEOUT
+DEBUG 21:dvk_receive_T:834: endpoint=31438 timeout=0
+DEBUG 21:dvk_receive_T:838: ipc ret=-1
+ERROR: 21:dvk_receive_T:857: rcode=-1
+ m3ftpd.c:main_ftpd:147:M3FTPD: muk_receive_T  rcode=-11
+ m3ftpd.c:main_ftpd:149:M3FTPD: muk_receive_T TIMEOUT
+DEBUG 21:dvk_receive_T:834: endpoint=31438 timeout=0
+DEBUG 21:dvk_receive_T:838: ipc ret=-1
+ERROR: 21:dvk_receive_T:857: rcode=-1
+ m3ftpd.c:main_ftpd:147:M3FTPD: muk_receive_T  rcode=-11
+ m3ftpd.c:main_ftpd:149:M3FTPD: muk_receive_T TIMEOUT
+DEBUG 21:dvk_receive_T:834: endpoint=31438 timeout=0
+DEBUG 21:dvk_receive_T:838: ipc ret=0
+ m3ftpd.c:main_ftpd:147:M3FTPD: muk_receive_T  rcode=0
+ m3ftpd.c:main_ftpd:154:M3FTPD: source=15 type=1 m1i1=11 m1i2=0 m1i3=0 m1p1=0xbfa58e21 m1p2=(nil) m1p3=(nil) 
+DEBUG 21:dvk_vcopy:122: src_ep=15 dst_ep=14 bytes=11
+DEBUG 21:dvk_vcopy:126: ipc ret=11
+ m3ftpd.c:main_ftpd:180:M3FTPD: path >file10M.txt<
+DEBUG 21:dvk_send_T:803: endpoint=15 timeout=0
+DEBUG 21:dvk_send_T:807: ipc ret=76
+ m3ftpd.c:main_ftpd:192:M3FTPD: FTP_GET filename:file10M.txt
+ mol_open.c:mol_open:8:name=file10M.txt flags=0
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=50A9920
+ mukipc.c:muk_sendrec_T:483:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:485:srcdst_ep:1
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_sendrec_T:491:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:498:SENDING HALF
+ mukipc.c:muk_sendrec_T:504:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:513:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:514:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ mukipc.c:muk_receive_T:253:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=14 type=5 m1i1=12 m1i2=0 m1i3=87670784 m1p1=0x656c6966 m1p2=0x2e4d3031 m1p3=0x747874 
+ fs.c:fs_get_work:160:source=14 type=5 m3i1=12 m3i2=0 m3p1=0x539c000 m3ca1=[file10M.txt]
+ fs.c:fs_get_work:182:fs_call_nr = 5 
+ open.c:fs_open:67:M3
+ utility.c:fetch_name:130:fs_who_e=14 path=539C000 len=12 flag=3
+ utility.c:fetch_name:142:M3=3
+ utility.c:fetch_name:143:M3_STRING=14
+ utility.c:fetch_name:157:user_path=file10M.txt
+ open.c:common_open:96:oflags=0 omode=0
+ filedes.c:get_fd:33:start=0 mode=4
+ filedes.c:get_fd:39:FD located is=0
+ open.c:common_open:102:fs_m_in.fd=0 oflags=0 
+ open.c:common_open:118:user_path=file10M.txt
+ path.c:parse_path:47:path=file10M.txt string=(null) action=0 
+ path.c:parse_path:55:RELATIVE: fp_endpoint=14 i_num=1
+ inode.c:dup_inode:380:
+ path.c:parse_path:98:string = file10M.txt
+ protect.c:forbidden:186:access_desired=1 
+ protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+ protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+ protect.c:forbidden:203:r=0
+ read.c:read_map:396:position=0
+ cache.c:rw_block:102:
+ super.c:get_block_size:28:
+ cache.c:rw_block:106:bp->b_blocknr= 395 block_size=4096
+ cache.c:rw_block:117: dev_io -> op=1027, dev=768, POS=1617920, BYTES=4096
+ device.c:dev_io:120:op=403 dev=768 major=3 minor=0 proc_e=1 pos=1617920 bytes=4096 flags=0
+ device.c:dev_io:131: DEV_READ -> m_type=1027, dev=768, POS=1617920, IO_ENDPT=1, COUNT=4096
+ device.c:dev_io:175:dmap_driver=3 source=-1216958464 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=1617920 m2l2=0 m2p1=0x5afbd4
+ device.c:r_gen_io:435:task_nr=3 source=-1216958464 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=1617920 m2l2=0 m2p1=0x5afbd4
+ device.c:r_gen_io:474: m_type=1027, COUNT/FLAGS=4096
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_sendrec_T:483:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:485:srcdst_ep:3
+ task.c:get_task:104:p_ep=3 p_nr=3
+ task.c:get_task:113:pproc=50A98F4
+ mukipc.c:muk_sendrec_T:491:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_sendrec_T:498:SENDING HALF
+ mukipc.c:muk_sendrec_T:504:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=3
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:513:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:514:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_receive_T:253:after tasksleep 3, p_error=0 
+ driver.c:driver_task:143:
+RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=18B000, COUNT=4096, ADDRESS:5AFBD4, compress(m2_l2):0
+ driver.c:driver_task:154:device_caller= 1, rd_mess.m_source= 1
+ driver.c:driver_task:177:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+ driver.c:do_rdwt:287:mp->COUNT=4096
+ driver.c:do_rdwt:297:mp->IO_ENDPT=1 - mp->ADDRESS:5AFBD4 - mp->COUNT=4096
+ rdisk.c:rd_prepare:228:device = 0 (rd_device = 0)
+ rdisk.c:rd_prepare:230:Prepare for I/O on a given minor device: (5330FF4;0), (102400000;0)
+ driver.c:do_rdwt:303:mp->m_type: 1027
+ driver.c:do_rdwt:323:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+ rdisk.c:rd_transfer:259:rd_device: 0
+ rdisk.c:rd_transfer:260:proc_nr=1 opcode=1033 nr_req=1
+ utility.c:cv64ul:31:f_cv64ul: 102400000
+ rdisk.c:rd_transfer:272:posit: 18B000
+ rdisk.c:rd_transfer:273:nr_req: 1
+ rdisk.c:rd_transfer:279:count: 4096
+ rdisk.c:rd_transfer:283:user_vir 5AFBD4
+ utility.c:cv64ul:31:f_cv64ul: 87232500
+ rdisk.c:rd_transfer:296:DRIVER - position I/O(mem_phys) 54BBFF4
+ rdisk.c:rd_transfer:300:
+<DEV_GATHER>
+ rdisk.c:rd_transfer:306:bytes: 4096
+ rdisk.c:rd_transfer:309:img_ptr=/dev/shm/rdisk.img img_p=3 st_size=102400000 st_blksize=4096 localbuff=5357000 buff_size=4096 active=1 available=1
+ rdisk.c:rd_transfer:313:pread: bytes=4096
+ rdisk.c:rd_transfer:318:MUK_vcopy 3->1 bytes=4096 
+ rdisk.c:rd_transfer:322:DRIVER: MUK_vcopy(DRIVER -> proc_nr) rcode=0
+ rdisk.c:rd_transfer:323:bytes= 4096
+ rdisk.c:rd_transfer:324:DRIVER - Offset (read) 5357000
+ rdisk.c:rd_transfer:325:mem_phys: 5357000 (in DRIVER)
+ rdisk.c:rd_transfer:326:user_vir: 5AFBD4 (in proc_nr 1)
+ rdisk.c:rd_transfer:339:user_vir (do-buffer) 5B0BD4
+ rdisk.c:rd_transfer:342:count=0 stbytes=4096 position=1622016
+ rdisk.c:rd_transfer:421:subtotal de bytes
+ rdisk.c:rd_transfer:423:subtotal de bytes tbytes=0 nr_req=0
+ driver.c:do_rdwt:330:mp->m2_l2 =0, buffer_size=0
+ driver.c:do_rdwt:331:dr_trasnfer = (r) 4096
+ driver.c:driver_task:249:SEND msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=4096
+ task.c:get_task:104:p_ep=3 p_nr=3
+ task.c:get_task:113:pproc=50A98F4
+ mukipc.c:muk_send_T:120:dst_ep:1 current_ep=3
+ mukipc.c:muk_send_T:121:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_send_T:128:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=3 p_sendto=27342 name=fs 
+ mukipc.c:muk_send_T:132:dst_ep:1 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send_T:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ task.c:get_task:104:p_ep=3 p_nr=3
+ task.c:get_task:113:pproc=50A98F4
+ mukipc.c:muk_receive_T:193:nr=3 id=5 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_receive_T:195:src_ep:31438 current_ep=3
+ mukipc.c:muk_receive_T:210:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive_T:225:Searching for a message
+ mukipc.c:muk_receive_T:245:Valid message was not found
+ mukipc.c:muk_receive_T:250:nr=3 id=5 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=rdisk 
+ mukipc.c:muk_receive_T:251:before tasksleep 3
+ rendez.c:tasksleep:9:id=5
+ mukipc.c:muk_sendrec_T:516:after tasksleep 1, p_error=0 
+ device.c:dev_io:204:BEFORE return dev_mess.REP_STATUS=4096 
+ cache.c:rw_block:119:dev_io r=4096, 
+ cache.c:put_block:168:
+ inode.c:get_inode:41:dev=768 numb=3
+ cache.c:put_block:168:
+ inode.c:get_inode:75:i_num=3
+i_mode=81A4
+i_nlinks=1
+i_uid=0
+i_gid=0
+i_dev=768
+i_ndzones=7
+i_nindirs=1024
+ path.c:parse_path:145:Devolviendo rip
+ open.c:common_open:131:FD: fs_m_in.fd=0 
+ open.c:common_open:132:filp_mode=4 filp_flags=0 filp_count=1 filp_pos=0 filp_selectors=0 filp_select_ops=0 filp_pipe_select_ops=0
+ open.c:common_open:134:exist=1 
+ protect.c:forbidden:186:access_desired=4 
+ protect.c:forbidden:187:perm_bits=6 perm_bits(OCT)=06
+ protect.c:forbidden:188:access_desired=4 access_desired(OCT)=04
+ protect.c:forbidden:203:r=0
+ open.c:common_open:140:r forbidden = 0
+ open.c:common_open:145: I_REGULAR
+ open.c:common_open:225:fs_m_in.fd=0 
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_send_T:120:dst_ep:14 current_ep=1
+ mukipc.c:muk_send_T:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=50A9920
+ mukipc.c:muk_send_T:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_send_T:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send_T:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_receive_T:193:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:195:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive_T:210:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive_T:225:Searching for a message
+ mukipc.c:muk_receive_T:245:Valid message was not found
+ mukipc.c:muk_receive_T:250:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:251:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:516:after tasksleep 14, p_error=0 
+ m3ftpd.c:main_ftpd:198:M3FTPD: READ LOOP
+DEBUG 21:dvk_receive_T:834: endpoint=15 timeout=0
+DEBUG 21:dvk_receive_T:838: ipc ret=-1
+ERROR: 21:dvk_receive_T:857: rcode=-1
+ERROR: m3ftpd.c:main_ftpd:205: rcode=-11
+ m3ftpd.c:main_ftpd:236:M3FTPD: CLOSE 
+ mol_close.c:mol_close:7:fd=0
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=50A9920
+ mukipc.c:muk_sendrec_T:483:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:485:srcdst_ep:1
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_sendrec_T:491:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:498:SENDING HALF
+ mukipc.c:muk_sendrec_T:504:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:513:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:514:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ mukipc.c:muk_receive_T:253:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=14 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=14 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:406:
+ filedes.c:get_filp:75:fild is=0
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_send_T:120:dst_ep:14 current_ep=1
+ mukipc.c:muk_send_T:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=50A9920
+ mukipc.c:muk_send_T:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_send_T:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send_T:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=50A98EC
+ mukipc.c:muk_receive_T:193:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:195:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive_T:210:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive_T:225:Searching for a message
+ mukipc.c:muk_receive_T:245:Valid message was not found
+ mukipc.c:muk_receive_T:250:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:251:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:516:after tasksleep 14, p_error=0 
+ERROR: m3ftpd.c:main_ftpd:239: rcode=-11
+ m3ftpd.c:ftpd_reply:26:ftpd_reply=-11
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=50A9920
+ mukipc.c:muk_send_T:120:dst_ep:15 current_ep=14
+ mukipc.c:muk_send_T:121:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ task.c:get_task:104:p_ep=15 p_nr=15
+muk2: mukipc.c:127: muk_send_T: Assertion `dst_ptr != NULL' failed.
+./muk2.sh: lÃ­nea 6:  1775 Abortado                nsenter -p -t $DC0 ./muk2 muk.cfg
+root@node0:/usr/src/dvs/vos/muk2# 
+
+
+
+		CLIENT 
+	root@node0:/usr/src/dvs/vos/muk2/servers/m3ftp# nsenter -p -t $DC0 ./m3ftp -g 0 file10M.txt file10M.out
+ m3ftp.c:main:158:M3FTP argc=5
+ m3ftp.c:main:163:M3FTP dcid=0
+ m3ftp.c:main:166:M3FTP ftpd_ep=14
+ m3ftp.c:ftp_init:58:ftp_lpid=22
+DEBUG 22:dvk_open:102: 
+DEBUG 22:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=15 nodeid=-1
+DEBUG 22:dvk_bind_X:1141: ipc ret=15
+ m3ftp.c:ftp_init:76:rcode=15
+DEBUG 22:dvk_getep:217: pid=22
+DEBUG 22:dvk_getep:221: ipc ret=15
+ m3ftp.c:ftp_init:120:M3FTP m_ptr=0x16e5000
+ m3ftp.c:ftp_init:127:M3FTP path_ptr=0x16e6000
+ m3ftp.c:ftp_init:134:M3FTP data_ptr=0x16e7000
+ m3ftp.c:main:174:M3FTP new cwd=/usr/src/dvs/vos/muk2/servers/m3ftp
+ m3ftp.c:main:198:oper=1
+ m3ftp.c:main:200:M3FTP: file10M.txt
+ m3ftp.c:main:201:M3FTP: request source=0 type=1 m1i1=11 m1i2=0 m1i3=0 m1p1=0xbfa58e21 m1p2=(nil) m1p3=(nil) 
+DEBUG 22:dvk_sendrec_T:866: endpoint=14 timeout=-1
+DEBUG 22:dvk_sendrec_T:870: ipc ret=0
+ m3ftp.c:main:204:M3FTP: reply source=14 type=0 m1i1=11 m1i2=0 m1i3=0 m1p1=0xbfa58e21 m1p2=(nil) m1p3=(nil) 
+ m3ftp.c:main:237:M3FTP FTP_GET file10M.txt->file10M.out
+ m3ftp.c:main:245:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfa58e21 m1p2=0x16e7000 m1p3=(nil) 
+DEBUG 22:dvk_sendrec_T:866: endpoint=14 timeout=-1
+DEBUG 22:dvk_sendrec_T:870: ipc ret=-1
+ERROR: 22:dvk_sendrec_T:888: rcode=-1
+ERROR: m3ftp.c:main:247: rcode=-1
+ m3ftp.c:main:266:M3FTP: CLOSE
+t_start=1569890769.77 t_stop=1569890771.25 t_total=1.48
+total_bytes = 0
+Throuhput = 0.000000 [bytes/s]
+ERROR: m3ftp.c:main:275: rcode=-1
+
+
+
+=====================================================================================================
+20191001:	modificaciones a M3FTPD	
+
+SERVER 
+ read.c:rw_chunk:348:MUK_vcopy 1->14 bytes=4096 
+ read.c:rw_chunk:349:Resultado muk_vcopy SERVIDOR -> CLIENTE 0
+ read.c:rw_chunk:350:chunk 4096
+ cache.c:put_block:168:
+ read.c:read_write:262:cum_io=65536
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 65536
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=65536 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=4FFA8EC
+ mukipc.c:muk_send_T:120:dst_ep:14 current_ep=1
+ mukipc.c:muk_send_T:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=4FFA920
+ mukipc.c:muk_send_T:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_send_T:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send_T:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=4FFA8EC
+ mukipc.c:muk_receive_T:193:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:195:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive_T:210:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive_T:225:Searching for a message
+ mukipc.c:muk_receive_T:245:Valid message was not found
+ mukipc.c:muk_receive_T:250:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:251:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:516:after tasksleep 14, p_error=0 
+ mol_read.c:mol_read:16:return 65536
+ m3ftpd.c:main_ftpd:208:M3FTPD: FTPDLEN=65536 rlen=65536
+DEBUG 4:dvk_vcopy:122: src_ep=14 dst_ep=15 bytes=65536
+DEBUG 4:dvk_vcopy:126: ipc ret=65536
+DEBUG 4:dvk_send_T:803: endpoint=15 timeout=0
+DEBUG 4:dvk_send_T:807: ipc ret=76
+DEBUG 4:dvk_receive_T:834: endpoint=15 timeout=0
+DEBUG 4:dvk_receive_T:838: ipc ret=-1
+ERROR: 4:dvk_receive_T:857: rcode=-1
+ERROR: m3ftpd.c:main_ftpd:203: rcode=-11  
+ m3ftpd.c:main_ftpd:234:M3FTPD: CLOSE 
+ mol_close.c:mol_close:7:fd=0
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=4FFA920
+ mukipc.c:muk_sendrec_T:483:nr=14 id=11 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:485:srcdst_ep:1
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=4FFA8EC
+ mukipc.c:muk_sendrec_T:491:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_sendrec_T:498:SENDING HALF
+ mukipc.c:muk_sendrec_T:504:destination is waiting. Copy the message and wakeup destination
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=1
+ rendez.c:_taskwakeup:35:i=1
+ mukipc.c:muk_sendrec_T:513:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_sendrec_T:514:before tasksleep 14
+ rendez.c:tasksleep:9:id=11
+ mukipc.c:muk_receive_T:253:after tasksleep 1, p_error=0 
+ fs.c:fs_get_work:159:source=14 type=6 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ fs.c:fs_get_work:160:source=14 type=6 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[]
+ fs.c:fs_get_work:182:fs_call_nr = 6 
+ open.c:fs_close:406:
+ filedes.c:get_filp:75:fild is=0
+ cache.c:put_block:168:
+ fs.c:main_fs:104:rcode (RESPUESTA syscall) 0
+ fs.c:fs_reply:415:Send a fs_reply to a user process.
+ fs.c:fs_reply:419:source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=4FFA8EC
+ mukipc.c:muk_send_T:120:dst_ep:14 current_ep=1
+ mukipc.c:muk_send_T:121:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ task.c:get_task:104:p_ep=14 p_nr=14
+ task.c:get_task:113:pproc=4FFA920
+ mukipc.c:muk_send_T:128:nr=14 id=11 flags=00000008 misc=00000400 p_getfrom=1 p_sendto=27342 name=m3ftp 
+ mukipc.c:muk_send_T:132:dst_ep:14 WAITING FOR THIS MESSAGE
+ mukipc.c:muk_send_T:138:p_rts_flags:0
+ rendez.c:_taskwakeup:25:
+ rendez.c:_taskwakeup:32:ep=14
+ rendez.c:_taskwakeup:35:i=1
+ fs.c:fs_reply:422:rcode=0
+ fs.c:fs_get_work:155: LISTENING . 
+ task.c:get_task:104:p_ep=1 p_nr=1
+ task.c:get_task:113:pproc=4FFA8EC
+ mukipc.c:muk_receive_T:193:nr=1 id=7 flags=00000000 misc=00000400 p_getfrom=27342 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:195:src_ep:31438 current_ep=1
+ mukipc.c:muk_receive_T:210:NOTIFY PENDING LOOP p_pending=0
+ mukipc.c:muk_receive_T:225:Searching for a message
+ mukipc.c:muk_receive_T:245:Valid message was not found
+ mukipc.c:muk_receive_T:250:nr=1 id=7 flags=00000008 misc=00000400 p_getfrom=31438 p_sendto=27342 name=fs 
+ mukipc.c:muk_receive_T:251:before tasksleep 1
+ rendez.c:tasksleep:9:id=7
+ mukipc.c:muk_sendrec_T:516:after tasksleep 14, p_error=0 
+ERROR: m3ftpd.c:main_ftpd:237: rcode=-11
+ m3ftpd.c:ftpd_reply:24:ftpd_reply=-11
+DEBUG 4:dvk_send_T:803: endpoint=15 timeout=0
+DEBUG 4:dvk_send_T:807: ipc ret=-1
+ERROR: 4:dvk_send_T:825: rcode=-1
+ m3ftpd.c:ftpd_reply:29:M3FTPD: ftpd_reply rcode=-11
+DEBUG 4:dvk_receive_T:834: endpoint=31438 timeout=0
+DEBUG 4:dvk_receive_T:838: ipc ret=0
+ m3ftpd.c:main_ftpd:145:M3FTPD: muk_receive_T  rcode=0
+ m3ftpd.c:main_ftpd:152:M3FTPD: source=15 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfe62e31 m1p2=0x1e2b000 m1p3=(nil) 
+M3FTPD: invalid request 3
+ m3ftpd.c:ftpd_reply:24:ftpd_reply=-22
+
+
+CLIENT 
+	< m3ftp.c:main:245:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfe62e31 m1p2=0x1e2b000 m1p3=(nil) 
+	DEBUG 5:dvk_sendrec_T:866: endpoint=14 timeout=-1
+	DEBUG 5:dvk_sendrec_T:870: ipc ret=0
+	 m3ftp.c:main:248:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfe62e31 m1p2=0x1e2b000 m1p3=(nil) 
+	< m3ftp.c:main:245:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfe62e31 m1p2=0x1e2b000 m1p3=(nil) 
+	DEBUG 5:dvk_sendrec_T:866: endpoint=14 timeout=-1
+	DEBUG 5:dvk_sendrec_T:870: ipc ret=0
+	 m3ftp.c:main:248:M3FTP: reply   source=14 type=-22 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbfe62e31 m1p2=0x1e2b000 m1p3=(nil) 
+	ERROR: m3ftp.c:main:251: rcode=-22
+	 m3ftp.c:main:266:M3FTP: CLOSE
+	t_start=1569973354.39 t_stop=1569973359.38 t_total=4.98
+	total_bytes = 262144
+	Throuhput = 52629.339135 [bytes/s]
+	ERROR: m3ftp.c:main:275: rcode=-22
+	
+	El type=3 es FTP_NEXT	3
+	
+=====================================================================================================
+20191006:	Correccion de errores en el GET error -22 
+
+	se corrigieron las macros 
+		}while(r == EDVSAGAIN);\ <<<< antes decia 	}while(r != EDVSAGAIN);\
+
+	PROBLEMA: 	
+				El  GET funciona OK
+				El PUT no escribe 
+				problema con el calculo de throughput en FTPD 
+					t_start=172701.00 t_stop=185327.00 t_total=12626.00
+					total_bytes = 0
+					Throuhput = 0.000000 [bytes/s]
+					t_start=660174.00 t_stop=682603.00 t_total=22429.00
+					total_bytes = 25615
+					Throuhput = 1.142048 [bytes/s]
+					t_start=748918.00 t_stop=891005.00 t_total=142087.00
+					total_bytes = 1474560
+					Throuhput = 10.377867 [bytes/s]
+					t_start=181583.00 t_stop=404276.00 t_total=222693.00
+					total_bytes = 1474560
+					Throuhput = 6.621492 [bytes/s]
+					t_start=272798.00 t_stop=280052.00 t_total=7254.00 <<<<<<<<
+					total_bytes = 25615
+					Throuhput = 3.531155 [bytes/s]
+					t_start=852465.00 t_stop=360554.00 t_total=-491911.00 <<<<<<<<<
+					total_bytes = 10485760
+					Throuhput = -21.316376 [bytes/s]
+
+		
 ULTIMO_LOG 		
 =====================================================================================================
 
-TODO: 			Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
+TODO: 			
+Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
 				Quizas se puede crear un hilo 
 							hilo {
 								Escucha por DVK el pedido (dvk_receive)

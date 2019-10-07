@@ -33,8 +33,8 @@ typedef long unsigned int update_t;
  * basic procs and threads
  */
 
-#define MUK_STACK_SIZE	32768
-
+#define MUK_STACK_SIZE		32768
+#define MUK_DVK_INTERVAL	1000
 
 #define USE_UCONTEXT 1
 
