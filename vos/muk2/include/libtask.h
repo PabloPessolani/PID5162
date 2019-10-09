@@ -18,6 +18,9 @@ extern "C" {
 #include <sys/wait.h>
 #include <sched.h>
 #include <signal.h>
+#include <sys/syscall.h> 
+#include <pthread.h>
+
 #if USE_UCONTEXT
 #include <ucontext.h>
 #endif
@@ -25,7 +28,40 @@ extern "C" {
 #include <inttypes.h>
 
 #include <inttypes.h>
-#include "/usr/src/dvs/vos/muk2/lib/libtask/task.h"
+
+#define DVS_USERSPACE	1
+#define _GNU_SOURCE
+#include <sched.h>
+#define cpumask_t cpu_set_t
+
+#include "/usr/src/dvs/include/com/dvs_config.h"
+#include "/usr/src/dvs/include/com/config.h"
+#include "/usr/src/dvs/include/com/const.h"
+#include "/usr/src/dvs/include/com/types.h"
+#include "/usr/src/dvs/include/com/timers.h"
+#include "/usr/src/dvs/include/com/dvs_usr.h"
+#include "/usr/src/dvs/include/com/dc_usr.h"
+#include "/usr/src/dvs/include/com/node_usr.h"
+#include "/usr/src/dvs/include/com/proc_usr.h"
+#include "/usr/src/dvs/include/com/proc_sts.h"
+#include "/usr/src/dvs/include/com/com.h"
+#include "/usr/src/dvs/include/com/ipc.h"
+#include "/usr/src/dvs/include/com/cmd.h"
+#include "/usr/src/dvs/include/com/proxy_usr.h"
+#include "/usr/src/dvs/include/com/proxy_sts.h"
+#include "/usr/src/dvs/include/com/dvs_errno.h"
+#include "/usr/src/dvs/include/com/endpoint.h"
+#include "/usr/src/dvs/include/com/priv_usr.h"
+#include "/usr/src/dvs/include/com/priv.h"
+#include "/usr/src/dvs/include/com/stub_dvkcall.h"
+#include "/usr/src/dvs/include/com/kipc.h"
+#include "/usr/src/dvs/include/generic/configfile.h"
+
+
+#include "../debug.h"
+#include "../macros.h"
+#include "/usr/src/dvs/vos/muk2/mutex.h"
+
 
 typedef long unsigned int update_t;
 	
@@ -35,6 +71,7 @@ typedef long unsigned int update_t;
 
 #define MUK_STACK_SIZE		32768
 #define MUK_DVK_INTERVAL	1000
+#define MUK_BIT_DONE		15     
 
 #define USE_UCONTEXT 1
 
@@ -220,6 +257,19 @@ typedef unsigned short ushort;
 typedef unsigned long long uvlong;
 typedef long long vlong;
 
+struct	dvk_request_s {
+	Task	*rq_task;
+	int		rq_oper;
+	int		rq_other_ep;
+	message *rq_mptr;
+	long	rq_timeout;
+	vcopy_t rq_vcopy;
+	int		rq_rcode;
+};
+typedef struct dvk_request_s dvk_request_t;
+#define DVK_RQST_FORMAT "id=%d rq_oper=%d rq_other_ep=%d rq_timeout=%ld\n"
+#define DVK_RQST_FIELDS(r) r->rq_task->id,r->rq_oper, r->rq_other_ep, r->rq_timeout
+
 struct Task
 {
 	char	name[256];	// offset known to acid
@@ -241,34 +291,28 @@ struct Task
 	void	*startarg;
 	void	*udata;
 	
-	int p_endpoint;						/* process endpoint					*/
-	int p_nr;							/* process number					*/
-	volatile unsigned long p_rts_flags;	/* process is runnable only if zero 		*/
-	volatile unsigned long p_misc_flags;	/* miselaneous flags			*/
-	int p_getfrom;						/* from whom does process want to receive?	*/
-	int p_sendto;						/* to whom does process want to send? 	*/
-	Task	*p_caller_q; 				/* head list of trying to send task to this task */
-	Task	*p_q_link; 					/* pointer to the next trying to send task    	*/
-	Rendez	p_rendez;
-	int		p_error;
-	unsigned long	p_pending;			/* bitmap of pending notifies 			*/
+	pid_t			pid;
 	
-	long	p_next_timeout;
-	Task	*p_t_link;
+	proc_usr_t 		*p_proc;		/* pointer to a proc_usr_t allocated struct 	*/
+	pthread_t		p_thread;
+	pthread_mutex_t p_mutex;
+	pthread_cond_t	p_cond; 
+	dvk_request_t	p_rqst;
 	
-	dvktimer_t p_alarm_timer;
-	message	*p_msg;  
-};
+	Task			*p_caller_q;	/* head list of trying to send task to this task*/
+	Task			*p_q_link;		/* pointer to the next trying to send task    	*/
+	Rendez			p_rendez;
+	int				p_error;
+	unsigned long	p_pending;		/* bitmap of pending notifies 					*/
+	long			p_timeout;
+	Task			*p_to_link;
+	dvktimer_t		p_alarm_timer;
+	message			*p_msg;  
+};	 
 
-#define PROC_MUK_FORMAT "nr=%d id=%d flags=%0.8lX misc=%0.8lX p_getfrom=%d p_sendto=%d name=%s \n"
-#define PROC_MUK_FIELDS(p) p->p_nr,p->id, p->p_rts_flags, p->p_misc_flags, p->p_getfrom, p->p_sendto, p->name
-
-#define PROC_TO_FORMAT "id=%d p_next_timeout=%ld link=%d\n"
-#define PROC_TO_FIELDS(p) p->id, p->p_next_timeout, ((p->p_t_link == NULL)?(-1):p->p_t_link->id)
-			 
 typedef struct Task muk_proc_t;
 
-int task_bind( Task* t, int p_ep, char *name);
+int task_bind( Task* t, int dcid,  int p_ep, char *name);
 int task_unbind( Task* t, int p_ep);
 int muk_tbind(int dcid, int p_ep, char *name);
 int muk_unbind(int dcid, int p_ep);

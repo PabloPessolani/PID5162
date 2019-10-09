@@ -988,6 +988,22 @@ CLIENT
 	se corrigieron las macros 
 		}while(r == EDVSAGAIN);\ <<<< antes decia 	}while(r != EDVSAGAIN);\
 
+	enviando SIGQUIT a MUK2 se ven los procesos ejecutando 
+	
+	task list:
+    11  m3ftp                sleep
+     2                       
+     3  systask              sleep
+     4s fdtask               poll (running)
+     5  rdisk                sleep
+     6  pm                   sleep
+     7  fs                   sleep
+     8  is                   sleep
+     9                       fdwait for read
+    10  nweb                 fdwait for read
+
+
+
 	PROBLEMA: 	
 				El  GET funciona OK
 				El PUT no escribe 
@@ -1010,38 +1026,45 @@ CLIENT
 					t_start=852465.00 t_stop=360554.00 t_total=-491911.00 <<<<<<<<<
 					total_bytes = 10485760
 					Throuhput = -21.316376 [bytes/s]
-
 		
+=====================================================================================================
+20191008:		Se modifico la forma en que se pueden utilizar las primitivas del DVK desde procesos MUK2_RETURN
+				Ahora, cada vez que se hace un muk_bind 
+					- se pide memoria para almacenar una estructura proc_usr_t igual que en el kernel
+					- esta estructura esta apuntada desde la tarea.
+					- cada tarea tiene asociada una estructura dvk_request_t
+					- se crea un thread por cada task bindeada el cual se bindea en el DVK !! (no en MUK2) con el mismo endpoint que la tarea. 
+					- el thread queda bloqueado hasta que la tarea le hace un PH_MTX_LOCK para distingirlo de MTX_LOCK que lo hace para tareas.
+					- Luego el thread entre en un loop infinito esperando que la tarea padre lo despierte porque tiene que procesar un request.
+					- la tarea padre completa la estructura dvk_request_t y hace un PH_COND_SIGNAL para despertar al thread
+					- el thread hace SEND, RECEIVE, SENDREC, NOTIFY y VCOPY 
+					- cuando finaliza hace un KILL SIGIO hacia el thread principal
+					- La signal handler hace un wakeup de la tarea correspondiente.
+		
+	
 ULTIMO_LOG 		
 =====================================================================================================
 
-TODO: 			
-Adaptar a LIBTASK para que incluya sendrec y m3ipc para comunicaciones externas
-				Quizas se puede crear un hilo 
-							hilo {
-								Escucha por DVK el pedido (dvk_receive)
-								notifica a la tarea (muk_notify)
-								espera la respuesta( muk_receive)
-								envia la respuesta al cliente (dvk_send)
-							}
-				RESPUESTA: NO FUNCIONARIA PORQUE EL HILO ESTA FUERA DEL CONTROL DE LIBTASK POR LO QUE SE PUEDEN
-						PRODUCIR CONDICIONES DE COMPETENCIA. NO PODRIA USAR LAS FUNCIONES muk_receive, muk_xxxx 
-							
-				SOLUCION:
-						DVK_receive_T(src_ep, msg, timeout){
-							do {
-								rcode = dvk_receive_T(ANY, msg, TIMOUT_NOWAIT);
-								if( rcode == EDVSTIMEDOUT) {
-									if( timeout > 0) {
-										timeout -= MUK_DVK_INTERVAL;
-										taskdelay((MUK_DVK_INTERVAL);
-									}
-								}
-							}while(rcode != EDVSTIMEDOUT);
-				
-				
-TODO:  ADAPTAR M3FTP PARA QUE ESCUCHE POR DVK (al cliente) Y OPERE SOBRE MUK 
+TODO:				Rehacer las funcione DVK_send, DVK_sendrec, etc para que 
+					completen los campos de dvk_request_t
+					hagan el PH_COND_SIGNAL al thread 
+					Se duerman esperando la respuesta con sleep de la tarea 
+					
+				ATENTI: Agregar un campo mas a la tarea que sea una variable de condicion de tal forma
+						que pueda sincronizarse con su thread. Si bien es bloqueante, el bloqueo 
+						deberia ser minimo.
 
+						
+TODO:
+		CREAR UNA TAREA TIPO CLOCK que se encargue de los timeouts 
+		en cada TICK de reloj se controlan la lista de alarmas 
+		PROBLEMA: puede que justo la IPC este modificando la alarma 
+		
+		OTRA POSIBILIDAD:
+			Que el PROCESO CLOCK se despierte cada 1 segundos 
+			verifica el vencimiento de alarmas 
+			y advierte al IPC del proceso correspondiente.
+			
 ERROR:	DE VEZ EN CUANDO SE CUELGA EL M3NWEB
 		 m3nweb.c:nweb_server:256:total_bytes=103730
 		 m3nweb.c:main_nweb:333:Conection accept
@@ -1088,8 +1111,6 @@ ATENCION: libtask brinda funciones propias para sustituir PRINTF y otras
 		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
 		NO PARECEN SER USADAS ??
 
-
-
 TODO: Se podria hacer una consola externa para controlar ciertas cosas en forma similar a UML
 		por ejemplo agregando al IS un nuevo servidor que se llame con_server que estaria 
 		escuchando en algun socket UDP, para que sea remotizable.
@@ -1107,13 +1128,11 @@ TODO: Se podria hacer una consola externa para controlar ciertas cosas en forma 
 
 Ver makefile de  https://github.com/jbleners/Falcon
 
-
 Se podria hacer una especie de whatdog.
 Cada Tarea tiene un contador que se va decrementando una vez por segundo si no ha tenido actividad.
 Cuando hay actividad (en el receive, por ejemplo) vuelve el contador a su valor inicial.
 Para el caso del web server que espera en el socket, entonces no deberia implementarse.
 para ello habria que poner un MISC-FLAG que indique que se quiere controlar si esta dormido.
-
 
 Hacer lo siguiente:
 	Desarrollar una tarea que funcione similar al clock que utilize los timers ya definidos en MINIX 

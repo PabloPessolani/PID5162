@@ -80,6 +80,7 @@
 
 #include "debug.h"
 #include "macros.h"
+#include "mutex.h"
 
 #define _POSIX_SOURCE      1	/* tell headers to include POSIX stuff */
 #define _MINIX             1	/* tell headers to include MINIX stuff */

@@ -324,6 +324,7 @@ void taskmain(int argc, char **argv)
  	proc_usr_t *mukproc_ptr;		/*  process pointer */
     config_t *cfg;
 	double t_start, t_stop, t_total; 
+	proc_usr_t *proc_ptr;
 
 	MUKDEBUG("\n");
 
@@ -477,7 +478,8 @@ void taskmain(int argc, char **argv)
 	for( i = -dc_ptr->dc_nr_tasks; i < (dc_ptr->dc_nr_procs); i++) {
 		t = get_task(i);
 		if( t == NULL) continue;
-		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(t));
+		proc_ptr = &t->p_proc;
+		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	} 
 	
     fflush(stdout);

@@ -29,7 +29,7 @@ _taskwakeup(Rendez *r, int all)
 		if((t = r->waiting.head) == nil)
 			break;
 		deltask(&r->waiting, t);
-		LIBDEBUG("ep=%d\n", t->p_endpoint);
+		LIBDEBUG("ep=%d\n", t->p_proc->p_endpoint);
 		taskready(t);
 	}
 	LIBDEBUG("i=%d\n", i);

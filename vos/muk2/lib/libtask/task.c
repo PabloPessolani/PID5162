@@ -3,7 +3,9 @@
 #include "taskimpl.h"
 #include <fcntl.h>
 #include <stdio.h>
+#include <pthread.h>
 
+extern int	local_nodeid;
 
 int	taskdebuglevel;
 int	taskcount;
@@ -21,6 +23,73 @@ Task  *pproc[NR_PROCS+NR_TASKS];
 
 static char *argv0;
 static	void		contextswitch(Context *from, Context *to);
+
+static void init_task_rqst( Task *t)
+{
+	t->p_rqst.rq_task 		= t;
+	t->p_rqst.rq_oper 		= (-1);
+	t->p_rqst.rq_other_ep 	= NONE;
+	t->p_rqst.rq_mptr		= NULL;
+	t->p_rqst.rq_timeout	= TIMEOUT_FOREVER;
+	t->p_rqst.rq_rcode 		= OK;
+}
+
+static void pth_dvk(void *t_arg)
+{
+	Task *t;
+	dvk_request_t *r_ptr;
+	vcopy_t		 *v_ptr;
+	int rcode;
+	
+	LIBDEBUG("DVK thread for %s\n", t->p_proc->p_name);	
+	PH_MTX_LOCK(t->p_mutex);
+	PH_COND_WAIT(t->p_cond, t->p_mutex);
+	PH_MTX_UNLOCK(t->p_mutex);
+	
+	t->p_proc->p_lpid = t->pid;
+	t->p_proc->p_vpid = syscall(SYS_gettid);
+	rcode = dvk_tbind(t->p_proc->p_dcid, t->p_proc->p_endpoint);
+	if( rcode != t->p_proc->p_endpoint){
+		ERROR_EXIT(rcode);
+	}
+	
+	LIBDEBUG("DVK thread for %s READY to process requests on endpoint=%d\n", 
+			t->p_proc->p_name, rcode);	
+			
+	while(TRUE){
+		PH_MTX_LOCK(t->p_mutex);
+		PH_COND_WAIT(t->p_cond, t->p_mutex);
+		PH_MTX_UNLOCK(t->p_mutex);
+		r_ptr = &t->p_rqst;
+		LIBDEBUG("%s: " DVK_RQST_FORMAT, t->p_proc->p_name, DVK_RQST_FIELDS(r_ptr));
+		switch(r_ptr->rq_oper) {
+			case SEND:
+				r_ptr->rq_rcode = dvk_send_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case SENDREC:
+				r_ptr->rq_rcode = dvk_sendrec_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case RECEIVE:
+				r_ptr->rq_rcode = dvk_receive_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case NOTIFY:
+				r_ptr->rq_rcode = dvk_notify(r_ptr->rq_other_ep);
+				break;
+			case VCOPY:
+				v_ptr = &r_ptr->rq_vcopy;
+				r_ptr->rq_rcode = dvk_vcopy(v_ptr->v_src,v_ptr->v_saddr,
+										v_ptr->v_dst,v_ptr->v_daddr,
+										v_ptr->v_bytes);
+				break;
+			default:
+				r_ptr->rq_rcode = EDVSNOSYS;
+				break;
+		}
+		if(r_ptr->rq_rcode < 0) ERROR_PRINT(r_ptr->rq_rcode);
+		SET_BIT(r_ptr->rq_oper, MUK_BIT_DONE);
+		pthread_kill(t->pid, SIGIO);
+	}
+}
 
 static void
 taskdebug(char *fmt, ...)
@@ -85,8 +154,8 @@ int muk_getep(int id)
 	for( i=0; i < nalltask; i++) {
 		t = alltask[i];
 		if( t->id == id) {
-			if(t->p_endpoint != NONE) {
-				return(t->p_endpoint);
+			if(t->p_proc->p_endpoint != NONE) {
+				return(t->p_proc->p_endpoint);
 			} else {
 				ERROR_RETURN(EDVSNOTBIND);
 			}
@@ -113,24 +182,36 @@ Task *get_task(int p_ep)
 	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);
 
 	tptr = pproc[p_nr+dc_ptr->dc_nr_tasks];
-	assert(tptr->p_nr == p_nr);
+	assert(tptr->p_proc->p_nr == p_nr);
 	return(tptr);
 }
+
 
 int muk_tbind(int dcid, int p_ep, char *name)
 {
 	int rcode;
 	
 	LIBDEBUG("dcid=%d p_ep=%d name=%s\n", dcid, p_ep, name);
-	rcode = task_bind( taskrunning,  p_ep, name);
+	rcode = task_bind( taskrunning, dcid, p_ep, name);
 	return(rcode);
 }
 
-int task_bind( Task* t, int p_ep, char *name)
+int task_bind( Task* t, int dcid, int p_ep, char *name)
 {
-	int p_nr;
+	int p_nr, rcode;
+	proc_usr_t *p_ptr;
 	
 	assert(t != NULL);
+	
+	p_ptr = &t->p_proc;
+	
+	p_ptr = malloc(sizeof (proc_usr_t));
+	if(p_ptr == NULL){
+		ERROR_EXIT(-errno);
+	}
+	
+	init_task_rqst(t);
+			
 	p_nr = _ENDPOINT_P(p_ep);
 	LIBDEBUG("id=%d p_nr=%d p_ep=%d\n", t->id, p_nr, p_ep);
 	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs))
@@ -138,11 +219,32 @@ int task_bind( Task* t, int p_ep, char *name)
 	if( pproc[p_nr+dc_ptr->dc_nr_tasks] != NULL) 
 		ERROR_EXIT(EDVSBUSY);			
 	pproc[p_nr+dc_ptr->dc_nr_tasks] = t;
-	t->p_nr		  = p_nr;	
-	t->p_endpoint = p_ep;	
-	taskname("%s",name, p_ep);
-	LIBDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(t));
+		
+	p_ptr->p_dcid 		= dcid;
+	p_ptr->p_nr	  		= p_nr;	
+	p_ptr->p_endpoint 	= p_ep;	
+	p_ptr->p_lpid 		= syscall(SYS_gettid);
+	p_ptr->p_vpid 		= PROC_NO_PID;
+	p_ptr->p_nodeid		= local_nodeid;
+	p_ptr->p_rts_flags 	= PROC_RUNNING;		/* process is runnable only if zero 		*/
+	p_ptr->p_misc_flags = MIS_UNIKERNEL;	/* miselaneous flags				*/
+	p_ptr->p_getfrom	= NONE;				/* from whom does process want to receive?	*/
+	p_ptr->p_sendto		= NONE;					/* to whom does process want to send? 	*/
+	p_ptr->p_waitmigr	= NONE;
+	p_ptr->p_proxy		= NONE;
+	strncpy(p_ptr->p_name, name, MAXPROCNAME-1);
+	taskname("%s",p_ptr->p_name, p_ep);
+	LIBDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
 	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);
+	
+	rcode = pthread_create( &t->p_thread, NULL, pth_dvk, t);
+	if(rcode) ERROR_EXIT(rcode);
+	MUKDEBUG("t->p_thread=%u\n",t->p_thread);
+		
+	PH_MTX_LOCK(t->p_mutex);
+	PH_COND_SIGNAL(t->p_cond);
+	PH_MTX_UNLOCK(t->p_mutex);
+		
 	return(p_ep);
 }
 
@@ -174,30 +276,33 @@ int task_unbind( Task* t, int p_ep)
 	// wakeup all receivers waiting a message from the unbounding task	
 	for( i = 0; i < (dc_ptr->dc_nr_procs+dc_ptr->dc_nr_tasks); i++) {
 		if( pproc[i] == NULL) continue;
-		if( pproc[i]->p_endpoint == p_ep) continue;
-		if( TEST_BIT(pproc[i]->p_rts_flags, BIT_RECEIVING) == 0) continue;
-		if( pproc[i]->p_getfrom == p_ep) {
-			pproc[i]->p_getfrom = NONE;
-			CLR_BIT(pproc[i]->p_rts_flags, BIT_RECEIVING);
-			if(pproc[i]->p_rts_flags == 0) {
+		if( pproc[i]->p_proc->p_endpoint == p_ep) continue;
+		if( TEST_BIT(pproc[i]->p_proc->p_rts_flags, BIT_RECEIVING) == 0) continue;
+		if( pproc[i]->p_proc->p_getfrom == p_ep) {
+			pproc[i]->p_proc->p_getfrom = NONE;
+			CLR_BIT(pproc[i]->p_proc->p_rts_flags, BIT_RECEIVING);
+			if(pproc[i]->p_proc->p_rts_flags == 0) {
 				taskwakeup(&pproc[i]->p_rendez);
 			}
 		}
 	}
 	
-	t->p_endpoint	= NONE;				/* process number					*/
-	t->p_nr			= NONE;				/* process number					*/
-	t->p_rts_flags 	= PROC_RUNNING;		/* process is runnable only if zero 		*/
-	t->p_misc_flags = MIS_UNIKERNEL;	/* miselaneous flags				*/
-	t->p_getfrom	= NONE;				/* from whom does process want to receive?	*/
-	t->p_sendto		= NONE;				/* to whom does process want to send? 	*/
+	free(t->p_proc);
+	t->p_proc		= NULL;
+	t->p_thread		= (-1);
+//	t->p_mutex 		= PTHREAD_MUTEX_INITIALIZER;
+//	t->p_cond		= PTHREAD_COND_INITIALIZER;
+	pthread_mutex_init(&t->p_mutex, NULL);
+	pthread_cond_init(&t->p_cond, NULL);
+	init_task_rqst(t);
+
 	t->p_caller_q	= NULL; 			/* head list of trying to send task to this task */
 	t->p_q_link		= NULL; 			/* pointer to the next trying to send task    	*/
 	t->p_msg		= NULL; 			/* pointer to application message buffer 	*/ 
 	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
 	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
-	t->p_next_timeout = TIMEOUT_FOREVER;
-	t->p_t_link 	= NULL;
+	t->p_timeout 	= TIMEOUT_FOREVER;
+	t->p_to_link 	= NULL;
 		
 	pproc[p_nr+dc_ptr->dc_nr_tasks] = NULL;
 	return(OK);
@@ -224,19 +329,22 @@ taskalloc(void (*fn)(void*), void *arg, uint stack)
 	t->startfn = fn;
 	t->startarg = arg;
 	
-	t->p_endpoint	= NONE;				/* process number					*/
-	t->p_nr			= NONE;				/* process number					*/
-	t->p_rts_flags 	= PROC_RUNNING;		/* process is runnable only if zero 		*/
-	t->p_misc_flags = MIS_UNIKERNEL;	/* miselaneous flags				*/
-	t->p_getfrom	= NONE;				/* from whom does process want to receive?	*/
-	t->p_sendto		= NONE;				/* to whom does process want to send? 	*/
-	t->p_caller_q	= NULL; 			/* head list of trying to send task to this task */
+	t->p_proc		= NULL;
+	t->p_thread		= (-1);
+//	t->p_mutex 		= PTHREAD_MUTEX_INITIALIZER;
+//	t->p_cond		= PTHREAD_COND_INITIALIZER;
+	pthread_mutex_init(&t->p_mutex, NULL);
+	pthread_cond_init(&t->p_cond, NULL);
+
+	init_task_rqst(t);
+		
+	t->p_caller_q	= NULL; 			/* head list of trying to send msg to this task */
 	t->p_q_link		= NULL; 			/* pointer to the next trying to send task    	*/
 	t->p_msg		= NULL; 			/* pointer to application message buffer 	*/ 
 	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
 	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
-	t->p_next_timeout 	= TIMEOUT_FOREVER;
-	t->p_t_link 	= NULL;
+	t->p_timeout 	= TIMEOUT_FOREVER;
+	t->p_to_link 	= NULL;				/* link to other process on timeout list */
 	
 	/* do a reasonable initialization */
 	memset(&t->context.uc, 0, sizeof t->context.uc);
@@ -291,11 +399,13 @@ taskcreate(void (*fn)(void*), void *arg, uint stack)
 			abort();
 		}
 	}
+	t->pid = syscall (SYS_gettid);
 	t->alltaskslot = nalltask;
 	alltask[nalltask++] = t;
 	taskready(t);
 	return id;
 }
+
 
 void
 tasksystem(void)
@@ -351,6 +461,7 @@ taskexit(int val)
 	taskrunning->exiting = 1;
 	taskswitch();
 }
+
 
 static void
 contextswitch(Context *from, Context *to)
@@ -440,6 +551,7 @@ taskgetstate(void)
 	return taskrunning->state;
 }
 
+
 void
 needstack(int n)
 {
@@ -454,12 +566,14 @@ needstack(int n)
 	}
 }
 
+
 static void
 taskinfo(int s)
 {
 	int i;
 	Task *t;
 	char *extra;
+	proc_usr_t *p_ptr;
 
 	fprint(2, "task list:\n");
 	for(i=0; i<nalltask; i++){
@@ -474,6 +588,47 @@ taskinfo(int s)
 			t->id, t->system ? 's' : ' ', 
 			t->name, t->state, extra);
 	}
+	
+	fprintf(2, "DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name\n");	
+	for(i=0; i<nalltask; i++){
+		t = alltask[i];
+		if( t->p_proc == NULL) continue;
+		p_ptr = &t->p_proc;
+		fprintf(2, "%2d %3d %5d %5ld/%-5ld %2d %4lX %4lX %5d %5d %5d %5d %-15.15s\n",
+					p_ptr->p_dcid,
+					p_ptr->p_nr,
+					p_ptr->p_endpoint,
+					p_ptr->p_lpid,
+					p_ptr->p_vpid,
+					p_ptr->p_nodeid,
+					p_ptr->p_rts_flags,
+					p_ptr->p_misc_flags,
+					p_ptr->p_getfrom,
+					p_ptr->p_sendto,
+					p_ptr->p_waitmigr,
+					p_ptr->p_proxy,
+					p_ptr->p_name);
+	}			
+}
+
+
+void dvk_handler(int s)
+{
+	int i;
+	dvk_request_t *r_ptr;
+	Task *t;
+	
+	for(i=0; i<nalltask; i++){
+		t = alltask[i];
+		if( t->p_proc == NULL) continue;
+		r_ptr = &t->p_rqst;
+		if( TEST_BIT(r_ptr->rq_oper, MUK_BIT_DONE)) {
+			CLR_BIT(r_ptr->rq_oper, MUK_BIT_DONE);
+			LIBDEBUG("wakeup %s: oper=%d rcode=%d\n", 
+				t->name, r_ptr->rq_oper, r_ptr->rq_rcode);
+			taskwakeup(&t->p_rendez);
+		}
+	}
 }
 
 /*
@@ -484,7 +639,7 @@ static int taskargc;
 static char **taskargv;
 int mainstacksize;
 
-static void
+void
 taskmainstart(void *v)
 {
 	taskname("taskmain");
@@ -502,6 +657,11 @@ main(int argc, char **argv)
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGQUIT, &sa, &osa);
 
+	sa.sa_handler = dvk_handler;
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGIO, &sa, &osa);
+	
+	
 #ifdef SIGINFO
 	sigaction(SIGINFO, &sa, &osa);
 #endif

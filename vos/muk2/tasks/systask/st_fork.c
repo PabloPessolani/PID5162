@@ -63,7 +63,7 @@ int st_fork(message *m_ptr)
 	child_ep = _ENDPOINT(child_gen, child_ptr->p_nr);
 	MUKDEBUG("bind dcid=%d child_lpid=%d, child_nr=%d  child_ep=%d child_gen=%d\n", 
 		dc_ptr->dc_dcid, child_lpid, child_nr, child_ep, child_gen);
-	rcode = task_bind( child_ptr, child_ep, child_ptr->name);
+	rcode = task_bind( child_ptr,  dc_ptr->dc_dcid, child_ep, child_ptr->name);
 	MUKDEBUG("child_ep=%d rcode=%d\n", child_ep, rcode);
 	if(child_ep != rcode) ERROR_RETURN(rcode);
 	
