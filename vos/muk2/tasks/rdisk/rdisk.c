@@ -494,7 +494,8 @@ int rd_do_open(struct driver *dp, message *rd_mptr)
 int rd_init(void )
 {
 	int i, rcode;
-	
+    proc_usr_t *proc_ptr;
+
 	MUKDEBUG("dcid=%d rd_ep=%d\n",dcid, rd_ep);
 
 	rd_id = taskid();
@@ -516,7 +517,8 @@ int rd_init(void )
 	MUKDEBUG("Get RDISK info\n");
 	
 	rd_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rd_ptr));
+	proc_ptr = rd_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
 	MUKDEBUG("Register RDISK into SYSTASK rd_id=%d\n",rd_id);

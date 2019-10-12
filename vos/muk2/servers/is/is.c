@@ -406,6 +406,7 @@ void init_is(void)
 {
      struct sigaction action;
 	 int rcode;
+    proc_usr_t *proc_ptr;
 
 	MUKDEBUG("dcid=%d is_ep=%d\n",dcid, is_ep);
 
@@ -425,7 +426,8 @@ void init_is(void)
 		
 	MUKDEBUG("Get is_ep info\n");
 	is_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(is_ptr));
+	proc_ptr = is_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));	
 	
 	/* Register into SYSTASK(local_nodeid) (as an autofork) */
 //	MUKDEBUG("Register IS into SYSTASK(local_nodeid) is_id=%d\n",is_id);

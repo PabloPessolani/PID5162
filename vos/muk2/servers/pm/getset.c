@@ -20,7 +20,7 @@ int pm_getset(void)
  * MOLGETPID also return secondary results (the effective IDs, or the parent
  * process ID) in 'reply_res2', which is returned to the user.
  */
-
+    proc_usr_t *proc_ptr;
 	mproc_t *rmp = mp;
 	muk_proc_t *rkp = kp;
 	int ret, proc;
@@ -89,14 +89,15 @@ MUKDEBUG("pm_call_nr=%d\n", pm_call_nr);
 		/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
 		if((ret =sys_procinfo(pm_who_p)) != OK) 
 			ERROR_EXIT(ret);
-		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
+		proc_ptr = rkp->p_proc;
+		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 
 		if((ret =sys_setpname(pm_m_in.M3_ENDPT,pm_m_in.M3_NAME)) != OK) 
 			ERROR_EXIT(ret);
 
 		if((ret =sys_procinfo(pm_who_p)) != OK) 
 			ERROR_EXIT(ret);
-		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
+		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 		
 		break;
 	default:

@@ -94,9 +94,9 @@ MUKDEBUG("pm_call_nr=%d result=%d\n", pm_call_nr, result);
 		 	* use or just a zombie, don't try to reply.
 		 	*/
 			if ((rmp->mp_flags & (REPLYPENDING | IN_USE | ZOMBIE)) == (REPLYPENDING | IN_USE)) {
-				MUKDEBUG("Replying to %d\n",rkp->p_endpoint);		   
-				if ((rcode = muk_send(rkp->p_endpoint, &rmp->mp_reply)) != OK) {
-					MUKDEBUG("PM can't reply to %d (%s)\n",rkp->p_endpoint, rkp->name);
+				MUKDEBUG("Replying to %d\n",rkp->p_proc->p_endpoint);		   
+				if ((rcode = muk_send(rkp->p_proc->p_endpoint, &rmp->mp_reply)) != OK) {
+					MUKDEBUG("PM can't reply to %d (%s)\n",rkp->p_proc->p_endpoint, rkp->name);
 					switch(rcode){  /* Auto Unbind the failed process */
 						case	EDVSSRCDIED:
 						case	EDVSDSTDIED:
@@ -153,8 +153,8 @@ void pm_get_work(void)
 		mp = &pm_proc_table[pm_who_p < 0 ? pm_ep : pm_who_p];
 		MUKDEBUG(PM_PROC_FORMAT, PM_PROC_FIELDS(mp));
 
-		if(pm_who_p >= 0 && kp->p_endpoint != pm_who_e) {
-			MUKDEBUG("PM endpoint number out of sync with kernel endpoint=%d.\n",kp->p_endpoint);
+		if(pm_who_p >= 0 && kp->p_proc->p_endpoint != pm_who_e) {
+			MUKDEBUG("PM endpoint number out of sync with kernel endpoint=%d.\n",kp->p_proc->p_endpoint);
 			continue;
 		}
 		return;
@@ -170,6 +170,7 @@ void pm_init(void)
 {
   	int i, rcode, tab_len;
 	char *sig_ptr;
+    proc_usr_t *proc_ptr;
 
 	static char mess_sigs[] = { SIGTERM, SIGHUP, SIGABRT, SIGQUIT };
 
@@ -189,7 +190,8 @@ void pm_init(void)
 		taskexit(&rcode);
 	}
 	pm_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(pm_ptr));
+	proc_ptr = pm_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
 
 	pm_msg_ptr = &pm_m_in;
 	

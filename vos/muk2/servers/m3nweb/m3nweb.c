@@ -53,6 +53,8 @@ void nw_usage(char* errmsg, ...) {
  	int rcode;
 	int  lcl_ep;
     config_t *cfg;
+    proc_usr_t *proc_ptr;
+
 	
 	MUKDEBUG(DVS_USR_FORMAT,DVS_USR_FIELDS(dvs_ptr));
 	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
@@ -105,7 +107,8 @@ void nw_usage(char* errmsg, ...) {
 	
 	MUKDEBUG("Get web_ep info\n");
 	web_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(web_ptr));
+	proc_ptr = web_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
 	/* Register into SYSTASK (as an autofork) */
 	MUKDEBUG("Register NWEB into SYSTASK web_id=%d\n",web_id);

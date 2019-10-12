@@ -35,7 +35,8 @@ int  main_systask ( int argc, char *argv[] )
 	int rcode;
 	unsigned int call_nr;
 	int result;
-	Task *proc_ptr;
+	Task *task_ptr;
+	proc_usr_t *proc_ptr;
 	message *m_ptr;
 	
 	pagesize = sysconf(_SC_PAGESIZE); /*  getpagesize() */
@@ -105,11 +106,12 @@ int  main_systask ( int argc, char *argv[] )
 					case	EDVSNOPROXY:
 					case	EDVSNOTCONN:
 					case	EDVSDEADSRCDST:
+						proc_ptr = task_ptr->p_proc;
 #ifdef ALLOC_LOCAL_TABLE 			
-						rcode = muk_getprocinfo(dc_ptr->dc_dcid, sys_m.m_source, proc_ptr);	
+						rcode = muk_getprocinfo(dc_ptr->dc_dcid, sys_m.m_source, task_ptr);	
 						if( rcode < 0) ERROR_RETURN(rcode );
 #else /* ALLOC_LOCAL_TABLE */			
-						proc_ptr = (Task *) get_task(sys_m.m_source);
+						task_ptr = (Task *) get_task(sys_m.m_source);
 						rcode = OK;
 #endif /* ALLOC_LOCAL_TABLE */			
 						
@@ -117,7 +119,7 @@ int  main_systask ( int argc, char *argv[] )
 						rcode = muk_unbind(dc_ptr->dc_dcid, sys_m.m_source);
 						if( rcode < 0) ERROR_RETURN(rcode );
 #ifdef ALLOC_LOCAL_TABLE 			
-						rcode = muk_getprocinfo(dc_ptr->dc_dcid, sys_m.m_source, proc_ptr);
+						rcode = muk_getprocinfo(dc_ptr->dc_dcid, sys_m.m_source, task_ptr);
 						if( rcode < 0) ERROR_RETURN(rcode );
 #endif /* ALLOC_LOCAL_TABLE */			
 						break;
@@ -140,7 +142,7 @@ int  main_systask ( int argc, char *argv[] )
  *===========================================================================*/
 int init_systask(int dcid)
 {
-	Task *proc_ptr;
+	proc_usr_t *proc_ptr;
 	int i, rcode;
 static char debug_path[MNX_PATH_MAX];
 
@@ -154,7 +156,8 @@ static char debug_path[MNX_PATH_MAX];
 		taskexit(&sys_ep);
 	}
 	sys_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT, PROC_MUK_FIELDS(sys_ptr));
+	proc_ptr = sys_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
 
 	last_rqst = time(NULL);
 

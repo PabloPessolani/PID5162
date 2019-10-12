@@ -89,6 +89,8 @@
 
 #include "../../debug.h"
 #include "../../macros.h"
+#include "../../mutex.h"
+#include "../../dvkipc.h"
 
 /*For rd_dtab*/
 #define OPER_NAME 0

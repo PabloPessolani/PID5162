@@ -78,6 +78,9 @@
 
 #include "../../debug.h"
 #include "../../macros.h"
+#include "../../mutex.h"
+#include "../../dvkipc.h"
+
 
 extern int	dvk_fd;
 extern int local_nodeid;

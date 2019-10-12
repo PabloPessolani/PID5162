@@ -105,8 +105,9 @@ void dmp_sys_dc(void)
 void dmp_sys_stats(void)
 {
 	int i;
-	muk_proc_t	*proc_ptr;
-	
+	muk_proc_t	*task_ptr;
+    proc_usr_t *proc_ptr;
+
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===========================================================================\n");
 	fprintf(dump_fd,"====================== dmp_sys_stats ======================================\n");
@@ -117,11 +118,12 @@ void dmp_sys_stats(void)
 //	assert(kproc_map != NULL);
 	
 	for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-		proc_ptr = (Task *) get_task(i);
-		if( proc_ptr == NULL) continue;
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		task_ptr = (Task *) get_task(i);
+		if( task_ptr == NULL) continue;
+		if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
+		proc_ptr = task_ptr->p_proc;
 		fprintf(dump_fd, "%2d %3d %5d %5d/%5d %2d %8ld %8ld %8ld %8ld %-15.15s\n",
 				proc_ptr->p_dcid,
 				proc_ptr->p_nr,
@@ -150,8 +152,8 @@ void dmp_sys_proc(void)
 	static char mis_str[20];
 	static char getf_str[10];
 	static char send_str[10];
-	
-	muk_proc_t	*proc_ptr;
+    proc_usr_t *proc_ptr;
+	muk_proc_t	*task_ptr;
 	
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===============================================================================\n");
@@ -163,27 +165,28 @@ void dmp_sys_proc(void)
 //	assert(kproc_map != NULL);
 
 	for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-		proc_ptr = (Task *) get_task(i);
-		if( proc_ptr == NULL) continue;
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		task_ptr = (Task *) get_task(i);
+		if( task_ptr == NULL) continue;
+		if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
+		proc_ptr = task_ptr->p_proc;	
 	    p_rts_flags_str(proc_ptr->p_rts_flags, rts_str);		
 	    p_misc_flags_str(proc_ptr->p_misc_flags, mis_str);	
 	    p_endpoint_str(proc_ptr->p_getfrom,	getf_str);		
-	    p_endpoint_str(proc_ptr->p_sendto,  send_str);			
+	    p_endpoint_str(proc_ptr->p_sendto,  send_str);
 		fprintf(dump_fd, "%2d %3d %5d %4d %11s %2d %16s %11s %5s %5s %-15.15s\n",
 				dc_ptr->dc_dcid,
 				proc_ptr->p_nr,
 				proc_ptr->p_endpoint,
-				proc_ptr->id,
-				proc_ptr->state,
-				local_nodeid,
+				task_ptr->id,
+				task_ptr->state,
+				proc_ptr->p_nodeid,
 				rts_str,
 				mis_str,
 				getf_str,
 				send_str,
-				proc_ptr->name);
+				task_ptr->name);
 	}
 	fprintf(dump_fd, "\n");
 }
@@ -195,8 +198,9 @@ void dmp_sys_proc(void)
 void dmp_sys_priv(void)
 {
 	int i;
-	muk_proc_t	*proc_ptr;
-	
+	muk_proc_t	*task_ptr;
+    proc_usr_t *proc_ptr;
+
 	fprintf(dump_fd, "\n");
 	fprintf(dump_fd,"===========================================================================\n");
 	fprintf(dump_fd,"====================== dmp_sys_priv =======================================\n");
@@ -207,11 +211,12 @@ void dmp_sys_priv(void)
 //	assert(kproc_map != NULL);
 
 	for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-		proc_ptr = get_task(i);
-		if( proc_ptr == NULL) continue;
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		task_ptr = get_task(i);
+		if( task_ptr == NULL) continue;
+		if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
+		proc_ptr = task_ptr->p_proc;
 		fprintf(dump_fd, "%3d %5d %5d %5d %5d %5d %5d %5d% -15.15s\n",
 				proc_ptr->p_nr,
 				proc_ptr->p_priv.priv_usr.priv_id,
@@ -299,7 +304,8 @@ void wdmp_sys_proc(message *m_ptr)
 	static char send_str[10];
 	static char migr_str[10];
 	static char pxy_str[10];
-	muk_proc_t	*proc_ptr;
+	muk_proc_t	*task_ptr;
+    proc_usr_t *proc_ptr;
 	char *page_ptr;
 	
 	MUKDEBUG("\n");
@@ -327,31 +333,31 @@ void wdmp_sys_proc(message *m_ptr)
 	// assert(kproc_map != NULL);
 
 	for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-		proc_ptr = (Task *) get_task(i);
-		if( proc_ptr == NULL) continue;
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		task_ptr = (Task *) get_task(i);
+		if( task_ptr == NULL) continue;
+		if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
 	    (void)strcat(page_ptr,"<tr>\n");
+		proc_ptr = task_ptr->p_proc;	
 		p_rts_flags_str(proc_ptr->p_rts_flags, rts_str);		
 	    p_misc_flags_str(proc_ptr->p_misc_flags, mis_str);	
 	    p_endpoint_str(proc_ptr->p_getfrom,	getf_str);		
-	    p_endpoint_str(proc_ptr->p_sendto,  send_str);		
+	    p_endpoint_str(proc_ptr->p_sendto,  send_str);	
 		sprintf(is_buffer, "<td>%2d</td> <td>%3d</td> <td>%5d</td> <td>%5ld</td>"
 			"<td>%11s</td> <td>%2d</td> <td>%16s</td> <td>%11s</td> <td>%5s</td> <td>%5s</td> "
 			"<td>%-15.15s</td> \n",
 			dc_ptr->dc_dcid,
 			proc_ptr->p_nr,
 			proc_ptr->p_endpoint,
-			proc_ptr->id,
-			
-			proc_ptr->state,
-			local_nodeid,
+			task_ptr->id,	
+			task_ptr->state,
+			proc_ptr->p_nodeid,
 			rts_str,
 			mis_str,
 			getf_str,
 			send_str,
-			proc_ptr->name);
+			task_ptr->name);
 		
 		(void)strcat(page_ptr,is_buffer);
 		(void)strcat(page_ptr,"</tr>\n");
@@ -415,7 +421,8 @@ void wdmp_sys_stats(message *m_ptr)
 {
 	int i;
 	char *page_ptr;
-	muk_proc_t	*proc_ptr;
+	muk_proc_t	*task_ptr;
+    proc_usr_t *proc_ptr;
 
 	MUKDEBUG("\n");
 	page_ptr = m_ptr->m1_p1;
@@ -441,12 +448,13 @@ void wdmp_sys_stats(message *m_ptr)
 //	assert(kproc_map != NULL);
 	
 	for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-		proc_ptr = (Task *) get_task(i);
-		if( proc_ptr == NULL) continue;
-		if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+		task_ptr = (Task *) get_task(i);
+		if( task_ptr == NULL) continue;
+		if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 			continue;
 		}
 		(void)strcat(page_ptr,"<tr>\n");
+		proc_ptr = task_ptr->p_proc;
 		sprintf(is_buffer, "<td>%2d</td> <td>%3d</td> <td>%5d</td> <td>%5ld</td> <td>%5ld</td> "
 			"<td>%2d</td> <td>%8ld</td> <td>%8ld</td> <td>%8ld</td> <td>%8ld</td> <td>%-15.15s</td>\n",
 				proc_ptr->p_dcid,
@@ -554,7 +562,7 @@ void p_misc_flags_str(int flags, char *str )
  *===========================================================================*/
 void p_endpoint_str(int endpoint, char *str)
 {
-	muk_proc_t	*proc_ptr;
+	muk_proc_t	*task_ptr;
 	int i;
 	
 	if( endpoint == NONE) {
@@ -564,13 +572,13 @@ void p_endpoint_str(int endpoint, char *str)
 	}else {
 //		sprintf(str,"%5d",endpoint);
 		for(i = (-dc_ptr->dc_nr_tasks) ; i < dc_ptr->dc_nr_procs; i++) {
-			proc_ptr = (Task *) get_task(i);
-			if( proc_ptr == NULL) continue;
-			if (TEST_BIT(proc_ptr->p_rts_flags, BIT_SLOT_FREE)) {
+			task_ptr = (Task *) get_task(i);
+			if( task_ptr == NULL) continue;
+			if (TEST_BIT(task_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) {
 				continue;
 			}
-			if( proc_ptr->p_endpoint == endpoint){
-				strncpy(str,proc_ptr->name,5);
+			if( task_ptr->p_proc->p_endpoint == endpoint){
+				strncpy(str,task_ptr->name,5);
 				break;
 			}
 		}

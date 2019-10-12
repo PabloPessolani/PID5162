@@ -20,6 +20,7 @@ extern "C" {
 #include <signal.h>
 #include <sys/syscall.h> 
 #include <pthread.h>
+#include <sys/queue.h>
 
 #if USE_UCONTEXT
 #include <ucontext.h>
@@ -98,7 +99,6 @@ void		tasksystem(void);
 unsigned int	taskdelay(unsigned int);
 unsigned int	taskid(void);
 Task * 		current_task(void);
-
 
 
 struct Tasklist	/* used internally */
@@ -270,6 +270,9 @@ typedef struct dvk_request_s dvk_request_t;
 #define DVK_RQST_FORMAT "id=%d rq_oper=%d rq_other_ep=%d rq_timeout=%ld\n"
 #define DVK_RQST_FIELDS(r) r->rq_task->id,r->rq_oper, r->rq_other_ep, r->rq_timeout
 
+#define MUK_VCOPY_FORMAT	VCOPY_FORMAT
+#define MUK_VCOPY_FIELDS(p) p->v_src, p->v_dst, p->v_rqtr,p->v_saddr, p->v_daddr, p->v_bytes
+
 struct Task
 {
 	char	name[256];	// offset known to acid
@@ -296,8 +299,9 @@ struct Task
 	proc_usr_t 		*p_proc;		/* pointer to a proc_usr_t allocated struct 	*/
 	pthread_t		p_thread;
 	pthread_mutex_t p_mutex;
-	pthread_cond_t	p_cond; 
-	dvk_request_t	p_rqst;
+	pthread_cond_t	p_th_cond;		/* condition variable for DVK ipc thread */ 
+	pthread_cond_t	p_tsk_cond;		/* condition variable for the task to synchronize with DVK ipc thread */ 
+	dvk_request_t	p_rqst;			
 	
 	Task			*p_caller_q;	/* head list of trying to send task to this task*/
 	Task			*p_q_link;		/* pointer to the next trying to send task    	*/
@@ -308,6 +312,9 @@ struct Task
 	Task			*p_to_link;
 	dvktimer_t		p_alarm_timer;
 	message			*p_msg;  
+	
+    TAILQ_ENTRY(Task) p_entries;         /* Tail queue. */
+
 };	 
 
 typedef struct Task muk_proc_t;

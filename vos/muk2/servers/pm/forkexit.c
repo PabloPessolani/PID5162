@@ -39,6 +39,7 @@ int pm_waitpid(void)
  * to awaken the caller.
  * Both WAIT and WAITPID are handled by this code.
  */
+  proc_usr_t *proc_ptr;
   register mproc_t *rp;
   int pidarg, options, children;
 
@@ -57,7 +58,7 @@ MUKDEBUG("pm_who_e=%d pm_call_nr=%d pid=%d sig_nr=%d\n",pm_who_e,pm_call_nr,pm_m
   children = 0;
   for (rp = &pm_proc_table[0]; rp < &pm_proc_table[dc_ptr->dc_nr_procs]; rp++) {
 	if ( rp->mp_parent == pm_who_p) {
-	MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(rp));
+		MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(rp));
 	if ( rp->mp_flags & IN_USE ) {
 		MUKDEBUG("The value of pidarg determines which children qualify pidarg=%d\n", pidarg);
 		/* The value of pidarg determines which children qualify. */
@@ -109,12 +110,16 @@ int pm_fork(void)
 	int  child_lpid, new_pid, child_nr, child_ep;
 	int rcode;
 	message *pm_msg_ptr;
+    proc_usr_t *proc_ptr;
+
 	
 	rkp = (muk_proc_t *) get_task(pm_who_p);
 	/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
   	if((rcode =sys_procinfo(pm_who_p)) != OK) 
 		ERROR_EXIT(rcode);
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
+	
+	proc_ptr = rkp->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	pm_msg_ptr  = &pm_m_in;
 	MUKDEBUG(MSG3_FORMAT,MSG3_FIELDS(pm_msg_ptr));
 	child_lpid = pm_m_in.M3_LPID;
@@ -130,7 +135,7 @@ int pm_fork(void)
 	MUKDEBUG("child_nr=%d child_ep=%d child_lpid=%d\n", 
 		child_nr, child_ep, child_lpid);
 
-	if(TEST_BIT( rkp->p_rts_flags,BIT_REMOTE)) {
+	if(TEST_BIT( rkp->p_proc->p_rts_flags,BIT_REMOTE)) {
 		rmp = &pm_proc_table[INIT_PROC_NR];
 	}else{
 		rmp = mp;	
@@ -141,7 +146,7 @@ int pm_fork(void)
   	/* Set up the child ; copy its 'pm_proc_table' slot from parent. */
   	*rmc = *rmp;			/* copy parent's process slot to child's */
 	
-	if(TEST_BIT( rkp->p_rts_flags,BIT_REMOTE)) {
+	if(TEST_BIT( rkp->p_proc->p_rts_flags,BIT_REMOTE)) {
 		rmc->mp_parent = INIT_PROC_NR;	/* record child's parent */				
 	}else{
 		rmc->mp_parent = pm_who_p;			/* record child's parent */		
@@ -164,12 +169,12 @@ int pm_fork(void)
   	if((rcode =sys_procinfo(child_nr)) != OK) 
 		ERROR_EXIT(rcode);
 	
-	if( child_ep != rkc->p_endpoint) ERROR_EXIT(EDVSINVAL);
+	if( child_ep != rkc->p_proc->p_endpoint) ERROR_EXIT(EDVSINVAL);
 
   	/* Tell file system about the (now successful) FORK. */
 	tell_fs(MOLFORK, pm_who_e, child_ep, rmc->mp_pid);
 
-  	rmp->mp_reply.endpt = rkc->p_endpoint;	/* child's process endpoint */
+  	rmp->mp_reply.endpt = rkc->p_proc->p_endpoint;	/* child's process endpoint */
 	MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(rmc));
 
   	return(new_pid);		 	/* child's pid */
@@ -190,12 +195,15 @@ int pm_wait4fork(void)
 	int  child_lpid, child_nr, child_ep;
 	int rcode;
 	message *pm_msg_ptr;
+    proc_usr_t *proc_ptr;
+
 	
 	rkc =  (muk_proc_t *) get_task(pm_who_p);
 	/* Tell SYSTASK copy the kernel entry to pm_kproc[parent_nr]  	*/
   	if((rcode =sys_procinfo(pm_who_p)) != OK) 
 		ERROR_EXIT(rcode);
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkc));
+	proc_ptr = rkc->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	pm_msg_ptr  = &pm_m_in;
 	MUKDEBUG(MSG3_FORMAT,MSG3_FIELDS(pm_msg_ptr));
 	child_lpid = pm_m_in.M3_LPID;
@@ -275,7 +283,7 @@ int pm_unbind(void)
 	ret = 0;
 	if( pm_m_in.m1_i1 != SELF ) { /*  OTHER PROCESS */
 		rkp =  (muk_proc_t *) get_task(_ENDPOINT_P(pm_m_in.m1_i1));
-		ret = pm_exit(&pm_proc_table[rkp->p_nr], 0, MOLUNBIND);
+		ret = pm_exit(&pm_proc_table[rkp->p_proc->p_nr], 0, MOLUNBIND);
 		if(ret != OK)
 			ERROR_RETURN(ret);
 		return(ret);
@@ -305,10 +313,11 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
   	mproc_t *p_mp, *rcp;
   	muk_proc_t *rkp;
   	molclock_t t[5];
+	proc_usr_t *proc_ptr;
 
   	proc_nr = (int) (rmp - pm_proc_table);	/* get process slot number */
 	rkp =  (muk_proc_t *) get_task(proc_nr);
-  	proc_ep = rkp->p_endpoint;
+  	proc_ep = rkp->p_proc->p_endpoint;
 	MUKDEBUG("mnx_pid=%d status=%d proc_nr=%d proc_ep=%d oper=%d\n", 
 		rmp->mp_pid, exit_status, proc_nr, proc_ep, oper);
 
@@ -341,9 +350,10 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
 //	tell_fs(MOLEXIT, proc_ep, 0, 0);  		/* tell FS to free the slot */
 
 	/* Tell SYSTASK to unbind the exiting process	*/
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
+	proc_ptr = rkp->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
-	rcode = _sys_exit(rkp->p_endpoint, local_nodeid);
+	rcode = _sys_exit(rkp->p_proc->p_endpoint, local_nodeid);
 			
 	if(rcode < 0 && rcode != EDVSNOTBIND  && rcode != EDVSDSTDIED)		
   		ERROR_EXIT(rcode);
@@ -352,9 +362,9 @@ int pm_exit(mproc_t *rmp, int exit_status, int oper )
   	if((rcode =sys_procinfo(proc_nr)) != OK) 
 		ERROR_EXIT(rcode);
 		
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(rkp));
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
-	if( TEST_BIT( rkp->p_rts_flags,BIT_SLOT_FREE)) {
+	if( TEST_BIT( rkp->p_proc->p_rts_flags,BIT_SLOT_FREE)) {
 		rmp->mp_flags &= ~REPLYPENDING;
 	}
 	
@@ -456,6 +466,7 @@ int pm_bindproc(void)
   	mproc_t *msp;
   	muk_proc_t *ksp, *psp;	
 	char *sig_ptr;
+    proc_usr_t *proc_ptr;
 	static char mess_sigs[] = { SIGTERM, SIGHUP, SIGABRT, SIGQUIT };
 	int  lpid, new_pid, sysproc_nr, sysproc_ep, rcode, oper;
 
@@ -480,10 +491,11 @@ int pm_bindproc(void)
 	
 	msp = &pm_proc_table[sysproc_nr];
 	ksp =  (muk_proc_t *) get_task(sysproc_nr);
-	if( ksp->p_rts_flags != SLOT_FREE) {
-		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(ksp));
+	if( ksp->p_proc->p_rts_flags != SLOT_FREE) {
+		proc_ptr = ksp->p_proc;
+		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));	
 		MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(msp));
-		if(! (ksp->p_rts_flags & BIT_REMOTE)){
+		if(! (ksp->p_proc->p_rts_flags & BIT_REMOTE)){
 			if(ksp->id != lpid) {
 				ERROR_RETURN(EDVSEXIST);
 			}else{
@@ -502,13 +514,13 @@ int pm_bindproc(void)
 	/* Tell SYSTASK to copy the kernel entry to pm_kproc[sysproc_nr]   */
 	if((rcode = sys_procinfo(sysproc_nr)) != OK) 
 		ERROR_EXIT(rcode);
-	assert( sysproc_nr == ksp->p_nr);
+	assert( sysproc_nr == ksp->p_proc->p_nr);
 		
 	MUKDEBUG("sysproc_nr=%d\n", sysproc_nr);
 	
   	/* Set up the sysproc */
 	psp = (muk_proc_t *) get_task(pm_ep);
-  	msp->mp_parent = psp->p_endpoint;	/* PM is the parent of all sysprocs */
+  	msp->mp_parent = psp->p_proc->p_endpoint;	/* PM is the parent of all sysprocs */
   	/* inherit only these flags */
  	msp->mp_flags 		= (IN_USE|PRIV_PROC);
   	msp->mp_child_utime = 0;		/* reset administration */
@@ -516,7 +528,7 @@ int pm_bindproc(void)
 	msp->mp_exitstatus 	= 0;
   	msp->mp_sigstatus 	= 0;
 	msp->mp_nice = PRIO_SERVER;
-	msp->mp_endpoint = ksp->p_endpoint;
+	msp->mp_endpoint = ksp->p_proc->p_endpoint;
 
 	sigemptyset(&msp->mp_sig2mess);
   	sigemptyset(&msp->mp_ignore);	
@@ -544,7 +556,7 @@ int pm_bindproc(void)
 
 	/* Reply to sysproc to wake it up. */
 // ANULADO POR AHORA 	setreply(sysproc_nr, 0);/* only parent gets details */
-  	msp->mp_reply.endpt = ksp->p_endpoint;	/* sysproc's process endpoint */
+  	msp->mp_reply.endpt = ksp->p_proc->p_endpoint;	/* sysproc's process endpoint */
 
   	return(new_pid);		 	/* sysproc's pid */
 }
@@ -580,7 +592,7 @@ int pm_freeproc(void)
 	next_free = 0; /* PARA EVITAR ERROR DE LINKEDICION */
 	if(next_free < 0) ERROR_RETURN(next_free);
 
-MUKDEBUG("next_free=%d\n", next_free);
+	MUKDEBUG("next_free=%d\n", next_free);
 		
 	rmc = &pm_proc_table[next_free];
 
@@ -594,7 +606,7 @@ MUKDEBUG("next_free=%d\n", next_free);
 
   	rmp->mp_reply.PR_SLOT = child_nr;	/* child's process endpoint */
 
-MUKDEBUG("child_nr=%d\n",  child_nr);
+	MUKDEBUG("child_nr=%d\n",  child_nr);
 
   	return( child_nr);		 	/* child's pid */
 }

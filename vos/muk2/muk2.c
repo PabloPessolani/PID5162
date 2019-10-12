@@ -478,7 +478,7 @@ void taskmain(int argc, char **argv)
 	for( i = -dc_ptr->dc_nr_tasks; i < (dc_ptr->dc_nr_procs); i++) {
 		t = get_task(i);
 		if( t == NULL) continue;
-		proc_ptr = &t->p_proc;
+		proc_ptr = t->p_proc;
 		MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	} 
 	

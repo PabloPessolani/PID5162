@@ -10,15 +10,11 @@
 //   return(msgptr->m_type);
 // }
 
-
-// #include "mollib.h"
-
 int molsyscall(int who, int syscallnr, message *msgptr)
 {
 	int status;
 
 	msgptr->m_type = syscallnr;
-	// status = muk_sendrec_T(who, msgptr, TIMEOUT_MOLCALL);
 	status = muk_sendrec(who, msgptr);
 
 	if (status != 0) {

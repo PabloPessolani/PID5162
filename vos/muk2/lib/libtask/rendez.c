@@ -29,7 +29,7 @@ _taskwakeup(Rendez *r, int all)
 		if((t = r->waiting.head) == nil)
 			break;
 		deltask(&r->waiting, t);
-		LIBDEBUG("ep=%d\n", t->p_proc->p_endpoint);
+		LIBDEBUG("id=%d\n", t->id);
 		taskready(t);
 	}
 	LIBDEBUG("i=%d\n", i);
@@ -39,6 +39,10 @@ _taskwakeup(Rendez *r, int all)
 int
 taskwakeup(Rendez *r)
 {
+	Task *t;
+	t = r->waiting.head; 
+	assert(t != nil);
+	LIBDEBUG("id=%d\n", t->id);
 	return _taskwakeup(r, 0);
 }
 

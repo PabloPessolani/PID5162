@@ -1042,6 +1042,78 @@ CLIENT
 					- La signal handler hace un wakeup de la tarea correspondiente.
 		
 	
+=====================================================================================================
+20191010:		Se creo una cola de peticiones entre las tareas MUK y los threads que atienden DVK IPC 
+
+DEBUG 2:dvk_bind_X:1137: cmd=0 dcid=0 pid=9 endpoint=14 nodeid=-1
+DEBUG 2:dvk_bind_X:1141: ipc ret=-1
+ERROR: task.c:pth_dvk:203: rcode=337
+ERROR: task.c:pth_dvk:205: rcode=-1
+
+#define EDVSSLOTUSED 	 (_SIGN 337)  	/* BIND the slot is already used */
+
+PARA MI, EL M3FTPD HACE UN PM_BIND QUE TRATA DE HACER EL BIND O ALGO ASI
+Y YA ENCUENTRA EL SLOT USADO
+
+st_bindproc.c:st_bindproc:53:source=0 type=1568 m3i1=11 m3i2=14 m3p1=0x1 m3ca1=[ftpd]
+ st_bindproc.c:st_bindproc:59:sysproc_lpid=11, sysproc_ep=14 sysproc_nr=14 sysproc_oper=1 
+ task.c:get_task:330:p_ep=14 p_nr=14
+ task.c:get_task:339:pproc=501B9C0
+ task.c:get_task:330:p_ep=14 p_nr=14
+ task.c:get_task:339:pproc=501B9C0
+
+ ESTO ESTA MAL !!! 
+ st_bindproc.c:st_bindproc:75:nr=97734880 endp=-1269695680 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ task.c:get_task:330:p_ep=14 p_nr=14
+ task.c:get_task:339:pproc=501B9C0
+
+ ESTO ESTA MAL !!! 
+ st_bindproc.c:st_bindproc:151:nr=97734880 endp=-1269695680 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ st_bindproc.c:st_bindproc:159:nr=97734880 endp=-1269695680 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+ system.c:main_systask:100:REPLY msg:source=0 type=0 m1i1=14 m1i2=1 m1i3=1 m1p1=0x64707466 m1p2=(nil) m1p3=(nil) 
+ task.c:get_task:330:p_ep=-2 p_nr=-2
+ task.c:get_task:339:pproc=501B980
+ mukipc.c:muk_send_T:151:dst_ep:0 current_ep=-2
+ mukipc.c:muk_send_T:153:nr=-2 endp=-2 dcid=0 flags=0 misc=400 lpid=2 vpid=3 nodeid=0 name=systask 
+ task.c:get_task:330:p_ep=0 p_nr=0
+ task.c:get_task:339:pproc=501B988
+
+
+ERROR: task.c:pth_dvk:203: rcode=2
+task list:
+     1  taskmain             sleep
+     2  U‰åSƒìè=|üÿÃ]l    
+     3  systask              sleep
+     4s fdtask               poll (running)
+     5  rdisk                sleep
+     6  pm                   sleep
+     7  fs                   sleep
+     8  is                   sleep
+	 
+
+ m3ftpd.c:main_ftpd:139:MTX_LOCK muk_mutex:1
+ m3ftpd.c:main_ftpd:140:MTX_UNLOCK muk_mutex:1
+ task.c:DVK_receive_T:93:nr=14 endp=14 dcid=0 flags=0 misc=400 lpid=2 vpid=9 nodeid=0 name=ftpd 
+ task.c:DVK_receive_T:101:PH_MTX_LOCK t->p_mutex 
+ task.c:DVK_receive_T:102:PH_COND_SIGNAL t->p_th_cond
+ task.c:DVK_receive_T:103:PH_COND_WAIT t->p_tsk_cond t->p_mutex
+ task.c:pth_dvk:215:PH_COND_SIGNAL t->p_tsk_cond
+ task.c:pth_dvk:216:PH_MTX_UNLOCK t->p_mutex 
+ task.c:pth_dvk:218:11: id=11 rq_oper=2 rq_other_ep=5255879 rq_timeout=5504480
+DEBUG 2:dvk_receive_T:834: endpoint=5255879 timeout=5504480
+ task.c:DVK_receive_T:104:PH_MTX_UNLOCK t->p_mutex 
+ rendez.c:tasksleep:9:id=11
+DEBUG 2:dvk_receive_T:838: ipc ret=-1 <<<<<<<<<<<<<<<<<<<< 
+ task.c:pth_dvk:244:PH_MTX_LOCK rqst_mutex 
+ task.c:pth_dvk:246:PH_MTX_UNLOCK rqst_mutex 
+ 
+ [  128.480722] ERROR: 683:ipc_mini_receive:335: rcode=-34
+ 
+[  128.480952] muk2[683]: segfault at 6a ip b77a9e16 sp b456a310 error 4 in libpthread-2.24.so[b779d000+19000]
+
+
+	 
+
 ULTIMO_LOG 		
 =====================================================================================================
 

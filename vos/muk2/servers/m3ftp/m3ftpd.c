@@ -14,7 +14,7 @@ int clt_ep;
 int oper;
 int ftp_pid;
 
-#define SEND_RECV_MS 	10000
+#define SEND_RECV_MS 	TIMEOUT_FOREVER
 
 /*===========================================================================*
  *				ftpd_reply					     *
@@ -39,7 +39,7 @@ void ftpd_init(void)
 {
   	int rcode;
 	int  lcl_ep;
-	
+    proc_usr_t *proc_ptr;
 
 	MUKDEBUG("dcid=%d ftp_ep=%d\n",dcid, ftp_ep);
 		
@@ -61,7 +61,7 @@ void ftpd_init(void)
 		taskexit(&rcode);
 	}
 
-//#ifdef ANULADO 
+#ifdef ANULADO 
 	// BIND to the DVK 
 	MUKDEBUG("local_nodeid=%d dcid=%d ftp_ep=%d\n", local_nodeid, dcid, ftp_ep);
 	rcode = dvk_tbind(dcid, ftp_ep);
@@ -70,7 +70,7 @@ void ftpd_init(void)
 		ERROR_PRINT(rcode);
 		taskexit(&rcode);
 	}
-//#endif ANULADO 
+#endif ANULADO 
 	
 	rcode = mol_bindproc(ftp_ep, ftp_ep, ftp_id, LCL_BIND);
 	MUKDEBUG("rcode=%d\n", rcode);
@@ -97,7 +97,8 @@ void ftpd_init(void)
 	
 	MUKDEBUG("Get ftp_ep info\n");
 	ftp_ptr = current_task();
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(ftp_ptr));
+	proc_ptr = ftp_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
 	// set the name of FTP 
 	rcode = sys_rsetpname(ftp_ep, "m3ftp", local_nodeid);
@@ -141,7 +142,7 @@ int  main_ftpd ( int argc, char *argv[] )
 	while(TRUE){
 		// Wait for file request 
 		do { 
-			DVK_receive_T(rcode, ANY,ftp_mptr, SEND_RECV_MS);
+			rcode = DVK_receive_T( ANY, ftp_mptr, TIMEOUT_MOLCALL);
 			MUKDEBUG("M3FTPD: muk_receive_T  rcode=%d\n", rcode);
 			if (rcode == EDVSAGAIN) {
 				MUKDEBUG("M3FTPD: muk_receive_T TIMEOUT\n");
@@ -171,7 +172,7 @@ int  main_ftpd ( int argc, char *argv[] )
 		clt_ep = ftp_mptr->m_source;
 		oper = ftp_mptr->FTPOPER;
 		
-		rcode = dvk_vcopy(clt_ep, ftp_mptr->FTPPATH,
+		rcode = DVK_vcopy(clt_ep, ftp_mptr->FTPPATH,
 							ftp_ep, ftp_path_ptr, ftp_mptr->FTPPLEN);
 		if( rcode < 0) break;
 		ftp_path_ptr[ftp_mptr->FTPPLEN] = 0;
@@ -179,7 +180,7 @@ int  main_ftpd ( int argc, char *argv[] )
 			
 		ftp_mptr->m_type = OK;	
 		
-		DVK_send_T(rcode, clt_ep, ftp_mptr, SEND_RECV_MS);
+		rcode = DVK_send_T( clt_ep, ftp_mptr, SEND_RECV_MS);
 		if(rcode < 0) {
 			ERROR_PRINT(rcode); 
 			break;
@@ -199,7 +200,7 @@ int  main_ftpd ( int argc, char *argv[] )
 					
 				do	{	
 					MUKDEBUG("M3FTPD: DVK_receive_T\n");
-					DVK_receive_T(rcode, clt_ep,ftp_mptr, SEND_RECV_MS);
+					rcode = DVK_receive_T( clt_ep,ftp_mptr, SEND_RECV_MS);
 					if(rcode < 0) {
 						ERROR_PRINT(-errno); 
 						break;
@@ -208,7 +209,7 @@ int  main_ftpd ( int argc, char *argv[] )
 					if ( (rlen = mol_read(ftpd_fd, ftp_data_ptr, ftp_mptr->FTPDLEN)) >= 0) {
 						MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);	
 						if( rlen > 0) {
-							rcode = dvk_vcopy( ftp_ep, ftp_data_ptr
+							rcode = DVK_vcopy( ftp_ep, ftp_data_ptr
 									,clt_ep, ftp_mptr->FTPDATA ,rlen);
 							if(rcode < 0) {
 								ERROR_PRINT(rcode); 
@@ -217,7 +218,7 @@ int  main_ftpd ( int argc, char *argv[] )
 						}
 						ftp_mptr->FTPDLEN = rlen;
 						ftp_mptr->m_type = OK;					
-						DVK_send_T(rcode, clt_ep, ftp_mptr, SEND_RECV_MS);
+						rcode = DVK_send_T( clt_ep, ftp_mptr, SEND_RECV_MS);
 						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
 							break;
@@ -256,7 +257,7 @@ int  main_ftpd ( int argc, char *argv[] )
 				total_bytes = 0;
 				
 				do	{	
-					DVK_receive_T(rcode, clt_ep,ftp_mptr, SEND_RECV_MS);
+					rcode = DVK_receive_T( clt_ep,ftp_mptr, SEND_RECV_MS);
 					if(rcode < 0) {
 						ERROR_PRINT(rcode); 
 						break;
@@ -271,7 +272,7 @@ int  main_ftpd ( int argc, char *argv[] )
 					}
 					if (ftp_mptr->FTPDLEN == 0) // EOF 
 						break; 
-					rcode = dvk_vcopy( clt_ep, ftp_mptr->FTPDATA
+					rcode = DVK_vcopy( clt_ep, ftp_mptr->FTPDATA
 									, ftp_ep, ftp_data_ptr,ftp_mptr->FTPDLEN);
 					if(rcode < 0) {
 						ERROR_PRINT(rcode); 
@@ -282,7 +283,7 @@ int  main_ftpd ( int argc, char *argv[] )
 						MUKDEBUG("M3FTPD: FTPDLEN=%d rlen=%d\n", ftp_mptr->FTPDLEN, rlen);			
 						ftp_mptr->FTPDLEN = rlen;
 						ftp_mptr->m_type = OK;					
-						DVK_send_T(rcode, clt_ep, ftp_mptr, SEND_RECV_MS);
+						rcode = DVK_send_T(clt_ep, ftp_mptr, SEND_RECV_MS);
 						if(rcode < 0) {
 							ERROR_PRINT(rcode); 
 							break;

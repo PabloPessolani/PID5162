@@ -46,7 +46,7 @@ MUKDEBUG("endpoint=%d \n", endpoint);
 	*proc = _ENDPOINT_P(endpoint);
 MUKDEBUG("*proc=%d\n", *proc);
 	rkp =  (muk_proc_t *) get_task(*proc);
-MUKDEBUG("rkp->p_endpoint=%d\n", rkp->p_endpoint);
+MUKDEBUG("rkp->p_proc->p_endpoint=%d\n", rkp->p_proc->p_endpoint);
 	
 	CHECK_P_NR(*proc);
 
@@ -56,7 +56,7 @@ MUKDEBUG("rkp->p_endpoint=%d\n", rkp->p_endpoint);
 		}					/* to PM is because it has binded to 	*/
 	}						/* the kernel, therefore has endpoint	*/
 
-	if(endpoint != rkp->p_endpoint) 
+	if(endpoint != rkp->p_proc->p_endpoint) 
 		ERROR_RETURN(EDVSENDPOINT);	
 	return(OK);
 }
@@ -107,6 +107,7 @@ int sys_procinfo(int p_nr)
 {
 	int rcode;
 	muk_proc_t *pm_proc_ptr;
+    proc_usr_t *proc_ptr;
 
 	pm_proc_ptr =  (muk_proc_t *) get_task(p_nr);
 	
@@ -115,8 +116,8 @@ int sys_procinfo(int p_nr)
 	rcode = sys_getinfo(GET_PROC, (void *) pm_proc_ptr, sizeof(muk_proc_t), NULL, p_nr);
 	if(rcode) ERROR_RETURN(rcode);
 #endif // ALLOC_LOCAL_TABLE 			
-	
-   	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(pm_proc_ptr));
+	proc_ptr = pm_proc_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 
 	return(OK);
 }
@@ -127,6 +128,8 @@ int sys_procinfo(int p_nr)
 void mproc_init(int p_nr)
 {
 	muk_proc_t *pm_proc_ptr;
+    proc_usr_t *proc_ptr;
+
 	
 	MUKDEBUG("p_nr=%d\n", p_nr);
 
@@ -155,9 +158,10 @@ void mproc_init(int p_nr)
 	
 	pm_proc_ptr =  (muk_proc_t *) get_task(p_nr);
 	if ( pm_proc_ptr != NULL) {
-		assert( !TEST_BIT(pm_proc_ptr->p_rts_flags, BIT_SLOT_FREE));
-		MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(pm_proc_ptr));
-		mp->mp_endpoint	= pm_proc_ptr->p_endpoint;
+		assert( !TEST_BIT(pm_proc_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE));
+		proc_ptr = pm_proc_ptr->p_proc;
+		MUKDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+		mp->mp_endpoint	= pm_proc_ptr->p_proc->p_endpoint;
 		mp->mp_flags	= IN_USE;
 		mp->mp_pid		= 0;
 		mp->mp_procgrp	= 0;

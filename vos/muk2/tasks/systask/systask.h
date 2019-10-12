@@ -71,6 +71,8 @@
 
 #include "../../debug.h"
 #include "../../macros.h"
+#include "../../mutex.h"
+#include "../../dvkipc.h"
 
 #include "config.h"
 #include "system.h"

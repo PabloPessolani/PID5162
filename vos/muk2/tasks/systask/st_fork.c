@@ -23,8 +23,9 @@ int get_free_proc(void);
 int st_fork(message *m_ptr)	
 {
 /* Handle sys_fork().  PR_ENDPT has forked.  The child is PR_SLOT. */
-	Task *caller_ptr;
+  Task *caller_ptr;
   Task *child_ptr;		/* child process pointer */
+  proc_usr_t *proc_ptr;
   priv_usr_t *cpriv_ptr;		/* child privileges pointer */
   int child_nr, child_lpid, child_ep;
   int rcode, child_gen;
@@ -34,7 +35,7 @@ int st_fork(message *m_ptr)
 //		return(EDVSNOTBIND);
 
   	caller_ptr = get_task(sys_who_p);
-	if(caller_ptr->p_endpoint != pm_ep) 
+	if(caller_ptr->p_proc->p_endpoint != pm_ep) 
 		ERROR_RETURN(EDVSACCES);
 
 	MUKDEBUG("child_id=%d\n",  m_ptr->PR_LPID);
@@ -53,14 +54,15 @@ int st_fork(message *m_ptr)
 	child_ptr = (Task *) get_task(child_nr);
 	rcode = OK;
 #endif /* ALLOC_LOCAL_TABLE */
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(child_ptr));
+	proc_ptr = child_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
 	/* Test if the child was binded to SYSTASK */	
-	if( child_ptr->p_rts_flags != SLOT_FREE) 	return(EDVSBUSY);
+	if( child_ptr->p_proc->p_rts_flags != SLOT_FREE) 	return(EDVSBUSY);
 	
 	/* Register the process to the kernel */
-	child_gen = _ENDPOINT_G(child_ptr->p_endpoint) + 1;
-	child_ep = _ENDPOINT(child_gen, child_ptr->p_nr);
+	child_gen = _ENDPOINT_G(child_ptr->p_proc->p_endpoint) + 1;
+	child_ep = _ENDPOINT(child_gen, child_ptr->p_proc->p_nr);
 	MUKDEBUG("bind dcid=%d child_lpid=%d, child_nr=%d  child_ep=%d child_gen=%d\n", 
 		dc_ptr->dc_dcid, child_lpid, child_nr, child_ep, child_gen);
 	rcode = task_bind( child_ptr,  dc_ptr->dc_dcid, child_ep, child_ptr->name);
@@ -75,8 +77,8 @@ int st_fork(message *m_ptr)
 	child_ptr = (Task *) get_task(child_nr);	
 	rcode = OK;
 #endif /* ALLOC_LOCAL_TABLE */
-	
-	MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(child_ptr));
+	proc_ptr = child_ptr->p_proc;
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 
 	m_ptr->PR_ENDPT = child_ep;
 	m_ptr->PR_SLOT  = child_nr;
@@ -90,6 +92,7 @@ int st_fork(message *m_ptr)
 int get_free_proc(void)
 {
 	Task *child_ptr;		/* child process pointer */
+    proc_usr_t *proc_ptr;
 
 	/* Searches for the next free slot 	*/
 	next_child = (dc_ptr->dc_nr_sysprocs);
@@ -99,8 +102,9 @@ int get_free_proc(void)
 #else /* ALLOC_LOCAL_TABLE */			
 		child_ptr = (Task *) get_task(next_child-dc_ptr->dc_nr_tasks);						
 #endif /* ALLOC_LOCAL_TABLE */		
-		if( (child_ptr->p_rts_flags == SLOT_FREE) ) {
-			MUKDEBUG(PROC_MUK_FORMAT,PROC_MUK_FIELDS(child_ptr));
+		if( (child_ptr->p_proc->p_rts_flags == SLOT_FREE) ) {
+			proc_ptr = child_ptr->p_proc;
+			MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 			MUKDEBUG("next_child=%d return=%d\n",
 				next_child, next_child-dc_ptr->dc_nr_tasks);
 			return(next_child-dc_ptr->dc_nr_tasks);

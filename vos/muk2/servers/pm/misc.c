@@ -92,7 +92,7 @@ MUKDEBUG("pm_m_in.pid=%d\n",pm_m_in.pid);
 		rmp = &pm_proc_table[i];
 		if ((rmp->mp_flags & IN_USE) && (rmp->mp_pid==pm_m_in.pid)) {
 			rkp =  (muk_proc_t *) get_task(i);
-  			mp->mp_reply.endpt = rkp->p_endpoint;
+  			mp->mp_reply.endpt = rkp->p_proc->p_endpoint;
   			return(OK);
 		} 
 	}
@@ -106,10 +106,10 @@ MUKDEBUG("pm_m_in.pid=%d\n",pm_m_in.pid);
 	MUKDEBUG("search_key=%s\n",search_key);
 	for ( i = 0; i < dc_ptr->dc_nr_procs; i++) {
 		rkp = get_task(i);
-		if ((rkp->p_rts_flags & SLOT_FREE) == 0){
+		if ((rkp->p_proc->p_rts_flags & SLOT_FREE) == 0){
 			MUKDEBUG("value:%s\n",rkp->name);
 			if(strncmp(rkp->name, search_key, key_len)==0) {
-				mp->mp_reply.endpt = rkp->p_endpoint;
+				mp->mp_reply.endpt = rkp->p_proc->p_endpoint;
 				return(OK);
 			} 
 		}
@@ -119,7 +119,7 @@ MUKDEBUG("pm_m_in.pid=%d\n",pm_m_in.pid);
 	MUKDEBUG("pm_who_e=%d\n",pm_who_e);
   	mp->mp_reply.endpt = pm_who_e;
 	rkp =  (muk_proc_t *) get_task(mp->mp_parent);
-	mp->mp_reply.pendpt = rkp->p_endpoint;
+	mp->mp_reply.pendpt = rkp->p_proc->p_endpoint;
   }
 
   return(OK);
