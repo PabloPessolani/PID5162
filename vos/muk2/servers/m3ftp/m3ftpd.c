@@ -25,7 +25,7 @@ void ftpd_reply(int rcode)
 
 	ftp_mptr->m_type = rcode;
 	DVK_send_T(rcode, clt_ep, ftp_mptr, SEND_RECV_MS);
-	if (rcode == EDVSAGAIN) {
+	if (rcode == EDVSTIMEDOUT) {
 		MUKDEBUG("M3FTPD: ftpd_reply rcode=%d\n", rcode);
 		return;
 	}
@@ -144,7 +144,7 @@ int  main_ftpd ( int argc, char *argv[] )
 		do { 
 			rcode = DVK_receive_T( ANY, ftp_mptr, TIMEOUT_MOLCALL);
 			MUKDEBUG("M3FTPD: muk_receive_T  rcode=%d\n", rcode);
-			if (rcode == EDVSAGAIN) {
+			if (rcode == EDVSTIMEDOUT) {
 				MUKDEBUG("M3FTPD: muk_receive_T TIMEOUT\n");
 				continue ;
 			}else if( rcode < 0) 

@@ -107,7 +107,6 @@ void
 runlock(RWLock *l)
 {
 	Task *t;
-
 	if(--l->readers == 0 && (t = l->wwaiting.head) != nil){
 		deltask(&l->wwaiting, t);
 		l->writer = t;
@@ -139,4 +138,5 @@ wunlock(RWLock *l)
 		l->writer = t;
 		taskready(t);
 	}
+
 }

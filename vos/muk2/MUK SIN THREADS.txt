@@ -1111,9 +1111,139 @@ DEBUG 2:dvk_receive_T:838: ipc ret=-1 <<<<<<<<<<<<<<<<<<<<
  
 [  128.480952] muk2[683]: segfault at 6a ip b77a9e16 sp b456a310 error 4 in libpthread-2.24.so[b779d000+19000]
 
+=====================================================================================================
+20191011:
+		
+		
+	root@node0:~# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  -2    -2   695/3      0    0   20 27342 27342 27342 27342 muk2           
+	 0   0     0   697/5      0    0    0 27342 27342 27342 27342 muk2           
+	 0   1     1   698/6      0    0    0 27342 27342 27342 27342 muk2           
+	 0   3     3   696/4      0    0    0 27342 27342 27342 27342 muk2           
+	 0   8     8   699/7      0    0    0 27342 27342 27342 27342 muk2           
+	 0  14    14   713/9      0    8    0 31438 27342 27342 27342 muk2           
+	 0  22    22   702/8      0    0    0 27342 27342 27342 27342 muk2           
+	root@node0:~# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  14    14   713/9      0    0    0 27342 27342 27342 27342 muk2   
+ 
+ 		 
+[   85.331661] Started in network mode
+[   85.331667] Own node address <1.1.100>, network identity 4711
+[   85.334609] Enabled bearer <eth:eth0>, discovery domain <1.1.0>, priority 10
+[  122.357224] ERROR: 694:check_caller:579: rcode=-310
+[  122.357741] ERROR: 694:check_caller:579: rcode=-310
+[  160.711687] ERROR: 713:ipc_mini_receive:500: rcode=-61 <<<< EDVSTIMEDOUT 
+[  160.711881] muk2[713]: segfault at 6a ip b76cde16 sp b448e310 error 4 in libpthread-2.24.so[b76c1000+19000]
 
-	 
 
+		713 es M3FTPD porque tiene el endpoint 14
+
+	  mukipc.c:muk_timeout_task:106:timeout_task->p_timeout=-1
+	 mukipc.c:muk_timeout_task:106:timeout_task->p_timeout=-1
+	 mukipc.c:muk_timeout_task:106:timeout_task->p_timeout=-1
+	 mukipc.c:muk_timeout_task:106:timeout_task->p_timeout=-1
+	DEBUG 2:dvk_receive_T:838: ipc ret=-1
+	 task.c:pth_dvk:249:PH_MTX_LOCK rqst_mutex 
+ 
+ 		PH_MTX_LOCK(rqst_mutex); <<<<<<<<<<<<<<<<<<<<<<<<< ESTE LO HACE BIEN 
+		TAILQ_INSERT_TAIL(&rqst_head, t, p_entries); <<<<< AQUI PUEDE ESTAR EL PROBLEMA 
+		pthread_kill(t->pid, SIGIO);				 <<<<< AQUI PUEDE ESTAR EL PROBLEMA 
+		PH_MTX_UNLOCK(rqst_mutex);
+		
+ --------------------------------------------------------------
+ANULANDO EL MANEJO DE COLAS SIGUE PASANDO ========>> PROBLEMA CON EL pthread_kill(t->pid, SIGIO); 
+ root@node0:~# dmesg
+[   33.403484] Started in network mode
+[   33.403490] Own node address <1.1.100>, network identity 4711
+[   33.407276] Enabled bearer <eth:eth0>, discovery domain <1.1.0>, priority 10
+[   62.179785] ERROR: 695:check_caller:579: rcode=-310
+[   62.180322] ERROR: 695:check_caller:579: rcode=-310
+[   99.306941] ERROR: 714:ipc_mini_receive:500: rcode=-61
+[   99.307237] muk2[714]: segfault at 6a ip b76c1e16 sp b4482310 error 4 in libpthread-2.24.so[b76b5000+19000]
+root@node0:~# 
+
+--------------------------------------------------------------
+ANULANDO EL KILL 
+
+root@node0:~# dmesg
+[   45.560277] Started in network mode
+[   45.560284] Own node address <1.1.100>, network identity 4711
+[   45.563480] Enabled bearer <eth:eth0>, discovery domain <1.1.0>, priority 10
+[   46.058531] ERROR: 656:check_caller:579: rcode=-310
+[   75.563898] ERROR: 694:check_caller:579: rcode=-310
+[   75.564413] ERROR: 694:check_caller:579: rcode=-310
+[  113.647389] ERROR: 703:ipc_mini_receive:500: rcode=-61 <<<<< VENDIO EL TIMEOUT 
+
+root@node0:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   695/3      0    0   20 27342 27342 27342 27342 muk2           
+ 0   0     0   697/5      0    0    0 27342 27342 27342 27342 muk2           
+ 0   1     1   698/6      0    0    0 27342 27342 27342 27342 muk2           
+ 0   3     3   696/4      0    0    0 27342 27342 27342 27342 muk2           
+ 0   8     8   699/7      0    0    0 27342 27342 27342 27342 muk2           
+ 0  14    14   703/9      0    0    0 27342 27342 27342 27342 muk2           
+ 0  22    22   700/8      0    0    0 27342 27342 27342 27342 muk2  
+ 
+ NO SE FALLA, (pero no ejecuta el SIGNAL HANDLER !!
+ 
+ 
+ TODO: Hacer una tarea en el ciclo de libtask que haga
+		PH_MUTEX_UNLOCK();
+		
+		PH_MUTEX_UNLOCK();
+		Para que le de tiempo de ejecucion a los threads que necesitan acceder 
+		
+TODO:
+	Usar int pthread_sigmask(int how, const sigset_t *set, sigset_t *oldset);
+	
+	
+MODIFICAR EL SCHEDULER 
+
+static void
+taskscheduler(void)
+{
+	int i;
+	Task *t;
+
+	taskdebug("scheduler enter");
+	
+	for(;;){
+		if(taskcount == 0)
+			exit(taskexitval);
+			
+		PH_MTX_LOCK(muk2_mutex);
+		if( dvk_bitmap != 0)
+			dvk_wakeup_tasks();
+		PH_MTX_UNLOCK(muk2_mutex);
+		
+		t = taskrunqueue.head;
+		if(t == nil){
+			fprint(2, "no runnable tasks! %d tasks stalled\n", taskcount);
+			exit(1);
+		}
+		deltask(&taskrunqueue, t);
+		t->ready = 0;
+		taskrunning = t;
+		tasknswitch++;
+		taskdebug("run %d (%s)", t->id, t->name);
+		contextswitch(&taskschedcontext, &t->context);
+//print("back in scheduler\n");
+		taskrunning = nil;
+		if(t->exiting){
+			if(!t->system)
+				taskcount--;
+			i = t->alltaskslot;
+			alltask[i] = alltask[--nalltask];
+			alltask[i]->alltaskslot = i;
+			free(t);
+		}
+	}
+}
+	
+
+		
 ULTIMO_LOG 		
 =====================================================================================================
 

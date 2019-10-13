@@ -65,6 +65,7 @@ EXTERN int ftp_nr, ftp_ep, ftp_id;
 EXTERN char *ftp_cfg;
 
 EXTERN int	muk_mutex; // pseudo-mutex 
+EXTERN pthread_mutex_t muk2_mutex;
 
 EXTERN Rendez muk_cond;
 EXTERN Rendez sys_cond;

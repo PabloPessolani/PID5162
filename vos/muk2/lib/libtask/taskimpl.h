@@ -143,6 +143,8 @@ void	deltask(Tasklist*, Task*);
 extern Task	*taskrunning;
 extern int	taskcount;
 
+extern pthread_mutex_t muk2_mutex;
+
 extern dc_usr_t *dc_ptr;
 
 #endif //  _TASKIMPL_H_

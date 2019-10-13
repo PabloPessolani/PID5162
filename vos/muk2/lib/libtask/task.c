@@ -23,7 +23,6 @@ Task  *pproc[NR_PROCS+NR_TASKS];
 
 TAILQ_HEAD(tailhead, Task) rqst_head;
 struct tailhead *rqst_headp;                 /* Tail queue head. */
-pthread_mutex_t rqst_mutex;
 
 static char *argv0;
 static	void		contextswitch(Context *from, Context *to);
@@ -218,21 +217,21 @@ static void pth_dvk(void *t_arg)
 		LIBDEBUG("%d: " DVK_RQST_FORMAT, t->id, DVK_RQST_FIELDS(r_ptr));
 		switch(r_ptr->rq_oper) {
 			case SEND:
-				r_ptr->rq_rcode = dvk_send_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				rcode = dvk_send_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
 				break;
 			case SENDREC:
-				r_ptr->rq_rcode = dvk_sendrec_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				rcode = dvk_sendrec_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
 				break;
 			case RECEIVE:
-				r_ptr->rq_rcode = dvk_receive_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				rcode = dvk_receive_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
 				break;
 			case NOTIFY:
-				r_ptr->rq_rcode = dvk_notify(r_ptr->rq_other_ep);
+				rcode = dvk_notify(r_ptr->rq_other_ep);
 				break;
 			case VCOPY:
 				v_ptr = &r_ptr->rq_vcopy;
 				LIBDEBUG("%s: " MUK_VCOPY_FORMAT, t->p_proc->p_name, MUK_VCOPY_FIELDS(v_ptr));
-				r_ptr->rq_rcode = dvk_vcopy(v_ptr->v_src,v_ptr->v_saddr,
+				rcode = dvk_vcopy(v_ptr->v_src,v_ptr->v_saddr,
 										v_ptr->v_dst,v_ptr->v_daddr,
 										v_ptr->v_bytes);
 				break;
@@ -240,11 +239,19 @@ static void pth_dvk(void *t_arg)
 				r_ptr->rq_rcode = EDVSNOSYS;
 				break;
 		}
-		if(r_ptr->rq_rcode < 0) ERROR_PRINT(r_ptr->rq_rcode);
-		PH_MTX_LOCK(rqst_mutex);
-		TAILQ_INSERT_TAIL(&rqst_head, t, p_entries);
-		PH_MTX_UNLOCK(rqst_mutex);
-		pthread_kill(t->pid, SIGIO);
+		if( rcode < 0)	{
+			r_ptr->rq_rcode = (-errno);
+			ERROR_PRINT(r_ptr->rq_rcode);
+		} else {
+			r_ptr->rq_rcode = rcode;			
+		}
+		LIBDEBUG("pid=%d id=%d name=%s\n", t->pid, t->id, t->name);
+		PH_MTX_LOCK(muk2_mutex);
+//		TAILQ_INSERT_TAIL(&rqst_head, t, p_entries);
+//		pthread_kill(t->pid, SIGIO);
+		SET_BIT(dvk_bitmap, t->id);
+		taskwakeup(&t->p_rendez);
+		PH_MTX_UNLOCK(muk2_mutex);
 	}
 }
 
@@ -357,21 +364,20 @@ int task_bind( Task* t, int dcid, int p_ep, char *name)
 {
 	int p_nr, rcode;
 	proc_usr_t *p_ptr;
-	
+
 	assert(t != NULL);
-	
-	
+		
 	p_ptr = malloc(sizeof (proc_usr_t));
 	if(p_ptr == NULL){
 		ERROR_EXIT(-errno);
 	}
 
+	t->pid = syscall (SYS_gettid);
 	t->p_proc = p_ptr;
-	
 	init_task_rqst(t);
-			
+		
 	p_nr = _ENDPOINT_P(p_ep);
-	LIBDEBUG("id=%d p_nr=%d p_ep=%d\n", t->id, p_nr, p_ep);
+	LIBDEBUG("pid=%d id=%d p_nr=%d p_ep=%d\n", t->pid, t->id, p_nr, p_ep);
 	if( p_nr < (-dc_ptr->dc_nr_tasks) || p_nr >= (dc_ptr->dc_nr_procs))
 		ERROR_EXIT(EDVSBADVALUE);
 	if( pproc[p_nr+dc_ptr->dc_nr_tasks] != NULL) 
@@ -562,7 +568,6 @@ taskcreate(void (*fn)(void*), void *arg, uint stack)
 			abort();
 		}
 	}
-	t->pid = syscall (SYS_gettid);
 	t->alltaskslot = nalltask;
 	alltask[nalltask++] = t;
 	taskready(t);
@@ -635,6 +640,18 @@ contextswitch(Context *from, Context *to)
 	}
 }
 
+static void dvk_wakeup_tasks(void)
+{
+	for(i=0; i<nalltask; i++){
+		if( TEST_BIT(dvk_bitmap, i)){
+			CLR_BIT(dvk_bitmap, i);
+			t = alltask[i];
+			taskwakeup(&t->p_rendez);
+		} 
+		if( dvk_bitmap == 0) return;
+	}
+}
+
 static void
 taskscheduler(void)
 {
@@ -642,9 +659,16 @@ taskscheduler(void)
 	Task *t;
 
 	taskdebug("scheduler enter");
+	
 	for(;;){
 		if(taskcount == 0)
 			exit(taskexitval);
+		
+		PH_MTX_LOCK(muk2_mutex);
+		if( dvk_bitmap != 0)
+			dvk_wakeup_tasks();
+		PH_MTX_UNLOCK(muk2_mutex);
+		
 		t = taskrunqueue.head;
 		if(t == nil){
 			fprint(2, "no runnable tasks! %d tasks stalled\n", taskcount);
@@ -774,29 +798,6 @@ taskinfo(int s)
 	}			
 }
 
-
-void dvk_handler(int s)
-{
-	int i;
-	dvk_request_t *r_ptr;
-	Task *t;
-	
-	LIBDEBUG("SIGNAL=%d\n",s);
-
-	PH_MTX_LOCK(rqst_mutex);
-	while (rqst_head.tqh_first != NULL) {
-		t = rqst_head.tqh_first;
-		if( t->p_proc == NULL)
-			ERROR_EXIT(EDVSNOTBIND);		
-		r_ptr = &t->p_rqst;
-		LIBDEBUG("wakeup %s: oper=%d rcode=%d\n", 
-				t->name, r_ptr->rq_oper, r_ptr->rq_rcode);
-		taskwakeup(&t->p_rendez);
-		TAILQ_REMOVE(&rqst_head, rqst_head.tqh_first, p_entries);
-	}
-	PH_MTX_UNLOCK(rqst_mutex);
-}
-
 /*
  * startup
  */
@@ -819,15 +820,11 @@ main(int argc, char **argv)
 	struct sigaction sa, osa;
 
 	memset(&sa, 0, sizeof sa);
-	sa.sa_handler = taskinfo;
+	sa.sa_handler = &taskinfo;
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGQUIT, &sa, &osa);
 
-	sa.sa_handler = dvk_handler;
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGIO, &sa, &osa);
-	
-	
+
 #ifdef SIGINFO
 	sigaction(SIGINFO, &sa, &osa);
 #endif
@@ -837,7 +834,9 @@ main(int argc, char **argv)
 	taskargv = argv;
 	
 	TAILQ_INIT(&rqst_head); 
-	pthread_mutex_init(&rqst_mutex, NULL);
+
+	dvk_bitmap = 0;
+	pthread_mutex_init(&muk2_mutex, NULL);
 
 	for( i = 0; i < (NR_PROCS+NR_TASKS); i++) {
 		pproc[i] = NULL;
