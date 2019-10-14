@@ -298,7 +298,8 @@ struct Task
 	
 	proc_usr_t 		*p_proc;		/* pointer to a proc_usr_t allocated struct 	*/
 	pthread_t		p_thread;
-	pthread_mutex_t p_mutex;
+	pthread_mutex_t p_th_mutex;
+	pthread_mutex_t p_tsk_mutex;
 	pthread_cond_t	p_th_cond;		/* condition variable for DVK ipc thread */ 
 	pthread_cond_t	p_tsk_cond;		/* condition variable for the task to synchronize with DVK ipc thread */ 
 	dvk_request_t	p_rqst;			
@@ -308,12 +309,12 @@ struct Task
 	Rendez			p_rendez;
 	int				p_error;
 	unsigned long	p_pending;		/* bitmap of pending notifies 					*/
+	
 	long			p_timeout;
-	Task			*p_to_link;
+    TAILQ_ENTRY(Task) p_entries;     /* Tail queue. */
+
 	dvktimer_t		p_alarm_timer;
 	message			*p_msg;  
-	
-    TAILQ_ENTRY(Task) p_entries;         /* Tail queue. */
 
 };	 
 
@@ -344,7 +345,7 @@ int muk_notify_X(int src_nr, int dst_ep);
 #define muk_wait4bindep_T(endpoint, to_ms)	muk_wait4bind_X(WAIT_BIND,  endpoint, to_ms)
 #define muk_wait4unbind_T(endpoint, to_ms)	muk_wait4bind_X(WAIT_UNBIND, endpoint, to_ms)
 
-int muk_timeout_task(void );
+int muk_tout_task(void );
 
 #ifdef __cplusplus
 }

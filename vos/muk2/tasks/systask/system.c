@@ -63,9 +63,11 @@ int  main_systask ( int argc, char *argv[] )
 		* Receive Request 
 	 	*------------------------------------*/
 		MUKDEBUG("SYSTASK is waiting for requests\n");
-		rcode = muk_receive(ANY,&sys_m);
-
-		MUKDEBUG("muk_receive rcode=%d\n", rcode);
+		do {
+			rcode = muk_receive_T(ANY,&sys_m, TIMEOUT_MOLCALL);
+			MUKDEBUG("muk_receive rcode=%d\n", rcode);
+		}while(rcode == EDVSTIMEDOUT);
+		
 		if(rcode < 0 ) {
 			ERROR_PRINT(rcode);
 			taskexit(&rcode);

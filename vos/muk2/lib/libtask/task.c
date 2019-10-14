@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <pthread.h>
 
+
 extern int	local_nodeid;
+unsigned long dvk_bitmap;
 
 int	taskdebuglevel;
 int	taskcount;
@@ -20,9 +22,6 @@ Task	**alltask;
 int		nalltask;
 
 Task  *pproc[NR_PROCS+NR_TASKS];
-
-TAILQ_HEAD(tailhead, Task) rqst_head;
-struct tailhead *rqst_headp;                 /* Tail queue head. */
 
 static char *argv0;
 static	void		contextswitch(Context *from, Context *to);
@@ -43,10 +42,8 @@ int DVK_send_T(int dst_ep, message *m_ptr, long timeout)
 	t->p_rqst.rq_timeout	= timeout;
 	t->p_rqst.rq_rcode 		= OK;
 	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
 	tasksleep(&t->p_rendez);
 	if( t->p_rqst.rq_rcode < 0 )
@@ -70,10 +67,8 @@ int DVK_sendrec_T(int srcdst_ep, message *m_ptr, long timeout)
 	t->p_rqst.rq_timeout	= timeout;
 	t->p_rqst.rq_rcode 		= OK;
 	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
 	tasksleep(&t->p_rendez);
 	if( t->p_rqst.rq_rcode < 0 )
@@ -97,10 +92,8 @@ int DVK_receive_T(int src_ep, message *m_ptr, long timeout)
 	t->p_rqst.rq_timeout	= timeout;
 	t->p_rqst.rq_rcode 		= OK;
 	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
 	tasksleep(&t->p_rendez);
 	if( t->p_rqst.rq_rcode < 0 )
@@ -124,10 +117,8 @@ int DVK_notify( int dst_ep)
 	t->p_rqst.rq_timeout	= TIMEOUT_FOREVER;
 	t->p_rqst.rq_rcode 		= OK;
 	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
 	tasksleep(&t->p_rendez);
 	if( t->p_rqst.rq_rcode < 0 )
@@ -159,11 +150,9 @@ int DVK_vcopy(int src_ep, int src_addr, int dst_ep, int dst_addr, int bytes)
 	v_ptr->v_dst 	= dst_ep;
 	v_ptr->v_daddr 	= dst_addr;
 	v_ptr->v_bytes 	= bytes;
-
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+	
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
 	tasksleep(&t->p_rendez);
 	if( t->p_rqst.rq_rcode < 0 )
@@ -190,10 +179,8 @@ static void pth_dvk(void *t_arg)
 	
 	t = (Task *) t_arg;
 	LIBDEBUG("DVK thread for %d\n", t->id);	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_WAIT(t->p_th_cond, t->p_mutex);
-	PH_COND_SIGNAL(t->p_tsk_cond);
-	PH_MTX_UNLOCK(t->p_mutex);
+	PH_MTX_LOCK(t->p_th_mutex);
+	PH_MTX_UNLOCK(t->p_tsk_mutex);
 	
 	t->p_proc->p_lpid = t->pid;
 	t->p_proc->p_vpid = syscall(SYS_gettid);
@@ -209,10 +196,8 @@ static void pth_dvk(void *t_arg)
 			t->id, rcode);	
 			
 	while(TRUE){
-		PH_MTX_LOCK(t->p_mutex);
-		PH_COND_WAIT(t->p_th_cond, t->p_mutex);
-		PH_COND_SIGNAL(t->p_tsk_cond);
-		PH_MTX_UNLOCK(t->p_mutex);
+		PH_MTX_LOCK(t->p_th_mutex);
+		PH_MTX_UNLOCK(t->p_tsk_mutex);
 		r_ptr = &t->p_rqst;
 		LIBDEBUG("%d: " DVK_RQST_FORMAT, t->id, DVK_RQST_FIELDS(r_ptr));
 		switch(r_ptr->rq_oper) {
@@ -247,10 +232,9 @@ static void pth_dvk(void *t_arg)
 		}
 		LIBDEBUG("pid=%d id=%d name=%s\n", t->pid, t->id, t->name);
 		PH_MTX_LOCK(muk2_mutex);
-//		TAILQ_INSERT_TAIL(&rqst_head, t, p_entries);
+//		TAILQ_INSERT_TAIL(&tout_head, t, p_entries);
 //		pthread_kill(t->pid, SIGIO);
 		SET_BIT(dvk_bitmap, t->id);
-		taskwakeup(&t->p_rendez);
 		PH_MTX_UNLOCK(muk2_mutex);
 	}
 }
@@ -401,16 +385,20 @@ int task_bind( Task* t, int dcid, int p_ep, char *name)
 	LIBDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
 	LIBDEBUG("pproc=%X\n", &pproc[p_nr+dc_ptr->dc_nr_tasks]);
 	
+	// initialize both mutexs to 0 
+	PH_MTX_LOCK(t->p_th_mutex);
+	PH_MTX_LOCK(t->p_tsk_mutex);
+	
 	rcode = pthread_create( &t->p_thread, NULL, pth_dvk, t);
 	if(rcode) ERROR_EXIT(rcode);
 	MUKDEBUG("t->p_thread=%u\n",t->p_thread);
-		
-	taskdelay(1000);
+
+	PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  al thread 
+	PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
 	
-	PH_MTX_LOCK(t->p_mutex);
-	PH_COND_SIGNAL(t->p_th_cond);
-	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
-	PH_MTX_UNLOCK(t->p_mutex);
+//	PH_COND_SIGNAL(t->p_th_cond);
+//	PH_COND_WAIT(t->p_tsk_cond, t->p_mutex);
+//	PH_MTX_UNLOCK(t->p_tsk_mutex);
 		
 	return(p_ep);
 }
@@ -459,9 +447,10 @@ int task_unbind( Task* t, int p_ep)
 	t->p_thread		= (-1);
 //	t->p_mutex 		= PTHREAD_MUTEX_INITIALIZER;
 //	t->p_th_cond		= PTHREAD_COND_INITIALIZER;
-	pthread_mutex_init(&t->p_mutex, NULL);
-	pthread_cond_init(&t->p_th_cond, NULL);
-	pthread_cond_init(&t->p_tsk_cond, NULL);
+	pthread_mutex_init(&t->p_th_mutex, NULL);
+	pthread_mutex_init(&t->p_tsk_mutex, NULL);
+//	pthread_cond_init(&t->p_th_cond, NULL);
+//	pthread_cond_init(&t->p_tsk_cond, NULL);
 	init_task_rqst(t);
 
 	t->p_caller_q	= NULL; 			/* head list of trying to send task to this task */
@@ -470,7 +459,6 @@ int task_unbind( Task* t, int p_ep)
 	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
 	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
 	t->p_timeout 	= TIMEOUT_FOREVER;
-	t->p_to_link 	= NULL;
 		
 	pproc[p_nr+dc_ptr->dc_nr_tasks] = NULL;
 	return(OK);
@@ -501,9 +489,12 @@ taskalloc(void (*fn)(void*), void *arg, uint stack)
 	t->p_thread		= (-1);
 //	t->p_mutex 		= PTHREAD_MUTEX_INITIALIZER;
 //	t->p_th_cond		= PTHREAD_COND_INITIALIZER;
-	pthread_mutex_init(&t->p_mutex, NULL);
-	pthread_cond_init(&t->p_th_cond, NULL);
-	pthread_cond_init(&t->p_tsk_cond, NULL);
+//	pthread_mutex_init(&t->p_mutex, NULL);
+	pthread_mutex_init(&t->p_th_mutex, NULL);
+	pthread_mutex_init(&t->p_tsk_mutex, NULL);
+	
+//	pthread_cond_init(&t->p_th_cond, NULL);
+//	pthread_cond_init(&t->p_tsk_cond, NULL);
 
 	init_task_rqst(t);
 		
@@ -513,7 +504,6 @@ taskalloc(void (*fn)(void*), void *arg, uint stack)
 	t->p_error 		= 0; 				/* returned error from IPC after block 	*/ 
 	t->p_pending	= 0; 				/* bitmap of pending notifies 		 	*/ 
 	t->p_timeout 	= TIMEOUT_FOREVER;
-	t->p_to_link 	= NULL;				/* link to other process on timeout list */
 	
 	/* do a reasonable initialization */
 	memset(&t->context.uc, 0, sizeof t->context.uc);
@@ -642,10 +632,15 @@ contextswitch(Context *from, Context *to)
 
 static void dvk_wakeup_tasks(void)
 {
+	int i;
+	Task *t;
+	
+	LIBDEBUG("nalltask=%d dvk_bitmap=%lX\n", nalltask, dvk_bitmap);
 	for(i=0; i<nalltask; i++){
-		if( TEST_BIT(dvk_bitmap, i)){
-			CLR_BIT(dvk_bitmap, i);
-			t = alltask[i];
+		t = alltask[i];
+		if( TEST_BIT(dvk_bitmap, t->id)){
+			CLR_BIT(dvk_bitmap, t->id);
+			LIBDEBUG("taskwakeup id=%d name=%s\n", t->id, t->name);
 			taskwakeup(&t->p_rendez);
 		} 
 		if( dvk_bitmap == 0) return;
@@ -833,8 +828,6 @@ main(int argc, char **argv)
 	taskargc = argc;
 	taskargv = argv;
 	
-	TAILQ_INIT(&rqst_head); 
-
 	dvk_bitmap = 0;
 	pthread_mutex_init(&muk2_mutex, NULL);
 

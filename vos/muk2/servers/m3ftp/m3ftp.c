@@ -12,7 +12,7 @@ dc_usr_t  dcu, *dc_ptr;
 proc_usr_t m3ftp, *m3ftp_ptr;	
 proc_usr_t m3ftpd, *m3ftpd_ptr;	
 FILE *fp;
-message *m_ptr;
+message *m_ptr, m;
 char *path_ptr;
 char *data_ptr;
 
@@ -110,7 +110,6 @@ void ftp_init(void)
 	if( TEST_BIT(m3ftpd_ptr->p_rts_flags, BIT_SLOT_FREE)) {
 		fprintf(stderr, "m3ftpd not started\n");	
 	}
-#endif // ANULADO 	
 	
 	/*---------------- Allocate memory for message  ---------------*/
 	posix_memalign( (void **) &m_ptr, getpagesize(), sizeof(message) );
@@ -118,6 +117,7 @@ void ftp_init(void)
    		ERROR_EXIT(-errno);
 	}
 	MUKDEBUG("M3FTP m_ptr=%p\n",m_ptr);
+#endif // ANULADO 	
 
 	/*---------------- Allocate memory for filename  ---------------*/
 	posix_memalign( (void **) &path_ptr, getpagesize(), MNX_PATH_MAX );
@@ -173,6 +173,8 @@ int main ( int argc, char *argv[] )
 	dir_ptr = getcwd(path_ptr, MNX_PATH_MAX);
 	MUKDEBUG("M3FTP new cwd=%s\n", dir_ptr);
 
+	m_ptr = &m;
+	
 	oper = FTP_NONE;
     while ((opt = getopt(argc, argv, "pg")) != -1) {
         switch (opt) {

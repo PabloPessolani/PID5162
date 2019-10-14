@@ -192,7 +192,7 @@ int st_setpname(message *m_ptr)
 	if(  TEST_BIT(sysproc_ptr->p_proc->p_rts_flags, BIT_SLOT_FREE)) 
 		ERROR_RETURN(EDVSNOTBIND);
 	
-	strncpy(sysproc_ptr->name,m_ptr->M3_NAME,(M3_STRING-1));
+	strncpy(sysproc_ptr->name, m_ptr->M3_NAME,(M3_STRING-1));
 	
 	return(OK);
 }

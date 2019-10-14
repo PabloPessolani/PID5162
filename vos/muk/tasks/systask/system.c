@@ -48,9 +48,7 @@ int  main_systask ( int argc, char *argv[] )
 	if (rcode ) ERROR_EXIT(rcode);
 
 	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(sys_cond, muk_mutex);
+	MTX_LOCK(sys_mutex);
 	MTX_UNLOCK(muk_mutex);
 	
 	/*------------------------------------

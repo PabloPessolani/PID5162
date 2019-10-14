@@ -19,6 +19,7 @@ EXTERN int dump_fd;
 EXTERN time_t boottime;
 
 EXTERN int main_ep;
+EXTERN int tout_id;
 
 //-------------------- SYSTASK GLOBAL DATA 
 // EXTERN Task *sys_tsk;
@@ -68,6 +69,7 @@ EXTERN int	muk_mutex; // pseudo-mutex
 EXTERN pthread_mutex_t muk2_mutex;
 
 EXTERN Rendez muk_cond;
+EXTERN Rendez tout_cond;
 EXTERN Rendez sys_cond;
 EXTERN Rendez pm_cond;
 EXTERN Rendez rd_cond;
@@ -75,3 +77,6 @@ EXTERN Rendez fs_cond;
 EXTERN Rendez is_cond;
 EXTERN Rendez nw_cond;
 EXTERN Rendez ftp_cond;
+
+
+

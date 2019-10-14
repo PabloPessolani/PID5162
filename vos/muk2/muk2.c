@@ -5,6 +5,7 @@
 #define FORK_WAIT_MS 1000
 #define	INIT_PID 		1
 
+
 /*===========================================================================*
  *				dwalltime				     *
  *===========================================================================*/
@@ -318,7 +319,7 @@ static void tsk_ftp(void *str_arg)
  *===========================================================================*/
 void taskmain(int argc, char **argv)
 {
-	int rcode, to_id, i;
+	int rcode, i;
 	Task *t;
 	static char muk_cmd[_POSIX_ARG_MAX];
  	proc_usr_t *mukproc_ptr;		/*  process pointer */
@@ -366,15 +367,22 @@ void taskmain(int argc, char **argv)
 	
 	muk_mutex = 1; // initialize pseudo-mutex 
 
-	to_id = taskcreate(muk_timeout_task, 0, MUK_STACK_SIZE);
+	MUKDEBUG("Starting TIMEOUT task -----------------------------------\n");
+	sprintf(muk_cmd,"timeout\n");
+	MTX_LOCK(muk_mutex);
+	tout_id = taskcreate(muk_tout_task, 0, MUK_STACK_SIZE);
+	MUKDEBUG("tout_id=%d\n",tout_id);
+	COND_WAIT(muk_cond, muk_mutex);
+	COND_SIGNAL(tout_cond);
+	MTX_UNLOCK(muk_mutex);
 
 #if 	ENABLE_SYSTASK
 	/*Create SYSTASK Task  */
 	MUKDEBUG("Starting SYSTASK task -----------------------------------\n");
 	sprintf(muk_cmd,"systask\n");
+	MTX_LOCK(muk_mutex);
 	sys_id = taskcreate(tsk_systask, muk_cmd, MUK_STACK_SIZE);
 	MUKDEBUG("sys_id=%d\n",sys_id);
-	MTX_LOCK(muk_mutex);
 	COND_WAIT(muk_cond, muk_mutex);
 	COND_SIGNAL(sys_cond);
 	MTX_UNLOCK(muk_mutex);	
@@ -385,9 +393,9 @@ void taskmain(int argc, char **argv)
 	if( rd_ep != HARDWARE) {
 		MUKDEBUG("Starting RDISK Task--------------------------------------\n");
 		sprintf(muk_cmd,"rdisk -c %s\n", rd_cfg);
+		MTX_LOCK(muk_mutex);
 		rd_id = taskcreate(tsk_rd, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("rd_id=%d\n",rd_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		COND_SIGNAL(rd_cond);
 		MTX_UNLOCK(muk_mutex);
@@ -399,9 +407,9 @@ void taskmain(int argc, char **argv)
 	if( pm_ep != HARDWARE) {
 		MUKDEBUG("Starting PM Task ---------------------------------------\n");
 		sprintf(muk_cmd,"pm\n");
+		MTX_LOCK(muk_mutex);
 		pm_id = taskcreate(tsk_pm, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("pm_id=%d\n",pm_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) get_task(pm_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
@@ -415,9 +423,9 @@ void taskmain(int argc, char **argv)
 	if( fs_ep != HARDWARE) {
 		MUKDEBUG("Starting FS Task--------------------------------------\n");
 		sprintf(muk_cmd,"fs %s\n", fs_cfg);
+		MTX_LOCK(muk_mutex);
 		fs_id = taskcreate(tsk_fs, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("fs_id=%d\n",fs_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) get_task(fs_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
@@ -431,9 +439,9 @@ void taskmain(int argc, char **argv)
 	if( is_ep != HARDWARE) {
 		MUKDEBUG("Starting IS Task--------------------------------------\n");
 		sprintf(muk_cmd,"is\n");
+		MTX_LOCK(muk_mutex);
 		is_id = taskcreate(tsk_is, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("is_id=%d\n",is_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		COND_SIGNAL(is_cond);
 		MTX_UNLOCK(muk_mutex);
@@ -447,9 +455,9 @@ void taskmain(int argc, char **argv)
 	//	pthread_attr_init(&attrs);
 	//	pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_JOINABLE);
 		sprintf(muk_cmd,"nw %s\n", web_cfg);
+		MTX_LOCK(muk_mutex);
 		web_id = taskcreate(tsk_web, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("web_id=%d\n",web_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		COND_SIGNAL(nw_cond);
 		MTX_UNLOCK(muk_mutex);
@@ -459,11 +467,11 @@ void taskmain(int argc, char **argv)
 #if ENABLE_FTP
 	if( ftp_ep != HARDWARE) {
 		/*Create FTP Task  */
-		MUKDEBUG("Starting FTP Task--------------------------------------\n");
-		sprintf(muk_cmd,"m3ftp\n");
+		MUKDEBUG("Starting FTPD Task--------------------------------------\n");
+		sprintf(muk_cmd,"m3ftpd\n");
+		MTX_LOCK(muk_mutex);
 		ftp_id = taskcreate(tsk_ftp, muk_cmd, MUK_STACK_SIZE);
 		MUKDEBUG("ftp_id=%d\n",ftp_id);
-		MTX_LOCK(muk_mutex);
 		COND_WAIT(muk_cond, muk_mutex);
 		COND_SIGNAL(ftp_cond);
 		MTX_UNLOCK(muk_mutex);

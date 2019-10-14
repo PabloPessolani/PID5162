@@ -112,6 +112,7 @@ void fproc_init(int p_nr)
 		MUKDEBUG(PM_PROC_FORMAT,PM_PROC_FIELDS(mp));
 		fs_proc->fp_endpoint= mp->mp_endpoint;
 		fs_proc->fp_pid		= mp->mp_pid;
+		fs_proc->fp_pid		= mp->mp_pid;		
 	}
 }
 

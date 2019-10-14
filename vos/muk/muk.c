@@ -380,6 +380,16 @@ int main ( int argc, char *argv[] )
 //	tap_ep		= HARDWARE;
 //	inet_ep		= HARDWARE;
 
+	// initialize synchronization semaphores ALL IN ZERO 
+	MTX_LOCK(muk_mutex);
+	MTX_LOCK(sys_mutex);
+	MTX_LOCK(pm_mutex);
+	MTX_LOCK(rd_mutex);
+	MTX_LOCK(fs_mutex);
+	MTX_LOCK(is_mutex);
+	MTX_LOCK(nw_mutex);
+	MTX_LOCK(ftp_mutex);  
+    
 	cfg= nil;
 	MUKDEBUG("cfg_file=%s\n", argv[1]);
 	cfg = config_read(argv[1], CFG_ESCAPED, cfg);
@@ -399,12 +409,10 @@ int main ( int argc, char *argv[] )
 	rcode = pthread_create( &sys_pth, NULL, pth_systask, muk_cmd );
 	if(rcode)ERROR_EXIT(rcode);
 	MUKDEBUG("sys_pth=%u\n",sys_pth);
-	MTX_LOCK(muk_mutex);
-	COND_WAIT(muk_cond, muk_mutex);
-	COND_SIGNAL(sys_cond);
-	MTX_UNLOCK(muk_mutex);
 	mukproc_ptr = (proc_usr_t *) PROC_MAPPED(sys_ep);
 	SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
+	MTX_UNLOCK(sys_mutex);
+	MTX_LOCK(muk_mutex);
 	
 #endif // ENABLE_SYSTASK
 	
@@ -418,12 +426,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &rd_pth, NULL, pth_rd, muk_cmd);
 		if(rcode) ERROR_EXIT(rcode);
 		MUKDEBUG("rd_pth=%u\n",rd_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(rd_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
-		COND_SIGNAL(rd_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(rd_mutex);
+		MTX_LOCK(muk_mutex);
 	}
 #endif // ENABLE_RDISK 
 
@@ -437,12 +443,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &pm_pth, NULL, pth_pm, muk_cmd );
 		if(rcode)ERROR_EXIT(rcode);
 		MUKDEBUG("pm_pth=%u\n",pm_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(pm_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
-		COND_SIGNAL(pm_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(pm_mutex);
+		MTX_LOCK(muk_mutex);
 	}
 #endif // ENABLE_PM
 
@@ -456,12 +460,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &fs_pth, NULL, pth_fs, muk_cmd);
 		if(rcode) ERROR_EXIT(rcode);
 		MUKDEBUG("fs_pth=%u\n",fs_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(fs_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);	
-		COND_SIGNAL(fs_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(fs_mutex);
+		MTX_LOCK(muk_mutex);
 	}
 #endif // ENABLE_FS
 
@@ -475,12 +477,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &is_pth, NULL, pth_is, muk_cmd);
 		if(rcode) ERROR_EXIT(rcode);
 		MUKDEBUG("is_pth=%u\n",is_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(is_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);	
-		COND_SIGNAL(is_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(is_mutex);
+		MTX_LOCK(muk_mutex);
 	} 
 #endif // ENABLE_IS 
 		
@@ -494,12 +494,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &web_pth, NULL, pth_web, muk_cmd);
 		if(rcode) ERROR_EXIT(rcode);
 		MUKDEBUG("web_pth=%u\n",web_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(web_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);	
-		COND_SIGNAL(nw_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(nw_mutex);
+		MTX_LOCK(muk_mutex);
 	}
 #endif // ENABLE_NW
 
@@ -513,12 +511,10 @@ int main ( int argc, char *argv[] )
 		rcode = pthread_create( &ftp_pth, NULL, pth_ftp, muk_cmd );
 		if(rcode) ERROR_EXIT(rcode);
 		MUKDEBUG("ftp_pth=%u\n",ftp_pth);
-		MTX_LOCK(muk_mutex);
-		COND_WAIT(muk_cond, muk_mutex);
 		mukproc_ptr = (proc_usr_t *) PROC_MAPPED(ftp_ep);
 		SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);	
-		COND_SIGNAL(ftp_cond);
-		MTX_UNLOCK(muk_mutex);
+		MTX_UNLOCK(ftp_mutex);
+		MTX_LOCK(muk_mutex);
 	}
 #endif // ENABLE_FTP
 

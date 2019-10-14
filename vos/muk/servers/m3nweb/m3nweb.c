@@ -361,9 +361,7 @@ int main_nweb (int argc, char *argv[] )
 	
 	MUKDEBUG("SYNCHRONIZE WITH MUK \n");
 	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(nw_cond, muk_mutex);
+	MTX_LOCK(nw_mutex);
 	MTX_UNLOCK(muk_mutex);
 
 	MUKDEBUG("Starting Web server main loop\n");

@@ -3,131 +3,116 @@
 
 Task	*timeout_task;
 #define MUK_TIMER_INTERVAL 		1000
+#define SETTIMEOUT			MOLVOID3
+
+
+extern Rendez muk_cond;
+extern Rendez tout_cond;
+extern int	muk_mutex; // pseudo-mutex 
+
+TAILQ_HEAD(tailhead, Task) tout_head;
+struct tailhead	*tout_ptr;
 
 void 	muk_enqueue_to(int timeout_ms)
 {
 	Task *t, *t_ptr;
-	long next_to, total_to;
+	long total_to;
 	
 	t = current_task(); 
 	LIBDEBUG("name=%s id=%d timeout_ms:%ld\n", t->name, t->id, timeout_ms);
+	t->p_error = OK; 
 	
-	assert(t->p_timeout == TIMEOUT_FOREVER);
-	assert(t->p_to_link == NULL);
 	assert(timeout_ms > 0);
 	timeout_ms = (timeout_ms < MUK_TIMER_INTERVAL)?MUK_TIMER_INTERVAL:timeout_ms;
-	
+
 	// void list 
-	if( timeout_task->p_to_link == NULL){
-		t->p_to_link = NULL;
-		t->p_timeout = TIMEOUT_FOREVER;
-		timeout_task->p_timeout = timeout_ms;
-		timeout_task->p_to_link = t;
+	if( TAILQ_EMPTY(tout_ptr)){
+		t->p_timeout = timeout_ms;
+		LIBDEBUG("TAILQ_INSERT_HEAD name=%s id=%d timeout:%ld\n", t->name, t->id, t->p_timeout);
+		TAILQ_INSERT_HEAD(tout_ptr, t, p_entries);
 	} else {
 		// lowest timeout_ms 
-		if( timeout_task->p_timeout >= timeout_ms){
-			t->p_timeout 		= timeout_task->p_timeout - timeout_ms;
-			t->p_to_link 			= timeout_task->p_to_link;
-			timeout_task->p_to_link = t;
-			timeout_task->p_timeout = timeout_ms;
+		t_ptr = TAILQ_FIRST(tout_ptr);
+		if( t_ptr->p_timeout >= timeout_ms){
+			t_ptr->p_timeout	= t_ptr->p_timeout - timeout_ms;
+			t->p_timeout 		= timeout_ms;
+			LIBDEBUG("TAILQ_INSERT_HEAD name=%s id=%d timeout_ms:%ld\n", t->name, t->id, timeout_ms);
+			TAILQ_INSERT_HEAD(tout_ptr, t, p_entries);
 		} else { // search the timeout_ms position 
-			total_to= next_to;
-			t_ptr 	= timeout_task->p_to_link;
-			while(total_to < timeout_ms){
-				next_to = t_ptr->p_timeout;
-				if( next_to != TIMEOUT_FOREVER){
-					if( (total_to + next_to) > timeout_ms){
-						t = t_ptr->p_to_link;
-						t_ptr->p_to_link = t;
-						t_ptr->p_timeout = timeout_ms-total_to;
-						t->p_timeout = (total_to + next_to) - timeout_ms;
-						break;
-					} else{
-						total_to += next_to;
-						t = t_ptr->p_to_link;
-						next_to = t_ptr->p_timeout;
-					}
-				}else{ // enqueue at the tail 
-					t = t_ptr->p_to_link;
-					t_ptr->p_to_link = t;
-					t_ptr->p_timeout = timeout_ms-total_to;
-					t->p_timeout = (total_to + next_to) - timeout_ms;
-					break;
+			total_to= t_ptr->p_timeout;
+			while( total_to < timeout_ms){
+				LIBDEBUG("name=%s id=%d total_to=%d timeout_ms=%d\n", t->name, t->id, total_to, timeout_ms);
+				if (TAILQ_NEXT(t_ptr, p_entries) == NULL) {
+					t->p_timeout = timeout_ms - total_to;
+					LIBDEBUG("TAILQ_INSERT_TAIL name=%s id=%d timeout_ms:%ld\n", t->name, t->id, timeout_ms);
+					TAILQ_INSERT_TAIL(tout_ptr, t, p_entries);
+					return;
 				}
+				t_ptr = TAILQ_NEXT(t_ptr, p_entries);
 			}
+			t->p_timeout     = timeout_ms-total_to;
+			LIBDEBUG("TAILQ_INSERT_BEFORE name=%s id_prev=%d id=%d timeout_ms:%ld\n", t->name, t_ptr->id, t->id, timeout_ms);
+			TAILQ_INSERT_BEFORE(t_ptr, t, p_entries);
 		}
 	}
+	return;
 }
-
+				
 void 	muk_dequeue_to(Task *t)
 {
-	Task *t_ptr;
-	
 	LIBDEBUG("name=%s id=%d timeout_ms=%d\n", t->name, t->id, t->p_timeout );
-	
-	assert(timeout_task->p_to_link != NULL);
-	assert(timeout_task->p_timeout >= 0);
-
-	t_ptr = timeout_task->p_to_link;
-	while( t_ptr->p_to_link != NULL){
-		if( t_ptr->p_to_link != t) {
-			t_ptr = t_ptr->p_to_link;
-			continue;
-		}
-		// task found 
-		t_ptr->p_to_link 		= t->p_to_link;
-		t_ptr->p_timeout  += t->p_timeout;
-		return;
-	}
-	// Never be here 
-	assert(t_ptr->p_to_link != NULL);
-	ERROR_EXIT(EDVSINVAL);
+	assert(t->p_timeout >= 0);
+	t->p_timeout = TIMEOUT_FOREVER;
+	t->p_error = OK; 
+	TAILQ_REMOVE(tout_ptr, t, p_entries);  /* Deletion. */
 }
 
 
 /*===========================================================================*
- *				muk_timeout_task				     *
- * This function is used to manage IPC timeouts 
+ *				muk_tout_task				     *
+ * This function is used to manage MUK timeouts 
  *===========================================================================*/
-int muk_timeout_task(void )
+int muk_tout_task(void )
 {
-	Task *task;
+	Task *t;
 
 	timeout_task = current_task();
 	LIBDEBUG("TIMEOUT TASK ID=%d\n", timeout_task->id);
-	taskname("%s","muk_timeout_task");
+	taskname("%s","muk_tout_task");
 	
 	// SETUP the HEAD of the timeout_ms list 
-	timeout_task->p_timeout = TIMEOUT_FOREVER;
-	timeout_task->p_to_link 	= NULL;
+	TAILQ_INIT(&tout_head);
+	
+	tout_ptr = &tout_head;
 
-	while(TRUE){
-		do {
-			LIBDEBUG("timeout_task->p_timeout=%d\n", timeout_task->p_timeout);
-			taskdelay(MUK_TIMER_INTERVAL);
-			if( timeout_task->p_timeout == TIMEOUT_FOREVER)
-				continue;
-			timeout_task->p_timeout -= MUK_TIMER_INTERVAL;
-			timeout_task->p_timeout = (timeout_task->p_timeout < MUK_TIMER_INTERVAL)
-												?MUK_TIMER_INTERVAL
-												:timeout_task->p_timeout;
-		} while ( timeout_task->p_timeout != 0);
+  	// SYNCHRONIZE WITH MUK
+	MTX_LOCK(muk_mutex);
+	COND_SIGNAL(muk_cond);
+	COND_WAIT(tout_cond, muk_mutex);
+	MTX_UNLOCK(muk_mutex);
 		
-		// at least one alarm/timeout_ms has elapsed 
-		do {
-			assert( timeout_task->p_to_link != NULL);
-			task = timeout_task->p_to_link;
-			LIBDEBUG("taskwakeup id=%d %s\n", task->id, task->name);
-			taskwakeup(&task->p_rendez);
-			task->p_error = EDVSAGAIN;
-			timeout_task->p_timeout = task->p_timeout;
-			timeout_task->p_to_link = task->p_to_link;
-			task->p_timeout = TIMEOUT_FOREVER;
-			task->p_to_link = NULL;
-		} while(timeout_task->p_timeout == 0);
-		if( timeout_task->p_to_link == NULL)
-			timeout_task->p_timeout = TIMEOUT_FOREVER;
-	}	
+//	taskdelay(MUK_TIMER_INTERVAL);
+	
+	while (TRUE) {
+		if( TAILQ_EMPTY(tout_ptr)){
+			taskdelay(MUK_TIMER_INTERVAL);
+			continue;
+		}
+		t = TAILQ_FIRST(tout_ptr);
+		if(t->p_timeout < 0) {
+			LIBDEBUG("ASSERT t->p_timeout(%d) <= 0 id=%d name=%s\n",t->p_timeout, t->id, t->name);
+			TAILQ_REMOVE(tout_ptr, t, p_entries);
+			continue;
+		}
+		t->p_timeout -= MUK_TIMER_INTERVAL;
+		if(	t->p_timeout <= 0) {
+			LIBDEBUG("TAILQ_REMOVE name=%s id=%d timeout_ms=%d\n", t->name, t->id, t->p_timeout );
+			TAILQ_REMOVE(tout_ptr, t, p_entries);
+			t->p_timeout = TIMEOUT_FOREVER;
+			t->p_error = EDVSTIMEDOUT; 
+			taskwakeup(&t->p_rendez);
+		}
+	}
 }
 
 
@@ -140,7 +125,7 @@ int muk_send_T(int dst_ep, message *mptr, long timeout_ms)
 	muk_proc_t **xpp;
 	muk_proc_t *current_ptr;
 	proc_usr_t *proc_ptr;
-	int rcode, current_nr, current_ep, dst_nr, src_ep;
+	int rcode, current_nr, current_ep, dst_nr;
 	
 	rcode = OK;
 	current_ptr = current_task();
@@ -170,9 +155,9 @@ int muk_send_T(int dst_ep, message *mptr, long timeout_ms)
 		dst_ptr->p_error = OK;
 		LIBDEBUG("p_proc->p_rts_flags:%lX\n", dst_ptr->p_proc->p_rts_flags );
 		if( dst_ptr->p_proc->p_rts_flags == 0){
-			taskwakeup(&dst_ptr->p_rendez);
 			if( dst_ptr->p_timeout > 0)
 				muk_dequeue_to(dst_ptr);
+			taskwakeup(&dst_ptr->p_rendez);
 		}		
 	} else { // not receiving 
 		LIBDEBUG("dst_ep:%d NOT RECEIVING\n", dst_ep);
@@ -218,7 +203,7 @@ int muk_send_T(int dst_ep, message *mptr, long timeout_ms)
  *===========================================================================*/
 int muk_receive_T(int src_ep, message *mptr, long timeout_ms)
 {
-	muk_proc_t *src_ptr, *dst_ptr;
+	muk_proc_t *src_ptr;
 	muk_proc_t **xpp;
 	int i, p_nr, src_nr;
 	muk_proc_t *current_ptr;
@@ -279,9 +264,9 @@ int muk_receive_T(int src_ep, message *mptr, long timeout_ms)
 			*xpp = src_ptr->p_q_link;
 			LIBDEBUG("p_proc->p_rts_flags:%lX\n", src_ptr->p_proc->p_rts_flags );
 			if(src_ptr->p_proc->p_rts_flags == 0){
-				taskwakeup(&src_ptr->p_rendez);
 				if(src_ptr->p_timeout > 0) 
-					muk_dequeue_to(src_ptr);	
+					muk_dequeue_to(src_ptr);
+				taskwakeup(&src_ptr->p_rendez);	
 			}
             ERROR_RETURN(OK);				/* report success */
 		}
@@ -333,7 +318,7 @@ int muk_notify_X(int src_ep, int dst_ep)
 	proc_ptr = dst_ptr->p_proc;
 	LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 
-	if( src_nr == SELF){
+	if( src_ep == SELF){
 		src_nr = current_nr;
 		src_ep = current_ep;
 	}else{
@@ -358,9 +343,9 @@ int muk_notify_X(int src_ep, int dst_ep)
 		dst_ptr->p_proc->p_getfrom 	= NONE;
 		dst_ptr->p_error 	= OK;
 		if(dst_ptr->p_proc->p_rts_flags == 0){
-			taskwakeup(&dst_ptr->p_rendez);
 			if(dst_ptr->p_timeout > 0)
 				muk_dequeue_to(dst_ptr);
+			taskwakeup(&dst_ptr->p_rendez);
 		}
 		return(OK);
 	} else { 
@@ -375,6 +360,124 @@ int muk_notify_X(int src_ep, int dst_ep)
 }
 
 /*--------------------------------------------------------------*/
+/*			muk_sendrec_T			*/
+/*--------------------------------------------------------------*/
+int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms)
+{
+	muk_proc_t *srcdst_ptr, *current_ptr;
+	muk_proc_t **xpp, *src_ptr;
+	int rcode;
+	proc_usr_t *proc_ptr;
+	int current_nr, current_id, current_ep;
+	int srcdst_nr;
+	
+	assert(timeout_ms != TIMEOUT_NOWAIT); 
+			
+	rcode = OK;
+	current_ptr = current_task();
+	current_nr = current_ptr->p_proc->p_nr;
+	assert(current_nr != NONE);
+ 	current_ep = current_ptr->p_proc->p_endpoint;
+	assert( get_task(current_ep) != NULL);
+	current_id   = current_ptr->id;
+	proc_ptr = current_ptr->p_proc;
+	LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
+	
+	LIBDEBUG("srcdst_ep:%d\n", srcdst_ep);
+	srcdst_nr = _ENDPOINT_P(srcdst_ep);
+	assert( srcdst_nr > (-dc_ptr->dc_nr_tasks) && srcdst_nr < (dc_ptr->dc_nr_procs));
+	assert(srcdst_ep != current_ep);
+	srcdst_ptr = get_task(srcdst_ep);
+	assert( srcdst_ptr != NULL);
+	proc_ptr = srcdst_ptr->p_proc;
+	LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
+
+	current_ptr->p_msg	= m_ptr;
+
+	/*--------------------------------------*/
+	/* SENDING/RECEIVING		*/
+	/*--------------------------------------*/
+	LIBDEBUG("SENDING HALF\n");
+	current_ptr->p_error	= OK;
+	current_ptr->p_proc->p_getfrom  = srcdst_ep;
+	if (  (TEST_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_RECEIVING) 
+		&& !TEST_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_SENDING)) &&
+		(srcdst_ptr->p_proc->p_getfrom == ANY || srcdst_ptr->p_proc->p_getfrom == current_ep)) {
+		LIBDEBUG("destination is waiting. Copy the message and wakeup destination\n");
+		CLR_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
+		srcdst_ptr->p_proc->p_getfrom 	= NONE;
+		memcpy(srcdst_ptr->p_msg, m_ptr, sizeof(message) );
+		srcdst_ptr->p_msg->m_source = current_ep;
+		if(srcdst_ptr->p_proc->p_rts_flags == 0) {
+			if(srcdst_ptr->p_timeout != TIMEOUT_FOREVER)
+				muk_dequeue_to(srcdst_ptr);
+			taskwakeup(&srcdst_ptr->p_rendez);
+		}
+		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING); /* Sending part: completed, now receiving.. */
+		current_ptr->p_proc->p_getfrom = srcdst_ep;
+		proc_ptr = current_ptr->p_proc;
+		if(timeout_ms != TIMEOUT_FOREVER) 
+			muk_enqueue_to(timeout_ms);
+		LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
+		LIBDEBUG("before tasksleep %d\n", current_ptr->p_proc->p_nr);
+		tasksleep(&current_ptr->p_rendez);
+		LIBDEBUG("after tasksleep %d, p_error=%d \n", current_ptr->p_proc->p_nr, current_ptr->p_error);
+		rcode = current_ptr->p_error;
+		if( rcode < 0) {
+			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
+			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
+			current_ptr->p_proc->p_getfrom  = NONE;
+			current_ptr->p_proc->p_sendto 	= NONE;
+		}
+	} else { 
+		LIBDEBUG("destination is not waiting srcdst_ptr-flags=%lX\n"
+			,srcdst_ptr->p_proc->p_rts_flags);
+		if(timeout_ms == TIMEOUT_NOWAIT) ERROR_RETURN(EDVSAGAIN);
+		LIBDEBUG("Enqueue at TAIL.\n");
+		/* The destination is not waiting for this message 			*/
+		/* Append the caller at the TAIL of the destination senders' queue	*/
+		/* blocked sending the message */
+				
+		current_ptr->p_msg->m_source = current_ptr->p_proc->p_endpoint;
+		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
+		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
+		current_ptr->p_proc->p_sendto 	= srcdst_ep;
+		
+		/* Process is now blocked.  Put in on the destination's queue. */
+		xpp = &srcdst_ptr->p_caller_q;		/* find end of list */
+		while (*xpp != NULL) xpp = &(*xpp)->p_q_link;	
+		*xpp = current_ptr;			/* add caller to end */
+		current_ptr->p_q_link = NULL;	/* mark new end of list */
+		if(timeout_ms != TIMEOUT_FOREVER) 
+			muk_enqueue_to(timeout_ms);
+		LIBDEBUG("before tasksleep %d\n", current_ptr->p_proc->p_nr);
+		tasksleep(&current_ptr->p_rendez);
+		LIBDEBUG("after tasksleep %d, p_error=%d \n", current_ptr->p_proc->p_nr, current_ptr->p_error);
+		rcode = current_ptr->p_error;
+		if( rcode < 0) {
+			LIBDEBUG("removing %d link from %d list.\n", current_ptr->p_proc->p_endpoint, srcdst_ep);
+			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
+			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
+			current_ptr->p_proc->p_getfrom  = NONE;
+			current_ptr->p_proc->p_sendto 	= NONE;
+			xpp = &srcdst_ptr->p_caller_q;		/* find end of list */
+			while (*xpp != NULL) {
+				src_ptr = (*xpp);
+				LIBDEBUG("current_ep=%d src_ptr->p_proc->p_endpoint=%d\n", current_ep, src_ptr->p_proc->p_endpoint);
+				if (src_ptr->p_proc->p_endpoint == current_ep) {
+					*xpp = src_ptr->p_q_link;
+					break;
+				}
+				xpp = &(*xpp)->p_q_link;		/* proceed to next */
+			}
+		} 
+	}
+
+	if(rcode < 0) ERROR_RETURN(rcode);
+	return(rcode);
+}
+
+/*--------------------------------------------------------------*/
 /*			muk_wait4bind_X									*/
 /*--------------------------------------------------------------*/
 #define	TIMEOUT_1SEC	1000
@@ -383,18 +486,29 @@ int muk_wait4bind_X(int oper, int other_ep, long timeout_ms)
 {
 	muk_proc_t *current_ptr, *other_ptr;
 	int ret;
-	int current_id, current_ep, other_nr;
+	int current_id, current_ep, other_nr, current_nr;
+	proc_usr_t *proc_ptr;
 	
-	LIBDEBUG("oper=%d other_ep=%d timeout_ms=%ld\n", 
+	current_ptr = current_task();
+	current_id = current_ptr->id;
+	
+	LIBDEBUG("id=%d oper=%d other_ep=%d timeout_ms=%ld\n", 
 		oper, other_ep, timeout_ms);
 
 	assert( oper == WAIT_BIND  || oper == WAIT_UNBIND);
-	if ( other_ep == SELF) other_ep = current_ep;
+	if ( other_ep == SELF) { 
+		current_nr = current_ptr->p_proc->p_nr;
+		assert( current_nr != NONE);
+		current_ep = current_ptr->p_proc->p_endpoint;
+		assert( get_task(current_ep) != NULL);
+		proc_ptr = current_ptr->p_proc;
+		other_ep = current_ep;
+		LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
+	}
 	
 	other_nr = _ENDPOINT_P(other_ep);
 	assert( other_nr > (-dc_ptr->dc_nr_tasks) && other_nr < (dc_ptr->dc_nr_procs));
 
-	LIBDEBUG("current_id=%d ret=%d\n", current_id, ret);
 	if( oper == WAIT_BIND ){ 
 		if (other_ep == current_ep) {
 			do {
@@ -510,120 +624,4 @@ int muk_wait4bind_X(int oper, int other_ep, long timeout_ms)
 	}
 	if(ret < EDVSERRCODE) ERROR_RETURN(ret);
 	return(ret);		
-}
-
-
-/*--------------------------------------------------------------*/
-/*			muk_sendrec_T			*/
-/*--------------------------------------------------------------*/
-int muk_sendrec_T(int srcdst_ep, message* m_ptr, long timeout_ms)
-{
-	muk_proc_t *srcdst_ptr, *current_ptr;
-	muk_proc_t **xpp, *src_ptr;
-	int rcode;
-	proc_usr_t *proc_ptr;
-	int current_nr, current_id, current_ep;
-	int srcdst_nr;
-	
-	assert(timeout_ms != TIMEOUT_NOWAIT); 
-			
-	rcode = OK;
-	current_ptr = current_task();
-	current_nr = current_ptr->p_proc->p_nr;
-	assert(current_nr != NONE);
- 	current_ep = current_ptr->p_proc->p_endpoint;
-	assert( get_task(current_ep) != NULL);
-	current_id   = current_ptr->id;
-	proc_ptr = current_ptr->p_proc;
-	LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
-	
-	LIBDEBUG("srcdst_ep:%d\n", srcdst_ep);
-	srcdst_nr = _ENDPOINT_P(srcdst_ep);
-	assert( srcdst_nr > (-dc_ptr->dc_nr_tasks) && srcdst_nr < (dc_ptr->dc_nr_procs));
-	assert(srcdst_ep != current_ep);
-	srcdst_ptr = get_task(srcdst_ep);
-	assert( srcdst_ptr != NULL);
-	proc_ptr = srcdst_ptr->p_proc;
-	LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
-
-	current_ptr->p_msg	= m_ptr;
-
-	/*--------------------------------------*/
-	/* SENDING/RECEIVING		*/
-	/*--------------------------------------*/
-	LIBDEBUG("SENDING HALF\n");
-	current_ptr->p_error	= OK;
-	current_ptr->p_proc->p_getfrom  = srcdst_ep;
-	if (  (TEST_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_RECEIVING) 
-		&& !TEST_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_SENDING)) &&
-		(srcdst_ptr->p_proc->p_getfrom == ANY || srcdst_ptr->p_proc->p_getfrom == current_ep)) {
-		LIBDEBUG("destination is waiting. Copy the message and wakeup destination\n");
-		CLR_BIT(srcdst_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
-		srcdst_ptr->p_proc->p_getfrom 	= NONE;
-		memcpy(srcdst_ptr->p_msg, m_ptr, sizeof(message) );
-		srcdst_ptr->p_msg->m_source = current_ep;
-		if(srcdst_ptr->p_proc->p_rts_flags == 0) 
-			taskwakeup(&srcdst_ptr->p_rendez);
-		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING); /* Sending part: completed, now receiving.. */
-		current_ptr->p_proc->p_getfrom = srcdst_ep;
-		proc_ptr = current_ptr->p_proc;
-		if(timeout_ms != TIMEOUT_FOREVER) 
-			muk_enqueue_to(timeout_ms);
-		LIBDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
-		LIBDEBUG("before tasksleep %d\n", current_ptr->p_proc->p_nr);
-		tasksleep(&current_ptr->p_rendez);
-		LIBDEBUG("after tasksleep %d, p_error=%d \n", current_ptr->p_proc->p_nr, current_ptr->p_error);
-		rcode = current_ptr->p_error;
-		if( rcode < 0) {
-			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
-			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
-			current_ptr->p_proc->p_getfrom  = NONE;
-			current_ptr->p_proc->p_sendto 	= NONE;
-		}
-	} else { 
-		LIBDEBUG("destination is not waiting srcdst_ptr-flags=%lX\n"
-			,srcdst_ptr->p_proc->p_rts_flags);
-		if(timeout_ms == TIMEOUT_NOWAIT) ERROR_RETURN(EDVSAGAIN);
-		LIBDEBUG("Enqueue at TAIL.\n");
-		/* The destination is not waiting for this message 			*/
-		/* Append the caller at the TAIL of the destination senders' queue	*/
-		/* blocked sending the message */
-				
-		current_ptr->p_msg->m_source = current_ptr->p_proc->p_endpoint;
-		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
-		SET_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
-		current_ptr->p_proc->p_sendto 	= srcdst_ep;
-		
-		/* Process is now blocked.  Put in on the destination's queue. */
-		xpp = &srcdst_ptr->p_caller_q;		/* find end of list */
-		while (*xpp != NULL) xpp = &(*xpp)->p_q_link;	
-		*xpp = current_ptr;			/* add caller to end */
-		current_ptr->p_q_link = NULL;	/* mark new end of list */
-		if(timeout_ms != TIMEOUT_FOREVER) 
-			muk_enqueue_to(timeout_ms);
-		LIBDEBUG("before tasksleep %d\n", current_ptr->p_proc->p_nr);
-		tasksleep(&current_ptr->p_rendez);
-		LIBDEBUG("after tasksleep %d, p_error=%d \n", current_ptr->p_proc->p_nr, current_ptr->p_error);
-		rcode = current_ptr->p_error;
-		if( rcode < 0) {
-			LIBDEBUG("removing %d link from %d list.\n", current_ptr->p_proc->p_endpoint, srcdst_ep);
-			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_RECEIVING);
-			CLR_BIT(current_ptr->p_proc->p_rts_flags, BIT_SENDING);
-			current_ptr->p_proc->p_getfrom  = NONE;
-			current_ptr->p_proc->p_sendto 	= NONE;
-			xpp = &srcdst_ptr->p_caller_q;		/* find end of list */
-			while (*xpp != NULL) {
-				src_ptr = (*xpp);
-				LIBDEBUG("current_ep=%d src_ptr->p_proc->p_endpoint=%d\n", current_ep, src_ptr->p_proc->p_endpoint);
-				if (src_ptr->p_proc->p_endpoint == current_ep) {
-					*xpp = src_ptr->p_q_link;
-					break;
-				}
-				xpp = &(*xpp)->p_q_link;		/* proceed to next */
-			}
-		} 
-	}
-
-	if(rcode < 0) ERROR_RETURN(rcode);
-	return(rcode);
 }

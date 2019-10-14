@@ -1156,12 +1156,29 @@ bfec7000    132K rw---   [ stack ]
 		SE CAMBIARON TODOS LOS MAKEFILES para compilar librerias ESTATICAS 
 		
 		NO SE PROBARON AUN 
-				 
+
+=======================================================================================
+20191014:
+
+SE cambio la sincronizacion asi
+			PROCESO MUK  
+				MTX_UNLOCK(sys_mutex);
+				MTX_LOCK(muk_mutex);    
+			PROCESO SYSTASK (idem para tasks y servers) 
+				MTX_LOCK(sys_mutex);
+				MTX_UNLOCK(muk_mutex);
+
+ATENCION: No usar WAIT y SIGNAL porque no garantizan sincronizacion .		
+
+		
 =======================================================================================
 =======================================================================================
 =======================================================================================
 
 TODO: 	PROBAR CREAR UN THREAD PARA wis_server A VER SI TRABAJA MERJOR VER "IS" DE MUK2
+
+TODO:	PROBAR MUK con la libreria convertidas y sincronizacion nueva 
+
 
 OJO!!! 
 Cambie el archivo de configuracion/script rdisk.sh de mol/drivers/rdisk  para que no soporte replicacion

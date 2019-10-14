@@ -1242,35 +1242,163 @@ taskscheduler(void)
 	}
 }
 	
+=====================================================================================================
+20191013/14:  IMPLEMENTACION DE TIMEOUT EN MUK_xXXXXXX
+
+			FUNCIONO  OK!
+			
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0  -2    -2   703/3      0    0   20 27342 27342 27342 27342 muk2           
+			 0   0     0   705/5      0    0    0 27342 27342 27342 27342 muk2           
+			 0   1     1   706/6      0    0    0 27342 27342 27342 27342 muk2           
+			 0   3     3   704/4      0    0    0 27342 27342 27342 27342 muk2           
+			 0   8     8   708/7      0    0    0 27342 27342 27342 27342 muk2           
+			 0  14    14   711/9      0    8    0 31438 27342 27342 27342 muk2           
+			 0  22    22   709/8      0    0    0 27342 27342 27342 27342 muk2 
+ 
+ERROR:
+		[  904.219047] ERROR: 711:ipc_mini_receive:500: rcode=-61
+		[  908.855693] muk2[702]: segfault at 7 ip b75d4d86 sp 06a58ebc error 4 in libc-2.24.so[b755f000+1b1000]
+		[  908.860285] ERROR: 711:ipc_mini_receive:500: rcode=-512
+
+
+			ERROR: 2:dvk_receive_T:857: rcode=-1
+			ERROR: task.c:pth_dvk:243: rcode=-61
+			ERROR: task.c:DVK_receive_T:106: rcode=-61
+			ERROR: open.c:common_open:119: rcode=-2      <<<<<<<<<<<<<<<<<< EDVSNOENT
+			ERROR: m3nweb.c:nweb_server:227: rcode=-2    <<<<<<<<<<<<<<<<<< EDVSNOENT 
+			ERROR: 2:dvk_receive_T:857: rcode=-1
+			ERROR: task.c:pth_dvk:243: rcode=-61
+			ERROR: task.c:DVK_receive_T:106: rcode=-61
+
+			M3NWEB -> FS 
+			 fs.c:fs_get_work:159:source=22 type=5 m1i1=12 m1i2=0 m1i3=111308805 m1p1=0x69766166 m1p2=0x2e6e6f63 m1p3=0x6f6369 
+			 fs.c:fs_get_work:160:source=22 type=5 m3i1=12 m3i2=0 m3p1=0x6a27005 m3ca1=[favicon.ico]
+			 fs.c:fs_get_work:182:fs_call_nr = 5 
+			 open.c:fs_open:67:M3
+			 utility.c:fetch_name:130:fs_who_e=22 path=6A27005 len=12 flag=3
+			 utility.c:fetch_name:142:M3=3
+			 utility.c:fetch_name:143:M3_STRING=14
+			 utility.c:fetch_name:157:user_path=favicon.ico
+			 open.c:common_open:96:oflags=0 omode=0
+			 filedes.c:get_fd:33:start=0 mode=4
+			 filedes.c:get_fd:39:FD located is=0
+			 open.c:common_open:102:fs_m_in.fd=0 oflags=0 
+			 open.c:common_open:118:user_path=favicon.ico
+			 path.c:parse_path:47:path=favicon.ico string=(null) action=0 
+			 path.c:parse_path:55:RELATIVE: fp_endpoint=22 i_num=1
+			 inode.c:dup_inode:380:
+			 path.c:parse_path:98:string = favicon.ico
+			 protect.c:forbidden:186:access_desired=1 
+			 protect.c:forbidden:187:perm_bits=7 perm_bits(OCT)=07
+			 protect.c:forbidden:188:access_desired=1 access_desired(OCT)=01
+			 protect.c:forbidden:203:r=0
+			 read.c:read_map:396:position=0
+			 cache.c:put_block:168:
+			 path.c:parse_path:105:NIL_INODE = (null)
+			 path.c:parse_path:110:There is more path.  Keep parsing
+			 fs.c:main_fs:104:rcode (RESPUESTA syscall) -2
+			 fs.c:fs_reply:415:Send a fs_reply to a user process.
+			 fs.c:fs_reply:419:source=0 type=-2 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+			 task.c:get_task:335:p_ep=1 p_nr=1
+			 task.c:get_task:344:pproc=504798C
+			 mukipc.c:muk_send_T:136:dst_ep:22 current_ep=1
+			 mukipc.c:muk_send_T:138:nr=1 endp=1 dcid=0 flags=0 misc=400 lpid=2 vpid=6 nodeid=0 name=fs 
+			 task.c:get_task:335:p_ep=22 p_nr=22
+			 task.c:get_task:344:pproc=50479E0
+			 mukipc.c:muk_send_T:146:nr=22 endp=22 dcid=0 flags=8 misc=400 lpid=2 vpid=8 nodeid=0 name=nweb 
+			 mukipc.c:muk_send_T:150:dst_ep:22 WAITING FOR THIS MESSAGE
+			 mukipc.c:muk_send_T:156:p_proc->p_rts_flags:0
+			 rendez.c:taskwakeup:45:id=10
+			 rendez.c:_taskwakeup:25:
+			 rendez.c:_taskwakeup:32:id=10
+			 rendez.c:_taskwakeup:35:i=1
+			 fs.c:fs_reply:422:rcode=0
+ 
+
+TODO:
+		1)	/proc/DC0/procs Cuando se hace el tbind, el nombre de los procesos no aparece (aparece muk2)
+				se supone que sys_rsetpname deberia cambiar el nombre 
+				PROBLEMA: NO HAY SOLUCION, LO QUE APARECE EN ESTE LISTADO SON LOS DVK THREADS DE LAS TASKS
+				NO HAY FORMA DE CAMBIAR EL NOMBRE SIN TENER SYSTASK EN DVK (LA SYSTASK DE MUK2 ESTA EN MUK2) 
+				
+		2)	la info del FS tampoco tiene los nombres de los procesos, la del PM si 
+				PROBLEMA: NO HAY SOLUCION, LA ESTRUCTURA  fproc_t NO TIENE CAMPO DE NOMBRE 
+		 
+			
+			
+ERROR: M3FTP 
+	 
+	 CLIENT 
+		< m3ftp.c:main:247:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbff6be31 m1p2=0xfb8000 m1p3=(nil) 
+		DEBUG 10:dvk_sendrec_T:866: endpoint=14 timeout=-1
+		DEBUG 10:dvk_sendrec_T:870: ipc ret=0
+		 m3ftp.c:main:250:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbff6be31 m1p2=0xfb8000 m1p3=(nil)
+		 
+		< m3ftp.c:main:247:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbff6be31 m1p2=0xfb8000 m1p3=(nil) 
+		DEBUG 10:dvk_sendrec_T:866: endpoint=14 timeout=-1
+		DEBUG 10:dvk_sendrec_T:870: ipc ret=0
+		 m3ftp.c:main:250:M3FTP: reply   source=14 type=0 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbff6be31 m1p2=0xfb8000 m1p3=(nil) 
+		 
+		< m3ftp.c:main:247:M3FTP: request source=14 type=3 m1i1=11 m1i2=65536 m1i3=0 m1p1=0xbff6be31 m1p2=0xfb8000 m1p3=(nil) 
+		DEBUG 10:dvk_sendrec_T:866: endpoint=14 timeout=-1
+
+
+	SERVER 
+		 m3ftpd.c:main_ftpd:202:M3FTPD: DVK_receive_T
+		 task.c:DVK_receive_T:91:nr=14 endp=14 dcid=0 flags=0 misc=400 lpid=2 vpid=9 nodeid=0 name=ftpd 
+		 task.c:DVK_receive_T:99:PH_MTX_LOCK t->p_mutex 
+		 task.c:DVK_receive_T:100:PH_COND_SIGNAL t->p_th_cond                  <<< SE SUPONE QUE DESPERTO AL THREAD 
+		 task.c:DVK_receive_T:101:PH_COND_WAIT t->p_tsk_cond t->p_mutex
+		 task.c:pth_dvk:212:PH_COND_WAIT t->p_th_cond t->p_mutex			   <<<< EL THREAD SE DUERME 
+
+ 
+PROBLEMA: 	DEBE ESTAR BLOQUEADO 
+			These functions shall unblock threads blocked on a condition variable.
+			The pthread_cond_signal() function shall unblock at least one of the threads that are blocked
+			on the specified condition variable cond (if any threads are blocked on cond).
+ 
+SOLUCION:	SE CAMBIO LA SINCRONIZACION SOLO CON MUTEXES up(A),down(B) y el otro Down(A) up(B)
+
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   689/3      0    0   20 27342 27342 27342 27342 muk2           
+ 0   0     0   691/5      0    0    0 27342 27342 27342 27342 muk2           
+ 0   1     1   692/6      0    0    0 27342 27342 27342 27342 muk2           
+ 0   3     3   690/4      0    0    0 27342 27342 27342 27342 muk2           
+ 0   8     8   693/7      0    0    0 27342 27342 27342 27342 muk2           
+ 0  14    14   695/9      0    8    0 31438 27342 27342 27342 muk2   <<<<< M3FTPD RECEIVING CON TIMEOUT 
+ 0  22    22   694/8      0    0    0 27342 27342 27342 27342 muk2           
+
+root@node0:~# dmesg
+[   69.904257] Started in network mode
+[   69.904263] Own node address <1.1.100>, network identity 4711
+[   69.907668] Enabled bearer <eth:eth0>, discovery domain <1.1.0>, priority 10
+[  108.192637] ERROR: 688:check_caller:579: rcode=-310
+[  108.193176] ERROR: 688:check_caller:579: rcode=-310
+[  140.278200] ERROR: 695:ipc_mini_receive:500: rcode=-61 <<<<<<<<<<<<<<<<<<< EDVSTIMEDOUT 
+
+root@node0:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   689/3      0    0   20 27342 27342 27342 27342 muk2           
+ 0   0     0   691/5      0    0    0 27342 27342 27342 27342 muk2           
+ 0   1     1   692/6      0    0    0 27342 27342 27342 27342 muk2           
+ 0   3     3   690/4      0    0    0 27342 27342 27342 27342 muk2           
+ 0   8     8   693/7      0    0    0 27342 27342 27342 27342 muk2           
+ 0  14    14   695/9      0    0    0 27342 27342 27342 27342 muk2     <<<<<< DEJA DE ESTAR RECEIVING !!!!!     
+ 0  22    22   694/8      0    0    0 27342 27342 27342 27342 muk2   
+ 
+ 
+	SE cambio la sincronizacion asi
+			PROCESO PARENT 
+				PH_MTX_UNLOCK(t->p_th_mutex);  
+				PH_MTX_LOCK(t->p_tsk_mutex);    
+			PROCESO CHILD 
+				PH_MTX_LOCK(t->p_th_mutex);
+				PH_MTX_UNLOCK(t->p_tsk_mutex);
 
 		
 ULTIMO_LOG 		
 =====================================================================================================
-
-TODO:				Rehacer las funcione DVK_send, DVK_sendrec, etc para que 
-					completen los campos de dvk_request_t
-					hagan el PH_COND_SIGNAL al thread 
-					Se duerman esperando la respuesta con sleep de la tarea 
-					
-				ATENTI: Agregar un campo mas a la tarea que sea una variable de condicion de tal forma
-						que pueda sincronizarse con su thread. Si bien es bloqueante, el bloqueo 
-						deberia ser minimo.
-
-						
-TODO:
-		CREAR UNA TAREA TIPO CLOCK que se encargue de los timeouts 
-		en cada TICK de reloj se controlan la lista de alarmas 
-		PROBLEMA: puede que justo la IPC este modificando la alarma 
-		
-		OTRA POSIBILIDAD:
-			Que el PROCESO CLOCK se despierte cada 1 segundos 
-			verifica el vencimiento de alarmas 
-			y advierte al IPC del proceso correspondiente.
-			
-ERROR:	DE VEZ EN CUANDO SE CUELGA EL M3NWEB
-		 m3nweb.c:nweb_server:256:total_bytes=103730
-		 m3nweb.c:main_nweb:333:Conection accept
-		./muk2.sh: lÃ­nea 6:  6732 ViolaciÃ³n de segmento  ./muk2 muk.cfg
 
 ERROR:	ANDA MAL EL REGISTRO DE TIEMPOS 
 		t_start=796533.00 t_stop=693299.00 t_total=-103234.00
@@ -1305,9 +1433,6 @@ ERROR:	ANDA MAL EL REGISTRO DE TIEMPOS
 		t_start=-nan t_stop=951985.00 t_total=572299.00
 		total_bytes = 0
 
-TODO:	PROBAR MUK con la libreria convertidas
-
-TODO: 	PROBAR CREAR EN MUK UN THREAD PARA wis_server A VER SI TRABAJA MERJOR 
 
 ATENCION: libtask brinda funciones propias para sustituir PRINTF y otras
 		utilizar estas funciones en lugar de las estandar sobre todo en DEBUG y MACROS 
@@ -1327,7 +1452,6 @@ TODO: Se podria hacer una consola externa para controlar ciertas cosas en forma 
 							fs_proc
 							fs_super
 							
-
 Ver makefile de  https://github.com/jbleners/Falcon
 
 Se podria hacer una especie de whatdog.
@@ -1336,27 +1460,6 @@ Cuando hay actividad (en el receive, por ejemplo) vuelve el contador a su valor 
 Para el caso del web server que espera en el socket, entonces no deberia implementarse.
 para ello habria que poner un MISC-FLAG que indique que se quiere controlar si esta dormido.
 
-Hacer lo siguiente:
-	Desarrollar una tarea que funcione similar al clock que utilize los timers ya definidos en MINIX 
-	para implementar los TIMEOUTs de SEND, SENDREC, RECEIVE, WAIT4BIND 
-
-	enqueue_alarm(taskrunning, 1000);
-	While(TRUE){
-		do {
-			next_deadline = dequeue_alarm(&task);
-			taskdelay(next_deadline);
-			enqueue_alarm(taskrunning, 1000);
-		} while ( task == taskrunning);
-		wakeup(task);
-	}	
-	
-PROBLEMA DE TIMEOUTS:
-		1) Cuando una IPC temporizada recibe o envia un mensaje antes del vencimiento del timeout
-			debe remover el timeout de la lista.
-		2) Hacer que timeout_task haga ciclos de 1000 ms no es garantia de que esos tiempos sean precisos
-			porque <----1000--->ejecutan otros procesos<-----1000----> 
-			y esto contabilizaria como 2000 ms, cuando en realidad fueron mucho mas.
-			Se debería tener una fuente de tiempo mas precisa u obtener el tiempo restante.
 		
 	
 	

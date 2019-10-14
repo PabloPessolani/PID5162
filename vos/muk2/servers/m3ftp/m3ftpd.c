@@ -101,7 +101,7 @@ void ftpd_init(void)
 	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(proc_ptr));
 	
 	// set the name of FTP 
-	rcode = sys_rsetpname(ftp_ep, "m3ftp", local_nodeid);
+	rcode = sys_rsetpname(ftp_ep, "m3ftpd", local_nodeid);
 	if(rcode < 0) ERROR_TSK_EXIT(rcode);
 	
 	

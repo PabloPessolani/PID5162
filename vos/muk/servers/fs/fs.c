@@ -58,9 +58,7 @@ void fs_print_usage(char* errmsg, ...) {
 	fs_init(argv[1]);
 
 	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(fs_cond, muk_mutex);
+	MTX_LOCK(fs_mutex);
 	MTX_UNLOCK(muk_mutex);
 	
 	MUKDEBUG("FS(%d) main loop that gets work\n", dcu.dc_dcid);
