@@ -150,7 +150,7 @@ static char debug_path[MNX_PATH_MAX];
 	MUKDEBUG("sys_pid=%d\n", sys_pid);
 	
 	sys_ep = dvk_tbind(dcid,SYSTASK(local_nodeid));
-	MUKDEBUG("sys_ep=%d\n", sys_ep);
+	MUKDEBUG("sys_ep=%d errno=%d\n", sys_ep, errno);
 	if( sys_ep != SYSTASK(local_nodeid)) {
 		ERROR_PRINT(EDVSENDPOINT);
 		pthread_exit(&sys_ep);

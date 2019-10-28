@@ -11,7 +11,7 @@ INCLUDE = .
 
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
-CFLAGS =  -g -c -fPIC -Wall -pthread  -v -O0 -D_FILE_OFFSET_BITS=64
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread  -v -O0 -D_FILE_OFFSET_BITS=64
 
 # OBJS = fs.o table.o utility.o open.o read.o write.o mount.o path.o super.o link.o inode.o misc.o cache.o dmap.o device.o \
 # 	../../stub_syscall.o

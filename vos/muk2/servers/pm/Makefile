@@ -9,7 +9,7 @@ CC = gcc
 INCLUDE = .
 
 # Options for development
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 OBJS = pm.o table.o utility.o getset.o forkexit.o \
 	timers.o signal.o misc.o time.o dump.o

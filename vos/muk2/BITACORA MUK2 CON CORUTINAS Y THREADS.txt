@@ -1,4 +1,4 @@
-MINIX AS A UNIKERNEL (MUK) SIN THREADS 
+MINIX AS A UNIKERNEL (MUK) CON CORUTINAS Y THREADS 
 =======================================
 
 
@@ -1396,6 +1396,21 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 				PH_MTX_LOCK(t->p_th_mutex);
 				PH_MTX_UNLOCK(t->p_tsk_mutex);
 
+		
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se cambio el Makefile de muk2 (habria que cambiar el de todo el arbol)
+para compilar con ptheads estaticamente linkeados usando
+	a) -lpthread (en lugar de -pthreads)
+	b) incorporando el flat -static 
+
+CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -lpthread -static <<<<<<<<
+
+muk2: muk2.o mukcfg.o 
+	$(CC)  -static -o muk2 muk2.o mukcfg.o $(LIB) -lpthread <<<<<<<<
+	
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
 		
 ULTIMO_LOG 		
 =====================================================================================================

@@ -11,7 +11,7 @@ INCLUDE = ..
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
 
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 #LZ4FLAGS = $(CFLAGS)  
 #LZ4FLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wstrict-prototypes

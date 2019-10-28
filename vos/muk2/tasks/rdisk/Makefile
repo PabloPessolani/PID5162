@@ -11,7 +11,7 @@ INCLUDE = .
 
 # Options for development
 # CFLAGS = -v -O3 -Wall -ansi
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 OBJS =  rdisk.o utility.o parse_config.o driver.o 
 

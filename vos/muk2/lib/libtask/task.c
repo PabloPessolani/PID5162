@@ -185,7 +185,7 @@ static void pth_dvk(void *t_arg)
 	t->p_proc->p_lpid = t->pid;
 	t->p_proc->p_vpid = syscall(SYS_gettid);
 	rcode = dvk_tbind(t->p_proc->p_dcid, t->p_proc->p_endpoint);
-	if( rcode < 0) {
+	if( rcode < EDVSERRCODE) {
 		ERROR_PRINT(errno);
 		if( (-errno) !=  t->p_proc->p_endpoint)
 			ERROR_EXIT(rcode);
@@ -221,16 +221,19 @@ static void pth_dvk(void *t_arg)
 										v_ptr->v_bytes);
 				break;
 			default:
-				r_ptr->rq_rcode = EDVSNOSYS;
+				rcode = EDVSNOSYS;
 				break;
 		}
+#ifdef ANULADO
 		if( rcode < 0)	{
 			r_ptr->rq_rcode = (-errno);
 			ERROR_PRINT(r_ptr->rq_rcode);
 		} else {
 			r_ptr->rq_rcode = rcode;			
 		}
-		LIBDEBUG("pid=%d id=%d name=%s\n", t->pid, t->id, t->name);
+#endif // ANULADO
+		r_ptr->rq_rcode = rcode;			
+		LIBDEBUG("pid=%d id=%d name=%s rcode=%d\n", t->pid, t->id, t->name, rcode);
 		PH_MTX_LOCK(muk2_mutex);
 //		TAILQ_INSERT_TAIL(&tout_head, t, p_entries);
 //		pthread_kill(t->pid, SIGIO);

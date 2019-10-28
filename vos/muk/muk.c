@@ -84,7 +84,7 @@ int tokenize(char *string, int *argc, char **argv, char *args)
 	int was_space,arg_len, i;
 	char *iptr, *optr, *tptr;
 	
-//	MUKDEBUG("string=%s\n", string);
+	MUKDEBUG("string=%s\n", string);
 
 	arg_len = 0;
 	iptr = string;
@@ -100,7 +100,7 @@ int tokenize(char *string, int *argc, char **argv, char *args)
 				arg_len++;
 				optr++;
 				argv[i] = tptr;
-//				MUKDEBUG("argv[%d]=%s\n", i, argv[i]);
+				MUKDEBUG("argv[%d]=%s\n", i, argv[i]);
 				tptr = optr;
 				i++;
 			}
@@ -118,7 +118,7 @@ int tokenize(char *string, int *argc, char **argv, char *args)
 	optr++;
 	*optr = '\0';	
 	arg_len++;
-//	MUKDEBUG("argc=%d arg_len=%d\n", *argc, arg_len);
+	MUKDEBUG("argc=%d arg_len=%d\n", *argc, arg_len);
 	return(arg_len);
 }
 	
@@ -409,10 +409,11 @@ int main ( int argc, char *argv[] )
 	rcode = pthread_create( &sys_pth, NULL, pth_systask, muk_cmd );
 	if(rcode)ERROR_EXIT(rcode);
 	MUKDEBUG("sys_pth=%u\n",sys_pth);
-	mukproc_ptr = (proc_usr_t *) PROC_MAPPED(sys_ep);
-	SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
 	MTX_UNLOCK(sys_mutex);
 	MTX_LOCK(muk_mutex);
+	mukproc_ptr = (proc_usr_t *) PROC_MAPPED(sys_ep);
+	SET_BIT( mukproc_ptr->p_misc_flags, MIS_BIT_UNIKERNEL);
+
 	
 #endif // ENABLE_SYSTASK
 	

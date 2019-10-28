@@ -1170,8 +1170,34 @@ SE cambio la sincronizacion asi
 
 ATENCION: No usar WAIT y SIGNAL porque no garantizan sincronizacion .		
 
-		
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se cambio el Makefile de muk (habria que cambiar el de todo el arbol)
+para compilar con ptheads estaticamente linkeados usando
+	a) -lpthread (en lugar de -pthreads)
+	b) incorporando el flat -static 
+
+CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -lpthread -static <<<<<<<<
+
+muk: muk.o mukcfg.o 
+	$(CC)  -static -o muk muk.o mukcfg.o $(LIB) -lpthread <<<<<<<<
+	
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 =======================================================================================
+20191026:
+		Error en el tratamiento de los codigos de retorno de la libreria 
+		stub_dvkipc cuando se usa con IPC 
+		
+ muk.c:pth_systask:148:my_pth=3078490944
+ system.c:init_systask:150:sys_pid=13
+DEBUG 12:dvk_bind_X:1137: cmd=0 dcid=0 pid=13 endpoint=-2 nodeid=-1
+DEBUG 12:dvk_bind_X:1141: ipc ret=-1
+ system.c:init_systask:153:sys_ep=-1 errno=2
+ERROR: system.c:init_systask:155: rcode=-306
+
+
+ULTIMO_LOG 
 =======================================================================================
 =======================================================================================
 

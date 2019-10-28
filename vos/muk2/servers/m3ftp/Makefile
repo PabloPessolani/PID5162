@@ -15,7 +15,7 @@ INCLUDE = .
 
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 #Objetos a compilar
 OBJS = m3ftpd.o 
 #OBJ2 =  m3ftp.o 

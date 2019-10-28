@@ -1,0 +1,13 @@
+PARA REALIZAR ARCHIVOS DE CONFIGURACION
+incluir en la shell lineas como las siguientes
+Esta crea el archivo prueba.cfg 
+-------------------------------------------
+cat << EOF > prueba.cfg
+dc DC$dcid {
+dcid $dcid;
+nr_procs 221;
+ }
+EOF
+read  -p "Enter para continuar... "
+-------------------------------------------
+

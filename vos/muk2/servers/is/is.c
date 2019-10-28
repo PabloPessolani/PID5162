@@ -245,7 +245,9 @@ void wis_server(int fd)
 	char * fstr;
 
 	MUKDEBUG("fd:%d\n", fd);
-	
+
+	taskname("%s","wis_server");
+
 	dump_fd = fd; 
 
 	ret = fdread(fd, wis_buffer,WISBUFSIZE); 	/* fdread Web request in one go */

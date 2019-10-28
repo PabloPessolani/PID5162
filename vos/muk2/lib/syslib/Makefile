@@ -10,7 +10,7 @@ INCLUDE = .
  
 
 # Options for development
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 OBJS =  taskcall.o sys_times.o sys_setalarm.o sys_fork.o sys_exit.o \
 	sys_privctl.o sys_getinfo.o sys_bindproc.o sys_vircopy.o sys_getuptime.o \

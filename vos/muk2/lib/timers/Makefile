@@ -9,7 +9,7 @@ CC = gcc
 INCLUDE = .
 
 # Options for development
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 OBJS =  timers.o 
 
 $(LIB): $(OBJS)

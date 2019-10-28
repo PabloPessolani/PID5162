@@ -10,7 +10,7 @@ INCLUDE = .
 
 # Options for development
 # CFLAGS = -v -O3 -Wall -ansi
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 OBJS =  system.o clock.o  \
 		st_unused.o st_times.o st_privctl.o st_nice.o \

@@ -21,7 +21,7 @@ $(OFILES): taskimpl.h task.h 386-ucontext.h power-ucontext.h
 
 AS=gcc -c
 CC=gcc
-CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -pthread 
+CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -lpthread 
 
 %.o: %.S
 	$(AS) $*.S

@@ -9,7 +9,7 @@ CC = gcc
 INCLUDE = .
 
 # Options for development
-CFLAGS =  -g -c -fPIC -Wall -pthread 
+CFLAGS =  -static -g -c -fPIC -Wall -lpthread 
 
 OBJS =  getsysinfo.o molsyscall.o mol_child_exit.o mol_exit.o mol_alarm.o \
 		mol_bindproc.o  mol_fork.o mol_getpid.o mol_wait.o mol_waitpid.o \

@@ -15,13 +15,13 @@ LIB= 	/usr/src/dvs/lib/config/libconfig.a \
 		
 AS=gcc -c
 CC=gcc
-CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -pthread 
+CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -lpthread -static 
 
 %.o: %.c
 	$(CC) $(CFLAGS) $*.c
 	
 muk: muk.o mukcfg.o 
-	$(CC)  -pthread -o muk muk.o mukcfg.o $(LIB)
+	$(CC)  -static -o muk muk.o mukcfg.o $(LIB) -lpthread
 	
 clean:
 	rm -f *.o  muk 

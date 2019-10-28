@@ -1,32 +1,25 @@
-all: tap 
+all: libtap.a
+
+LIB=libtap.a 
+
+
 # Which compiler
 CC = gcc
 
 # Where are include files kept
-INCLUDE = ..
+INCLUDE = .
 
-# Options for develofsent
+# Options for development
 # CFLAGS = -v -O3 -Wall -ansi
+CFLAGS =  -g -c -fPIC -Wall  -lpthread -static 
 
-CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
-LZ4FLAGS = $(CFLAGS)  
-LZ4FLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wstrict-prototypes
+OBJS =  tap.o  parse_config.o
 
-
-OBJS =  tap.o
-
-LIBS = 	/usr/src/dvs/vos/mol/lib/syslib/libsyslib.so \
-		/usr/src/dvs/vos/mol/lib/timers/libtimers.so \
-		/usr/src/dvs/vos/mol/lib/mollib/libmollib.so \
-		/usr/src/dvs/vos/mol/lib/config/libconfig.so \
-		/usr/src/dvs/dvk-lib/stub_dvkcall.o 
-	
-		
-tap: $(OBJS)
-	$(CC)  $(CFLAGS) -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic -o tap $(OBJS) $(LIBS) -I$(INCLUDE)	
-		
 .c.o:
-	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE) -Wall
+	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
+
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS) 
 
 clean:
-	rm tap *.o
+	rm  $(LIB) *.o
