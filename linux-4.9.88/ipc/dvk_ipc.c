@@ -204,8 +204,10 @@ send_replay: /* Return point for a migrated destination process */
 			caller_ptr->p_usr.p_sendto = NONE;
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) 
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr); 
 				goto send_replay;
+			}
 		}
 	} else {					/* the destination is LOCAL  */
 		/*---------------------------------------------------------------------------------------------------*/
@@ -257,8 +259,10 @@ send_replay: /* Return point for a migrated destination process */
 				WUNLOCK_PROC(dst_ptr);
 				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_sendto 	= NONE;
-				if( ret == EDVSMIGRATE) 
+				if( ret == EDVSMIGRATE) {
+					WUNLOCK_PROC(caller_ptr);
 					goto send_replay;
+				}
 			}
 		}
 	}
@@ -693,7 +697,10 @@ sendrec_replay:
 			caller_ptr->p_usr.p_sendto  = NONE;
 			caller_ptr->p_usr.p_getfrom = NONE;
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) goto sendrec_replay;
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr);
+				goto sendrec_replay;
+			}
 		}
 	} else {
 		/*---------------------------------------------------------------------------------------------------*/
@@ -728,7 +735,29 @@ sendrec_replay:
 			}else {
 				caller_ptr->p_usr.p_lclsent++;
 			}
-		} else { 
+		} else if ( test_bit(BIT_SENDING, &srcdst_ptr->p_usr.p_rts_flags) &&
+			srcdst_ptr->p_usr.p_sendto == caller_ep) {
+			// this situation occurs when the caller exits from previous sendrec with ERESTARTSYS  and the srcdst process want to reply_replay 
+			// the previous request to caller.
+			DVKDEBUG(GENERIC,"destination %d is waiting to send to %d\n", srcdst_ep,caller_ep);
+			COPY_USR2USR_PROC(ret, caller_ep, srcdst_ptr, (char *) srcdst_ptr->p_umsg, caller_ptr, (char *) m_ptr,  sizeof(message) );
+			clear_bit(BIT_SENDING, &srcdst_ptr->p_usr.p_rts_flags);
+			srcdst_ptr->p_usr.p_sendto 	= NONE;
+			if(srcdst_ptr->p_usr.p_rts_flags == 0) {
+				LOCAL_PROC_UP(srcdst_ptr, ret1); 
+				if(ret1 < EDVSERRCODE)
+					ERROR_PRINT(ret1);
+			}
+			if(ret < 0) {
+				caller_ptr->p_usr.p_getfrom = NONE;
+				caller_ptr->p_usr.p_sendto 	= NONE;
+				WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
+				ERROR_RETURN(ret);
+			}else {
+				srcdst_ptr->p_usr.p_lclsent++;
+			}
+			WUNLOCK_PROC(srcdst_ptr);				
+		}else { 
 			DVKDEBUG(GENERIC,"destination is not waiting srcdst_ptr-flags=%lX. Enqueue at TAIL.\n"
 				,srcdst_ptr->p_usr.p_rts_flags);
 			/* The destination is not waiting for this message 			*/
@@ -756,8 +785,10 @@ sendrec_replay:
 				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_getfrom    	= NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
-				if( ret == EDVSMIGRATE) 
+				if( ret == EDVSMIGRATE) {
+					WUNLOCK_PROC(caller_ptr);
 					goto sendrec_replay;
+				}
 			} else {
 				WUNLOCK_PROC(srcdst_ptr);
 				caller_ptr->p_usr.p_lclsent++;
@@ -979,6 +1010,7 @@ notify_replay:
 			caller_ptr->p_usr.p_sendto = NONE;
 			caller_ptr->p_usr.p_proxy = NONE;
 			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr);			
 				goto notify_replay;
 			}
 		}
@@ -1864,8 +1896,10 @@ reply_replay: /* Return point for a migrated destination process */
 			caller_ptr->p_usr.p_sendto = NONE;
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) 
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr); 
 				goto reply_replay;
+			}
 		}
 	} else {					/* the destination is LOCAL  */
 		/*---------------------------------------------------------------------------------------------------*/
@@ -1887,7 +1921,6 @@ reply_replay: /* Return point for a migrated destination process */
 			dst_ptr->p_usr.p_getfrom 	= NONE;
 			if(dst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(dst_ptr, ret);
-			WUNLOCK_PROC(dst_ptr); 
 			caller_ptr->p_usr.p_lclsent++;
 		} else { 
 			DVKDEBUG(GENERIC,"destination is not waiting dst_flags=%lX. Enqueue at the TAIL.\n"
@@ -1897,6 +1930,7 @@ reply_replay: /* Return point for a migrated destination process */
 			/* blocked sending the message */
 			ret = EDVSPROCSTS;
 		}
+		WUNLOCK_PROC(dst_ptr); 
 	}
 
 	WUNLOCK_PROC(caller_ptr);

@@ -270,22 +270,22 @@ while (TRUE) {
 			/* Status is # of bytes transferred or error code. */
 			mess.REP_STATUS = r;	
 			
-			TASKDEBUG("SEND msg a DEVICE_CALLER: %d -> m_type=%d, (REP_ENDPT)=%d, (REP_STATUS)=%d\n",
+			TASKDEBUG("REPLY msg a DEVICE_CALLER: %d -> m_type=%d, (REP_ENDPT)=%d, (REP_STATUS)=%d\n",
 				dev_caller,
 				mess.m_type,
 				mess.REP_ENDPT,
 				mess.REP_STATUS);
 		} else{
-			TASKDEBUG("SEND msg a DEVICE_CALLER: %d -> m_type=%d, (POSITION/BLOCK_NR)=%d, (SIGS)=%s\n",
+			TASKDEBUG("REPLY msg a DEVICE_CALLER: %d -> m_type=%d, (POSITION/BLOCK_NR)=%d, (SIGS)=%s\n",
 				dev_caller,
 				mess.m_type,
 				mess.mB_nr,
 				mess.mB_md5);
 		}
 			
-		ret = dvk_send(dev_caller, &mess); /*envío respuesta al cliente q solicitó*/
+		ret = dvk_reply(dev_caller, &mess); /*envío respuesta al cliente q solicitó*/
 		if( ret != 0 ) {
-			fprintf( stderr,"SEND ret=%d\n",ret);
+			fprintf( stderr,"REPLY ret=%d\n",ret);
 			fflush(stderr);
 			exit(1);
 			}

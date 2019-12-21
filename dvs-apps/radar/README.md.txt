@@ -143,14 +143,17 @@ Si ejecutamos el siguiente comando en NODE0 (cuando comienza el envio de mensaje
 
 	cat /proc/dvs/DC0/procs 
 
-Veremos el endpoint del cliente bindeado automaticamente al nodo correcto:
+Veremos el endpoint del cliente bindeado automaticamente al nodo correcto en NODE0:
 
 	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 	0   3     3   641/4      0    8   20  31438 27342 27342 27342 rdisk          
 	0  70    70   -1/-1      2  1000   0  27342 27342 27342 27342 rclient 
 	
-Si ahora detenemos el proceso de RDISK en NODE0 (o desconectamos su placa de red), NODE1 deberia
-pasar a oficiar ahora de PRIMARIO.
+Si ahora detenemos el proceso de RDISK en NODE0, NODE1 deberia
+pasar a oficiar ahora de PRIMARIO. Para hacerlo ejecutamos lo siguiente en NODO0:
+
+. /usr/src/dvs/dvs-apps/dc_init/DC0.sh		(NOTAR EL PUNTO Y EL ESPACIO AL INICIO DEL COMANDO)
+nsenter -p -u -F -t$DC0 pkill rdisk
 
 Ejecutando "cat /proc/dvs/DC0/procs" en NODE1 vemos:
 	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name

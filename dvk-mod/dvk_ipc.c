@@ -198,8 +198,10 @@ send_replay: /* Return point for a migrated destination process */
 			caller_ptr->p_usr.p_sendto = NONE;
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) 
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr); 
 				goto send_replay;
+			}
 		}
 	} else {					/* the destination is LOCAL  */
 		/*---------------------------------------------------------------------------------------------------*/
@@ -251,8 +253,10 @@ send_replay: /* Return point for a migrated destination process */
 				WUNLOCK_PROC(dst_ptr);
 				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_sendto 	= NONE;
-				if( ret == EDVSMIGRATE) 
+				if( ret == EDVSMIGRATE) {
+					WUNLOCK_PROC(caller_ptr);
 					goto send_replay;
+				}
 			}
 		}
 	}
@@ -502,7 +506,7 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 {
 	struct proc *srcdst_ptr, *caller_ptr, *sproxy_ptr;
 	dc_desc_t *dc_ptr;
-	int ret, retry, dcid;
+	int ret, retry, dcid, ret1;
 	int caller_nr, caller_pid, caller_ep;
 	int srcdst_nr;
 	struct task_struct *task_ptr;	
@@ -677,7 +681,10 @@ sendrec_replay:
 			caller_ptr->p_usr.p_sendto  = NONE;
 			caller_ptr->p_usr.p_getfrom = NONE;
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) goto sendrec_replay;
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr);
+				goto sendrec_replay;
+			}
 		}
 	} else {
 		/*---------------------------------------------------------------------------------------------------*/
@@ -712,13 +719,36 @@ sendrec_replay:
 			}else {
 				caller_ptr->p_usr.p_lclsent++;
 			}
-		} else { 
-			DVKDEBUG(GENERIC,"destination is not waiting srcdst_ptr-flags=%lX. Enqueue at TAIL.\n"
+		} else if ( test_bit(BIT_SENDING, &srcdst_ptr->p_usr.p_rts_flags) &&
+			srcdst_ptr->p_usr.p_sendto == caller_ep) {
+			// this situation occurs when the caller exits from previous sendrec with ERESTARTSYS  and the srcdst process want to reply_replay 
+			// the previous request to caller.
+			DVKDEBUG(GENERIC,"destination %d is waiting to send to %d\n", srcdst_ep,caller_ep);
+			COPY_USR2USR_PROC(ret, caller_ep, srcdst_ptr, (char *) srcdst_ptr->p_umsg, caller_ptr, (char *) m_ptr,  sizeof(message) );
+			clear_bit(BIT_SENDING, &srcdst_ptr->p_usr.p_rts_flags);
+			srcdst_ptr->p_usr.p_sendto 	= NONE;
+			if(srcdst_ptr->p_usr.p_rts_flags == 0) {
+				LOCAL_PROC_UP(srcdst_ptr, ret1); 
+				if(ret1 < EDVSERRCODE)
+					ERROR_PRINT(ret1);
+			}
+			if(ret < 0) {
+				caller_ptr->p_usr.p_getfrom = NONE;
+				caller_ptr->p_usr.p_sendto 	= NONE;
+				WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
+				ERROR_RETURN(ret);
+			}else {
+				srcdst_ptr->p_usr.p_lclsent++;
+			}
+			WUNLOCK_PROC(srcdst_ptr);				
+		}else { 
+			DVKDEBUG(GENERIC,"destination is not waiting to receive srcdst_ptr-flags=%lX. Enqueue at TAIL.\n"
 				,srcdst_ptr->p_usr.p_rts_flags);
 			/* The destination is not waiting for this message 			*/
 			/* Append the caller at the TAIL of the destination senders' queue	*/
 			/* blocked sending the message */
-					
+
+
 			caller_ptr->p_message.m_source = caller_ptr->p_usr.p_endpoint;
 			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 			set_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
@@ -732,19 +762,21 @@ sendrec_replay:
 				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
 					LIST_DEL(&caller_ptr->p_link); /* remove from queue */
-					WUNLOCK_PROC(srcdst_ptr);
 				} else {
-					WUNLOCK_PROC(srcdst_ptr);
 					caller_ptr->p_usr.p_lclsent++;
 				}
+				WUNLOCK_PROC(srcdst_ptr);
 				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
-				caller_ptr->p_usr.p_getfrom    	= NONE;
+				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
-				if( ret == EDVSMIGRATE) 
+				if( ret == EDVSMIGRATE){ 
+					WUNLOCK_PROC(caller_ptr);
 					goto sendrec_replay;
+				}
 			} else {
 				caller_ptr->p_usr.p_lclsent++;
+				WUNLOCK_PROC(srcdst_ptr);
 			}
 		}
 	}
@@ -958,6 +990,7 @@ notify_replay:
 			caller_ptr->p_usr.p_sendto = NONE;
 			caller_ptr->p_usr.p_proxy = NONE;
 			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr);
 				goto notify_replay;
 			}
 		}
@@ -1824,8 +1857,10 @@ reply_replay: /* Return point for a migrated destination process */
 			caller_ptr->p_usr.p_sendto = NONE;
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_proxy = NONE;
-			if( ret == EDVSMIGRATE) 
+			if( ret == EDVSMIGRATE) {
+				WUNLOCK_PROC(caller_ptr); 
 				goto reply_replay;
+			}
 		}
 	} else {					/* the destination is LOCAL  */
 		/*---------------------------------------------------------------------------------------------------*/
@@ -1847,7 +1882,6 @@ reply_replay: /* Return point for a migrated destination process */
 			dst_ptr->p_usr.p_getfrom 	= NONE;
 			if(dst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(dst_ptr, ret);
-			WUNLOCK_PROC(dst_ptr); 
 			caller_ptr->p_usr.p_lclsent++;
 		} else { 
 			DVKDEBUG(GENERIC,"destination is not waiting dst_flags=%lX. Enqueue at the TAIL.\n"
@@ -1857,8 +1891,8 @@ reply_replay: /* Return point for a migrated destination process */
 			/* blocked sending the message */
 			ret = EDVSPROCSTS;
 		}
+		WUNLOCK_PROC(dst_ptr);
 	}
-
 	WUNLOCK_PROC(caller_ptr);
 	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);

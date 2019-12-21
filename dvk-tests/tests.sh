@@ -18,6 +18,8 @@ mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
 dmesg -c >> /dev/shm/dmesg.txt
+lsmod | grep dvk 
+read  -p "mount Enter para continuar... "
 #cd /usr/src/dvs/dvs-apps/dvsd
 #./dvsd $lcl 
 part=(5 + $dcid)

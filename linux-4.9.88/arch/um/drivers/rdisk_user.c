@@ -34,6 +34,8 @@ int start_rd_thread(unsigned long sp, int *fd_out)
 {
 	int pid, fds[2], err;
 
+	printk("start_rd_thread - sp=%ld\n", sp);
+
 	err = os_pipe(fds, 1, 1);
 	if(err < 0){
 		printk("start_rd_thread - os_pipe failed, err = %d\n", -err);
@@ -55,7 +57,8 @@ int start_rd_thread(unsigned long sp, int *fd_out)
 		printk("start_rd_thread - clone failed : errno = %d\n", errno);
 		goto rd_out_close;
 	}
-
+// ATENCION, ESTO ES PARA "SINCRONIZAR"	
+sleep(2);
 	return(pid);
 
  rd_out_close:

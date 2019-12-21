@@ -925,8 +925,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		}
 		WUNLOCK_PROC(rp);
 	}
-		
-		
+				
 	/*********************************************************/
 	/* WARNING: Quizás falte controlar si el proceso unbind */
 	/* está en medio de una MIGRACION 				*/
@@ -1391,6 +1390,8 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 	
 	CHECK_DCID(dcid);		/* check DC ID limits 	*/
 	dc_ptr = &dc[dcid];
+DVKDEBUG(DBGPARAMS,"dc_ptr=%p\n",dc_ptr);
+
 	RLOCK_DC(dc_ptr);
 	do {	
 		rcode = 0;
@@ -1404,6 +1405,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 	}while(0);
 	if(rcode) ERROR_RUNLOCK_DC(dc_ptr, rcode);
 
+DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 	WLOCK_PROC(proc_ptr);
 	if( !test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)){
 		if ( oper != BKUP_BIND && oper != REPLICA_BIND ) {

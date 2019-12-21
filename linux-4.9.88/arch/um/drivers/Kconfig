@@ -1,13 +1,5 @@
 menu "UML Character Devices"
 
-
-config UML_RDISK 
-	bool "UML Replicated Disk proxy"
-	default y
-	help
-	This options enable RDISK proxy to the host RDISK.
-	
-	
 config UML_DVK 
 	bool "UML Distributed Virtualization Kernel (DVK) pseudo character device"
 	default y

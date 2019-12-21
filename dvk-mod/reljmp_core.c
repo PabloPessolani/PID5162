@@ -22,6 +22,8 @@
 static struct mutex *reljmp_jump_label_mutex = NULL;
 static struct mutex *reljmp_text_mutex = NULL;
 static void *(*reljmp_text_poke)(void *, const void *, size_t) = NULL;
+static void (*reljmp_jump_label_lock)(void) = NULL;
+static void (*reljmp_jump_label_unlock)(void) = NULL;
 
 /* Dump some information to syslog */
 static void reljmp_info(char *prefix, const char *name, void *addr)
@@ -47,7 +49,8 @@ static void reljmp_lock(void)
 	DVKDEBUG(DBGLVL0,"\n");
 	preempt_disable();
 	synchronize_sched();
-	mutex_lock(reljmp_jump_label_mutex);
+//	mutex_lock(reljmp_jump_label_mutex);
+	reljmp_jump_label_lock();
 	get_online_cpus();
 	mutex_lock(reljmp_text_mutex);
 }
@@ -58,7 +61,8 @@ static void reljmp_unlock(void)
 	DVKDEBUG(DBGLVL0,"\n");
 	mutex_unlock(reljmp_text_mutex);
     put_online_cpus();
-	mutex_unlock(reljmp_jump_label_mutex);
+//	mutex_unlock(reljmp_jump_label_mutex);
+	reljmp_jump_label_unlock();
 	preempt_enable();
 }
 
@@ -97,9 +101,11 @@ void reljmp_register(struct reljmp *jmp)
 int reljmp_init_once(void)
 {
 	DVKDEBUG(DBGLVL0,"reljmp: initialize\n");
-	RELJMP_LOOKUP_TYPE(jump_label_mutex, (struct mutex *));
+//	RELJMP_LOOKUP_TYPE(jump_label_mutex, (struct mutex *));
 	RELJMP_LOOKUP_TYPE(text_mutex, (struct mutex *));
 	RELJMP_LOOKUP_FUNC(text_poke);
+	RELJMP_LOOKUP_FUNC(jump_label_lock);
+	RELJMP_LOOKUP_FUNC(jump_label_unlock);
 	return 0;
 }
 

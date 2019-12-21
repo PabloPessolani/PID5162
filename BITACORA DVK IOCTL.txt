@@ -5992,7 +5992,279 @@ root@node0:/dev/shm# dmesg | grep fault
 		NO ME FUNCIONO 
 		
 =======================================================================================
+20191003: Intentando ejecutar UML  con RDISK como driver hago 
+
+root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# ./rdisk.sh 0
+
+Luego, arranco en otra sesion UML 
+root@node0:/usr/src/linux# . /dev/shm/DC0.sh 
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+
+		Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 9875456 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:90: UML-kernel PID=2 TID=2 uml_ep=-2
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.419068] CPU: 1 PID: 691 Comm: linux Tainted: G           O    4.9.88 #79
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.419171] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.419299] task: e904b2c0 task.stack: e8eaa000
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.419889] Stack:
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.419920]  00000002 70e430a4 f8a046c0 e90a2740 f60cd000 e8eabd90 d91e064a e8cdf9c0
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420039]  02100000 e8eabd98 d91e068f e8eabdc4 d94667b3 00000021 d91e0440 e90a2740
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420210]  00000000 e8eabdd4 000000ff f5b13780 00000000 e8aae4f8 e8eabde8 d91e0d0e
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420329] Call Trace:
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420369]  [<d91e064a>] ? cdev_get+0x1a/0x50
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420424]  [<d91e068f>] ? exact_lock+0xf/0x20
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420480]  [<d94667b3>] ? kobj_lookup+0xc3/0x140
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420545]  [<d91e0440>] ? mount_fs+0x160/0x160
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420602]  [<d91e0d0e>] ? chrdev_open+0xfe/0x170
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.420660]  [<d91d9587>] ? do_dentry_open+0x1f7/0x300
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.422910]  [<d91e0c10>] ? cdev_put+0x30/0x30
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.425111]  [<d91da9c4>] ? vfs_open+0x44/0x70
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.427293]  [<d91eabf8>] ? path_openat+0x548/0x11d0
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.429466]  [<d941f2ae>] ? pty_write+0x5e/0x70
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.431587]  [<d9347ca8>] ? list_del+0x8/0x20
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.434145]  [<d90a9cae>] ? remove_wait_queue+0x1e/0x30
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.436416]  [<d9413992>] ? tty_write_unlock+0x32/0x40
+Terminado (killed)
+root@node0:/usr/src/linux# 
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.438426]  [<d91eca18>] ? do_filp_open+0x68/0xe0
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.440440]  [<d919cd1a>] ? handle_mm_fault+0x73a/0xf60
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.442474]  [<d91fa9a6>] ? __alloc_fd+0x36/0x150
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.444462]  [<d9357659>] ? strncpy_from_user+0x39/0x140
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.446466]  [<d91dad92>] ? do_sys_open+0x112/0x1f0
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.448340]  [<d91d0000>] ? mem_cgroup_move_account+0x150/0x1e0
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.450480]  [<d9003728>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.452355]  [<d95e9302>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.454120] Code: 7c d9 5b 5d e9 fa ef 10 00 8d 76 00 8d bc 27 00 00 00 00 55 89 e5 57 56 53 83 ec 08 0f 1f 44 00 00 85 c0 89 c2 0f 84 c8 00 00 00 <83> 38 02 0f 84 9f 00 00 00 8b 98 dc 01 00 00 85 db 0f 84 91 00
+
+Message from syslogd@node0 at Nov  3 23:20:41 ...
+ kernel:[  247.459541] EIP: [<d90f1058>] 
+ 
+ 
+ 
+ 
+ [  247.415155] DEBUG 695:ipc_exit_unbind:377: WUNLOCK_TASK pid=695 count=0
+[  247.417749] BUG: unable to handle kernel paging request at f8a046c0
+[  247.417864] IP: [<d90f1058>] try_module_get+0x18/0xf0
+[  247.418019] *pdpt = 0000000019903001 *pde = 0000000035ac3067 
+[  247.418111] *pte = 0000000000000000 
+
+[  247.418185] Oops: 0000 [#1] SMP
+[  247.418227] Modules linked in: iptable_filter fuse snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device vmwgfx snd_pcm ttm drm_kms_helper drm evdev joydev snd_timer snd vmw_balloon serio_raw pcspkr soundcore sg shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay crc32c_generic ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid xhci_pci xhci_hcd psmouse ehci_pci uhci_hcd ehci_hcd usbcore pcnet32 ata_piix mii mptspi scsi_transport_spi libata mptscsih mptbase scsi_mod i2c_piix4
+[  247.419068] CPU: 1 PID: 691 Comm: linux Tainted: G           O    4.9.88 #79
+[  247.419171] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  247.419299] task: e904b2c0 task.stack: e8eaa000
+[  247.419362] EIP: 0060:[<d90f1058>] EFLAGS: 00010286 CPU: 1
+[  247.419431] EIP is at try_module_get+0x18/0xf0
+[  247.419486] EAX: f8a046c0 EBX: f8a046c0 ECX: d91e0680 EDX: f8a046c0
+[  247.419561] ESI: e90a2740 EDI: f60cd000 EBP: e8eabd80 ESP: e8eabd6c
+[  247.419670]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+[  247.419772] CR0: 80050033 CR2: f8a046c0 CR3: 28513160 CR4: 000006f0
+[  247.419889] Stack:
+[  247.419920]  00000002 70e430a4 f8a046c0 e90a2740 f60cd000 e8eabd90 d91e064a e8cdf9c0
+[  247.420039]  02100000 e8eabd98 d91e068f e8eabdc4 d94667b3 00000021 d91e0440 e90a2740
+[  247.420210]  00000000 e8eabdd4 000000ff f5b13780 00000000 e8aae4f8 e8eabde8 d91e0d0e
+[  247.420329] Call Trace:
+[  247.420369]  [<d91e064a>] ? cdev_get+0x1a/0x50
+[  247.420424]  [<d91e068f>] ? exact_lock+0xf/0x20
+[  247.420480]  [<d94667b3>] ? kobj_lookup+0xc3/0x140
+[  247.420545]  [<d91e0440>] ? mount_fs+0x160/0x160
+[  247.420602]  [<d91e0d0e>] ? chrdev_open+0xfe/0x170
+[  247.420660]  [<d91d9587>] ? do_dentry_open+0x1f7/0x300
+[  247.422910]  [<d91e0c10>] ? cdev_put+0x30/0x30
+[  247.425111]  [<d91da9c4>] ? vfs_open+0x44/0x70
+[  247.427293]  [<d91eabf8>] ? path_openat+0x548/0x11d0
+[  247.429466]  [<d941f2ae>] ? pty_write+0x5e/0x70
+[  247.431587]  [<d9347ca8>] ? list_del+0x8/0x20
+[  247.434145]  [<d90a9cae>] ? remove_wait_queue+0x1e/0x30
+[  247.436416]  [<d9413992>] ? tty_write_unlock+0x32/0x40
+[  247.438426]  [<d91eca18>] ? do_filp_open+0x68/0xe0
+[  247.440440]  [<d919cd1a>] ? handle_mm_fault+0x73a/0xf60
+[  247.442474]  [<d91fa9a6>] ? __alloc_fd+0x36/0x150
+[  247.444462]  [<d9357659>] ? strncpy_from_user+0x39/0x140
+[  247.446466]  [<d91dad92>] ? do_sys_open+0x112/0x1f0
+[  247.448340]  [<d91d0000>] ? mem_cgroup_move_account+0x150/0x1e0
+[  247.450480]  [<d9003728>] ? do_fast_syscall_32+0x98/0x160
+[  247.452355]  [<d95e9302>] ? sysenter_past_esp+0x47/0x75
+[  247.454120] Code: 7c d9 5b 5d e9 fa ef 10 00 8d 76 00 8d bc 27 00 00 00 00 55 89 e5 57 56 53 83 ec 08 0f 1f 44 00 00 85 c0 89 c2 0f 84 c8 00 00 00 <83> 38 02 0f 84 9f 00 00 00 8b 98 dc 01 00 00 85 db 0f 84 91 00
+[  247.459541] EIP: [<d90f1058>] 
+[  247.459583] try_module_get+0x18/0xf0
+[  247.461329]  SS:ESP 0068:e8eabd6c
+[  247.463118] CR2: 00000000f8a046c0
+[  247.464833] ---[ end trace a46b16edf5e1ce2a ]---
+
+
+
+APARENTEMENTE NO ESTA INSTALANDO EL MODULO 
+
+root@node0:/usr/src/dvs/dvk-mod# cat /dev/shm/dmesg.txt
+[   59.427865] dvk: loading out-of-tree module taints kernel.
+[   59.436597] DEBUG dvk_init_module:257: Hello, DVS! tasklist_ptr=0
+[   59.437222] DEBUG dvk_init_module:261: Hello, DVS! setaffinity_ptr=CA092550
+[   59.437769] DEBUG dvk_init_module:265: Hello, DVS! free_nsproxy_ptr=CA0864E0
+[   59.438227] DEBUG dvk_init_module:269: Hello, DVS! sys_wait4_ptr=CA06C870
+[   59.443565] DEBUG dvk_init_module:273: Hello, DVS! scnprintf_ptr=0
+[   59.449063] DEBUG dvk_init_module:277: Hello, DVS! dvk_unbind_ptr=0
+[   59.449066] DEBUG dvk_init_module:279: usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
+[   59.449068] DEBUG dvk_init_module:281: parms:  dvk_major=33 dvk_minor=0 dvk_nr_devs=1
+[   59.449082] DEBUG dvk_init_module:298: Registeration is a success The major device number is 33.
+[   59.449083] DEBUG dvk_init_module:299: We suggest you use:
+[   59.449084] DEBUG dvk_init_module:300: mknod /dev/dvk c 33 0
+[   59.449085] DEBUG dvk_init_module:301: OLD local_nodeid=-1
+[   59.449086] DEBUG dvk_replace_init:132: 
+[   59.449088] DEBUG reljmp_init_once:99: reljmp: initialize
+[   59.454324] reljmp: failed to lookup jump_label_mutex
+[   59.454404] ERROR: 635:dvk_replace_init:136: rcode=-19
+
+
+MODIFIQUE  Makefile de arch/x86/boot/compressed/Makefile
+Segun el patch https://lore.kernel.org/patchwork/patch/983227/
+
+El problema es que jump_label_mutex se define si HAVE_JUMP_LABEL
+	#ifdef HAVE_JUMP_LABEL
+	/* mutex to protect coming/going of the the jump_label table */
+	static DEFINE_MUTEX(jump_label_mutex); 
+	void jump_label_lock(void)
+	{
+		mutex_lock(&jump_label_mutex);
+	}
+
+y HAVE_JUMP_LABEL se define si 
+	#if defined(CC_HAVE_ASM_GOTO) && defined(CONFIG_JUMP_LABEL)
+	# define HAVE_JUMP_LABEL
+	#endif
+
+con CONFIG_JUMP_LABEL no hay problemas
+	root@node0:/usr/src/linux# grep CONFIG_JUMP_LABEL .config
+	CONFIG_JUMP_LABEL=y
+
+El problema esta en CC_HAVE_ASM_GOTO que debe definirse en el Makefile 
+
+	LDFLAGS_vmlinux := -T
+
+	# check for 'asm goto'
+	ifeq ($(shell $(CONFIG_SHELL) $(srctree)/scripts/gcc-goto.sh $(CC) $(KBUILD_CFLAGS)), y)
+	  CC_HAVE_ASM_GOTO := 1
+	  KBUILD_CFLAGS += -DCC_HAVE_ASM_GOTO
+	  KBUILD_AFLAGS += -DCC_HAVE_ASM_GOTO
+	endif
+
+	hostprogs-y	:= mkpiggy
+	HOST_EXTRACFLAGS += -I$(srctree)/tools/include
+
+
+NO FUNCIONA IGUAL
+	Buscando los simbolos que requiere reljmp_core
+		RELJMP_LOOKUP_TYPE(jump_label_mutex, (struct mutex *));
+		RELJMP_LOOKUP_TYPE(text_mutex, (struct mutex *));
+		RELJMP_LOOKUP_FUNC(text_poke);
+	Se ve que solo uno aparece 
+		root@node0:/usr/src/linux/scripts# cat /proc/kallsyms | grep jump_label_mutex
+		root@node0:/usr/src/linux/scripts# cat /proc/kallsyms | grep text_mutex <<< este al menos existe en los fuentes 
+		root@node0:/usr/src/linux/scripts# cat /proc/kallsyms | grep text_poke
+		d6028c60 T text_poke_early
+		d6029520 T text_poke
+		d6029a50 T text_poke_bp
+		
+Las operaciones sobre jump_label_mutex pueden realizarse utilizando 
+root@node0:/usr/src/linux/scripts# cat /proc/kallsyms | grep jump_label_lock
+d6168670 T jump_label_lock
+root@node0:/usr/src/linux/scripts# cat /proc/kallsyms | grep jump_label_unlock
+d6168690 T jump_label_unlock
+
+
+=======================================================================================
 ULTIMO_LOG
+
+TODO;: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+	Actualmente se tienen las mismas funciones tanto para DKV_IPC y DVK_IOCTL y DVK_USER
+	Proximamente deberian incorporarse las mismas funciones pero ejecutandolas desde el kernel
+	
+	Cada dvk_call deberia llamarse	lnx_send(), lnx_receive, etc.
+		
+	Las mismas podrian ser invocadas tanto desde el kernel como desde modo usuario.
+	Es decir:
+		dvk_send->lnx_send() cuando se usa IOCTL 
+		ipc_send->lnx_send() cuando se usa IPC 
+		krn_send->lnx_send() cuando se invoca desde el mismo kernel
+		
+	Como estas funciones tiene copias hacia y desde el modo usuario, debe incluirse al kernel tambien
+	Esto se puede hacer utilizando el p_misc_flag = MIS_BIT_KTHREAD
+	
+	Cuando se tenga que hacer una copia, entonces 
+			if( test_bit(proc_ptr->p_usr.p_misc_flag, MIS_BIT_KTHREAD))
+				memcpy()
+			else 
+				COPY_USR2KRN o COPY_KRN2USR
+				
+	ADEMAS: Deberian hacerse 2 modulos de DVK_IOCTL, uno cuando las funciones ya estan cargadas
+		porque esta parametrizado con DVK_IPC o la otra cuando no lo estan que debe cargarse el modulo completo.
+		
+	Los modulos deberian llamarse entonces dvknoipc y dvkipc
+	
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
 			
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1

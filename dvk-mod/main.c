@@ -66,6 +66,7 @@ struct reljmp *reljmp_func[] = {
 #endif //CONFIG_DVKIPC 
 };
 
+#ifdef CONFIG_DVKIPC 
 char *dvk_ipc_names[DVK_NR_CALLS] = {
     "ipc_void0",
     "ipc_dc_init",
@@ -180,6 +181,7 @@ char *dvk_ipc_names[DVK_NR_CALLS] = {
     ipc_wakeup,
 };
 
+#else // CONFIG_DVKIPC 
 
 char *dvk_io_names[DVK_NR_CALLS] = {
     "io_void0",
@@ -256,6 +258,7 @@ long (*dvk_io_routine[DVK_NR_CALLS])(unsigned long arg) = {
     io_getproxyinfo,
     io_wakeup,
 };
+#endif // CONFIG_DVKIPC 
 
 static int dvk_replace_init(void)
 {
@@ -281,7 +284,7 @@ static int dvk_replace_init(void)
 	return 0;
 }
 
-static void dkv_replace_exit(void)
+static void dvk_replace_exit(void)
 {
 	int i;
 
@@ -366,7 +369,7 @@ long dvk_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 void dvk_cleanup_module(void)
 {
 	DVKDEBUG(DBGLVL0,"\n");
-	dkv_replace_exit();
+	dvk_replace_exit();
 }
 
 //----------------------------------------------------------

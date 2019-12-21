@@ -74,7 +74,7 @@ EXPORT_SYMBOL(exit_unbind_ptr);
 /*--------------------------------------------------------------*/
 asmlinkage long old_exit_unbind(long code)
 {
-	printk(KERN_ALERT "DVK: old_exit_unbind code:%d\n",code);
+//	printk(KERN_ALERT "DVK: old_exit_unbind code:%d\n",code);
 	return (-ENOSYS);
 }
 EXPORT_SYMBOL(old_exit_unbind);
@@ -85,7 +85,7 @@ EXPORT_SYMBOL(old_exit_unbind);
 /*--------------------------------------------------------------*/
 static void exit_unbind(long code)
 {
-	printk(KERN_ALERT "DVK: exit_unbind local_nodeid:%d\n",atomic_read(&local_nodeid));
+//	printk(KERN_ALERT "DVK: exit_unbind local_nodeid:%d\n",atomic_read(&local_nodeid));
 	exit_unbind_ptr(code);
 }
 EXPORT_SYMBOL(exit_unbind);

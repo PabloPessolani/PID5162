@@ -21,6 +21,10 @@
 #include "um_dvk.h"
 #include "glo_dvk.h"
 
+#ifdef CONFIG_DVKIPC
+#undef CONFIG_DVKIPC
+#endif // CONFIG_DVKIPC
+
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
 
 extern int userspace_pid[];

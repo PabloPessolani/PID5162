@@ -120,4 +120,32 @@ Se modifico el archivo Kconfig.char
 			This options enable DVK pseudo device driver as a pass-through to the host-DVK.
  
  
+ =============================================================================================
+ 
+ device_initcall(rd_driver_init): Al inicializar los drivers, el kernel invoca a rd_driver_init()
+
+ rd_driver_init: 
+	invoca a start_rd_thread() para crear el  thread de rdisk
+	Setea la IRQ para rdisk en RDISK_IRQ
+ 
+ start_rd_thread() en rdisk_user.c:
+	Crea el pipe para las transferencias de requerimientos entre el UML Kernel y el thread de rdisk rd_thread()
+	Crea el thread rd_thread()
+	
+rd_thread():
+	ciclo infinito	
+		lee el pipe de peticiones 
+		Invoca a do_rdisk(req)
+		escribe el pipe con la respuesta
+		
+do_rdisk():
+	realiza las operaciones de READ y WRITE usando rdisk_rw() quien hace la invocacion al DVK.
+	
+	
+	
+
+
+	
+ 
+ 
  

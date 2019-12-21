@@ -64,7 +64,7 @@ int main ( int argc, char *argv[] )
 	    m_ptr->m1_i1 = i;
 		printf("CLIENT SENDREC msg %d:" MSG1_FORMAT, i, MSG1_FIELDS(m_ptr));
 		ret = dvk_sendrec_T(svr_nr, (long) m_ptr, RADAR_TIMEOUT);
-		if( ret == 0 ) 
+		if( ret != 0 ) 
 			ERROR_PRINT(ret);
 		else 
 			printf("CLIENT received  REPLY msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));

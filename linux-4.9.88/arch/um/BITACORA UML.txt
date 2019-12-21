@@ -716,8 +716,7 @@ EN HOST
 [ 3919.787024] DEBUG 6811:check_caller:536: caller_pid=6811 caller_tgid=6811
 [ 3919.787025] ERROR: 6811:check_caller:570: rcode=-310
 [ 3919.787026] ERROR: 6811:dvk_ioctl:228: rcode=-310
-[ 3954.156308] DVK: exit_unbind local_nodeid:0
-
+[ 3954.156308] 
 
 ==============================================================================================
 20190430.  EL PROBLEMA SON LAS DIRECCIONES EN MODO USUARIO. 
@@ -772,8 +771,7 @@ DEBUG EN HOST
 [29326.453403] ERROR: 9443:check_caller:570: rcode=-310
 [29326.453405] DEBUG 9443:new_getdcinfo:1831: RLOCK_DC dc=0 count=0
 [29326.453407] DEBUG 9443:new_getdcinfo:1833: RUNLOCK_DC dc=0 count=0
-[29326.470500] DVK: exit_unbind local_nodeid:0
-
+[29326.470500] 
 DEBUG EN UMLoot@node0:/usr/src/dvs/dvk-proxies/test# dmesg -c                                                    
 [  401.060000] DEBUG 657:uml_dvk_open:95: dvk_dev=/dev/dvk
 [  401.060000] DEBUG 657:uml_dvk_open:103: rcode=23
@@ -855,8 +853,7 @@ DEBUG EN EL HOST
 [29697.766128] ERROR: 10018:check_caller:570: rcode=-310
 [29697.766130] DEBUG 10018:new_getdcinfo:1831: RLOCK_DC dc=0 count=0
 [29697.766140] DEBUG 10018:new_getdcinfo:1833: RUNLOCK_DC dc=0 count=0
-[29697.767270] DVK: exit_unbind local_nodeid:0
-
+[29697.767270] 
 ESTO DEMUESTRA QUE EL QUE HACE LA PETICION ES EL UML-KERNEL (10018)
 
 
@@ -2657,8 +2654,7 @@ EN EL HOST
 [ 1884.625935] ERROR: 13416:check_caller:570: rcode=-310
 [ 1884.625936] ERROR: 13416:new_mini_sendrec:511: rcode=-310
 [ 1884.625937] ERROR: 13416:dvk_ioctl:225: rcode=-310
-[ 1884.641001] DVK: exit_unbind local_nodeid:0
-
+[ 1884.641001] 
 root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk          
@@ -2691,13 +2687,8 @@ ERROR: 2:dvk_sendrec_T:714: rcode=-310
 ERROR: 682:rd_open_dev:289: rcode=-310
 rdiska: Can't open: errno = 310
 mount: mount /dev/rdiska on /mnt failed: Unknown error 310
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:8192
-root@node0:~# DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-
+root@node0:~# 
 
 ==============================================================================================
 20190531:
@@ -2719,6 +2710,7 @@ DVK: old_exit_unbind code:0
 		 0   3     3   695/695    0    8   20 31438 27342 27342 27342 rdisk          
 		
 	Luego hacer DENTRO de UML 
+		mount -o remount,rw /dev/ubda /
 		mknod /dev/dvk c 33 0 
 		echo > /dev/dvk  <<<<<<<<<<<< ESTO FUERZA EL OPEN DEL DVK y por lo tanto hace el BIND del UML con endpoint=SYSTASK 
 		
@@ -3414,13 +3406,10 @@ UML_RDISK SE DESPIERTA
 
 ---------------------------------------------------------------------------
 
-DVK: old_exit_unbind code:0
 [  OK  ] Started Permit User Sessions.
 [  OK  ] Started Getty on tty3.
 [  OK  ] Started Getty on tty6.
 [  OK  ] Started Getty on tty1.
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 [  OK  ] Started Getty on tty5.
 [  OK  ] Started Getty on tty2.
 [  OK  ] Started Getty on tty4.
@@ -3436,14 +3425,6 @@ Debian GNU/Linux 9 node0 tty1
 
 node0 login: root
 Password: 
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 Linux node0 4.9.88 #15 Sun Jun 2 21:55:52 -03 2019 i686
 
 The programs included with the Debian GNU/Linux system are free software;
@@ -4339,8 +4320,6 @@ DEBUG rd_prepare_request:763: op=0 offset=295936 length=1024 sectorsize=512 erro
 DEBUG rd_submit_request:781: 
 DEBUG do_rd_request:804: 
 DEBUG rd_thread:1069: op=0 offset=295936 length=1024 sectorsize=512 error=0EXT4-fs (rdiska): mounted filesystem without journal. Opts: (null)
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 
 ------------------------------------------------------------------------------------------
 OBJETIVO: Hacer que un programa comun UML puede invocar las APIs del DVK 
@@ -4372,8 +4351,6 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 20190603:  
       
  root@node0:/usr/src/dvs/dvk-tests# mknod /dev/dvk c 33 0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 
 root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
 DEBUG uml_dvk_open:88: dvk_dev=/dev/dvk
@@ -4421,8 +4398,6 @@ UML DVK CALL user=1 tracee_lpid=1119 tracer_lpid=936 dvk_fd=27 cmd=8004E31A
 ERROR: 684:dvk_getep:163: rcode=-305
 ERROR: uml_bind.c:main:31: rcode=-305
 PARENT dvk_getep pid=684 ep=-1081250584 rep=-305 dvk_fd=0
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 DEBUG uml_dvk_release:131: dvk_dev=/dev/dvk
 
 ----------------------------------------------------------------------------------
@@ -4666,14 +4641,12 @@ ATENCION: TUVE QUE ANULAR EN stub_dvkcall los indicios de CONFIG_UML_DVK
 root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
 UML user-mode pid=683 DVK_FILE_NAME=/dev/dvk
 DVK userspace MATCH __NR_open user=1 tracee_lpid=3290 tracer_lpid=3110 tmp_path=/dev/dvk flags=0 mode=80000C6F
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Segmentation fault
 
 root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
 UML user-mode pid=684 DVK_FILE_NAME=/dev/dvk
 DVK userspace MATCH __NR_open user=1 tracee_lpid=3292 tracer_lpid=3110 tmp_path=/dev/dvk flags=0 mode=80000C6F
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Segmentation fault
 
@@ -4696,14 +4669,12 @@ Aaparentemente funciona asi:
 root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
 UML user-mode pid=683 DVK_FILE_NAME=/dev/dvk
 DVK userspace MATCH __NR_open user=0 tracee_lpid=0 tracer_lpid=2 tmp_path=/dev/dvk flags=0 mode=C6F
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Segmentation fault
 
 root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
 UML user-mode pid=684 DVK_FILE_NAME=/dev/dvk
 DVK userspace MATCH __NR_open user=0 tracee_lpid=0 tracer_lpid=2 tmp_path=/dev/dvk flags=0 mode=C6F
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Segmentation fault
 
@@ -4762,7 +4733,6 @@ Stub registers -
         15 - 101028
         16 - 7b
 handle_trap - failed to wait at end of syscall, errno = 0, status = 2943= 0x0‭B7F‬
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
 
@@ -4828,7 +4798,6 @@ Stub registers -
         15 - 101028
         16 - 7b
 handle_trap - failed to wait at end of syscall, errno = 0, status = 2943
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
 
@@ -4898,8 +4867,7 @@ root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd
 		ERROR: uml_bind.c:main:38: rcode=-9
 		PARENT dvk_getep pid=685 ep=-1 rep=-9 dvk_fd=-1
 		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
-		^CDVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:2
+		^C		DVK: old_exit_unbind code:2
 
 		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 76
 		UML user-mode pid=686 DVK_FILE_NAME=/dev/dvk
@@ -4914,8 +4882,7 @@ root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd
 		ERROR: uml_bind.c:main:38: rcode=-9
 		PARENT dvk_getep pid=686 ep=-1 rep=-9 dvk_fd=-1
 		DVK userspace __NR_open tmp_path=[/run/sys] UML_DVK_DEV=[/dev/dvk]
-		^CDVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:2
+		^C		DVK: old_exit_unbind code:2
 
 
 		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 66
@@ -5118,7 +5085,6 @@ Stub registers -
         15 - 101028
         16 - 7b
 handle_trap - failed to wait at end of syscall, errno = 0, status = 2943
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
 
@@ -5309,8 +5275,6 @@ DVK handle_dvk_exit pid=2335
 ERROR: 695:dvk_getep:163: rcode=-38
 ERROR: uml_bind.c:main:47: rcode=-38
 PARENT dvk_getep pid=695 ep=-1 rep=-38 dvk_fd=3
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 DEBUG uml_dvk_release:131: dvk_dev=/dev/dvk
 
 
@@ -5623,9 +5587,7 @@ GENIAL!!! probe COPY CLIENTE Y COPY SERVER
 		 copy_client.c:main:141:CLIENT RECIEVED: source=10 type=0 m1i1=1024 m1i2=0 m1i3=0 m1p1=0x80007000 m1p2=(nil) m1p3=(nil) 
 		 copy_client.c:main:143:CLIENT: buffer after=ABCDEFGHIJKLMNOPQRSTUVWXYABCDEF
 		 copy_client.c:main:145:CLIENT END
-		DVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:0
-				
+								
 ..................................................................................
 
 	// Si trato de ejecutar el copy_server me da error en la espera del RCV 
@@ -5667,8 +5629,7 @@ GENIAL!!! probe COPY CLIENTE Y COPY SERVER
 		ERROR: 685:dvk_receive_T:685: rcode=-512
 		 copy_server.c:main:119:SERVER: source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
 		SERVER: dvk_receive ret=-512  
-		DVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:256
+				DVK: old_exit_unbind code:256
 
 ALGO SUCEDE CON  ERESTARTSYS !! (-512)
 
@@ -5739,15 +5700,12 @@ DVK handle_dvk_exit pid=2313
 handle_dvk_exit dvk_retcode=-109
 ERROR: 698:dvk_send_T:661: rcode=-109
 ERROR: test_sendrec.c:main:104: rcode=-109
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 DVK handle_dvk_enter __NR_ioctl fd=28 cmd=8004E30F lpid=0
 DVK handle_dvk_exit pid=2312
 handle_dvk_exit dvk_retcode=0
 nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=4232 vpid=2312 nodeid=0 name=linux 
 endp=10 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
 nr=10 endp=10 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:17920
 
 EN LA PARTE DEL RECEIVE 
@@ -5759,7 +5717,6 @@ si_signo=5 si_errno=0 si_code=133 si_pid=642 si_uid=0 si_syscall=0  <<<<  5) SIG
 ERROR: 680:dvk_receive_T:685: rcode=-512
  copy_server.c:main:119:SERVER: source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
 SERVER: dvk_receive ret=-512
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:256
 
 root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
@@ -5794,8 +5751,7 @@ root@node0:/usr/src/linux# kill -l
 		PTRACE_SET_THREAD_AREA failed, err = -3, index = 6
 		arch_switch_tls failed, errno 3, not EINVAL
 		userspace - PTRACE_SETREGS errno=3  <<<<<<<<<<<<<<< EDVSSRCH /* no such process */
-		DVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:11
+				DVK: old_exit_unbind code:11
 		Segmentation fault
 
 		[ 6017.755144] DEBUG dvk_ioctl:201: cmd=4004E303 arg=BFFEEB20
@@ -5837,8 +5793,7 @@ root@node0:/usr/src/linux# kill -l
 		DVK handle_dvk_enter DVK_IOCSRECEIVE fd=27 cmd=4004E303 args=-1080632544
 		DVK handle_dvk_wait pid=1353
 		handle_dvk_wait - PTRACE_GETSIGMASK failed, errno = 22 <<<<<<<<< EINVAL  invalid argument
-		DVK: exit_unbind local_nodeid:0
-		DVK: old_exit_unbind code:11
+				DVK: old_exit_unbind code:11
 		Segmentation fault
 
 ==============================================================================================
@@ -6020,7 +5975,6 @@ DEBUG 681:dvk_getdvsinfo:215: ioctl ret=0 errno=0
 ERROR: 681:dvk_getdvsinfo:221: rcode=-1
 ERROR: 681:dvk_getdvsinfo:221: rcode=-1
 dvk_getdvsinfo error=-1 
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:256
 
 ERROR: 681:dvk_getdvsinfo:221: rcode=-1
@@ -6163,7 +6117,6 @@ SENDREC DEL COPY_CLIENT EN EL HOST
 Si luego desde UML le envio un SIGCONT 
 
 root@node0:/usr/src/dvs/dvk-proxies/test# userspace - child stopped with signal 18
-DVK: exit_unbind local_nodeid:0
 DVK: old_exit_unbind code:11
 [3]+  Segmentation fault      ./uml_server 0 10
 
@@ -6254,8 +6207,6 @@ handle_dvk_exit dvk_retcode=76
 DEBUG 681:dvk_send_T:663: ioctl ret=76 errno=0
 DEBUG 681:dvk_send_T:672: ioctl ret=76
  copy_server.c:main:163:SERVER END
-DVK: exit_unbind local_nodeid:0
-DVK: old_exit_unbind code:0
 
 root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
@@ -6510,6 +6461,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 		
 		Para montar el disco en RDWR
 		mount -o remount,rw /dev/ubda /
+		
 	
 ==============================================================================================
 20190727:
@@ -6780,7 +6732,6 @@ tcp        0      0 192.168.0.101:3000      192.168.0.100:39908     ESTABLISHED
 
 FUNCIONO CON PROXY TCP !!!!!
 
-
 CON PROXY TIPC DA LO SIGUIENTE
 root@node1:/usr/src/dvs/dvk-proxies/test# ./copy_client 0 10 55                
 DEBUG 701:dvk_open:102: 
@@ -6946,8 +6897,1713 @@ DEBUG 701:ipc_exit_unbind:360: WUNLOCK_TASK pid=701 count=0
 DEBUG 701:ipc_exit_unbind:361: WUNLOCK_DC dc=0 count=0
 
 
+=============================================================================================
+20191103:	Habiendo cambiado dvk-lib e incorporado la posibilidad de DVKIPC se presentan problemas
+		al ejecutar el UML 
 		
+		
+		EN UML
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+
+		Adding 25542656 bytes to physical memory to account for exec-shield gap
+		DEBUG start_kernel_proc:90: UML-kernel PID=3 TID=3 uml_ep=-2 <<<<<<<<<<<<<<<<<<<<< viene de linea de comando uml_ep=-2
+		DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
+		DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=3 endpoint=-2 nodeid=-1
+
+		EN DMESG
+		[ 1999.938726] DEBUG 16558:ipc_exit_unbind:368: WUNLOCK_TASK pid=16558 count=0
+		[ 1999.941680] DEBUG 16559:ipc_exit_unbind:231: code=256
+		[ 1999.941685] DEBUG 16559:ipc_exit_unbind:235: WLOCK_TASK pid=16559 count=0
+		[ 1999.941686] DEBUG 16559:ipc_exit_unbind:366: Process not bound pid=16559 linux
+		[ 1999.941688] DEBUG 16559:ipc_exit_unbind:368: WUNLOCK_TASK pid=16559 count=0
+		[ 1999.943276] DEBUG dvk_open:167: 
+		[ 1999.943363] DEBUG dvk_ioctl:201: cmd=4004E309 arg=8421F94 <<<<<<<<<<<<< ESTA INVOCANDO A DVK_IOCTL en lugar de DVK_IPC 
+		[ 1999.943364] DEBUG dvk_ioctl:221: DVK_CALL=9 (bind) 
+		[ 1999.943366] DEBUG io_bind:97: 
+		[ 1999.943369] DEBUG new_bind:1372: oper=0 dcid=0 param_pid=3 endpoint=-2 nodeid=-1
+		[ 1999.945319] ------------[ cut here ]------------
+		[ 1999.945459] WARNING: CPU: 2 PID: 16555 at lib/list_debug.c:33 __list_add+0xb4/0x120
+		[ 1999.945462] list_add corruption. prev->next should be next (f8649a68), but was ffffffff. (prev=  (null)).
+		[ 1999.945463] Modules linked in: dvk(O) iptable_filter fuse joydev vmw_balloon serio_raw snd_ens1371 snd_ac97_codec ac97_bus pcspkr gameport snd_rawmidi snd_seq_device snd_pcm evdev shpchp sg snd_timer snd vmwgfx ttm drm_kms_helper soundcore vmw_vmci drm ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid ata_piix ehci_pci uhci_hcd libata ehci_hcd xhci_pci mptspi xhci_hcd scsi_transport_spi mptscsih mptbase scsi_mod psmouse usbcore pcnet32 mii i2c_piix4
+		[ 1999.945546] CPU: 2 PID: 16555 Comm: linux Tainted: G           O    4.9.88 #39
+		[ 1999.945548] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+		[ 1999.945550]  e857fd8c c8328f02 e857fda0 00000000 c8067a3a c8827bac e857fdc0 000040ab
+		[ 1999.945556]  c8827510 00000021 c8347b34 00000021 00000009 c8347b34 ffffffff f8649a64
+		[ 1999.945560]  e84c2140 e857fdac c8067aa6 00000009 00000000 e857fda0 c8827bac e857fdc0
+		[ 1999.945565] Call Trace:
+		[ 1999.945572]  [<c8328f02>] ? dump_stack+0x55/0x73
+		[ 1999.945576]  [<c8067a3a>] ? __warn+0xea/0x110
+		[ 1999.945578]  [<c8347b34>] ? __list_add+0xb4/0x120
+		[ 1999.945581]  [<c8347b34>] ? __list_add+0xb4/0x120
+		[ 1999.945584]  [<c8067aa6>] ? warn_slowpath_fmt+0x46/0x60
+		[ 1999.945586]  [<c8347b34>] ? __list_add+0xb4/0x120
+		[ 1999.945624]  [<c86365d8>] ? __mutex_lock_slowpath+0x78/0x100
+		[ 1999.945629]  [<c80c32e7>] ? vprintk_default+0x37/0x40
+		[ 1999.945632]  [<c8635dec>] ? mutex_lock+0x1c/0x30
+		[ 1999.945639]  [<f8617593>] ? new_bind+0x176/0x112d [dvk]
+		[ 1999.945644]  [<c81d873d>] ? __check_object_size+0x9d/0x11c
+		[ 1999.945649]  [<f8610ae2>] ? io_bind+0x6f/0xc1 [dvk]
+		[ 1999.945655]  [<f861017a>] ? dvk_ioctl+0xc2/0x150 [dvk]
+		[ 1999.945660]  [<f86100b8>] ? dvk_write+0x2e/0x2e [dvk]
+		[ 1999.945693]  [<c81efb04>] ? do_vfs_ioctl+0x94/0x730
+		[ 1999.945697]  [<c819cc1a>] ? handle_mm_fault+0x73a/0xf60
+		[ 1999.945700]  [<c81dc5b9>] ? vfs_write+0x149/0x1c0
+		[ 1999.945703]  [<c81f0200>] ? SyS_ioctl+0x60/0x70
+		[ 1999.945706]  [<c8003728>] ? do_fast_syscall_32+0x98/0x160
+		[ 1999.945710]  [<c8638f42>] ? sysenter_past_esp+0x47/0x75
+		[ 1999.945712] ---[ end trace 871f8b8da21eaae4 ]---
+
+EN uml_dvk.c se incluye el codigo utilizando el fuente de la libreria  
+
+		En RDISK hay que usar DVK_IOCTL porque de esta forma accede a las DVK_CALLs del KERNEL del host a traves de la interface de archivos
+		Cuando los procesos internos del UML quieren comunicarse entre si o con proceso externos via proxy lo deben hacer utilizando la interface IPC 
+			porque esta esta embebida en el kernel de UML 
+			
+=============================================================================================
+20191103:		Los problemas que presenta UML ahora se deben a la mezcla de versiones del DVK 
+				hay programas compilados con la libreria stub_dvkcall.o y otros con stub_dvkipc.o 
+				Para que funcione RDISK y todo driver del kernel UML, debe tener acceso al driver IOCTL 
+				porque de esa forma accede a través de la interface de archivo de UML. No lo puede hacer
+				a traves de IPC.
+				Ademas, puede haber conflicto a la hora de utilizar el codigo de la libreria en formato fuente
+				tal como lo hace um_dvk.c 
+	En um/drivers/um_dvk.c 
+		#ifdef CONFIG_UML_DVK           <<<<<<<<<<<< indica que compilara para UML 
+		#include <kern_util.h>
+
+		#define DVK_GLOBAL_HERE		1
+		#include "um_dvk.h"
+		#include "glo_dvk.h"
+
+		#ifdef CONFIG_DVKIPC			<<<<<<<<<<<< si esta definido DVKIPC
+		#undef CONFIG_DVKIPC		    <<<<<<<<<<<< lo desdefine 
+		#endif // CONFIG_DVKIPC
+
+		#include "/usr/src/dvs/dvk-lib/stub_dvkcall.c" <<<<< carga directamente el fuente 
+		
+		
+	PROBLEMA: Si bien el UML arranca, el dmesg arroja el mensaje 
+		  225.177261] DEBUG 786:ipc_exit_unbind:240: code=256
+		[  225.177268] DEBUG 786:ipc_exit_unbind:375: Process not bound pid=786 linux
+		indicando que el kernel LINUX esta compilado con la version de IPC 
+
+	SOLUCION: Recompilar el kernel del HOST con la opcion CONFIG_DVKIPC deshabilitada 
+  	
+	
+=============================================================================================
+20191107:
+	despues de arrancar el UML, se hacen
+			root@node1:~# mount /dev/rdiska /mnt
+			DEBUG rd_open:713: 
+			DEBUG rd_open_dev:305: major=3 minor=0
+			DEBUG rd_open_dev:316: source=1219235940 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1219235840 m2p1=  (null)
+			DEBUG 1657:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 1657:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 1657:dvk_sendrec_T:932: ioctl ret=0
+			DEBUG rd_open_dev:319: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1219235840 m2p1=  (null)
+			DEBUG rd_ioctl:915: cmd=21297
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:968: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:975: len=4096 off=134152192
+			DEBUG rdisk_rw:948: source=1217113964 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=48299000
+			DEBUG 1665:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 1665:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 1665:dvk_sendrec_T:932: ioctl ret=0
+			DEBUG rdisk_rw:951: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=48299000
+			DEBUG do_rdisk:1000: minor=0 len=0 off=134152192
+			DEBUG rd_thread:1090: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+			
+			DEBUG rd_thread:1072: 
+			DEBUG rd_intr:669: 
+			DEBUG rd_handler:640: 
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:968: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:975: len=4096 off=134209536
+			DEBUG rdisk_rw:948: source=1217113964 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=4829b000
+			DEBUG 1665:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 1665:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 1665:dvk_sendrec_T:932: ioctl ret=0
+			DEBUG rdisk_rw:951: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=4829b000
+			DEBUG do_rdisk:1000: minor=0 len=0 off=134209536
+			DEBUG rd_thread:1090: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+			
+			DEBUG rd_thread:1072: 
+			DEBUG rd_intr:669: 
+			DEBUG rd_handler:640: 
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:968: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:975: len=4096 off=0
+			DEBUG rdisk_rw:948: source=1217113964 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=4829d000
+			DEBUG 1665:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 1665:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 1665:dvk_sendrec_T:932: ioctl ret=0
+			DEBUG rdisk_rw:951: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=4829d000
+			DEBUG do_rdisk:1000: minor=0 len=0 off=0
+			DEBUG rd_thread:1090: op=0 offset=0 length=4096 sectorsize=512 error=0
+			
+			DEBUG rd_thread:1072: 
+			DEBUG rd_intr:669: 
+			DEBUG rd_handler:640: 
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:968: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:975: len=4096 off=4096
+			DEBUG rdisk_rw:948: source=1217113964 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=4096 m2l2=0 m2p1=482a4000
+			DEBUG 1665:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 1665:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 1665:dvk_sendrec_T:932: ioctl ret=0
+			DEBUG rdisk_rw:951: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=482a4000
+			DEBUG do_rdisk:1000: minor=0 len=0 off=4096
+			DEBUG rd_thread:1090: op=0 offset=4096 length=4096 sectorsize=512 error=0
+
+		NO PARECE HABER PROBLEMA DE IPC 
+		root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  -2    -2 17200/1657   0    0   20 27342 27342 27342 27342 linux          
+		 0   3     3  3624/3624   0    8   20 31438 27342 27342 27342 rdisk          
+		 0  30    30 17208/1665   0    0   20 27342 27342 27342 27342 linux  
+
+ 
+Anulando el BIND del cliente RDISK y haciendo q las peticiones las haga UML Kernel (ep=-2)
+pareciera ser que hay un deadlock.	
+		
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  4155/609    0    C   20     3     3 27342 27342 linux          
+ 0   3     3   763/763    0    4   20 27342    -2 27342 27342 rdisk 
+	
+
+En realidad sigue el problema del -512 en el cual un SIGNAL despierta al proceso (SE REPITE AL INFINITO)
+rcdst_ep=3 
+[ 4090.667308] DEBUG new_mini_sendrec:606: SENDING HALF
+[ 4090.667309] DEBUG new_mini_sendrec:714: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[ 4090.667311] DEBUG sleep_proc2:720: BEFORE DOWN lpid=4155 p_sem=0 timeout=30000
+[ 4090.667312] DEBUG sleep_proc2:722: endpoint=-2 flags=C
+[ 4090.667313] DEBUG sleep_proc2:726: WUNLOCK_PROC ep=-2 count=0
+[ 4090.667314] DEBUG sleep_proc2:726: WUNLOCK_PROC ep=3 count=0
+[ 4090.667315] DEBUG sleep_proc2:727: endpoint=-2 flags=C
+[ 4090.677187] DEBUG sleep_proc2:735: endpoint=-2 ret=-512 p_rcode=0
+[ 4090.677190] DEBUG sleep_proc2:736: endpoint=-2 flags=C cpuid=3
+[ 4090.677192] DEBUG sleep_proc2:738: WLOCK_PROC ep=-2 count=0
+[ 4090.677193] DEBUG sleep_proc2:738: WLOCK_PROC ep=3 count=0
+[ 4090.677194] DEBUG sleep_proc2:760: pid=4155 ret=-512
+[ 4090.677196] DEBUG sleep_proc2:785: nr=-2 endp=-2 dcid=0 lpid=4155 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			
+			
+			
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1086: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:968: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:975: len=4096 off=133718016
+DEBUG rdisk_rw:948: source=1208684396 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133718016 m2l2=0 m2p1=47aee000
+DEBUG 792:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 792:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 792:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:951: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133718016 m2l2=0 m2p1=47aee000
+DEBUG do_rdisk:1000: minor=0 len=0 off=133718016
+DEBUG rd_thread:1089: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1071: 
+
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1086: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:968: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:975: len=4096 off=133709824
+DEBUG rdisk_rw:948: source=1208684396 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133709824 m2l2=0 m2p1=478f4000
+
+
+SE ESTA COMIENDO LA CPU!! 
+	KiB Swap:   522236 total,   522236 free,        0 used.  1656944 avail Mem 
+	  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND     
+	10097 root      20   0 1051284  62376  61964 R 100,0  3,0   4:44.67 linux 
+
+NO SERA QUE DEBERIA AL FINAL DE UN SENDREC en esta esperando un (rcode == 0) y ahora al cambiar la libreria (rcode >= 0) 
+
+
+=============================================================================================
+20191119:
+	root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	0  -2    -2  1224/188    0    0   20 27342 27342 27342 27342 linux          
+	0   3     3   764/764    0    8   20 31438 27342 27342 27342 rdisk          
+	0  30    30  1232/196    0    0   20 27342 27342 27342 27342 linux  
+ 
+	Se supone que los pedidos a RDISK deben provenir desde ENDPOINT=30 
+	
+		mount -o remount,rw /dev/ubda /
+		mknod /dev/dvk c 33 0 
+		echo > /dev/dvk 
+		mount /dev/rdiska /mnt
+		
+		
+	EN UML 
+	======
+=134152192 m2l2=0 m2p1=48ab5000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134152192
+DEBUG rd_thread:1090: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134209536
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3 at kernel/softirq.c:161 __local_bh_enable_ip+0x35/0x92
+BUG: recent printk recursion!
+CPU: 0 PID: 3 Comm: ksoftirqd/0 Not tainted 4.9.88 #9
+Stack:
+ 083b7efc 00000000 08076ac6 0839aa80 4908dee0 08238073 00000000 00000000
+ 083b7efc 4908def8 0807403a 00000000 488b1640 488b1640 00000000 4908df18
+ 080740c5 0839aa80 000000a1 08076ac6 00000009 00000000 00000000 4908df2c
+Call Trace:
+ [<0805beab>] show_stack+0xaf/0xf7
+ [<08076ac6>] ? __local_bh_enable_ip+0x35/0x92
+ [<08238073>] dump_stack+0x16/0x1b
+ [<0807403a>] __warn+0xa5/0xbe
+ [<080740c5>] warn_slowpath_null+0x17/0x1c
+ [<08076ac6>] ? __local_bh_enable_ip+0x35/0x92
+ [<08076ac6>] __local_bh_enable_ip+0x35/0x92
+ [<0809a233>] __rcu_process_callbacks+0x8c/0x98
+ [<0809a221>] ? __rcu_process_callbacks+0x7a/0x98
+ [<0809a24c>] rcu_process_callbacks+0xd/0x19
+ [<0807691d>] __do_softirq+0xa3/0x197
+ [<08076a27>] run_ksoftirqd+0x16/0x2d
+ [<08089972>] smpboot_thread_fn+0x142/0x157
+ [<08089830>] ? smpboot_thread_fn+0x0/0x157
+ [<0808719e>] kthread+0xcf/0xd6
+ [<0805af8f>] new_thread_handler+0x63/0x7c
+
+---[ end trace a108824e53135434 ]---
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=0
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=49273000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=49273000
+DEBUG do_rdisk:1001: minor=0 len=0 off=0
+DEBUG rd_thread:1090: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=4096
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=4096 m2l2=0 m2p1=49272000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=49272000
+DEBUG do_rdisk:1001: minor=0 len=0 off=4096
+DEBUG rd_thread:1090: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134213632
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=488ef000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=488ef000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134213632
+DEBUG rd_thread:1090: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134082560
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=488ee000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=488ee000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134082560
+DEBUG rd_thread:1090: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134184960
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=488f1000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=488f1000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134184960
+DEBUG rd_thread:1090: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134086656
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=488f0000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=488f0000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134086656
+DEBUG rd_thread:1090: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=134012928
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134012928 m2l2=0 m2p1=4890b000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134012928 m2l2=0 m2p1=4890b000
+DEBUG do_rdisk:1001: minor=0 len=0 off=134012928
+DEBUG rd_thread:1090: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133914624
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133914624 m2l2=0 m2p1=4890a000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133914624 m2l2=0 m2p1=4890a000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133914624
+DEBUG rd_thread:1090: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133869568
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133869568 m2l2=0 m2p1=48927000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133869568 m2l2=0 m2p1=48927000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133869568
+DEBUG rd_thread:1090: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133840896
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133840896 m2l2=0 m2p1=48926000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133840896 m2l2=0 m2p1=48926000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133840896
+DEBUG rd_thread:1090: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133750784
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133750784 m2l2=0 m2p1=48948000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133750784 m2l2=0 m2p1=48948000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133750784
+DEBUG rd_thread:1090: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133718016
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133718016 m2l2=0 m2p1=48966000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133718016 m2l2=0 m2p1=48966000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133718016
+DEBUG rd_thread:1090: op=0 offset=133718016 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133709824
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133709824 m2l2=0 m2p1=48924000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133709824 m2l2=0 m2p1=48924000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133709824
+DEBUG rd_thread:1090: op=0 offset=133709824 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=133730304 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=133730304 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=133730304 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=133730304
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133730304 m2l2=0 m2p1=48ab6000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=133730304 m2l2=0 m2p1=48ab6000
+DEBUG do_rdisk:1001: minor=0 len=0 off=133730304
+DEBUG rd_thread:1090: op=0 offset=133730304 length=4096 sectorsize=512 error=0
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=132636672 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=132636672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=132636672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=132636672
+BUG: recent printk recursion! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=132636672 m2l2=0 m2p1=488ec000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=132636672 m2l2=0 m2p1=488ec000
+DEBUG do_rdisk:1001: minor=0 len=0 off=132636672
+DEBUG rd_thread:1090: op=0 offset=132636672 length=4096 sectorsize=512 error=0
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=1048576 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=1048576 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=1048576 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=1048576
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=1048576 m2l2=0 m2p1=4888c000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 276:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=1048576 m2l2=0 m2p1=4888c000
+DEBUG do_rdisk:1001: minor=0 len=0 off=1048576
+DEBUG rd_thread:1090: op=0 offset=1048576 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1072: 
+DEBUG rd_intr:669: 
+DEBUG rd_handler:640: 
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at kernel/irq/handle.c:149 __handle_irq_event_percpu+0x59/0xb4
+irq 15 handler rd_intr+0x0/0xe0 enabled interrupts
+CPU: 0 PID: 0 Comm:  Tainted: G        W       4.9.88 #9
+Stack:
+ 083b7efc 0839ce18 490bae48 0839ce3f 490badf4 08238073 00000000 00000000
+ 083b7efc 490bae0c 0807403a 00000001 49153440 0000000f 00000001 490bae34
+ 0807407b 0839ce3f 00000095 08096d25 00000009 00000000 490bae2c 0839ce18
+Call Trace:
+ [<0805beab>] 
+show_stack+0xaf/0xf7
+ [<08238073>] 
+dump_stack+0x16/0x1b
+ [<0807403a>] 
+__warn+0xa5/0xbe
+ [<0807407b>] 
+warn_slowpath_fmt+0x28/0x2d
+ [<08096d25>] ? 
+__handle_irq_event_percpu+0x59/0xb4
+ [<08096d25>] 
+__handle_irq_event_percpu+0x59/0xb4
+ [<08068e03>] ? 
+rd_intr+0x0/0xe0
+ [<08096d9a>] 
+handle_irq_event_percpu+0x1a/0x45
+ [<08096de2>] 
+handle_irq_event+0x1d/0x2b
+ [<08098e5a>] 
+handle_edge_irq+0xa6/0xbf
+ [<0809683d>] 
+generic_handle_irq+0x1b/0x20
+ [<0805a99b>] 
+do_IRQ+0x1f/0x34
+ [<0805a9f1>] 
+sigio_handler+0x41/0x4b
+ [<0806c3cc>] 
+sig_handler_common+0x90/0xa9
+ [<0806c2f4>] 
+unblock_signals+0x32/0x7a
+ [<0806c409>] 
+set_signals+0x1a/0x2b
+ [<08095300>] 
+console_unlock+0x451/0x46e
+ [<080955ae>] 
+vprintk_emit+0x291/0x29b
+ [<0809570f>] 
+vprintk_default+0x16/0x18
+ [<080b4d1f>] 
+printk+0xf/0x11
+ [<080699b9>] 
+rd_thread+0x255/0x44d
+ [<08069764>] ? 
+rd_thread+0x0/0x44d
+ [<080e0f17>] ? 
+super_cache_count+0x0/0x7c
+ [<080e10df>] ? 
+super_cache_scan+0x0/0x128
+
+---[ end trace a108824e53135435 ]---
+DEBUG do_rd_request:809: 
+DEBUG rd_prepare_request:758: len=4096
+DEBUG rd_prepare_request:768: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:786: 
+DEBUG rd_thread:1087: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:969: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk:976: len=4096 off=12288
+DEBUG rdisk_rw:949: source=1225502572 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=12288 m2l2=0 m2p1=492dd000
+DEBUG 276:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 276:dvk_sendrec_T:923: ioctl ret=0 errno=0
+
+EN HOST 
+root@node0:/usr/src/dvs/vos/mol/drivers/rdisk# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2  1045/268    0    0   20 27342 27342 27342 27342 linux          
+ 0   3     3   651/651    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  30    30  1053/276    0    0   20 27342 27342 27342 27342 linux 
+ 
+ 
+ =============================================================================================
+20191209:
+			
+			DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=48ed6000
+			DEBUG do_rdisk:1001: minor=0 len=0 off=134184960
+			DEBUG rd_thread:1090: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1072: 
+			DEBUG rd_intr:669: 
+			DEBUG rd_handler:640: 
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:969: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:976: len=4096 off=134086656
+			DEBUG rdisk_rw:949: source=1229680492 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=48ed9000
+			DEBUG 542:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 542:dvk_sendrec_T:923: ioctl ret=0 errno=0
+			DEBUG 542:dvk_sendrec_T:932: ioctl ret=0
+			
+			DEBUG rdisk_rw:952: source=3 type=68 m2i1=30 m2i2=4096 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=48ed9000
+			DEBUG do_rdisk:1001: minor=0 len=0 off=134086656
+			DEBUG rd_thread:1090: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1072: 
+			DEBUG rd_intr:669: 
+			DEBUG rd_handler:640: 
+			DEBUG do_rd_request:809: 
+			DEBUG rd_prepare_request:758: len=4096
+			DEBUG rd_prepare_request:768: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:786: 
+			DEBUG rd_thread:1087: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:969: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:976: len=4096 off=134012928
+			DEBUG rdisk_rw:949: source=1229680492 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134012928 m2l2=0 m2p1=48ed8000
+			DEBUG 542:dvk_sendrec_T:910: endpoint=3 timeout=30000
+			DEBUG 542:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		ESTA FALTANDO 
+			DEBUG 542:dvk_sendrec_T:932: ioctl ret=0
+		COLGADO !!!! 
+
+
+		RDISK TERMINA LA PETICION CORRECTAMENTE   (7FCE000 == 134012928)
+			RECEIVE: m_source=30, m_type=1027, DEVICE=0, IO_ENDPT=30, POSITION=7FCE000, COUNT=4096, ADDRESS:48ED8000, compress(m2_l2):0
+			 driver.c:driver_task:140:device_caller= 30, mess.m_source= 30
+			 driver.c:driver_task:164:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+			 driver.c:do_rdwt:267:mp->COUNT=4096
+			 driver.c:do_rdwt:277:mp->IO_ENDPT=30 - mp->ADDRESS:48ED8000 - mp->COUNT=4096
+			 rdisk.c:m_prepare:262:device = 0
+			 rdisk.c:get_geometry:969:img_fd=15 dev_owner=-2 st_size=134217728 st_blksize=4096 localbuff=1465000 active=1 available=1
+			 rdisk.c:get_geometry:977:base=0 size=134217728 cyl=128 heads=64 sec=32
+			 driver.c:do_rdwt:283:mp->m_type: 1027
+			 driver.c:do_rdwt:303:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+			 rdisk.c:m_transfer:299:m_device: 0
+			 rdisk.c:m_transfer:312:dv_size: 134217728
+			 rdisk.c:m_transfer:315:posit: 7FCE000
+			 rdisk.c:m_transfer:316:nr_req: 1
+			 rdisk.c:m_transfer:322:count: 4096
+			 rdisk.c:m_transfer:326:user_vir 48ED8000
+			 rdisk.c:m_transfer:343:
+			<DEV_GATHER>
+			 rdisk.c:m_transfer:349:bytes: 4096
+			 rdisk.c:m_transfer:353:pread: bytes=4096
+			DEBUG 626:dvk_vcopy:122: src_ep=3 dst_ep=30 bytes=4096
+			DEBUG 626:dvk_vcopy:138: ioctl ret=4096 errno=0
+			DEBUG 626:dvk_vcopy:147: ioctl ret=4096
+			 rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+			 rdisk.c:m_transfer:389:bytes= 4096
+			 rdisk.c:m_transfer:390:DRIVER - Offset (read) 1465000
+			 rdisk.c:m_transfer:392:user_vir: 48ED8000 (in proc_nr 30)
+			 rdisk.c:m_transfer:405:user_vir (do-buffer) 48ED9000
+			 rdisk.c:m_transfer:408:count=0 stbytes=4096 position=134017024
+			 rdisk.c:m_transfer:694:subtotal de bytes
+			 driver.c:do_rdwt:310:mp->m2_l2 =0, buffer_size=0
+			 driver.c:do_rdwt:311:dr_trasnfer = (r) 4096
+			 driver.c:driver_task:230:SEND msg a DEVICE_CALLER: 30 -> m_type=68, (REP_ENDPT)=30, (REP_STATUS)=4096
+			DEBUG 626:dvk_send_T:843: endpoint=30 timeout=-1
+			DEBUG 626:dvk_send_T:856: ioctl ret=76 errno=0
+			DEBUG 626:dvk_send_T:865: ioctl ret=76
+			 driver.c:driver_task:114:M3-IPC Listening ...
+
+		top
+		  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                
+		 1296 root      20   0 1051284  63172  62756 R  99,7  3,1   0:41.47 linux                  
+		 1304 root      20   0 1051284  63172  62756 R  99,7  3,1   0:22.92 linux   
+		 
+==============================================================================================
+20191214:
+		Se encontraron errores en sendrec() de UNLOCK al salir por ERESTARTSYS.
+		Se modificaron tanto la version IPC como modulo.
+		Se compilo la version de modulo.
+		
+==============================================================================================
+20191215:
+		root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+		lcl_nodeid=0 dcid=0
+		Enter para continuar... 
+		Spread Enter para continuar... 
+		./tests.sh: lÃ­nea 17:   713 Abortado                /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt  (dir ahora: /usr/src/dvs/dvk-tests)
+		insmod: ERROR: could not insert module dvk.ko: Unknown symbol in module
+		mount Enter para continuar... 
+		partition 5
+		mount Enter para continuar... 
+		local_nodeid=0 Enter para continuar... 
+		DEBUG 720:dvk_open:106: Open dvk device file /dev/dvk
+		ERROR: 720:dvk_open:109: rcode=-6
+		ERROR: 720:dvk_open:114: rcode=-1
+		ERROR: test_dvs_init.c:main:167: rcode=-1
+		Initializing DVS. Local node ID 0... 
+		DEBUG 720:dvk_dvs_init:542: nodeid=0
+		DEBUG 720:dvk_dvs_init:554: ioctl ret=-1 errno=9
+		ERROR: 720:dvk_dvs_init:556: rcode=-9
+		DEBUG 720:dvk_dvs_init:559: ioctl ret=-9
+		ERROR: 720:dvk_dvs_init:561: rcode=-9
+		ERROR: test_dvs_init.c:main:171: rcode=-9
+		d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+		Get DVS info
+		DEBUG 720:dvk_getdvsinfo:248: 
+		DEBUG 720:dvk_getdvsinfo:257: ioctl ret=-1 errno=9
+		ERROR: 720:dvk_getdvsinfo:259: rcode=-9
+		DEBUG 720:dvk_getdvsinfo:262: ioctl ret=-9
+		ERROR: 720:dvk_getdvsinfo:264: rcode=-9
+		local node ID -9... 
+		d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=2.1 sizeof(proc)=0
+		DC0 Enter para continuar... 
+
+	SE CUELGA AL ARRANAR UML
+	
+
+
+
+
+
+
+SSH Secure Shell 3.2.9 (Build 283)
+Copyright (c) 2000-2003 SSH Communications Security Corp - http://www.ssh.com/
+
+This copy of SSH Secure Shell is a non-commercial version.
+This version does not include PKI and PKCS #11 functionality.
+
+
+Linux node0 4.9.88 #3 SMP Sun Dec 15 20:48:15 -03 2019 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun Dec 15 21:00:01 2019 from 192.168.1.11
+root@node0:~# . /dev/shm/DC0.sh 
+root@node0:~# cd /usr/src/linux
+root@node0:/usr/src/linux# ls -l linux
+-rwxr-xr-x 1 root root 68240476 dic 13 14:07 linux
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rd_ep: rd_ep=3
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 7249920 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:90: UML-kernel PID=2 TID=2 uml_ep=-2
+DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
+DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=2 endpoint=-2 nodeid=-1
+DEBUG uml_bind_X:69: os_ioctl_generic ret=-2
+Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #1 Fri Dec 13 14:06:45 -03 2019
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 261852
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+Memory: 1034792K/1055656K available (2812K kernel code, 821K rwdata, 808K rodata, 86K init, 135K bss, 20864K reserved, 0K cma-reserved)
+NR_IRQS:16
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1856.30 BogoMIPS (lpj=9281536)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
+TCP: Hash tables configured (established 8192 bind 8192)
+UDP hash table entries: 512 (order: 1, 8192 bytes)
+UDP-Lite hash table entries: 512 (order: 1, 8192 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/7CkPLM/mconsole
+Checking host MADV_REMOVE support...OK
+UML Audio Relay (host dsp = /dev/sound/dsp, host mixer = /dev/sound/mixer)
+UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:118: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:123: UML-kernel PID=2  UML-kernel TID=2
+DEBUG rd_driver_init:721: RDISK_IRQ=15
+rdisk: Synchronous mode
+start_rd_thread - sp=1208713212
+DEBUG init_rdisk:1058: 
+DEBUG 10:dvk_open:106: Open dvk device file /dev/dvk
+DEBUG 10:dvk_getdvsinfo:248: 
+DEBUG 10:dvk_getdvsinfo:257: ioctl ret=0 errno=0
+DEBUG 10:dvk_getdvsinfo:262: ioctl ret=0
+DEBUG init_rdisk:1074: local_nodeid=0
+DEBUG init_rdisk:1075: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 10:dvk_getdcinfo:349: dcid=0
+DEBUG 10:dvk_getdcinfo:361: ioctl ret=0 errno=0
+DEBUG 10:dvk_getdcinfo:366: ioctl ret=0
+DEBUG init_rdisk:1081: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG init_rdisk:1082: flags=0 dc_nodes=3 dc_pid=2358 dc_name=DC0
+DEBUG 10:dvk_bind_X:1199: cmd=0 dcid=0 pid=10 endpoint=30 nodeid=-1
+DEBUG 10:dvk_bind_X:1233: ioctl ret=30
+DEBUG init_rdisk:1090: rdisk bind rdc_ep=30
+DEBUG 10:dvk_getprocinfo:1156: dcid=0 p_nr=30 
+DEBUG 10:dvk_getprocinfo:1169: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1174: ioctl ret=0
+DEBUG init_rdisk:1095: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=2451 vpid=10 nodeid=0 name=linux 
+DEBUG rd_thread:1113: 
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+console [mc-1] enabled
+DEBUG rd_init:686: 
+DEBUG rd_add:465: n=0
+DEBUG rd_dev_size:143: 
+DEBUG 2:dvk_getep:225: pid=2
+DEBUG 2:dvk_getep:234: ioctl ret=-2 errno=0
+DEBUG 2:dvk_getep:239: ioctl ret=-2
+DEBUG rd_get_geometry:927: tid=2 my_ep=-2 minor=0
+DEBUG rd_get_geometry:937: source=23 type=1029 m2i1=0 m2i2=-2 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48085e1c
+DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rd_get_geometry:940: source=3 type=68 m2i1=-2 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48085e1c
+DEBUG rd_get_geometry:942: base=0 size=134217728 cyl=128 heads=64 sec=32
+DEBUG rd_dev_size:152: cyl=128 heads=64 sec=32
+DEBUG rd_dev_size:154: RDISK size=134217728 
+DEBUG rd_disk_register:425: major=42 unit=0
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to Debian GNU/Linux 10 (buster)!
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+random: crng init done
+systemd[1]: Reached target Remote File Systems.
+[  OK  ] Reached target Remote File Systems.
+systemd[1]: Created slice User and Session Slice.
+[  OK  ] Created slice User and Session Slice.
+systemd[1]: Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket (/dev/log).
+systemd[1]: Condition check resulted in Journal Audit Socket being skipped.
+systemd[1]: Listening on udev Control Socket.
+[  OK  ] Listening on udev Control Socket.
+systemd[1]: Reached target Swap.
+[  OK  ] Reached target Swap.
+systemd[1]: Listening on udev Kernel Socket.
+[  OK  ] Listening on udev Kernel Socket.
+systemd[1]: Created slice system-getty.slice.
+[  OK  ] Created slice system-getty.slice.
+systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+systemd[1]: Listening on initctl Compatibility Named Pipe.
+[  OK  ] Listening on initctl Compatibility Named Pipe.
+[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Local Encrypted Volumes.
+[  OK  ] Listening on Syslog Socket.
+[  OK  ] Listening on Journal Socket.
+         Starting Journal Service...
+         Starting Remount Root and Kernel File Systems...
+         Mounting POSIX Message Queue File System...
+         Starting Load Kernel Modules...
+[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+[  OK  ] Reached target Slices.
+[  OK  ] Mounted POSIX Message Queue File System.
+[  OK  ] Started Remount Root and Kernel File Systems.
+         Starting Load/Save Random Seed...
+         Starting Create Static Device Nodes in /dev...
+         Starting udev Coldplug all Devices...
+[  OK  ] Started Load Kernel Modules.
+         Starting Apply Kernel Variables...
+         Mounting FUSE Control File System...
+[  OK  ] Started Journal Service.
+         Starting Flush Journal to Persistent Storage...
+[  OK  ] Started Load/Save Random Seed.
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Started Apply Kernel Variables.
+[  OK  ] Started Create Static Device Nodes in /dev.
+systemd-journald[404]: Received request to flush runtime journal from PID 1
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+         Starting udev Kernel Device Manager...
+         Starting Raise network interfaces...
+[  OK  ] Started Flush Journal to Persistent Storage.
+         Starting Create Volatile Files and Directories...
+[  OK  ] Started udev Kernel Device Manager.
+[  OK  ] Started udev Coldplug all Devices.
+DEBUG rd_open:754: 
+DEBUG rd_open_dev:391: major=42 minor=0
+DEBUG rd_open_dev:402: source=1209639012 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1209638912 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rd_open_dev:405: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1209638912 m2p1=  (null)
+DEBUG rd_release:783: 
+DEBUG rd_close_dev:365: major=42 minor=0
+DEBUG rd_close_dev:376: source=0 type=1031 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1202241168 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+
+APARENTEMENTE HAY UN BLOQUEO DE SEMAFOROS
+
+Ccuando se hace cat /proc/dvs/DC0/procs queda colgado 
+y el dmesg muestra [ 3835.322425] DEBUG dc_procs_read:370: RLOCK_PROC ep=-7 count=0
+	[ 3835.322426] DEBUG dc_procs_read:372: RUNLOCK_PROC ep=-7 count=0
+	[ 3835.322427] DEBUG dc_procs_read:370: RLOCK_PROC ep=-6 count=0
+	[ 3835.322428] DEBUG dc_procs_read:372: RUNLOCK_PROC ep=-6 count=0
+	[ 3835.322429] DEBUG dc_procs_read:370: RLOCK_PROC ep=-5 count=0
+	[ 3835.322430] DEBUG dc_procs_read:372: RUNLOCK_PROC ep=-5 count=0
+	[ 3835.322432] DEBUG dc_procs_read:370: RLOCK_PROC ep=-4 count=0
+	[ 3835.322433] DEBUG dc_procs_read:372: RUNLOCK_PROC ep=-4 count=0
+	[ 3835.322434] DEBUG dc_procs_read:370: RLOCK_PROC ep=-3 count=0
+	[ 3835.322435] DEBUG dc_procs_read:372: RUNLOCK_PROC ep=-3 count=0
+
+	AQUI NO SIGUE, ES DECIR TRATANDO DE LOCKEAR (-2) 
+		RDISK RECEIVE 
+	[ 3736.010009] DEBUG new_mini_receive:310: caller_nr=3 caller_ep=3 src_ep=31438 
+	[ 3736.010010] DEBUG new_mini_receive:314: dcid=0
+	[ 3736.010011] DEBUG new_mini_receive:318: RUNLOCK_PROC ep=3 count=0
+	[ 3736.010012] DEBUG new_mini_receive:320: RLOCK_DC dc=0 count=0
+	[ 3736.010013] DEBUG new_mini_receive:323: RUNLOCK_DC dc=0 count=0
+	[ 3736.010014] DEBUG new_mini_receive:373: WLOCK_PROC ep=3 count=0
+	[ 3736.010015] DEBUG new_mini_receive:478: Any suitable message from 31438 was not found.
+	[ 3736.010016] DEBUG sleep_proc:344: timeout=-1
+	[ 3736.010018] DEBUG sleep_proc:355: BEFORE DOWN lpid=2404 p_sem=0 timeout=-1
+	[ 3736.010019] DEBUG sleep_proc:357: endpoint=3 flags=8
+	[ 3736.010020] DEBUG sleep_proc:361: WUNLOCK_PROC ep=3 count=0
+	
+		UML DESPIERTA DEL new_mini_sendrec (por el  send de RDISK) 
+	[ 3736.010058] DEBUG sleep_proc2:735: endpoint=-2 ret=7500 p_rcode=76
+	[ 3736.010061] DEBUG sleep_proc2:736: endpoint=-2 flags=0 cpuid=2
+	[ 3736.010063] DEBUG sleep_proc2:738: WLOCK_PROC ep=-2 count=0
+	[ 3736.010064] DEBUG sleep_proc2:738: WLOCK_PROC ep=3 count=0
+	[ 3736.010067] DEBUG sleep_proc2:785: nr=-2 endp=-2 dcid=0 lpid=2442 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+	[ 3736.010068] DEBUG sleep_proc2:787: someone wakeups me: sem=0 p_rcode=0
+	[ 3736.010070] DEBUG new_mini_sendrec:763: WUNLOCK_PROC ep=-2 count=0
+	
+		UML sendrec RDISK 
+	[ 3736.094514] DEBUG dvk_ioctl:337: cmd=4004E305 arg=47A8BDC4
+	[ 3736.094518] DEBUG dvk_ioctl:357: DVK_CALL=5 (io_mini_sendrec) 
+	[ 3736.094519] DEBUG io_mini_sendrec:56: 
+	[ 3736.094521] DEBUG new_mini_sendrec:514: srcdst_ep=3
+	[ 3736.094522] DEBUG check_caller:536: caller_pid=2442 caller_tgid=2442
+	[ 3736.094524] DEBUG check_caller:572: WLOCK_PROC ep=-2 count=0
+	[ 3736.094526] DEBUG check_caller:601: WUNLOCK_PROC ep=-2 count=0
+	[ 3736.094527] DEBUG check_caller:604: dcid=0
+	[ 3736.094528] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+	[ 3736.094529] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+	[ 3736.094530] DEBUG check_caller:618: caller_pid=2442 
+	[ 3736.094532] DEBUG new_mini_sendrec:525: RLOCK_PROC ep=-2 count=0
+	[ 3736.094552] DEBUG new_mini_sendrec:530: caller_nr=-2 caller_ep=-2 srcdst_ep=3 
+	[ 3736.094553] DEBUG new_mini_sendrec:533: RUNLOCK_PROC ep=-2 count=0
+	[ 3736.094554] DEBUG new_mini_sendrec:535: dcid=0
+	[ 3736.094555] DEBUG new_mini_sendrec:539: RLOCK_DC dc=0 count=0
+	[ 3736.094556] DEBUG new_mini_sendrec:542: RUNLOCK_DC dc=0 count=0
+	[ 3736.094557] DEBUG new_mini_sendrec:557: WLOCK_PROC ep=-2 count=0
+
+SOLUCIONADO!!!! 
+	Se modificaron dvk_ipc.c tanto de dvk como de IPC .
+	
+Sigue sin funcionar 
+
+		NET: Registered protocol family 30
+		tipc: Started in single node mode
+		Key type dns_resolver registered
+		Initialized stdio console driver
+		Console initialized on /dev/tty0
+		console [tty0] enabled
+		Initializing software serial port version 1
+		console [mc-1] enabled
+		DEBUG rd_init:686: 
+		DEBUG rd_add:465: n=0
+		DEBUG rd_dev_size:143: 
+		DEBUG 2:dvk_getep:225: pid=2
+		DEBUG 2:dvk_getep:234: ioctl ret=-2 errno=0
+		DEBUG 2:dvk_getep:239: ioctl ret=-2
+		DEBUG rd_get_geometry:927: tid=2 my_ep=-2 minor=0
+		DEBUG rd_get_geometry:937: source=23 type=1029 m2i1=0 m2i2=-2 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48085e1c
+		DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_get_geometry:940: source=3 type=68 m2i1=-2 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48085e1c
+		DEBUG rd_get_geometry:942: base=0 size=134217728 cyl=128 heads=64 sec=32
+		DEBUG rd_dev_size:152: cyl=128 heads=64 sec=32
+		DEBUG rd_dev_size:154: RDISK size=134217728 
+		DEBUG rd_disk_register:425: major=42 unit=0
+		winch_thread : TIOCSCTTY failed on fd 2 err = 1
+		EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+		EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+		VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+		devtmpfs: mounted
+		This architecture does not have kernel memory protection.
+		random: fast init done
+		systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+		cgroup: cgroup2: unknown option "nsdelegate"
+		systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+		systemd[1]: Detected virtualization vmware.
+		systemd[1]: Detected architecture x86.
+
+		Welcome to Debian GNU/Linux 10 (buster)!
+
+		systemd[1]: Set hostname to <node1>.
+		systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+		systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+		systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+		systemd[1]: Listening on udev Control Socket.
+		[  OK  ] Listening on udev Control Socket.
+		systemd[1]: Listening on initctl Compatibility Named Pipe.
+		[  OK  ] Listening on initctl Compatibility Named Pipe.
+		systemd[1]: Created slice User and Session Slice.
+		[  OK  ] Created slice User and Session Slice.
+		[  OK  ] Reached target Remote File Systems.
+		[  OK  ] Reached target Slices.
+		[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+		[  OK  ] Listening on udev Kernel Socket.
+		[  OK  ] Listening on Journal Socket (/dev/log).
+		[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+		[  OK  ] Reached target Swap.
+		[  OK  ] Listening on Journal Socket.
+				 Starting Remount Root and Kernel File Systems...
+				 Mounting POSIX Message Queue File System...
+		[  OK  ] Created slice system-getty.slice.
+		systemd[1]: Starting Load Kernel Modules...
+				 Starting Load Kernel Modules...
+		systemd[1]: Condition check resulted in Create list of required static device nodes for the current kernel being skipped.
+		systemd[1]: Started Dispatch Password Requests to Console Directory Watch.
+		[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+		systemd[1]: Reached target Paths.
+		[  OK  ] Reached target Paths.
+		systemd[1]: Reached target Local Encrypted Volumes.
+		[  OK  ] Reached target Local Encrypted Volumes.
+		systemd[1]: Listening on Syslog Socket.
+		[  OK  ] Listening on Syslog Socket.
+		systemd[1]: Starting Journal Service...
+				 Starting Journal Service...
+		systemd[1]: Condition check resulted in Kernel Debug File System being skipped.
+		systemd[1]: Mounted POSIX Message Queue File System.
+		[  OK  ] Mounted POSIX Message Queue File System.
+		systemd[1]: Started Remount Root and Kernel File Systems.
+		[  OK  ] Started Remount Root and Kernel File Systems.
+				 Starting Load/Save Random Seed...
+				 Starting Create Static Device Nodes in /dev...
+		random: crng init done
+				 Starting udev Coldplug all Devices...
+		[  OK  ] Started Load Kernel Modules.
+				 Starting Apply Kernel Variables...
+				 Mounting FUSE Control File System...
+		[  OK  ] Started Load/Save Random Seed.
+		[  OK  ] Started Journal Service.
+		[  OK  ] Mounted FUSE Control File System.
+		[  OK  ] Started Create Static Device Nodes in /dev.
+				 Starting udev Kernel Device Manager...
+		[  OK  ] Reached target Local File Systems (Pre).
+		[  OK  ] Reached target Local File Systems.
+				 Starting Flush Journal to Persistent Storage...
+		[  OK  ] Started Apply Kernel Variables.
+				 Starting Raise network interfaces...
+		[  OK  ] Started udev Kernel Device Manager.
+		systemd-journald[407]: Received request to flush runtime journal from PID 1
+		[  OK  ] Started Flush Journal to Persistent Storage.
+				 Starting Create Volatile Files and Directories...
+		[  OK  ] Started udev Coldplug all Devices.
+		DEBUG rd_open:754: 
+		DEBUG rd_open_dev:391: major=42 minor=0
+		DEBUG rd_open_dev:402: source=1209589860 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1209589760 m2p1=  (null)
+		DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_open_dev:405: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1209589760 m2p1=  (null)
+		DEBUG rd_release:783: 
+		DEBUG rd_close_dev:365: major=42 minor=0
+		DEBUG rd_close_dev:376: source=0 type=1031 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1200955024 m2p1=  (null)
+		DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_close_dev:379: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1200955024 m2p1=  (null)
+		[  OK  ] Started Create Volatile Files and Directories.
+		[  OK  ] Started Raise network interfaces.
+		[  OK  ] Reached target Network.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Reached target System Time Synchronized.
+				 Starting Update UTMP about System Boot/Shutdown...
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+		See 'systemctl status systemd-update-utmp.service' for details.
+		[DEPEND] Dependency failed for Updaâ¦about System Runlevel Changes.
+		[  OK  ] Reached target System Initialization.
+		[  OK  ] Started Daily apt download activities.
+		[  OK  ] Started Daily apt upgrade and clean activities.
+		[  OK  ] Started Daily Cleanup of Temporary Directories.
+		[  OK  ] Reached target Timers.
+		[  OK  ] Listening on D-Bus System Message Bus Socket.
+		[  OK  ] Reached target Sockets.
+		[  OK  ] Reached target Basic System.
+				 Starting System Logging Service...
+				 Starting Permit User Sessions...
+		[  OK  ] Started Regular background program processing daemon.
+				 Starting Login Service...
+		[  OK  ] Started D-Bus System Message Bus.
+				 Starting OpenBSD Secure Shell server...
+		[  OK  ] Started System Logging Service.
+		[  OK  ] Started Permit User Sessions.
+		[  OK  ] Started Getty on tty1.
+		[  OK  ] Reached target Login Prompts.
+		[  OK  ] Started Login Service.
+		[  OK  ] Started OpenBSD Secure Shell server.
+		[  OK  ] Reached target Multi-User System.
+		[  OK  ] Reached target Graphical Interface.
+		winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+		Debian GNU/Linux 10 node1 tty1
+
+		node1 login: root
+		Password: 
+		Linux node1 4.9.88 #1 Fri Dec 13 14:06:45 -03 2019 i686
+
+		The programs included with the Debian GNU/Linux system are free software;
+		the exact distribution terms for each program are described in the
+		individual files in /usr/share/doc/*/copyright.
+
+		Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+		permitted by applicable law.
+		root@node1:~# fsck /dev/rdiska &
+		[1] 714
+		root@node1:~# fsck from util-linux 2.29.2
+		DEBUG rd_open:754: 
+		DEBUG rd_open_dev:391: major=42 minor=0
+		DEBUG rd_open_dev:402: source=1209589860 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1209589760 m2p1=  (null)
+		DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_open_dev:405: source=3 type=68 m2i1=30 m2i2=0 m2i3=0 m2l1=0 m2l2=1209589760 m2p1=  (null)
+		DEBUG rd_ioctl:957: cmd=21297
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134152192
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=47a71000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=47a71000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134152192
+		DEBUG rd_thread:1131: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134209536
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=48402000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=48402000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134209536
+		DEBUG rd_thread:1131: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=0
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=0 m2l2=0 m2p1=47a6c000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=0 m2l2=0 m2p1=47a6c000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=0
+		DEBUG rd_thread:1131: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=4096
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=4096 m2l2=0 m2p1=4791a000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=4096 m2l2=0 m2p1=4791a000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=4096
+		DEBUG rd_thread:1131: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134213632
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=48406000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=48406000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134213632
+		DEBUG rd_thread:1131: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134082560
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=4793a000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=4793a000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134082560
+		DEBUG rd_thread:1131: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134184960
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=47a48000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=47a48000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134184960
+		DEBUG rd_thread:1131: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134086656
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=47959000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=47959000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134086656
+		DEBUG rd_thread:1131: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=134012928
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=134012928 m2l2=0 m2p1=4795e000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=134012928 m2l2=0 m2p1=4795e000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=134012928
+		DEBUG rd_thread:1131: op=0 offset=134012928 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=133914624
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133914624 m2l2=0 m2p1=47917000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=133914624 m2l2=0 m2p1=47917000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=133914624
+		DEBUG rd_thread:1131: op=0 offset=133914624 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=133869568
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133869568 m2l2=0 m2p1=47a77000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=133869568 m2l2=0 m2p1=47a77000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=133869568
+		DEBUG rd_thread:1131: op=0 offset=133869568 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=133840896
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133840896 m2l2=0 m2p1=481fa000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=133840896 m2l2=0 m2p1=481fa000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=133840896
+		DEBUG rd_thread:1131: op=0 offset=133840896 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:850: 
+		DEBUG rd_prepare_request:799: len=4096
+		DEBUG rd_prepare_request:809: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:827: 
+		DEBUG rd_thread:1128: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1010: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1017: len=4096 off=133750784
+		DEBUG rdisk_rw:990: source=1208668012 type=1027 m2i1=0 m2i2=30 m2i3=4096 m2l1=133750784 m2l2=0 m2p1=47921000
+		DEBUG 10:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 10:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 10:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:993: source=3 type=68 m2i1=30 m2i2=0 m2i3=4096 m2l1=133750784 m2l2=0 m2p1=47921000
+		DEBUG do_rdisk:1042: minor=0 len=0 off=133750784
+		DEBUG rd_thread:1131: op=0 offset=133750784 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1113: 
+		------------[ cut here ]------------
+		WARNING: CPU: 0 PID: 0 at kernel/softirq.c:140 __local_bh_enable+0x2f/0x51
+		CPU: 0 PID: 0 Comm:  Not tainted 4.9.88 #1
+		Stack:
+		 083b7f0e 00000000 080768c4 0839aa92 480ace48 08238174 00000000 00000000
+		 083b7f0e 480ace60 0807415a 47937800 00000200 00000000 47937800 480ace80
+		 080741e5 0839aa92 0000008c 080768c4 00000009 00000000 00000000 480ace98
+		Call Trace:
+		 [<0805beab>] 
+		show_stack+0xaf/0xf7
+		 [<080768c4>] ? 
+		__local_bh_enable+0x2f/0x51
+		 [<08238174>] 
+		dump_stack+0x16/0x1b
+		 [<0807415a>] 
+		__warn+0xa5/0xbe
+		 [<080741e5>] 
+		warn_slowpath_null+0x17/0x1c
+		 [<080768c4>] ? 
+
+
+LOS ERRORES SON DIFERENTES PERO: PODRÀ SER UN PROBLEMA DE QUIEN ES EL QUE HACE LOS REQUESTS
+A RDISK ??? UML_KERNEL(-2) O RDISK_CLIENT(ep=30)
+	
+SENDREC DESDE UML->RDISK 
+	[  718.391929] DEBUG dvk_ioctl:357: DVK_CALL=5 (io_mini_sendrec) 
+	[  718.391930] DEBUG io_mini_sendrec:56: 
+	[  718.391932] DEBUG new_mini_sendrec:514: srcdst_ep=3
+	[  718.391934] DEBUG check_caller:536: caller_pid=718 caller_tgid=718
+	[  718.391936] DEBUG check_caller:572: WLOCK_PROC ep=-2 count=0
+	[  718.391937] DEBUG check_caller:601: WUNLOCK_PROC ep=-2 count=0
+	[  718.391938] DEBUG check_caller:604: dcid=0
+	[  718.391940] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+	[  718.391941] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+	[  718.391942] DEBUG check_caller:618: caller_pid=718 
+	[  718.391943] DEBUG new_mini_sendrec:525: RLOCK_PROC ep=-2 count=0
+	[  718.391945] DEBUG new_mini_sendrec:530: caller_nr=-2 caller_ep=-2 srcdst_ep=3 
+	
+SENDREC DESDE RDISK_CLIENT->RDISK 
+	[  718.410744] DEBUG dvk_ioctl:357: DVK_CALL=5 (io_mini_sendrec) 
+	[  718.410745] DEBUG io_mini_sendrec:56: 
+	[  718.410747] DEBUG new_mini_sendrec:514: srcdst_ep=3
+	[  718.410749] DEBUG check_caller:536: caller_pid=726 caller_tgid=726
+	[  718.410751] DEBUG check_caller:572: WLOCK_PROC ep=30 count=0
+	[  718.410752] DEBUG check_caller:601: WUNLOCK_PROC ep=30 count=0
+	[  718.410753] DEBUG check_caller:604: dcid=0
+	[  718.410754] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+	[  718.410755] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+	[  718.410756] DEBUG check_caller:618: caller_pid=726 
+	[  718.410758] DEBUG new_mini_sendrec:525: RLOCK_PROC ep=30 count=0
+	[  718.410759] DEBUG new_mini_sendrec:530: caller_nr=30 caller_ep=30 srcdst_ep=3 
+
+--------------------------------------------------------------------------------------
+POSIBLE SOLUCION:
+
+			En rdisk_user.c se hace el clone de rd_thread() que invoca a do_rdisk()
+			en rdisk_kern.c se define rd_thread() el cual hace las operaciones del DVK
+			
+			Se podria intentar crear otro clone denominado do_rdisk_io() el cual hace las operaciones del dvk
+			para ello sincroniza utilizando dos mutex
+					rd_th_mutex:
+					rd_io_mutex:
+
+			Para que el nuevo rd_io_thread() vea el requerimiento, deberia ser global o estatico el puntero.
+			
+			
+int rd_thread(void *arg)
+{
+	struct rd_thread_req *req;
+	int n;
+	int rcode;
+
+	os_fix_helper_signals();
+
+	rcode = init_rdisk();
+
+	// mutex to 0 
+	mutex_lock(&rd_th_mutex);
+	
+	while(1){
+		DVKDEBUG(INTERNAL,"\n");
+
+		n = os_read_file(rdk_fd, &req,
+				 sizeof(struct rd_thread_req *));
+		if(n != sizeof(struct rd_thread_req *)){
+			if(n < 0)
+				printk("rd_thread - read failed, fd = %d, "
+				       "err = %d\n", rdk_fd, -n);
+			else {
+				printk("rd_thread - short read, fd = %d, "
+				       "length = %d\n", rdk_fd, n);
+			}
+			continue;
+		}
+
+		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+		rd_count++;
+		req_ptr = req; // apunta al requerimiento
+		mutex_unlock(&rd_io_mutex);
+		mutex_lock(&rd_th_mutex);
+		// aqui ejecutaria 	do_rdisk_io(); donde el requerimiento seria por variable global
+		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+		n = os_write_file(rdk_fd, &req,
+				  sizeof(struct rd_thread_req *));
+		if(n != sizeof(struct rd_thread_req *))
+			printk("rd_thread - write failed, fd = %d, err = %d\n",
+			       rdk_fd, -n);
+	}
+
+	return 0;
+} 
+
+
+thread do_rdisk(void)
+{
+	char *buf;
+	unsigned long len;
+	int n, minor;
+	__u64 off;
+
+	// mutex to 0 
+	mutex_lock(&rd_io_mutex);
+
+	while(1){
+		
+		mutex_lock(&rd_io_mutex);
+		if (req->op == RD_FLUSH) {
+			printk("do_rdisk - sync ignored\n");
+			mutex_unlock(&rd_th_mutex);
+			return;
+		}
+		
+		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+
+		minor = req->req->rq_disk->first_minor;
+		len = req->length;
+		do {
+			off = req->offset +	(req->length - len);
+			buf = &req->buffer[(req->length - len)];
+			DVKDEBUG(INTERNAL,"len=%d off=%d\n", len, off);
+			if(req->op == RD_READ){
+				n = rdisk_rw(DEV_READ, minor, buf, len, off);
+				if (n < 0) {
+					printk("do_rdisk - read failed, err = %d\n", n);
+					req->error = 1;
+					mutex_unlock(&rd_th_mutex);
+					return;
+				}
+				if (n == 0 ) {
+					if( len < req->length)
+						memset(&buf[n], 0, req->length - len);
+					len = 0;
+					break;
+				}
+			} else {
+				n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
+				if(n < 0){
+					printk("do_rdisk - write failed err = %d\n", n);
+					req->error = 1;
+					mutex_unlock(&rd_th_mutex);
+					return;
+				}
+			}
+			len -= n;
+		} while( (len > 0) );
+
+		DVKDEBUG(INTERNAL,"minor=%d len=%d off=%d\n", minor, len, off);
+		req->error = 0;
+		mutex_unlock(&rd_th_mutex);
+	}
+}
+		 
  ====================================  ULTIMO_LOG ===================================
+
+
+  x Symbol: BLK_DEV_UBD [=y]                                                      x
+  x Type  : boolean                                                               x
+  x Prompt: Virtual block device                                                  x
+  x   Location:                                                                   x
+  x     -> Device Drivers                                                         x
+  x       -> Block devices (BLK_DEV [=y])                                         x
+  x   Defined at drivers/block/Kconfig:168                                        x
+  x   Depends on: BLK_DEV [=y] && UML [=y] 
+
 
 TAREAS A REALIZAR
 =================
@@ -7421,6 +9077,7 @@ int Atoi(char *str)
 
 
 
+===================================================================================
 
 
 
@@ -7430,20 +9087,839 @@ int Atoi(char *str)
 
 
 
+SSH Secure Shell 3.2.9 (Build 283)
+Copyright (c) 2000-2003 SSH Communications Security Corp - http://www.ssh.com/
+
+This copy of SSH Secure Shell is a non-commercial version.
+This version does not include PKI and PKCS #11 functionality.
 
 
+Linux node0 4.9.88 #3 SMP Tue Nov 5 22:22:51 -03 2019 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Dec 13 12:31:47 2019 from 192.168.1.11
+root@node0:~# . /dev/shm/DC0.sh 
+root@node0:~# cd /usr/src/linux
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rd_ep: rd_ep=3
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 15679488 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:90: UML-kernel PID=2 TID=2 uml_ep=-2
+DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
+DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=2 endpoint=-2 nodeid=-1
+DEBUG uml_bind_X:69: os_ioctl_generic ret=-2
+Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #12 Wed Dec 11 11:54:01 -03 2019
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 263894
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033960K/1063888K available (2812K kernel code, 821K rwdata, 808K rodata, 86K init, 135K bss, 29928K reserved, 0K cma-reserved)
+NR_IRQS:16
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1784.21 BogoMIPS (lpj=8921088)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/uYSOWv/mconsole
+Checking host MADV_REMOVE support...OK
+UML Audio Relay (host dsp = /dev/sound/dsp, host mixer = /dev/sound/mixer)
+UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:118: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:123: UML-kernel PID=2  UML-kernel TID=2
+DEBUG rd_driver_init:721: 
+rdisk: Synchronous mode
+start_rd_thread - sp=1217101820
+DEBUG init_rdisk:1058: 
+DEBUG 10:dvk_open:106: Open dvk device file /dev/dvk
+DEBUG 10:dvk_getdvsinfo:248: 
+DEBUG 10:dvk_getdvsinfo:257: ioctl ret=0 errno=0
+DEBUG 10:dvk_getdvsinfo:262: ioctl ret=0
+DEBUG init_rdisk:1074: local_nodeid=0
+DEBUG init_rdisk:1075: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 10:dvk_getdcinfo:349: dcid=0
+DEBUG 10:dvk_getdcinfo:361: ioctl ret=0 errno=0
+DEBUG 10:dvk_getdcinfo:366: ioctl ret=0
+DEBUG init_rdisk:1081: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG init_rdisk:1082: flags=0 dc_nodes=3 dc_pid=691 dc_name=DC0
+DEBUG 10:dvk_bind_X:1199: cmd=0 dcid=0 pid=10 endpoint=30 nodeid=-1
+DEBUG 10:dvk_bind_X:1233: ioctl ret=30
+DEBUG init_rdisk:1090: rdisk bind rdc_ep=30
+DEBUG 10:dvk_getprocinfo:1156: dcid=0 p_nr=30 
+DEBUG 10:dvk_getprocinfo:1169: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1174: ioctl ret=0
+DEBUG init_rdisk:1095: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=745 vpid=10 nodeid=0 name=linux 
+DEBUG rd_thread:1113: 
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+console [mc-1] enabled
+DEBUG rd_init:686: 
+DEBUG rd_add:465: n=0
+DEBUG rd_dev_size:143: 
+DEBUG 2:dvk_getep:225: pid=2
+DEBUG 2:dvk_getep:234: ioctl ret=-2 errno=0
+DEBUG 2:dvk_getep:239: ioctl ret=-2
+DEBUG rd_get_geometry:927: tid=2 my_ep=-2 minor=0
+DEBUG rd_get_geometry:937: source=23 type=1029 m2i1=0 m2i2=-2 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48889e1c
+DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
+DEBUG 2:dvk_sendrec_T:923: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:932: ioctl ret=0
+DEBUG rd_get_geometry:940: source=3 type=68 m2i1=-2 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48889e1c
+DEBUG rd_get_geometry:942: base=0 size=134217728 cyl=128 heads=64 sec=32
+DEBUG rd_dev_size:152: cyl=128 heads=64 sec=32
+DEBUG rd_dev_size:154: RDISK size=134217728 
+DEBUG rd_disk_register:425: major=42 unit=0
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to Debian GNU/Linux 10 (buster)!
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+random: crng init done
+systemd[1]: Starting of Arbitrary Executable File Formats File System Automount Point not supported.
+[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+systemd[1]: Listening on Journal Socket.
+[  OK  ] Listening on Journal Socket.
+systemd[1]: Mounting POSIX Message Queue File System...
+         Mounting POSIX Message Queue File System...
+systemd[1]: Condition check resulted in Kernel Debug File System being skipped.
+systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+systemd[1]: Listening on Syslog Socket.
+[  OK  ] Listening on Syslog Socket.
+systemd[1]: Condition check resulted in Create list of required static device nodes for the current kernel being skipped.
+systemd[1]: Reached target Remote File Systems.
+[  OK  ] Reached target Remote File Systems.
+systemd[1]: Listening on initctl Compatibility Named Pipe.
+[  OK  ] Listening on initctl Compatibility Named Pipe.
+systemd[1]: Condition check resulted in Set Up Additional Binary Formats being skipped.
+[  OK  ] Created slice system-getty.slice.
+         Starting Load Kernel Modules...
+[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+[  OK  ] Listening on udev Kernel Socket.
+[  OK  ] Created slice User and Session Slice.
+[  OK  ] Reached target Slices.
+[  OK  ] Reached target Swap.
+[  OK  ] Listening on udev Control Socket.
+[  OK  ] Listening on Journal Socket (/dev/log).
+         Starting Journal Service...
+[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Local Encrypted Volumes.
+         Starting Remount Root and Kernel File Systems...
+[  OK  ] Mounted POSIX Message Queue File System.
+[  OK  ] Started Load Kernel Modules.
+         Mounting FUSE Control File System...
+         Starting Apply Kernel Variables...
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Started Journal Service.
+[  OK  ] Started Remount Root and Kernel File Systems.
+         Starting Load/Save Random Seed...
+         Starting Create Static Device Nodes in /dev...
+         Starting udev Coldplug all Devices...
+         Starting Flush Journal to Persistent Storage...
+[  OK  ] Started Apply Kernel Variables.
+[  OK  ] Started Create Static Device Nodes in /dev.
+         Starting udev Kernel Device Manager...
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+         Starting Raise network interfaces...
+[  OK  ] Started Load/Save Random Seed.
+systemd-journald[406]: Received request to flush runtime journal from PID 1
+[  OK  ] Started Flush Journal to Persistent Storage.
+         Starting Create Volatile Files and Directories...
+[  OK  ] Started Create Volatile Files and Directories.
+         Starting Update UTMP about System Boot/Shutdown...
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[  OK  ] Reached target System Time Synchronized.
+[  OK  ] Stopped Network Time Synchronization.
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[  OK  ] Stopped Network Time Synchronization.
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[  OK  ] Started udev Kernel Device Manager.
+[  OK  ] Stopped Network Time Synchronization.
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[  OK  ] Stopped Network Time Synchronization.
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[  OK  ] Stopped Network Time Synchronization.
+[FAILED] Failed to start Network Time Synchronization.
+See 'systemctl status systemd-timesyncd.service' for details.
+[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+See 'systemctl status systemd-update-utmp.service' for details.
+[DEPEND] Dependency failed for Updaâ¦about System Runlevel Changes.
+[  OK  ] Started udev Coldplug all Devices.
+[  OK  ] Reached target System Initialization.
+DEBUG rd_open:754: 
+DEBUG rd_open_dev:391: major=42 minor=0
+DEBUG rd_open_dev:402: source=1219911780 type=1030 m2i1=0 m2i2=30 m2i3=0 m2l1=0 m2l2=1219911680 m2p1=  (null)
+DEBUG 2:dvk_sendrec_T:910: endpoint=3 timeout=30000
 
 
+=============================================================================================
+ 377.220781] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+[  377.220782] DEBUG io_mini_sendrec:56: 
+[  377.220784] DEBUG new_mini_sendrec:507: srcdst_ep=3
+[  377.220785] DEBUG check_caller:536: caller_pid=737 caller_tgid=737
+[  377.220786] DEBUG check_caller:572: WLOCK_PROC ep=-2 count=0
+[  377.220787] DEBUG check_caller:601: WUNLOCK_PROC ep=-2 count=0
+[  377.220788] DEBUG check_caller:604: dcid=0
+[  377.220790] DEBUG check_caller:608: RLOCK_DC dc=0 count=0
+[  377.220791] DEBUG check_caller:612: RUNLOCK_DC dc=0 count=0
+[  377.220792] DEBUG check_caller:618: caller_pid=737 
+[  377.220793] DEBUG new_mini_sendrec:518: RLOCK_PROC ep=-2 count=0
+[  377.220794] DEBUG new_mini_sendrec:523: caller_nr=-2 caller_ep=-2 srcdst_ep=3 
+[  377.220795] DEBUG new_mini_sendrec:526: RUNLOCK_PROC ep=-2 count=0
+[  377.220796] DEBUG new_mini_sendrec:528: dcid=0
+[  377.220797] DEBUG new_mini_sendrec:532: RLOCK_DC dc=0 count=0
+[  377.220798] DEBUG new_mini_sendrec:535: RUNLOCK_DC dc=0 count=0
+[  377.220800] DEBUG new_mini_sendrec:550: WLOCK_PROC ep=-2 count=0
+
+[  377.361456] DEBUG new_mini_sendrec:727: WUNLOCK_PROC ep=3 count=0
+[  377.361457] DEBUG new_mini_sendrec:731: removing -2 link from 3 list.
+[  377.361458] DEBUG new_mini_sendrec:732: LIST_DEL
+[  377.361459] DEBUG new_mini_sendrec:748: WUNLOCK_PROC ep=-2 count=0
+[  377.361461] ERROR: 737:new_mini_sendrec:749: rcode=-512
+[  377.361463] ERROR: 737:dvk_ioctl:225: rcode=-512
+[  377.361536] DEBUG dvk_ioctl:201: cmd=4004E305 arg=482DDC2C
+[  377.361538] DEBUG dvk_ioctl:221: DVK_CALL=5 (mini_sendrec) 
+
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  -2    -2   737/2      0    C   20     3     3 27342 27342 linux          
+ 0   3     3   719/719    0    4   20 27342    -2 27342 27342 rdisk          
+ 0  30    30   745/10     0    0   20 27342 27342 27342 27342 linux  
+ 
+ERROR:
+	Cuando finaliza con (-512) ERESTARTSYS
+	
+	rdisk_client -> sendrec(RDISK)
+	RDISK recibe el pedido y lo procesa
+	rdisk_client sale por ERESTARTSYS y borra sus banderas
+	rdisk_client -> sendrec(RDISK) nuevamente y se prenden sus 2 banderas y se encola en la espera de RDISK 
+	RDISK hace el send(rdisk_client) pero rdisk_client tiene las 2 banderas prendidas, y esto hace que se bloqee,
+	
+	send()
+			/* Check if 'dst' is blocked waiting for this message.   */
+		if ( (test_bit(BIT_RECEIVING, &dst_ptr->p_usr.p_rts_flags) && 
+				!test_bit(BIT_SENDING, &dst_ptr->p_usr.p_rts_flags))
+				
+		CONDICION1: Ambos flags apagados porque termino con ERESTARTSYS 
+		CONDICION2: Ambos flags prendidos porque volvio a empezar con el sendrec()
+			SOLUCION1: Reemplazar el dvk_send() por dvk_reply() en RDISK
+					PROBLEMA: El rdisk, saldra por error EDVSPROCSTS
+			SOLUCION2: 
+					Cuando ingresa rdisk_client al sendrec() si las bandera de RDISK esta en SENDING->rdisk_client
+					deberia: 
+						1) borrarle a RDISK la bandera de SENDING
+						2) Removerlo de la cola propia
+						3) 
+		
+--------------------------------------------------------------------------------------------
+20191213:
+		Se reemplazo en mol/drivers/rdisk los dvk_send() de respuestas por dvk_reply()
 			
-	
-	
-	
+--------------------------------------------------------------------------------------------
+20191214:
+				
+		mount -o remount,rw /dev/ubda /
+		mount /dev/rdiska /mnt
 		
-
-
-
-
-
-			 
+		Se cambio el clt_ep = FS_PROC_NR;
+		Se hicieron cambios en RDISK tanto de MOL, como de MUK y MUK2
 		
-		
+==========================================================================================
+
+		DEBUG uml_dvk_init_module:118: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+		DEBUG uml_dvk_init_module:123: UML-kernel PID=838  UML-kernel TID=838
+		DEBUG rd_driver_init:722: RDISK_IRQ=15
+		rdisk: Synchronous mode
+		start_rd_thread - sp=1204625404
+		DEBUG init_rdisk:1072: 
+		DEBUG 846:dvk_open:106: Open dvk device file /dev/dvk
+		DEBUG 846:dvk_getdvsinfo:248: 
+		DEBUG 846:dvk_getdvsinfo:257: ioctl ret=0 errno=0
+		DEBUG 846:dvk_getdvsinfo:262: ioctl ret=0
+		DEBUG init_rdisk:1088: local_nodeid=0
+		DEBUG init_rdisk:1089: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		DEBUG 846:dvk_getdcinfo:349: dcid=0
+		DEBUG 846:dvk_getdcinfo:361: ioctl ret=0 errno=0
+		DEBUG 846:dvk_getdcinfo:366: ioctl ret=0
+		DEBUG init_rdisk:1095: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		DEBUG init_rdisk:1096: flags=0 dc_nodes=3 dc_pid=5784 dc_name=DC0
+		DEBUG 846:dvk_bind_X:1199: cmd=0 dcid=0 pid=846 endpoint=1 nodeid=-1
+		DEBUG 846:dvk_bind_X:1233: ioctl ret=1
+		DEBUG init_rdisk:1110: rdisk bind rdc_ep=1
+		DEBUG 846:dvk_getprocinfo:1156: dcid=0 p_nr=1 
+		DEBUG 846:dvk_getprocinfo:1169: ioctl ret=0 errno=0
+		DEBUG 846:dvk_getprocinfo:1174: ioctl ret=0
+		DEBUG init_rdisk:1114: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=14539 vpid=846 nodeid=0 name=linux 
+		DEBUG rd_thread:1133: 
+		Host TLS support detected
+		Detected host type: i386 (GDT indexes 6 to 9)
+		workingset: timestamp_bits=30 max_order=18 bucket_order=0
+		NFS: Registering the id_resolver key type
+		Key type id_resolver registered
+		Key type id_legacy registered
+		nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+		nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+		Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+		fuse init (API version 7.26)
+		io scheduler noop registered
+		io scheduler deadline registered (default)
+		io scheduler cfq registered
+		loop: module loaded
+		nbd: registered device at major 43
+		tun: Universal TUN/TAP device driver, 1.6
+		tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+		PPP generic driver version 2.4.2
+		SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+		NET: Registered protocol family 17
+		tipc: Activated (version 2.0.0)
+		NET: Registered protocol family 30
+		tipc: Started in single node mode
+		Key type dns_resolver registered
+		Initialized stdio console driver
+		Console initialized on /dev/tty0
+		console [tty0] enabled
+		Initializing software serial port version 1
+		console [mc-1] enabled
+		DEBUG rd_init:688: 
+		DEBUG rd_add:467: n=0
+		DEBUG rd_dev_size:143: 
+		DEBUG 838:dvk_getep:225: pid=838
+		DEBUG 838:dvk_getep:234: ioctl ret=-2 errno=0
+		DEBUG 838:dvk_getep:239: ioctl ret=-2
+		DEBUG rd_get_geometry:928: tid=838 my_ep=-2 minor=0
+		DEBUG rd_get_geometry:938: source=23 type=1029 m2i1=0 m2i2=-2 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=47c85e1c
+		DEBUG 838:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 838:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 838:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_get_geometry:941: source=3 type=68 m2i1=-2 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=47c85e1c
+		DEBUG rd_get_geometry:943: base=0 size=134217728 cyl=128 heads=64 sec=32
+		DEBUG rd_dev_size:152: cyl=128 heads=64 sec=32
+		DEBUG rd_dev_size:154: RDISK size=134217728 
+		DEBUG rd_disk_register:427: major=42 unit=0
+		winch_thread : TIOCSCTTY failed on fd 2 err = 1
+		EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+		EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+		VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+		devtmpfs: mounted
+		This architecture does not have kernel memory protection.
+		random: fast init done
+		systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+		cgroup: cgroup2: unknown option "nsdelegate"
+		systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+		systemd[1]: Detected virtualization vmware.
+		systemd[1]: Detected architecture x86.
+
+		Welcome to Debian GNU/Linux 10 (buster)!
+
+		systemd[1]: Set hostname to <node1>.
+		systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+		systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+		systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+		systemd[1]: Created slice User and Session Slice.
+		[  OK  ] Created slice User and Session Slice.
+		systemd[1]: Reached target Swap.
+		[  OK  ] Reached target Swap.
+		systemd[1]: Condition check resulted in Journal Audit Socket being skipped.
+		[  OK  ] Listening on Journal Socket.
+				 Mounting POSIX Message Queue File System...
+				 Starting Load Kernel Modules...
+		[  OK  ] Reached target Slices.
+		[  OK  ] Listening on initctl Compatibility Named Pipe.
+		random: crng init done
+		[  OK  ] Listening on Journal Socket (/dev/log).
+		[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+		[  OK  ] Listening on udev Kernel Socket.
+		[  OK  ] Reached target Remote File Systems.
+				 Starting Remount Root and Kernel File Systems...
+		[  OK  ] Listening on udev Control Socket.
+		[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+		[  OK  ] Reached target Local Encrypted Volumes.
+		[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+		[  OK  ] Created slice system-getty.slice.
+		[  OK  ] Listening on Syslog Socket.
+				 Starting Journal Service...
+		[  OK  ] Reached target Paths.
+		systemd[1]: Mounted POSIX Message Queue File System.
+		[  OK  ] Mounted POSIX Message Queue File System.
+		systemd[1]: Started Load Kernel Modules.
+		[  OK  ] Started Load Kernel Modules.
+		systemd[1]: Mounting FUSE Control File System...
+				 Mounting FUSE Control File System...
+		systemd[1]: Starting Apply Kernel Variables...
+				 Starting Apply Kernel Variables...
+		systemd[1]: Condition check resulted in Kernel Configuration File System being skipped.
+		systemd[1]: Mounted FUSE Control File System.
+		[  OK  ] Mounted FUSE Control File System.
+		systemd[1]: Started Remount Root and Kernel File Systems.
+		[  OK  ] Started Remount Root and Kernel File Systems.
+		systemd[1]: Starting Load/Save Random Seed...
+				 Starting Load/Save Random Seed...
+		systemd[1]: Condition check resulted in Rebuild Hardware Database being skipped.
+		systemd[1]: Starting udev Coldplug all Devices...
+				 Starting udev Coldplug all Devices...
+				 Starting Create Static Device Nodes in /dev...
+		[  OK  ] Started Apply Kernel Variables.
+		[  OK  ] Started Load/Save Random Seed.
+		[  OK  ] Started Create Static Device Nodes in /dev.
+		[  OK  ] Reached target Local File Systems (Pre).
+		[  OK  ] Reached target Local File Systems.
+				 Starting Raise network interfaces...
+				 Starting udev Kernel Device Manager...
+		[  OK  ] Started udev Coldplug all Devices.
+		systemd[1]: Started Journal Service.
+		[  OK  ] Started Journal Service.
+				 Starting Flush Journal to Persistent Storage...
+		[  OK  ] Started udev Kernel Device Manager.
+		DEBUG rd_open:755: 
+		DEBUG rd_open_dev:392: major=42 minor=0
+		DEBUG rd_open_dev:404: source=1204670564 type=1030 m2i1=0 m2i2=-2 m2i3=0 m2l1=0 m2l2=1204670464 m2p1=  (null)
+		DEBUG 838:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 838:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 838:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_open_dev:407: source=3 type=68 m2i1=-2 m2i2=0 m2i3=0 m2l1=0 m2l2=1204670464 m2p1=  (null)
+		DEBUG rd_release:784: 
+		DEBUG rd_close_dev:365: major=42 minor=0
+		DEBUG rd_close_dev:377: source=0 type=1031 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=1196703376 m2p1=  (null)
+		DEBUG 838:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 838:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 838:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_close_dev:380: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=1196703376 m2p1=  (null)
+		[**    ] (1 of 2) A start job is running forâ¦network interfaces (12s / 5min 4s)
+		[  OK  ] Started Flush Journal to Persistent Storage.
+		[  OK  ] Started Raise network interfaces.
+		[  OK  ] Reached target Network.
+				 Starting Create Volatile Files and Directories...
+		[  OK  ] Started Create Volatile Files and Directories.
+				 Starting Update UTMP about System Boot/Shutdown...
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Reached target System Time Synchronized.
+		[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+		See 'systemctl status systemd-update-utmp.service' for details.
+		[DEPEND] Dependency failed for Updaâ¦about System Runlevel Changes.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Reached target System Initialization.
+		[  OK  ] Started Daily Cleanup of Temporary Directories.
+		[  OK  ] Started Daily apt download activities.
+		[  OK  ] Listening on D-Bus System Message Bus Socket.
+		[  OK  ] Reached target Sockets.
+		[  OK  ] Reached target Basic System.
+				 Starting Login Service...
+				 Starting Permit User Sessions...
+				 Starting System Logging Service...
+		[  OK  ] Started Regular background program processing daemon.
+		[  OK  ] Started Daily apt upgrade and clean activities.
+		[  OK  ] Reached target Timers.
+				 Starting OpenBSD Secure Shell server...
+		[  OK  ] Started D-Bus System Message Bus.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Stopped Network Time Synchronization.
+		[FAILED] Failed to start Network Time Synchronization.
+		See 'systemctl status systemd-timesyncd.service' for details.
+		[  OK  ] Started Login Service.
+		[  OK  ] Started System Logging Service.
+		[  OK  ] Started Permit User Sessions.
+		[  OK  ] Started Getty on tty1.
+		[  OK  ] Reached target Login Prompts.
+		[  OK  ] Started OpenBSD Secure Shell server.
+		[  OK  ] Reached target Multi-User System.
+		[  OK  ] Reached target Graphical Interface.
+		winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+		Debian GNU/Linux 10 node1 tty1
+
+		node1 login: root
+		Password: 
+		Linux node1 4.9.88 #8 Sat Dec 21 12:04:58 -03 2019 i686
+
+		The programs included with the Debian GNU/Linux system are free software;
+		the exact distribution terms for each program are described in the
+		individual files in /usr/share/doc/*/copyright.
+
+		Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+		permitted by applicable law.
+		root@node1:~# mount -o remount,rw /dev/ubda /
+		EXT4-fs (ubda): warning: mounting unchecked fs, running e2fsck is recommended
+		EXT4-fs (ubda): re-mounted. Opts: (null)
+		root@node1:~# mount /dev/rdiska /mnt
+		DEBUG rd_open:755: 
+		DEBUG rd_open_dev:392: major=42 minor=0
+		DEBUG rd_open_dev:404: source=1204670564 type=1030 m2i1=0 m2i2=-2 m2i3=0 m2l1=0 m2l2=1204670464 m2p1=  (null)
+		DEBUG 838:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 838:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 838:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rd_open_dev:407: source=3 type=68 m2i1=-2 m2i2=0 m2i3=0 m2l1=0 m2l2=1204670464 m2p1=  (null)
+		DEBUG 838:dvk_getep:225: pid=838
+		DEBUG 838:dvk_getep:234: ioctl ret=-2 errno=0
+		DEBUG 838:dvk_getep:239: ioctl ret=-2
+		DEBUG rd_ioctl:960: cmd=21297 tid=838 my_ep=-2
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134152192
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=47662000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134152192 m2l2=0 m2p1=47662000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134152192
+		DEBUG rd_thread:1151: op=0 offset=134152192 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134209536
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=474db000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134209536 m2l2=0 m2p1=474db000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134209536
+		DEBUG rd_thread:1151: op=0 offset=134209536 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=0
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=0 m2l2=0 m2p1=4752b000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=4752b000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=0
+		DEBUG rd_thread:1151: op=0 offset=0 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=4096
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=4096 m2l2=0 m2p1=47540000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=47540000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=4096
+		DEBUG rd_thread:1151: op=0 offset=4096 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134213632
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=475d7000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134213632 m2l2=0 m2p1=475d7000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134213632
+		DEBUG rd_thread:1151: op=0 offset=134213632 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134082560
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=477d3000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134082560 m2l2=0 m2p1=477d3000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134082560
+		DEBUG rd_thread:1151: op=0 offset=134082560 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134184960
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=474d2000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134184960 m2l2=0 m2p1=474d2000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134184960
+		DEBUG rd_thread:1151: op=0 offset=134184960 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		DEBUG rd_intr:339: 
+		DEBUG rd_handler:309: 
+		DEBUG rd_handler:322: req->op=0
+		DEBUG rd_handler:315: n=-11 sizeof(req)=4
+		DEBUG do_rd_request:851: 
+		DEBUG rd_prepare_request:800: len=4096
+		DEBUG rd_prepare_request:810: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG rd_submit_request:828: 
+		DEBUG rd_thread:1148: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1020: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG do_rdisk:1027: op=0 minor=0 len=4096 off=134086656
+		DEBUG 846:dvk_getep:225: pid=846
+		DEBUG 846:dvk_getep:234: ioctl ret=1 errno=0
+		DEBUG 846:dvk_getep:239: ioctl ret=1
+		DEBUG rdisk_rw:986: oper=1027 tid=846 my_ep=1 minor=0
+		DEBUG rdisk_rw:999: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=47701000
+		DEBUG 846:dvk_sendrec_T:910: endpoint=3 timeout=30000
+		DEBUG 846:dvk_sendrec_T:923: ioctl ret=0 errno=0
+		DEBUG 846:dvk_sendrec_T:932: ioctl ret=0
+		DEBUG rdisk_rw:1002: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=134086656 m2l2=0 m2p1=47701000
+		DEBUG rdisk_rw:1004: READ/WRITE bytes=4096
+		DEBUG do_rdisk:1056: op=0 minor=0 len=0 off=134086656
+		DEBUG rd_thread:1151: op=0 offset=134086656 length=4096 sectorsize=512 error=0
+		DEBUG rd_thread:1133: 
+		BUG: failure at fs/buffer.c:1270/check_irqs_on()!
+		Kernel panic - not syncing: BUG!
+		CPU: 0 PID: 698 Comm: rs:main Q:Reg Not tainted 4.9.88 #8
+		Stack:
+		 083b7f59 00000000 4784ab80 00000000 47667b80 082381a4 00000000 00000000
+		 083b7f59 47667b98 080b4cd0 00000006 00000000 4784ab80 00000000 47667c04
+		 0810179a 0838adcd 0838adb0 083a2074 000004f6 08322140 00000087 478e7a80
+		Call Trace:
+		 [<0805beab>] show_stack+0xaf/0xf7
+		 [<082381a4>] dump_stack+0x16/0x1b
+		 [<080b4cd0>] panic+0x84/0x18a
+		 [<0810179a>] __find_get_block+0x10a/0x162
+		 [<0814d10f>] ? __ext4_handle_dirty_metadata+0x46/0x17b
+		 [<08132725>] ? ext4_mark_iloc_dirty+0x4a4/0x59a
+		 [<081327d1>] ? ext4_mark_iloc_dirty+0x550/0x59a
+		 [<0810404c>] __getblk_gfp+0x1b/0x2aa
+		 [<0812ebba>] __ext4_get_inode_loc+0xf6/0x344
+		 [<08130f6e>] ext4_get_inode_loc+0x19/0x1b
+		 [<0813282e>] ext4_reserve_inode_write+0x13/0x70
+		 [<081328ae>] ext4_mark_inode_dirty+0x23/0x13d
+		 [<08070cdc>] ? do_set_thread_area+0x14/0x35
+		 [<08135975>] ext4_dirty_inode+0x37/0x51
+		 [<080fc23e>] __mark_inode_dirty+0x28/0x181
+		 [<080f1c42>] generic_update_time+0x72/0x7c
+		 [<080f35e2>] file_update_time+0x8b/0xa9
+		 [<080b79f7>] __generic_file_write_iter+0x6c/0x194
+		 [<083178e4>] ? __down_write+0xd/0x11
+		 [<0812c35d>] ext4_file_write_iter+0x286/0x358
+		 [<080df65b>] __vfs_write+0xbe/0x109
+		 [<080df825>] vfs_write+0xbf/0x14a
+		 [<080df95f>] SyS_write+0x3c/0x73
+		 [<0805d6dd>] handle_syscall+0x6f/0x99
+		 [<0806e98f>] userspace+0x38e/0x40c
+		 [<080dc4f0>] ? kfree+0x4e/0x58
+		 [<08071ab8>] ? os_set_thread_area+0x13/0x25
+		 [<08070cdc>] ? do_set_thread_area+0x14/0x35
+		 [<08070e2e>] ? arch_switch_tls+0xc9/0xec
+		 [<0805affe>] fork_handler+0x56/0x5b
+
+		Abortado
+		root@node0:/usr/src/linux# 
+
+	EN EL SERVER RDISK 
+		driver.c:driver_task:114:M3-IPC Listening ...
+		DEBUG 5811:dvk_receive_T:876: endpoint=31438 timeout=-1
+		DEBUG 5811:dvk_receive_T:889: ioctl ret=0 errno=0
+		DEBUG 5811:dvk_receive_T:899: ioctl ret=0
+		driver.c:driver_task:129:
+		RECEIVE: m_source=1, m_type=1027, DEVICE=0, IO_ENDPT=1, POSITION=7FE0000, COUNT=4096, ADDRESS:47701000, compress(m2_l2):0
+		 driver.c:driver_task:140:device_caller= 1, mess.m_source= 1
+		 driver.c:driver_task:164:m_type: 1027 - (DEV_READ= 1027 ? WRITE= 1028)
+		 driver.c:do_rdwt:267:mp->COUNT=4096
+		 driver.c:do_rdwt:277:mp->IO_ENDPT=1 - mp->ADDRESS:47701000 - mp->COUNT=4096
+		 rdisk.c:m_prepare:262:device = 0
+		 rdisk.c:get_geometry:969:device=0
+		 rdisk.c:get_geometry:971:img_fd=10 dev_owner=-2 st_size=134217728 st_blksize=4096 localbuff=81D000 active=1 available=1
+		 rdisk.c:get_geometry:979:base=0 size=134217728 cyl=128 heads=64 sec=32
+		 driver.c:do_rdwt:283:mp->m_type: 1027
+		 driver.c:do_rdwt:303:opcode: 1033 - DEV_GATHER=1033 - DEV_SCATTER=1032
+		 rdisk.c:m_transfer:299:m_device: 0
+		 rdisk.c:m_transfer:312:dv_size: 134217728
+		 rdisk.c:m_transfer:315:posit: 7FE0000
+		 rdisk.c:m_transfer:316:nr_req: 1
+		 rdisk.c:m_transfer:322:count: 4096
+		 rdisk.c:m_transfer:326:user_vir 47701000
+		 rdisk.c:m_transfer:343:
+		<DEV_GATHER>
+		 rdisk.c:m_transfer:349:bytes: 4096
+		 rdisk.c:m_transfer:353:pread: bytes=4096
+		DEBUG 5811:dvk_vcopy:122: src_ep=3 dst_ep=1 bytes=4096
+		DEBUG 5811:dvk_vcopy:138: ioctl ret=4096 errno=0
+		DEBUG 5811:dvk_vcopy:147: ioctl ret=4096
+		 rdisk.c:m_transfer:388:DRIVER: dvk_vcopy(DRIVER -> proc_nr) rcode=4096
+		 rdisk.c:m_transfer:389:bytes= 4096
+		 rdisk.c:m_transfer:390:DRIVER - Offset (read) 81D000
+		 rdisk.c:m_transfer:392:user_vir: 47701000 (in proc_nr 1)
+		 rdisk.c:m_transfer:405:user_vir (do-buffer) 47702000
+		 rdisk.c:m_transfer:408:count=0 stbytes=4096 position=134090752
+		 rdisk.c:m_transfer:694:subtotal de bytes
+		 driver.c:do_rdwt:310:mp->m2_l2 =0, buffer_size=0
+		 driver.c:do_rdwt:311:dr_trasnfer = (r) 4096
+		 driver.c:driver_task:230:REPLY msg a DEVICE_CALLER: 1 -> m_type=68, (REP_ENDPT)=1, (REP_STATUS)=4096
+		DEBUG 5811:dvk_reply_T:943: endpoint=1 timeout=-1
+		DEBUG 5811:dvk_reply_T:956: ioctl ret=76 errno=0
+		DEBUG 5811:dvk_reply_T:965: ioctl ret=76
+		 driver.c:driver_task:114:M3-IPC Listening ...
+		 
+		 
+		 

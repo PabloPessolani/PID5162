@@ -757,7 +757,7 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	}
 		
 	if( ret) {
-DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);  
+		DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);  
 		if(proc->p_pseudosem < 0) proc->p_pseudosem++; 
 //		del_timer_sync(&proc->p_timer);
 		proc->p_rcode = ret; 
@@ -784,7 +784,7 @@ DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);
 	pu_ptr = &proc->p_usr;
 	DVKDEBUG(INTERNAL, PROC_CPU_FORMAT, PROC_CPU_FIELDS(pu_ptr));
 	
-DVKDEBUG(INTERNAL,"someone wakeups me: sem=%d p_rcode=%d\n",proc->p_pseudosem, proc->p_rcode);
+	DVKDEBUG(INTERNAL,"someone wakeups me: sem=%d p_rcode=%d\n",proc->p_pseudosem, proc->p_rcode);
 	return(ret);
 }
 
