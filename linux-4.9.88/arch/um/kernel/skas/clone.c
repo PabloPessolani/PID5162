@@ -26,7 +26,7 @@
 #ifdef CONFIG_UML_DVK_NULO
 #define DVK_FILE_NAME "/dev/dvk"
 static	int stub_dvk_fd = (-1);
-#endif CONFIG_UML_DVK_NULO
+#endif // CONFIG_UML_DVK_NULO
 
 void __attribute__ ((__section__ (".__syscall_stub")))
 stub_clone_handler(void)

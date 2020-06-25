@@ -198,9 +198,14 @@ config BLK_DEV_COW_COMMON
 	bool
 	default BLK_DEV_UBD
 
+config UML_RAMDISK 
+	bool "UML RAM Disk"
+	default y
+	help
+	This options enable RAMDISK
+
 config UML_RDISK 
 	bool "UML Replicated Disk proxy"
-	depends on UML_DVK
 	default y
 	help
 	This options enable RDISK proxy to the host RDISK.

@@ -362,7 +362,14 @@ int __init linux_main(int argc, char **argv)
 			printk("rd_ep command line argument not specified");
 			exit(1);
 	}
-#endif // CONFIG_UML_RDISK 
+#endif //CONFIG_UML_RDISK
+
+#ifdef CONFIG_RHOSTFS
+	if( rhs_ep == (-1) ){		
+			printk("rhs_ep command line argument not specified");
+			exit(1);
+	}
+#endif // CONFIG_RHOSTFS 
 
 #endif //CONFIG_UML_DVK
 	

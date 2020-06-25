@@ -21,7 +21,7 @@
 #ifdef 	CONFIG_UML_DVK
 
 #include "/usr/src/dvs/include/com/dvk_calls.h"
-#include "/usr/src/dvs/include/com/dvk_ioctl.h"
+//#include "/usr/src/dvs/include/com/dvk_ioctl.h"
 #define  UML_DVK_DEV		"/dev/dvk"
 #define  UML_DVK_NAMELEN	8
 

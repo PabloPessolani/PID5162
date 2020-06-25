@@ -26,7 +26,13 @@
 #include <asm/ptrace-abi.h>
 #include <asm/ptrace.h>
 
-#define  CONFIG_UML_DVK		1
+#ifdef  CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=YES")
+#else // CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=NO")
+#pragma message ("define CONFIG_UML_DVK=YES")
+#define CONFIG_UML_DVK	1
+#endif // CONFIG_UML_DVK
 
 #ifdef CONFIG_UML_DVK
 #include <signal.h>
@@ -366,6 +372,8 @@ int start_userspace(unsigned long stub_stack)
 #define SC_RETCODE (4 * EAX)
 #endif
 
+void need_uml_resched(void);
+
 void return_from_dvkcall(int dvk_retcode,  struct uml_pt_regs *r);
 
 #define SI_INFO_FORMAT 		"si_signo=%d si_errno=%d si_code=%d si_pid=%d si_uid=%d si_syscall=%d\n"
@@ -403,7 +411,6 @@ static void handle_dvk_wait(int pid, struct uml_pt_regs *regs)
 		printk(UM_KERN_ERR "handle_dvk_wait - PTRACE_SETSIGMASK failed, errno = %d\n", errno);
 		fatal_sigsegv();
 	}
-
 
 #ifdef ANULADO
 
@@ -450,7 +457,7 @@ static void handle_dvk_wait(int pid, struct uml_pt_regs *regs)
 
 static void handle_dvk_exit(int pid, struct uml_pt_regs *regs)
 {
-	int err, status, dvk_retcode;
+	int err, status, dvk_retcode, syscall;
 	siginfo_t si;
 	siginfo_t *sptr;
 	
@@ -474,10 +481,14 @@ static void handle_dvk_exit(int pid, struct uml_pt_regs *regs)
 	CATCH_EINTR(err = waitpid(pid, &status, WUNTRACED | __WALL));
 
     dvk_retcode = ptrace(PTRACE_PEEKUSER, pid, SC_RETCODE, NULL);
+
 	if( dvk_retcode == (-ENOSYS))
 		printk("handle_dvk_exit WARNING dvk_retcode=%d == -ENOSYS\n", dvk_retcode);
 	else 
 		printk("handle_dvk_exit dvk_retcode=%d\n", dvk_retcode);
+
+	syscall = ptrace(PTRACE_PEEKUSER, pid, sizeof(long)*ORIG_EAX, 0);
+	printk("handle_dvk_exit syscall=%d\n", syscall);
 		
 	if ((err < 0) || !WIFSTOPPED(status) ||
 		(WSTOPSIG(status) != SIGTRAP + 0x80)) {

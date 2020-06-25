@@ -106,12 +106,11 @@ long dvk_open(void)
 	LIBDEBUG(DBGPARAMS,  "Open dvk device file %s\n", DVK_FILE_NAME);
 #ifndef  CONFIG_UML_DVK
 	dvk_fd = open(DVK_FILE_NAME, 0);
-	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
-	errno = 0;
+	if (dvk_fd < 0) ERROR_RETURN(-errno);
 #else // CONFIG_UML_DVK
 	dvk_fd = os_open_file(DVK_FILE_NAME, of_set_rw(OPENFLAGS(), 1, 1), &dvk_fd);
-#endif // CONFIG_UML_DVK
 	if (dvk_fd < 0)  ERROR_RETURN(dvk_fd);
+#endif // CONFIG_UML_DVK
 	return(dvk_fd);
 }
 

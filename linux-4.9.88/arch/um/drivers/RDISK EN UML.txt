@@ -125,9 +125,10 @@ Se modifico el archivo Kconfig.char
  device_initcall(rd_driver_init): Al inicializar los drivers, el kernel invoca a rd_driver_init()
 
  rd_driver_init: 
-	invoca a start_rd_thread() para crear el  thread de rdisk
+	invoca a start_rd_thread() para crear el  thread de rdisk y le pasa un descriptor de pipe
+		por donde recibe las peticion y responde las mismas
 	Setea la IRQ para rdisk en RDISK_IRQ
- 
+		
  start_rd_thread() en rdisk_user.c:
 	Crea el pipe para las transferencias de requerimientos entre el UML Kernel y el thread de rdisk rd_thread()
 	Crea el thread rd_thread()
@@ -141,11 +142,20 @@ rd_thread():
 do_rdisk():
 	realiza las operaciones de READ y WRITE usando rdisk_rw() quien hace la invocacion al DVK.
 	
+rd_handler(void): ATENCION!! Cumple una doble tarea: procesa las respuestas de peticiones anteriores e inserta nuevas peticiones !!!!!!!
+	Cada vez que se produce una RDISK_IRQ, se busca en el pipe de las respuestas para ver si 
+	rd_thread() termino de procesarla. Puede procesar una sarta completa. 
+	Por cada una que procesa, notifica al kernel de UML mediante blk_end_request() y libera el buffer de la peticion.
+	Si ya no quedan respuestas, entonces retorna EAGAIN y reestablece el pipe para la IRQ.
+	Luego, lee la cola de peticiones almacenadas en la estructura de rdisk y las va insertando como peticiones en 
+	el pipe usando la funcion do_rd_request()
+	
+do_rd_request:
+	Lee la cola de la estructura rdisk y la inserta en el pipe de peticiones
+	rd_prepare_request() preparar la peticion
+	rd_submit_request() inserta la peticion en el pipe 
 	
 	
-
-
-	
- 
+ apt-get install linux-image-amd64 linux-headers-amd64
  
  

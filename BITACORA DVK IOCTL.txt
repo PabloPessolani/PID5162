@@ -116,6 +116,12 @@ du -a /home | sort -n -r | head -n 5
 			Hello DVS. PAP
 			./ioctl
 			get_nth_byte message:Hello DVS. PAP
+			root@uml:/home/dvs/chardev-ioctl# dmesg
+			[ 1974.024014] Registeration is a success The major device number is 100.
+			[ 1974.024030] If you want to talk to the device driver,
+			[ 1974.024041] you'll have to create a device file. 
+			[ 1974.024052] We suggest you use:
+			[ 1974.024063] mknod /dev/char_dev c 100 0
 
 			get_msg message:Hello DVS. PAP
 
@@ -123,12 +129,6 @@ du -a /home | sort -n -r | head -n 5
 			[ 1625.157546] mknod /dev/char_dev c 100 0
 		
 		El dmesg completo da
-			root@uml:/home/dvs/chardev-ioctl# dmesg
-			[ 1974.024014] Registeration is a success The major device number is 100.
-			[ 1974.024030] If you want to talk to the device driver,
-			[ 1974.024041] you'll have to create a device file. 
-			[ 1974.024052] We suggest you use:
-			[ 1974.024063] mknod /dev/char_dev c 100 0
 			[ 1974.024074] The device file name is important, because
 			[ 1974.024084] the ioctl program assumes that's the
 			[ 1974.024188] file you'll use.

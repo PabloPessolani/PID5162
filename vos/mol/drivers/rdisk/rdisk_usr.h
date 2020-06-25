@@ -43,6 +43,6 @@ typedef struct sumdevvec sumdevvec_t;
 #define SUM_USR_FORMAT "nr_transferred=%u nr_matched=%u nr_updated=%u tbytes=%u\n"
 #define SUM_USR_FIELDS(sum) sum->nr_transferred,sum->nr_matched, sum->nr_updated, sum->tbytes
 
-#define DFT_HEADS		64
+#define DFT_HEADS		2
 #define DFT_SECTORS 	32 
 

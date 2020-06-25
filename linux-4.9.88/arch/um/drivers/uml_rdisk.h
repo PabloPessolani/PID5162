@@ -4,6 +4,9 @@
  * Licensed under the GPL
  */
 
+// MEMORY TEST DISK 
+#define RD_MEMORY			1
+
 #ifndef __UM_RDISK_USER_H
 #define __UM_RDISK_USER_H
 
@@ -24,5 +27,16 @@ extern int kernel_fd;
 */ 		
 #define 	RD_MAJOR		42
 #define 	RD_MINOR		0
+
+#define RD_SECTOR_SIZE	512
+#define RD_SECTOR_SHIFT	9
+
+#ifdef RD_MEMORY
+#define RD_MEM_CYLINDERS 	45
+#define RD_MEM_HEADS 		2
+#define RD_MEM_SECTORS 		32
+#endif // RD_MEMORY
+
+
 #endif // __UM_RDISK_USER_H
 

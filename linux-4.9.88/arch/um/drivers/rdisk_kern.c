@@ -18,7 +18,7 @@
  */
 
 // #ifdef CONFIG_UML_RDISK 
-
+// 
 #define RD_SHIFT 0
 
 #include <linux/module.h>
@@ -48,6 +48,41 @@
 #include "/usr/src/dvs/vos/mol/include/partition.h"
 #include "/usr/src/dvs/vos/mol/include/ioc_disk.h"
 
+#ifdef  CONFIG_DVS_DVK
+#pragma message ("CONFIG_DVS_DVK=YES")
+#else // CONFIG_DVS_DVK
+#pragma message ("CONFIG_DVS_DVK=NO")
+#endif // CONFIG_DVS_DVK
+
+#ifdef  CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=YES")
+#else // CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=NO")
+#endif // CONFIG_UML_DVK
+
+#ifdef  CONFIG_UML_USER
+#pragma message ("CONFIG_UML_USER=YES")
+#else // CONFIG_UML_USER
+#pragma message ("CONFIG_UML_USER=NO")
+#endif // CONFIG_UML_USER
+
+#ifdef  CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=YES")
+#else // CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=NO")
+#endif // CONFIG_DVKIPC
+
+#ifdef  CONFIG_UML_RDISK
+#pragma message ("CONFIG_UML_RDISK=YES")
+#else // CONFIG_UML_RDISK
+#pragma message ("CONFIG_UML_RDISK=NO")
+#endif // CONFIG_UML_RDISK
+
+
+#ifdef RD_MEMORY
+char *rd_mem;
+#endif // RD_MEMORY
+ 
 enum rd_req { RD_READ, RD_WRITE, RD_FLUSH };
 
 struct rd_thread_req {
@@ -69,8 +104,7 @@ static DEFINE_MUTEX(rd_lock);
 static DEFINE_MUTEX(rd_mutex); /* replaces BKL, might not be needed */
 
 
-#define MAX_SG 			64
-#define RD_SECTOR_SIZE	512
+#define MAX_SG 			1
 
 struct rdisk {
 	struct list_head restart;
@@ -301,7 +335,7 @@ static int rd_thread_fd = -1;
 static void rd_handler(void)
 {
 	struct rd_thread_req *req;
-	struct rdisk *rdisk;
+	struct rdisk *rd_dev;
 	struct list_head *list, *next_ele;
 	unsigned long flags;
 	int n;
@@ -326,11 +360,11 @@ static void rd_handler(void)
 	reactivate_fd(rd_thread_fd, RDISK_IRQ);
 
 	list_for_each_safe(list, next_ele, &restart){
-		rdisk = container_of(list, struct rdisk, restart);
-		list_del_init(&rdisk->restart);
-		spin_lock_irqsave(&rdisk->lock, flags);
-		do_rd_request(rdisk->queue);
-		spin_unlock_irqrestore(&rdisk->lock, flags);
+		rd_dev = container_of(list, struct rdisk, restart);
+		list_del_init(&rd_dev->restart);
+		spin_lock_irqsave(&rd_dev->lock, flags);
+		do_rd_request(rd_dev->queue);
+		spin_unlock_irqrestore(&rd_dev->lock, flags);
 	}
 }
 
@@ -363,8 +397,11 @@ static void rd_close_dev(struct rdisk *rd_dev)
 	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
 
 	DVKDEBUG(INTERNAL, "major=%d minor=%d\n", major, minor);
-	if (minor >= RD_MAX_DEV) ERROR_RETURN(EDVSOVERRUN);
-	
+	if (minor >= RD_MAX_DEV) {
+		ERROR_PRINT(EDVSOVERRUN);
+		return;
+	}
+#ifndef RD_MEMORY	
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	m_ptr->m_type   = DEV_CLOSE;
@@ -373,12 +410,17 @@ static void rd_close_dev(struct rdisk *rd_dev)
 	m_ptr->IO_ENDPT = rdc_ep;
 //	m_ptr->IO_ENDPT = uml_ep;
 	m_ptr->ADDRESS  = NULL;
-	m_ptr->COUNT    = NULL;
+	m_ptr->COUNT    = 0;
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
-	if(rcode < 0) ERROR_RETURN(rcode);
+	if(rcode < 0) {
+		ERROR_PRINT(rcode);
+		return;
+	}
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
-	return(OK);	
+#endif // RD_MEMORY	
+
+	return;	
 }
 
 static int rd_open_dev(struct rdisk *rd_dev)
@@ -392,6 +434,7 @@ static int rd_open_dev(struct rdisk *rd_dev)
 	DVKDEBUG(INTERNAL, "major=%d minor=%d\n", major, minor);
 	if (minor >= RD_MAX_DEV) ERROR_RETURN(EDVSOVERRUN);
 	
+#ifndef RD_MEMORY	
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	m_ptr->m_type   = DEV_OPEN;
@@ -406,6 +449,7 @@ static int rd_open_dev(struct rdisk *rd_dev)
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	return(OK);	
+#endif // RD_MEMORY	
 }
 
 static void rd_device_release(struct device *dev)
@@ -425,7 +469,7 @@ static int rd_disk_register(int major, u64 size, int unit,
 	struct gendisk *disk;
 
 	DVKDEBUG(INTERNAL,"major=%d unit=%d\n", major, unit);
-
+// The argument minors is the maximum number of minor numbers that this disk can have
 	disk = alloc_disk(1 << RD_SHIFT);
 	if(disk == NULL)
 		return -ENOMEM;
@@ -438,6 +482,8 @@ static int rd_disk_register(int major, u64 size, int unit,
 		sprintf(disk->disk_name, "rdisk%c", 'a' + unit);
 	else
 		sprintf(disk->disk_name, "rd_fake%d", unit);
+
+	DVKDEBUG(INTERNAL,"disk_name=%s\n", disk->disk_name);
 
 	/* sysfs register (not for ide fake devices) */
 	if (major == RD_MAJOR) {
@@ -457,7 +503,7 @@ static int rd_disk_register(int major, u64 size, int unit,
 	return 0;
 }
 
-#define ROUND_BLOCK(n) ((n + ((1 << 9) - 1)) & (-1 << 9))
+#define ROUND_BLOCK(n) ((n + ((1 << RD_SECTOR_SHIFT) - 1)) & (-1 << RD_SECTOR_SHIFT))
 
 static int rd_add(int n, char **error_out)
 {
@@ -706,12 +752,21 @@ static int __init rd_init(void)
 			       "%s\n", i, error);
 	}
 	mutex_unlock(&rd_lock);
+	
+#ifdef RD_MEMORY
+	rd_mem = kmalloc( RD_MEM_CYLINDERS * RD_MEM_HEADS * RD_MEM_SECTORS * RD_SECTOR_SIZE,
+					 GFP_ATOMIC);
+	if(rd_mem == NULL)
+		ERROR_RETURN(EDVSNOMEM);
+#endif // RD_MEMORY
+	
 	return 0;
 }
 
-#ifndef CONFIG_DVKIPC
+
+#ifdef CONFIG_UML_RDISK
 late_initcall(rd_init);
-#endif // CONFIG_DVKIPC
+#endif // CONFIG_UML_RDISK
 
 
 static int __init rd_driver_init(void)
@@ -729,6 +784,7 @@ static int __init rd_driver_init(void)
 	}
 	stack = alloc_stack(0, 0);
 	rd_pid = start_rd_thread(stack + PAGE_SIZE - sizeof(void *), &rd_thread_fd);
+	printk("start_rd_thread rd_pid=%d\n", rd_pid);
 	if(rd_pid < 0){
 		printk(KERN_ERR
 		       "rdisk : Failed to start I/O thread (errno = %d) - "
@@ -742,9 +798,9 @@ static int __init rd_driver_init(void)
 	return 0;
 }
 
-#ifndef CONFIG_DVKIPC
+#ifdef CONFIG_UML_RDISK 
 device_initcall(rd_driver_init);
-#endif // CONFIG_DVKIPC
+#endif // CONFIG_UML_RDISK
 
 static int rd_open(struct block_device *bdev, fmode_t mode)
 {
@@ -805,7 +861,7 @@ static void rd_prepare_request(struct request *req, struct rd_thread_req *rd_req
 	rd_req->error = 0;
 	rd_req->op = (rq_data_dir(req) == READ) ? RD_READ : RD_WRITE;
 	rd_req->buffer = page_address(page) + page_offset;
-	rd_req->sectorsize = 1 << 9;
+	rd_req->sectorsize = 1 << RD_SECTOR_SHIFT;
 
 	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(rd_req));
 
@@ -889,13 +945,13 @@ static void do_rd_request(struct request_queue *q)
 				return;
 			}
 			rd_prepare_request(req, rd_req,
-					(unsigned long long)dev->rq_pos << 9,
+					(unsigned long long)dev->rq_pos << RD_SECTOR_SHIFT,
 					sg->offset, sg->length, sg_page(sg));
 
 			if (rd_submit_request(rd_req, dev) == false)
 				return;
 
-			dev->rq_pos += sg->length >> 9;
+			dev->rq_pos += sg->length >> RD_SECTOR_SHIFT;
 			dev->start_sg++;
 		}
 		dev->end_sg = 0;
@@ -919,6 +975,12 @@ static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 
 int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
 {
+#ifdef RD_MEMORY
+	geo->heads 		= RD_MEM_HEADS;
+	geo->sectors 	= RD_MEM_SECTORS;
+	geo->cylinders 	= RD_MEM_CYLINDERS;
+	geo->start 		= 0;
+#else // RD_MEMORY
 	message dev_mess, *m_ptr;
 	int rcode, tid, my_ep;
 	mnx_part_t mnx_part, *part_ptr;
@@ -945,6 +1007,8 @@ int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
 	geo->sectors 	= part_ptr->sectors;
 	geo->cylinders 	= part_ptr->cylinders;
 	geo->start 		= part_ptr->base;
+#endif // RD_MEMORY
+
 	return 0;	
 }
 
@@ -961,11 +1025,17 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, u
 	
 	switch (cmd) {
 		case HDIO_GET_IDENTITY:
+#ifdef RD_MEMORY
+			rd_id[ATA_ID_HEADS]		= RD_MEM_HEADS;
+			rd_id[ATA_ID_SECTORS]	= RD_MEM_SECTORS;
+			rd_id[ATA_ID_CYLS]		= RD_MEM_CYLINDERS;
+#else // RD_MEMORY
 			rcode = rd_getgeo(bdev, &geo);
 			memset(&rd_id, 0, ATA_ID_WORDS * 2);
 			rd_id[ATA_ID_CYLS]		= geo.cylinders;
 			rd_id[ATA_ID_HEADS]		= geo.heads;
 			rd_id[ATA_ID_SECTORS]	= geo.sectors;
+#endif // RD_MEMORY
 			if(copy_to_user((char __user *) arg, (char *) &rd_id,
 					 sizeof(rd_id)))
 				return -EFAULT;
@@ -980,6 +1050,16 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 {
 	message dev_mess, *m_ptr;
 	int rcode, tid, my_ep;
+
+#ifdef RD_MEMORY
+	void *ptr; 
+	DVKDEBUG(INTERNAL,"oper=%d len=%ld\n",oper, len);
+	if( oper == DEV_READ)
+		ptr = memcpy(buf, (rd_mem + off), len);
+	else 
+		ptr = memcpy( (rd_mem + off), buf, len);
+	return(len);	
+#else // RD_MEMORY
 
 	tid = os_gettid();
 	my_ep = dvk_getep(tid);
@@ -1003,6 +1083,8 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 		
 	DVKDEBUG(INTERNAL,"READ/WRITE bytes=%d\n", m_ptr->REP_STATUS);
 	return(m_ptr->REP_STATUS);
+#endif // RD_MEMORY
+
 }
 
 static void do_rdisk(struct rd_thread_req *req)
@@ -1071,24 +1153,17 @@ static int init_rdisk(void)
 	
 	DVKDEBUG(INTERNAL,"\n");	
 
+#ifndef RD_MEMORY
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
 	
 	dvsu_ptr = &dvs;
 
-#ifdef CONFIG_DVKIPC
-	int rdisk_nodeid;
-	rdisk_nodeid = dvk_getdvsinfo(dvsu_ptr);
-	if( rdisk_nodeid < 0) ERROR_RETURN(rdisk_nodeid);
-	DVKDEBUG(INTERNAL,"rdisk_nodeid=%d\n",rdisk_nodeid);	
-	DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#else  // CONFIG_DVKIPC
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
 	DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);	
 	DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#endif // CONFIG_DVKIPC
-	
+
 	dcu_ptr = &dcu;
 	rcode = dvk_getdcinfo(dcid, dcu_ptr);
 	if( rcode < 0) ERROR_RETURN(rcode);
@@ -1112,6 +1187,7 @@ static int init_rdisk(void)
 	rcode = dvk_getprocinfo(dcid, rdc_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
+#endif // RD_MEMORY
 
 }
 

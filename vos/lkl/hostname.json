@@ -1,0 +1,7 @@
+ {
+       "debug":"65535",
+       "singlecpu":"1",
+       "sysctl":"kernel.hostname=pirulo",
+	   "mount":"proc,sysfs",
+}
+	 

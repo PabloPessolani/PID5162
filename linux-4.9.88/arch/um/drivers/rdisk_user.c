@@ -23,7 +23,6 @@
 
 #include <os.h>
  
-
 #include "um_dvk.h"
 #include "uml_rdisk.h"
 #include "glo_dvk.h"
@@ -52,6 +51,7 @@ int start_rd_thread(unsigned long sp, int *fd_out)
 	}
 
 	pid = clone(rd_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
+	printk("start_rd_thread pid=%d\n", pid);
 	if(pid < 0){
 		err = -errno;
 		printk("start_rd_thread - clone failed : errno = %d\n", errno);

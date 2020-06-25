@@ -3,8 +3,10 @@
 
 #ifdef DVK_GLOBAL_HERE
 #define EXTERN
+char *dvk_dev = UML_DVK_DEV;
 #else
 #define EXTERN extern
+extern char *dvk_dev;
 #endif
 
 #ifndef CONFIG_DVKIPC
@@ -24,12 +26,6 @@ EXTERN int 			rd_ep;		// RDISK Endpoint (external from UML)  from boot parameter
 
 extern int  dvk_fd; 
 extern int local_nodeid;
-#ifdef DVK_GLOBAL_HERE
-char *dvk_dev = UML_DVK_DEV;
-#else 
-extern char *dvk_dev;
-#endif 
-	
 
-#endif // CONFIG_UML_DVK
+#endif // CONFIG_UML_DVK 
 

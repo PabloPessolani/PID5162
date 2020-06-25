@@ -92,7 +92,7 @@ void *__switch_to(struct task_struct *from, struct task_struct *to)
 	return current->thread.prev_sched;
 }
 
-#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK_ANULADO
 void need_uml_resched(void)
 {
 	set_tsk_need_resched(current);

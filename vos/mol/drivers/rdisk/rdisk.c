@@ -394,7 +394,7 @@ unsigned nr_req;		/* length of request vector */
 				if (rcode < 0 ) {
 					fprintf( stderr,"dvk_vcopy rcode=%d\n",rcode);
 					fflush(stderr);
-					break;
+					ERROR_RETURN(rcode);
 				}
 
 				stbytes += bytes; /*total bytes transfers*/								
@@ -402,7 +402,7 @@ unsigned nr_req;		/* length of request vector */
 				iov->iov_addr += bytes;
 
 				user_vir = iov->iov_addr;
-				TASKDEBUG("user_vir (do-buffer) %X\n", user_vir);	
+				TASKDEBUG("user_vir (updated) %X\n", user_vir);	
 
 				count -= bytes;
 				TASKDEBUG("count=%d stbytes=%d position=%ld\n", count, stbytes, position);	
@@ -455,6 +455,7 @@ unsigned nr_req;		/* length of request vector */
 						if (rcode < 0 ){
 							fprintf(stderr, "VCOPY rcode=%d\n", rcode);
 							fflush(stderr);
+							ERROR_RETURN(rcode);
 							break;
 						}else{
 							stbytes = stbytes + bytes; /*si dvk_vcopy fue exitosa, devuelve cantidad de bytes transferidos*/
