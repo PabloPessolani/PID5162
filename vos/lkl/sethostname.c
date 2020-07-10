@@ -1,8 +1,35 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
-int main(int argc, char **argv[])
+size_t uk_strlen(const char *__s)
+{
+	return(0);
+}
+
+size_t uk_gethostname(const char *__s, int c)
+{
+	return(0);
+}
+
+size_t uk_sethostname(const char *__s, int c)
+{
+	return(0);
+}
+
+size_t uk_printf(const char *__s, ...)
+{
+	return(0);
+}
+
+
+#define strlen			uk_strlen
+#define gethostname		uk_gethostname
+#define sethostname		uk_sethostname
+#define printf			uk_printf
+
+int _start()
 {
 	char lkl[10] = "lklhost";
 	char host[10];
@@ -18,6 +45,11 @@ int main(int argc, char **argv[])
 	
 	rcode = gethostname(host, 10);
 	printf("new hostname=%s\n",host);	
-	exit(0);
+	
+	 /* exit system call */
+    asm("movl $1,%eax;"
+        "xorl %ebx,%ebx;"
+        "int  $0x80"
+    );
 }
    

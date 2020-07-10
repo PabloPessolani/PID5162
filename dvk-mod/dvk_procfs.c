@@ -454,7 +454,7 @@ ssize_t dc_stats_read(struct file *file, char __user *ubuf, size_t count, loff_t
 				RUNLOCK_PROC(proc_ptr);
 				continue;
 			}
-			len += sprintf(page+len, "%2d %3d %5d %5d/%5d %2d %8ld %8ld %8ld %8ld %-15.15s\n",
+			len += sprintf(page+len, "%2d %3d %5d %5ld/%-5ld %2d %8ld %8ld %8ld %8ld %-15.15s\n",
 					proc_ptr->p_usr.p_dcid,
 					proc_ptr->p_usr.p_nr,
 					proc_ptr->p_usr.p_endpoint,

@@ -33,3 +33,14 @@ typedef struct dvs_usr dvs_usr_t;
 
 
 #endif /* COM_DVS_USR_H */
+Raúl.
+Tengo entendido que le instalaron ToIP por GPON
+Ya pude solucionar el problema. La linea de FIBER funciona, aparentemente era un problema en el inalambrico.
+
+El linea de TELECOM la cortaron los tecnicos de FIBER cuando fueron a instalarlo y ahora hice el reclamo al 114 y van en 72 hs me dijeron.
+
+MIL GRACIAS!
+
+Salu2
+
+PAP

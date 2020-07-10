@@ -877,6 +877,12 @@ notify_replay:
 	*------------------------------------------*/
 	WLOCK_ORDERED2(caller_ptr,dst_ptr);
 	DVKDEBUG(DBGPARAMS,"dst_nr=%d dst_ep=%d\n",dst_nr, dst_ptr->p_usr.p_endpoint);
+	
+	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs){
+		WUNLOCK_PROC2(caller_ptr, dst_ptr);
+		ERROR_RETURN(caller_ptr,EDVSPRIVILEGES);
+	}
+	
 	if (dst_ptr->p_usr.p_endpoint != dst_ep) 	{
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
 		ERROR_RETURN(EDVSENDPOINT);
@@ -1023,9 +1029,6 @@ notify_replay:
 			if(dst_ptr->p_usr.p_rts_flags == 0)
 				LOCAL_PROC_UP(dst_ptr, OK); /* ATENTI puede haber mas de una razon para despertar al proceso!! */
 		} else { 
-			if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs) 
-				ERROR_WUNLOCK_PROC(dst_ptr,EDVSPRIVILEGES);
-	
 			DVKDEBUG(GENERIC,"destination is not waiting dst_ptr->p_usr.p_rts_flags=%lX\n",dst_ptr->p_usr.p_rts_flags);
   			/* Add to destination the bit map with pending notifications  */
 			if(get_sys_bit(dst_ptr->p_priv.priv_notify_pending, caller_ptr->p_priv.priv_usr.priv_id))

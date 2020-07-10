@@ -38,7 +38,7 @@
 
 #define MAXBATCMD		(MAXCOPYBUF/sizeof(cmd_t))		
 typedef union {
-	cmd_t 	pay_cmd[MAXBATCMD];		/* Proxies commands (ONLY FOR MESSAGE)  NOT USED YET	*/
+	cmd_t 	pay_cmd[MAXBATCMD];		/* Proxies commands (ONLY FOR MESSAGE)  */
 									/* can be used to transport multiple batch messages 			*/
 	char 	pay_data[MAXCOPYBUF];	/* buffer space to copy data	*/  
 } proxy_payload_t;

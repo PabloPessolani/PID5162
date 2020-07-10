@@ -29,8 +29,7 @@ Se modifico el archivo Kconfig.char
 			default y
 			help
 			This options enable RDISK proxy to the host RDISK.
-			
-			
+					
 		config UML_DVK 
 			bool "UML Distributed Virtualization Kernel (DVK) pseudo character device"
 			default y
