@@ -1,0 +1,48 @@
+
+GITHUB ORIGINAL:
+	https://github.com/lkl/linux
+
+ANTES:
+    No parece buena idea utilizar el HIJACK que utiliza LD_PRELOAD 
+	Solo algunas system calls estan hackeadas
+	hostname no lo esta.
+
+20200717:
+	Hasta ahora no logramos con Diego hacer andar el Servidor TCP linkeado con LKL 
+	El Cliente comun funciona.
+	TODO: Diego va a portar el cliente a LKL
+	
+    Se puede utilizar NBD desde LKL ??
+	LKL no usa el .config del root de LINUX 
+	utiliza el archivo /usr/src/lkl/linux-master/arch/lkl/configs/defconfig
+	lo modifique agregando
+	CONFIG_BLK_DEV=y
+	CONFIG_BLK_DEV_NBD=y
+
+	Luego compile el LKL
+	cd /usr/src/lkl/linux-master
+	make -C tools/lkl clean 
+	make -C tools/lkl 
+	
+	ANTES: 44188980 may 26 11:25 lkl.o
+	
+	RESULTADO ERROR:
+	ld: Se intentÃ³ hacer un enlace reubicable con entrada elf32-i386 y salida elf64-x86-64
+	ld: init/main.o: el fichero de clase ELFCLASS32 es incompatible con ELFCLASS64
+	ld: fallÃ³ el enlace final: Fichero en formato errÃ³neo
+	Makefile:1068: fallo en las instrucciones para el objetivo 'vmlinux'
+	make[1]: *** [vmlinux] Error 1
+	Makefile:65: fallo en las instrucciones para el objetivo '/usr/src/lkl/linux-master/tools/lkl/lib/lkl.o'
+	make: *** [/usr/src/lkl/linux-master/tools/lkl/lib/lkl.o] Error 2
+	make: se sale del directorio '/usr/src/lkl/linux-master/tools/lkl'
+
+	PARA VOLVER ATRAS
+	borre el .config del  linux-master
+		make clean 
+	luego 
+		make -C tools/lkl
+	
+	
+	
+	
+	

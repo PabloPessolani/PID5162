@@ -17,6 +17,8 @@
 
 #include "dvk_ipc.h"
 
+unsigned int dvk_ipc_on;
+
 char *dvk_routine_names[DVK_NR_CALLS] = {
     "ipc_void0",
     "ipc_dc_init",
@@ -135,8 +137,8 @@ long ipc_void0( int first, unsigned long second,unsigned long third, void __user
 {
 	return(ENOSYS);
 }
-int  dvk_mod_loaded = 0;
-EXPORT_SYMBOL(dvk_mod_loaded);
+//int  dvk_mod_loaded = 0;
+//EXPORT_SYMBOL(dvk_mod_loaded);
 long sc_dvk_ipc(int call, int first, unsigned long second,unsigned long third, void __user *ptr, long fifth)
 {	
 	return(-ENOSYS);

@@ -89,6 +89,7 @@ ssize_t info_read(struct file *file, char __user *ubuf, size_t count, loff_t *pp
 	len = 0;
 	
 	page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+  	len += sprintf(page+len, "name=%s\n", dvs.d_name);
   	len += sprintf(page+len, "nodeid=%d\n", atomic_read(&local_nodeid));
   	len += sprintf(page+len, "nr_dcs=%d\n", dvs.d_nr_dcs);
   	len += sprintf(page+len, "nr_nodes=%d\n", dvs.d_nr_nodes);
@@ -98,7 +99,8 @@ ssize_t info_read(struct file *file, char __user *ubuf, size_t count, loff_t *pp
   	len += sprintf(page+len, "max_copy_buf=%d\n", dvs.d_max_copybuf);
   	len += sprintf(page+len, "max_copy_len=%d\n", dvs.d_max_copylen);
   	len += sprintf(page+len, "dbglvl=%lX\n", dvs.d_dbglvl);
-  	len += sprintf(page+len, "version=%d.%d\n", dvs.d_version, dvs.d_subver);
+  	len += sprintf(page+len, "version=%d\n", dvs.d_version);
+  	len += sprintf(page+len, "flags=%lX\n", dvs.d_flags);
   	len += sprintf(page+len, "sizeof(proc)=%d\n", sizeof(struct proc));
   	len += sprintf(page+len, "sizeof(proc) aligned=%d\n", sizeof_proc_aligned);
   	len += sprintf(page+len, "sizeof(dc)=%d\n", sizeof(dc_desc_t));

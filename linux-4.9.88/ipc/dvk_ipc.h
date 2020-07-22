@@ -46,6 +46,8 @@
 #include "/usr/src/dvs/include/com/dvk_calls.h"
 #include "/usr/src/dvs/include/com/dvs_errno.h"
 
+#include "./dvk-mod/dvk_newproto.h"
+
 #include "dvk_debug.h"
 #include "dvk_macros.h"
 #include "dvk_proto.h"
@@ -53,6 +55,5 @@
 //#include "dvk_ipcproto.h"
 
 extern atomic_t local_nodeid;
-
 
 

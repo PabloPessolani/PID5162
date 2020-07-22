@@ -2,18 +2,19 @@
 #include "tests.h"
 
 dvs_usr_t  dvs = {
+		.d_name = "DEFAULT",
 		.d_nr_dcs=NR_DCS,
 		.d_nr_nodes=NR_NODES,
 		.d_nr_procs=NR_PROCS,
 		.d_nr_tasks=NR_TASKS,
 		.d_nr_sysprocs=NR_SYS_PROCS,
-
 		.d_max_copybuf=MAXCOPYBUF,
 		.d_max_copylen=MAXCOPYLEN,
 
 		.d_dbglvl=0x00000000, /* DEFAULT IS 520966 = 0X7F306 */
-		2,
-		1
+		.d_version=DVS_VERSION,
+		.d_flags=0,
+		0,
 		};
 
    
@@ -26,7 +27,7 @@ extern int optind, optopt, opterr;
 
 	nodeid = (-1);
 
-	while ((c = getopt(argc, argv, "n:V:N:P:T:S:B:L:D:")) != -1) {
+	while ((c = getopt(argc, argv, "n:V:N:P:T:S:B:L:D:C:")) != -1) {
 		switch(c) {
 			case 'n':
 				nodeid = atoi(optarg);
@@ -91,19 +92,26 @@ extern int optind, optopt, opterr;
 			case 'Q':
 				dvs.d_dbglvl = atol(optarg);
 				break;
+			case 'C':
+				if (strlen (optarg) > (MAXPROCNAME-1)){
+					fprintf (stderr, "DVS Cluster name too long (max length = %d)\n", MAXPROCNAME-1);
+					exit(EXIT_FAILURE);
+				}
+				strncpy(dvs.d_name, optarg, MAXPROCNAME-1);
+				break;
 			default:
-				fprintf (stderr,"usage: %s [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] "
-						"[-B max_copybuf] [-L max_copylen] " 
-						"[-S nr_sysprocs] [-D dbglvl]\n", argv[0]);
+				fprintf (stderr,"usage: %s \n\t [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
+						" [-B max_copybuf] [-L max_copylen] [-S nr_sysprocs] [-D dbglvl] \n"
+						, argv[0]);
 				exit(EXIT_FAILURE);
 		}
 	}
 	
 
 	if( argv[optind] != NULL || nodeid == (-1)){
-		fprintf (stderr,"usage: %s [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] "
-				"[-B max_copybuf] [-L max_copylen] " 
-				"[-S nr_sysprocs] [-D dbglvl]\n", argv[0]);
+		fprintf (stderr,"usage: %s \n\t [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
+				" [-B max_copybuf] [-L max_copylen] [-S nr_sysprocs] [-D dbglvl] \n"
+				, argv[0]);
 		exit(EXIT_FAILURE);
 	}	
 

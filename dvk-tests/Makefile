@@ -1,13 +1,13 @@
 CC=gcc
 BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
-		test_lclvcopy test_wait4bind test_add_node test_priv \
+		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
 		uml_test
 		
 	
 INCLUDE = ..
-LIBS = ../dvk-lib/stub_dvkcall.o
+LIBS = ../dvk-lib/stub_dvkipc.o
 #LIBS = ../dvk-lib/libdvkipc.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
 
@@ -19,6 +19,9 @@ vm_read: vm_read.c
 test_dvs_init: test_dvs_init.c 
 	$(CC)  $(CFLAGS) -o test_dvs_init test_dvs_init.c  $(LIBS) -I$(INCLUDE)
 
+test_dvs_info: test_dvs_info.c 
+	$(CC)  $(CFLAGS) -o test_dvs_info test_dvs_info.c  $(LIBS) -I$(INCLUDE)
+	
 test_dc_init: test_dc_init.c 
 	$(CC)  $(CFLAGS) -o test_dc_init test_dc_init.c  $(LIBS) -I$(INCLUDE)
 	

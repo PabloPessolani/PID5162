@@ -66,6 +66,8 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	}
 	
 	d_ptr = &dvs;
+	set_bit(BIT_IOCTL,&d_ptr->d_flags);
+
 	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(d_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(d_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_VER_FORMAT, DVS_VER_FIELDS(d_ptr));

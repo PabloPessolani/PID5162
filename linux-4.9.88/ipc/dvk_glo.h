@@ -69,8 +69,9 @@ struct file_operations proc_dbg_fops = {
 	mmap : proc_dbg_mmap,
 };
 
-#ifdef CONFIG_UML_DVK	
+#ifdef CONFIG_UML_DVK
 dvs_usr_t dvs = {
+	    "DVS_UML",
 		NR_DCS,
 		NR_NODES,
 		NR_PROCS,
@@ -83,12 +84,13 @@ dvs_usr_t dvs = {
 		(GENERIC|INTERNAL|DBGPROCLOCK|DBGDCLOCK|DBGMESSAGE|DBGCMD|DBGVCOPY|DBGPARAMS|DBGPROC|\
 		 DBGPRIV|DBGPROCSEM),
 		DVS_VERSION,
-		DVS_SUBVER
+		0
 		};
 #else // CONFIG_UML_DVK
 
 #ifdef  CONFIG_DVKIPC 
 dvs_usr_t dvs = {
+		"DVS_IPC",
 		NR_DCS,
 		NR_NODES,
 		NR_PROCS,
@@ -101,7 +103,7 @@ dvs_usr_t dvs = {
 		(GENERIC|INTERNAL|DBGPROCLOCK|DBGDCLOCK|DBGMESSAGE|DBGCMD|DBGVCOPY|DBGPARAMS|DBGPROC|\
 		 DBGPRIV|DBGPROCSEM),
 		DVS_VERSION,
-		DVS_SUBVER
+		0
 		};
 #else // CONFIG_DVKIPC	
 extern dvs_usr_t dvs;

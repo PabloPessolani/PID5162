@@ -1,0 +1,184 @@
+BITACORA DVS - 20200720
+
+Objetivos:
+1) reemplazar el campo d_subver del DVS por d_flags para controlar el tipo de DVK disponibles para utilizar (IOCTL-IPC)
+2) incorporar nombre al DVS
+3) Si el IPC esta instalado, el modulo IOCTL utiliza esas funciones del kernel. 
+4) Permitir la utilizacion de las dvk_calls directamente desde el kernel
+	PROBLEMA QUE VAMOS A ENFRETAR: Como copiar datos desde el kernel de un proceso al modo usuario de otro ?????
+
+COMPILAR EL KERNEL LINUX
+=======================
+
+sudo apt-get update
+sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc
+apt-get install linux-headers-686-pae
+
+cp /boot/config-$(uname -r) .config
+make menuconfig
+sudo make -j 4 && sudo make modules_install -j 4 && sudo make install -j 4
+update-initramfs -c -k 4.9.88
+update-grub  
+update-grub2
+
+  x Symbol: DVKIPC [=n]                                                                                x
+  x Type  : boolean                                                                                    x
+  x Prompt: Distributed Virtualization Kernel IPC                                                      x
+  x   Location:                                                                                        x
+  x     -> General setup                                                                               x
+  x (1)   -> System V IPC (SYSVIPC [=y])                                                               x
+  x Prompt: DVS's DVK embedded in kernel using IPC                                                     x
+  x   Location:                                                                                        x
+  x (2) -> Processor type and features                                                                 x
+  x   Defined at init/Kconfig:254                                                                      x
+  x   Depends on: SYSVIPC [=y]                                                                         x
+  x                             
+  
+
+
+===============================================================================================================
+20200720:
+    1) reemplazar el campo d_subver del DVS por d_flags para controlar el tipo de DVK disponibles para utilizar (IOCTL-IPC)
+	2) incorporar nombre al DVS
+
+MIS_BIT_KTHREAD: indica que el proceso es un Kernel Thread o está haciendo una invocación desde el kernel.
+
+	Se cambio la estructura dvs_usr_t para que contenga el nombre del DVS Cluster y los flags que indica que 
+	tipo de interfaces estan disponibles.
+	
+	Se cambiaron, por ahora, las dos versiones de dvk_hyper.c new_dc_init para que contemple las modificaciones
+	Tambien se cambio el dvk_procfs.c de ambas versiones.
+	
+version IOCTL:
+		Initialiting DVS: Enter para continuar... 
+		DEBUG 651:dvk_open:106: Open dvk device file /dev/dvk
+		ERROR: 651:dvk_open:109: rcode=0
+		Initializing DVS. Local node ID 0... 
+		DEBUG 651:dvk_dvs_init:542: nodeid=0
+		DEBUG 651:dvk_dvs_init:554: ioctl ret=0 errno=0
+		DEBUG 651:dvk_dvs_init:559: ioctl ret=0
+		d_name=DVS_CLUSTER1 d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64  <<<< DVS_CLUSTER1
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+		Get DVS info
+		DEBUG 651:dvk_getdvsinfo:248: 
+		DEBUG 651:dvk_getdvsinfo:257: ioctl ret=0 errno=0
+		DEBUG 651:dvk_getdvsinfo:262: ioctl ret=0
+		local node ID 0... 
+		d_name=DVS_CLUSTER1 d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=5 flags=2 sizeof(proc)=512 <<<<<<<<<<< flags=2 => BIT_IOCTL
+		
+		root@node0:/usr/src/dvs/scripts# cd /proc/dvs/
+		root@node0:/proc/dvs# ls -l
+		total 0
+		-r--r--r-- 1 root root 0 jul 20 14:44 info
+		-r--r--r-- 1 root root 0 jul 20 14:44 nodes
+		dr-xr-xr-x 2 root root 0 jul 20 14:44 proxies
+		root@node0:/proc/dvs# more info 
+		name=DVS_CLUSTER1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		nodeid=0
+		nr_dcs=32
+		nr_nodes=32
+		max_nr_procs=221
+		max_nr_tasks=35
+		max_sys_procs=64
+		max_copy_buf=65536
+		max_copy_len=1048576
+		dbglvl=FFFFFF
+		version=5 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+		flags=2 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		sizeof(proc)=504
+		sizeof(proc) aligned=512
+		sizeof(dc)=156
+		sizeof(node)=92
+
+PARA HOMOGENEIZAR UN UNICO CODIGO 
+		Traslade el directorio dvk-mod debajo del /usr/src/linux/ipc 
+		De tal modo que el IPC utilice esos objetos creados con el modulo
+		
+	    AL COMPILAR EL KERNEL 
+		root@node0:/usr/src/linux/ipc/dvk-mod# ls -lt *.o
+			Estos son los programas que compila el KERNEL 
+				-rw-r--r-- 1 root root  218172 jul 20 18:35 dvk_sproxy.o
+				-rw-r--r-- 1 root root  181844 jul 20 18:35 dvk_acks.o
+				-rw-r--r-- 1 root root  244928 jul 20 18:35 dvk_utils.o
+				-rw-r--r-- 1 root root  200500 jul 20 18:35 dvk_procfs.o
+				-rw-r--r-- 1 root root  187068 jul 20 18:35 dvk_debugfs.o
+				-rw-r--r-- 1 root root  209712 jul 20 18:35 dvk_migrate.o
+				-rw-r--r-- 1 root root  427380 jul 20 18:35 dvk_hyper.o
+				-rw-r--r-- 1 root root  311872 jul 20 18:35 dvk_ipc.o
+				-rw-r--r-- 1 root root  233148 jul 20 18:35 dvk_rproxy.o
+			Estos son los programas que compila el MODULO  		
+				-rw-r--r-- 1 root root   71484 jul 20 18:29 dvk.mod.o
+				-rw-r--r-- 1 root root 2918280 jul 20 18:29 dvk.o
+				-rw-r--r-- 1 root root  178824 jul 20 18:28 reljmp_core.o
+				-rw-r--r-- 1 root root  207048 jul 20 18:28 dvk_decode.o
+				-rw-r--r-- 1 root root  172168 jul 20 18:28 dvk_newcall.o
+				-rw-r--r-- 1 root root  197056 jul 20 18:28 main.o
+		Asi que en teoria, hay que compilar el kernel con CONFIG_DVKIPC  y automaticamente 
+		se compilan algunos programas del directorio del dvk-mod 
+		Si solo hay que compilar el MODULO, entonces ejecutar make en el directorio dvk-mod 
+
+===============================================================================================================
+20200721:
+		Se modifico le main.c de ipc/dvk-mod que verifica si ya existe la estructura dvs en el kernel
+		Si existe, entonces se setea dvs_ptr hacia la variable ya existente en el kernel
+
+		Se creo test_dvs_info linkeado con libdvkipc.o para ver si ya el kernel tiene configurado 
+		
+PROBLEMA: Cuando se quiere cambiar algo del DVK se tiene que recompilar el kernel COMPLETO!! 
+	SOLUCION: Proximas versiones compilarsas sin soporte de CONFIG_DVKIPC.
+	
+			root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_info 
+			DEBUG 610:dvk_open:102: 
+			Get DVS info
+			DEBUG 610:dvk_getdvsinfo:248: 
+			DEBUG 610:dvk_getdvsinfo:252: ipc ret=-1
+			ERROR: 610:dvk_getdvsinfo:253: rcode=-1
+			ERROR: 610:dvk_getdvsinfo:264: rcode=-1
+			local node ID -1... 
+			d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64  <<<<<<<<<<< nombre DVS_IPC
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=7F306 version=5 flags=1 sizeof(proc)=0											<<<<<<<<<<< flags=1 => BIT_IPC			
+			root@node0:/usr/src/dvs/dvk-tests# cd ..
+			root@node0:/usr/src/dvs# cd ..
+			root@node0:/usr/src# cd dvs/scripts/
+			root@node0:/usr/src/dvs/scripts# ./rtest.sh t 0
+			lcl_nodeid=0
+			TCP proxies selected
+			./rtest.sh: lÃ­nea 94:   616 Abortado        /usr/local/sbin/spread -c /etc/spread.conf > spread.txt
+			dvk                   258048  0
+			Initialiting DVS: Enter para continuar... 
+			DEBUG 624:dvk_open:102: 
+			Initializing DVS. Local node ID 0... 
+			DEBUG 624:dvk_dvs_init:542: nodeid=0
+			DEBUG 624:dvk_dvs_init:546: ipc ipc_op=71680 ret=0
+			d_name=DVS_CLUSTER1 d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+			Get DVS info
+			DEBUG 624:dvk_getdvsinfo:248: 
+			DEBUG 624:dvk_getdvsinfo:252: ipc ret=0
+			local node ID 0...  
+			d_name=DVS_CLUSTER1 d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 <<<<<<<<<<<< nombre DVS_CLUSTER1
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512					<<<<<<<<<<< flags=0x0101 => (BIT_IPC | BIT_INITIALIZED)
+
+ULTIMO_LOG
+===============================================================================================================
+20200722:
+	
+TODO:  Probar con IOCTL y con IPC 
+
+TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD en p_misc_flags.
+		Esto se hizo en el proxy de kernel 
+		C:\PAP\UTN\INVESTIGACION\LAB-NTC\PROYECTOS\MOL-IPC\m3-ipc-mod\MoL_Module\ksocket-0.0.2\m3ipc_tcp_proxy
+		PROBLEMA CON COPY_KRN_USR y viceversa.	
+		
+		
+		
+		
+
+	
+

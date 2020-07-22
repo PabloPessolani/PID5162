@@ -1284,6 +1284,7 @@ DVKDEBUG(DBGLVL1,"child_pid(minix)=%d child_ep=%d \n",child_pid, child_ep);
 
 /****************************************************************
  *  Copy a block of data from Userspace to Userspace	
+ *  Based on: https://elixir.bootlin.com/linux/v4.9.88/source/mm/process_vm_access.c
 *****************************************************************/
 
 long copy_usr2usr(int source, struct proc *src_proc, char *src_addr, struct proc *dst_proc, char *dst_addr, int bytes)

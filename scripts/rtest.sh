@@ -99,7 +99,7 @@ dmesg -c > /usr/src/dvs/dvk-tests/dmesg.txt
 lsmod | grep dvk
 #cd /home/MoL_Module/mol-ipc
 read  -p "Initialiting DVS: Enter para continuar... "
-/usr/src/dvs/dvk-tests/test_dvs_init -n $lcl_nodeid -D 16777215
+/usr/src/dvs/dvk-tests/test_dvs_init -n $lcl_nodeid -D 16777215 -C DVS_CLUSTER1
 read  -p "Initialiting DC0: Enter para continuar... "
 /usr/src/dvs/dvk-tests/test_dc_init -d 0
 mv DC0.sh /usr/src/dvs/dvk-tests/DC0.sh
