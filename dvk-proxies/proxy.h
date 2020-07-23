@@ -66,6 +66,7 @@
 #include "../include/com/com.h"
 #include "../include/com/const.h"
 #include "../include/com/cmd.h"
+#include "../include/com/kipc.h"
 #include "../include/com/types.h"
 #include "../include/com/timers.h"
 #include "../include/com/ipc.h"

@@ -21,6 +21,7 @@
 #include <linux/cpumask.h>
 #include <linux/syscalls.h>
 #include <linux/capability.h>
+#include <linux/bitmap.h>
 
 #include <uapi/linux/uio.h>
 

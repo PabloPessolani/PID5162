@@ -13,15 +13,7 @@
 
 asmlinkage long new_hdw_notify(int dcid, int dst_ep);
 
-#define PRINT_MAP(map) do {\
-	printk("PRINT_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
-	for(i = 0; i < NR_SYS_CHUNKS; i++){\
-		printk("%X.",(map.chunk)[i]);\
-	}\
-	printk("\n");\
-}while(0);
-	
-	
+
 /*2345678901234567890123456789012345678901234567890123456789012345678901234567*/
 
 /*--------------------------------------------------------------*/
@@ -35,6 +27,7 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	int caller_nr, caller_ep, caller_pid;
 	int dst_nr, dcid;
 	struct task_struct *task_ptr;
+	int dc_max_sysprocs, dc_max_nr_tasks;
 
 	DVKDEBUG(DBGPARAMS,"dst_ep=%d\n",dst_ep);
 
@@ -53,8 +46,10 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	caller_ep   = caller_ptr->p_usr.p_endpoint;
 	dcid		= caller_ptr->p_usr.p_dcid;
 	DVKDEBUG(DBGPARAMS,"caller_nr=%d caller_ep=%d dst_ep=%d \n", caller_nr, caller_ep, dst_ep);
-//if (caller_pid != caller_ptr->p_usr.p_lpid) 	
-//		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADPID);
+	// Check if the caller has the privileges to DVK_SEND messages 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_SEND )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
  	RUNLOCK_PROC(caller_ptr);
 
 	DVKDEBUG(INTERNAL,"dcid=%d\n", dcid);
@@ -64,6 +59,8 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	RUNLOCK_DC(dc_ptr);	
 
 	/*------------------------------------------
@@ -79,11 +76,22 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	if( caller_ep == dst_ep) 			
 		ERROR_RETURN(EDVSENDPOINT);
 	
- 	WLOCK_PROC(caller_ptr);
-	caller_ptr->p_umsg	= m_ptr;
+ 	RLOCK_PROC(caller_ptr);
+	// check if the CALLER has the priviledges to SEND a message to the  destination 
+	if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		} 
+	} else {
+		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		}
+	}
+ 	RUNLOCK_PROC(caller_ptr);
 
 send_replay: /* Return point for a migrated destination process */
 	WLOCK_ORDERED2(caller_ptr,dst_ptr);
+	caller_ptr->p_umsg	= m_ptr;
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
@@ -282,7 +290,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	int sypriv_id, sys_nr, dcid;
 //	int sys_ep = NONE;
 	int i, ret, src_nr;
-	dvk_map_t *map;
+	ipc_map_t *map;
   	bitchunk_t *chunk;
 	int caller_nr, caller_pid, caller_ep;
 	struct task_struct *task_ptr;	
@@ -315,6 +323,10 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
+	// Check if the caller has the priviledges to DVK_RECEIVE messages 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_RECEIVE )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
 	RUNLOCK_PROC(caller_ptr);
 
 	RLOCK_DC(dc_ptr);
@@ -510,6 +522,7 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	int caller_nr, caller_pid, caller_ep;
 	int srcdst_nr;
 	struct task_struct *task_ptr;	
+	int dc_max_sysprocs, dc_max_nr_tasks;
 
 	DVKDEBUG(DBGPARAMS,"srcdst_ep=%d\n", srcdst_ep);
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
@@ -530,6 +543,10 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 		caller_nr, caller_ep, srcdst_ep);
 //	if (caller_pid != caller_ptr->p_usr.p_lpid) 	
 //		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADPID);
+	// Check if the caller has the priviledges to DVK_SENDREC messages 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_SENDREC )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
  	RUNLOCK_PROC(caller_ptr);
 
 	DVKDEBUG(INTERNAL,"dcid=%d\n", dcid);
@@ -539,6 +556,7 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
 	RUNLOCK_DC(dc_ptr);	
 
 	/*------------------------------------------
@@ -554,14 +572,25 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	if( caller_ep == srcdst_ep) 			
 		ERROR_RETURN(EDVSENDPOINT);
 
-	WLOCK_PROC(caller_ptr);
-	caller_ptr->p_umsg	= m_ptr;
+	RLOCK_PROC(caller_ptr);
+	// check if the CALLER has the priviledges to SENDREC a message to the  destination 
+	if( (srcdst_nr+dc_max_nr_tasks) < dc_max_sysprocs ) {
+		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (srcdst_nr+dc_max_nr_tasks) )){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		} 
+	} else {
+		if( (srcdst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		}
+	}
+ 	RUNLOCK_PROC(caller_ptr);
 	
 sendrec_replay:
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
 	WLOCK_ORDERED2(caller_ptr,srcdst_ptr);
+	caller_ptr->p_umsg	= m_ptr;
 	DVKDEBUG(DBGPARAMS,"srcdst_nr=%d srcdst_ep=%d\n",srcdst_nr, srcdst_ptr->p_usr.p_endpoint);
 
 	do	{
@@ -800,6 +829,7 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 	struct task_struct *task_ptr;	
 	struct timespec *t_ptr;
 	message *mptr;
+	int dc_max_sysprocs, dc_max_nr_tasks;
 
 	DVKDEBUG(DBGPARAMS,"src_nr=%d dst_ep=%d update_proc=%d \n", src_nr, dst_ep, update_proc);
 	
@@ -807,14 +837,7 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 
 	ret = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 	
-	/* Admit sending notify from an unbound process in name of HARWARE */
-	if( src_nr == HARDWARE) {
-		// stub_syscall3(NOTIFY, HARDWARE, dst_ep, dcid)
-		ret = new_hdw_notify(update_proc, dst_ep); // update_proc is the dcid for this function 
-		if(ret < 0) ERROR_RETURN (ret);
-		return(ret);
-	}
-	if(ret < 0) ERROR_RETURN (ret);
+
 	/*------------------------------------------
 	 * Checks the caller process PID
 	 * Gets the DCID
@@ -825,10 +848,21 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 	dcid		= caller_ptr->p_usr.p_dcid;
 	caller_ep   = caller_ptr->p_usr.p_endpoint;
 	DVKDEBUG(DBGPARAMS,"caller_nr=%d caller_ep=%d dst_ep=%d \n", caller_nr, caller_ep, dst_ep);
-//	if (caller_pid != caller_ptr->p_usr.p_lpid) 	
-//		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADPID);
+	// Check if the caller has the priviledges to DVK_NOTIFY 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_NOTIFY )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
 	RUNLOCK_PROC(caller_ptr);
 		
+	/* Admit sending notify from an unbound process in name of HARWARE */
+	if( src_nr == HARDWARE) {
+		// stub_syscall3(NOTIFY, HARDWARE, dst_ep, dcid)
+		ret = new_hdw_notify(update_proc, dst_ep); // update_proc is the dcid for this function 
+		if(ret < 0) ERROR_RETURN (ret);
+		return(ret);
+	}
+	if(ret < 0) ERROR_RETURN (ret);
+	
 	DVKDEBUG(INTERNAL,"dcid=%d\n", dcid);
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
@@ -845,6 +879,7 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 		src_ep = src_ptr->p_usr.p_endpoint;
 		RUNLOCK_PROC(src_ptr);
 	}
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
 	RUNLOCK_DC(dc_ptr);	
 
 	/*------------------------------------------
@@ -865,10 +900,18 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 //		ERROR_RUNLOCK_PROC(dst_ptr,EDVSPRIVILEGES);
 //	RUNLOCK_PROC(dst_ptr);
 
- 	WLOCK_PROC(caller_ptr);
-	/** Checks the caller's privileges */
-	if( caller_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs)
-		ERROR_WUNLOCK_PROC(caller_ptr,EDVSPRIVILEGES);
+	RLOCK_PROC(caller_ptr);
+	// check if the CALLER has the priviledges to NOTIFY a message to the  destination 
+	if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		} 
+	} else {
+		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		}
+	}
+ 	RUNLOCK_PROC(caller_ptr);
 	
 notify_replay:
 
@@ -1085,6 +1128,8 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	int retry, ret = OK;
 	struct task_struct *task_ptr;
 	cmd_t *cmd_ptr;
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_nodes;
+
 	
 	DVKDEBUG(DBGPARAMS,"src_ep=%d dst_ep=%d bytes=%d\n",src_ep, dst_ep, bytes);
 
@@ -1126,6 +1171,11 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
 		
 	dc_ptr 	= &dc[dcid];
+	
+	// Check if the caller has the priviledges to DVK_VCOPY data blocks 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
 	RUNLOCK_PROC(caller_ptr);
 	
 	RLOCK_DC(dc_ptr);
@@ -1135,7 +1185,6 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	/*-------------------------------------------------------------*/
 	/*	get info about SOURCE and DESTINATION processes */
 	/*-------------------------------------------------------------*/
-    nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	src_nr  = _ENDPOINT_P(src_ep);
 	if( 	src_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 
 		|| 	src_nr >= dc_ptr->dc_usr.dc_nr_procs) {
@@ -1150,10 +1199,40 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		ERROR_RUNLOCK_DC(dc_ptr, EDVSRANGE);
 	}
 	dst_ptr = NBR2PTR(dc_ptr, dst_nr);
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	RUNLOCK_DC(dc_ptr);
+
+	// CHECK if the caller is a SYSTEM process 
+	if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+		ERROR_RETURN(EDVSTRAPDENIED);
+	}
+
+	// CHECK if the caller can COPY to other SYSTEM processes 
+	RLOCK_PROC(caller_ptr);
+	caller_nr = caller_ptr->p_usr.p_nr;
+	caller_ep = caller_ptr->p_usr.p_endpoint;
+	if( dst_nr != caller_nr) {
+		if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+			DVKDEBUG(INTERNAL,"(dst_nr+dc_max_nr_tasks)=%d\n", (dst_nr+dc_max_nr_tasks));
+			if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
+				ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+			}			
+		}
+	}
+	if( src_nr != caller_nr) {
+		if( (src_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+			if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (src_nr+dc_max_nr_tasks) )){
+				ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+			}			
+		}
+	}
+ 	RUNLOCK_PROC(caller_ptr);
 	
 	/*-------------------------------------------------------------*/
 	/*	LOCK PROCESSES IN ASCENDENT ORDER		*/
 	/*-------------------------------------------------------------*/
+	RLOCK_DC(dc_ptr);
 	DVKDEBUG(GENERIC,"LOCK PROCESSES IN ASCENDENT ORDER\n");
 	if( src_ptr != caller_ptr && dst_ptr != caller_ptr ) {	/* Requester is a third process */
 		WLOCK_PROC3(caller_ptr,src_ptr,dst_ptr);
@@ -1164,11 +1243,12 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 			WLOCK_PROC2(caller_ptr,src_ptr);			/* requester is the destination */
 		}
 	}
-	
+		
 	DVKDEBUG(GENERIC,"CHECK FOR SOURCE/DESTINATION STATUS\n");
 	do	{
 		retry = 0;
 		ret = OK;
+		
 		/*--------------------------------------------------------------*/
 		/*			check SOURCE										*/
 		/*--------------------------------------------------------------*/
@@ -1248,6 +1328,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		}
 	} while(retry);
 	RUNLOCK_DC(dc_ptr);
+	
 	if(ret < 0) {	
 		if( src_ptr != caller_ptr && dst_ptr != caller_ptr ) {
 			WUNLOCK_PROC3(caller_ptr,src_ptr,dst_ptr);
@@ -1574,6 +1655,8 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 	int ret;
 	int caller_nr, caller_pid, caller_ep;
 	struct task_struct *task_ptr;	
+	int dc_max_sysprocs, dc_max_nr_tasks;
+
 
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
 
@@ -1600,13 +1683,24 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
+	// Check if the caller has the priviledges to DVK_RCVRQST messages 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_RCVRQST )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
 	RUNLOCK_PROC(caller_ptr);
 
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_WUNLOCK_DC(dc_ptr, EDVSDCNOTRUN);
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;	
 	RUNLOCK_DC(dc_ptr);	
 
+	// check if the CALLER has the priviledges to RECEIVE a message 
+	if( (caller_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+		ERROR_RETURN(EDVSTRAPDENIED);
+	}
+	
 	WLOCK_PROC(caller_ptr);
 	/*--------------------------------------*/
 	/* WAKE UP CONTROL 		*/
@@ -1699,6 +1793,7 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	int caller_nr, caller_ep, caller_pid;
 	int dst_nr, dcid;
 	struct task_struct *task_ptr;
+	int dc_max_sysprocs, dc_max_nr_tasks;
 
 	if( DVS_NOT_INIT() )
 		ERROR_RETURN(EDVSDVSINIT);
@@ -1720,6 +1815,10 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	DVKDEBUG(DBGPARAMS,"caller_nr=%d caller_ep=%d dst_ep=%d \n", caller_nr, caller_ep, dst_ep);
 //	if (caller_pid != caller_ptr->p_usr.p_lpid) 	
 //		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADPID);
+	// Check if the caller has the priviledges to DVK_REPLY messages 
+	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_REPLY )){
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+	} 
  	RUNLOCK_PROC(caller_ptr);
 
 	DVKDEBUG(INTERNAL,"dcid=%d\n", dcid);
@@ -1729,6 +1828,8 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	RUNLOCK_DC(dc_ptr);	
 
 	/*------------------------------------------
@@ -1744,11 +1845,23 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	if( caller_ep == dst_ep) 			
 		ERROR_RETURN(EDVSENDPOINT);
 	
- 	WLOCK_PROC(caller_ptr);
-	caller_ptr->p_umsg	= m_ptr;
+	
+	RLOCK_PROC(caller_ptr);
+	// check if the CALLER has the priviledges to REPLY a message to the  destination 
+	if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		} 
+	} else {
+		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
+		}
+	}
+ 	RUNLOCK_PROC(caller_ptr);
 
 reply_replay: /* Return point for a migrated destination process */
 	WLOCK_ORDERED2(caller_ptr,dst_ptr);
+	caller_ptr->p_umsg	= m_ptr;
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
@@ -1913,7 +2026,8 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 	int dst_nr;
 	int ret;
 	message *mptr;
-	
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nodes;
+
 	DVKDEBUG(DBGPARAMS,"dcid=%d dst_ep=%d \n", dcid, dst_ep);
 #ifdef DVS_CAPABILITIES
 	 if ( !capable(CAP_VOS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
@@ -1926,10 +2040,13 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
+	
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
-	RUNLOCK_DC(dc_ptr);	
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	dc_max_nodes    = dc_ptr->dc_usr.dc_nodes;
 
 	/*------------------------------------------
 	 * get the destination process number
@@ -1945,27 +2062,48 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 		ERROR_RETURN(EDVSENDPOINT);
 
 	WLOCK_PROC(dst_ptr);
-	if( test_bit(BIT_SLOT_FREE, &dst_ptr->p_usr.p_rts_flags))
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSDSTDIED);
+	do {
+		ret = 0;
+		if( test_bit(BIT_SLOT_FREE, &dst_ptr->p_usr.p_rts_flags)){
+			ret = EDVSDSTDIED;
+			break;
+		}
+			
+		if( dst_ptr->p_usr.p_nodeid < 0 
+			|| dst_ptr->p_usr.p_nodeid >= dvs.d_nr_nodes) 	{
+			ret = EDVSBADNODEID;
+			break;
+		}
 		
-	if( dst_ptr->p_usr.p_nodeid < 0 
-		|| dst_ptr->p_usr.p_nodeid >= dvs_ptr->d_nr_nodes) 	 
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSBADNODEID);
-	
-	if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes))
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSNODCNODE);
-	
-	if( test_bit(BIT_MIGRATE, &dst_ptr->p_usr.p_rts_flags)) 	/*destination is migrating	*/
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSMIGRATE);
-	
-	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs) 
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSPRIVILEGES);
+		if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)){
+			ret = EDVSNODCNODE;
+			break;
+		}
+		/*destination is migrating	*/
+		if( test_bit(BIT_MIGRATE, &dst_ptr->p_usr.p_rts_flags)) {
+			ret = EDVSMIGRATE;
+			break;
+		}			
+		
+		if( dst_ptr->p_priv.priv_usr.priv_id >= dc_max_sysprocs) {
+			ret = EDVSPRIVILEGES;
+			break;
+		}			
 
-	if( IT_IS_REMOTE(dst_ptr)) 		/* the destination is REMOTE */
-		ERROR_WUNLOCK_PROC(dst_ptr, EDVSRMTPROC);	
-		
+		/* the destination is REMOTE */
+		if( IT_IS_REMOTE(dst_ptr)){
+			ret = EDVSRMTPROC;
+			break;
+		}			 		
+	}while(0);
+	
 	hdw_ptr = NBR2PTR(dc_ptr, HARDWARE);
+	RUNLOCK_DC(dc_ptr);	
+	if (ret < 0) 
+		ERROR_WUNLOCK_PROC(dst_ptr, ret);	
+
 	RLOCK_PROC(hdw_ptr);
+
 	/* Check if 'dst' is blocked waiting for this message.   */
 	ret = OK;
 	if (  (test_bit(BIT_RECEIVING, &dst_ptr->p_usr.p_rts_flags) 
@@ -1994,7 +2132,7 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 		DVKDEBUG(GENERIC,"set_sys_bit priv_notify_pending=%X priv_id=%d\n", 
 				dst_ptr->p_priv.priv_notify_pending, dst_ptr->p_priv.priv_usr.priv_id);
 		int i;
-		PRINT_MAP(dst_ptr->p_priv.priv_notify_pending);		
+		PRINT_SYS_MAP(dst_ptr->p_priv.priv_notify_pending);		
 	}
 	RUNLOCK_PROC(hdw_ptr);
 	WUNLOCK_PROC(dst_ptr);

@@ -538,6 +538,7 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	struct task_struct *task_ptr;	
 	cluster_node_t *node_ptr;
 	struct timespec *t_ptr;
+	int dc_max_sysprocs, dc_max_nr_tasks;
 
 #ifdef DVS_CAPABILITIES
 	 if ( !capable(CAP_DVS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
@@ -557,6 +558,8 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	 *  and it is in the correct state 
 	  *------------------------------------------*/
 	do {
+		if( ! get_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_PUT2LCL ))
+			{ret = EDVSBADCALL;break;} 
 		if( test_bit( BIT_SLOT_FREE, &rproxy_ptr->p_usr.p_rts_flags))	{ret = EDVSPROCSTS;break;} 
 		if( !test_bit(MIS_BIT_PROXY, &rproxy_ptr->p_usr.p_misc_flags))	{ret = EDVSNOPROXY;break;} 
 		if( !test_bit(MIS_BIT_CONNECTED, &rproxy_ptr->p_usr.p_misc_flags)){ret = EDVSNOTCONN;break;}  
@@ -625,6 +628,8 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 		WUNLOCK_DC(dc_ptr);
 		ERROR_RETURN(ret);
 	}
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 
 	node_ptr->n_usr.n_rtimestamp = current_kernel_time();	
 	t_ptr = &node_ptr->n_usr.n_rtimestamp;
@@ -675,6 +680,22 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			break;
 		}
 		
+		if( (lcl_nr+dc_max_nr_tasks) < dc_max_sysprocs ) {
+			if( ! get_sys_bit(rmt_ptr->p_priv.priv_usr.priv_ipc_to, (lcl_nr+dc_max_nr_tasks) )){
+				DVKDEBUG(INTERNAL,"REMOTE EDVSTRAPDENIED rmt_nr=%d->lcl_nr=%d\n", 
+					rmt_nr, lcl_nr);
+				ret = EDVSTRAPDENIED;
+				break;
+			}
+		} else {
+			if( (rmt_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+				DVKDEBUG(INTERNAL,"REMOTE EDVSTRAPDENIED rmt_nr=%d->lcl_nr=%d\n", 
+					rmt_nr, lcl_nr);
+				ret = EDVSTRAPDENIED;
+				break;
+			}
+		}
+	
 #endif  /* MOL_AUTOBIND */ 	
 		
 		if(IT_IS_LOCAL(rmt_ptr) && 
@@ -715,20 +736,23 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 		if( test_bit(MIS_BIT_CONNECTED, &sproxy_ptr->p_usr.p_misc_flags)){
 			WUNLOCK_PROC(sproxy_ptr);
 			switch(h_ptr->c_cmd) {
-				case CMD_SNDREC_MSG:		// ONLY ACK ON ERROR	
+				case CMD_SNDREC_MSG:			
+					ack = CMD_SEND_ACK;
+					break;
 				case CMD_SEND_MSG:
+					ack = CMD_SEND_ACK;
+					break;
 				case CMD_REPLY_MSG:
 					ack = CMD_SEND_ACK;
 					break;
 				case CMD_NTFY_MSG:
-					ack = CMD_NONE; /* Avoid sending an ACK */
+					ack = CMD_SEND_ACK;
 					break;
 				case CMD_COPYIN_DATA:
 					ack = CMD_COPYIN_ACK;
 					break;
 				case CMD_COPYIN_RQST:	
 					/* reply to requester, not to sender */
-					rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
 					if(IT_IS_LOCAL(rqtr_ptr)) {
 						ret = EDVSLCLPROC; 
 					}else{
@@ -749,7 +773,6 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 				default:
 					break;
 			}
-			
 		}else{
 			WUNLOCK_PROC(sproxy_ptr);
 		}
@@ -773,47 +796,88 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 		case CMD_SNDREC_MSG:	/* The remote process has sent a message to a local process 		*/ 
 			DVKDEBUG(INTERNAL,"CMD_SNDREC_MSG dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			if( ! get_sys_bit(rmt_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_SENDREC )){
+				ret = EDVSBADCALL;
+			} else { 
+				ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			}
 			break;
 		case CMD_SEND_MSG:	/* The remote process has sent a message to a local process 		*/ 
 			DVKDEBUG(INTERNAL,"CMD_SEND_MSG dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			if( ! get_sys_bit(rmt_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_SEND )){
+				ret = EDVSBADCALL;
+			} else { 		
+				ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			}
 			break;
 		case CMD_REPLY_MSG: 	/*  The remote process has sent a reply message to a local process	*/
 			DVKDEBUG(INTERNAL,"CMD_REPLY_MSG dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			if( ! get_sys_bit(rmt_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_REPLY )){
+				ret = EDVSBADCALL;
+			}else{ 				
+				ret = send_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr);
+			}
 			break;
 		case CMD_NTFY_MSG:	/* The remote process has sent a notify message to a local process 	*/
 			DVKDEBUG(INTERNAL,"CMD_NTFY_MSG dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d rcode=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr,h_ptr->c_rcode);	
-			ret = notify_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr, h_ptr->c_rcode);
+			if( ! get_sys_bit(rmt_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_NOTIFY )){
+				ret = EDVSBADCALL;
+			}else { 	
+				ret = notify_rmt2lcl(usr_hdr_ptr, h_ptr, rmt_ptr, lcl_ptr, h_ptr->c_rcode);
+			}
 			break;
 		case CMD_COPYIN_DATA: 	/* The remote process has requested a COPYIN data into the local process space */
 			DVKDEBUG(INTERNAL,"CMD_COPYIN_DATA dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = copyin_data_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
+			if( ! get_sys_bit(rqtr_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+				ret = EDVSBADCALL;
+			} else { 	
+				ret = copyin_data_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			}
 			break;
 		case CMD_COPYIN_RQST: 	/* The remote process has requested a COPYIN data into the local process space */
 			DVKDEBUG(INTERNAL,"CMD_COPYIN_RQST dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = copyin_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
+			if( ! get_sys_bit(rqtr_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+				ret = EDVSBADCALL;
+			}else { 
+				ret = copyin_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			}
 			break;
 		case CMD_COPYOUT_RQST: /* The remote process has requested to COPYOUT data from a local process space */
 			DVKDEBUG(INTERNAL,"CMD_COPYOUT_RQST dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = copyout_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
+			if( ! get_sys_bit(rqtr_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+				ret = EDVSBADCALL;
+			}else { 			
+				ret = copyout_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			}
 			break;	
 		case CMD_COPYLCL_RQST: /* The remote process has requested to COPY between 2 process on the local node  */
 			DVKDEBUG(INTERNAL,"CMD_COPYLCL_RQST dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = copylcl_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
+			if( ! get_sys_bit(rqtr_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+				ret = EDVSBADCALL;
+			}else{ 				
+				ret = copylcl_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			}
 			break;	
 		case CMD_COPYRMT_RQST: /* The remote process has requested to COPY between local process and other in other node  */
 			DVKDEBUG(INTERNAL,"CMD_COPYRMT_RQST dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
-			ret = copyrmt_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
+			if( ! get_sys_bit(rqtr_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_VCOPY )){
+				ret = EDVSBADCALL;
+			}else{ 				
+				ret = copyrmt_rqst_rmt2lcl(rproxy_ptr, rmt_ptr, lcl_ptr, h_ptr, usr_pay_ptr);
+			}
 			break;		
 		/*----------------------------------------------------------------------------------------------*/
 		/*		REMOTE ACKNOWLEGES/REPLIES 	 						*/

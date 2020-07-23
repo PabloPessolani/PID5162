@@ -31,7 +31,7 @@
 
 #ifdef DVKDBG
 
-#ifdef CONFIG_DVK
+#if defined CONFIG_DVKIPC || defined CONFIG_DVS_DVK
  #define DVKDEBUG(dbglvl, text, args ...) \
  do { \
  if(dbglvl & dvs.d_dbglvl) \

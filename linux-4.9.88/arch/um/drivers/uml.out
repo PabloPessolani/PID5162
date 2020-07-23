@@ -14,7 +14,7 @@ Adding 31715328 bytes to physical memory to account for exec-shield gap
 
 DEBUG start_kernel_proc:90: UML-kernel PID=903 TID=903 uml_ep=-2
 DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
-
+
 Debian GNU/Linux 10 node1 tty1
 
 node1 login: 

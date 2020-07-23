@@ -11,7 +11,7 @@
 /* MIGRATION END:  EVERY thread migrated needs a new_migrate call	*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -517,5 +517,5 @@ long int migr_commit(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid, int new_
 
 	return(OK);
 }
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 	

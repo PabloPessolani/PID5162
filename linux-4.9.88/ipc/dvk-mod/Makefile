@@ -4,9 +4,9 @@ DEBUG = y
 
 # Add your debugging flag (or not) to CFLAGS
 ifeq ($(DEBUG),y)
-  DEBFLAGS = -O -g -DDVK_DEBUG -zmuldefs # "-O" is needed to expand inlines
+  DEBFLAGS = -O -g -DDVK_MODULE -DDVK_DEBUG -zmuldefs # "-O" is needed to expand inlines
 else
-  DEBFLAGS = -O2
+  DEBFLAGS = -O2 -DDVK_MODULE
 endif
 
 DVSINC=/usr/src/dvs/include

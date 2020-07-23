@@ -2,7 +2,7 @@
 /*			MOL UTILITIES				*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -1412,6 +1412,6 @@ return(OK);
 
 #endif // NULL_CODE
 
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 

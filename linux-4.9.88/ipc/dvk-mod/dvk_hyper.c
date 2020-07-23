@@ -5,6 +5,9 @@
 #define DVK_GLOBAL_HERE 1
 #include "dvk_mod.h"
 
+asmlinkage long (*sys_wait4_ptr)(pid_t pid, int __user *stat_addr, int options, struct rusage __user *ru);
+//size_t bitmap_scnprintf(unsigned long *bitmap, int nbits,char *buf, size_t size);
+
 /*--------------------------------------------------------------*/
 /*			new_dvs_init				*/
 /* Initialize the DVS system					*/
@@ -34,7 +37,18 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	CHECK_NODEID(nodeid);
 
 	WLOCK_DVS;
-
+	
+#ifndef DVK_MODULE 
+	if ( tasklist_ptr == NULL ) {
+		DVKDEBUG(INTERNAL,"Setting function pointers\n");
+		tasklist_ptr 		= &tasklist_lock;
+		setaffinity_ptr 	= &sched_setaffinity;
+		free_nsproxy_ptr 	= &free_nsproxy;
+		sys_wait4_ptr 		= &sys_wait4; 
+		exit_unbind_ptr		= &new_exit_unbind;
+	}
+#endif DVK_MODULE 
+	
 	dvs_ptr = &dvs;
 	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(dvs_ptr));
@@ -1400,7 +1414,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 	
 	CHECK_DCID(dcid);		/* check DC ID limits 	*/
 	dc_ptr = &dc[dcid];
-DVKDEBUG(DBGPARAMS,"dc_ptr=%p\n",dc_ptr);
+	DVKDEBUG(DBGPARAMS,"dc_ptr=%p\n",dc_ptr);
 
 	RLOCK_DC(dc_ptr);
 	do {	
@@ -1413,9 +1427,9 @@ DVKDEBUG(DBGPARAMS,"dc_ptr=%p\n",dc_ptr);
 		i = p_nr+dc_ptr->dc_usr.dc_nr_tasks;
 		proc_ptr = DC_PROC(dc_ptr,i);
 	}while(0);
-	if(rcode) ERROR_RUNLOCK_DC(dc_ptr, rcode);
+	if(rcode < 0) ERROR_RUNLOCK_DC(dc_ptr, rcode);
 
-DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
+    DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 	WLOCK_PROC(proc_ptr);
 	if( !test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)){
 		if ( oper != BKUP_BIND && oper != REPLICA_BIND ) {
@@ -1428,6 +1442,7 @@ DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 
 	/* Initialize all process' descriptor fields */
 	init_proc_desc(proc_ptr, dcid, i);		
+	// DVKDEBUG(DBGPARAMS,"init_proc_desc finished\n");
 		
 	if( oper != RMT_BIND ) {	/* LOCAL PROCESS */
 		/*
@@ -1445,7 +1460,8 @@ DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 		}else { // pid = (-1) is CURRENT 
 			task_ptr = current;
 		}
-						
+		
+		//DVKDEBUG(DBGPARAMS,"task_ptr=%p\n", task_ptr);
 		vpid = pid_vnr(get_task_pid(task_ptr, PIDTYPE_PID));	
 		lpid = task_pid_nr(task_ptr);
 		tid  = task_ptr->tgid;
@@ -1470,7 +1486,7 @@ DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 		}
 #endif  // INUTIL
 
-
+		//DVKDEBUG(DBGPARAMS,"oper=%d\n", oper);
 		switch(oper) {
 			case SELF_BIND:
 				DVKDEBUG(INTERNAL,"SELF_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
@@ -1498,6 +1514,7 @@ DVKDEBUG(DBGPARAMS,"proc_ptr=%p\n",proc_ptr);
 		UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 		WUNLOCK_PROC(proc_ptr);
 
+		//DVKDEBUG(DBGPARAMS,"multiples locks\n");
 		TASK_LOCK_INIT(task_ptr);	
 		WLOCK_TASK(task_ptr);	
 		WLOCK_PROC(proc_ptr);
@@ -1514,6 +1531,7 @@ setaffinity_ptr(param_pid, &pap_mask);
 		* proc_ptr is LOCKED
 		* dc_ptr is LOCKED
 		*/
+		// DVKDEBUG(DBGPARAMS,"thread_group_leader\n");
 		if(!thread_group_leader(task_ptr)) {  /* Check that the MAIN thread is bound	*/
 			leader_ptr= task_ptr->group_leader;		/* get the leader task pointer 		*/
 			WLOCK_TASK(leader_ptr);
@@ -1562,10 +1580,17 @@ setaffinity_ptr(param_pid, &pap_mask);
 
 		proc_ptr->p_usr.p_lpid 	= lpid; 	/* Update LPID		*/
 		proc_ptr->p_usr.p_vpid 	= vpid; 	/* Update VPID		*/
+		SET_SYS_MAP(proc_ptr->p_priv.priv_usr.priv_ipc_to);
 		if( i < dc_ptr->dc_usr.dc_nr_sysprocs) {
 			proc_ptr->p_priv.priv_usr.priv_id = i;
+			SET_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
 		}else{
 			proc_ptr->p_priv.priv_usr.priv_id = dc_ptr->dc_usr.dc_nr_sysprocs;
+			CLR_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_SENDREC); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_UNBIND); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GETEP); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_WAIT4BIND); 			
 		}
 		cpumask_copy(&proc_ptr->p_usr.p_cpumask, &dc_ptr->dc_usr.dc_cpumask);
 		
@@ -1591,18 +1616,28 @@ setaffinity_ptr(param_pid, &pap_mask);
 		
 		proc_ptr->p_usr.p_rts_flags = REMOTE;			
 		proc_ptr->p_usr.p_nodeid   = nodeid;
+		SET_SYS_MAP(proc_ptr->p_priv.priv_usr.priv_ipc_to);
 		if( i < dc_ptr->dc_usr.dc_nr_sysprocs) {
 			proc_ptr->p_priv.priv_usr.priv_id = i;
+			SET_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
 		}else{
 			proc_ptr->p_priv.priv_usr.priv_id = dc_ptr->dc_usr.dc_nr_sysprocs;
+			CLR_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_SENDREC); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_UNBIND); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GETEP); 
+			set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_WAIT4BIND); 			
 		}
+		
 		uname_ptr = (char *) param_pid; /* if LOCAL => pid=PID, if REMOTE => pid= name[] */ 
 //		rcode = copy_from_user(proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
 		COPY_FROM_USER_PROC(rcode, proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
 	}
 
+	PRINT_SYS_MAP(proc_ptr->p_priv.priv_usr.priv_ipc_to);
+	PRINT_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	
 	set_bit(proc_ptr->p_usr.p_nodeid, &proc_ptr->p_usr.p_nodemap);
-
 	uproc_ptr = &proc_ptr->p_usr;
 	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 	DVKDEBUG(INTERNAL,PROC_CPU_FORMAT,PROC_CPU_FIELDS(uproc_ptr));
@@ -2583,6 +2618,7 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	CHECK_NODEID(px_nr);
 
 	/* Verify if both PIDs are running */
+
 	LOCK_TASK_LIST; //read_lock(&tasklist_ptr);
 	stask_ptr = pid_task(find_vpid(spid), PIDTYPE_PID);  
 	rtask_ptr = pid_task(find_vpid(rpid), PIDTYPE_PID);  

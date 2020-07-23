@@ -11,9 +11,6 @@
 	#endif // __LINUX_CPUMASK_H
 #endif // DVS_USERSPACE
 
-#define MAXPROCNAME	16
-#define PROC_NO_PID	(-1)
-
 /* =================================*/
 /* PROCESS DESCRIPTOR	             */
 /* =================================*/

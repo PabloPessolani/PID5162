@@ -8,7 +8,7 @@ struct priv {
 
 	priv_usr_t priv_usr;		/* Privileges user fields 		*/
 
-	dvk_map_t 	priv_notify_pending; /* bit map with pending notifications */
+	ipc_map_t 	priv_notify_pending; /* bit map with pending notifications */
 	irq_id_t 	priv_int_pending;
 	ksigset_t 	priv_sig_pending;
 	update_t	priv_updt_pending;

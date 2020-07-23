@@ -1173,18 +1173,18 @@ static int init_rh_client(void)
 	
 	dvsu_ptr = &dvs;
 
-#ifdef CONFIG_DVKIPC
+#ifdef CONFIG_DVKIOCTLIPC
 	int rhclient_nodeid;
 	rhclient_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( rhclient_nodeid < 0) ERROR_RETURN(rhclient_nodeid);
 	RHDEBUG("rhclient_nodeid=%d\n",rhclient_nodeid);	
 	RHDEBUG( DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#else  // CONFIG_DVKIPC
+#else  // CONFIG_DVKIOCTLIPC
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
 	RHDEBUG("local_nodeid=%d\n",local_nodeid);	
 	RHDEBUG( DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#endif // CONFIG_DVKIPC
+#endif // CONFIG_DVKIOCTLIPC
 	
 	dcu_ptr = &dcu;
 	rcode = dvk_getdcinfo(dcid, dcu_ptr);

@@ -2,7 +2,7 @@
 /*			MOL REMOTE ACKNOWLEDGES				*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -198,7 +198,7 @@ DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d ack=%d rcode=%d\n",
 	}
 }
 
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 
 

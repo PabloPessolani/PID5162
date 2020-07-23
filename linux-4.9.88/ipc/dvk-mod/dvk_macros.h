@@ -111,7 +111,7 @@
  do { \
 	inherit_cpu(proc); \
  	proc->p_rcode = rcode; \
-DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d rcode=%d\n",proc->p_usr.p_lpid,proc->p_pseudosem, rcode); \
+	DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d rcode=%d\n",proc->p_usr.p_lpid,proc->p_pseudosem, rcode); \
 	proc->p_pseudosem += 1; \
 	wake_up_interruptible(&proc->p_wqhead); \
 }while(0);
@@ -120,7 +120,7 @@ DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d rcode=%d\n",proc->p_usr.p_lpid,p
  do { \
  	inherit_cpu(proc); \
    	proc->p_rcode = EDVSSHUTDOWN; \
-DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d\n",proc->p_usr.p_lpid,proc->p_pseudosem); \
+	DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d\n",proc->p_usr.p_lpid,proc->p_pseudosem); \
 	proc->p_pseudosem += 1; \
 	wake_up_interruptible(&proc->p_wqhead); \
 	}\

@@ -82,11 +82,8 @@ void  main ( int argc, char *argv[] )
 		if( ret != 0 ) ERROR_PRINT(ret);
 		printf("CHILD RECEIVE msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
 
-  		priv_ptr->priv_id   = 0x0C;
   		priv_ptr->priv_warn = 0x55;
  		priv_ptr->priv_level = KERNEL_PRIV;
-  		priv_ptr->priv_trap_mask = 0xAA;
-  		priv_ptr->priv_call_mask = 0x18;
 		printf("CHILD SET PRIV:" PRIV_USR_FORMAT, PRIV_USR_FIELDS(priv_ptr));
 
 		ret = dvk_setpriv(dcid , m_ptr->m_source , priv_ptr);

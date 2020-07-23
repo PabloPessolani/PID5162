@@ -3,7 +3,7 @@
 /****************************************************************/
 
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -559,7 +559,7 @@ long sproxy_enqueue(struct proc *proc_ptr)
 		}
 	}
 }	
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 
 

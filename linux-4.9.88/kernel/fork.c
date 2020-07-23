@@ -90,11 +90,11 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/task.h>
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/dvk-mod/dvk_debug.h"
 #include "/usr/src/dvs/dvk-mod/dvk_macros.h"
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 /*
  * Minimum number of threads to boot the kernel
@@ -1835,11 +1835,11 @@ static __latent_entropy struct task_struct *copy_process(
 		nr_threads++;
 	}
 
-//#ifdef  CONFIG_DVK
+//#ifdef  CONFIG_DVKIOCTL
 	TASK_LOCK_INIT(p);
 	p->task_proc  = NULL;
 	init_waitqueue_head(&p->task_wqh);
-//#ifdef  CONFIG_DVK
+//#ifdef  CONFIG_DVKIOCTL
 	
 	total_forks++;
 	spin_unlock(&current->sighand->siglock);

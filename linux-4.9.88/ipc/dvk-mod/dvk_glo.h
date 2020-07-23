@@ -2,6 +2,8 @@
 /*				GLOBAL VARIABLES		*/
 /*----------------------------------------------------------------*/
 
+EXTERN int dvk_iface_type; 
+
 EXTERN dc_desc_t dc[NR_DCS];		/* an array of DC structs */
 EXTERN cluster_node_t node[NR_NODES];	/* an array of NODE structs */
 EXTERN proxies_t proxies[NR_NODES];		/* an array of PROXY PAIR structs */
@@ -20,11 +22,12 @@ EXTERN struct dentry *dbg_dvs; /* directory entry of "dvs" directory on debugfs 
 EXTERN rwlock_t *tasklist_ptr;
 EXTERN long (*setaffinity_ptr)(pid_t , const struct cpumask *); 
 EXTERN void (*free_nsproxy_ptr)(struct nsproxy *ns);
-EXTERN long (*sys_wait4_ptr)(pid_t pid, int __user *stat_addr,
+EXTERN asmlinkage long (*sys_wait4_ptr)(pid_t pid, int __user *stat_addr,
 				int options, struct rusage __user *ru);
 				
-EXTERN  size_t (*scnprintf_ptr)(unsigned long *bitmap, int nbits, char *buf, size_t size);
-EXTERN long (*dvk_unbind_ptr)(long code);	 
+extern asmlinkage long (*exit_unbind_ptr) (long code);
+
+EXTERN asmlinkage long (*dvk_unbind_ptr)(long code);	 
 EXTERN long (*dvk_mod_ipc_ptr) (int call, int first, unsigned long second,unsigned long third, void __user *ptr, long fifth);
 EXTERN ssize_t dvk_vm_rw(struct task_struct *task,
 			     const struct iovec *lvec,

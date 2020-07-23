@@ -23,11 +23,14 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
-//#endif // CONFIG_DVK
+#include "/usr/src/dvs/include/com/com.h"
+#include "/usr/src/dvs/include/com/dvs_usr.h"
+#include "../ipc/dvk-mod/dvk_debug.h"
+#include "../ipc/dvk-mod/dvk_macros.h"
+extern dvs_usr_t dvs;
+//#endif // CONFIG_DVKIOCTL
 
 typedef ssize_t (*io_fn_t)(struct file *, char __user *, size_t, loff_t *);
 typedef ssize_t (*iter_fn_t)(struct kiocb *, struct iov_iter *);
@@ -840,7 +843,7 @@ out:
 	return ret;
 }
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 /**
  * dvk_rw_check_kvector() - check an array of &struct iovec if it is valid.
  *
@@ -885,7 +888,7 @@ ssize_t dvk_rw_check_kvector(int type, struct iovec  *kvector,
 	}
 	return(ret);
 }
-//#endif //CONFIG_DVK
+//#endif //CONFIG_DVKIOCTL
 
 
 static ssize_t do_readv_writev(int type, struct file *file,

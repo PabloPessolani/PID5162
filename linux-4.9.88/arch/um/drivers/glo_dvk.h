@@ -9,11 +9,11 @@ char *dvk_dev = UML_DVK_DEV;
 extern char *dvk_dev;
 #endif
 
-#ifndef CONFIG_DVKIPC
+#ifndef CONFIG_DVKIOCTLIPC
 EXTERN dvs_usr_t 	dvs;
-#else // CONFIG_DVKIPC
+#else // CONFIG_DVKIOCTLIPC
 extern dvs_usr_t 	dvs;
-#endif // CONFIG_DVKIPC
+#endif // CONFIG_DVKIOCTLIPC
 
 EXTERN dc_usr_t 	dcu;
 EXTERN proc_usr_t 	uml_proc;

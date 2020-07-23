@@ -28,23 +28,23 @@
 #define DBGPROXYLOCK	0x00100000
 #define DBGREFCOUNT	0x00200000
 
-#ifndef CONFIG_DVK
-#define CONFIG_DVK
+#ifndef CONFIG_DVKIOCTL
+#define CONFIG_DVKIOCTL
 #endif 
 
 #ifdef DVKDBG
 
-#ifdef CONFIG_DVK
+#ifdef CONFIG_DVKIOCTL
  #define DVKDEBUG(dbglvl, text, args ...) \
  do { \
  if(dbglvl & dvs.d_dbglvl) \
      printk("DEBUG %d:%s:%u: " \
              text, current->pid, __FUNCTION__ ,__LINE__, ## args); \
  }while(0);
-#else //CONFIG_DVK
+#else //CONFIG_DVKIOCTL
  #define DVKDEBUG(dbglvl, text, args ...) \
     printk("DEBUG %s:%u: " text, __FUNCTION__ ,__LINE__, ## args)
-#endif //CONFIG_DVK
+#endif //CONFIG_DVKIOCTL
 	 
 #else
 #define DVKDEBUG(x, args ...)

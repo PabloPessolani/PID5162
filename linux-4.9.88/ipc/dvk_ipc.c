@@ -8,7 +8,7 @@
 /* Hypervisor Calls: dc_init, dc_dump, proc_dump, bind, unbind  */
 /* setpriv							*/ 
 /****************************************************************/
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -2037,6 +2037,6 @@ reply_replay: /* Return point for a migrated destination process */
 	WUNLOCK_PROC(dst_ptr);
 	return(ret);
 }
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 

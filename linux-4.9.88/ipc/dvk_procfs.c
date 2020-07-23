@@ -3,7 +3,7 @@
 /*			MINIX OVER LINUX PROC FS ROUTINES 			*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -550,7 +550,7 @@ int node_stats_read( char *page, char **start, off_t off, int count, int *eof, v
 }
 #endif // 	NULL_CODE
 
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 
 

@@ -6,11 +6,14 @@
 #include <linux/splice.h>
 #include <net/checksum.h>
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
-//#endif // CONFIG_DVK
+#include "/usr/src/dvs/include/com/com.h"
+#include "/usr/src/dvs/include/com/dvs_usr.h"
+#include "../ipc/dvk-mod/dvk_debug.h"
+#include "../ipc/dvk-mod/dvk_macros.h"
+extern dvs_usr_t dvs;
+//#endif // CONFIG_DVKIOCTL
 
 #define PIPE_PARANOIA /* for now */
 
@@ -1260,7 +1263,7 @@ int import_iovec(int type, const struct iovec __user * uvector,
 }
 EXPORT_SYMBOL(import_iovec);
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 /**
  * dvk_check_iovect() - check an array of &struct iovec if it is valid,
  * and initialize a new &struct iov_iter iterator to access it.
@@ -1286,7 +1289,7 @@ int dvk_check_iovect(int type, const struct iovec *kvector,
 	return(0);
 }
 EXPORT_SYMBOL(dvk_check_iovect);
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 
 #ifdef CONFIG_COMPAT

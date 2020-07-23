@@ -17,10 +17,56 @@
 	( MAP_CHUNK(map.chunk,bit) &= ~(1 << CHUNK_OFFSET(bit) )
 #define NR_SYS_CHUNKS	BITMAP_CHUNKS(NR_SYS_PROCS)
 
-#define PRINT_MAP(map) do {\
-	MOLDEBUG("%s:", #map);\
+#define PRINT_SYS_MAP(map) do {\
+	int i;\
+	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
+	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_SYS_CHUNKS);\
 	for(i = 0; i < NR_SYS_CHUNKS; i++){\
-		MOLDEBUG("%X.",(map)[i]);\
+		DVKDEBUG(INTERNAL,"%X.",(map.chunk)[i]);\
 	}\
-		MOLDEBUG("%X.",(map)[i]);\
-}
+	DVKDEBUG(INTERNAL,"\n");\
+}while(0);
+
+#define CLR_SYS_MAP(map) do {\
+	int i;\
+	for(i = 0; i < NR_SYS_CHUNKS; i++){\
+		(map.chunk)[i]=0;\
+	}\
+}while(0);
+
+#define SET_SYS_MAP(map) do {\
+	int i;\
+	for(i = 0; i < NR_SYS_CHUNKS; i++){\
+		(map.chunk)[i]= ~0;\
+	}\
+}while(0);
+
+#define NR_DVK_CHUNKS	BITMAP_CHUNKS(NR_DVK_CALLS)
+
+#define PRINT_DVK_MAP(map) do {\
+	int i;\
+	DVKDEBUG(INTERNAL,"PRINT_DVK_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
+	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_DVK_CHUNKS);\
+	for(i = 0; i < NR_DVK_CHUNKS; i++){\
+		DVKDEBUG(INTERNAL,"%X.",(map.chunk)[i]);\
+	}\
+	DVKDEBUG(INTERNAL,"\n");\
+}while(0);
+
+#define CLR_DVK_MAP(map) do {\
+	int i;\
+	for(i = 0; i < NR_DVK_CHUNKS; i++){\
+		(map.chunk)[i]=0;\
+	}\
+}while(0);
+
+
+#define SET_DVK_MAP(map) do {\
+	int i;\
+	for(i = 0; i < NR_DVK_CHUNKS; i++){\
+		(map.chunk)[i]=~0;\
+	}\
+}while(0);
+
+
+

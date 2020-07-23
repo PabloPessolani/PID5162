@@ -5,12 +5,12 @@
 
 #include <linux/sched/prio.h>
 
-// #ifdef CONFIG_DVK
+// #ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
 //#define STRINGIFY(s) XSTRINGIFY(s)
 //#define XSTRINGIFY(s) #s
 //#pragma message ("LOCK_TASK_TYPE=" STRINGIFY(LOCK_TASK_TYPE))
-// #endif // CONFIG_DVK
+// #endif // CONFIG_DVKIOCTL
 
 
 struct sched_param {
@@ -1939,7 +1939,7 @@ struct task_struct {
 	unsigned long trace_recursion;
 #endif /* CONFIG_TRACING */
 
-// #ifdef CONFIG_DVK
+// #ifdef CONFIG_DVKIOCTL
 /*  proc_t pointer definded as void */
 	void 		*task_proc;
 	wait_queue_head_t task_wqh;
@@ -1963,7 +1963,7 @@ struct task_struct {
 	#pragma message ("USE_TASK NONE!!")
 #warning LOCK_TASK_TYPE = ???	
 #endif
-//# endif CONFIG_DVK
+//# endif CONFIG_DVKIOCTL
 
 #ifdef CONFIG_KCOV
 	/* Coverage collection mode enabled for this task (0 if disabled). */

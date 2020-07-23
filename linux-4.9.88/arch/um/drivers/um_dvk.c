@@ -21,9 +21,9 @@
 #include "um_dvk.h"
 #include "glo_dvk.h"
 
-#ifdef CONFIG_DVKIPC
-#undef CONFIG_DVKIPC
-#endif // CONFIG_DVKIPC
+#ifdef CONFIG_DVKIOCTLIPC
+#undef CONFIG_DVKIOCTLIPC
+#endif // CONFIG_DVKIOCTLIPC
 
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
 

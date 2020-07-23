@@ -53,8 +53,9 @@
 #define GETPROXYINFO	36	
 #define WAKEUPEP		37	
 
-#define NR_MOLCALLS	 	38   /* Numero de IPCs/DRDCM Calls habilitadas */ 
+#define NR_DVK_CALLS	38   /* Numero de IPCs/DRDCM Calls habilitadas */ 
 
+#ifdef ANULADO 
 #define IPCMASK			0x08	/* mask to test IPC calls */
 
 #define MINIX_ECHO	   8	/* 1000 : echo a message */
@@ -67,5 +68,6 @@
 #define CHECK_PTR       0xBB	/* 1011 1011 : validate message buffer */
 #define CHECK_DST       0x55	/* 0101 0101 : validate message destination */
 #define CHECK_DEADLOCK  0x93	/* 1001 0011 : check for deadlock */
+#endif // ANULADO 
 
 #endif /* KIPC_H */

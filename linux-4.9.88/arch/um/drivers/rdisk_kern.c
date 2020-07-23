@@ -48,11 +48,11 @@
 #include "/usr/src/dvs/vos/mol/include/partition.h"
 #include "/usr/src/dvs/vos/mol/include/ioc_disk.h"
 
-#ifdef  CONFIG_DVS_DVK
-#pragma message ("CONFIG_DVS_DVK=YES")
-#else // CONFIG_DVS_DVK
-#pragma message ("CONFIG_DVS_DVK=NO")
-#endif // CONFIG_DVS_DVK
+#ifdef  CONFIG_DVKIOCTLIOCTL
+#pragma message ("CONFIG_DVKIOCTLIOCTL=YES")
+#else // CONFIG_DVKIOCTLIOCTL
+#pragma message ("CONFIG_DVKIOCTLIOCTL=NO")
+#endif // CONFIG_DVKIOCTLIOCTL
 
 #ifdef  CONFIG_UML_DVK
 #pragma message ("CONFIG_UML_DVK=YES")
@@ -66,11 +66,11 @@
 #pragma message ("CONFIG_UML_USER=NO")
 #endif // CONFIG_UML_USER
 
-#ifdef  CONFIG_DVKIPC
-#pragma message ("CONFIG_DVKIPC=YES")
-#else // CONFIG_DVKIPC
-#pragma message ("CONFIG_DVKIPC=NO")
-#endif // CONFIG_DVKIPC
+#ifdef  CONFIG_DVKIOCTLIPC
+#pragma message ("CONFIG_DVKIOCTLIPC=YES")
+#else // CONFIG_DVKIOCTLIPC
+#pragma message ("CONFIG_DVKIOCTLIPC=NO")
+#endif // CONFIG_DVKIOCTLIPC
 
 #ifdef  CONFIG_UML_RDISK
 #pragma message ("CONFIG_UML_RDISK=YES")

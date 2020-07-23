@@ -165,18 +165,719 @@ PROBLEMA: Cuando se quiere cambiar algo del DVK se tiene que recompilar el kerne
 			d_max_copybuf=65536 d_max_copylen=1048576
 			d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512					<<<<<<<<<<< flags=0x0101 => (BIT_IPC | BIT_INITIALIZED)
 
-ULTIMO_LOG
+
 ===============================================================================================================
 20200722:
+	privilegios
+	     Los procesos de usuario >= NR_SYSPROCS, por default no tienen privilegios de enviar a ningun proceso
+		 Los procesos de systema < NR_SYSPROCS, por default pueden enviarle a todos los procesos.
+
+EJECUTANDO:
+		root@node0:~# cd /usr/src/dvs/dvk-tests/
+		root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+		lcl_nodeid=0 dcid=0
+		Enter para continuar... 
+		Spread Enter para continuar... 
+		./tests.sh: lÃ­nea 17:   629 Abortado                /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt  (dir ahora: /usr/src/dvs/dvk-tests)
+		mount Enter para continuar... 
+		partition 5
+		mount Enter para continuar... 
+		local_nodeid=0 Enter para continuar... 
+		DEBUG 632:dvk_open:102: 
+		Initializing DVS. Local node ID 0... 
+		DEBUG 632:dvk_dvs_init:542: nodeid=0
+		DEBUG 632:dvk_dvs_init:546: ipc ipc_op=71680 ret=0
+		d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+		Get DVS info
+		DEBUG 632:dvk_getdvsinfo:248: 
+		DEBUG 632:dvk_getdvsinfo:252: ipc ret=0
+		local node ID 0... 
+		d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		d_max_copybuf=65536 d_max_copylen=1048576
+		d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512
+		DC0 Enter para continuar... 
+		TCP PROXY Enter para continuar... ^C
+		root@node0:/usr/src/dvs/dvk-tests# . /dev/shm/DC0.sh 
+		root@node0:/usr/src/dvs/dvk-tests# ./test_sendrec 
+		Usage: ./test_sendrec <dcid> <parent_nr> <child_nr>  
+		root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_sendrec 0 11 12
+		DEBUG 2:dvk_open:102: 
+		DEBUG 3:dvk_bind_X:1199: cmd=0 dcid=0 pid=-1 endpoint=12 nodeid=-1
+		DEBUG 2:dvk_bind_X:1199: cmd=0 dcid=0 pid=-1 endpoint=11 nodeid=-1
+		DEBUG 2:dvk_bind_X:1203: ipc ret=11 errno=0
+		PARENT BIND dcid=0 parent_pid=2 parent_nr=11 parent_ep=11 m_ptr=0x1127008
+		PARENT pause before SENDREC
+		DEBUG 3:dvk_bind_X:1203: ipc ret=12 errno=0
+		CHILD BIND dcid=0 child_pid=3 child_nr=12 child_ep=12 m_ptr=0x1127008
+		CHILD FIRST RECEIVE
+		DEBUG 3:dvk_receive_T:876: endpoint=31438 timeout=-1
+		PARENT FIRST SENDREC msg:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_sendrec_T:910: endpoint=12 timeout=-1
+		DEBUG 2:dvk_sendrec_T:914: ipc ret=-1
+		ERROR: 2:dvk_sendrec_T:915: rcode=-110
+		ERROR: 2:dvk_sendrec_T:934: rcode=-110
+		ERROR: test_sendrec.c:main:55: rcode=-110
+		PARENT FIRST REPLY msg:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		PARENT SECOND SENDREC msg:source=0 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_sendrec_T:910: endpoint=12 timeout=-1
+		DEBUG 2:dvk_sendrec_T:914: ipc ret=-1
+		ERROR: 2:dvk_sendrec_T:915: rcode=-110
+		ERROR: 2:dvk_sendrec_T:934: rcode=-110
+		ERROR: test_sendrec.c:main:65: rcode=-110
+		PARENT SECOND REPLY msg:source=0 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+
+EL DMESG
+		[  106.660052] DEBUG 647:SYSC_ipc:163: ipc_bind: call=2304 first=0 second=0 third=-1 fifth=-1 
+		[  106.660057] DEBUG 647:ipc_bind:185: oper=0 dcid=0 param_pid=-1 endpoint=11 nodeid=-1
+		[  106.660061] DEBUG new_bind:1394: oper=0 dcid=0 param_pid=-1 endpoint=11 nodeid=-1
+		[  106.660063] DEBUG new_bind:1416: dc_ptr=cca754a0
+		[  106.660064] DEBUG new_bind:1418: RLOCK_DC dc=0 count=0
+		[  106.660066] DEBUG new_bind:1431: proc_ptr=e79a5a00
+		[  106.660067] DEBUG new_bind:1432: WLOCK_PROC ep=11 count=0
+		[  106.660069] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+		[  106.660070] DEBUG init_proc_desc:27: Clearing Privileges
+		[  106.660071] DEBUG init_proc_desc:35: Clearing Process fields
+		[  106.660075] DEBUG new_bind:1468: param_pid=-1 lpid=647 vpid=2 tid=647
+		[  106.660076] DEBUG new_bind:1492: SELF_BIND param_pid=-1 lpid=647 vpid=2 tid=647
+		[  106.660078] DEBUG new_bind:1514: WUNLOCK_PROC ep=11 count=0
+		[  106.660079] DEBUG new_bind:1518: WLOCK_TASK pid=647 count=0
+		[  106.660080] DEBUG new_bind:1519: WLOCK_PROC ep=11 count=0
+		[  106.660081] DEBUG new_bind:1556: increment the reference count of the task struct=647 count=2
+		[  106.660083] DEBUG new_bind:1567: process p_name=test_sendrec *p_name_ptr=test_sendrec
+		[  106.660084] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 647:new_bind:1630:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+		[  106.660086] DEBUG new_bind:1630: FF.
+		[  106.660087] DEBUG new_bind:1630: FF.
+		[  106.660088] DEBUG new_bind:1630: FF.
+		[  106.660089] DEBUG new_bind:1630: FF.
+		[  106.660089] DEBUG new_bind:1630: 
+		[  106.660091] DEBUG new_bind:1631: PRINT_DVK_MAP: 647:new_bind:1631:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+		[  106.660092] DEBUG new_bind:1631: FF.
+		[  106.660093] DEBUG new_bind:1631: FF.
+		[  106.660093] DEBUG new_bind:1631: FF.
+		[  106.660094] DEBUG new_bind:1631: 
+		[  106.660097] DEBUG new_bind:1635: nr=11 endp=11 dcid=0 flags=0 misc=20 lpid=647 vpid=2 nodeid=0 name=test_sendrec 
+		[  106.660099] DEBUG new_bind:1636: nr=11 endp=11 dcid=0 lpid=647 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[  106.660100] DEBUG new_bind:1650: WUNLOCK_TASK pid=647 count=0
+		[  106.660101] DEBUG new_bind:1656: WUNLOCK_PROC ep=11 count=0
+		[  106.660102] DEBUG new_bind:1658: DC_INCREF counter=1
+		[  106.660104] DEBUG new_bind:1659: RUNLOCK_DC dc=0 count=0
+		[  106.660113] DEBUG 648:SYSC_ipc:163: ipc_bind: call=2304 first=0 second=0 third=-1 fifth=-1 
+		[  106.660118] DEBUG 648:ipc_bind:185: oper=0 dcid=0 param_pid=-1 endpoint=12 nodeid=-1
+		[  106.660122] DEBUG new_bind:1394: oper=0 dcid=0 param_pid=-1 endpoint=12 nodeid=-1
+		[  106.660124] DEBUG new_bind:1416: dc_ptr=cca754a0
+		[  106.660126] DEBUG new_bind:1418: RLOCK_DC dc=0 count=0
+		[  106.660128] DEBUG new_bind:1431: proc_ptr=e79a5c00
+		[  106.660129] DEBUG new_bind:1432: WLOCK_PROC ep=12 count=0
+		[  106.660131] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+		[  106.660132] DEBUG init_proc_desc:27: Clearing Privileges
+		[  106.660133] DEBUG init_proc_desc:35: Clearing Process fields
+		[  106.660136] DEBUG new_bind:1468: param_pid=-1 lpid=648 vpid=3 tid=648
+		[  106.660138] DEBUG new_bind:1492: SELF_BIND param_pid=-1 lpid=648 vpid=3 tid=648
+		[  106.660139] DEBUG new_bind:1514: WUNLOCK_PROC ep=12 count=0
+		[  106.660141] DEBUG new_bind:1518: WLOCK_TASK pid=648 count=0
+		[  106.660142] DEBUG new_bind:1519: WLOCK_PROC ep=12 count=0
+		[  106.660143] DEBUG new_bind:1556: increment the reference count of the task struct=648 count=2
+		[  106.660144] DEBUG new_bind:1567: process p_name=test_sendrec *p_name_ptr=test_sendrec
+		[  106.660146] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 648:new_bind:1630:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+		[  106.660148] DEBUG new_bind:1630: FF.
+		[  106.660149] DEBUG new_bind:1630: FF.
+		[  106.660150] DEBUG new_bind:1630: FF.
+		[  106.660151] DEBUG new_bind:1630: FF.
+		[  106.660151] DEBUG new_bind:1630: 
+		[  106.660153] DEBUG new_bind:1631: PRINT_DVK_MAP: 648:new_bind:1631:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+		[  106.660154] DEBUG new_bind:1631: FF.
+		[  106.660155] DEBUG new_bind:1631: FF.
+		[  106.660156] DEBUG new_bind:1631: FF.
+		[  106.660156] DEBUG new_bind:1631: 
+		[  106.660159] DEBUG new_bind:1635: nr=12 endp=12 dcid=0 flags=0 misc=20 lpid=648 vpid=3 nodeid=0 name=test_sendrec 
+		[  106.660161] DEBUG new_bind:1636: nr=12 endp=12 dcid=0 lpid=648 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[  106.660162] DEBUG new_bind:1650: WUNLOCK_TASK pid=648 count=0
+		[  106.660163] DEBUG new_bind:1656: WUNLOCK_PROC ep=12 count=0
+		[  106.660164] DEBUG new_bind:1658: DC_INCREF counter=2
+		[  106.660165] DEBUG new_bind:1659: RUNLOCK_DC dc=0 count=0
+		[  106.660254] DEBUG 648:SYSC_ipc:163: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
+		[  106.660256] DEBUG 648:ipc_mini_receive:74: src_ep=31438 timeout_ms=-1
+		[  106.660257] DEBUG new_mini_receive:303: src_ep=31438
+		[  106.660259] DEBUG check_caller:533: caller_pid=648 caller_tgid=648
+		[  106.660260] DEBUG check_caller:569: WLOCK_PROC ep=12 count=0
+		[  106.660261] DEBUG check_caller:599: WUNLOCK_PROC ep=12 count=0
+		[  106.660262] DEBUG check_caller:602: dcid=0
+		[  106.660264] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[  106.660265] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[  106.660266] DEBUG check_caller:616: caller_pid=648 
+		[  106.660267] DEBUG new_mini_receive:314: RLOCK_PROC ep=12 count=0
+		[  106.660269] DEBUG new_mini_receive:318: caller_nr=12 caller_ep=12 src_ep=31438 
+		[  106.660270] DEBUG new_mini_receive:322: dcid=0
+		[  106.660271] DEBUG new_mini_receive:330: RUNLOCK_PROC ep=12 count=0
+		[  106.660272] DEBUG new_mini_receive:332: RLOCK_DC dc=0 count=0
+		[  106.660273] DEBUG new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+		[  106.660274] DEBUG new_mini_receive:385: WLOCK_PROC ep=12 count=0
+		[  106.660276] DEBUG new_mini_receive:490: Any suitable message from 31438 was not found.
+		[  106.660277] DEBUG sleep_proc:341: timeout=-1
+		[  106.660278] DEBUG sleep_proc:352: BEFORE DOWN lpid=648 p_sem=0 timeout=-1
+		[  106.660279] DEBUG sleep_proc:354: endpoint=12 flags=8
+		[  106.660280] DEBUG sleep_proc:358: WUNLOCK_PROC ep=12 count=0
+		
+		[  109.661328] DEBUG 647:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=12 second=0 third=0 fifth=-1 
+		[  109.661335] DEBUG 647:ipc_mini_sendrec:106: srcdst_ep=12 timeout_ms=-1
+		[  109.661337] DEBUG new_mini_sendrec:527: srcdst_ep=12
+		[  109.661340] DEBUG check_caller:533: caller_pid=647 caller_tgid=647
+		[  109.661343] DEBUG check_caller:569: WLOCK_PROC ep=11 count=0
+		[  109.661345] DEBUG check_caller:599: WUNLOCK_PROC ep=11 count=0
+		[  109.661346] DEBUG check_caller:602: dcid=0
+		[  109.661349] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[  109.661351] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[  109.661353] DEBUG check_caller:616: caller_pid=647 
+		[  109.661355] DEBUG new_mini_sendrec:538: RLOCK_PROC ep=11 count=0
+		[  109.661357] DEBUG new_mini_sendrec:543: caller_nr=11 caller_ep=11 srcdst_ep=12 
+		[  109.661359] DEBUG new_mini_sendrec:550: RUNLOCK_PROC ep=11 count=0
+		[  109.661361] DEBUG new_mini_sendrec:552: dcid=0
+		[  109.661363] DEBUG new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+		[  109.661364] DEBUG new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+		[  109.661366] DEBUG new_mini_sendrec:575: RLOCK_PROC ep=11 count=0
+		[  109.661368] DEBUG new_mini_sendrec:579: RUNLOCK_PROC ep=11 count=0
+		[  109.661371] ERROR: 647:new_mini_sendrec:579: rcode=-110
+		
+		[  109.661533] DEBUG 647:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=12 second=0 third=0 fifth=-1 
+		[  109.661536] DEBUG 647:ipc_mini_sendrec:106: srcdst_ep=12 timeout_ms=-1
+		[  109.661538] DEBUG new_mini_sendrec:527: srcdst_ep=12
+		[  109.661540] DEBUG check_caller:533: caller_pid=647 caller_tgid=647
+		[  109.661542] DEBUG check_caller:569: WLOCK_PROC ep=11 count=0
+		[  109.661544] DEBUG check_caller:599: WUNLOCK_PROC ep=11 count=0
+		[  109.661545] DEBUG check_caller:602: dcid=0
+		[  109.661547] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[  109.661549] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[  109.661550] DEBUG check_caller:616: caller_pid=647 
+		[  109.661552] DEBUG new_mini_sendrec:538: RLOCK_PROC ep=11 count=0
+		[  109.661554] DEBUG new_mini_sendrec:543: caller_nr=11 caller_ep=11 srcdst_ep=12 
+		[  109.661556] DEBUG new_mini_sendrec:550: RUNLOCK_PROC ep=11 count=0
+		[  109.661558] DEBUG new_mini_sendrec:552: dcid=0
+		[  109.661559] DEBUG new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+		[  109.661561] DEBUG new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+		[  109.661563] DEBUG new_mini_sendrec:575: RLOCK_PROC ep=11 count=0
+		[  109.661565] DEBUG new_mini_sendrec:579: RUNLOCK_PROC ep=11 count=0
+		[  109.661567] ERROR: 647:new_mini_sendrec:579: rcode=-110 <<<<<  EDVSTRAPDENIED
+
+
+===============================================================================================================
+20200723:
+
+EJECUTANDO:
+		Root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_sendrec 0 11 12
+		DEBUG 2:dvk_open:102: 
+		DEBUG 2:dvk_bind_X:1199: cmd=0 dcid=0 pid=-1 endpoint=11 nodeid=-1
+		DEBUG 2:dvk_bind_X:1203: ipc ret=11 errno=0
+		PARENT BIND dcid=0 parent_pid=2 parent_nr=11 parent_ep=11 m_ptr=0x15f4008
+		PARENT pause before SENDREC
+		DEBUG 3:dvk_bind_X:1199: cmd=0 dcid=0 pid=-1 endpoint=12 nodeid=-1
+		DEBUG 3:dvk_bind_X:1203: ipc ret=12 errno=0
+		CHILD BIND dcid=0 child_pid=3 child_nr=12 child_ep=12 m_ptr=0x15f4008
+		CHILD FIRST RECEIVE
+		DEBUG 3:dvk_receive_T:876: endpoint=31438 timeout=-1
+		PARENT FIRST SENDREC msg:source=0 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_sendrec_T:910: endpoint=12 timeout=-1
+		DEBUG 3:dvk_receive_T:880: ipc ret=0
+		CHILD RECEIVE msg:source=11 type=10 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		CHILD FIRST SEND
+		DEBUG 3:dvk_send_T:843: endpoint=11 timeout=-1
+		DEBUG 3:dvk_send_T:847: ipc ret=76
+		DEBUG 2:dvk_sendrec_T:914: ipc ret=0
+		PARENT FIRST REPLY msg:source=12 type=254 m1i1=1 m1i2=2 m1i3=3 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		PARENT SECOND SENDREC msg:source=12 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_sendrec_T:910: endpoint=12 timeout=-1
+		CHILD SECOND RECEIVE
+		DEBUG 3:dvk_receive_T:876: endpoint=31438 timeout=-1
+		DEBUG 3:dvk_receive_T:880: ipc ret=0
+		CHILD RECEIVE msg:source=11 type=11 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		CHILD SECOND SEND
+		DEBUG 3:dvk_send_T:843: endpoint=11 timeout=-1
+		DEBUG 3:dvk_send_T:847: ipc ret=76
+		DEBUG 2:dvk_sendrec_T:914: ipc ret=0
+		PARENT SECOND REPLY msg:source=12 type=239 m1i1=5 m1i2=6 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+		DEBUG 2:dvk_getprocinfo:1156: dcid=0 p_nr=11 
+		DEBUG 2:dvk_getprocinfo:1160: ipc ret=0
+		nr=11 endp=11 dcid=0 flags=0 misc=20 lpid=658 vpid=2 nodeid=0 name=test_sendrec 
+		endp=11 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+		nr=11 endp=11 dcid=0 p_lclsent=2 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+
+DMESG 
+		[   62.066811] DEBUG 658:SYSC_ipc:163: ipc_bind: call=2304 first=0 second=0 third=-1 fifth=-1 
+		[   62.066816] DEBUG 658:ipc_bind:185: oper=0 dcid=0 param_pid=-1 endpoint=11 nodeid=-1
+		[   62.066820] DEBUG new_bind:1394: oper=0 dcid=0 param_pid=-1 endpoint=11 nodeid=-1
+		[   62.066822] DEBUG new_bind:1416: dc_ptr=d7a754a0
+		[   62.066824] DEBUG new_bind:1418: RLOCK_DC dc=0 count=0
+		[   62.066825] DEBUG new_bind:1431: proc_ptr=e7925a00
+		[   62.066826] DEBUG new_bind:1432: WLOCK_PROC ep=11 count=0
+		[   62.066828] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+		[   62.066830] DEBUG init_proc_desc:27: Clearing Privileges
+		[   62.066830] DEBUG init_proc_desc:35: Clearing Process fields
+		[   62.066833] DEBUG new_bind:1468: param_pid=-1 lpid=658 vpid=2 tid=658
+		[   62.066835] DEBUG new_bind:1492: SELF_BIND param_pid=-1 lpid=658 vpid=2 tid=658
+		[   62.066837] DEBUG new_bind:1514: WUNLOCK_PROC ep=11 count=0
+		[   62.066838] DEBUG new_bind:1518: WLOCK_TASK pid=658 count=0
+		[   62.066839] DEBUG new_bind:1519: WLOCK_PROC ep=11 count=0
+		[   62.066840] DEBUG new_bind:1556: increment the reference count of the task struct=658 count=2
+		[   62.066842] DEBUG new_bind:1567: process p_name=test_sendrec *p_name_ptr=test_sendrec
+		[   62.066843] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 658:new_bind:1630:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+		[   62.066845] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 658:new_bind:1630:4:
+		[   62.066846] DEBUG new_bind:1630: FFFF.
+		[   62.066848] DEBUG new_bind:1630: FFFF.
+		[   62.066848] DEBUG new_bind:1630: FFFF.
+		[   62.066849] DEBUG new_bind:1630: FFFF.
+		[   62.066850] DEBUG new_bind:1630: 
+		[   62.066852] DEBUG new_bind:1631: PRINT_DVK_MAP: 658:new_bind:1631:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+		[   62.066853] DEBUG new_bind:1631: PRINT_IPCTO_MAP: 658:new_bind:1631:3:
+		[   62.066854] DEBUG new_bind:1631: FF.
+		[   62.066855] DEBUG new_bind:1631: FF.
+		[   62.066856] DEBUG new_bind:1631: FF.
+		[   62.066857] DEBUG new_bind:1631: 
+		[   62.066859] DEBUG new_bind:1635: nr=11 endp=11 dcid=0 flags=0 misc=20 lpid=658 vpid=2 nodeid=0 name=test_sendrec 
+		[   62.066861] DEBUG new_bind:1636: nr=11 endp=11 dcid=0 lpid=658 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   62.066862] DEBUG new_bind:1650: WUNLOCK_TASK pid=658 count=0
+		[   62.066863] DEBUG new_bind:1656: WUNLOCK_PROC ep=11 count=0
+		[   62.066864] DEBUG new_bind:1658: DC_INCREF counter=1
+		[   62.066865] DEBUG new_bind:1659: RUNLOCK_DC dc=0 count=0
+		[   62.067359] DEBUG 659:SYSC_ipc:163: ipc_bind: call=2304 first=0 second=0 third=-1 fifth=-1 
+		[   62.067403] DEBUG 659:ipc_bind:185: oper=0 dcid=0 param_pid=-1 endpoint=12 nodeid=-1
+		[   62.067408] DEBUG new_bind:1394: oper=0 dcid=0 param_pid=-1 endpoint=12 nodeid=-1
+		[   62.067410] DEBUG new_bind:1416: dc_ptr=d7a754a0
+		[   62.067412] DEBUG new_bind:1418: RLOCK_DC dc=0 count=0
+		[   62.067413] DEBUG new_bind:1431: proc_ptr=e7925c00
+		[   62.067415] DEBUG new_bind:1432: WLOCK_PROC ep=12 count=0
+		[   62.067417] DEBUG init_proc_desc:16: p_name=$noname dcid=0
+		[   62.067418] DEBUG init_proc_desc:27: Clearing Privileges
+		[   62.067418] DEBUG init_proc_desc:35: Clearing Process fields
+		[   62.067422] DEBUG new_bind:1468: param_pid=-1 lpid=659 vpid=3 tid=659
+		[   62.067424] DEBUG new_bind:1492: SELF_BIND param_pid=-1 lpid=659 vpid=3 tid=659
+		[   62.067425] DEBUG new_bind:1514: WUNLOCK_PROC ep=12 count=0
+		[   62.067427] DEBUG new_bind:1518: WLOCK_TASK pid=659 count=0
+		[   62.067428] DEBUG new_bind:1519: WLOCK_PROC ep=12 count=0
+		[   62.067429] DEBUG new_bind:1556: increment the reference count of the task struct=659 count=2
+		[   62.067430] DEBUG new_bind:1567: process p_name=test_sendrec *p_name_ptr=test_sendrec
+		[   62.067432] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 659:new_bind:1630:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+		[   62.067434] DEBUG new_bind:1630: PRINT_IPCTO_MAP: 659:new_bind:1630:4:
+		[   62.067435] DEBUG new_bind:1630: FFFF.
+		[   62.067436] DEBUG new_bind:1630: FFFF.
+		[   62.067437] DEBUG new_bind:1630: FFFF.
+		[   62.067438] DEBUG new_bind:1630: FFFF.
+		[   62.067439] DEBUG new_bind:1630: 
+		[   62.067440] DEBUG new_bind:1631: PRINT_DVK_MAP: 659:new_bind:1631:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+		[   62.067441] DEBUG new_bind:1631: PRINT_IPCTO_MAP: 659:new_bind:1631:3:
+		[   62.067442] DEBUG new_bind:1631: FF.
+		[   62.067443] DEBUG new_bind:1631: FF.
+		[   62.067444] DEBUG new_bind:1631: FF.
+		[   62.067445] DEBUG new_bind:1631: 
+		[   62.067447] DEBUG new_bind:1635: nr=12 endp=12 dcid=0 flags=0 misc=20 lpid=659 vpid=3 nodeid=0 name=test_sendrec 
+		[   62.067449] DEBUG new_bind:1636: nr=12 endp=12 dcid=0 lpid=659 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   62.067450] DEBUG new_bind:1650: WUNLOCK_TASK pid=659 count=0
+		[   62.067452] DEBUG new_bind:1656: WUNLOCK_PROC ep=12 count=0
+		[   62.067453] DEBUG new_bind:1658: DC_INCREF counter=2
+		[   62.067454] DEBUG new_bind:1659: RUNLOCK_DC dc=0 count=0
+		[   62.067514] DEBUG 659:SYSC_ipc:163: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
+		[   62.067516] DEBUG 659:ipc_mini_receive:74: src_ep=31438 timeout_ms=-1
+		[   62.067518] DEBUG new_mini_receive:303: src_ep=31438
+		[   62.067550] DEBUG check_caller:533: caller_pid=659 caller_tgid=659
+		[   62.067552] DEBUG check_caller:569: WLOCK_PROC ep=12 count=0
+		[   62.067553] DEBUG check_caller:599: WUNLOCK_PROC ep=12 count=0
+		[   62.067554] DEBUG check_caller:602: dcid=0
+		[   62.067556] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   62.067557] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   62.067558] DEBUG check_caller:616: caller_pid=659 
+		[   62.067559] DEBUG new_mini_receive:314: RLOCK_PROC ep=12 count=0
+		[   62.067561] DEBUG new_mini_receive:318: caller_nr=12 caller_ep=12 src_ep=31438 
+		[   62.067562] DEBUG new_mini_receive:322: dcid=0
+		[   62.067563] DEBUG new_mini_receive:330: RUNLOCK_PROC ep=12 count=0
+		[   62.067564] DEBUG new_mini_receive:332: RLOCK_DC dc=0 count=0
+		[   62.067565] DEBUG new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+		[   62.067566] DEBUG new_mini_receive:385: WLOCK_PROC ep=12 count=0
+		[   62.067568] DEBUG new_mini_receive:490: Any suitable message from 31438 was not found.
+		[   62.067569] DEBUG sleep_proc:341: timeout=-1
+		[   62.067571] DEBUG sleep_proc:352: BEFORE DOWN lpid=659 p_sem=0 timeout=-1
+		[   62.067572] DEBUG sleep_proc:354: endpoint=12 flags=8
+		[   62.067573] DEBUG sleep_proc:358: WUNLOCK_PROC ep=12 count=0
+		[   65.068118] DEBUG 658:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=12 second=0 third=0 fifth=-1 
+		[   65.068125] DEBUG 658:ipc_mini_sendrec:106: srcdst_ep=12 timeout_ms=-1
+		[   65.068128] DEBUG new_mini_sendrec:527: srcdst_ep=12
+		[   65.068131] DEBUG check_caller:533: caller_pid=658 caller_tgid=658
+		[   65.068134] DEBUG check_caller:569: WLOCK_PROC ep=11 count=0
+		[   65.068136] DEBUG check_caller:599: WUNLOCK_PROC ep=11 count=0
+		[   65.068137] DEBUG check_caller:602: dcid=0
+		[   65.068140] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   65.068142] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   65.068144] DEBUG check_caller:616: caller_pid=658 
+		[   65.068146] DEBUG new_mini_sendrec:538: RLOCK_PROC ep=11 count=0
+		[   65.068148] DEBUG new_mini_sendrec:543: caller_nr=11 caller_ep=11 srcdst_ep=12 
+		[   65.068150] DEBUG new_mini_sendrec:550: RUNLOCK_PROC ep=11 count=0
+		[   65.068152] DEBUG new_mini_sendrec:552: dcid=0
+		[   65.068154] DEBUG new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+		[   65.068155] DEBUG new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+		[   65.068157] DEBUG new_mini_sendrec:575: RLOCK_PROC ep=11 count=0
+		[   65.068159] DEBUG new_mini_sendrec:586: RUNLOCK_PROC ep=11 count=0
+		[   65.068161] DEBUG new_mini_sendrec:592: WLOCK_PROC ep=12 count=0
+		[   65.068163] DEBUG new_mini_sendrec:594: srcdst_nr=12 srcdst_ep=12
+		[   65.068165] DEBUG new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+		[   65.068167] DEBUG new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+		[   65.068169] DEBUG new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+		[   65.068171] DEBUG new_mini_sendrec:637: dcid=0 caller_pid=658 caller_nr=11 srcdst_ep=12 
+		[   65.068173] DEBUG new_mini_sendrec:642: SENDING HALF
+		[   65.068174] DEBUG new_mini_sendrec:726: destination is waiting. Copy the message and wakeup destination
+		[   65.068178] DEBUG copy_usr2usr:884: rqtr_ep=11 src_ep=11 src_lpid=658 src_vpid=2 src_addr=015f4008
+		[   65.068182] DEBUG copy_usr2usr:887: dst_ep=12 dst_lpid=659 dst_vpid=3 dst_addr=015f4008 bytes=76
+		[   65.068183] DEBUG copy_usr2usr:891: task_pid_nr(current)=658
+		[   65.068185] DEBUG copy_usr2usr:894: WRITE
+		[   65.068187] DEBUG copy_usr2usr:899: task_pid_nr(dst_ptr->p_task)=659
+		[   65.068191] DEBUG dvk_vm_rw:442: pid=659 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+		[   65.068193] DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+		[   65.068195] DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+		[   65.068197] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+		[   65.068200] DEBUG dvk_vm_rw_core:277: pid=659 riovcnt=1 flags=0 vm_write=1
+		[   65.068207] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+		[   65.068227] DEBUG dvk_vm_rw_core:349: rc=76
+		[   65.068229] DEBUG dvk_vm_rw_core:356: rc=76
+		[   65.068231] DEBUG copy_usr2usr:952: len=76
+		[   65.068233] DEBUG inherit_cpu:285: cpuid=1 vpid=3
+		[   65.068245] DEBUG inherit_cpu:293: nr=12 endp=12 dcid=0 lpid=659 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   65.068247] DEBUG new_mini_sendrec:732: BEFORE UP lpid=659 p_sem=-1 rcode=76
+		[   65.068263] DEBUG new_mini_sendrec:740: WUNLOCK_PROC ep=12 count=0
+		[   65.068265] DEBUG sleep_proc:341: timeout=-1
+		[   65.068267] DEBUG sleep_proc:352: BEFORE DOWN lpid=658 p_sem=0 timeout=-1
+		[   65.068269] DEBUG sleep_proc:354: endpoint=11 flags=8
+		[   65.068270] DEBUG sleep_proc:358: WUNLOCK_PROC ep=11 count=1
+		[   65.068284] DEBUG sleep_proc:365: endpoint=12 ret=0 p_rcode=76
+		[   65.068286] DEBUG sleep_proc:366: endpoint=12 flags=0 cpuid=1
+		[   65.068288] DEBUG sleep_proc:367: WLOCK_PROC ep=12 count=0
+		[   65.068291] DEBUG sleep_proc:414: nr=12 endp=12 dcid=0 lpid=659 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   65.068293] DEBUG sleep_proc:416: someone wakeups me: sem=0 p_rcode=0
+		[   65.068295] DEBUG new_mini_receive:507: WUNLOCK_PROC ep=12 count=0
+		[   65.068430] DEBUG 659:SYSC_ipc:163: ipc_mini_send: call=512 first=11 second=0 third=0 fifth=-1 
+		[   65.068433] DEBUG 659:ipc_mini_send:52: dst_ep=11 timeout_ms=-1
+		[   65.068434] DEBUG new_mini_send:32: dst_ep=11
+		[   65.068437] DEBUG check_caller:533: caller_pid=659 caller_tgid=659
+		[   65.068439] DEBUG check_caller:569: WLOCK_PROC ep=12 count=0
+		[   65.068440] DEBUG check_caller:599: WUNLOCK_PROC ep=12 count=0
+		[   65.068442] DEBUG check_caller:602: dcid=0
+		[   65.068444] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   65.068446] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   65.068447] DEBUG check_caller:616: caller_pid=659 
+		[   65.068449] DEBUG new_mini_send:44: RLOCK_PROC ep=12 count=0
+		[   65.068452] DEBUG new_mini_send:48: caller_nr=12 caller_ep=12 dst_ep=11 
+		[   65.068453] DEBUG new_mini_send:53: RUNLOCK_PROC ep=12 count=0
+		[   65.068455] DEBUG new_mini_send:55: dcid=0
+		[   65.068457] DEBUG new_mini_send:59: RLOCK_DC dc=0 count=0
+		[   65.068458] DEBUG new_mini_send:64: RUNLOCK_DC dc=0 count=0
+		[   65.068460] DEBUG new_mini_send:79: RLOCK_PROC ep=12 count=0
+		[   65.068462] DEBUG new_mini_send:90: RUNLOCK_PROC ep=12 count=0
+		[   65.068464] DEBUG new_mini_send:93: WUNLOCK_PROC ep=12 count=1
+		[   65.068466] DEBUG new_mini_send:93: WLOCK_PROC ep=11 count=1
+		[   65.068468] DEBUG new_mini_send:93: WLOCK_PROC ep=12 count=1
+		[   65.068470] DEBUG new_mini_send:98: dst_nr=11 dst_ep=11
+		[   65.068471] DEBUG new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+		[   65.068473] DEBUG new_mini_send:121: RLOCK_DC dc=0 count=0
+		[   65.068475] DEBUG new_mini_send:125: RUNLOCK_DC dc=0 count=0
+		[   65.068477] DEBUG new_mini_send:140: dcid=0 caller_pid=659 caller_nr=12 dst_ep=11 
+		[   65.068479] DEBUG new_mini_send:222: destination is waiting. Copy the message and wakeup destination
+		[   65.068482] DEBUG copy_usr2usr:884: rqtr_ep=12 src_ep=12 src_lpid=659 src_vpid=3 src_addr=015f4008
+		[   65.068485] DEBUG copy_usr2usr:887: dst_ep=11 dst_lpid=658 dst_vpid=2 dst_addr=015f4008 bytes=76
+		[   65.068486] DEBUG copy_usr2usr:891: task_pid_nr(current)=659
+		[   65.068488] DEBUG copy_usr2usr:894: WRITE
+		[   65.068489] DEBUG copy_usr2usr:899: task_pid_nr(dst_ptr->p_task)=658
+		[   65.068492] DEBUG dvk_vm_rw:442: pid=658 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+		[   65.068494] DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+		[   65.068496] DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+		[   65.068498] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+		[   65.068500] DEBUG dvk_vm_rw_core:277: pid=658 riovcnt=1 flags=0 vm_write=1
+		[   65.068505] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+		[   65.068518] DEBUG dvk_vm_rw_core:349: rc=76
+		[   65.068520] DEBUG dvk_vm_rw_core:356: rc=76
+		[   65.068522] DEBUG copy_usr2usr:952: len=76
+		[   65.068524] DEBUG inherit_cpu:285: cpuid=1 vpid=2
+		[   65.068531] DEBUG inherit_cpu:293: nr=11 endp=11 dcid=0 lpid=658 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   65.068533] DEBUG new_mini_send:233: BEFORE UP lpid=658 p_sem=-1 rcode=76
+		[   65.068541] DEBUG new_mini_send:234: WUNLOCK_PROC ep=11 count=1
+		[   65.068543] DEBUG new_mini_send:272: WUNLOCK_PROC ep=12 count=1
+		[   65.068584] DEBUG sleep_proc:365: endpoint=11 ret=0 p_rcode=76
+		[   65.068586] DEBUG sleep_proc:366: endpoint=11 flags=0 cpuid=1
+		[   65.068588] DEBUG sleep_proc:367: WLOCK_PROC ep=11 count=1
+		[   65.068591] DEBUG sleep_proc:414: nr=11 endp=11 dcid=0 lpid=658 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   65.068593] DEBUG sleep_proc:416: someone wakeups me: sem=0 p_rcode=0
+		[   65.068595] DEBUG new_mini_sendrec:813: WUNLOCK_PROC ep=11 count=1
+		[   65.068635] DEBUG 658:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=12 second=0 third=0 fifth=-1 
+		[   65.068637] DEBUG 658:ipc_mini_sendrec:106: srcdst_ep=12 timeout_ms=-1
+		[   65.068639] DEBUG new_mini_sendrec:527: srcdst_ep=12
+		[   65.068641] DEBUG check_caller:533: caller_pid=658 caller_tgid=658
+		[   65.068643] DEBUG check_caller:569: WLOCK_PROC ep=11 count=1
+		[   65.068645] DEBUG check_caller:599: WUNLOCK_PROC ep=11 count=1
+		[   65.068646] DEBUG check_caller:602: dcid=0
+		[   65.068648] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   65.068650] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   65.068651] DEBUG check_caller:616: caller_pid=658 
+		[   65.068653] DEBUG new_mini_sendrec:538: RLOCK_PROC ep=11 count=1
+		[   65.068656] DEBUG new_mini_sendrec:543: caller_nr=11 caller_ep=11 srcdst_ep=12 
+		[   65.068657] DEBUG new_mini_sendrec:550: RUNLOCK_PROC ep=11 count=1
+		[   65.068659] DEBUG new_mini_sendrec:552: dcid=0
+		[   65.068661] DEBUG new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+		[   65.068663] DEBUG new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+		[   65.068665] DEBUG new_mini_sendrec:575: RLOCK_PROC ep=11 count=1
+		[   65.068721] DEBUG new_mini_sendrec:586: RUNLOCK_PROC ep=11 count=1
+		[   65.068729] DEBUG new_mini_sendrec:592: WLOCK_PROC ep=12 count=1
+		[   65.068732] DEBUG new_mini_sendrec:594: srcdst_nr=12 srcdst_ep=12
+		[   65.068734] DEBUG new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+		[   65.068737] DEBUG new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+		[   65.068739] DEBUG new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+		[   65.068743] DEBUG new_mini_sendrec:637: dcid=0 caller_pid=658 caller_nr=11 srcdst_ep=12 
+		[   65.068744] DEBUG new_mini_sendrec:642: SENDING HALF
+		[   65.068746] DEBUG new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+		[   65.068751] DEBUG sleep_proc2:718: BEFORE DOWN lpid=658 p_sem=0 timeout=-1
+		[   65.068753] DEBUG sleep_proc2:720: endpoint=11 flags=C
+		[   65.068755] DEBUG sleep_proc2:724: WUNLOCK_PROC ep=11 count=2
+		[   65.068757] DEBUG sleep_proc2:724: WUNLOCK_PROC ep=12 count=1
+		[   65.068759] DEBUG sleep_proc2:725: endpoint=11 flags=C
+		[   75.071018] DEBUG 659:SYSC_ipc:163: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
+		[   75.071023] DEBUG 659:ipc_mini_receive:74: src_ep=31438 timeout_ms=-1
+		[   75.071025] DEBUG new_mini_receive:303: src_ep=31438
+		[   75.071027] DEBUG check_caller:533: caller_pid=659 caller_tgid=659
+		[   75.071029] DEBUG check_caller:569: WLOCK_PROC ep=12 count=1
+		[   75.071030] DEBUG check_caller:599: WUNLOCK_PROC ep=12 count=1
+		[   75.071031] DEBUG check_caller:602: dcid=0
+		[   75.071033] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   75.071034] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   75.071035] DEBUG check_caller:616: caller_pid=659 
+		[   75.071036] DEBUG new_mini_receive:314: RLOCK_PROC ep=12 count=1
+		[   75.071038] DEBUG new_mini_receive:318: caller_nr=12 caller_ep=12 src_ep=31438 
+		[   75.071038] DEBUG new_mini_receive:322: dcid=0
+		[   75.071040] DEBUG new_mini_receive:330: RUNLOCK_PROC ep=12 count=1
+		[   75.071041] DEBUG new_mini_receive:332: RLOCK_DC dc=0 count=0
+		[   75.071042] DEBUG new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+		[   75.071043] DEBUG new_mini_receive:385: WLOCK_PROC ep=12 count=1
+		[   75.071045] DEBUG new_mini_receive:434: WUNLOCK_PROC ep=12 count=1
+		[   75.071046] DEBUG new_mini_receive:435: WLOCK_PROC ep=11 count=2
+		[   75.071047] DEBUG new_mini_receive:436: WLOCK_PROC ep=12 count=1
+		[   75.071048] DEBUG new_mini_receive:440: Found acceptable message from 11. Copy it and update status.
+		[   75.071049] DEBUG new_mini_receive:443: LIST_DEL
+		[   75.071052] DEBUG copy_usr2usr:884: rqtr_ep=11 src_ep=11 src_lpid=658 src_vpid=2 src_addr=015f4008
+		[   75.071054] DEBUG copy_usr2usr:887: dst_ep=12 dst_lpid=659 dst_vpid=3 dst_addr=015f4008 bytes=76
+		[   75.071055] DEBUG copy_usr2usr:891: task_pid_nr(current)=659
+		[   75.071055] DEBUG copy_usr2usr:902: READ
+		[   75.071057] DEBUG copy_usr2usr:907: task_pid_nr(src_ptr->p_task)=658
+		[   75.071059] DEBUG dvk_vm_rw:442: pid=658 liovcnt=1 riovcnt=1 flags=0 vm_write=0
+		[   75.071061] DEBUG dvk_check_iovect:1280: type=0 nr_segs=1
+		[   75.071062] DEBUG dvk_rw_check_kvector:862: type=0 nr_segs=1
+		[   75.071063] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+		[   75.071065] DEBUG dvk_vm_rw_core:277: pid=658 riovcnt=1 flags=0 vm_write=0
+		[   75.071072] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+		[   75.071086] DEBUG dvk_vm_rw_core:349: rc=76
+		[   75.071087] DEBUG dvk_vm_rw_core:356: rc=76
+		[   75.071089] DEBUG copy_usr2usr:952: len=76
+		[   75.071090] DEBUG new_mini_receive:475: WUNLOCK_PROC ep=11 count=2
+		[   75.071092] DEBUG new_mini_receive:476: WUNLOCK_PROC ep=12 count=1
+		[   75.071144] DEBUG 659:SYSC_ipc:163: ipc_mini_send: call=512 first=11 second=0 third=0 fifth=-1 
+		[   75.071145] DEBUG 659:ipc_mini_send:52: dst_ep=11 timeout_ms=-1
+		[   75.071146] DEBUG new_mini_send:32: dst_ep=11
+		[   75.071148] DEBUG check_caller:533: caller_pid=659 caller_tgid=659
+		[   75.071149] DEBUG check_caller:569: WLOCK_PROC ep=12 count=1
+		[   75.071150] DEBUG check_caller:599: WUNLOCK_PROC ep=12 count=1
+		[   75.071151] DEBUG check_caller:602: dcid=0
+		[   75.071152] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   75.071153] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   75.071154] DEBUG check_caller:616: caller_pid=659 
+		[   75.071155] DEBUG new_mini_send:44: RLOCK_PROC ep=12 count=1
+		[   75.071157] DEBUG new_mini_send:48: caller_nr=12 caller_ep=12 dst_ep=11 
+		[   75.071158] DEBUG new_mini_send:53: RUNLOCK_PROC ep=12 count=1
+		[   75.071159] DEBUG new_mini_send:55: dcid=0
+		[   75.071160] DEBUG new_mini_send:59: RLOCK_DC dc=0 count=0
+		[   75.071161] DEBUG new_mini_send:64: RUNLOCK_DC dc=0 count=0
+		[   75.071162] DEBUG new_mini_send:79: RLOCK_PROC ep=12 count=1
+		[   75.071163] DEBUG new_mini_send:90: RUNLOCK_PROC ep=12 count=1
+		[   75.071165] DEBUG new_mini_send:93: WUNLOCK_PROC ep=12 count=2
+		[   75.071166] DEBUG new_mini_send:93: WLOCK_PROC ep=11 count=2
+		[   75.071167] DEBUG new_mini_send:93: WLOCK_PROC ep=12 count=2
+		[   75.071168] DEBUG new_mini_send:98: dst_nr=11 dst_ep=11
+		[   75.071169] DEBUG new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+		[   75.071170] DEBUG new_mini_send:121: RLOCK_DC dc=0 count=0
+		[   75.071171] DEBUG new_mini_send:125: RUNLOCK_DC dc=0 count=0
+		[   75.071172] DEBUG new_mini_send:140: dcid=0 caller_pid=659 caller_nr=12 dst_ep=11 
+		[   75.071174] DEBUG new_mini_send:222: destination is waiting. Copy the message and wakeup destination
+		[   75.071175] DEBUG copy_usr2usr:884: rqtr_ep=12 src_ep=12 src_lpid=659 src_vpid=3 src_addr=015f4008
+		[   75.071177] DEBUG copy_usr2usr:887: dst_ep=11 dst_lpid=658 dst_vpid=2 dst_addr=015f4008 bytes=76
+		[   75.071178] DEBUG copy_usr2usr:891: task_pid_nr(current)=659
+		[   75.071179] DEBUG copy_usr2usr:894: WRITE
+		[   75.071180] DEBUG copy_usr2usr:899: task_pid_nr(dst_ptr->p_task)=658
+		[   75.071181] DEBUG dvk_vm_rw:442: pid=658 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+		[   75.071182] DEBUG dvk_check_iovect:1280: type=1 nr_segs=1
+		[   75.071184] DEBUG dvk_rw_check_kvector:862: type=1 nr_segs=1
+		[   75.071185] DEBUG dvk_rw_check_kvector:862: type=-1 nr_segs=1
+		[   75.071186] DEBUG dvk_vm_rw_core:277: pid=658 riovcnt=1 flags=0 vm_write=1
+		[   75.071188] DEBUG dvk_vm_rw_core:331: i=0 rc=0
+		[   75.071197] DEBUG dvk_vm_rw_core:349: rc=76
+		[   75.071198] DEBUG dvk_vm_rw_core:356: rc=76
+		[   75.071199] DEBUG copy_usr2usr:952: len=76
+		[   75.071201] DEBUG inherit_cpu:285: cpuid=1 vpid=2
+		[   75.071207] DEBUG inherit_cpu:293: nr=11 endp=11 dcid=0 lpid=658 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   75.071208] DEBUG new_mini_send:233: BEFORE UP lpid=658 p_sem=-1 rcode=76
+		[   75.071218] DEBUG new_mini_send:234: WUNLOCK_PROC ep=11 count=2
+		[   75.071220] DEBUG new_mini_send:272: WUNLOCK_PROC ep=12 count=2
+		[   75.071927] DEBUG sleep_proc2:733: endpoint=11 ret=0 p_rcode=76
+		[   75.071931] DEBUG sleep_proc2:734: endpoint=11 flags=0 cpuid=1
+		[   75.071932] DEBUG sleep_proc2:736: WLOCK_PROC ep=11 count=2
+		[   75.071934] DEBUG sleep_proc2:736: WLOCK_PROC ep=12 count=2
+		[   75.071936] DEBUG sleep_proc2:783: nr=11 endp=11 dcid=0 lpid=658 p_cpumask=FFFFFFFF nodemap=1 name=test_sendrec 
+		[   75.071937] DEBUG sleep_proc2:785: someone wakeups me: sem=0 p_rcode=0
+		[   75.071940] DEBUG new_mini_sendrec:808: WUNLOCK_PROC ep=12 count=2
+		[   75.071941] DEBUG new_mini_sendrec:813: WUNLOCK_PROC ep=11 count=2
+		[   75.072000] DEBUG 658:SYSC_ipc:163: ipc_getprocinfo: call=3840 first=0 second=11 third=0 fifth=0 
+		[   75.072002] DEBUG 658:ipc_getprocinfo:283: dcid=0 p_nr=11
+		[   75.072004] DEBUG new_getprocinfo:1938: dcid=0 p_nr=11
+		[   75.072007] DEBUG check_caller:533: caller_pid=658 caller_tgid=658
+		[   75.072008] DEBUG check_caller:569: WLOCK_PROC ep=11 count=2
+		[   75.072009] DEBUG check_caller:599: WUNLOCK_PROC ep=11 count=2
+		[   75.072010] DEBUG check_caller:602: dcid=0
+		[   75.072012] DEBUG check_caller:606: RLOCK_DC dc=0 count=0
+		[   75.072013] DEBUG check_caller:610: RUNLOCK_DC dc=0 count=0
+		[   75.072014] DEBUG check_caller:616: caller_pid=658 
+		[   75.072016] DEBUG new_getprocinfo:1955: RLOCK_DC dc=0 count=0
+		[   75.072017] DEBUG new_getprocinfo:1960: RUNLOCK_DC dc=0 count=0
+		[   75.072018] DEBUG new_getprocinfo:1962: RLOCK_PROC ep=11 count=2
+		[   75.072019] DEBUG new_getprocinfo:1963: lpid=658 name=test_sendrec
+		[   75.072021] DEBUG new_getprocinfo:1965: RUNLOCK_PROC ep=11 count=2
+
+Si cambiamos a:
+		root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_sendrec 0 13 53
+			DONDE endpoint=53 es SERVER que hace RECEIVE 
+			ERROR: test_sendrec.c:main:104: rcode=-102 <<<< EDVSBADCALL
+			Producto de verificar si puede realizar el dvkcall RECEIVE 
+			if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, RECEIVE )){
+					ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+			} 
+			
+Si cambiamos a:
+		root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_sendrec 0  54 14
+			DONDE endpoint=14 es SERVER que hace RECEIVE y endpoint 54 cliente que hace SENDREC 
+			[  673.141653] ERROR: 22093:new_mini_sendrec:548: rcode=-102
+			if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, SENDREC )){
+				ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
+			}	 
 	
+	Por Default, todo proceso tendra acceso al SYSCALL (SENDREC, GETEP, WAIT4BIND, UNBIND)
+
+	
+		Se modifico dvk_debug.h 
+				#if defined CONFIG_DVKIPC || defined CONFIG_DVSIOCTL
+
+	
+		Cambie en el Linux y en DVS 
+			CONFIG_DVS_DVK => CONFIG_DVKIOCTL
+		usando https://www.internalpointers.com/post/linux-find-and-replace-text-multiple-files
+		
+		grep -RiIl 'CONFIG_DVK' | xargs sed -i 's/CONFIG_DVK/CONFIG_DVS_DVK/g'
+
+		grep -RiIl 'CONFIG_DVS_DVK' | xargs sed -i 's/CONFIG_DVS_DVK/CONFIG_DVKIOCTL/g'
+		
+		grep -RiIl 'DVS_DVK' | xargs sed -i 's/DVS_DVK/DVKIOCTL/g'
+		
+		PARA ENCONTRAR ARCHIVOS MODIFICADOS EN /usr/src/linux 
+		find . -type f -newermt '2020-07-23' | grep -v ".order" | grep -v ".builtin" | grep -v ".mod" | grep -v ".cmd" | grep -v ".o"
+
+		Se implementaron control de privilegios de PROXIES 
+			get2rmt equivalente a RECEIVE
+			put2lcl equivalente a SEND 
+			
+		Luego cuando se tiene un Mensaje a entregar por el PROXY_RECEIVER a traves de put2lcl 
+			Se deben controlar los permisos del endpoint emisor y receptor.
+			
+		En el proxy sender no deberia haber problemas porque ya el IPC controla eso.
+
+ 
+		------------------------------------------------------------------------------------------------	
+		COMPILE EL KERNEL SIN CONFIG_DVKIPC Y LUEGO COMPILE EL MODULO 
+		RECOMPILE TODOS LOS PROGRAMAS PARA QUE USEN LA LIBRERIA DE IOCTL
+		EL MODULO CARGA 
+			root@node0:/usr/src/dvs/dvk-tests# dmesg
+			root@node0:/usr/src/dvs/dvk-tests# lsmod | grep dvk
+			dvk                   262144  0
+
+		PERO NO ESTAN RESUELTAS LAS DVK CALLS 
+			root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_info 
+			DEBUG 697:dvk_open:102: 
+			Get DVS info
+			DEBUG 697:dvk_getdvsinfo:248: 
+			DEBUG 697:dvk_getdvsinfo:252: ipc ret=-1
+			ERROR: 697:dvk_getdvsinfo:253: rcode=-38
+			ERROR: 697:dvk_getdvsinfo:264: rcode=-38
+			local node ID -38... 
+			d_name= d_nr_dcs=0 d_nr_nodes=0 d_nr_procs=0 d_nr_tasks=0 d_nr_sysprocs=0 
+			d_max_copybuf=0 d_max_copylen=0
+			d_dbglvl=0 version=0 flags=0 sizeof(proc)=0
+
+
+		grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIPC/g'
+
+
+		Jul 23 20:02:15 node0 kernel: [   53.684729] dvk: loading out-of-tree module taints kernel.
+		Jul 23 20:02:15 node0 kernel: [   53.698794] DEBUG dvk_init_module:397: Hello, DVS! tasklist_ptr=D887C1C0
+		Jul 23 20:02:15 node0 kernel: [   53.713585] DEBUG dvk_init_module:400: Hello, DVS! dvk_dvs_init=0
+		Jul 23 20:02:15 node0 kernel: [   53.714242] DEBUG dvk_init_module:409: Hello, DVS! setaffinity_ptr=D8092560
+		Jul 23 20:02:15 node0 kernel: [   53.714820] DEBUG dvk_init_module:413: Hello, DVS! free_nsproxy_ptr=D80864F0
+		Jul 23 20:02:15 node0 kernel: [   53.715265] DEBUG dvk_init_module:417: Hello, DVS! sys_wait4_ptr=D806C880
+		Jul 23 20:02:15 node0 kernel: [   53.727917] DEBUG dvk_init_module:421: Hello, DVS! dvk_unbind_ptr=D89F8BB0
+		Jul 23 20:02:15 node0 kernel: [   53.727920] DEBUG dvk_init_module:423: usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
+		Jul 23 20:02:15 node0 kernel: [   53.727922] DEBUG dvk_init_module:425: parms:  dvk_major=33 dvk_minor=0 dvk_nr_devs=1
+		Jul 23 20:02:15 node0 kernel: [   53.728066] DEBUG dvk_init_module:442: Registeration is a success The major device number is 33.
+		Jul 23 20:02:15 node0 kernel: [   53.728067] DEBUG dvk_init_module:443: We suggest you use:
+		Jul 23 20:02:15 node0 kernel: [   53.728068] DEBUG dvk_init_module:444: mknod /dev/dvk c 33 0
+		Jul 23 20:02:15 node0 kernel: [   53.728069] DEBUG dvk_init_module:445: OLD local_nodeid=-1
+		Jul 23 20:02:15 node0 kernel: [   53.728070] DEBUG dvk_replace_init:273: 
+		Jul 23 20:02:15 node0 kernel: [   53.728071] DEBUG reljmp_init_once:103: reljmp: initialize
+		Jul 23 20:02:15 node0 kernel: [   53.738813] reljmp: text_mutex @ 0xd8895550
+		Jul 23 20:02:15 node0 kernel: [   53.738985] reljmp: text_poke @ 0xd8029520
+		Jul 23 20:02:15 node0 kernel: [   53.740431] reljmp: jump_label_lock @ 0xd8168580
+		Jul 23 20:02:15 node0 kernel: [   53.741765] reljmp: jump_label_unlock @ 0xd81685a0
+		Jul 23 20:02:15 node0 kernel: [   53.741768] DEBUG reljmp_init:117: reljmp: initialize old_exit_unbind
+		Jul 23 20:02:15 node0 kernel: [   53.742207] DEBUG reljmp_init:129: reljmp: original old_exit_unbind:d806a310
+		Jul 23 20:02:15 node0 kernel: [   53.755048] DEBUG reljmp_init:139: reljmp: replacement new_exit_unbind:f88538b3
+		Jul 23 20:02:15 node0 kernel: [   53.755051] DEBUG reljmp_init:146: reljmp: jump code f887f199
+		Jul 23 20:02:15 node0 kernel: [   53.755053] DEBUG exit_unbind_init_handler:40: 
+		Jul 23 20:02:15 node0 kernel: [   53.755054] DEBUG reljmp_register:88: register old_exit_unbind
+		Jul 23 20:02:15 node0 kernel: [   53.755055] DEBUG reljmp_lock:49: 
+		Jul 23 20:02:15 node0 kernel: [   53.763875] DEBUG reljmp_unlock:61: 
+		Jul 23 20:02:15 node0 kernel: [   53.763881] DEBUG reljmp_register:96: reljmp: patched old_exit_unbind:d806a310
+		Jul 23 20:02:24 node0 kernel: [   61.937418] DEBUG dvk_open:308: 
+		Jul 23 20:02:24 node0 kernel: [   61.937502] DEBUG dvk_ioctl:342: cmd=8004E31B arg=528DA0
+		Jul 23 20:02:24 node0 kernel: [   61.937505] DEBUG dvk_ioctl:362: DVK_CALL=27 (io_getdvsinfo) 
+		Jul 23 20:02:24 node0 kernel: [   61.937506] DEBUG io_getdvsinfo:288: 
+		Jul 23 20:02:24 node0 kernel: [   61.937508] DEBUG new_getdvsinfo:1836: local_nodeid=-1 
+		Jul 23 20:02:24 node0 kernel: [   61.937510] ERROR: 638:dvk_ioctl:366: rcode=-1
+
+
+		root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_info 
+		DEBUG 664:dvk_open:102: 
+		Get DVS info
+		DEBUG 664:dvk_getdvsinfo:248: 
+		DEBUG 664:dvk_getdvsinfo:252: ipc ret=-1
+		ERROR: 664:dvk_getdvsinfo:253: rcode=-38
+		ERROR: 664:dvk_getdvsinfo:264: rcode=-38
+		local node ID -38... 
+		d_name= d_nr_dcs=0 d_nr_nodes=0 d_nr_procs=0 d_nr_tasks=0 d_nr_sysprocs=0 
+		d_max_copybuf=0 d_max_copylen=0
+		d_dbglvl=0 version=0 flags=0 sizeof(proc)=0
+
+		
+===============================================================================================================
+ULTIMO_LOG
+===============================================================================================================
 TODO:  Probar con IOCTL y con IPC 
 
+
+		
 TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD en p_misc_flags.
 		Esto se hizo en el proxy de kernel 
 		C:\PAP\UTN\INVESTIGACION\LAB-NTC\PROYECTOS\MOL-IPC\m3-ipc-mod\MoL_Module\ksocket-0.0.2\m3ipc_tcp_proxy
 		PROBLEMA CON COPY_KRN_USR y viceversa.	
 		
-		
+
+	
+				
 		
 		
 

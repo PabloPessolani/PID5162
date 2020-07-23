@@ -2,7 +2,7 @@
 /*	MINIX OVER LINUX DEBUGFS ROUTINES 				*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -187,7 +187,7 @@ static int mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 		
 	return 0;
 }
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 
 
 

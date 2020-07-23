@@ -88,7 +88,7 @@ dvs_usr_t dvs = {
 		};
 #else // CONFIG_UML_DVK
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 dvs_usr_t dvs = {
 		"DVS_IPC",
 		NR_DCS,
@@ -105,9 +105,9 @@ dvs_usr_t dvs = {
 		DVS_VERSION,
 		0
 		};
-#else // CONFIG_DVKIPC	
+#else // CONFIG_DVKIOCTLIPC	
 extern dvs_usr_t dvs;
-#endif // CONFIG_DVKIPC	
+#endif // CONFIG_DVKIOCTLIPC	
 
 #endif // CONFIG_UML_DVK	
 

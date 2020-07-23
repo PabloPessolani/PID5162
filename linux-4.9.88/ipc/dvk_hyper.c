@@ -2,7 +2,7 @@
 /*			MINIX OVER LINUX HYPERVISOR 	 	*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #define DVK_GLOBAL_HERE 1
 #include "dvk_ipc.h"
@@ -3708,5 +3708,5 @@ DVKDEBUG(DBGLVL1,"i=%d p_nr=%d dcid=%d lpid=%d endpoint=%d nodeid=%d name=%s\n",
 
 #endif /*MOLAUTOFORK */
 #endif // NULL_CODE
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 

@@ -5,6 +5,10 @@
 #include "timers.h"
 #endif // _DVSCOM_TIMERS_H
 
+#ifndef KIPC_H
+#include "kipc.h"
+#endif // KIPC_H
+
 #ifndef _DVKCOM_TYPES_H
 #include "types.h"
 #endif // _DVKCOM_TYPES_H
@@ -23,16 +27,16 @@ struct priv_usr {
   int		priv_level;			/* privilege level		*/
 
   short 	priv_trap_mask;		/* allowed system call traps */
-  dvk_map_t priv_ipc_from;		/* allowed callers to receive from */
-  dvk_map_t priv_ipc_to;		/* allowed destination processes */
-  long 		priv_call_mask;			/* allowed dvk calls */
+  ipc_map_t priv_ipc_from;		/* allowed callers to receive from */
+  ipc_map_t priv_ipc_to;		/* allowed destination processes */
+  dvk_map_t	priv_dvk_allowed;		/* allowed dvk calls */
 
   dvktimer_t priv_alarm_timer;	/* synchronous alarm timer */ 
 
 };
 typedef struct priv_usr priv_usr_t;
 
-#define PRIV_USR_FORMAT "priv_id=%d priv_warn=%d priv_level=%d trap=%X call=%X\n"
-#define PRIV_USR_FIELDS(p) p->priv_id, p->priv_warn, p->priv_level,(unsigned int)p->priv_trap_mask,(unsigned int) p->priv_call_mask
+#define PRIV_USR_FORMAT "priv_id=%d priv_warn=%d priv_level=%d\n"
+#define PRIV_USR_FIELDS(p) p->priv_id, p->priv_warn, p->priv_level
 
 #endif /* _COM_PRIV_USR_H */

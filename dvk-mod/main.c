@@ -382,9 +382,7 @@ static	char *tasklist_name = "tasklist_lock";
 static	char *setaffinity_name = "sched_setaffinity";
 static	char *free_nsproxy_name = "free_nsproxy";
 static	char *sys_wait4_name = "sys_wait4";
-static	char *scnprintf_name = "bitmap_scnprintf";
 static	char *exit_unbind_name = "exit_unbind_ptr";
-static	char *dvk_mod_ipc_name = "dvk_mod_ipc";
 	
 	unsigned long sym_addr = kallsyms_lookup_name(tasklist_name);
 	
@@ -405,18 +403,10 @@ static	char *dvk_mod_ipc_name = "dvk_mod_ipc";
 	sys_wait4_ptr = (void *) sym_addr;
 	DVKDEBUG(DBGLVL0,"Hello, DVS! sys_wait4_ptr=%X\n", sys_wait4_ptr);
 		
-	sym_addr = kallsyms_lookup_name(scnprintf_name);
-	scnprintf_ptr = (void *) sym_addr;
-	DVKDEBUG(DBGLVL0,"Hello, DVS! scnprintf_ptr=%X\n", scnprintf_ptr);
-	
 	sym_addr = kallsyms_lookup_name(exit_unbind_name);
 	dvk_unbind_ptr = (void *) sym_addr;
 	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_unbind_ptr=%X\n", dvk_unbind_ptr);
 	
-	sym_addr = kallsyms_lookup_name(dvk_mod_ipc_name);
-	dvk_mod_ipc_ptr = (void *) sym_addr;
-	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_mod_ipc_ptr=%X\n", dvk_mod_ipc_ptr);
-		
 	DVKDEBUG(DBGLVL0,"usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 \n");
 	DVKDEBUG(DBGLVL0,"parms:  dvk_major=%d dvk_minor=%d dvk_nr_devs=%d\n",
 				 dvk_major, dvk_minor, dvk_nr_devs);

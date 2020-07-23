@@ -2,7 +2,7 @@
 /*		MINIX OVER LINUX IPC PRIMITIVES FOR PROXIES	*/
 /****************************************************************/
 
-#ifdef  CONFIG_DVKIPC 
+#ifdef  CONFIG_DVKIOCTLIPC 
 
 #include "dvk_ipc.h"
 
@@ -888,5 +888,5 @@ do {
 	if(ret) ERROR_RETURN(ret);
 	return(ret);
 }
-#endif //CONFIG_DVKIPC 
+#endif //CONFIG_DVKIOCTLIPC 
 

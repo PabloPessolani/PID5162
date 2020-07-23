@@ -276,13 +276,13 @@ static int dvk_replace_init(void)
 	retval = reljmp_init_once();
 	if (retval) ERROR_RETURN(retval);
 
-	for (i = 0; i < ARRAY_SIZE(reljmp_func); i++) {
+	for (i = 0; i < ARRAY_SIZE(reljmp_func)-1; i++) { // ONE LESS WHEN DVKIPC IS NOT LOADED
 		retval = reljmp_init(reljmp_func[i]);
 		if (retval) ERROR_RETURN(retval);
 	}
 
 	/* Register the jumps */
-	for (i = 0; i < ARRAY_SIZE(reljmp_func); i++) {
+	for (i = 0; i < ARRAY_SIZE(reljmp_func)-1; i++) { // ONE LESS WHEN DVKIPC IS NOT LOADED
 		reljmp_register(reljmp_func[i]);
 	}
 
@@ -387,10 +387,8 @@ static	char *tasklist_name = "tasklist_lock";
 static	char *setaffinity_name = "sched_setaffinity";
 static	char *free_nsproxy_name = "free_nsproxy";
 static	char *sys_wait4_name = "sys_wait4";
-static	char *scnprintf_name = "bitmap_scnprintf";
 static	char *exit_unbind_name = "exit_unbind_ptr";
-static	char *dvk_mod_ipc_name = "dvk_mod_ipc";
-static	char *dvk_dvs_name = "dvs";
+static	char *dvk_dvs_init = "ipc_dvs_init";
 	
 	unsigned long sym_addr = kallsyms_lookup_name(tasklist_name);
 	
@@ -398,9 +396,11 @@ static	char *dvk_dvs_name = "dvs";
 	tasklist_ptr = (rwlock_t *) sym_addr;
 	DVKDEBUG(DBGLVL0,"Hello, DVS! tasklist_ptr=%X\n", tasklist_ptr);
 
-	sym_addr = kallsyms_lookup_name(dvk_dvs_name);
+	sym_addr = kallsyms_lookup_name(dvk_dvs_init);
+	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_dvs_init=%X\n", sym_addr);
 	if( sym_addr == NULL) {
 
+		dvk_iface_type = DVK_IOCTL;		
 		dvs_ptr = &dvs;
 		dvs_ptr->d_dbglvl = 0xFFFFFFFF;
 
@@ -415,19 +415,11 @@ static	char *dvk_dvs_name = "dvs";
 		sym_addr = kallsyms_lookup_name(sys_wait4_name);
 		sys_wait4_ptr = (void *) sym_addr;
 		DVKDEBUG(DBGLVL0,"Hello, DVS! sys_wait4_ptr=%X\n", sys_wait4_ptr);
-			
-		sym_addr = kallsyms_lookup_name(scnprintf_name);
-		scnprintf_ptr = (void *) sym_addr;
-		DVKDEBUG(DBGLVL0,"Hello, DVS! scnprintf_ptr=%X\n", scnprintf_ptr);
-		
+				
 		sym_addr = kallsyms_lookup_name(exit_unbind_name);
 		dvk_unbind_ptr = (void *) sym_addr;
 		DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_unbind_ptr=%X\n", dvk_unbind_ptr);
 		
-		sym_addr = kallsyms_lookup_name(dvk_mod_ipc_name);
-		dvk_mod_ipc_ptr = (void *) sym_addr;
-		DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_mod_ipc_ptr=%X\n", dvk_mod_ipc_ptr);
-			
 		DVKDEBUG(DBGLVL0,"usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 \n");
 		DVKDEBUG(DBGLVL0,"parms:  dvk_major=%d dvk_minor=%d dvk_nr_devs=%d\n",
 					 dvk_major, dvk_minor, dvk_nr_devs);
@@ -454,16 +446,16 @@ static	char *dvk_dvs_name = "dvs";
 
 	//	atomic_set ( &local_nodeid, 3);
 	//	DVKDEBUG(DBGLVL0, "NEW local_nodeid=%d\n", atomic_read(&local_nodeid));
+    	rcode = dvk_replace_init();
 	}else {
+		SET_BIT( dvk_iface_type, BIT_IOCTL);		
 		dvs_ptr = (void *) sym_addr;
 		DVKDEBUG(DBGLVL0,"Hello, DVS! dvs_ptr=%X\n", dvs_ptr);
-		DVKDEBUG(DBGLVL0, "Current kernel has CONFIG_DVKIPC\n");
+		DVKDEBUG(DBGLVL0, "Current kernel has CONFIG_DVKIPC dvk_iface_type=%x\n", dvk_iface_type);
 		set_bit(DVK_IOCTL, &dvs_ptr->d_flags);
 		DVKDEBUG(DBGLVL0,"DVS flags=%X\n", dvs_ptr->d_flags);
+		rcode = EDVSEXIST;
 	}
-	
-
-	rcode = dvk_replace_init();
 	
 	return(rcode);
 }

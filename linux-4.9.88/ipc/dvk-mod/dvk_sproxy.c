@@ -100,6 +100,8 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	ret = OK;
 	WLOCK_PROC(sproxy_ptr);
 	do {
+		if( ! get_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_GET2RMT ))
+			{ret = EDVSBADCALL;break;} 
 		if( !test_bit(MIS_BIT_PROXY, &sproxy_ptr->p_usr.p_misc_flags))	{ret = EDVSNOPROXY;break;} 
 		if( !test_bit(MIS_BIT_CONNECTED, &sproxy_ptr->p_usr.p_misc_flags)){ret = EDVSNOTCONN;break;}  
 	} while(0);

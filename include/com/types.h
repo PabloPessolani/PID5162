@@ -13,8 +13,12 @@ typedef long unsigned int update_t;
 #define BITMAP_CHUNKS(nr_bits) (((nr_bits)+BITCHUNK_BITS-1)/BITCHUNK_BITS)
 
 typedef struct {			/* bitmap for sys indexes */
-  bitchunk_t chunk[BITMAP_CHUNKS(NR_SYS_PROCS)];
+  bitchunk_t chunk[BITMAP_CHUNKS(NR_DVK_CALLS)];
 } dvk_map_t;
+
+typedef struct {			/* bitmap for sys process indexes */
+  bitchunk_t chunk[BITMAP_CHUNKS(NR_SYS_PROCS)];
+} ipc_map_t;
 
 typedef struct {			/* bitmap for VM indexes */
   bitchunk_t chunk[BITMAP_CHUNKS(NR_DCS)];

@@ -13,7 +13,7 @@ dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
-cd /usr/src/dvs/dvk-mod
+cd /usr/src/linux/ipc/dvk-mod/
 mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
@@ -28,7 +28,7 @@ read  -p "mount Enter para continuar... "
 #mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
 cd /usr/src/dvs/dvk-tests
 read  -p "local_nodeid=$lcl Enter para continuar... "
-./test_dvs_init -n $lcl -D 16777215
+./test_dvs_init -n $lcl -D 16777215 -C TEST_CLUSTER
 read  -p "DC$dcid Enter para continuar... "
 # ./test_dc_init -d $dcid
 cd /dev/shm

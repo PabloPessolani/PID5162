@@ -181,8 +181,9 @@
  long ipc_bind(int oper, int dcid, int param_pid, int endpoint, int nodeid)
 {  
 	long rcode;
-	rcode = new_bind(oper, dcid, param_pid,
+	DVKDEBUG(DBGPARAMS,"oper=%d dcid=%d param_pid=%d endpoint=%d nodeid=%d\n",oper, dcid, param_pid,
 						endpoint, nodeid);
+	rcode = new_bind(oper, dcid, param_pid,	endpoint, nodeid);
 	return(rcode);
 }
 

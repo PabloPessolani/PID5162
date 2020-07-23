@@ -320,7 +320,7 @@ source "kernel/Kconfig.freezer"
 menu "Processor type and features"
 
 if X86_32
-config DVS_DVK
+config DVKIOCTL
 	bool "DVS Distributed Virtualization Kernel (DVK) for x86 platforms (32 bits)"
 	default y
 	---help---

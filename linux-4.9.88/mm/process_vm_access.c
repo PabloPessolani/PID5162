@@ -21,11 +21,14 @@
 #include <linux/compat.h>
 #endif
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
-//#endif // CONFIG_DVK
+#include "/usr/src/dvs/include/com/com.h"
+#include "/usr/src/dvs/include/com/dvs_usr.h"
+#include "../ipc/dvk-mod/dvk_debug.h"
+#include "../ipc/dvk-mod/dvk_macros.h"
+extern dvs_usr_t dvs;
+//#endif // CONFIG_DVKIOCTL
 
 /**
  * process_vm_rw_pages - read/write pages from task specified
@@ -245,7 +248,7 @@ free_proc_pages:
 	return rc;
 }
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 /**
  * dvk_vm_rw_core - core of reading/writing pages from task specified
  * @task: task struct pointer of the process to read/write from/to
@@ -356,7 +359,7 @@ free_proc_pages:
 	DVKDEBUG(INTERNAL,"rc=%d\n",rc);
 	return rc;
 }
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 
 /**
@@ -412,7 +415,7 @@ free_iovecs:
 	return rc;
 }
 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 /**
  * dvk_vm_rw - check iovecs before calling core routine
  * @pid: PID of process to read/write from/to
@@ -455,7 +458,7 @@ ssize_t dvk_vm_rw(struct task_struct *task,
 	return(rc);
 }
 EXPORT_SYMBOL(dvk_vm_rw);
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 
 SYSCALL_DEFINE6(process_vm_readv, pid_t, pid, const struct iovec __user *, lvec,

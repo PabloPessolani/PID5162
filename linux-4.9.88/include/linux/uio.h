@@ -164,10 +164,10 @@ int import_iovec(int type, const struct iovec __user * uvector,
 		 unsigned nr_segs, unsigned fast_segs,
 		 struct iovec **iov, struct iov_iter *i);
 		 
-//#ifdef CONFIG_DVK
+//#ifdef CONFIG_DVKIOCTL
 int dvk_check_iovect(int type, const struct iovec *kvector,
 		 unsigned nr_segs, struct iov_iter *iter);
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 #ifdef CONFIG_COMPAT
 struct compat_iovec;

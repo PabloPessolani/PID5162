@@ -21,20 +21,24 @@ void init_proc_desc(struct proc *proc_ptr, int dcid, int index)
 	}else{
 		dc_ptr = &dc[dcid];
 		proc_ptr->p_usr.p_nr 	= (index-(dc_ptr->dc_usr.dc_nr_tasks));
-		for (j=0; j< BITMAP_CHUNKS(dvs_ptr->d_nr_sysprocs); j++) {
-	      		proc_ptr->p_priv.priv_notify_pending.chunk[j] = 0;	
-	      		proc_ptr->p_priv.priv_usr.priv_ipc_from.chunk[j] = 0;	
-	      		proc_ptr->p_priv.priv_usr.priv_ipc_to.chunk[j] = 0;	
-				proc_ptr->p_priv.priv_notify_pending.chunk[j] = 0;	
-		}
+		CLR_SYS_MAP(proc_ptr->p_priv.priv_notify_pending);
 	}
 
+	DVKDEBUG(INTERNAL,"Clearing Privileges\n");
 	proc_ptr->p_priv.priv_usr.priv_id	   		= 0;
-	proc_ptr->p_priv.priv_usr.priv_warn	   	= NONE;
+	proc_ptr->p_priv.priv_usr.priv_warn	   		= NONE;
 	proc_ptr->p_priv.priv_usr.priv_level     	= USER_PRIV;
 	proc_ptr->p_priv.priv_usr.priv_trap_mask 	= 0;
-	proc_ptr->p_priv.priv_usr.priv_call_mask 	= 0;
+	CLR_SYS_MAP(proc_ptr->p_priv.priv_usr.priv_ipc_to);
+	CLR_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	
+	DVKDEBUG(INTERNAL,"Setting Default DVK calls privileges\n");
+	set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_SENDREC); 
+	set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_UNBIND); 
+	set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GETEP); 
+	set_sys_bit(proc_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_WAIT4BIND); 
 
+	DVKDEBUG(INTERNAL,"Clearing Process fields\n");
 	proc_ptr->p_usr.p_dcid 				= dcid;
 	proc_ptr->p_usr.p_lpid 				= PROC_NO_PID;
 	proc_ptr->p_usr.p_vpid 				= PROC_NO_PID;
@@ -42,7 +46,6 @@ void init_proc_desc(struct proc *proc_ptr, int dcid, int index)
 	proc_ptr->p_usr.p_misc_flags 		= GENERIC_PROC;
 	proc_ptr->p_usr.p_nodeid 			= (-1);			/* OLD: atomic_read(&local_nodeid); */
 	proc_ptr->p_usr.p_nodemap 			= 0;
-
 	proc_ptr->p_rcode 					= OK;	
 
 	memset(&proc_ptr->p_message,0,sizeof(message));
@@ -267,8 +270,24 @@ void clear_proxies(proxies_t *px_ptr)
 	px_ptr->px_usr.px_maxbcmds = 0;
 	sproxy_ptr = &px_ptr->px_sproxy;
 	rproxy_ptr = &px_ptr->px_rproxy;
+
 	init_proc_desc(sproxy_ptr, PROXY_NO_DC, px_ptr->px_usr.px_id);
+	CLR_SYS_MAP(sproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
+	CLR_DVK_MAP(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	DVKDEBUG(INTERNAL,"Setting Default DVK calls privileges\n");
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
+	
 	init_proc_desc(rproxy_ptr, PROXY_NO_DC, px_ptr->px_usr.px_id);
+	CLR_SYS_MAP(rproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
+	CLR_DVK_MAP(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
+
 	sproxy_ptr->p_usr.p_rts_flags	= SLOT_FREE;
 	rproxy_ptr->p_usr.p_rts_flags	= SLOT_FREE;
 	strcpy(px_ptr->px_usr.px_name, "NONAME");
@@ -285,7 +304,7 @@ void inherit_cpu(struct proc *proc_ptr)
 	proc_usr_t *pu_ptr;	
 	
 	cpuid = get_cpu();
-	DVKDEBUG(INTERNAL, "cpuid=%d vpid=ld\n", cpuid, proc_ptr->p_usr.p_vpid );
+	DVKDEBUG(INTERNAL, "cpuid=%d vpid=%ld\n", cpuid, proc_ptr->p_usr.p_vpid );
 	cpumask_clear(&tmp_cpumask);
 	cpumask_set_cpu(cpuid, &tmp_cpumask);
 	if ( (ret = setaffinity_ptr(proc_ptr->p_usr.p_vpid, &tmp_cpumask)))
@@ -597,6 +616,7 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 			ERROR_WUNLOCK_PROC(caller_ptr,EDVSNOTREADY);
 		}
 	}
+
 	px = test_bit(MIS_BIT_PROXY, &caller_ptr->p_usr.p_misc_flags);
 	WUNLOCK_PROC(caller_ptr);
 	
