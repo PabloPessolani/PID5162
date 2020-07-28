@@ -8785,9 +8785,16 @@ DEBUG rd_thread:1167:
 
 				
 ==============================================================================================
-
-		 
 VIENDO QUE NO DA RESULTADO NADA, entonces la proxima opcion es generar un RAMDISK del ejemplo de ldd3.pdf 
+===================================================================================
+ 20200728:
+			ATENCION , al haber cambiado de lugar del dvk-mod de 
+				dvs/dvk-mod 
+			a 
+				linux/ipc/dvk-mod 
+				
+			Cuando se compila UML BORRA EL MODULO!!! dvk.ko !!!!
+				 
  
 		 
  ====================================  ULTIMO_LOG ===================================
@@ -10122,4 +10129,5 @@ fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
 
 
 
+	grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIOCTL/g'
 

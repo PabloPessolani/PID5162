@@ -3,7 +3,7 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
 		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
-		uml_test
+		uml_test test_priv_info test_set_priv
 		
 	
 INCLUDE = ..
@@ -21,6 +21,12 @@ test_dvs_init: test_dvs_init.c
 
 test_dvs_info: test_dvs_info.c 
 	$(CC)  $(CFLAGS) -o test_dvs_info test_dvs_info.c  $(LIBS) -I$(INCLUDE)
+
+test_priv_info: test_priv_info.c 
+	$(CC)  $(CFLAGS) -o test_priv_info test_priv_info.c  $(LIBS) -I$(INCLUDE)
+
+test_set_priv: test_set_priv.c 
+	$(CC)  $(CFLAGS) -o test_set_priv test_set_priv.c  $(LIBS) -I$(INCLUDE)
 	
 test_dc_init: test_dc_init.c 
 	$(CC)  $(CFLAGS) -o test_dc_init test_dc_init.c  $(LIBS) -I$(INCLUDE)

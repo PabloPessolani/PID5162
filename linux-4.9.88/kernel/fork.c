@@ -92,8 +92,8 @@
 
 //#ifdef CONFIG_DVKIOCTL
 #include "/usr/src/dvs/include/com/config.h"
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
+#include "../ipc/dvk-mod/dvk_debug.h"
+#include "../ipc/dvk-mod/dvk_macros.h"
 //#endif // CONFIG_DVKIOCTL
 
 /*

@@ -27,7 +27,12 @@
 #include "/usr/src/dvs/include/com/dvs_usr.h"
 #include "../ipc/dvk-mod/dvk_debug.h"
 #include "../ipc/dvk-mod/dvk_macros.h"
+#ifdef CONFIG_UML_DVK 
 extern dvs_usr_t dvs;
+#else //CONFIG_UML_DVK
+dvs_usr_t dvs;
+#endif // CONFIG_UML_DVK
+	
 //#endif // CONFIG_DVKIOCTL
 
 /**

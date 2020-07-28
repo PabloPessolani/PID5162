@@ -5,7 +5,7 @@
  */
 
 // MEMORY TEST DISK 
-#define RD_MEMORY			1
+//#define RD_MEMORY			1
 
 #ifndef __UM_RDISK_USER_H
 #define __UM_RDISK_USER_H

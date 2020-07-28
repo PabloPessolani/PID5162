@@ -37,7 +37,7 @@ struct proc {
   proc_usr_t	 	p_usr;  /* SIEMPRE DEBE ESTAR PRIMERO !!!! */
 
   char *p_name_ptr;		/* for local processes is pointer to task_ptr->comm */		
-  int p_rcode;			/* return code of an IPC operation */
+  int 	p_rcode;			/* return code of an IPC operation */
 
   priv_t  p_priv;		/* privileges structure */
 

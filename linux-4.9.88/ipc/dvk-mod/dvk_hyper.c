@@ -1383,6 +1383,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 	struct task_struct *task_ptr, *leader_ptr;
 	char *uname_ptr;
 	pid_t lpid, vpid, tid;
+	priv_usr_t *upriv_ptr;
 
 #ifdef DVS_CAPABILITIES
 	 if ( !capable(CAP_VOS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
@@ -1634,6 +1635,9 @@ setaffinity_ptr(param_pid, &pap_mask);
 		COPY_FROM_USER_PROC(rcode, proc_ptr->p_usr.p_name,uname_ptr,MAXPROCNAME-1);
 	}
 
+	upriv_ptr = &proc_ptr->p_priv.priv_usr;
+	DVKDEBUG(INTERNAL,"sizeof(priv_usr_t)=%d\n" , sizeof(priv_usr_t));
+	DVKDEBUG(INTERNAL,PRIV_USR_FORMAT,PRIV_USR_FIELDS(upriv_ptr));
 	PRINT_SYS_MAP(proc_ptr->p_priv.priv_usr.priv_ipc_to);
 	PRINT_DVK_MAP(proc_ptr->p_priv.priv_usr.priv_dvk_allowed);
 	
@@ -2418,7 +2422,7 @@ asmlinkage long new_getpriv(int dcid, int proc_ep, priv_usr_t *u_priv)
 	RLOCK_PROC(proc_ptr);
 	kp_ptr = &proc_ptr->p_priv.priv_usr;
 //	ret = copy_to_user( u_priv, kp_ptr,  sizeof(priv_usr_t));
-	COPY_TO_USER_PROC(ret, u_priv, kp_ptr,  sizeof(priv_usr_t));
+	COPY_TO_USER_PROC(ret, kp_ptr, u_priv,  sizeof(priv_usr_t));
 	DVKDEBUG(DBGPRIV,PRIV_USR_FORMAT,PRIV_USR_FIELDS(kp_ptr));
 	RUNLOCK_PROC(proc_ptr);
 	RUNLOCK_DC(dc_ptr);
@@ -2435,7 +2439,8 @@ asmlinkage long new_setpriv(int dcid, int proc_ep, priv_usr_t *u_priv)
 {
 	dc_desc_t *dc_ptr;
 	struct proc *proc_ptr;
-	priv_usr_t *kp_ptr;
+	priv_usr_t lclpriv, *lcl_ptr;
+	priv_usr_t *kpriv_ptr;
 	int proc_nr;
 	int ret = OK;
 
@@ -2464,10 +2469,28 @@ asmlinkage long new_setpriv(int dcid, int proc_ep, priv_usr_t *u_priv)
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDSTDIED);
 
 	WLOCK_PROC(proc_ptr);
-	kp_ptr = &proc_ptr->p_priv.priv_usr;
-//	ret = copy_from_user( kp_ptr, u_priv, sizeof(priv_usr_t));
-	COPY_FROM_USER_PROC(ret, kp_ptr, u_priv, sizeof(priv_usr_t));
-	DVKDEBUG(DBGPRIV,PRIV_USR_FORMAT,PRIV_USR_FIELDS(kp_ptr));
+	kpriv_ptr = &proc_ptr->p_priv.priv_usr;
+//	ret = copy_from_user( kpriv_ptr, u_priv, sizeof(priv_usr_t));
+	lcl_ptr = &lclpriv;
+	COPY_FROM_USER_PROC(ret, lcl_ptr, u_priv, sizeof(priv_usr_t));
+	DVKDEBUG(DBGPRIV,PRIV_USR_FORMAT,PRIV_USR_FIELDS(lcl_ptr));
+	PRINT_DVK_MAP(lcl_ptr->priv_dvk_allowed);
+	PRINT_SYS_MAP(lcl_ptr->priv_ipc_to);
+	
+	if((lcl_ptr->priv_warn < (-dc_ptr->dc_usr.dc_nr_tasks) )
+			|| (lcl_ptr->priv_warn >= (dc_ptr->dc_usr.dc_nr_sysprocs))){
+		ret = EDVSBADPROC;
+	}else if ( lcl_ptr->priv_level < 0 || lcl_ptr->priv_level > PROXY_PRIV){
+		ret = EDVSBADVALUE;
+	}else{  
+		kpriv_ptr->priv_warn  = lcl_ptr->priv_warn;
+		kpriv_ptr->priv_level = lcl_ptr->priv_level;
+		memcpy(&kpriv_ptr->priv_ipc_to, &lcl_ptr->priv_ipc_to, sizeof(ipc_map_t));
+		memcpy(&kpriv_ptr->priv_dvk_allowed, &lcl_ptr->priv_dvk_allowed, sizeof(dvk_map_t));
+		PRINT_DVK_MAP(kpriv_ptr->priv_dvk_allowed);
+		PRINT_SYS_MAP(kpriv_ptr->priv_ipc_to);
+		ret = OK;
+	}	
 	WUNLOCK_PROC(proc_ptr);
 	RUNLOCK_DC(dc_ptr);
 	
@@ -2648,6 +2671,9 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	WLOCK_PROC(rproxy_ptr);
 	WLOCK_PROC(sproxy_ptr);
 
+	//-------------------------------------------
+	//	PROXY SENDER 
+	//-------------------------------------------
 	WLOCK_TASK(stask_ptr);
 	init_proc_desc(sproxy_ptr, PROXY_NO_DC, px_nr);
 	stask_ptr->task_proc = sproxy_ptr;		/* Set the  process descriptor into the task descriptor */
@@ -2666,10 +2692,21 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	sproxy_ptr->p_priv.priv_usr.priv_level 	= PROXY_PRIV;	
 	sproxy_ptr->p_usr.p_rmtsent		= 0;
 	set_bit(MIS_BIT_PROXY, &sproxy_ptr->p_usr.p_misc_flags);
+
+	CLR_SYS_MAP(sproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
+	CLR_DVK_MAP(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	DVKDEBUG(INTERNAL,"Setting SENDER Proxy Default DVK calls privileges\n");
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
+	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
+		
 	sp_ptr = &sproxy_ptr->p_usr;
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(sp_ptr));
 	WUNLOCK_TASK(stask_ptr);
 
+	//-------------------------------------------
+	//	PROXY RECEIVER 
+	//-------------------------------------------
 	WLOCK_TASK(rtask_ptr);
 	init_proc_desc(rproxy_ptr, PROXY_NO_DC, px_nr);
 	rtask_ptr->task_proc = rproxy_ptr;		/* Set the  process descriptor into the task descriptor */
@@ -2687,6 +2724,13 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	rproxy_ptr->p_priv.priv_usr.priv_level	= PROXY_PRIV;	
 	rproxy_ptr->p_usr.p_rmtsent		= 0;
 	set_bit(MIS_BIT_PROXY, &rproxy_ptr->p_usr.p_misc_flags);
+
+	CLR_SYS_MAP(rproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
+	CLR_DVK_MAP(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
+	DVKDEBUG(INTERNAL,"Setting RECEIVER Proxy Default DVK calls privileges\n");
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
+	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
 	rp_ptr = &rproxy_ptr->p_usr;
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(rp_ptr));
 	WUNLOCK_TASK(rtask_ptr);
@@ -3286,7 +3330,6 @@ long do_autobind(dc_desc_t *dc_ptr, struct proc *rmt_ptr, int endpoint, int node
 	}
 	rcode = unlock_sr_proxies(node[nodeid].n_usr.n_proxies);
 	if(rcode != OK)		ERROR_RETURN(rcode);
-
 
 	proc_ptr->p_usr.p_rts_flags = REMOTE;		/* set to RUNNING on REMOTE host */
 	proc_ptr->p_usr.p_endpoint = endpoint;

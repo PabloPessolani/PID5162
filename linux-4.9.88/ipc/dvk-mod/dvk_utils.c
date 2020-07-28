@@ -274,19 +274,10 @@ void clear_proxies(proxies_t *px_ptr)
 	init_proc_desc(sproxy_ptr, PROXY_NO_DC, px_ptr->px_usr.px_id);
 	CLR_SYS_MAP(sproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
 	CLR_DVK_MAP(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
-	DVKDEBUG(INTERNAL,"Setting Default DVK calls privileges\n");
-	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
-	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
-	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
-	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
 	
 	init_proc_desc(rproxy_ptr, PROXY_NO_DC, px_ptr->px_usr.px_id);
 	CLR_SYS_MAP(rproxy_ptr->p_priv.priv_usr.priv_ipc_to);	
 	CLR_DVK_MAP(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed);
-	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
-	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
-	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
-	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
 
 	sproxy_ptr->p_usr.p_rts_flags	= SLOT_FREE;
 	rproxy_ptr->p_usr.p_rts_flags	= SLOT_FREE;

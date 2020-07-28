@@ -144,7 +144,7 @@ long sc_dvk_ipc(int call, int first, unsigned long second,unsigned long third, v
 	return(-ENOSYS);
 }
 EXPORT_SYMBOL(sc_dvk_ipc);
-#endif //CONFIG_DVKIOCTLIPC 
+#endif //CONFIG_DVKIPC 
 
 SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		unsigned long, third, void __user *, ptr, long, fifth)
@@ -154,7 +154,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 	version = call >> 16; /* hack for backward compatibility */
 	call &= 0xffff;
 
-#ifdef  CONFIG_DVKIOCTLIPC 
+#ifdef  CONFIG_DVKIPC 
 	int rcode, dvk_call;
 	if( call > 0xFF) { // DVK_CALL are formed as call = NR00;
 //		if( dvk_mod_loaded == 0) ERROR_RETURN(EDVSNOSYS);
@@ -166,7 +166,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		rcode = (*dvk_routine[dvk_call])(first, second, third, ptr, fifth);
 		return(rcode);
 	}	
-#endif //CONFIG_DVKIOCTLIPC 
+#endif //CONFIG_DVKIPC 
 	
 	switch (call) {
 	case SEMOP:

@@ -158,6 +158,1637 @@ do_rd_request:
 	
  apt-get install linux-image-amd64 linux-headers-amd64
  
+ ===================================================================================
+ 20200728:
+		Despues de haber abandonado UML por mucho tiempo, retome RDISK 
+		
+		Una vez booteado, 
+		. /dev/shm/DC0.sh
+		cd /usr/src/linux 
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		
+		EL dmesg de UML es:
+			root@node1:~# dmesg
+			[    0.200000] DEBUG rd_init:734: 
+			[    0.200000] DEBUG rd_add:513: n=0
+			[    0.200000] DEBUG rd_dev_size:177: 
+			[    0.200000] DEBUG rd_dev_size:186: cyl=45 heads=2 sec=32
+			[    0.200000] DEBUG rd_dev_size:188: RDISK size=1474560 
+			[    0.200000] DEBUG rd_disk_register:471: major=42 unit=0
+			[    0.200000] DEBUG rd_disk_register:486: disk_name=rdiska
+			[    0.200000] EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+			[    0.280000] EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+			[    0.280000] VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+			[    0.340000] devtmpfs: mounted
+			[    0.350000] This architecture does not have kernel memory protection.
+			[    0.750000] random: fast init done
+			[    2.750000] systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+			[    2.770000] cgroup: cgroup2: unknown option "nsdelegate"
+			[    2.890000] systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+			[    2.890000] systemd[1]: Detected virtualization vmware.
+			[    2.890000] systemd[1]: Detected architecture x86.
+			[    2.930000] systemd[1]: Set hostname to <node1>.
+			[    3.010000] systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+			[    7.190000] systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+			[    7.190000] systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+			[    8.700000] systemd[1]: Starting of Arbitrary Executable File Formats File System Automount Point not supported.
+			[    8.710000] systemd[1]: Created slice User and Session Slice.
+			[    8.710000] systemd[1]: Condition check resulted in Journal Audit Socket being skipped.
+			[    8.720000] systemd[1]: Listening on Journal Socket.
+			[    8.800000] systemd[1]: Mounting POSIX Message Queue File System...
+			[    8.820000] systemd[1]: Condition check resulted in Create list of required static device nodes for the current kernel being skipped.
+			[    8.850000] systemd[1]: Condition check resulted in Set Up Additional Binary Formats being skipped.
+			[    8.870000] systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+			[    9.000000] systemd[1]: Starting Load Kernel Modules...
+			[    9.030000] systemd[1]: Created slice system-getty.slice.
+			[   10.290000] random: crng init done
+			[   11.860000] systemd-journald[406]: Received request to flush runtime journal from PID 1
+			[   14.860000] DEBUG rd_open:811: 
+			[   14.860000] DEBUG rd_open_dev:434: major=42 minor=0
+			[   14.860000] DEBUG rd_release:840: 
+			[   14.860000] DEBUG rd_close_dev:399: major=42 minor=0
+		
+		Para obtener el config con el que fue realizado el kernel 
+			Remontar el root  como READ-WRITE
+				mount -o remount,rw /dev/root /
+				cp /proc/config.gz a /tmp
+				cd /tmp 
+				gzip -d config.gz 
+ 
+		DESPUES de arrancar RDISK y UML lo sospechoso es esto
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  -2    -2 17805/215    0    0   20 27342 27342 27342 27342 linux     <<<<<<   MISMO PID ??
+		 0   3     3 18105/18105  0    8   20 31438 27342 27342 27342 rdisk          
+		 0  30    30 17805/215    0    0   20 27342 27342 27342 27342 linux     <<<<<<<  MISMO PID ??
+		
+		ANTES ERA ASI ---------------------------------------------------------
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  -2    -2  1045/268    0    0   20 27342 27342 27342 27342 linux     <<<<< DIFERENTE PID    
+		 0   3     3   651/651    0    8   20 31438 27342 27342 27342 rdisk         
+		 0  30    30  1053/276    0    0   20 27342 27342 27342 27342 linux 	<<<<< DIFERENTE PID
+ 
+ 
+	 
+ 
+ ===================================================================================
+ 20200728:
+EN SESION 1: 
+		Se arranca el dvs 
+			cd /usr/src/dvs/dvk-tests
+			./tests.sh 0 0
+			. /dev/shm/DC0.sh
+		Luego se arranca RDISK 
+			cd /usr/src/dvs/vos/mol/rdisk 
+			./rdisk.sh 0 
+			
+ EN SESION 2:
+		. /dev/shm/DC0.sh
+		cd /linux 
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+
+LUEGO DE BOOTEDO se hizo
+		fsck /dev/rdiska 
+		mount /dev/rdiska /mnt 
+		ls -l /dev/rdiska
+		
+		Cuando se intento hacer una copia de un archivo FALLO !!
+
+		root@node1:/mnt# cp -r /etc/network .                                                                         
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=9216
+			DEBUG 32:dvk_getep:223: pid=32
+			DEBUG 32:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 32:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=32 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=9216 m2l2=0 m2p1=45836400
+			DEBUG 32:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 32:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 32:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=9216 m2l2=0 m2p1=45836400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=9216
+			DEBUG rd_thread:1227: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=8192
+			DEBUG 32:dvk_getep:223: pid=32
+			DEBUG 32:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 32:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=32 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=8192 m2l2=0 m2p1=45836000
+			DEBUG 32:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 32:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 32:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=8192 m2l2=0 m2p1=45836000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=8192
+			DEBUG rd_thread:1227: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			------------[ cut here ]------------
+			WARNING: CPU: 0 PID: 0 at kernel/softirq.c:140 __local_bh_enable+0x2f/0x51
+			CPU: 0 PID: 0 Comm: (null) Not tainted 4.9.88 #56
+			Stack:
+			 083b901a 00000000 08076976 0839bb9e 47d5ae44 08238226 00000000 00000000
+			 083b901a 47d5ae5c 080741fa 47644400 00000200 00000000 47644400 47d5ae7c
+			 08074285 0839bb9e 0000008c 08076976 00000009 00000000 00000000 47d5ae94
+			Call Trace:
+			 [<0805bec7>] 
+			show_stack+0xaf/0xf7
+			Abortado
+
+
+
+EN SESION 2: EN UML 
+
+			
+			Pero cuando se trata de hacer 
+			root@node1:~# mount /dev/rdiska /mnt
+			DEBUG rd_open:811: 
+			DEBUG rd_open_dev:434: major=42 minor=0
+			DEBUG rd_open_dev:447: source=1235341412 type=1030 m2i1=0 m2i2=-2 m2i3=0 m2l1=0 m2l2=1235341312 m2p1=  (null)
+			DEBUG 892:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 892:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 892:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rd_open_dev:450: source=3 type=68 m2i1=-2 m2i2=0 m2i3=0 m2l1=0 m2l2=1235341312 m2p1=  (null)
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=4096
+			DEBUG 900:dvk_getep:223: pid=900
+			DEBUG 900:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 900:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=900 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=4096 m2l2=0 m2p1=49321000
+			DEBUG 900:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 900:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 900:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=49321000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=4096
+			DEBUG rd_thread:1227: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG rd_thread:1209: 
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=0
+			DEBUG 900:dvk_getep:223: pid=900
+			DEBUG 900:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 900:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=900 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=0 m2l2=0 m2p1=49320000
+			DEBUG 900:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 900:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 900:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=49320000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=0
+			DEBUG rd_thread:1227: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=12288
+			DEBUG 900:dvk_getep:223: pid=900
+			DEBUG 900:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 900:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=900 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=12288 m2l2=0 m2p1=49083000
+			DEBUG 900:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 900:dvk_sendrec_T:921: ioctl ret=0 errno=0
+
+EN SESION 1:
+		root@node0:/usr/src# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  -2    -2   996/892    0    0   20 27342 27342 27342 27342 linux          
+		 0   1     1  1004/900    0    0   20 27342 27342 27342 27342 linux          
+		 0   3     3   701/701    0    8   20 31438 27342 27342 27342 rdisk          
+		root@node0:/usr/src# cat /proc/dvs/DC0/stats 
+		DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+		 0  -2    -2   996/892    0        4        0        0        0 linux          
+		 0   1     1  1004/900    0        3        0        0        0 linux          
+		 0   3     3   701/701    0      117        0       78        0 rdisk  
+
+		En caso que el Filesystem resulte averiado, entonces hacer 
+			fsck -V /dev/shm/rdisk.img
+			
+en KERN.LOG 
+			Jul 28 20:16:38 node0 kernel: [11464.741482] DEBUG KUML:dvk_ioctl:342: cmd=4004E305 arg=4907FC2C
+			Jul 28 20:16:38 node0 kernel: [11464.741486] DEBUG KUML:dvk_ioctl:362: DVK_CALL=5 (io_mini_sendrec) 
+			Jul 28 20:16:38 node0 kernel: [11464.741487] DEBUG KUML:io_mini_sendrec:56: 
+			Jul 28 20:16:38 node0 kernel: [11464.741490] DEBUG KUML:new_mini_sendrec:527: srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.741492] DEBUG KUML:check_caller:546: caller_pid=KUML caller_tgid=KUML
+			Jul 28 20:16:38 node0 kernel: [11464.741494] DEBUG KUML:check_caller:582: WLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741496] DEBUG KUML:check_caller:612: WUNLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741497] DEBUG KUML:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.741499] DEBUG KUML:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741500] DEBUG KUML:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741501] DEBUG KUML:check_caller:629: caller_pid=KUML 
+			Jul 28 20:16:38 node0 kernel: [11464.741503] DEBUG KUML:new_mini_sendrec:538: RLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741504] DEBUG KUML:new_mini_sendrec:543: caller_nr=-2 caller_ep=-2 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.741506] DEBUG KUML:new_mini_sendrec:550: RUNLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741507] DEBUG KUML:new_mini_sendrec:552: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.741508] DEBUG KUML:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741510] DEBUG KUML:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741511] DEBUG KUML:new_mini_sendrec:575: RLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741513] DEBUG KUML:new_mini_sendrec:586: RUNLOCK_PROC ep=-2 count=46
+			Jul 28 20:16:38 node0 kernel: [11464.741514] DEBUG KUML:new_mini_sendrec:592: WLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.741515] DEBUG KUML:new_mini_sendrec:594: srcdst_nr=3 srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.741517] DEBUG KUML:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.741518] DEBUG KUML:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741519] DEBUG KUML:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.741521] DEBUG KUML:new_mini_sendrec:637: dcid=0 caller_pid=KUML caller_nr=-2 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.741522] DEBUG KUML:new_mini_sendrec:642: SENDING HALF
+			Jul 28 20:16:38 node0 kernel: [11464.741524] DEBUG KUML:new_mini_sendrec:726: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.741527] DEBUG KUML:copy_usr2usr:897: rqtr_ep=-2 src_ep=-2 src_lpid=KUML src_vpid=892 src_addr=4907fc58
+			Jul 28 20:16:38 node0 kernel: [11464.741529] DEBUG KUML:copy_usr2usr:900: dst_ep=3 dst_lpid=RDISK dst_vpid=RDISK dst_addr=bf8be178 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.741530] DEBUG KUML:copy_usr2usr:904: task_pid_nr(current)=KUML
+			Jul 28 20:16:38 node0 kernel: [11464.741531] DEBUG KUML:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.741532] DEBUG KUML:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.741550] DEBUG KUML:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.741552] DEBUG KUML:inherit_cpu:298: cpuid=3 vpid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.741554] ERROR: KUML:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.741557] DEBUG KUML:inherit_cpu:306: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.741558] DEBUG KUML:new_mini_sendrec:732: BEFORE UP lpid=RDISK p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.741582] DEBUG KUML:new_mini_sendrec:740: WUNLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.741584] DEBUG KUML:sleep_proc:354: timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.741586] DEBUG KUML:sleep_proc:365: BEFORE DOWN lpid=KUML p_sem=0 timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.741587] DEBUG KUML:sleep_proc:367: endpoint=-2 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.741588] DEBUG KUML:sleep_proc:371: WUNLOCK_PROC ep=-2 count=47
+			Jul 28 20:16:38 node0 kernel: [11464.741626] DEBUG RDISK:sleep_proc:378: endpoint=3 ret=0 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.741630] DEBUG RDISK:sleep_proc:379: endpoint=3 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.741632] DEBUG RDISK:sleep_proc:380: WLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.741635] DEBUG RDISK:sleep_proc:427: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.741637] DEBUG RDISK:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.741639] DEBUG RDISK:new_mini_receive:507: WUNLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742115] DEBUG RDISK:dvk_ioctl:342: cmd=4004E307 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.742118] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=7 (io_mini_reply) 
+			Jul 28 20:16:38 node0 kernel: [11464.742120] DEBUG RDISK:io_mini_reply:78: 
+			Jul 28 20:16:38 node0 kernel: [11464.742123] DEBUG RDISK:new_mini_reply:1801: dst_ep=-2
+			Jul 28 20:16:38 node0 kernel: [11464.742125] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.742127] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742128] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742130] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.742131] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742133] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742134] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.742135] DEBUG RDISK:new_mini_reply:1811: RLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742137] DEBUG RDISK:new_mini_reply:1815: caller_nr=3 caller_ep=3 dst_ep=-2 
+			Jul 28 20:16:38 node0 kernel: [11464.742138] DEBUG RDISK:new_mini_reply:1822: RUNLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742139] DEBUG RDISK:new_mini_reply:1824: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.742140] DEBUG RDISK:new_mini_reply:1828: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742142] DEBUG RDISK:new_mini_reply:1833: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742143] DEBUG RDISK:new_mini_reply:1849: RLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742144] DEBUG RDISK:new_mini_reply:1860: RUNLOCK_PROC ep=3 count=114
+			Jul 28 20:16:38 node0 kernel: [11464.742146] DEBUG RDISK:new_mini_reply:1863: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742147] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=-2 count=47
+			Jul 28 20:16:38 node0 kernel: [11464.742148] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742149] DEBUG RDISK:new_mini_reply:1868: dst_nr=-2 dst_ep=-2
+			Jul 28 20:16:38 node0 kernel: [11464.742151] DEBUG RDISK:new_mini_reply:1887: dst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.742152] DEBUG RDISK:new_mini_reply:1891: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742153] DEBUG RDISK:new_mini_reply:1895: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742155] DEBUG RDISK:new_mini_reply:1910: dcid=0 caller_pid=RDISK caller_nr=3 dst_ep=-2 
+			Jul 28 20:16:38 node0 kernel: [11464.742156] DEBUG RDISK:new_mini_reply:1989: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.742160] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=3 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=bf8be178
+			Jul 28 20:16:38 node0 kernel: [11464.742162] DEBUG RDISK:copy_usr2usr:900: dst_ep=-2 dst_lpid=KUML dst_vpid=892 dst_addr=4907fc58 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.742163] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.742164] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.742165] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=KUML
+			Jul 28 20:16:38 node0 kernel: [11464.742187] DEBUG RDISK:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.742189] DEBUG RDISK:inherit_cpu:298: cpuid=1 vpid=892
+			Jul 28 20:16:38 node0 kernel: [11464.742192] ERROR: RDISK:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.742194] DEBUG RDISK:inherit_cpu:306: nr=-2 endp=-2 dcid=0 lpid=KUML p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.742196] DEBUG RDISK:new_mini_reply:2000: BEFORE UP lpid=KUML p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.742228] DEBUG RDISK:new_mini_reply:2010: WUNLOCK_PROC ep=-2 count=47
+			Jul 28 20:16:38 node0 kernel: [11464.742230] DEBUG RDISK:new_mini_reply:2012: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742251] DEBUG RDISK:dvk_ioctl:342: cmd=4004E303 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.742253] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=3 (io_mini_receive) 
+			Jul 28 20:16:38 node0 kernel: [11464.742254] DEBUG RDISK:io_mini_receive:35: 
+			Jul 28 20:16:38 node0 kernel: [11464.742256] DEBUG RDISK:new_mini_receive:303: src_ep=31438
+			Jul 28 20:16:38 node0 kernel: [11464.742258] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.742259] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742260] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742261] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.742262] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742264] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742265] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.742266] DEBUG RDISK:new_mini_receive:314: RLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742267] DEBUG RDISK:new_mini_receive:318: caller_nr=3 caller_ep=3 src_ep=31438 
+			Jul 28 20:16:38 node0 kernel: [11464.742268] DEBUG RDISK:new_mini_receive:322: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.742270] DEBUG RDISK:new_mini_receive:330: RUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742271] DEBUG RDISK:new_mini_receive:332: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742272] DEBUG RDISK:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.742274] DEBUG RDISK:new_mini_receive:385: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742276] DEBUG RDISK:new_mini_receive:490: Any suitable message from 31438 was not found.
+			Jul 28 20:16:38 node0 kernel: [11464.742277] DEBUG RDISK:sleep_proc:354: timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.742279] DEBUG RDISK:sleep_proc:365: BEFORE DOWN lpid=RDISK p_sem=0 timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.742300] DEBUG RDISK:sleep_proc:367: endpoint=3 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.742301] DEBUG RDISK:sleep_proc:371: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.742448] DEBUG KUML:sleep_proc:378: endpoint=-2 ret=7500 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.742450] DEBUG KUML:sleep_proc:379: endpoint=-2 flags=0 cpuid=3
+			Jul 28 20:16:38 node0 kernel: [11464.742451] DEBUG KUML:sleep_proc:380: WLOCK_PROC ep=-2 count=47
+			Jul 28 20:16:38 node0 kernel: [11464.742454] DEBUG KUML:sleep_proc:427: nr=-2 endp=-2 dcid=0 lpid=KUML p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.742455] DEBUG KUML:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.742457] DEBUG KUML:new_mini_sendrec:813: WUNLOCK_PROC ep=-2 count=47
+			Jul 28 20:16:38 node0 kernel: [11464.771478] DEBUG RDCLT:dvk_ioctl:342: cmd=8004E31A arg=384
+			Jul 28 20:16:38 node0 kernel: [11464.771481] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=26 (io_getep) 
+			Jul 28 20:16:38 node0 kernel: [11464.771483] DEBUG RDCLT:io_getep:279: 
+			Jul 28 20:16:38 node0 kernel: [11464.771485] DEBUG RDCLT:new_getep:2022: pid=900
+			Jul 28 20:16:38 node0 kernel: [11464.771489] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.771491] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771493] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771494] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771496] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771497] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771498] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.771500] DEBUG RDCLT:new_getep:2037: caller_pid=RDCLT caller_vpid=900 dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771502] DEBUG RDCLT:new_getep:2046: task_pid_nr(task_ptr)=RDCLT vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.771503] DEBUG RDCLT:new_getep:2059: RLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771505] DEBUG RDCLT:new_getep:2078: RUNLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771506] DEBUG RDCLT:new_getep:2081: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771507] DEBUG RDCLT:new_getep:2082: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771509] DEBUG RDCLT:new_getep:2085: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771510] DEBUG RDCLT:new_getep:2088: endpoint=1
+			Jul 28 20:16:38 node0 kernel: [11464.771569] DEBUG RDCLT:dvk_ioctl:342: cmd=4004E305 arg=498B4F0C
+			Jul 28 20:16:38 node0 kernel: [11464.771570] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=5 (io_mini_sendrec) 
+			Jul 28 20:16:38 node0 kernel: [11464.771572] DEBUG RDCLT:io_mini_sendrec:56: 
+			Jul 28 20:16:38 node0 kernel: [11464.771573] DEBUG RDCLT:new_mini_sendrec:527: srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.771575] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.771576] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771577] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771578] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771580] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771581] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771582] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.771583] DEBUG RDCLT:new_mini_sendrec:538: RLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771585] DEBUG RDCLT:new_mini_sendrec:543: caller_nr=1 caller_ep=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.771586] DEBUG RDCLT:new_mini_sendrec:550: RUNLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771587] DEBUG RDCLT:new_mini_sendrec:552: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771589] DEBUG RDCLT:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771590] DEBUG RDCLT:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771591] DEBUG RDCLT:new_mini_sendrec:575: RLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771593] DEBUG RDCLT:new_mini_sendrec:586: RUNLOCK_PROC ep=1 count=69
+			Jul 28 20:16:38 node0 kernel: [11464.771594] DEBUG RDCLT:new_mini_sendrec:592: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.771596] DEBUG RDCLT:new_mini_sendrec:594: srcdst_nr=3 srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.771597] DEBUG RDCLT:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.771598] DEBUG RDCLT:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771600] DEBUG RDCLT:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.771601] DEBUG RDCLT:new_mini_sendrec:637: dcid=0 caller_pid=RDCLT caller_nr=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.771602] DEBUG RDCLT:new_mini_sendrec:642: SENDING HALF
+			Jul 28 20:16:38 node0 kernel: [11464.771604] DEBUG RDCLT:new_mini_sendrec:726: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.771607] DEBUG RDCLT:copy_usr2usr:897: rqtr_ep=1 src_ep=1 src_lpid=RDCLT src_vpid=900 src_addr=498b4f40
+			Jul 28 20:16:38 node0 kernel: [11464.771609] DEBUG RDCLT:copy_usr2usr:900: dst_ep=3 dst_lpid=RDISK dst_vpid=RDISK dst_addr=bf8be178 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.771610] DEBUG RDCLT:copy_usr2usr:904: task_pid_nr(current)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.771611] DEBUG RDCLT:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.771613] DEBUG RDCLT:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.771633] DEBUG RDCLT:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.771635] DEBUG RDCLT:inherit_cpu:298: cpuid=0 vpid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.771637] ERROR: RDCLT:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.771640] DEBUG RDCLT:inherit_cpu:306: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.771641] DEBUG RDCLT:new_mini_sendrec:732: BEFORE UP lpid=RDISK p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.771666] DEBUG RDCLT:new_mini_sendrec:740: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.771668] DEBUG RDCLT:sleep_proc:354: timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.771669] DEBUG RDCLT:sleep_proc:365: BEFORE DOWN lpid=RDCLT p_sem=0 timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.771671] DEBUG RDCLT:sleep_proc:367: endpoint=1 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.771672] DEBUG RDCLT:sleep_proc:371: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.771831] DEBUG RDISK:sleep_proc:378: endpoint=3 ret=0 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.771835] DEBUG RDISK:sleep_proc:379: endpoint=3 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.771837] DEBUG RDISK:sleep_proc:380: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.771840] DEBUG RDISK:sleep_proc:427: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.771841] DEBUG RDISK:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.771843] DEBUG RDISK:new_mini_receive:507: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772076] DEBUG RDISK:dvk_ioctl:342: cmd=4004E30D arg=BF8BE014
+			Jul 28 20:16:38 node0 kernel: [11464.772078] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=13 (io_vcopy) 
+			Jul 28 20:16:38 node0 kernel: [11464.772079] DEBUG RDISK:io_vcopy:142: 
+			Jul 28 20:16:38 node0 kernel: [11464.772082] DEBUG RDISK:new_vcopy:1134: src_ep=3 dst_ep=1 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.772085] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.772087] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772088] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772089] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772091] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772092] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772094] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.772095] DEBUG RDISK:new_vcopy:1148: RLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772096] DEBUG RDISK:new_vcopy:1169: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772098] DEBUG RDISK:new_vcopy:1179: RUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772099] DEBUG RDISK:new_vcopy:1181: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772100] DEBUG RDISK:new_vcopy:1204: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772102] DEBUG RDISK:new_vcopy:1212: RLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772103] DEBUG RDISK:new_vcopy:1217: (dst_nr+dc_max_nr_tasks)=35
+			Jul 28 20:16:38 node0 kernel: [11464.772104] DEBUG RDISK:new_vcopy:1230: RUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772105] DEBUG RDISK:new_vcopy:1235: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772106] DEBUG RDISK:new_vcopy:1236: LOCK PROCESSES IN ASCENDENT ORDER
+			Jul 28 20:16:38 node0 kernel: [11464.772108] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.772109] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772110] DEBUG RDISK:new_vcopy:1247: CHECK FOR SOURCE/DESTINATION STATUS
+			Jul 28 20:16:38 node0 kernel: [11464.772112] DEBUG RDISK:new_vcopy:1330: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772113] DEBUG RDISK:new_vcopy:1348: CALLER dcid=0 caller_pid=RDISK caller_nr=3 caller_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.772115] DEBUG RDISK:new_vcopy:1354: CALLER p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.772116] DEBUG RDISK:new_vcopy:1355: SOURCE p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.772117] DEBUG RDISK:new_vcopy:1356: DESTIN p_endpoint=1 
+			Jul 28 20:16:38 node0 kernel: [11464.772118] DEBUG RDISK:new_vcopy:1357: BYTES  bytes	=4096 
+			Jul 28 20:16:38 node0 kernel: [11464.772119] DEBUG RDISK:new_vcopy:1367: src_pid=RDISK src_tgid=RDISK dst_pid=RDCLT dst_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.772121] DEBUG RDISK:new_vcopy:1375: COPY_USR2USR_PROC copylen=4096
+			Jul 28 20:16:38 node0 kernel: [11464.772124] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=27342 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=00da2000
+			Jul 28 20:16:38 node0 kernel: [11464.772126] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=49321000 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.772127] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.772128] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.772129] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.772148] DEBUG RDISK:copy_usr2usr:965: len=4096
+			Jul 28 20:16:38 node0 kernel: [11464.772150] DEBUG RDISK:new_vcopy:1629: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.772152] DEBUG RDISK:new_vcopy:1636: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772240] DEBUG RDISK:dvk_ioctl:342: cmd=4004E307 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.772242] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=7 (io_mini_reply) 
+			Jul 28 20:16:38 node0 kernel: [11464.772243] DEBUG RDISK:io_mini_reply:78: 
+			Jul 28 20:16:38 node0 kernel: [11464.772245] DEBUG RDISK:new_mini_reply:1801: dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.772246] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.772248] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772249] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772250] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772251] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772253] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772254] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.772255] DEBUG RDISK:new_mini_reply:1811: RLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772256] DEBUG RDISK:new_mini_reply:1815: caller_nr=3 caller_ep=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.772258] DEBUG RDISK:new_mini_reply:1822: RUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772259] DEBUG RDISK:new_mini_reply:1824: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772260] DEBUG RDISK:new_mini_reply:1828: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772261] DEBUG RDISK:new_mini_reply:1833: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772263] DEBUG RDISK:new_mini_reply:1849: RLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772281] DEBUG RDISK:new_mini_reply:1860: RUNLOCK_PROC ep=3 count=115
+			Jul 28 20:16:38 node0 kernel: [11464.772283] DEBUG RDISK:new_mini_reply:1863: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772285] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.772286] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772287] DEBUG RDISK:new_mini_reply:1868: dst_nr=1 dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.772288] DEBUG RDISK:new_mini_reply:1887: dst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772290] DEBUG RDISK:new_mini_reply:1891: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772291] DEBUG RDISK:new_mini_reply:1895: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772293] DEBUG RDISK:new_mini_reply:1910: dcid=0 caller_pid=RDISK caller_nr=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.772294] DEBUG RDISK:new_mini_reply:1989: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.772296] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=3 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=bf8be178
+			Jul 28 20:16:38 node0 kernel: [11464.772298] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=498b4f40 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.772299] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.772300] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.772301] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.772311] DEBUG RDISK:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.772312] DEBUG RDISK:inherit_cpu:298: cpuid=1 vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.772314] ERROR: RDISK:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.772317] DEBUG RDISK:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.772318] DEBUG RDISK:new_mini_reply:2000: BEFORE UP lpid=RDCLT p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.772863] DEBUG RDISK:new_mini_reply:2010: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.772868] DEBUG RDISK:new_mini_reply:2012: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772926] DEBUG RDISK:dvk_ioctl:342: cmd=4004E303 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.772928] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=3 (io_mini_receive) 
+			Jul 28 20:16:38 node0 kernel: [11464.772929] DEBUG RDISK:io_mini_receive:35: 
+			Jul 28 20:16:38 node0 kernel: [11464.772933] DEBUG RDISK:new_mini_receive:303: src_ep=31438
+			Jul 28 20:16:38 node0 kernel: [11464.772936] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.772938] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772939] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772941] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772942] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772943] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772945] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.772946] DEBUG RDISK:new_mini_receive:314: RLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772948] DEBUG RDISK:new_mini_receive:318: caller_nr=3 caller_ep=3 src_ep=31438 
+			Jul 28 20:16:38 node0 kernel: [11464.772949] DEBUG RDISK:new_mini_receive:322: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.772950] DEBUG RDISK:new_mini_receive:330: RUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772952] DEBUG RDISK:new_mini_receive:332: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772953] DEBUG RDISK:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.772955] DEBUG RDISK:new_mini_receive:385: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.772957] DEBUG RDISK:new_mini_receive:490: Any suitable message from 31438 was not found.
+			Jul 28 20:16:38 node0 kernel: [11464.772958] DEBUG RDISK:sleep_proc:354: timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.772960] DEBUG RDISK:sleep_proc:365: BEFORE DOWN lpid=RDISK p_sem=0 timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.772961] DEBUG RDISK:sleep_proc:367: endpoint=3 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.772962] DEBUG RDISK:sleep_proc:371: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.773260] DEBUG RDCLT:sleep_proc:378: endpoint=1 ret=7500 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.773262] DEBUG RDCLT:sleep_proc:379: endpoint=1 flags=0 cpuid=2
+			Jul 28 20:16:38 node0 kernel: [11464.773264] DEBUG RDCLT:sleep_proc:380: WLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.773266] DEBUG RDCLT:sleep_proc:427: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.773268] DEBUG RDCLT:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.773270] DEBUG RDCLT:new_mini_sendrec:813: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780288] DEBUG RDCLT:dvk_ioctl:342: cmd=8004E31A arg=384
+			Jul 28 20:16:38 node0 kernel: [11464.780292] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=26 (io_getep) 
+			Jul 28 20:16:38 node0 kernel: [11464.780294] DEBUG RDCLT:io_getep:279: 
+			Jul 28 20:16:38 node0 kernel: [11464.780296] DEBUG RDCLT:new_getep:2022: pid=900
+			Jul 28 20:16:38 node0 kernel: [11464.780299] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780302] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780303] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780305] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780307] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780309] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780310] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.780313] DEBUG RDCLT:new_getep:2037: caller_pid=RDCLT caller_vpid=900 dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780318] DEBUG RDCLT:new_getep:2046: task_pid_nr(task_ptr)=RDCLT vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.780319] DEBUG RDCLT:new_getep:2059: RLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780320] DEBUG RDCLT:new_getep:2078: RUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780321] DEBUG RDCLT:new_getep:2081: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780323] DEBUG RDCLT:new_getep:2082: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780324] DEBUG RDCLT:new_getep:2085: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780325] DEBUG RDCLT:new_getep:2088: endpoint=1
+			Jul 28 20:16:38 node0 kernel: [11464.780438] DEBUG RDCLT:dvk_ioctl:342: cmd=4004E305 arg=498B4F0C
+			Jul 28 20:16:38 node0 kernel: [11464.780440] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=5 (io_mini_sendrec) 
+			Jul 28 20:16:38 node0 kernel: [11464.780441] DEBUG RDCLT:io_mini_sendrec:56: 
+			Jul 28 20:16:38 node0 kernel: [11464.780444] DEBUG RDCLT:new_mini_sendrec:527: srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.780445] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780448] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780449] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780450] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780452] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780453] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780454] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.780455] DEBUG RDCLT:new_mini_sendrec:538: RLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780457] DEBUG RDCLT:new_mini_sendrec:543: caller_nr=1 caller_ep=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.780458] DEBUG RDCLT:new_mini_sendrec:550: RUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780459] DEBUG RDCLT:new_mini_sendrec:552: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780460] DEBUG RDCLT:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780461] DEBUG RDCLT:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780463] DEBUG RDCLT:new_mini_sendrec:575: RLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780465] DEBUG RDCLT:new_mini_sendrec:586: RUNLOCK_PROC ep=1 count=70
+			Jul 28 20:16:38 node0 kernel: [11464.780466] DEBUG RDCLT:new_mini_sendrec:592: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780468] DEBUG RDCLT:new_mini_sendrec:594: srcdst_nr=3 srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.780469] DEBUG RDCLT:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780470] DEBUG RDCLT:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780471] DEBUG RDCLT:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780473] DEBUG RDCLT:new_mini_sendrec:637: dcid=0 caller_pid=RDCLT caller_nr=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.780474] DEBUG RDCLT:new_mini_sendrec:642: SENDING HALF
+			Jul 28 20:16:38 node0 kernel: [11464.780476] DEBUG RDCLT:new_mini_sendrec:726: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.780480] DEBUG RDCLT:copy_usr2usr:897: rqtr_ep=1 src_ep=1 src_lpid=RDCLT src_vpid=900 src_addr=498b4f40
+			Jul 28 20:16:38 node0 kernel: [11464.780481] DEBUG RDCLT:copy_usr2usr:900: dst_ep=3 dst_lpid=RDISK dst_vpid=RDISK dst_addr=bf8be178 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.780483] DEBUG RDCLT:copy_usr2usr:904: task_pid_nr(current)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780484] DEBUG RDCLT:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.780485] DEBUG RDCLT:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780507] DEBUG RDCLT:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.780510] DEBUG RDCLT:inherit_cpu:298: cpuid=1 vpid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780513] ERROR: RDCLT:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.780515] DEBUG RDCLT:inherit_cpu:306: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.780516] DEBUG RDCLT:new_mini_sendrec:732: BEFORE UP lpid=RDISK p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.780525] DEBUG RDCLT:new_mini_sendrec:740: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780527] DEBUG RDCLT:sleep_proc:354: timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.780529] DEBUG RDCLT:sleep_proc:365: BEFORE DOWN lpid=RDCLT p_sem=0 timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.780530] DEBUG RDCLT:sleep_proc:367: endpoint=1 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.780531] DEBUG RDCLT:sleep_proc:371: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.780536] DEBUG RDISK:sleep_proc:378: endpoint=3 ret=0 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.780538] DEBUG RDISK:sleep_proc:379: endpoint=3 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.780539] DEBUG RDISK:sleep_proc:380: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780541] DEBUG RDISK:sleep_proc:427: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.780542] DEBUG RDISK:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.780544] DEBUG RDISK:new_mini_receive:507: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780772] DEBUG RDISK:dvk_ioctl:342: cmd=4004E30D arg=BF8BE014
+			Jul 28 20:16:38 node0 kernel: [11464.780774] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=13 (io_vcopy) 
+			Jul 28 20:16:38 node0 kernel: [11464.780775] DEBUG RDISK:io_vcopy:142: 
+			Jul 28 20:16:38 node0 kernel: [11464.780778] DEBUG RDISK:new_vcopy:1134: src_ep=3 dst_ep=1 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.780779] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780781] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780783] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780784] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780785] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780787] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780788] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.780791] DEBUG RDISK:new_vcopy:1148: RLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780792] DEBUG RDISK:new_vcopy:1169: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780793] DEBUG RDISK:new_vcopy:1179: RUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780794] DEBUG RDISK:new_vcopy:1181: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780796] DEBUG RDISK:new_vcopy:1204: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780797] DEBUG RDISK:new_vcopy:1212: RLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780798] DEBUG RDISK:new_vcopy:1217: (dst_nr+dc_max_nr_tasks)=35
+			Jul 28 20:16:38 node0 kernel: [11464.780800] DEBUG RDISK:new_vcopy:1230: RUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780801] DEBUG RDISK:new_vcopy:1235: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780802] DEBUG RDISK:new_vcopy:1236: LOCK PROCESSES IN ASCENDENT ORDER
+			Jul 28 20:16:38 node0 kernel: [11464.780804] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.780805] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780806] DEBUG RDISK:new_vcopy:1247: CHECK FOR SOURCE/DESTINATION STATUS
+			Jul 28 20:16:38 node0 kernel: [11464.780807] DEBUG RDISK:new_vcopy:1330: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780809] DEBUG RDISK:new_vcopy:1348: CALLER dcid=0 caller_pid=RDISK caller_nr=3 caller_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.780810] DEBUG RDISK:new_vcopy:1354: CALLER p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.780811] DEBUG RDISK:new_vcopy:1355: SOURCE p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.780812] DEBUG RDISK:new_vcopy:1356: DESTIN p_endpoint=1 
+			Jul 28 20:16:38 node0 kernel: [11464.780813] DEBUG RDISK:new_vcopy:1357: BYTES  bytes	=4096 
+			Jul 28 20:16:38 node0 kernel: [11464.780815] DEBUG RDISK:new_vcopy:1367: src_pid=RDISK src_tgid=RDISK dst_pid=RDCLT dst_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780816] DEBUG RDISK:new_vcopy:1375: COPY_USR2USR_PROC copylen=4096
+			Jul 28 20:16:38 node0 kernel: [11464.780818] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=27342 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=00da2000
+			Jul 28 20:16:38 node0 kernel: [11464.780820] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=49320000 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.780821] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780822] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.780823] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780837] DEBUG RDISK:copy_usr2usr:965: len=4096
+			Jul 28 20:16:38 node0 kernel: [11464.780839] DEBUG RDISK:new_vcopy:1629: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.780841] DEBUG RDISK:new_vcopy:1636: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780929] DEBUG RDISK:dvk_ioctl:342: cmd=4004E307 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.780931] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=7 (io_mini_reply) 
+			Jul 28 20:16:38 node0 kernel: [11464.780932] DEBUG RDISK:io_mini_reply:78: 
+			Jul 28 20:16:38 node0 kernel: [11464.780934] DEBUG RDISK:new_mini_reply:1801: dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.780935] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780937] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780938] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780939] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780940] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780941] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780942] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.780944] DEBUG RDISK:new_mini_reply:1811: RLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780945] DEBUG RDISK:new_mini_reply:1815: caller_nr=3 caller_ep=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.780947] DEBUG RDISK:new_mini_reply:1822: RUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780948] DEBUG RDISK:new_mini_reply:1824: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780949] DEBUG RDISK:new_mini_reply:1828: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780950] DEBUG RDISK:new_mini_reply:1833: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780951] DEBUG RDISK:new_mini_reply:1849: RLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780953] DEBUG RDISK:new_mini_reply:1860: RUNLOCK_PROC ep=3 count=116
+			Jul 28 20:16:38 node0 kernel: [11464.780954] DEBUG RDISK:new_mini_reply:1863: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.780956] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.780957] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.780958] DEBUG RDISK:new_mini_reply:1868: dst_nr=1 dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.780959] DEBUG RDISK:new_mini_reply:1887: dst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.780961] DEBUG RDISK:new_mini_reply:1891: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780962] DEBUG RDISK:new_mini_reply:1895: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.780964] DEBUG RDISK:new_mini_reply:1910: dcid=0 caller_pid=RDISK caller_nr=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.780965] DEBUG RDISK:new_mini_reply:1989: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.780969] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=3 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=bf8be178
+			Jul 28 20:16:38 node0 kernel: [11464.780970] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=498b4f40 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.780971] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.780972] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.780973] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.780983] DEBUG RDISK:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.780984] DEBUG RDISK:inherit_cpu:298: cpuid=1 vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.780986] ERROR: RDISK:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.780988] DEBUG RDISK:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.780989] DEBUG RDISK:new_mini_reply:2000: BEFORE UP lpid=RDCLT p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.780990] DEBUG RDISK:new_mini_reply:2010: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.780992] DEBUG RDISK:new_mini_reply:2012: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781010] DEBUG RDISK:dvk_ioctl:342: cmd=4004E303 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.781012] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=3 (io_mini_receive) 
+			Jul 28 20:16:38 node0 kernel: [11464.781013] DEBUG RDISK:io_mini_receive:35: 
+			Jul 28 20:16:38 node0 kernel: [11464.781015] DEBUG RDISK:new_mini_receive:303: src_ep=31438
+			Jul 28 20:16:38 node0 kernel: [11464.781016] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.781018] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781019] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781020] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.781021] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.781023] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.781024] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.781026] DEBUG RDISK:new_mini_receive:314: RLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781027] DEBUG RDISK:new_mini_receive:318: caller_nr=3 caller_ep=3 src_ep=31438 
+			Jul 28 20:16:38 node0 kernel: [11464.781030] DEBUG RDISK:new_mini_receive:322: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.781031] DEBUG RDISK:new_mini_receive:330: RUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781033] DEBUG RDISK:new_mini_receive:332: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.781034] DEBUG RDISK:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.781035] DEBUG RDISK:new_mini_receive:385: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781037] DEBUG RDISK:new_mini_receive:490: Any suitable message from 31438 was not found.
+			Jul 28 20:16:38 node0 kernel: [11464.781038] DEBUG RDISK:sleep_proc:354: timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.781039] DEBUG RDISK:sleep_proc:365: BEFORE DOWN lpid=RDISK p_sem=0 timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.781041] DEBUG RDISK:sleep_proc:367: endpoint=3 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.781042] DEBUG RDISK:sleep_proc:371: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.781058] DEBUG RDCLT:sleep_proc:378: endpoint=1 ret=7500 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.781059] DEBUG RDCLT:sleep_proc:379: endpoint=1 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.781060] DEBUG RDCLT:sleep_proc:380: WLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.781062] DEBUG RDCLT:sleep_proc:427: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.781064] DEBUG RDCLT:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.781065] DEBUG RDCLT:new_mini_sendrec:813: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.795228] do_exit: local_nodeid:0
+			Jul 28 20:16:38 node0 kernel: [11464.795742] DEBUG 1177:new_exit_unbind:236: code=-679718886
+			Jul 28 20:16:38 node0 kernel: [11464.795745] DEBUG 1177:new_exit_unbind:240: WLOCK_TASK pid=233 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.795747] DEBUG 1177:new_exit_unbind:371: Process not bound pid=1177 systemd-journal
+			Jul 28 20:16:38 node0 kernel: [11464.795748] DEBUG 1177:new_exit_unbind:373: WUNLOCK_TASK pid=233 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809170] DEBUG RDCLT:dvk_ioctl:342: cmd=8004E31A arg=384
+			Jul 28 20:16:38 node0 kernel: [11464.809173] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=26 (io_getep) 
+			Jul 28 20:16:38 node0 kernel: [11464.809175] DEBUG RDCLT:io_getep:279: 
+			Jul 28 20:16:38 node0 kernel: [11464.809179] DEBUG RDCLT:new_getep:2022: pid=900
+			Jul 28 20:16:38 node0 kernel: [11464.809182] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.809184] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809186] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809187] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809303] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809306] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809308] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.809311] DEBUG RDCLT:new_getep:2037: caller_pid=RDCLT caller_vpid=900 dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809313] DEBUG RDCLT:new_getep:2046: task_pid_nr(task_ptr)=RDCLT vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.809314] DEBUG RDCLT:new_getep:2059: RLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809316] DEBUG RDCLT:new_getep:2078: RUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809317] DEBUG RDCLT:new_getep:2081: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809318] DEBUG RDCLT:new_getep:2082: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809320] DEBUG RDCLT:new_getep:2085: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809321] DEBUG RDCLT:new_getep:2088: endpoint=1
+			Jul 28 20:16:38 node0 kernel: [11464.809594] DEBUG RDCLT:dvk_ioctl:342: cmd=4004E305 arg=498B4F0C
+			Jul 28 20:16:38 node0 kernel: [11464.809596] DEBUG RDCLT:dvk_ioctl:362: DVK_CALL=5 (io_mini_sendrec) 
+			Jul 28 20:16:38 node0 kernel: [11464.809597] DEBUG RDCLT:io_mini_sendrec:56: 
+			Jul 28 20:16:38 node0 kernel: [11464.809599] DEBUG RDCLT:new_mini_sendrec:527: srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.809601] DEBUG RDCLT:check_caller:546: caller_pid=RDCLT caller_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.809602] DEBUG RDCLT:check_caller:582: WLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809604] DEBUG RDCLT:check_caller:612: WUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809605] DEBUG RDCLT:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809606] DEBUG RDCLT:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809607] DEBUG RDCLT:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809608] DEBUG RDCLT:check_caller:629: caller_pid=RDCLT 
+			Jul 28 20:16:38 node0 kernel: [11464.809610] DEBUG RDCLT:new_mini_sendrec:538: RLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809612] DEBUG RDCLT:new_mini_sendrec:543: caller_nr=1 caller_ep=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.809614] DEBUG RDCLT:new_mini_sendrec:550: RUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809615] DEBUG RDCLT:new_mini_sendrec:552: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809616] DEBUG RDCLT:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809619] DEBUG RDCLT:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809620] DEBUG RDCLT:new_mini_sendrec:575: RLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809622] DEBUG RDCLT:new_mini_sendrec:586: RUNLOCK_PROC ep=1 count=71
+			Jul 28 20:16:38 node0 kernel: [11464.809623] DEBUG RDCLT:new_mini_sendrec:592: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809625] DEBUG RDCLT:new_mini_sendrec:594: srcdst_nr=3 srcdst_ep=3
+			Jul 28 20:16:38 node0 kernel: [11464.809626] DEBUG RDCLT:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809627] DEBUG RDCLT:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809628] DEBUG RDCLT:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809630] DEBUG RDCLT:new_mini_sendrec:637: dcid=0 caller_pid=RDCLT caller_nr=1 srcdst_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.809631] DEBUG RDCLT:new_mini_sendrec:642: SENDING HALF
+			Jul 28 20:16:38 node0 kernel: [11464.809633] DEBUG RDCLT:new_mini_sendrec:726: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.809636] DEBUG RDCLT:copy_usr2usr:897: rqtr_ep=1 src_ep=1 src_lpid=RDCLT src_vpid=900 src_addr=498b4f40
+			Jul 28 20:16:38 node0 kernel: [11464.809638] DEBUG RDCLT:copy_usr2usr:900: dst_ep=3 dst_lpid=RDISK dst_vpid=RDISK dst_addr=bf8be178 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.809639] DEBUG RDCLT:copy_usr2usr:904: task_pid_nr(current)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.809640] DEBUG RDCLT:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.809642] DEBUG RDCLT:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.809662] DEBUG RDCLT:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.809664] DEBUG RDCLT:inherit_cpu:298: cpuid=1 vpid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.809666] ERROR: RDCLT:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.809669] DEBUG RDCLT:inherit_cpu:306: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.809671] DEBUG RDCLT:new_mini_sendrec:732: BEFORE UP lpid=RDISK p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.809677] DEBUG RDCLT:new_mini_sendrec:740: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809679] DEBUG RDCLT:sleep_proc:354: timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.809681] DEBUG RDCLT:sleep_proc:365: BEFORE DOWN lpid=RDCLT p_sem=0 timeout=30000
+			Jul 28 20:16:38 node0 kernel: [11464.809682] DEBUG RDCLT:sleep_proc:367: endpoint=1 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.809684] DEBUG RDCLT:sleep_proc:371: WUNLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.809689] DEBUG RDISK:sleep_proc:378: endpoint=3 ret=0 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.809691] DEBUG RDISK:sleep_proc:379: endpoint=3 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.809692] DEBUG RDISK:sleep_proc:380: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809694] DEBUG RDISK:sleep_proc:427: nr=3 endp=3 dcid=0 lpid=RDISK p_cpumask=FFFFFFFF nodemap=1 name=rdisk 
+			Jul 28 20:16:38 node0 kernel: [11464.809696] DEBUG RDISK:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.809697] DEBUG RDISK:new_mini_receive:507: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809901] DEBUG RDISK:dvk_ioctl:342: cmd=4004E30D arg=BF8BE014
+			Jul 28 20:16:38 node0 kernel: [11464.809903] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=13 (io_vcopy) 
+			Jul 28 20:16:38 node0 kernel: [11464.809904] DEBUG RDISK:io_vcopy:142: 
+			Jul 28 20:16:38 node0 kernel: [11464.809906] DEBUG RDISK:new_vcopy:1134: src_ep=3 dst_ep=1 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.809908] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.809910] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809911] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809912] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809913] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809914] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809915] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.809917] DEBUG RDISK:new_vcopy:1148: RLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809918] DEBUG RDISK:new_vcopy:1169: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.809919] DEBUG RDISK:new_vcopy:1179: RUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809920] DEBUG RDISK:new_vcopy:1181: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809922] DEBUG RDISK:new_vcopy:1204: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809923] DEBUG RDISK:new_vcopy:1212: RLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809924] DEBUG RDISK:new_vcopy:1217: (dst_nr+dc_max_nr_tasks)=35
+			Jul 28 20:16:38 node0 kernel: [11464.809926] DEBUG RDISK:new_vcopy:1230: RUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809927] DEBUG RDISK:new_vcopy:1235: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809928] DEBUG RDISK:new_vcopy:1236: LOCK PROCESSES IN ASCENDENT ORDER
+			Jul 28 20:16:38 node0 kernel: [11464.809930] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.809931] DEBUG RDISK:new_vcopy:1241: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.809932] DEBUG RDISK:new_vcopy:1247: CHECK FOR SOURCE/DESTINATION STATUS
+			Jul 28 20:16:38 node0 kernel: [11464.809933] DEBUG RDISK:new_vcopy:1330: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.809935] DEBUG RDISK:new_vcopy:1348: CALLER dcid=0 caller_pid=RDISK caller_nr=3 caller_ep=3 
+			Jul 28 20:16:38 node0 kernel: [11464.809936] DEBUG RDISK:new_vcopy:1354: CALLER p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.809937] DEBUG RDISK:new_vcopy:1355: SOURCE p_endpoint=3 
+			Jul 28 20:16:38 node0 kernel: [11464.809938] DEBUG RDISK:new_vcopy:1356: DESTIN p_endpoint=1 
+			Jul 28 20:16:38 node0 kernel: [11464.809939] DEBUG RDISK:new_vcopy:1357: BYTES  bytes	=4096 
+			Jul 28 20:16:38 node0 kernel: [11464.809941] DEBUG RDISK:new_vcopy:1367: src_pid=RDISK src_tgid=RDISK dst_pid=RDCLT dst_tgid=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.809942] DEBUG RDISK:new_vcopy:1375: COPY_USR2USR_PROC copylen=4096
+			Jul 28 20:16:38 node0 kernel: [11464.809944] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=27342 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=00da2000
+			Jul 28 20:16:38 node0 kernel: [11464.809946] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=49083000 bytes=4096
+			Jul 28 20:16:38 node0 kernel: [11464.809947] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.809948] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.809949] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.809961] DEBUG RDISK:copy_usr2usr:965: len=4096
+			Jul 28 20:16:38 node0 kernel: [11464.809965] DEBUG RDISK:new_vcopy:1629: WUNLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.809966] DEBUG RDISK:new_vcopy:1636: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810055] DEBUG RDISK:dvk_ioctl:342: cmd=4004E307 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.810057] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=7 (io_mini_reply) 
+			Jul 28 20:16:38 node0 kernel: [11464.810058] DEBUG RDISK:io_mini_reply:78: 
+			Jul 28 20:16:38 node0 kernel: [11464.810060] DEBUG RDISK:new_mini_reply:1801: dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.810061] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.810063] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810064] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810065] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.810066] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810067] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810068] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.810070] DEBUG RDISK:new_mini_reply:1811: RLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810071] DEBUG RDISK:new_mini_reply:1815: caller_nr=3 caller_ep=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.810073] DEBUG RDISK:new_mini_reply:1822: RUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810074] DEBUG RDISK:new_mini_reply:1824: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.810076] DEBUG RDISK:new_mini_reply:1828: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810077] DEBUG RDISK:new_mini_reply:1833: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810078] DEBUG RDISK:new_mini_reply:1849: RLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810080] DEBUG RDISK:new_mini_reply:1860: RUNLOCK_PROC ep=3 count=117
+			Jul 28 20:16:38 node0 kernel: [11464.810083] DEBUG RDISK:new_mini_reply:1863: WUNLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810084] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.810085] DEBUG RDISK:new_mini_reply:1863: WLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810086] DEBUG RDISK:new_mini_reply:1868: dst_nr=1 dst_ep=1
+			Jul 28 20:16:38 node0 kernel: [11464.810088] DEBUG RDISK:new_mini_reply:1887: dst_ptr->p_usr.p_nodeid=0
+			Jul 28 20:16:38 node0 kernel: [11464.810089] DEBUG RDISK:new_mini_reply:1891: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810090] DEBUG RDISK:new_mini_reply:1895: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810092] DEBUG RDISK:new_mini_reply:1910: dcid=0 caller_pid=RDISK caller_nr=3 dst_ep=1 
+			Jul 28 20:16:38 node0 kernel: [11464.810093] DEBUG RDISK:new_mini_reply:1989: destination is waiting. Copy the message and wakeup destination
+			Jul 28 20:16:38 node0 kernel: [11464.810095] DEBUG RDISK:copy_usr2usr:897: rqtr_ep=3 src_ep=3 src_lpid=RDISK src_vpid=RDISK src_addr=bf8be178
+			Jul 28 20:16:38 node0 kernel: [11464.810097] DEBUG RDISK:copy_usr2usr:900: dst_ep=1 dst_lpid=RDCLT dst_vpid=900 dst_addr=498b4f40 bytes=76
+			Jul 28 20:16:38 node0 kernel: [11464.810098] DEBUG RDISK:copy_usr2usr:904: task_pid_nr(current)=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.810099] DEBUG RDISK:copy_usr2usr:907: WRITE
+			Jul 28 20:16:38 node0 kernel: [11464.810100] DEBUG RDISK:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=RDCLT
+			Jul 28 20:16:38 node0 kernel: [11464.810109] DEBUG RDISK:copy_usr2usr:965: len=76
+			Jul 28 20:16:38 node0 kernel: [11464.810111] DEBUG RDISK:inherit_cpu:298: cpuid=1 vpid=900
+			Jul 28 20:16:38 node0 kernel: [11464.810112] ERROR: RDISK:inherit_cpu:302: rcode=-3
+			Jul 28 20:16:38 node0 kernel: [11464.810114] DEBUG RDISK:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.810116] DEBUG RDISK:new_mini_reply:2000: BEFORE UP lpid=RDCLT p_sem=-1 rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.810117] DEBUG RDISK:new_mini_reply:2010: WUNLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.810119] DEBUG RDISK:new_mini_reply:2012: WUNLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810138] DEBUG RDISK:dvk_ioctl:342: cmd=4004E303 arg=BF8BE130
+			Jul 28 20:16:38 node0 kernel: [11464.810139] DEBUG RDISK:dvk_ioctl:362: DVK_CALL=3 (io_mini_receive) 
+			Jul 28 20:16:38 node0 kernel: [11464.810140] DEBUG RDISK:io_mini_receive:35: 
+			Jul 28 20:16:38 node0 kernel: [11464.810142] DEBUG RDISK:new_mini_receive:303: src_ep=31438
+			Jul 28 20:16:38 node0 kernel: [11464.810144] DEBUG RDISK:check_caller:546: caller_pid=RDISK caller_tgid=RDISK
+			Jul 28 20:16:38 node0 kernel: [11464.810145] DEBUG RDISK:check_caller:582: WLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810146] DEBUG RDISK:check_caller:612: WUNLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810147] DEBUG RDISK:check_caller:615: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.810148] DEBUG RDISK:check_caller:619: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810150] DEBUG RDISK:check_caller:623: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810151] DEBUG RDISK:check_caller:629: caller_pid=RDISK 
+			Jul 28 20:16:38 node0 kernel: [11464.810152] DEBUG RDISK:new_mini_receive:314: RLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810153] DEBUG RDISK:new_mini_receive:318: caller_nr=3 caller_ep=3 src_ep=31438 
+			Jul 28 20:16:38 node0 kernel: [11464.810154] DEBUG RDISK:new_mini_receive:322: dcid=0
+			Jul 28 20:16:38 node0 kernel: [11464.810156] DEBUG RDISK:new_mini_receive:330: RUNLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810157] DEBUG RDISK:new_mini_receive:332: RLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810158] DEBUG RDISK:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+			Jul 28 20:16:38 node0 kernel: [11464.810160] DEBUG RDISK:new_mini_receive:385: WLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810162] DEBUG RDISK:new_mini_receive:490: Any suitable message from 31438 was not found.
+			Jul 28 20:16:38 node0 kernel: [11464.810163] DEBUG RDISK:sleep_proc:354: timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.810164] DEBUG RDISK:sleep_proc:365: BEFORE DOWN lpid=RDISK p_sem=0 timeout=-1
+			Jul 28 20:16:38 node0 kernel: [11464.810165] DEBUG RDISK:sleep_proc:367: endpoint=3 flags=8
+			Jul 28 20:16:38 node0 kernel: [11464.810166] DEBUG RDISK:sleep_proc:371: WUNLOCK_PROC ep=3 count=118
+			Jul 28 20:16:38 node0 kernel: [11464.810220] DEBUG RDCLT:sleep_proc:378: endpoint=1 ret=7500 p_rcode=76
+			Jul 28 20:16:38 node0 kernel: [11464.810222] DEBUG RDCLT:sleep_proc:379: endpoint=1 flags=0 cpuid=1
+			Jul 28 20:16:38 node0 kernel: [11464.810223] DEBUG RDCLT:sleep_proc:380: WLOCK_PROC ep=1 count=72
+			Jul 28 20:16:38 node0 kernel: [11464.810225] DEBUG RDCLT:sleep_proc:427: nr=1 endp=1 dcid=0 lpid=RDCLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+			Jul 28 20:16:38 node0 kernel: [11464.810226] DEBUG RDCLT:sleep_proc:429: someone wakeups me: sem=0 p_rcode=0
+			Jul 28 20:16:38 node0 kernel: [11464.810228] DEBUG RDCLT:new_mini_sendrec:813: WUNLOCK_PROC ep=1 count=7
+
+
+ PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                               
+ 1004 root      20   0 1051284  61544  61128 R 100,0  3,0  15:32.76 linux   <<<<<<<<<<<< 100% CPU !!!
+ 
+ 
+ EN OTRA PRUEBA FUNCION TODO BIEN PERO DIO ESTE ERROR DURANTE EL MOUNT
+ 
+			  [<08076899>] ? 
+			__local_bh_enable_ip+0x35/0x92
+			 [<08237e46>] 
+			dump_stack+0x16/0x1b
+			 [<08073e1a>] 
+			__warn+0xa5/0xbe
+			 [<08073ea5>] 
+			warn_slowpath_null+0x17/0x1c
+			 [<08076899>] ? 
+			__local_bh_enable_ip+0x35/0x92
+			 [<08076899>] 
+			__local_bh_enable_ip+0x35/0x92
+			 [<0809a006>] 
+			__rcu_process_callbacks+0x8c/0x98
+			 [<08099ff4>] ? 
+			__rcu_process_callbacks+0x7a/0x98
+			 [<0809a01f>] 
+			rcu_process_callbacks+0xd/0x19
+			 [<080766f0>] 
+			__do_softirq+0xa3/0x197
+			 [<080767fa>] 
+			run_ksoftirqd+0x16/0x2d
+			 [<08089745>] 
+			smpboot_thread_fn+0x142/0x157
+			 [<08089603>] ? 
+			smpboot_thread_fn+0x0/0x157
+			 [<08086f71>] 
+			kthread+0xcf/0xd6
+			 [<0805af8f>] 
+			new_thread_handler+0x63/0x7c
+
+			---[ end trace ddfe23b07357ce53 ]---
+			DEBUG do_rdisk:1102: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=1024
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=473f1400
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=1024 m2l2=0 m2p1=473f1400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=1024
+			DEBUG rd_thread:1227: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG rd_thread:1209: 
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=2048
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=2048 m2l2=0 m2p1=473f1800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=2048 m2l2=0 m2p1=473f1800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=2048
+			DEBUG rd_thread:1227: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=10240
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=10240 m2l2=0 m2p1=473f2800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=10240 m2l2=0 m2p1=473f2800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=10240
+			DEBUG rd_thread:1227: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=1024
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=473f1400
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=1024 m2l2=0 m2p1=473f1400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=1024
+			DEBUG rd_thread:1227: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			do_exit: local_nodeid:0
+			
+			root@node1:~# ls -l /mnt
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=33792
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=33792 m2l2=0 m2p1=4742d000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=33792 m2l2=0 m2p1=4742d000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=33792
+			DEBUG rd_thread:1227: op=0 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=11264
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=11264 m2l2=0 m2p1=473f2c00
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=11264 m2l2=0 m2p1=473f2c00
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=11264
+			DEBUG rd_thread:1227: op=0 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			total 14
+			-rw-r--r-- 1 root root  1107 Jan 10  2020 listado.txt
+			drwx------ 2 root root 12288 Jan 10  2020 lost+found
+			do_exit: local_nodeid:0
+			
+			root@node1:~# cp /mnt/listado.txt /tmp
+			cp: cannot create regular file '/tmp/listado.txt': Read-only file system
+			do_exit: local_nodeid:0
+			root@node1:~# mount -o remount,rw /dev/root /
+			EXT4-fs (ubda): warning: mounting unchecked fs, running e2fsck is recommended
+			EXT4-fs (ubda): re-mounted. Opts: (null)
+			do_exit: local_nodeid:0
+			root@node1:~# cp /mnt/listado.txt /tmp                                                                 
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=2048
+			DEBUG rd_prepare_request:866: op=0 offset=525312 length=2048 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=525312 length=2048 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=525312 length=2048 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=2048 off=525312
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=2048 m2l1=525312 m2l2=0 m2p1=4742f000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=2048 m2i3=2048 m2l1=525312 m2l2=0 m2p1=4742f000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=2048
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=525312
+			DEBUG rd_thread:1227: op=0 offset=525312 length=2048 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			do_exit: local_nodeid:0
+			
+			root@node1:~# ls /tmp
+			config  listado.txt
+			do_exit: local_nodeid:0
+			
+			root@node1:~# ls -l /tmp
+			total 36
+			-r--r--r-- 1 root root 30768 Jul 28 12:14 config
+			-rw-r--r-- 1 root root  1107 Jul 28 23:37 listado.txt
+			do_exit: local_nodeid:0
+			root@node1:~# cd /tmp  
+			
+			root@node1:/tmp# cp config /mnt
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=9216
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=9216 m2l2=0 m2p1=473f2400
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=9216 m2l2=0 m2p1=473f2400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=9216
+			DEBUG rd_thread:1227: op=0 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=8192
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=8192 m2l2=0 m2p1=473f2000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=8192 m2l2=0 m2p1=473f2000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=8192
+			DEBUG rd_thread:1227: op=0 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			do_exit: local_nodeid:0
+			root@node1:/tmp# DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_thread:1224: op=1 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=2048
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=2048 m2l2=0 m2p1=473f1800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_prepare_request:866: op=1 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=12288
+			DEBUG rd_prepare_request:866: op=1 offset=48128 length=12288 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=60416 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=1 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=15360
+			DEBUG rd_prepare_request:866: op=1 offset=65536 length=15360 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=2048 m2l2=0 m2p1=473f1800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=2048
+			DEBUG rd_thread:1227: op=1 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=8192
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=8192 m2l2=0 m2p1=473f2000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=8192 m2l2=0 m2p1=473f2000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=8192
+			DEBUG rd_thread:1227: op=1 offset=8192 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=9216
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=9216 m2l2=0 m2p1=473f2400
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=9216 m2l2=0 m2p1=473f2400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=9216
+			DEBUG rd_thread:1227: op=1 offset=9216 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=33792
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=33792 m2l2=0 m2p1=4742d000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=33792 m2l2=0 m2p1=4742d000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=33792
+			DEBUG rd_thread:1227: op=1 offset=33792 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=48128 length=12288 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=48128 length=12288 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=12288 off=48128
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=12288 m2l1=48128 m2l2=0 m2p1=46c58000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=12288 m2i3=12288 m2l1=48128 m2l2=0 m2p1=46c58000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=12288
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=48128
+			DEBUG rd_thread:1227: op=1 offset=48128 length=12288 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=60416 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=60416 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=60416
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=60416 m2l2=0 m2p1=46c5cc00
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=60416 m2l2=0 m2p1=46c5cc00
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=60416
+			DEBUG rd_thread:1227: op=1 offset=60416 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=4096 off=61440
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=4096 m2l1=61440 m2l2=0 m2p1=46c5b000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=61440 m2l2=0 m2p1=46c5b000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=61440
+			DEBUG rd_thread:1227: op=1 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=65536 length=15360 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=65536 length=15360 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=15360 off=65536
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1028 m2i1=0 m2i2=1 m2i3=15360 m2l1=65536 m2l2=0 m2p1=46c5d000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=15360 m2i3=15360 m2l1=65536 m2l2=0 m2p1=46c5d000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=15360
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=65536
+			DEBUG rd_thread:1227: op=1 offset=65536 length=15360 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+
+			root@node1:/tmp# DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=1 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=10240
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=10240 m2l2=0 m2p1=473f2800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=10240 m2l2=0 m2p1=473f2800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=10240
+			DEBUG rd_thread:1227: op=1 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_thread:1224: op=1 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=1 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=1 minor=0 len=1024 off=11264
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1028 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1028 m2i1=0 m2i2=1 m2i3=1024 m2l1=11264 m2l2=0 m2p1=473f2c00
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=11264 m2l2=0 m2p1=473f2c00
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=1 minor=0 len=0 off=11264
+			DEBUG rd_thread:1227: op=1 offset=11264 length=1024 sectorsize=512 error=0
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=1
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG rd_thread:1209: 
+			
+PRIMERO SE HIZO UN umount que funciono bien pero luego al tratar de hacer otro mount ABORTO 
+			root@node1:/tmp# mount /dev/rdiska /mnt                                                                       
+			DEBUG rd_open:811: 
+			DEBUG rd_open_dev:434: major=42 minor=0
+			DEBUG rd_open_dev:447: source=1236000868 type=1030 m2i1=0 m2i2=-2 m2i3=0 m2l1=0 m2l2=1236000768 m2p1=  (null)
+			DEBUG 1399:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1399:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1399:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rd_open_dev:450: source=3 type=68 m2i1=-2 m2i2=0 m2i3=0 m2l1=0 m2l2=1236000768 m2p1=  (null)
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=4096
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=4096 m2l2=0 m2p1=4925f000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=4925f000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=4096
+			DEBUG rd_thread:1227: op=0 offset=4096 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=0
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=0 m2l2=0 m2p1=4928c000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=4928c000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=0
+			DEBUG rd_thread:1227: op=0 offset=0 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=12288
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=12288 m2l2=0 m2p1=492b9000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=12288 m2l2=0 m2p1=492b9000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=12288
+			DEBUG rd_thread:1227: op=0 offset=12288 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=28672 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=28672 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=28672 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=28672
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=28672 m2l2=0 m2p1=498ec000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=28672 m2l2=0 m2p1=498ec000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=28672
+			DEBUG rd_thread:1227: op=0 offset=28672 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			BUG: recent printk recursion!
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=4096
+			DEBUG rd_prepare_request:866: op=0 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=4096 off=61440
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=61440 m2l2=0 m2p1=49054000
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=61440 m2l2=0 m2p1=49054000
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=4096
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=61440
+			DEBUG rd_thread:1227: op=0 offset=61440 length=4096 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG rd_release:840: 
+			DEBUG rd_close_dev:399: major=42 minor=0
+			DEBUG rd_close_dev:414: source=1235598844 type=1031 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+			DEBUG 1399:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1399:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1399:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rd_close_dev:420: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+			DEBUG rd_open:811: 
+			DEBUG rd_open_dev:434: major=42 minor=0
+			DEBUG rd_open_dev:447: source=1236000868 type=1030 m2i1=0 m2i2=-2 m2i3=0 m2l1=0 m2l2=1236000768 m2p1=  (null)
+			DEBUG 1399:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1399:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1399:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rd_open_dev:450: source=3 type=68 m2i1=-2 m2i2=0 m2i3=0 m2l1=0 m2l2=1236000768 m2p1=  (null)
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=1024
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=1024 m2l2=0 m2p1=46cb6400
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=1024 m2l2=0 m2p1=46cb6400
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=1024
+			DEBUG rd_thread:1227: op=0 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=2048
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=0 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=2048 m2l2=0 m2p1=46cb6800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=2048 m2l2=0 m2p1=46cb6800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=2048
+			DEBUG rd_thread:1227: op=0 offset=2048 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1102: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG do_rdisk:1109: op=0 minor=0 len=1024 off=10240
+			DEBUG 1407:dvk_getep:223: pid=1407
+			DEBUG 1407:dvk_getep:232: ioctl ret=1 errno=0
+			DEBUG 1407:dvk_getep:237: ioctl ret=1
+			DEBUG rdisk_rw:1066: oper=1027 tid=1407 my_ep=1 minor=0
+			DEBUG rdisk_rw:1079: source=1 type=1027 m2i1=0 m2i2=1 m2i3=1024 m2l1=10240 m2l2=0 m2p1=46cba800
+			DEBUG 1407:dvk_sendrec_T:908: endpoint=3 timeout=30000
+			DEBUG 1407:dvk_sendrec_T:921: ioctl ret=0 errno=0
+			DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
+			DEBUG rdisk_rw:1082: source=3 type=68 m2i1=1 m2i2=1024 m2i3=1024 m2l1=10240 m2l2=0 m2p1=46cba800
+			DEBUG rdisk_rw:1084: READ/WRITE bytes=1024
+			DEBUG do_rdisk:1138: op=0 minor=0 len=0 off=10240
+			DEBUG rd_thread:1227: op=0 offset=10240 length=1024 sectorsize=512 error=0
+			DEBUG rd_thread:1209: 
+			DEBUG rd_intr:373: 
+			DEBUG rd_handler:343: 
+			DEBUG rd_handler:356: req->op=0
+			DEBUG rd_handler:349: n=-11 sizeof(req)=4
+			DEBUG do_rd_request:907: 
+			DEBUG rd_prepare_request:856: len=1024
+			DEBUG rd_prepare_request:866: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			DEBUG rd_submit_request:884: 
+			DEBUG rd_thread:1224: op=1 offset=1024 length=1024 sectorsize=512 error=0
+			Abortado
+
+   
+  ===================================================================================
+ ULTIMO_LOG
+ 
  TODO
  ===================================================================================
  ===================================================================================

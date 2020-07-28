@@ -813,73 +813,475 @@ Si cambiamos a:
 
 		grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIPC/g'
 
+		FUNCIONARON BIEN LAS PRUEBAS LOCALES!!!!!
+		
+		ATENCION:
+			No olvidar de recompilar dvk-lib 
+			No olvidar de modificar los Makefile de todos los programas 
+				dvk-test 
+				dvk-loops
+				dvk-proxies
+				dvs-apps/dc_init 
+		
+===============================================================================================================
+20200726:
+		Se modificarone errores de dvk_utils al inicializar los proxies referentes a los privilegios.
+		
+		Se creo el utilitario test_priv_info para imprimir los privilegios de un proceso 
 
-		Jul 23 20:02:15 node0 kernel: [   53.684729] dvk: loading out-of-tree module taints kernel.
-		Jul 23 20:02:15 node0 kernel: [   53.698794] DEBUG dvk_init_module:397: Hello, DVS! tasklist_ptr=D887C1C0
-		Jul 23 20:02:15 node0 kernel: [   53.713585] DEBUG dvk_init_module:400: Hello, DVS! dvk_dvs_init=0
-		Jul 23 20:02:15 node0 kernel: [   53.714242] DEBUG dvk_init_module:409: Hello, DVS! setaffinity_ptr=D8092560
-		Jul 23 20:02:15 node0 kernel: [   53.714820] DEBUG dvk_init_module:413: Hello, DVS! free_nsproxy_ptr=D80864F0
-		Jul 23 20:02:15 node0 kernel: [   53.715265] DEBUG dvk_init_module:417: Hello, DVS! sys_wait4_ptr=D806C880
-		Jul 23 20:02:15 node0 kernel: [   53.727917] DEBUG dvk_init_module:421: Hello, DVS! dvk_unbind_ptr=D89F8BB0
-		Jul 23 20:02:15 node0 kernel: [   53.727920] DEBUG dvk_init_module:423: usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
-		Jul 23 20:02:15 node0 kernel: [   53.727922] DEBUG dvk_init_module:425: parms:  dvk_major=33 dvk_minor=0 dvk_nr_devs=1
-		Jul 23 20:02:15 node0 kernel: [   53.728066] DEBUG dvk_init_module:442: Registeration is a success The major device number is 33.
-		Jul 23 20:02:15 node0 kernel: [   53.728067] DEBUG dvk_init_module:443: We suggest you use:
-		Jul 23 20:02:15 node0 kernel: [   53.728068] DEBUG dvk_init_module:444: mknod /dev/dvk c 33 0
-		Jul 23 20:02:15 node0 kernel: [   53.728069] DEBUG dvk_init_module:445: OLD local_nodeid=-1
-		Jul 23 20:02:15 node0 kernel: [   53.728070] DEBUG dvk_replace_init:273: 
-		Jul 23 20:02:15 node0 kernel: [   53.728071] DEBUG reljmp_init_once:103: reljmp: initialize
-		Jul 23 20:02:15 node0 kernel: [   53.738813] reljmp: text_mutex @ 0xd8895550
-		Jul 23 20:02:15 node0 kernel: [   53.738985] reljmp: text_poke @ 0xd8029520
-		Jul 23 20:02:15 node0 kernel: [   53.740431] reljmp: jump_label_lock @ 0xd8168580
-		Jul 23 20:02:15 node0 kernel: [   53.741765] reljmp: jump_label_unlock @ 0xd81685a0
-		Jul 23 20:02:15 node0 kernel: [   53.741768] DEBUG reljmp_init:117: reljmp: initialize old_exit_unbind
-		Jul 23 20:02:15 node0 kernel: [   53.742207] DEBUG reljmp_init:129: reljmp: original old_exit_unbind:d806a310
-		Jul 23 20:02:15 node0 kernel: [   53.755048] DEBUG reljmp_init:139: reljmp: replacement new_exit_unbind:f88538b3
-		Jul 23 20:02:15 node0 kernel: [   53.755051] DEBUG reljmp_init:146: reljmp: jump code f887f199
-		Jul 23 20:02:15 node0 kernel: [   53.755053] DEBUG exit_unbind_init_handler:40: 
-		Jul 23 20:02:15 node0 kernel: [   53.755054] DEBUG reljmp_register:88: register old_exit_unbind
-		Jul 23 20:02:15 node0 kernel: [   53.755055] DEBUG reljmp_lock:49: 
-		Jul 23 20:02:15 node0 kernel: [   53.763875] DEBUG reljmp_unlock:61: 
-		Jul 23 20:02:15 node0 kernel: [   53.763881] DEBUG reljmp_register:96: reljmp: patched old_exit_unbind:d806a310
-		Jul 23 20:02:24 node0 kernel: [   61.937418] DEBUG dvk_open:308: 
-		Jul 23 20:02:24 node0 kernel: [   61.937502] DEBUG dvk_ioctl:342: cmd=8004E31B arg=528DA0
-		Jul 23 20:02:24 node0 kernel: [   61.937505] DEBUG dvk_ioctl:362: DVK_CALL=27 (io_getdvsinfo) 
-		Jul 23 20:02:24 node0 kernel: [   61.937506] DEBUG io_getdvsinfo:288: 
-		Jul 23 20:02:24 node0 kernel: [   61.937508] DEBUG new_getdvsinfo:1836: local_nodeid=-1 
-		Jul 23 20:02:24 node0 kernel: [   61.937510] ERROR: 638:dvk_ioctl:366: rcode=-1
+===============================================================================================================
+20200727 :
+		Agregue utilitario test_set_priv  
+		usage: ./test_set_priv 
+				[-w warn_ep] [-l level] [-I ipc_to] [-N ipc_not] [-A Allowed] [-D Deny] -d dcid -p p_nr
 
+		Para probar se bindea un proceso PRIVILEGIADO (6)
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_bind 0 5
 
-		root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_info 
-		DEBUG 664:dvk_open:102: 
-		Get DVS info
-		DEBUG 664:dvk_getdvsinfo:248: 
-		DEBUG 664:dvk_getdvsinfo:252: ipc ret=-1
-		ERROR: 664:dvk_getdvsinfo:253: rcode=-38
-		ERROR: 664:dvk_getdvsinfo:264: rcode=-38
-		local node ID -38... 
-		d_name= d_nr_dcs=0 d_nr_nodes=0 d_nr_procs=0 d_nr_tasks=0 d_nr_sysprocs=0 
-		d_max_copybuf=0 d_max_copylen=0
-		d_dbglvl=0 version=0 flags=0 sizeof(proc)=0
+		y el resultado es 
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -D put2lcl -d 0 -p 5
+			DEBUG 5:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 5:dvk_getdvsinfo:246: 
+			DEBUG 5:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			deny_dvk=20
+			dcid=0
+			DEBUG 5:dvk_getdcinfo:347: dcid=0
+			DEBUG 5:dvk_getdcinfo:359: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getdcinfo:364: ioctl ret=0
+			dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			flags=0 dc_nodes=3 dc_pid=827 dc_name=DC0
+			dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+			DEBUG 5:dvk_getprocinfo:1154: dcid=0 p_nr=5 
+			DEBUG 5:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getprocinfo:1172: ioctl ret=0
+			nr=5 endp=5 dcid=0 flags=0 misc=20 lpid=865 vpid=2 nodeid=0 name=test_bind 
+			endp=5 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+			nr=5 endp=5 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+			DEBUG 5:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 5:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			BEFORE priv_id=39 priv_warn=27342 priv_level=0
+			BEFORE 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[mini_send(2)]->[mini_receive(3)]->[mini_notify(4)]->[mini_sendrec(5)]->[mini_rcvrqst(6)]->[mini_reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			DEBUG 5:dvk_setpriv:1009: dcid=0 endpoint=5 
+			DEBUG 5:dvk_setpriv:1022: ioctl ret=0 errno=0
+			DEBUG 5:dvk_setpriv:1027: ioctl ret=0
+			DEBUG 5:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 5:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			AFTER priv_id=39 priv_warn=27342 priv_level=0
+			AFTER 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[mini_send(2)]->[mini_receive(3)]->[mini_notify(4)]->[mini_sendrec(5)]->[mini_rcvrqst(6)]->[mini_reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFEF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
 
 		
+SEGUN EL KERN.LOG   
+		Jul 27 11:02:31 node0 kernel: [ 1376.037400] DEBUG dvk_ioctl:342: cmd=4004E30C arg=BFC13060
+		Jul 27 11:02:31 node0 kernel: [ 1376.037404] DEBUG dvk_ioctl:362: DVK_CALL=12 (io_setpriv) 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037405] DEBUG io_setpriv:131: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037409] DEBUG new_setpriv:2457: RLOCK_DC dc=0 count=0
+		Jul 27 11:02:31 node0 kernel: [ 1376.037410] DEBUG new_setpriv:2462: dcid=0 proc_nr=5 proc_ep=5
+		Jul 27 11:02:31 node0 kernel: [ 1376.037412] DEBUG new_setpriv:2470: WLOCK_PROC ep=5 count=0
+		Jul 27 11:02:31 node0 kernel: [ 1376.037415] DEBUG new_setpriv:2474: priv_id=39 priv_warn=27342 priv_level=0
+		Jul 27 11:02:31 node0 kernel: [ 1376.037417] DEBUG new_setpriv:2475: PRINT_DVKALLOWED_MAP: 870:new_setpriv:2475:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037419] DEBUG new_setpriv:2475: PRINT_DVKALLOWED_MAP: 870:new_setpriv:2475:3:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037420] DEBUG new_setpriv:2475: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037420] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037421] DEBUG new_setpriv:2475: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037421] FFEF: <<<<<<<<<<<<<<<<<<<<<<<<<<<<< FFEF: 1111111111101111
+		Jul 27 11:02:31 node0 kernel: [ 1376.037422] DEBUG new_setpriv:2475: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037422] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037423] DEBUG new_setpriv:2475: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037424] DEBUG new_setpriv:2476: PRINT_SYS_MAP: 870:new_setpriv:2476:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037426] DEBUG new_setpriv:2476: PRINT_SYS_MAP: 870:new_setpriv:2476:4:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037427] DEBUG new_setpriv:2476: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037427] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037428] DEBUG new_setpriv:2476: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037428] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037429] DEBUG new_setpriv:2476: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037429] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037430] DEBUG new_setpriv:2476: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037430] FFFF:
+		Jul 27 11:02:31 node0 kernel: [ 1376.037431] DEBUG new_setpriv:2476: 
+		Jul 27 11:02:31 node0 kernel: [ 1376.037432] DEBUG new_setpriv:2477: WUNLOCK_PROC ep=5 count=0
+		Jul 27 11:02:31 node0 kernel: [ 1376.037433] DEBUG new_setpriv:2478: RUNLOCK_DC dc=0 count=0	
+
+
+OTRA PRUEBA:  QUITAR PERMISOS PARA IPC AL PROCESO (-34)
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -N -34  -d 0 -p 5
+			DEBUG 32:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 32:dvk_getdvsinfo:246: 
+			DEBUG 32:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 32:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			dcid=0
+			DEBUG 32:dvk_getdcinfo:347: dcid=0
+			DEBUG 32:dvk_getdcinfo:359: ioctl ret=0 errno=0
+			DEBUG 32:dvk_getdcinfo:364: ioctl ret=0
+			dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			flags=0 dc_nodes=3 dc_pid=827 dc_name=DC0
+			dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+			DEBUG 32:dvk_getprocinfo:1154: dcid=0 p_nr=5 
+			DEBUG 32:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+			DEBUG 32:dvk_getprocinfo:1172: ioctl ret=0
+			nr=5 endp=5 dcid=0 flags=0 misc=20 lpid=952 vpid=29 nodeid=0 name=test_bind 
+			endp=5 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+			nr=5 endp=5 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+			DEBUG 32:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 32:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 32:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			BEFORE priv_id=39 priv_warn=27342 priv_level=0
+			BEFORE 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF:
+			FFFF:
+			FFFF:
+			FFFF:
+			DEBUG 32:dvk_setpriv:1009: dcid=0 endpoint=5 
+			DEBUG 32:dvk_setpriv:1022: ioctl ret=0 errno=0
+			DEBUG 32:dvk_setpriv:1027: ioctl ret=0
+			DEBUG 32:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 32:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 32:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			AFTER priv_id=39 priv_warn=27342 priv_level=0
+			AFTER 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFE: <<<<<<<<<<<<<<<<<< AQUI MODIFICO 
+			FFFF:
+			FFFF:
+			FFFF:
+
+OTRA PRUEBA:  VOLVER A DAR PERMISOS PARA IPC AL PROCESO (-34)
+
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -I -34  -d 0 -p 5
+			DEBUG 33:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 33:dvk_getdvsinfo:246: 
+			DEBUG 33:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 33:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			dcid=0
+			DEBUG 33:dvk_getdcinfo:347: dcid=0
+			DEBUG 33:dvk_getdcinfo:359: ioctl ret=0 errno=0
+			DEBUG 33:dvk_getdcinfo:364: ioctl ret=0
+			dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			flags=0 dc_nodes=3 dc_pid=827 dc_name=DC0
+			dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+			DEBUG 33:dvk_getprocinfo:1154: dcid=0 p_nr=5 
+			DEBUG 33:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+			DEBUG 33:dvk_getprocinfo:1172: ioctl ret=0
+			nr=5 endp=5 dcid=0 flags=0 misc=20 lpid=952 vpid=29 nodeid=0 name=test_bind 
+			endp=5 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+			nr=5 endp=5 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+			DEBUG 33:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 33:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 33:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			BEFORE priv_id=39 priv_warn=27342 priv_level=0
+			BEFORE 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFE: <<<<<<<<<<<<<<<<<<<< ESTADO ANTERIOR
+			FFFF:
+			FFFF:
+			FFFF:
+			DEBUG 33:dvk_setpriv:1009: dcid=0 endpoint=5 
+			DEBUG 33:dvk_setpriv:1022: ioctl ret=0 errno=0
+			DEBUG 33:dvk_setpriv:1027: ioctl ret=0
+			DEBUG 33:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 33:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 33:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			AFTER priv_id=39 priv_warn=27342 priv_level=0
+			AFTER 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF: <<<<<<<<<<<<<<<<<<< ESTADO NUEVO 
+			FFFF:
+			FFFF:
+			FFFF:
+
+OTRA PRUEBA: CAMBIAR EL WARN ENDPOINT Y EL LEVEL 
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -w -33 -l 3  -d 0 -p 5
+			DEBUG 37:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 37:dvk_getdvsinfo:246: 
+			DEBUG 37:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 37:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			dcid=0
+			DEBUG 37:dvk_getdcinfo:347: dcid=0
+			DEBUG 37:dvk_getdcinfo:359: ioctl ret=0 errno=0
+			DEBUG 37:dvk_getdcinfo:364: ioctl ret=0
+			dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			flags=0 dc_nodes=3 dc_pid=827 dc_name=DC0
+			dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+			DEBUG 37:dvk_getprocinfo:1154: dcid=0 p_nr=5 
+			DEBUG 37:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+			DEBUG 37:dvk_getprocinfo:1172: ioctl ret=0
+			nr=5 endp=5 dcid=0 flags=0 misc=20 lpid=971 vpid=34 nodeid=0 name=test_bind 
+			endp=5 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+			nr=5 endp=5 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+			DEBUG 37:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 37:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 37:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			BEFORE priv_id=39 priv_warn=27342 priv_level=0 <<<<<<<<<<<<<<<<<<<<<<<<< ORIGINAL 
+			BEFORE 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF:
+			FFFF:
+			FFFF:
+			FFFF:
+			DEBUG 37:dvk_setpriv:1009: dcid=0 endpoint=5 
+			DEBUG 37:dvk_setpriv:1022: ioctl ret=0 errno=0
+			DEBUG 37:dvk_setpriv:1027: ioctl ret=0
+			DEBUG 37:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 37:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 37:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52 
+			AFTER priv_id=39 priv_warn=-33 priv_level=3  <<<<<<<<<<<<<<<<<<<<<<<<< MODIFICADO 
+			AFTER 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF:
+			FFFF:
+			FFFF:
+			FFFF:
+
+
+	dvk_hyper.c:  controle los parametros que pasa el dvk_setpriv 
+
+	PRUEBA DE CAMBIAR 
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -w -33 -l 3  -d 0 -p 5
+			DEBUG 5:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 5:dvk_getdvsinfo:246: 
+			DEBUG 5:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			dcid=0
+			DEBUG 5:dvk_getdcinfo:347: dcid=0
+			DEBUG 5:dvk_getdcinfo:359: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getdcinfo:364: ioctl ret=0
+			dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			flags=0 dc_nodes=3 dc_pid=658 dc_name=DC0
+			dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+			DEBUG 5:dvk_getprocinfo:1154: dcid=0 p_nr=5 
+			DEBUG 5:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getprocinfo:1172: ioctl ret=0
+			nr=5 endp=5 dcid=0 flags=0 misc=20 lpid=695 vpid=2 nodeid=0 name=test_bind 
+			endp=5 dcid=0 flags=0 p_getfrom=27342 p_sendto=27342 p_waitmigr=27342 p_waitunbind=27342 p_proxy=27342
+			nr=5 endp=5 dcid=0 p_lclsent=0 p_rmtsent=0 p_lclcopy=0 p_rmtcopy=0 
+			DEBUG 5:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 5:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			BEFORE priv_id=39 priv_warn=27342 priv_level=0 <<<<<<<<<<<<<<<<<<<<<<<<<<< VALORES ORIGINALES
+			BEFORE 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF:
+			FFFF:
+			FFFF:
+			FFFF:
+			DEBUG 5:dvk_setpriv:1009: dcid=0 endpoint=5 
+			DEBUG 5:dvk_setpriv:1022: ioctl ret=0 errno=0
+			DEBUG 5:dvk_setpriv:1027: ioctl ret=0
+			DEBUG 5:dvk_getpriv:1037: dcid=0 endpoint=5 
+			DEBUG 5:dvk_getpriv:1050: ioctl ret=0 errno=0
+			DEBUG 5:dvk_getpriv:1055: ioctl ret=0
+			sizeof(priv_usr_t)=52
+			AFTER priv_id=39 priv_warn=-33 priv_level=3 <<<<<<<<<<<<<<<<<<<<<<<<<<< VALORES NUEVOS
+			AFTER 
+			NR_DVK_CHUNKS=3
+			BITCHUNK_BITS=16
+
+			FFFF:[void0(0)]->[dc_init(1)]->[send(2)]->[receive(3)]->[notify(4)]->[sendrec(5)]->[rcvrqst(6)]->[reply(7)]->[dc_end(8)]->[bind(9)]->[unbind(10)]->[getpriv(11)]->[setpriv(12)]->[vcopy(13)]->[getdcinfo(14)]->[getprocinfo(15)]->
+			FFFF:[mini_relay(16)]->[proxies_bind(17)]->[proxies_unbind(18)]->[getnodeinfo(19)]->[put2lcl(20)]->[get2rmt(21)]->[add_node(22)]->[del_node(23)]->[dvs_init(24)]->[dvs_end(25)]->[getep(26)]->[getdvsinfo(27)]->[proxy_conn(28)]->[wait4bind(29)]->[migrate(30)]->[node_up(31)]->
+			FFFF:[node_down(32)]->[getproxyinfo(33)]->[wakeup(34)]->
+			NR_SYS_CHUNKS=4
+			BITCHUNK_BITS=16
+
+			FFFF:
+			FFFF:
+			FFFF:
+			FFFF:
+
+		PROVOCANDO ERRORES 
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -w -55 -l 3  -d 0 -p 5 <<<< INVALID warn_ep
+			DEBUG 17:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 17:dvk_getdvsinfo:246: 
+			DEBUG 17:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 17:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			Invalid warn_ep [-34-28]
+			root@node0:/usr/src/dvs/dvk-tests# make
+			gcc  -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic -o test_set_priv test_set_priv.c  ../dvk-lib//stub_dvkcall.o -I..
+			
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -w -55 -l 3  -d 0 -p 5 <<<<< INVALID level 
+			DEBUG 21:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 21:dvk_getdvsinfo:246: 
+			DEBUG 21:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 21:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			Invalid warn_ep [-34,28]
+			root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_set_priv -w -5 -l 33  -d 0 -p 5
+			DEBUG 22:dvk_open:105: Open dvk device file /dev/dvk
+			DEBUG 22:dvk_getdvsinfo:246: 
+			DEBUG 22:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+			DEBUG 22:dvk_getdvsinfo:260: ioctl ret=0
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			local_nodeid=0
+			Invalid level [0-4]
+
+
+	
 ===============================================================================================================
 ULTIMO_LOG
 ===============================================================================================================
-TODO:  Probar con IOCTL y con IPC 
 
+TODO:  Probar proxies 
 
+TODO:  Hacer un programa
+		- test_proc_info  para ver los procesos
+			test_priv_info <DC> <endpoint> 
+			
+			
+			struct priv_usr {
+
+  dvk_id_t 	priv_id;			/* index of this system structure */
+  int		priv_warn;				/* process to warn when the process exit/fork */
+  int		priv_level;			/* privilege level		*/
+
+  short 	priv_trap_mask;		/* allowed system call traps */
+  ipc_map_t priv_ipc_from;		/* allowed callers to receive from */
+  ipc_map_t priv_ipc_to;		/* allowed destination processes */
+  dvk_map_t	priv_dvk_allowed;		/* allowed dvk calls */
+
+  dvktimer_t priv_alarm_timer;	/* synchronous alarm timer */ 
+
+};
+
+		- test_priv_info para ver los proxies 
+		
+		
+
+TODO:   Incluir impresion de PRIVILEGIOS en /proc 
+		- De Procesos 
+			/proc/dvs/DCO/privs 
+			
+		- De Proxies 
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/proxies/priv_allowed
+			ID Type -lpid- id  -warn- lvl ------name----- priv_dvk_allowed
+														  3322222222221111111111000000000033222222222211111111110000000000	
+			12 send 123456 12  123456 123 123456789012345 1098765432109876543210987654321010987654321098765432109876543210 	      
+   	
+	
+		
+		  dvk_id_t 	priv_id;			/* index of this system structure */
+  int		priv_warn;				/* process to warn when the process exit/fork */
+  int		priv_level;			/* privilege level		*/
+
+  short 	priv_trap_mask;		/* allowed system call traps */
+  ipc_map_t priv_ipc_from;		/* allowed callers to receive from */
+  ipc_map_t priv_ipc_to;		/* allowed destination processes */
+  dvk_map_t	priv_dvk_allowed;		/* allowed dvk calls */
+  	
+		
+TODO:  Probar Kernel con IPC y modulo con IOCTL juntos 
+
+TODO:  Agregar al proceso, DC, DVS un campo de uptime que indique cuando se arranco.
+		Agregar un campo de p_clr_time que indica cuando se limpiaron las estadisticas. 
+		Tambien se deberia hacer un dvk_clrprocstats() y dvk_clrproxystats()
+		Para limpiar las estadisticas.
 		
 TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD en p_misc_flags.
 		Esto se hizo en el proxy de kernel 
 		C:\PAP\UTN\INVESTIGACION\LAB-NTC\PROYECTOS\MOL-IPC\m3-ipc-mod\MoL_Module\ksocket-0.0.2\m3ipc_tcp_proxy
 		PROBLEMA CON COPY_KRN_USR y viceversa.	
-		
-
+		ATENCION, hay que contemplar:
+			- IPC: AMBOS ENDPOINTS ESTEN EN EL KERNEL
+			- IPC: QUE UN ENDPOINT ESTEN EN EL KERNEL Y OTRO EN EL USER 
+			- VCOPY: TODAS LAS COMBINACIONES USER-KERNEL PARA SRC-DST-RQTR
 	
-				
+	POSIBLE SOLUCION: 
+		Supongamos que un proceso de USER hace un dvk_receive() 
+		queda esperando en modo kernel. 
+		El proceso SRC es de KERNEL y con memcpy copia el mensaje al DST 
+		y lo despierta, y este antes se fija si el emisor estaba KERNEL
+		Si es asi, hace COPY_KRN_USR y luego vuelve.
+		Es decir, hay una doble copia.
 		
-		
-
 	
-

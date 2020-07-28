@@ -19,10 +19,10 @@
 
 #define PRINT_SYS_MAP(map) do {\
 	int i;\
-	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
-	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_SYS_CHUNKS);\
+	DVKDEBUG(INTERNAL,"PRINT_SYS_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
+	DVKDEBUG(INTERNAL,"PRINT_SYS_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_SYS_CHUNKS);\
 	for(i = 0; i < NR_SYS_CHUNKS; i++){\
-		DVKDEBUG(INTERNAL,"%X.",(map.chunk)[i]);\
+		DVKDEBUG(INTERNAL,"\n%X:",(map.chunk)[i]);\
 	}\
 	DVKDEBUG(INTERNAL,"\n");\
 }while(0);
@@ -45,10 +45,10 @@
 
 #define PRINT_DVK_MAP(map) do {\
 	int i;\
-	DVKDEBUG(INTERNAL,"PRINT_DVK_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
-	DVKDEBUG(INTERNAL,"PRINT_IPCTO_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_DVK_CHUNKS);\
+	DVKDEBUG(INTERNAL,"PRINT_DVKALLOWED_MAP: %d:%s:%u:%s:",task_pid_nr(current), __FUNCTION__ ,__LINE__,#map);\
+	DVKDEBUG(INTERNAL,"PRINT_DVKALLOWED_MAP: %d:%s:%u:%d:",task_pid_nr(current), __FUNCTION__ ,__LINE__,NR_DVK_CHUNKS);\
 	for(i = 0; i < NR_DVK_CHUNKS; i++){\
-		DVKDEBUG(INTERNAL,"%X.",(map.chunk)[i]);\
+		DVKDEBUG(INTERNAL,"\n%X:",(map.chunk)[i]);\
 	}\
 	DVKDEBUG(INTERNAL,"\n");\
 }while(0);

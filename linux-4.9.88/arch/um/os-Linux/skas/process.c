@@ -59,8 +59,8 @@
 #include "/usr/src/dvs/include/dvk/dvk_ioparm.h"
 #include "/usr/src/dvs/include/generic/tracker.h"
 #include "/usr/src/dvs/include/com/stub_dvkcall.h"
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
+#include "../../../../ipc/dvk-mod/dvk_debug.h"
+#include "../../../../ipc/dvk-mod/dvk_macros.h"
 
 #define DEVICE_NAME "dvk"
 #define  UML_DVK_DEV		"/dev/dvk"

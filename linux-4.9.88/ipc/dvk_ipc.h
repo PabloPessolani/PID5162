@@ -48,8 +48,8 @@
 
 #include "./dvk-mod/dvk_newproto.h"
 
-#include "dvk_debug.h"
-#include "dvk_macros.h"
+#include "./dvk-mod/dvk_debug.h"
+#include "./dvk-mod/dvk_macros.h"
 #include "dvk_proto.h"
 #include "dvk_glo.h"
 //#include "dvk_ipcproto.h"

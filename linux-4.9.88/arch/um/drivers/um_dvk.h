@@ -24,8 +24,8 @@
 #include "/usr/src/dvs/include/generic/tracker.h"
 #include "/usr/src/dvs/include/com/stub_dvkcall.h"
 
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
+#include "../../../../ipc/dvk-mod/dvk_debug.h"
+#include "../../../../ipc/dvk-mod/dvk_macros.h"
 
 #include "../include/uml_debug.h"
 #include "../include/uml_macros.h"
