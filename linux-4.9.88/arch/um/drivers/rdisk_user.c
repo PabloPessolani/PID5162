@@ -27,7 +27,7 @@
 #include "uml_rdisk.h"
 #include "glo_dvk.h"
 
-extern int rdk_fd;
+extern int umlkrn_fd;
 
 int start_rd_thread(unsigned long sp, int *fd_out)
 {
@@ -35,21 +35,27 @@ int start_rd_thread(unsigned long sp, int *fd_out)
 
 	printk("start_rd_thread - sp=%ld\n", sp);
 
-	err = os_pipe(fds, 1, 1);
+	// socketpair - create a pair of connected sockets fds[0] , fds[1]  
+	err = os_pipe(fds, 1, 1); // first 1 means stream => SOCK_STREAM (AF_UNIX)
+								// second 1 means close_on_exec = YES
 	if(err < 0){
 		printk("start_rd_thread - os_pipe failed, err = %d\n", -err);
 		goto rd_out;
 	}
 
-	rdk_fd = fds[0];
+	// Kernel socket FD 
+	umlkrn_fd = fds[0];
+	// RDISK thread socket FD rd_thread_fd
 	*fd_out = fds[1];
 
+	// set the FD as Non-blocking 
 	err = os_set_fd_block(*fd_out, 0);
 	if (err) {
 		printk("start_rd_thread - failed to set nonblocking I/O.\n");
 		goto rd_out_close;
 	}
 
+	// create rd_thread 
 	pid = clone(rd_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
 	printk("start_rd_thread pid=%d\n", pid);
 	if(pid < 0){
@@ -64,7 +70,7 @@ sleep(2);
  rd_out_close:
 	os_close_file(fds[0]);
 	os_close_file(fds[1]);
-	rdk_fd = -1;
+	umlkrn_fd = -1;
 	*fd_out = -1;
  rd_out:
 	return err;

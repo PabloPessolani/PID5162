@@ -1,20 +1,10 @@
 /*
- * Copyright (C) 2000 Jeff Dike (jdike@karaya.com)
+ * UDB_KERN.C with Copyright (C) 2000 Jeff Dike (jdike@karaya.com)
  * Licensed under the GPL
  */
 
-/* 2001-09-28...2002-04-17
- * Partition stuff by James_McMechan@hotmail.com
- * old style rdisk by setting RD_SHIFT to 0
- * 2002-09-27...2002-10-18 massive tinkering for 2.5
- * partitions have changed in 2.5
- * 2003-01-29 more tinkering for 2.5.59-1
- * This should now address the sysfs problems and has
- * the symlink for devfs to allow for booting with
- * the common /dev/rdisk/discX/... names rather than
- * only /dev/ubdN/discN this version also has lots of
- * clean ups preparing for rdisk-many.
- * James McMechan
+/* 2020-07-28
+  RDISK_KERN.C by Pablo Pessolani, based on udb_kern.c source code
  */
 
 // #ifdef CONFIG_UML_RDISK 
@@ -48,11 +38,11 @@
 #include "/usr/src/dvs/vos/mol/include/partition.h"
 #include "/usr/src/dvs/vos/mol/include/ioc_disk.h"
 
-#ifdef  CONFIG_DVKIOCTLIOCTL
-#pragma message ("CONFIG_DVKIOCTLIOCTL=YES")
-#else // CONFIG_DVKIOCTLIOCTL
-#pragma message ("CONFIG_DVKIOCTLIOCTL=NO")
-#endif // CONFIG_DVKIOCTLIOCTL
+#ifdef  CONFIG_DVKIOCTL
+#pragma message ("CONFIG_DVKIOCTL=YES")
+#else // CONFIG_DVKIOCTL
+#pragma message ("CONFIG_DVKIOCTL=NO")
+#endif // CONFIG_DVKIOCTL
 
 #ifdef  CONFIG_UML_DVK
 #pragma message ("CONFIG_UML_DVK=YES")
@@ -66,11 +56,11 @@
 #pragma message ("CONFIG_UML_USER=NO")
 #endif // CONFIG_UML_USER
 
-#ifdef  CONFIG_DVKIOCTLIPC
-#pragma message ("CONFIG_DVKIOCTLIPC=YES")
-#else // CONFIG_DVKIOCTLIPC
-#pragma message ("CONFIG_DVKIOCTLIPC=NO")
-#endif // CONFIG_DVKIOCTLIPC
+#ifdef  CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=YES")
+#else // CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=NO")
+#endif // CONFIG_DVKIPC
 
 #ifdef  CONFIG_UML_RDISK
 #pragma message ("CONFIG_UML_RDISK=YES")
@@ -78,12 +68,10 @@
 #pragma message ("CONFIG_UML_RDISK=NO")
 #endif // CONFIG_UML_RDISK
 
+enum rd_req { RD_READ, RD_WRITE, RD_FLUSH, RD_OPEN, RD_CLOSE };
 
-#ifdef RD_MEMORY
-char *rd_mem;
-#endif // RD_MEMORY
- 
-enum rd_req { RD_READ, RD_WRITE, RD_FLUSH };
+#define REQ_OP_OPEN 	(REQ_OP_FLUSH+1)
+#define REQ_OP_CLOSE 	(REQ_OP_OPEN+1)
 
 struct rd_thread_req {
 	struct request *req;
@@ -102,6 +90,7 @@ struct rd_thread_req {
 
 static DEFINE_MUTEX(rd_lock);
 static DEFINE_MUTEX(rd_mutex); /* replaces BKL, might not be needed */
+static DEFINE_MUTEX(rd_sync);
 
 
 #define MAX_SG 			1
@@ -145,6 +134,7 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode,
 		     unsigned int cmd, unsigned long arg);
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo);
 int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo);
+static bool rd_submit_request(struct rd_thread_req *rd_req, struct rdisk *dev);
 
 static const struct block_device_operations rd_blops = {
         .owner		= THIS_MODULE,
@@ -284,6 +274,8 @@ static int rd_setup_common(char *str, int *index_out, char **error_out)
 	return 0;
 }
 
+#ifdef ANULADO 
+
 static int rd_setup(char *str)
 {
 	char *error;
@@ -297,7 +289,6 @@ static int rd_setup(char *str)
 		       "%s\n", str, error);
 	return 1;
 }
-
 __setup("rdisk", rd_setup);
 __uml_help(rd_setup,
 "rdisk<n><flags>=<filename>[(:|,)<filename2>]\n"
@@ -323,8 +314,9 @@ __uml_help(rd_setup,
 "    UMLs and file locking will be turned off - this is appropriate for a\n"
 "    cluster filesystem and inappropriate at almost all other times.\n\n"
 );
+#endif // ANULADO 
 
-static void do_rd_request(struct request_queue * q);
+static void rd_enqueue_request(struct request_queue * q);
 
 static LIST_HEAD(restart);
 static int rd_thread_fd = -1;
@@ -342,6 +334,7 @@ static void rd_handler(void)
 
 	DVKDEBUG(INTERNAL,"\n");
 
+	// read messages from pipe until it will be empty
 	while(1){
 		n = os_read_file(rd_thread_fd, &req,
 				 sizeof(struct rd_thread_req *));
@@ -354,16 +347,22 @@ static void rd_handler(void)
 			return;
 		}
 		DVKDEBUG(INTERNAL,"req->op=%d\n", req->op);
-		blk_end_request(req->req, 0, req->length);
+		if( req->op != RD_OPEN && req->op != RD_CLOSE ){
+			blk_end_request(req->req, 0, req->length);
+		}
 		kfree(req);
 	}
+	// Reanable IRQ 
 	reactivate_fd(rd_thread_fd, RDISK_IRQ);
 
+	// for each request,  enqueue them.
 	list_for_each_safe(list, next_ele, &restart){
 		rd_dev = container_of(list, struct rdisk, restart);
 		list_del_init(&rd_dev->restart);
 		spin_lock_irqsave(&rd_dev->lock, flags);
-		do_rd_request(rd_dev->queue);
+		
+		rd_enqueue_request(rd_dev->queue);
+		
 		spin_unlock_irqrestore(&rd_dev->lock, flags);
 	}
 }
@@ -388,20 +387,17 @@ static void kill_rd_thread(void)
 __uml_exitcall(kill_rd_thread);
 
 
-static void rd_close_dev(struct rdisk *rd_dev)
+static int rd_close_dev( int minor)
 {
 	message dev_mess, *m_ptr;
-	int rcode, major, minor;
+	int rcode, major;
 
 	major = RD_MAJOR;
-	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
 
 	DVKDEBUG(INTERNAL, "major=%d minor=%d\n", major, minor);
 	if (minor >= RD_MAX_DEV) {
-		ERROR_PRINT(EDVSOVERRUN);
-		return;
+		ERROR_RETURN(EDVSOVERRUN);
 	}
-#ifndef RD_MEMORY	
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	m_ptr->m_type   = DEV_CLOSE;
@@ -414,34 +410,29 @@ static void rd_close_dev(struct rdisk *rd_dev)
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
 	if(rcode < 0) {
-		ERROR_PRINT(rcode);
-		return;
+		ERROR_RETURN(rcode);
 	}
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
-#endif // RD_MEMORY	
-
-	return;	
+	return(0);	
 }
 
-static int rd_open_dev(struct rdisk *rd_dev)
+static int rd_open_dev(int minor)
 {
 	message dev_mess, *m_ptr;
-	int rcode, major, minor;
+	int rcode, major;
 
 	major = RD_MAJOR;
-	minor = RD_MINOR; // <<<<< ver de donde se puede obtener este 
 
 	DVKDEBUG(INTERNAL, "major=%d minor=%d\n", major, minor);
 	if (minor >= RD_MAX_DEV) ERROR_RETURN(EDVSOVERRUN);
 	
-#ifndef RD_MEMORY	
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	m_ptr->m_type   = DEV_OPEN;
 	m_ptr->DEVICE   = minor;
 	m_ptr->POSITION = 0;
 //	m_ptr->IO_ENDPT = rdc_ep;
-	m_ptr->IO_ENDPT = uml_ep;
+	m_ptr->IO_ENDPT = rdc_ep;
 	m_ptr->ADDRESS  = NULL;
 	m_ptr->COUNT    = NULL;
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
@@ -449,7 +440,6 @@ static int rd_open_dev(struct rdisk *rd_dev)
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	return(OK);	
-#endif // RD_MEMORY	
 }
 
 static void rd_device_release(struct device *dev)
@@ -524,7 +514,7 @@ static int rd_add(int n, char **error_out)
 	sg_init_table(rd_dev->sg, MAX_SG);
 
 	err = -ENOMEM;
-	rd_dev->queue = blk_init_queue(do_rd_request, &rd_dev->lock);
+	rd_dev->queue = blk_init_queue(rd_enqueue_request, &rd_dev->lock);
 	if (rd_dev->queue == NULL) {
 		*error_out = "Failed to initialize device queue";
 		goto out;
@@ -655,7 +645,6 @@ static int rd_remove(int n, char **error_out)
 	struct rdisk *rd_dev;
 	int err = -ENODEV;
 
-
 	DVKDEBUG(INTERNAL,"n=%d\n", n);
 
 	mutex_lock(&rd_lock);
@@ -752,13 +741,9 @@ static int __init rd_init(void)
 			       "%s\n", i, error);
 	}
 	mutex_unlock(&rd_lock);
-	
-#ifdef RD_MEMORY
-	rd_mem = kmalloc( RD_MEM_CYLINDERS * RD_MEM_HEADS * RD_MEM_SECTORS * RD_SECTOR_SIZE,
-					 GFP_ATOMIC);
-	if(rd_mem == NULL)
-		ERROR_RETURN(EDVSNOMEM);
-#endif // RD_MEMORY
+
+	// to synchronize with rd_thread 
+	mutex_lock(&rd_sync);
 	
 	return 0;
 }
@@ -783,6 +768,7 @@ static int __init rd_driver_init(void)
 		 * enough. So use anyway the io thread. */
 	}
 	stack = alloc_stack(0, 0);
+	// Start the rd_thread (in rdisk_user.c) with the rd_thread_fd as argument.
 	rd_pid = start_rd_thread(stack + PAGE_SIZE - sizeof(void *), &rd_thread_fd);
 	printk("start_rd_thread rd_pid=%d\n", rd_pid);
 	if(rd_pid < 0){
@@ -792,6 +778,7 @@ static int __init rd_driver_init(void)
 		rd_pid = -1;
 		return 0;
 	}
+	// when rd_thread_fd (pipe) receives messages (write), it trigger RDISK_IRQ
 	err = um_request_irq(RDISK_IRQ, rd_thread_fd, IRQ_READ, rd_intr, 0, "rdisk", rd_devs);
 	if(err != 0)
 		printk(KERN_ERR "um_request_irq failed - errno = %d\n", -err);
@@ -799,25 +786,66 @@ static int __init rd_driver_init(void)
 }
 
 #ifdef CONFIG_UML_RDISK 
+// HERE START ALL  equivalent to main() of RDISK 
 device_initcall(rd_driver_init);
 #endif // CONFIG_UML_RDISK
 
-static int rd_open(struct block_device *bdev, fmode_t mode)
+/* Called with dev->lock held */
+static void rd_prepare_open_request(struct request *req,
+				  struct rd_thread_req *rd_req)
 {
-	struct gendisk *disk = bdev->bd_disk;
+	struct gendisk *disk = req->rq_disk;
 	struct rdisk *rd_dev = disk->private_data;
-	int err = 0;
 
 	DVKDEBUG(INTERNAL,"\n");
+	rd_req->req = req;
+	rd_req->op = RD_OPEN;
+	rd_req->length = 0;
+}
 
+static void rd_prepare_close_request(struct request *req,
+				  struct rd_thread_req *rd_req)
+{
+	struct gendisk *disk = req->rq_disk;
+	struct rdisk *rd_dev = disk->private_data;
+
+	DVKDEBUG(INTERNAL,"\n");
+	rd_req->req = req;
+	rd_req->op = RD_CLOSE;
+	rd_req->length = 0;
+}
+
+static int rd_open(struct block_device *bdev, fmode_t mode)
+{
+	int my_tid, my_ep;
+	struct gendisk *disk = bdev->bd_disk;
+	struct rdisk *rd_dev = disk->private_data;
+	struct rd_thread_req *rd_req;
+	int err = 0;
+	
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"mode=%d my_tid=%d my_ep=%d\n", mode, my_tid, my_ep);
+	
 	mutex_lock(&rd_mutex);
 	if(rd_dev->count == 0){
-		err = rd_open_dev(rd_dev);
-		if(err){
-			printk(KERN_ERR "%s: Can't open: errno = %d\n",
-			       disk->disk_name, -err);
+//		err = rd_open_dev(rd_dev);
+		DVKDEBUG(INTERNAL,"REQ_OP_OPEN\n");
+		rd_req = kmalloc(sizeof(struct rd_thread_req),
+				 GFP_ATOMIC);
+		if (rd_req == NULL) {
+			if (list_empty(&rd_dev->restart))
+				list_add(&rd_dev->restart, &restart);
 			goto out;
+		} 
+		rd_prepare_open_request(REQ_OP_OPEN, rd_req);
+		if (rd_submit_request(rd_req, rd_dev) != false) {
+			mutex_unlock(&rd_mutex);
+			mutex_lock(&rd_sync); // waiting rd_thread reply 			
+			rd_dev->count++;
+			return(OK);
 		}
+		goto out;
 	}
 	rd_dev->count++;
 //	set_disk_ro(disk, !rd_dev->openflags.w);
@@ -835,13 +863,34 @@ out:
 
 static void rd_release(struct gendisk *disk, fmode_t mode)
 {
+	int my_tid, my_ep;
 	struct rdisk *rd_dev = disk->private_data;
+	struct rd_thread_req *rd_req;
 
-	DVKDEBUG(INTERNAL,"\n");
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"mode=%d my_tid=%d my_ep=%d\n", mode, my_tid, my_ep);
 
 	mutex_lock(&rd_mutex);
-	if(--rd_dev->count == 0)
-		rd_close_dev(rd_dev);
+	if(rd_dev->count > 0){
+		DVKDEBUG(INTERNAL,"REQ_OP_CLOSE\n");
+		rd_req = kmalloc(sizeof(struct rd_thread_req),
+				 GFP_ATOMIC);
+		if (rd_req == NULL) {
+			if (list_empty(&rd_dev->restart))
+				list_add(&rd_dev->restart, &restart);
+			goto out;
+		}
+		rd_prepare_close_request(REQ_OP_CLOSE, rd_req);
+		if (rd_submit_request(rd_req, rd_dev) != false){
+			mutex_unlock(&rd_mutex);
+			mutex_lock(&rd_sync); // waiting rd_thread reply 			
+			rd_dev->count--;
+			return(OK);			
+		}
+		goto out;
+	}
+out:
 	mutex_unlock(&rd_mutex);
 }
 
@@ -866,6 +915,7 @@ static void rd_prepare_request(struct request *req, struct rd_thread_req *rd_req
 	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(rd_req));
 
 }
+
 
 /* Called with dev->lock held */
 static void rd_prepare_flush_request(struct request *req,
@@ -899,7 +949,7 @@ static bool rd_submit_request(struct rd_thread_req *rd_req, struct rdisk *dev)
 }
 
 /* Called with dev->lock held */
-static void do_rd_request(struct request_queue *q)
+static void rd_enqueue_request(struct request_queue *q)
 {
 	struct rd_thread_req *rd_req;
 	struct request *req;
@@ -922,6 +972,7 @@ static void do_rd_request(struct request_queue *q)
 		req = dev->request;
 
 		if (req_op(req) == REQ_OP_FLUSH) {
+			DVKDEBUG(INTERNAL,"REQ_OP_FLUSH\n");
 			rd_req = kmalloc(sizeof(struct rd_thread_req),
 					 GFP_ATOMIC);
 			if (rd_req == NULL) {
@@ -933,7 +984,14 @@ static void do_rd_request(struct request_queue *q)
 			if (rd_submit_request(rd_req, dev) == false)
 				return;
 		}
-
+		DVKDEBUG(INTERNAL,"req_op(req)=%d\n", req_op(req));
+//	REQ_OP_READ,
+//	REQ_OP_WRITE,
+//	REQ_OP_DISCARD,		/* request to discard sectors */
+//	REQ_OP_SECURE_ERASE,	/* request to securely erase sectors */
+//	REQ_OP_WRITE_SAME,	/* write same block many times */
+//	REQ_OP_FLUSH,		/* request for cache flush */
+	
 		while(dev->start_sg < dev->end_sg){
 			struct scatterlist *sg = &dev->sg[dev->start_sg];
 
@@ -962,11 +1020,14 @@ static void do_rd_request(struct request_queue *q)
 
 static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
+	int my_tid, my_ep;
 	struct rdisk *rd_dev = bdev->bd_disk->private_data;
 	int minor= bdev->bd_disk->first_minor;
 	int rcode; 
 	
-	DVKDEBUG(INTERNAL,"\n");
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"my_tid=%d my_ep=%d\n", my_tid, my_ep);	
 
 	rcode = rd_get_geometry(rd_dev, minor, geo);
 	if( rcode < 0) ERROR_RETURN(rcode);
@@ -975,20 +1036,15 @@ static int rd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 
 int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
 {
-#ifdef RD_MEMORY
-	geo->heads 		= RD_MEM_HEADS;
-	geo->sectors 	= RD_MEM_SECTORS;
-	geo->cylinders 	= RD_MEM_CYLINDERS;
-	geo->start 		= 0;
-#else // RD_MEMORY
 	message dev_mess, *m_ptr;
-	int rcode, tid, my_ep;
+	int rcode;
 	mnx_part_t mnx_part, *part_ptr;
-
-	tid = os_gettid();
-	my_ep = dvk_getep(tid);
-	DVKDEBUG(INTERNAL,"tid=%d my_ep=%d minor=%d\n", tid, my_ep, minor);
-
+	int my_tid, my_ep;
+	
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"minor=%d my_tid=%d my_ep=%d\n", minor, my_tid, my_ep);
+	
   	part_ptr = &mnx_part;
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
@@ -1007,8 +1063,6 @@ int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
 	geo->sectors 	= part_ptr->sectors;
 	geo->cylinders 	= part_ptr->cylinders;
 	geo->start 		= part_ptr->base;
-#endif // RD_MEMORY
-
 	return 0;	
 }
 
@@ -1017,25 +1071,20 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, u
 	struct rdisk *rd_dev = bdev->bd_disk->private_data;
 	struct hd_geometry geo;
 	u16 rd_id[ATA_ID_WORDS];
-	int rcode, tid, my_ep;
-
-	tid = os_gettid();
-	my_ep = dvk_getep(tid);
-	DVKDEBUG(INTERNAL,"cmd=%d tid=%d my_ep=%d\n",cmd, tid, my_ep);
+	int rcode;
+	int my_tid, my_ep;
+	
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"mode=%d cmd=%d my_tid=%d my_ep=%d\n", mode, cmd,  my_tid, my_ep);
 	
 	switch (cmd) {
 		case HDIO_GET_IDENTITY:
-#ifdef RD_MEMORY
-			rd_id[ATA_ID_HEADS]		= RD_MEM_HEADS;
-			rd_id[ATA_ID_SECTORS]	= RD_MEM_SECTORS;
-			rd_id[ATA_ID_CYLS]		= RD_MEM_CYLINDERS;
-#else // RD_MEMORY
 			rcode = rd_getgeo(bdev, &geo);
 			memset(&rd_id, 0, ATA_ID_WORDS * 2);
 			rd_id[ATA_ID_CYLS]		= geo.cylinders;
 			rd_id[ATA_ID_HEADS]		= geo.heads;
 			rd_id[ATA_ID_SECTORS]	= geo.sectors;
-#endif // RD_MEMORY
 			if(copy_to_user((char __user *) arg, (char *) &rd_id,
 					 sizeof(rd_id)))
 				return -EFAULT;
@@ -1049,21 +1098,11 @@ static int rd_ioctl(struct block_device *bdev, fmode_t mode, unsigned int cmd, u
 int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 {
 	message dev_mess, *m_ptr;
-	int rcode, tid, my_ep;
-
-#ifdef RD_MEMORY
-	void *ptr; 
-	DVKDEBUG(INTERNAL,"oper=%d len=%ld\n",oper, len);
-	if( oper == DEV_READ)
-		ptr = memcpy(buf, (rd_mem + off), len);
-	else 
-		ptr = memcpy( (rd_mem + off), buf, len);
-	return(len);	
-#else // RD_MEMORY
-
-	tid = os_gettid();
-	my_ep = dvk_getep(tid);
-	DVKDEBUG(INTERNAL,"oper=%d tid=%d my_ep=%d minor=%d\n",oper, tid, my_ep, minor);
+	int rcode, my_tid, my_ep;
+	
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"oper=%d minor=%d rd_tid=%d my_ep=%d\n",oper, minor,  my_tid, my_ep);
 		
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
@@ -1083,26 +1122,44 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 		
 	DVKDEBUG(INTERNAL,"READ/WRITE bytes=%d\n", m_ptr->REP_STATUS);
 	return(m_ptr->REP_STATUS);
-#endif // RD_MEMORY
-
 }
 
-static void do_rdisk(struct rd_thread_req *req)
+static void do_rdisk_rqst(struct rd_thread_req *req)
 {
 	char *buf;
 	unsigned long len;
-	int n, minor;
+	int n, minor, err;
 	__u64 off;
 
 	if (req->op == RD_FLUSH) {
-		printk("do_rdisk - sync ignored\n");
+		printk("do_rdisk_rqst - sync ignored\n");
 		return;
 	}
-	
-	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
 
+	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
 	minor = req->req->rq_disk->first_minor;
 	len = req->length;
+
+	if (req->op == RD_OPEN) {
+		err = rd_open_dev(minor);
+		if( err != 0){
+			ERROR_PRINT(err);
+		}
+		req->error = err;
+		mutex_unlock(&rd_sync); // unlock the kernel 
+		return;
+	}
+
+	if (req->op == RD_CLOSE) {
+		err = rd_close_dev(minor);
+		if( err != 0){
+			ERROR_PRINT(err);
+		}
+		req->error = err;
+		mutex_unlock(&rd_sync); // unlock the kernel 
+		return;
+	}
+		
 	do {
 		off = req->offset +	(req->length - len);
 		buf = &req->buffer[(req->length - len)];
@@ -1110,7 +1167,7 @@ static void do_rdisk(struct rd_thread_req *req)
 		if(req->op == RD_READ){
 			n = rdisk_rw(DEV_READ, minor, buf, len, off);
 			if (n < 0) {
-				printk("do_rdisk - read failed, err = %d\n", n);
+				printk("do_rdisk_rqst - read failed, err = %d\n", n);
 				req->error = 1;
 				return;
 			}
@@ -1123,7 +1180,7 @@ static void do_rdisk(struct rd_thread_req *req)
 		} else if (req->op == RD_WRITE){
 			n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
 			if(n < 0){
-				printk("do_rdisk - write failed err = %d\n", n);
+				printk("do_rdisk_rqst - write failed err = %d\n", n);
 				req->error = 1;
 				return;
 			}
@@ -1150,10 +1207,12 @@ static int init_rdisk(void)
 	dvs_usr_t *dvsu_ptr;
 	dc_usr_t *dcu_ptr;
 	proc_usr_t *proc_ptr;  
+	int my_tid, my_ep;
 	
-	DVKDEBUG(INTERNAL,"\n");	
+	my_tid = os_gettid();
+	my_ep = dvk_getep(my_tid);
+	DVKDEBUG(INTERNAL,"my_tid=%d my_ep=%d\n", my_tid, my_ep);
 
-#ifndef RD_MEMORY
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
 	
@@ -1187,14 +1246,15 @@ static int init_rdisk(void)
 	rcode = dvk_getprocinfo(dcid, rdc_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
-#endif // RD_MEMORY
-
+	return(rcode);
 }
 
-int rdk_fd = -1;
+int umlkrn_fd = -1;
 /* Only changed by the io thread. XXX: currently unused. */
 static int rd_count = 0;
 
+// This thread waits for Kernel requests throght a Unix socket umlkrn_fd
+// schedule the operation, and then replies to kernel through the same socket 
 int rd_thread(void *arg)
 {
 	struct rd_thread_req *req;
@@ -1203,33 +1263,35 @@ int rd_thread(void *arg)
 
 	os_fix_helper_signals();
 
+	// bind RDISK to DVK 
 	rcode = init_rdisk();
 
 	while(1){
 		DVKDEBUG(INTERNAL,"\n");
 
-		n = os_read_file(rdk_fd, &req,
+		// waiting command from kernel 
+		n = os_read_file(umlkrn_fd, &req,
 				 sizeof(struct rd_thread_req *));
 		if(n != sizeof(struct rd_thread_req *)){
 			if(n < 0)
 				printk("rd_thread - read failed, fd = %d, "
-				       "err = %d\n", rdk_fd, -n);
+				       "err = %d\n", umlkrn_fd, -n);
 			else {
 				printk("rd_thread - short read, fd = %d, "
-				       "length = %d\n", rdk_fd, n);
+				       "length = %d\n", umlkrn_fd, n);
 			}
 			continue;
 		}
 
 		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
 		rd_count++;
-		do_rdisk(req);
+		do_rdisk_rqst(req);
 		DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
-		n = os_write_file(rdk_fd, &req,
+		n = os_write_file(umlkrn_fd, &req,
 				  sizeof(struct rd_thread_req *));
 		if(n != sizeof(struct rd_thread_req *))
 			printk("rd_thread - write failed, fd = %d, err = %d\n",
-			       rdk_fd, -n);
+			       umlkrn_fd, -n);
 	}
 
 	return 0;

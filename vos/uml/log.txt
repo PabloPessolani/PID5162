@@ -499,3 +499,5 @@ DEBUG 1407:dvk_sendrec_T:930: ioctl ret=0
 DEBUG rd_handler:343:                                                                                         
 DEBUG rd_handler:356: req->op=0                                                                               
 DEBUG 1407:dvk_getep:237: ioctl ret=1                                                                         
+root@node0:/usr/src/linux#                                                                                    
+<<< Log from 192.168.1.100 ended julio 29, 2020, 01:34:30 >>>
