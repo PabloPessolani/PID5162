@@ -7,6 +7,10 @@
   RDISK_KERN.C by Pablo Pessolani, based on udb_kern.c source code
  */
 
+// #define MEM_TEST	1
+
+//#define FILE_TEST	1
+
 // #ifdef CONFIG_UML_RDISK 
 // 
 #define RD_SHIFT 0
@@ -34,6 +38,7 @@
 #include "um_dvk.h"
 #include "uml_rdisk.h"
 #include "glo_dvk.h"
+#include "usr_dvk.h"
 
 #include "/usr/src/dvs/vos/mol/include/com.h"
 #include "/usr/src/dvs/vos/mol/include/partition.h"
@@ -69,37 +74,23 @@
 #pragma message ("CONFIG_UML_RDISK=NO")
 #endif // CONFIG_UML_RDISK
 
-//////////////////////////////////////////////////////////////////////////////////
-// MINIX (RDISK) REQUEST TYPES 
-//#define DEV_RQ_BASE   0x400	/* base for device request types */
-//#define DEV_RS_BASE   0x500	/* base for device response types */
-//#define CANCEL       	(DEV_RQ_BASE +  0) /* force a task to cancel */
-//#define DEV_READ		(DEV_RQ_BASE +  3) /* read from minor device */
-//#define DEV_WRITE   	(DEV_RQ_BASE +  4) /* write to minor device */
-//#define DEV_IOCTL    	(DEV_RQ_BASE +  5) /* I/O control code */
-//#define DEV_OPEN     	(DEV_RQ_BASE +  6) /* open a minor device */
-//#define DEV_CLOSE    	(DEV_RQ_BASE +  7) /* close a minor device */
-//
-// LINUX BLOCK DEVICE REQUEST TYPES 
-// enum req_op {
-//	REQ_OP_READ,
-//	REQ_OP_WRITE,
-//	REQ_OP_DISCARD,		/* request to discard sectors */
-//	REQ_OP_SECURE_ERASE,	/* request to securely erase sectors */
-//	REQ_OP_WRITE_SAME,	/* write same block many times */
-//	REQ_OP_FLUSH,		/* request for cache flush */
-//};
-// AND TWO ADDED 
-// #define REQ_OP_OPEN 	(REQ_OP_FLUSH+1)
-// #define REQ_OP_CLOSE 	(REQ_OP_OPEN+1)
-//////////////////////////////////////////////////////////////////////////////////
+
+
+#ifdef DVKDBG
+#undef DVKDBG
+#undef DVKDEBUG(txt, args ...)
+#define DVKDEBUG(x, args ...)
+#endif 
+
+
+enum rd_req { RD_READ, RD_WRITE, RD_FLUSH, RD_OPEN, RD_CLOSE };
 
 #define REQ_OP_OPEN 	(REQ_OP_FLUSH+1)
 #define REQ_OP_CLOSE 	(REQ_OP_OPEN+1)
 
 struct rd_thread_req {
 	struct request *req;
-	enum req_op op;
+	enum rd_req op;
 	unsigned long long offset;
 	unsigned long length;
 	char *buffer;
@@ -115,6 +106,12 @@ struct rd_thread_req {
 static DEFINE_MUTEX(rd_lock);
 static DEFINE_MUTEX(rd_mutex); /* replaces BKL, might not be needed */
 static DEFINE_MUTEX(rd_ksync);
+//static DEFINE_MUTEX(rd_tsync);
+
+#ifdef FILE_TEST
+int img_fd;
+#endif// FILE_TEST
+	
 
 #define MUTEX_LOCK(mutex) 	\
 do {\
@@ -309,7 +306,50 @@ static int rd_setup_common(char *str, int *index_out, char **error_out)
 	return 0;
 }
 
+#ifdef ANULADO 
+
+static int rd_setup(char *str)
+{
+	char *error;
+	int err;
+
+	DVKDEBUG(INTERNAL,"\n");
+
+	err = rd_setup_common(str, NULL, &error);
+	if(err)
+		printk(KERN_ERR "Failed to initialize device with \"%s\" : "
+		       "%s\n", str, error);
+	return 1;
+}
+__setup("rdisk", rd_setup);
+__uml_help(rd_setup,
+"rdisk<n><flags>=<filename>[(:|,)<filename2>]\n"
+"    This is used to associate a device with a file in the underlying\n"
+"    filesystem. When specifying two filenames, the first one is the\n"
+"    COW name and the second is the backing file name. As separator you can\n"
+"    use either a ':' or a ',': the first one allows writing things like;\n"
+"	ubd0=~/Uml/root_cow:~/Uml/root_backing_file\n"
+"    while with a ',' the shell would not expand the 2nd '~'.\n"
+"    When using only one filename, UML will detect whether to treat it like\n"
+"    a COW file or a backing file. To override this detection, add the 'd'\n"
+"    flag:\n"
+"	ubd0d=BackingFile\n"
+"    Usually, there is a filesystem in the file, but \n"
+"    that's not required. Swap devices containing swap files can be\n"
+"    specified like this. Also, a file which doesn't contain a\n"
+"    filesystem can have its contents read in the virtual \n"
+"    machine by running 'dd' on the device. <n> must be in the range\n"
+"    0 to 7. Appending an 'r' to the number will cause that device\n"
+"    to be mounted read-only. For example ubd1r=./ext_fs. Appending\n"
+"    an 's' will cause data to be written to disk on the host immediately.\n"
+"    'c' will cause the device to be treated as being shared between multiple\n"
+"    UMLs and file locking will be turned off - this is appropriate for a\n"
+"    cluster filesystem and inappropriate at almost all other times.\n\n"
+);
+#endif // ANULADO 
+
 static void rd_build_request(struct request_queue * q);
+
 static LIST_HEAD(restart);
 static int rd_thread_fd = -1;
 
@@ -329,7 +369,9 @@ static int h;
 
 	// read REPLY messages from rd_thread reply pipe until it will be empty
 	while(1){
-			
+		
+//		os_idle_sleep( 200000000);
+		
 		n = os_read_file(rd_thread_fd, &req,
 				 sizeof(struct rd_thread_req *));
 		if(n != sizeof(req)){
@@ -340,7 +382,7 @@ static int h;
 			return;
 		}
 		DVKDEBUG(INTERNAL,"req->op=%d\n", req->op);
-		if( req->op != REQ_OP_OPEN && req->op != REQ_OP_CLOSE ){
+		if( req->op != RD_OPEN && req->op != RD_CLOSE ){
 			blk_end_request(req->req, 0, req->length);
 		}
 		// free Memory 
@@ -377,6 +419,7 @@ static void kill_rd_thread(void)
 }
 
 __uml_exitcall(kill_rd_thread);
+
 
 static int rd_close_dev( int minor)
 {
@@ -734,8 +777,10 @@ static int __init rd_init(void)
 	}
 	
 	MUTEX_UNLOCK(&rd_lock);
-	MUTEX_LOCK(&rd_ksync);
 
+	MUTEX_LOCK(&rd_ksync);
+//	MUTEX_LOCK(&rd_tsync);
+	
 	return 0;
 }
 
@@ -787,7 +832,7 @@ static void rd_prepare_open_request(struct request *req,
 {
 	DVKDEBUG(INTERNAL,"\n");
 	rd_req->req = req;
-	rd_req->op = REQ_OP_OPEN;
+	rd_req->op = RD_OPEN;
 	rd_req->length = 0;
 }
 
@@ -796,7 +841,7 @@ static void rd_prepare_close_request(struct request *req,
 {
 	DVKDEBUG(INTERNAL,"\n");
 	rd_req->req = req;
-	rd_req->op = REQ_OP_CLOSE;
+	rd_req->op = RD_CLOSE;
 	rd_req->length = 0;
 }
 
@@ -813,6 +858,11 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 	DVKDEBUG(INTERNAL,"mode=%d my_tid=%d my_ep=%d\n", mode, my_tid, my_ep);
 	
 	MUTEX_LOCK(&rd_mutex);
+#ifdef FILE_TEST
+	img_fd = os_open_file("/var/log/rdisk.img", O_RDWR, O_SYNC);
+	if( img_fd < 0) ERROR_PRINT(errno);
+	else rd_dev->count++;
+#else // FILE_TEST
 	if(rd_dev->count == 0){
 		DVKDEBUG(INTERNAL,"REQ_OP_OPEN\n");
 		rd_req = kmalloc(sizeof(struct rd_thread_req),
@@ -825,6 +875,7 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 		rd_prepare_open_request(REQ_OP_OPEN, rd_req);
 		if (rd_submit_request(rd_req, rd_dev) != false) {
 			rd_dev->count++;
+//			MUTEX_UNLOCK(&rd_tsync);	
 			MUTEX_LOCK(&rd_ksync);
 			MUTEX_UNLOCK(&rd_mutex);
 			return(OK);
@@ -832,6 +883,7 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 		goto out;
 	}
 	rd_dev->count++;
+#endif // FILE_TEST
 //	set_disk_ro(disk, !rd_dev->openflags.w);
 
 	/* This should no more be needed. And it didn't work anyway to exclude
@@ -857,6 +909,9 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 
 	MUTEX_LOCK(&rd_mutex);
 	if(--rd_dev->count == 0){
+#ifdef FILE_TEST
+		os_close_file(img_fd)
+#else // FILE_TEST
 		DVKDEBUG(INTERNAL,"REQ_OP_CLOSE\n");
 		rd_req = kmalloc(sizeof(struct rd_thread_req),
 				 GFP_ATOMIC);
@@ -868,11 +923,13 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 		rd_prepare_close_request(REQ_OP_CLOSE, rd_req);
 		if (rd_submit_request(rd_req, rd_dev) != false){
 			MUTEX_LOCK(&rd_ksync);
+//			MUTEX_UNLOCK(&rd_tsync);	
 			MUTEX_UNLOCK(&rd_mutex);
 			return(OK);			
 		}
 		goto out;
 	}
+#endif // FILE_TEST
 out:
 	MUTEX_UNLOCK(&rd_mutex);
 }
@@ -889,7 +946,7 @@ static void rd_prepare_rw_rqst(struct request *req, struct rd_thread_req *rd_req
 	rd_req->offset = offset;
 	rd_req->length = len;
 	rd_req->error = 0;
-	rd_req->op = (rq_data_dir(req) == READ) ? REQ_OP_READ : REQ_OP_WRITE;
+	rd_req->op = (rq_data_dir(req) == READ) ? RD_READ : RD_WRITE;
 	rd_req->buffer = page_address(page) + page_offset;
 	rd_req->sectorsize = 1 << RD_SECTOR_SHIFT;
 
@@ -904,7 +961,7 @@ static void rd_build_flush_request(struct request *req,
 {
 	DVKDEBUG(INTERNAL,"\n");
 	rd_req->req = req;
-	rd_req->op = REQ_OP_FLUSH;
+	rd_req->op = RD_FLUSH;
 }
 
 static bool rd_submit_request(struct rd_thread_req *rd_req, struct rdisk *dev)
@@ -1082,13 +1139,21 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 	message dev_mess, *m_ptr;
 	int rcode, my_tid, my_ep;
 		
+#ifdef MEM_TEST
+	DVKDEBUG(INTERNAL,"oper=%d minor=%d len=%ld\n",oper, minor,  len);
+	memset((void *) buf, 'A', (size_t) len);
+	m_ptr->REP_STATUS = len;
+#else //  MEM_TEST
 	my_tid = os_gettid();
 	my_ep = dvk_getep(my_tid);
 	DVKDEBUG(INTERNAL,"oper=%d minor=%d len=%ld rd_tid=%d my_ep=%d\n",
 		oper, minor, len, my_tid, my_ep);
+#ifdef FILE_TEST
+	if( oper == 
+#else // FILE_TEST
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
-	if( oper == REQ_OP_READ)
+	if( oper == RD_READ)
 		m_ptr->m_type   = DEV_READ;
 	else
 		m_ptr->m_type   = DEV_WRITE;
@@ -1104,6 +1169,8 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
+#endif // FILE_TEST
+#endif // MEM_TEST	
 	DVKDEBUG(INTERNAL,"READ/WRITE bytes=%d\n", m_ptr->REP_STATUS);
 	return(m_ptr->REP_STATUS);
 }
@@ -1115,7 +1182,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 	int n, minor, err;
 	__u64 off;
 
-	if (req->op == REQ_OP_FLUSH) {
+	if (req->op == RD_FLUSH) {
 		printk("do_rdisk_rqst - sync ignored\n");
 		return;
 	}
@@ -1124,7 +1191,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 	minor = req->req->rq_disk->first_minor;
 	len = req->length;
 
-	if (req->op == REQ_OP_OPEN) {
+	if (req->op == RD_OPEN) {
 		err = rd_open_dev(minor);
 		if( err != 0){
 			ERROR_PRINT(err);
@@ -1134,7 +1201,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 		return;
 	}
 
-	if (req->op == REQ_OP_CLOSE) {
+	if (req->op == RD_CLOSE) {
 		err = rd_close_dev(minor);
 		if( err != 0){
 			ERROR_PRINT(err);
@@ -1149,8 +1216,8 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 		off = req->offset +	(req->length - len);
 		buf = &req->buffer[(req->length - len)];
 		DVKDEBUG(INTERNAL,"op=%d minor=%d len=%d off=%d\n", req->op, minor, len, off);
-		if(req->op == REQ_OP_READ){
-			n = rdisk_rw(REQ_OP_READ, minor, buf, len, off);
+		if(req->op == RD_READ){
+			n = rdisk_rw(DEV_READ, minor, buf, len, off);
 			if (n < 0) {
 				printk("do_rdisk_rqst - read failed, err = %d\n", n);
 				req->error = 1;
@@ -1162,8 +1229,8 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 				len = 0;
 				break;
 			}
-		} else if (req->op == REQ_OP_WRITE){
-			n = rdisk_rw(REQ_OP_WRITE, minor, buf, len, off);
+		} else if (req->op == RD_WRITE){
+			n = rdisk_rw(DEV_WRITE, minor, buf, len, off);
 			if(n < 0){
 				printk("do_rdisk_rqst - write failed err = %d\n", n);
 				req->error = 1;

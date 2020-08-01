@@ -1,5 +1,5 @@
 
-#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK 
 
 #include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
 

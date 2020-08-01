@@ -63,7 +63,6 @@ obj-$(CONFIG_BLK_DEV_COW_COMMON) += cow_user.o
 obj-$(CONFIG_UML_RANDOM) += random.o
 obj-$(CONFIG_UML_DVK) += dvk.o
 obj-$(CONFIG_UML_RDISK) += rdisk.o
-obj-$(CONFIG_UML_RAMDISK) += ramdisk.o
 
 # pcap_user.o must be added explicitly.
 USER_OBJS := fd.o null.o pty.o tty.o xterm.o slip_common.o pcap_user.o vde_user.o 
