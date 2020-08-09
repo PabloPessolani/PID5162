@@ -92,8 +92,10 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(dvs_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_VER_FORMAT, DVS_VER_FIELDS(dvs_ptr));
 	
+#ifndef CONFIG_UML 	
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_size=%d\n", boot_cpu_data.x86_cache_size);
 	DVKDEBUG(INTERNAL,"CPU INFO: x86_cache_alignment =%d\n", boot_cpu_data.x86_cache_alignment);
+#endif // CONFIG_UML 	
 
 	DVKDEBUG(INTERNAL,"Initializing %d DCs: dc=%p\n", dvs_ptr->d_nr_dcs, dc);
 	for( i = 0;  i < dvs_ptr->d_nr_dcs; i++) {
@@ -118,7 +120,12 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	node[nodeid].n_usr.n_flags = (NODE_ATTACHED | NODE_SCONNECTED | NODE_SCONNECTED);
 	
 	/*Align every struct proc with the cache line */
+#ifndef CONFIG_UML 	
 	sizeof_proc_aligned = boot_cpu_data.x86_cache_alignment;
+#else  // CONFIG_UML 	
+#define  UML_CPU_ALIGNMENT 64
+	sizeof_proc_aligned = UML_CPU_ALIGNMENT;
+#endif // CONFIG_UML 	
 	while( sizeof(struct proc) > sizeof_proc_aligned)
 		sizeof_proc_aligned = (sizeof_proc_aligned << 1);
 	log2_proc_size = ilog2(sizeof_proc_aligned);

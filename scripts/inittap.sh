@@ -12,14 +12,15 @@ else
 	dcidA=$1
 fi	
 let dcidB=($dcidA+1)
-echo  dcidA=$dcidA dcidB=$dcidB
-ipbr0="192.168.2.2$dcidA"
-iptap0="192.168.2.20$dcidA"
-iptap1="192.168.2.20$dcidB"
+let dcidC=($dcidA+2)
+echo  dcidA=$dcidA dcidB=$dcidB dcidC=$dcidC
+ipbr0="192.168.2.10$dcidA"
+iptap0="192.168.2.10$dcidB"
+iptap1="192.168.2.10$dcidC"
 echo ipbr0=$ipbr0 iptap0=$iptap0 iptap1=$iptap1 
 netmask="255.255.255.0"
-mactap0="02:AA:BB:CC:DD:0$dcidA"
-mactap1="02:AA:BB:CC:DD:0$dcidB"
+mactap0="02:AA:BB:CC:DD:0$dcidB"
+mactap1="02:AA:BB:CC:DD:0$dcidC"
 echo netmask=$netmask mactap0=$mactap0 mactap1=$mactap1 
 # enable routing between interfaces
 echo 1 >  /proc/sys/net/ipv4/ip_forward

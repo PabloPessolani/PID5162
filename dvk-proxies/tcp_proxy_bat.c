@@ -1,5 +1,5 @@
 /********************************************************/
-/* 		TCP PROXIES	WITH BATCHING MESSAGES			*/
+/* 		TCP PROXIES	WITH BATCHING MESSAGES	*/
 /********************************************************/
 
 #include "proxy.h"

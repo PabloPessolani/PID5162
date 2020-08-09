@@ -1,11 +1,11 @@
 menu "UML Character Devices"
 
-config UML_DVK 
-	bool "UML Distributed Virtualization Kernel (DVK) pseudo character device"
+config UML_RDISK 
+	bool "UML Replicated Disk proxy"
 	depends on DVS 
 	default y
 	help
-	This options enable DVK pseudo device driver as a pass-through to the host-DVK.
+	This options enable RDISK proxy to the host RDISK.
 	
 config STDERR_CONSOLE
 	bool "stderr console"

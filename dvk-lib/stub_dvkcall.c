@@ -1095,7 +1095,7 @@ long dvk_node_up(char *name, int nodeid,  int pxid)
 {
     long ret;
 	
-    LIBDEBUG(DBGPARAMS, "nodeid=%d pxid=%d \n", nodeid, pxid);
+    LIBDEBUG(DBGPARAMS, "nodeid=%d pxid=%d name=%s \n", nodeid, pxid, name);
 #ifdef	CONFIG_DVKIPC
 	int ipc_op = ((DVKIPC_VERSION)<<16 | (DVK_NODEUP << 8));
 	ret = ipc(	ipc_op, nodeid, pxid, 0L, name, 0L);

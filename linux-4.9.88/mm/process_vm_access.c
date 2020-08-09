@@ -21,19 +21,20 @@
 #include <linux/compat.h>
 #endif
 
-//#ifdef CONFIG_DVKIOCTL
+//#ifdef CONFIG_DVS
 #include "/usr/src/dvs/include/com/config.h"
 #include "/usr/src/dvs/include/com/com.h"
 #include "/usr/src/dvs/include/com/dvs_usr.h"
 #include "../ipc/dvk-mod/dvk_debug.h"
 #include "../ipc/dvk-mod/dvk_macros.h"
-#ifdef CONFIG_UML_DVK 
+
+#if  defined (CONFIG_DVKIOCTL) || defined (CONFIG_DVKIPC) 
 extern dvs_usr_t dvs;
-#else //CONFIG_UML_DVK
+#else 
 dvs_usr_t dvs;
-#endif // CONFIG_UML_DVK
+#endif 
 	
-//#endif // CONFIG_DVKIOCTL
+//#endif // CONFIG_DVS
 
 /**
  * process_vm_rw_pages - read/write pages from task specified

@@ -3185,12 +3185,17 @@ Call Trace:
 Abortado
 	
 	
-	
+TARDE:
 
-
+				
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-TODO:
+MAÑANA:
 		PROBAR CON UN ARCHIVO DE IMAGEN.
+
+
+		PROBAR CON UN PROXY DE RDISK UNIDO POR PIPE 
+			UML/RD_THREAD ===PIPE=== RDISK_PROXY ===M3IPC===RDISK 
+				
 
 OPCION:
 		Hacer un RDISK PROXY

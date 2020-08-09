@@ -9,6 +9,13 @@ config STATIC_LINK
 	  Additionally, this option enables using higher memory spaces (up to
 	  2.75G) for UML.
 
+
+config DVS
+	bool "Distributed Virtualization System (IPC) support"
+	default n
+	help
+		Distributed Virtualization System (IPC) support
+	  
 source "mm/Kconfig"
 
 config LD_SCRIPT_STATIC
@@ -46,6 +53,7 @@ config HOSTFS
 
 config RHOSTFS
 	tristate "DVS Remote Host filesystem"
+	depends on DVS 
 	default y
 	help
 	  This is the UML hostfs but on a remote host.

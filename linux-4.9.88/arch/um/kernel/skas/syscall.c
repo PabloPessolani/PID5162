@@ -177,13 +177,13 @@ out:
 	syscall_trace_leave(regs);
 }
 
-#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_DVS
 void return_from_dvkcall(int dvk_retcode,  struct uml_pt_regs *r)
 {
 	struct pt_regs *regs = container_of(r, struct pt_regs, regs);
 	PT_REGS_SET_SYSCALL_RETURN(regs, dvk_retcode);
 }
 
-#endif // CONFIG_UML_DVK
+#endif // CONFIG_DVS
 
 

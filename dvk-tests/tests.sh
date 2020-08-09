@@ -13,7 +13,7 @@ dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
-cd /usr/src/linux/ipc/dvk-mod/
+cd /usr/src/dvs/dvk-mod/
 mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
@@ -49,15 +49,15 @@ echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> /dev/shm/DC$dcid.
 echo "};"          					>> DC$dcid.cfg
 /usr/src/dvs/dvs-apps/dc_init/dc_init /dev/shm/DC$dcid.cfg > /dev/shm/dc_init$dcid.out 2> /dev/shm/dc_init$dcid.err
 dmesg -c >> /dev/shm/dmesg.txt
-read  -p "TCP PROXY Enter para continuar... "
+read  -p " TCP LZ4 BAT PROXY Enter para continuar... "
+# read  -p "TCP PROXY Enter para continuar... "
 #     PARA DESHABILITAR EL ALGORITMO DE NAGLE!! 
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency
 echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 cd /usr/src/dvs/dvk-proxies
-read  -p "TCP PROXY Enter para continuar... "
-#./sp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
-./tcp_proxy node$rmt $rmt >/dev/shm/node$rmt.txt 2>/dev/shm/error$rmt.txt &
-#read  -p "TIPC BAT PROXY Enter para continuar... "
+#./tcp_proxy node$rmt $rmt >/dev/shm/node$rmt.txt 2>/dev/shm/error$rmt.txt &
+/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZ -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+#read  -p "TIPC LZ4 BAT PROXY Enter para continuar... "
 #tipc node set netid 4711
 #tipc_addr="1.1.10$lcl"
 #tipc node set addr $tipc_addr

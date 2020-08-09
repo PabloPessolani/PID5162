@@ -14,7 +14,9 @@
 #include "dvk_mod.h"
 
 extern int send_sig_info(int, struct siginfo *, struct task_struct *);
+#ifndef CONFIG_UML 	
 extern struct cpuinfo_x86 boot_cpu_data;
+#endif // CONFIG_UML 	
 
 /*------------------------------------------------------*/
 /* Searchs all processes at the MIGRATION list and*/

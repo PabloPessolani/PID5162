@@ -30,8 +30,8 @@
 #pragma message ("CONFIG_UML_DVK=YES")
 #else // CONFIG_UML_DVK
 #pragma message ("CONFIG_UML_DVK=NO")
-#pragma message ("define CONFIG_UML_DVK=YES")
-#define CONFIG_UML_DVK	1
+//#pragma message ("define CONFIG_UML_DVK=YES")
+//#define CONFIG_UML_DVK	1
 #endif // CONFIG_UML_DVK
 
 #ifdef CONFIG_UML_DVK

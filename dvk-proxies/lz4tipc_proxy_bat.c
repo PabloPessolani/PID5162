@@ -232,7 +232,7 @@ int pr_setup_connection(void)
    
 }
 
-/* pr_receive_payloadr: receives the header from remote sender */
+/* pr_receive_payload: receives the payload from remote sender */
 int pr_receive_payload(proxy_payload_t *pl_ptr, int pl_size) 
 {
     int n, received = 0;
@@ -1106,7 +1106,7 @@ void  ps_init(void)
 
 void usage(void)
 {
-   	fprintf(stderr,"Usage: tipc_proxy_bat -[bBZ] -n <px_name> -i <px_id> \n");
+   	fprintf(stderr,"Usage: lz4tipc_proxy_bat -[bBZ] -n <px_name> -i <px_id> \n");
    	fprintf(stderr,"/t b: Remote Client auto-binding\n");
    	fprintf(stderr,"/t B: Message Batching\n");
    	fprintf(stderr,"/t Z: LZ4 Data Compression\n");

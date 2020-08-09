@@ -1,6 +1,15 @@
 
 #include "dvk_ipc.h"
 
+#ifdef CONFIG_UML	
+
+#ifdef  DVKDEBUG
+#undef  DVKDEBUG
+#define DVKDEBUG(x, args ...)
+#endif //DVKDEBUG
+
+#endif // CONFIG_UML	
+
 /*--------------------------------------------------------------*/
 /*			ipc_dvs_init			*/
 /* Initialize the DVS system					*/
@@ -240,14 +249,15 @@
 	return(rcode);
 }
 
-long ipc_vcopy(unsigned long arg)
+long ipc_vcopy( int src_ep, 
+				unsigned long src_addr,
+				unsigned long dst_ep, 
+				void  *dst_addr, 
+				long bytes)
 {  
-	parm_vcopy_t vc;
 	long rcode=0; 
-	DVKDEBUG(DBGPARAMS,"\n");
-	rcode = copy_from_user( (void*) &vc, (const void __user *) arg, sizeof(parm_vcopy_t));
-	if(rcode) ERROR_RETURN(EDVS2BIG);	
-	rcode = new_vcopy(vc.v_src,  vc.v_saddr, vc.v_dst, vc.v_daddr, vc.v_bytes);
+	DVKDEBUG(DBGPARAMS, "src_ep=%d dst_ep=%d bytes=%d\n", src_ep, dst_ep, bytes);
+	rcode = new_vcopy(src_ep,  src_addr, dst_ep, dst_addr, bytes);
 	return(rcode);
 }
 

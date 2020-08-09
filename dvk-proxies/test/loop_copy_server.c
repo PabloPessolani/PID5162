@@ -106,6 +106,9 @@ int child_function(int child) {
 		exit(1);		
 	}	
 	
+	if( maxbuf > 30) buffer[30] = 0;	
+	USRDEBUG("CHILD child %d: buffer after=%s\n", child, buffer);
+	
 	USRDEBUG("CHILD child_nr %d: unbinding %d\n", child_nr,client_nr);
 	dvk_unbind(dcid,child_nr);
 
