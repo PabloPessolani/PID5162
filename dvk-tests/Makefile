@@ -7,8 +7,8 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		
 	
 INCLUDE = ..
-LIBS = ../dvk-lib//stub_dvkcall.o
-#LIBS = ../dvk-lib/libdvkipc.so
+#LIBS = ../dvk-lib//stub_dvkcall.o
+LIBS = ../dvk-lib/libdvkipc.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
 
 all: $(BINS)

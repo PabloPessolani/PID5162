@@ -42,6 +42,44 @@ extern atomic_t	local_nodeid;
 
 #ifdef DVK_GLOBAL_HERE
 
+char *dvk_names[DVK_NR_CALLS] = {
+    "void0",
+    "dc_init",
+    "mini_send",
+    "mini_receive",
+    "mini_notify",
+    "mini_sendrec",
+    "mini_rcvrqst",
+    "mini_reply",
+    "dc_end",
+    "bind",
+    "unbind",
+    "getpriv",
+    "setpriv",
+    "vcopy",
+    "getdcinfo",
+    "getprocinfo",
+    "mini_relay",
+    "proxies_bind",
+    "proxies_unbind",
+    "getnodeinfo",
+    "put2lcl",
+    "get2rmt",
+    "add_node",
+    "del_node",
+    "dvs_init",
+    "dvs_end",
+    "getep",
+    "getdvsinfo",
+    "proxy_conn",
+    "wait4bind",
+    "migrate",   
+    "node_up",
+    "node_down",
+    "getproxyinfo",
+	"wakeup",
+};   /* the ones we are gonna replace */
+
 struct file_operations nodes_file_fops= {
  owner : THIS_MODULE,
  read  : nodes_read,
@@ -70,6 +108,16 @@ struct file_operations dc_info_file_fops = {
 struct file_operations dc_procs_file_fops = {
  owner : THIS_MODULE,
  read  : dc_procs_read,
+};
+
+struct file_operations dc_ipcto_file_fops = {
+ owner : THIS_MODULE,
+ read  : dc_ipcto_read,
+};
+
+struct file_operations dc_dvkcalls_file_fops = {
+ owner : THIS_MODULE,
+ read  : dc_dvkcalls_read,
 };
 
 struct file_operations dc_stats_file_fops = {
@@ -113,6 +161,7 @@ spinlock_t dvs_spinlock = SPIN_LOCK_UNLOCKED;
 
 #else /* DVK_GLOBAL_HERE */
 
+EXTERN char *dvk_names[DVK_NR_CALLS];
 
 // EXTERN struct file_operations nodes_file_fops;
 EXTERN struct file_operations info_file_fops;
@@ -121,6 +170,8 @@ EXTERN struct file_operations proxies_procs_file_fops;
 EXTERN struct file_operations dc_info_file_fops;
 EXTERN struct file_operations dc_procs_file_fops;
 EXTERN struct file_operations dc_stats_file_fops;
+EXTERN struct file_operations dc_ipcto_file_fops;
+EXTERN struct file_operations dc_dvkcalls_file_fops;
 
 EXTERN struct file_operations proc_dbg_fops;
 EXTERN dvs_usr_t dvs;

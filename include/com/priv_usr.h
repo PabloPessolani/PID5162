@@ -23,7 +23,7 @@
 struct priv_usr {
 
   dvk_id_t 	priv_id;			/* index of this system structure */
-  int		priv_warn;				/* process to warn when the process exit/fork */
+  int		priv_warn;			/* process to warn when the process exit/fork */
   int		priv_level;			/* privilege level		*/
 
   short 	priv_trap_mask;		/* allowed system call traps */

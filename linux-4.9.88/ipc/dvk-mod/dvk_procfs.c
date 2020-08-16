@@ -409,6 +409,219 @@ ssize_t dc_procs_read(struct file *file, char __user *ubuf, size_t count, loff_t
 	return len;
 }
 
+#define SPRINTF_DVK_MAP(map) do {\
+	int i, j, index;\
+	DVKDEBUG("NR_DVK_CHUNKS=%d\n",NR_DVK_CHUNKS);\
+	DVKDEBUG("BITCHUNK_BITS=%d\n",BITCHUNK_BITS);\
+	for(i = 0, index=0; i < NR_DVK_CHUNKS; i++){\
+		sprintf("\n%X:",(map.chunk)[i]);\
+		for(j = 0; j < BITCHUNK_BITS; j++, index++){ \
+			if (get_sys_bit(map, index)) {\
+				if(index < DVK_NR_CALLS)\
+					sprintf("[%s(%d)]->", dvk_names[index], index);\
+			}\
+		}\
+	}\
+}while(0);
+
+#define PRINTF_SYS_MAP(map) do {\
+	int i;\
+	DVKDEBUG("NR_SYS_CHUNKS=%d\n",NR_SYS_CHUNKS);\
+	DVKDEBUG("BITCHUNK_BITS=%d\n",BITCHUNK_BITS);\
+	for(i = 0; i < NR_SYS_CHUNKS; i++){\
+		sprintf("\n%X:",(map.chunk)[i]);\
+	}\
+}while(0);
+
+/*--------------------------------------------------------------*/
+/*			/proc/dvs/DCx/ipcto 			 */
+/*--------------------------------------------------------------*/
+ssize_t dc_ipcto_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos) 
+{
+	int dcid;
+	int i, len, rcode;
+	char *page;
+	static int last_proc = 0;
+	int *data_ptr;
+	struct proc *proc_ptr;
+	dc_desc_t *dc_ptr;
+	priv_t		*priv_ptr;
+	priv_usr_t  *upriv_ptr;
+	ipc_map_t   *map_ptr;
+	char *ptr;
+	
+	DVKDEBUG(INTERNAL,"last_proc=%d count=%d ppos=%ld\n", last_proc, count, *ppos);
+	if( count <= 0) return(0);
+	if( last_proc == (-1)){
+		last_proc = 0;
+		return(0);  // => EOF 
+	}
+	len = 0;
+	
+	// get de DCID
+	data_ptr = (int *) PDE_DATA(file_inode(file));
+	if(!(data_ptr)){
+		DVKDEBUG(GENERIC,"Null data");
+		return 0;
+	}
+	dcid = *data_ptr;
+	DVKDEBUG(DBGPARAMS,"dcid=%d\n", dcid);
+	dc_ptr = &dc[dcid];
+	
+	len = 0;
+	page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	len = 0;
+	if( last_proc == 0){
+		len = sprintf(page, "-nr id --wr- lv ");	
+	}
+	ptr = page+len;	
+	for( i = ((NR_SYS_CHUNKS*BITCHUNK_BITS)-1); i >= 0; i--){
+		sprintf(ptr++, "%c", ('0' + i%10));	
+	}
+	len += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+	sprintf(ptr,"\n");
+	len++;
+	
+	RLOCK_DC(dc_ptr);
+	if( dc_ptr->dc_usr.dc_flags != DC_FREE)  {
+		for(i = last_proc; i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs); i++) {
+			proc_ptr = DC_PROC(dc_ptr,i);
+			RLOCK_PROC(proc_ptr);
+			if (test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)) {
+				RUNLOCK_PROC(proc_ptr);
+				continue;
+			}
+			
+			priv_ptr = &proc_ptr->p_priv;
+			upriv_ptr = &priv_ptr->priv_usr;
+			len += sprintf(page+len, "%3d %2d %5d %2d ",
+					proc_ptr->p_usr.p_nr,				
+					upriv_ptr->priv_id,
+					upriv_ptr->priv_warn,
+					upriv_ptr->priv_level);
+			ptr = page+len;	
+			map_ptr = &upriv_ptr->priv_ipc_to;			
+			ipcmap2ascii(ptr, map_ptr);	
+			len += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+			ptr += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+			sprintf(ptr,"\n");
+			len++;
+			
+			RUNLOCK_PROC(proc_ptr);	
+			if(len > (count - MAX_LINE_WIDTH) )
+				break;
+			if(len > (PAGE_SIZE - MAX_LINE_WIDTH) )
+				break;					
+		} 
+	}
+	
+	if( i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs)) 
+		last_proc = i;
+	else 
+		last_proc = (-1);
+	RUNLOCK_DC(dc_ptr);
+
+	rcode = copy_to_user(ubuf,page,len);
+	kfree(page);
+	if( rcode ) ERROR_RETURN(EDVSFAULT);
+	return len;
+}
+
+/*--------------------------------------------------------------*/
+/*			/proc/dvs/DCx/dvkcalls 			 */
+/*--------------------------------------------------------------*/
+ssize_t dc_dvkcalls_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos) 
+{
+	int dcid;
+	int i, len, rcode;
+	char *page;
+	static int last_proc = 0;
+	int *data_ptr;
+	struct proc *proc_ptr;
+	dc_desc_t *dc_ptr;
+	priv_t		*priv_ptr;
+	priv_usr_t  *upriv_ptr;
+	dvk_map_t   *map_ptr;
+	char *ptr;
+	
+	DVKDEBUG(INTERNAL,"last_proc=%d count=%d ppos=%ld\n", last_proc, count, *ppos);
+	if( count <= 0) return(0);
+	if( last_proc == (-1)){
+		last_proc = 0;
+		return(0);  // => EOF 
+	}
+	len = 0;
+	
+	// get de DCID
+	data_ptr = (int *) PDE_DATA(file_inode(file));
+	if(!(data_ptr)){
+		DVKDEBUG(GENERIC,"Null data");
+		return 0;
+	}
+	dcid = *data_ptr;
+	DVKDEBUG(DBGPARAMS,"dcid=%d\n", dcid);
+	dc_ptr = &dc[dcid];
+	
+	len = 0;
+	page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	len = 0;
+	if( last_proc == 0){
+		len = sprintf(page, "-nr id --wr- lv ");	
+	}
+	ptr = page+len;	
+	for( i = ((NR_DVK_CHUNKS*BITCHUNK_BITS)-1); i >= 0; i--){
+		sprintf(ptr++, "%c", ('0' + i%10));	
+	}
+	len += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+	sprintf(ptr,"\n");
+	len++;
+	
+	RLOCK_DC(dc_ptr);
+	if( dc_ptr->dc_usr.dc_flags != DC_FREE)  {
+		for(i = last_proc; i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs); i++) {
+			proc_ptr = DC_PROC(dc_ptr,i);
+			RLOCK_PROC(proc_ptr);
+			if (test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)) {
+				RUNLOCK_PROC(proc_ptr);
+				continue;
+			}
+			
+			priv_ptr = &proc_ptr->p_priv;
+			upriv_ptr = &priv_ptr->priv_usr;
+			len += sprintf(page+len, "%3d %2d %5d %2d ",
+					proc_ptr->p_usr.p_nr,				
+					upriv_ptr->priv_id,
+					upriv_ptr->priv_warn,
+					upriv_ptr->priv_level);
+			ptr = page+len;	
+			map_ptr = &upriv_ptr->priv_dvk_allowed;			
+			dvkcalls2ascii(ptr, map_ptr);	
+			len += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+			ptr += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+			sprintf(ptr,"\n");
+			len++;
+			
+			RUNLOCK_PROC(proc_ptr);	
+			if(len > (count - MAX_LINE_WIDTH) )
+				break;
+			if(len > (PAGE_SIZE - MAX_LINE_WIDTH) )
+				break;					
+		} 
+	}
+	
+	if( i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs)) 
+		last_proc = i;
+	else 
+		last_proc = (-1);
+	RUNLOCK_DC(dc_ptr);
+
+	rcode = copy_to_user(ubuf,page,len);
+	kfree(page);
+	if( rcode ) ERROR_RETURN(EDVSFAULT);
+	return len;
+}
+
+
 /*--------------------------------------------------------------*/
 /*			/proc/dvs/DCx/stats			*/
 /*--------------------------------------------------------------*/

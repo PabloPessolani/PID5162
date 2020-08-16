@@ -16,14 +16,17 @@
 
 #ifdef CONFIG_UML_DVK
 #include <kern_util.h>
+//#include <linux/syscall.h>
 
 #define DVK_GLOBAL_HERE		1
 #include "um_dvk.h"
 #include "glo_dvk.h"
 
-#ifdef CONFIG_DVKIOCTLIPC
-#undef CONFIG_DVKIOCTLIPC
-#endif // CONFIG_DVKIOCTLIPC
+#ifdef CONFIG_DVKIPC
+	#ifdef CONFIG_DVKIOCTL
+		#undef CONFIG_DVKIOCTL
+	#endif //CONFIG_DVKIOCTL
+#endif //CONFIG_DVKIPC
 
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
 
@@ -37,6 +40,12 @@ int module_dvk;
 module_param(dvk_dev, charp, 0644);
 MODULE_PARM_DESC(dvk_dev, DVK_HELP);
 
+
+int os_ipc(unsigned int call, int first, int second, int third,
+               void *ptr, long fifth)
+{
+	return(sys_ipc(call, first, second, third, ptr, fifth));
+}
 
 #ifndef MODULE
 static int set_dvk(char *name, int *add)

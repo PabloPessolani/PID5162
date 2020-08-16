@@ -285,6 +285,10 @@ extern void initial_thread_cb_skas(void (*proc)(void *),
 				 void *arg);
 extern void halt_skas(void);
 extern void reboot_skas(void);
+#ifdef CONFIG_UML_DVK
+int os_ipc(unsigned int call, int first, int second, int third,
+               void *ptr, long fifth);
+#endif // CONFIG_UML_DVK
 
 /* irq.c */
 extern int os_waiting_for_events(struct irq_fd *active_fds);

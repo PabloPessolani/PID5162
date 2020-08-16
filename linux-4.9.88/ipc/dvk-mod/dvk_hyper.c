@@ -595,6 +595,35 @@ asmlinkage long new_dc_init(dc_usr_t *dcu_addr)
 			DVKDEBUG(GENERIC,"/proc/dvs/%s/procs installed\n", dc_ptr->dc_usr.dc_name);
 
 		}
+		
+		/*creates DC entry under /proc/dvs/DCxx/ipcto */
+		dc_ptr->dc_ipcto_entry = proc_create_data("ipcto", 0444, dc_ptr->dc_DC_dir, &dc_ipcto_file_fops, &dc_ptr->dc_usr.dc_dcid);
+		if (dc_ptr->dc_ipcto_entry == NULL) {
+			printk("ERROR: %d:%s:%u: Couldn't create ipcto under /proc/dvs/%s\n",
+				task_pid_nr(current), __FUNCTION__ ,__LINE__, dc_ptr->dc_usr.dc_name); 
+			ret = EDVSBADFILE;
+			break;
+		} else {
+//			dc_ptr->dc_procs_entry->read_proc = dc_procs_read;
+//			dc_ptr->dc_procs_entry->data = (void*) &dc_ptr->dc_usr.dc_dcid;
+			DVKDEBUG(GENERIC,"/proc/dvs/%s/ipcto installed\n", dc_ptr->dc_usr.dc_name);
+
+		}	
+
+		/*creates DC entry under /proc/dvs/DCxx/dvkcalls */
+		dc_ptr->dc_dvkcalls_entry = proc_create_data("dvkcalls", 0444, dc_ptr->dc_DC_dir, &dc_dvkcalls_file_fops, &dc_ptr->dc_usr.dc_dcid);
+		if (dc_ptr->dc_dvkcalls_entry == NULL) {
+			printk("ERROR: %d:%s:%u: Couldn't create dvkcalls under /proc/dvs/%s\n",
+				task_pid_nr(current), __FUNCTION__ ,__LINE__, dc_ptr->dc_usr.dc_name); 
+			ret = EDVSBADFILE;
+			break;
+		} else {
+//			dc_ptr->dc_procs_entry->read_proc = dc_procs_read;
+//			dc_ptr->dc_procs_entry->data = (void*) &dc_ptr->dc_usr.dc_dcid;
+			DVKDEBUG(GENERIC,"/proc/dvs/%s/dvkcalls installed\n", dc_ptr->dc_usr.dc_name);
+
+		}
+		
 		/*creates DC entry under /proc/dvs/DCxx/stats */
 		dc_ptr->dc_stats_entry = proc_create_data("stats", 0444, dc_ptr->dc_DC_dir, &dc_stats_file_fops, &dc_ptr->dc_usr.dc_dcid);
 		if (dc_ptr->dc_stats_entry == NULL) {

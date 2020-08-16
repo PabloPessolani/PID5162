@@ -134,7 +134,7 @@ EN HOST
 EN OTRA SESION, ARRANCAR UML 
 		cd /usr/src/linux
 		. /dev/shm/DC0.sh		
-		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd 
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd 
 		
 EN UML (node1)
 		Para montar el disco en RDWR
@@ -205,11 +205,68 @@ NO SE REALIZARON PRUEBAS EN SENTIDO INVERSO (HOST ES CLIENT, UML ES SERVER) PORQ
 ESTAN HARDCODED CON LOS VALORES DE HOST(nodeid=0) y UML(nodeid=1) 
 	
 
+===================== REALIZAR PRUEBAS TRANSFERENCIA DE ARCHIVOS  ========================
+
+HOST(SERVER) UML(CLIENT)
+------------------------
+	HOST 
+	cd /usr/src/dvs/dvk-tests/
+	./test_rmtbind 0 21 1 m3ftp_client
+	cd /usr/src/dvs/dvk-proxies/test/m3ftp/
+	nsenter -p -t $DC0 ./m3ftpd 0 20
+		RESULTADO
+		t_start=1597065786.26 t_stop=1597065787.32 t_total=1.07
+		total_bytes = 1024000
+		Throuhput = 958636.216548 [bytes/s]
+	
+	UML
+	cd /usr/src/dvs/dvk-tests/
+	./test_rmtbind 0 20 0 m3ftp_server
+	cd /usr/src/dvs/dvk-proxies/test/m3ftp/
+	GET 
+		./m3ftp -g 0 20 21 server.txt client.txt
+	PUT 
+		./m3ftp -p 0 20 21 server2.txt client.txt
+	
+	
+		
+HOST(CLIENT) UML(SERVER)
+------------------------
+
+	UML 
+		./m3ftpd 0 21
+		RESULTADO 
+			t_start=1597065811.79 t_stop=1597065821.18 t_total=9.39
+			total_bytes = 7340032
+			Throuhput = 781798.949413 [bytes/s]
+	HOST 
+	GET
+		nsenter -p -t $DC0 ./m3ftp -g 0 21 20 server.txt client2.txt
+	PUT	 
+		nsenter -p -t $DC0 ./m3ftp -p 0 21 20 server3.txt client2.txt
 
 
+COMPARATIVO CON SSH
+
+Sending file modes: C0755 69227508 vmlinux
+vmlinux                 100%   66MB   6.0MB/s   00:10    
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+debug1: client_input_channel_req: channel 0 rtype eow@openssh.com reply 0
+debug1: channel 0: free: client-session, nchannels 1
+debug1: fd 0 clearing O_NONBLOCK
+Transferred: sent 14480, received 69312416 bytes, in 11.0 seconds
+Bytes per second: sent 1313.7, received 6288443.9
 
 
+Con Buffer de 64Kbytes
+t_start=1597187333.69 t_stop=1597187436.31 t_total=102.62
+total_bytes = 69227508
+FTP_GET [vmlinux] Throuhput = 674578.360351 [bytes/s]
 
+Con Buffer de 1024Kbytes
+t_start=1597188308.03 t_stop=1597188349.19 t_total=41.15
+total_bytes = 69227508
+FTP_GET [vmlinux] Throuhput = 1682237.536407 [bytes/s]
 
 
 

@@ -75,6 +75,8 @@ int sleep_proc(struct proc *proc, long timeout_ms);
 int sleep_proc2(struct proc *proc, struct proc *other, long timeout_ms);	
 int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2, long timeout_ms);	
 void bm2ascii( char *buf, unsigned long int bitmap);
+void ipcmap2ascii(char *buf, ipc_map_t *map_ptr);
+void dvkcalls2ascii(char *buf, dvk_map_t *map_ptr);
 void inherit_cpu(struct proc *proc_ptr);
 void resume_migration( struct proc *proc_ptr);
 proc_t *get_sproxy(int nodeid); 
@@ -91,6 +93,8 @@ ssize_t info_read(struct file *file, char __user *ubuf, size_t count, loff_t *pp
 //int dc_stats_read( char *page, char **start, off_t off, int count, int *eof, void *data );
 ssize_t dc_info_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
 ssize_t dc_procs_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos); 
+ssize_t dc_ipcto_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos); 
+ssize_t dc_dvkcalls_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
 ssize_t dc_stats_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
 
 

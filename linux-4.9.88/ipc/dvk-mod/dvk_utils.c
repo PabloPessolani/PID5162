@@ -513,6 +513,43 @@ void bm2ascii(char *buf, unsigned long int bitmap)
 	*buf = '\0';
 }
 
+/// PONER EN com/macros.h
+#define GET_SYS_BIT(map,bit) ( MAP_CHUNK(map->chunk,bit) & (1 << CHUNK_OFFSET(bit) )
+
+/*===========================================================================*
+ *				ipcmap2ascii		 			   				     *
+ *===========================================================================*/
+void ipcmap2ascii(char *buf, ipc_map_t *map_ptr)
+{
+	int i,j;
+
+	for(i = NR_SYS_CHUNKS-1; i >= 0; i--){
+		for( j = (BITCHUNK_BITS-1); j >= 0 ; j--, buf++) {
+			if (GET_SYS_BIT(map_ptr, (j + (i * BITCHUNK_BITS)))) 
+				*buf = 'X';
+			else 
+				*buf = '-';
+		}
+	}
+}
+
+/*===========================================================================*
+ *				dvkcalls2ascii		 			   				     *
+ *===========================================================================*/
+void dvkcalls2ascii(char *buf, dvk_map_t *map_ptr)
+{
+	int i,j;
+
+	for(i = NR_DVK_CHUNKS-1; i >= 0; i--){
+		for( j = (BITCHUNK_BITS-1); j >= 0 ; j--, buf++) {
+			if (GET_SYS_BIT(map_ptr, (j + (i * BITCHUNK_BITS)))) 
+				*buf = 'X';
+			else 
+				*buf = '-';
+		}
+	}
+}
+
 /*--------------------------------------------------------------*/
 /*			check_caller			*/
 /* Checks if the caller is a thread. Checks if it is		*/

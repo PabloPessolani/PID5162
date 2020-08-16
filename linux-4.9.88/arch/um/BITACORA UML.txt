@@ -9935,19 +9935,52 @@ ERROR AL TRATAR DE EJECUTAR EL SERVER EN UML
 		lz4tcp_proxy_bat.c:ps_start_serving:899:SPROXY: sending BATCHED COMMANDS batch_nr=3
 		
  
+ ======================================================================================================
+ 20200812
+		A los efectos de realizar benchmarks se adaptaron m3ftpd y m3ftp para ejecutar directamente sin MOL ni MUK
+		La version correcta tomada  como base es la de MUK (La version de MOL tiene error de protocolo entre cliente y servidor)
 		
-TODO:
-		RE-PROGRAMAR INFORMACION ESTADISTICA AL PROXY VIA WEB 
-		ADAPTAR EL PROGRAMA M3FTP Y M3FTPD 
-		CREAR PROGRAMA DE PRUEBA DE RDISK dvk-loops\rdisktests
-		EJECUTAR RDISK en el HOST y  CLIENT RDISK en UML
-		COMPLETAR EL INSTRUCTIVO
-		HACER PARRAFO EN PAPER SOBRE M3IPC en UML
-		GUARDAR VERSION DE KERNEL DE HOST Y DE UML CON NOMBRE CORRECTO 
-		
-		HACER TOPOLOGIA NODE0 UML Y NODE1 UML 
-		EJECUTAR PRUEBAS 
-		
+		SERVER tiene formato:
+				Usage: ftpd <dcid> <ftpd_ep>
+			Ejemplo 
+				nsenter -p -t $DC0 ./m3ftpd 0 20 
+				
+		CLIENT tiene formato: 		
+				Usage:  m3ftp {-p|-g} <dcid> <srv_ep> <clt_ep> <rmt_fname> <lcl_fname> 
+			Ejemplo
+				nsenter -p -t $DC0 ./m3ftp -g 0 20 21 server.txt client.txt
+
+		Por cada transferencia el server registra en el m3ftpd.log 
+			root@node0:/usr/src/dvs/dvk-proxies/test/m3ftp# more m3ftpd.log
+			t_start=1597032521.95 t_stop=1597032522.13 t_total=0.18
+			total_bytes = 1024000
+			Throuhput = 5607124.033922 [bytes/s]
+	
+		PARA CREAR UN ARCHIVO CON DATOS RANDOM
+		 dd if=/dev/urandom of=server.txt bs=1024 count=1000
+		PARA COMPARAR ARCHIVOS BINARIOS
+		cmp -l archivo1.bin archivo2.bin 
+
+
+ ======================================================================================================
+ 20200815
+		Se modifico stub_dvkcall.c para que soporte desde el KERNEL de UML tanto la interface IOCTL como IPC.
+		Si se compila UML con CONFIG_DVKIPC: significa IPC en el kernel de UML
+		Si se compila UML con CONFIG_DVKIOCTL: significa IOCTL en el kernel de UML
+		Si se compila UML con CONFIG_DVKIPC con CONFIG_UML_DVK : significa IPC en el kernel de UML y que el kernel utilizar IPC del HOST para comunicarse 
+		Si se compila UML con CONFIG_DVKIOCTL con CONFIG_UML_DVK: significa IOCTL en el kernel de UML y que el kernel utilizar IOCTL del HOST para comunicarse
+
+	FALTA PROBAR TODO EN EL HOST!!
+	CONFIG_DVKIPC=y
+	CONFIG_UML_DVK=y
+
+		Se modifico arch/um/drivers/um_dvk.c para que incluya os_ipc => sys_ipc
+	FALTA PROBAR EN UML PROGRAMAS DE USUARIO
+	FALTA PROBAR EN UML PROGRAMAS DE KERNEL - RHOSTSFS 
+	
+	
+======================================================================================================
+ 
 		
 hacer 		
 mount -o remount,rw /dev/ubda /
@@ -11301,9 +11334,6 @@ fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
 /dev/rdiska on /mnt type ext2 (rw,relatime,errors=continue,user_xattr,acl) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIOCTL/g'
-
-
-
 
 
 

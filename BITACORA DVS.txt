@@ -35,6 +35,13 @@ update-grub2
   x                             
   
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EN EL MAN DE IPC 
+       On some architectures—for example x86-64 and ARM—there is no ipc()
+       system call !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ===============================================================================================================
 20200720:
@@ -1212,12 +1219,13 @@ OTRA PRUEBA: CAMBIAR EL WARN ENDPOINT Y EL LEVEL
 ULTIMO_LOG
 ===============================================================================================================
 
+TODO:	RE-PROGRAMAR INFORMACION ESTADISTICA AL PROXY VIA WEB 
+	
 TODO:  Probar proxies 
 
 TODO:  Hacer un programa
 		- test_proc_info  para ver los procesos
 			test_priv_info <DC> <endpoint> 
-			
 			
 			struct priv_usr {
 
@@ -1240,10 +1248,10 @@ TODO:  Hacer un programa
 
 TODO:   Incluir impresion de PRIVILEGIOS en /proc 
 		- De Procesos 
-			/proc/dvs/DCO/privs 
+			/proc/dvs/DCO/priv
 			
 		- De Proxies 
-			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/proxies/priv_allowed
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/proxies/priv
 			ID Type -lpid- id  -warn- lvl ------name----- priv_dvk_allowed
 														  3322222222221111111111000000000033222222222211111111110000000000	
 			12 send 123456 12  123456 123 123456789012345 1098765432109876543210987654321010987654321098765432109876543210 	      
@@ -1265,6 +1273,7 @@ TODO:  Probar Kernel con IPC y modulo con IOCTL juntos
 TODO:  Agregar al proceso, DC, DVS un campo de uptime que indique cuando se arranco.
 		Agregar un campo de p_clr_time que indica cuando se limpiaron las estadisticas. 
 		Tambien se deberia hacer un dvk_clrprocstats() y dvk_clrproxystats()
+		tambien se podria hacer mediante el /proc
 		Para limpiar las estadisticas.
 		
 TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD en p_misc_flags.

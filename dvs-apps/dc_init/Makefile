@@ -6,8 +6,8 @@ INCLUDE = ..
 LIBS = 	/usr/local/lib/libspread.a \
 		/usr/src/dvs/lib/config/libconfig.so \
 		/usr/local/lib/libspread-util.a \
-        /usr/src/dvs/dvk-lib/stub_dvkcall.o
-#		/usr/src/dvs/dvk-lib/libdvkipc.so 
+		/usr/src/dvs/dvk-lib/libdvkipc.so 
+#        /usr/src/dvs/dvk-lib/stub_dvkcall.o
 
 #LIBS = ../dvk-lib/libdvklib.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
