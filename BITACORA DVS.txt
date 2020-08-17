@@ -1213,13 +1213,45 @@ OTRA PRUEBA: CAMBIAR EL WARN ENDPOINT Y EL LEVEL
 			local_nodeid=0
 			Invalid level [0-4]
 
+===============================================================================================================
+20200816:
+		Se agregaron a /proc 
+			DCx/ipcto
+				-nr id --wr- lv 3210987654321098765432109876543210987654321098765432109876543210
+				 11 46 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+				 80 64 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+			DCx/dvkcalls 
+				-nr id --wr- lv 765432109876543210987654321098765432109876543210
+				 11 46 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+				 80 64 27342  0 ------------------X--X---------------X----X-----
+			proxies/ipcto
+				ID Type 3210987654321098765432109876543210987654321098765432109876543210
+				 0 send ----------------------------------------------------------------
+				 0 recv ----------------------------------------------------------------
+			proxies/dvkcalls 
+				ID Type 765432109876543210987654321098765432109876543210
+				 0 send --------------------------X--XX-----------------
+				 0 recv ---------------------------X-XX-----------------
+			
+		Que muestran el estado de los privilegios de los procesos 
 
+
+		Se reprogramo INFORMACION ESTADISTICA AL PROXY VIA WEB 
+			El SENDER proxy reporta en el puerto (4000+nodeid)
+				SENDER Proxy Web Server .
+				---snode--	---dnode--	---dcid---	--nr_msgs-	--nr_data-	--nr_cmd--
+						0			1			0			15		655360		25
+			El RECEIVER proxy reporta en el puerto (5000+nodeid)
+				RECEIVER Proxy Web Server .
+				---snode--	---dnode--	---dcid---	--nr_msgs-	--nr_data-	--nr_cmd--
+						1			0			0			15			0		40			
+
+		
 	
 ===============================================================================================================
 ULTIMO_LOG
 ===============================================================================================================
 
-TODO:	RE-PROGRAMAR INFORMACION ESTADISTICA AL PROXY VIA WEB 
 	
 TODO:  Probar proxies 
 

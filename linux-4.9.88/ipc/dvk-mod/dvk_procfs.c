@@ -260,6 +260,189 @@ ssize_t proxies_procs_read(struct file *file, char __user *ubuf, size_t count, l
 }
 
 /*--------------------------------------------------------------*/
+/*			/proc/dvs/proxies/ipcto			*/
+/*--------------------------------------------------------------*/
+ssize_t proxies_ipcto_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos) 
+{
+	int i, len, rcode;
+	char *page;
+	static int last_proc = 0;
+	proxies_t *px_ptr;
+	struct proc *sproc_ptr,*rproc_ptr;
+	priv_t		*spriv_ptr, *rpriv_ptr;
+	priv_usr_t  *supriv_ptr, *rupriv_ptr;
+	ipc_map_t   *map_ptr;
+	char *ptr;
+	
+	DVKDEBUG(INTERNAL,"last_proc=%d count=%d ppos=%ld\n", last_proc, count, *ppos);
+	if( count <= 0) return(0);
+	if( last_proc == (-1)){
+		last_proc = 0;
+		return(0);  // => EOF 
+	}
+	len = 0;
+	page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+
+	if( last_proc == 0)
+		len = sprintf(page, "ID Type ");	
+	ptr = page+len;	
+	for( i = ((NR_SYS_CHUNKS*BITCHUNK_BITS)-1); i >= 0; i--){
+		sprintf(ptr++, "%c", ('0' + i%10));	
+	}
+	len += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+	sprintf(ptr,"\n");
+	len++;
+
+
+	for (i = 0; i < dvs_ptr->d_nr_nodes; i++) {
+		px_ptr = &proxies[i];
+		RLOCK_PROXY(px_ptr);
+		if( px_ptr->px_usr.px_flags == PROXIES_FREE) {
+			RUNLOCK_PROXY(px_ptr);
+			continue;
+		}
+
+		sproc_ptr = &proxies[i].px_sproxy;
+		RLOCK_PROC(sproc_ptr);
+		spriv_ptr = &sproc_ptr->p_priv;
+		supriv_ptr = &spriv_ptr->priv_usr;
+		len += sprintf(page+len, "%2d %4s ",
+				i,"send");
+		ptr = page+len;	
+		map_ptr = &supriv_ptr->priv_ipc_to;			
+		ipcmap2ascii(ptr, map_ptr);	
+		len += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+		ptr += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+		sprintf(ptr,"\n");
+		len++;
+		RUNLOCK_PROC(sproc_ptr);
+
+		rproc_ptr = &proxies[i].px_rproxy;
+		RLOCK_PROC(rproc_ptr);
+		rpriv_ptr = &rproc_ptr->p_priv;
+		rupriv_ptr = &rpriv_ptr->priv_usr;
+		len += sprintf(page+len, "%2d %4s ",
+				i,"recv");
+		ptr = page+len;	
+		map_ptr = &rupriv_ptr->priv_ipc_to;			
+		ipcmap2ascii(ptr, map_ptr);	
+		len += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+		ptr += (NR_SYS_CHUNKS*BITCHUNK_BITS);
+		sprintf(ptr,"\n");
+		len++;
+		RUNLOCK_PROC(rproc_ptr);
+		
+		RUNLOCK_PROXY(px_ptr);
+		if(len > (count - (2*MAX_LINE_WIDTH)) )
+			break;
+		if(len > (PAGE_SIZE - (2*MAX_LINE_WIDTH)))
+			break;
+	}
+
+	if( i < dvs_ptr->d_nr_nodes) 
+		last_proc = i;
+	else 
+		last_proc = (-1);
+
+	rcode = copy_to_user(ubuf,page,len);
+	kfree(page);
+	if( rcode ) ERROR_RETURN(EDVSFAULT);
+	return len;
+}
+
+/*--------------------------------------------------------------*/
+/*			/proc/dvs/proxies/dvkcalls			*/
+/*--------------------------------------------------------------*/
+// int proxies_dvkcalls_read( char *page, char **start, off_t off, int count, int *eof, void *data )
+ssize_t proxies_dvkcalls_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos) 
+{
+	int i, len, rcode;
+	char *page;
+	static int last_proc = 0;
+	proxies_t *px_ptr;
+	struct proc *sproc_ptr,*rproc_ptr;
+	priv_t		*spriv_ptr, *rpriv_ptr;
+	priv_usr_t  *supriv_ptr, *rupriv_ptr;
+	dvk_map_t   *map_ptr;
+	char *ptr;
+	
+	DVKDEBUG(INTERNAL,"last_proc=%d count=%d ppos=%ld\n", last_proc, count, *ppos);
+	if( count <= 0) return(0);
+	if( last_proc == (-1)){
+		last_proc = 0;
+		return(0);  // => EOF 
+	}
+	len = 0;
+	page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+
+	if( last_proc == 0)
+		len = sprintf(page, "ID Type ");	
+	ptr = page+len;	
+	for( i = ((NR_DVK_CHUNKS*BITCHUNK_BITS)-1); i >= 0; i--){
+		sprintf(ptr++, "%c", ('0' + i%10));	
+	}
+	len += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+	sprintf(ptr,"\n");
+	len++;
+
+
+	for (i = 0; i < dvs_ptr->d_nr_nodes; i++) {
+		px_ptr = &proxies[i];
+		RLOCK_PROXY(px_ptr);
+		if( px_ptr->px_usr.px_flags == PROXIES_FREE) {
+			RUNLOCK_PROXY(px_ptr);
+			continue;
+		}
+
+		sproc_ptr = &proxies[i].px_sproxy;
+		RLOCK_PROC(sproc_ptr);
+		spriv_ptr = &sproc_ptr->p_priv;
+		supriv_ptr = &spriv_ptr->priv_usr;
+		len += sprintf(page+len, "%2d %4s ",
+				i,"send");
+		ptr = page+len;	
+		map_ptr = &supriv_ptr->priv_dvk_allowed;			
+		dvkcalls2ascii(ptr, map_ptr);	
+		len += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+		ptr += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+		sprintf(ptr,"\n");
+		len++;
+		RUNLOCK_PROC(sproc_ptr);
+
+		rproc_ptr = &proxies[i].px_rproxy;
+		RLOCK_PROC(rproc_ptr);
+		rpriv_ptr = &rproc_ptr->p_priv;
+		rupriv_ptr = &rpriv_ptr->priv_usr;
+		len += sprintf(page+len, "%2d %4s ",
+				i,"recv");
+		ptr = page+len;	
+		map_ptr = &rupriv_ptr->priv_dvk_allowed;			
+		dvkcalls2ascii(ptr, map_ptr);	
+		len += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+		ptr += (NR_DVK_CHUNKS*BITCHUNK_BITS);
+		sprintf(ptr,"\n");
+		len++;
+		RUNLOCK_PROC(rproc_ptr);
+		
+		RUNLOCK_PROXY(px_ptr);
+		if(len > (count - (2*MAX_LINE_WIDTH)) )
+			break;
+		if(len > (PAGE_SIZE - (2*MAX_LINE_WIDTH)))
+			break;
+	}
+
+	if( i < dvs_ptr->d_nr_nodes) 
+		last_proc = i;
+	else 
+		last_proc = (-1);
+
+	rcode = copy_to_user(ubuf,page,len);
+	kfree(page);
+	if( rcode ) ERROR_RETURN(EDVSFAULT);
+	return len;
+}
+
+/*--------------------------------------------------------------*/
 /*			/proc/dvs/DCx/info 						*/
 /*--------------------------------------------------------------*/
 // int dc_info_read( char *page, char **start, off_t off, int count, int *eof, void *data )

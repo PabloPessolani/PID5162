@@ -17,6 +17,8 @@ EXTERN struct proc_dir_entry *nodes_entry;
 EXTERN struct proc_dir_entry *proxies_dir;
 EXTERN struct proc_dir_entry *proxies_info_entry;
 EXTERN struct proc_dir_entry *proxies_procs_entry;
+EXTERN struct proc_dir_entry *proxies_ipcto_entry;
+EXTERN struct proc_dir_entry *proxies_dvkcalls_entry;
 EXTERN struct dentry *dbg_dvs; /* directory entry of "dvs" directory on debugfs */
 
 EXTERN rwlock_t *tasklist_ptr;
@@ -100,6 +102,16 @@ struct file_operations proxies_procs_file_fops = {
  read  : proxies_procs_read,
 };
 
+struct file_operations proxies_ipcto_file_fops = {
+ owner : THIS_MODULE,
+ read  : proxies_ipcto_read,
+};
+
+struct file_operations proxies_dvkcalls_file_fops = {
+ owner : THIS_MODULE,
+ read  : proxies_dvkcalls_read,
+};
+
 struct file_operations dc_info_file_fops = {
  owner : THIS_MODULE,
  read  : dc_info_read,
@@ -167,6 +179,8 @@ EXTERN char *dvk_names[DVK_NR_CALLS];
 EXTERN struct file_operations info_file_fops;
 EXTERN struct file_operations proxies_info_file_fops;
 EXTERN struct file_operations proxies_procs_file_fops;
+EXTERN struct file_operations proxies_ipcto_file_fops;
+EXTERN struct file_operations proxies_dvkcalls_file_fops;
 EXTERN struct file_operations dc_info_file_fops;
 EXTERN struct file_operations dc_procs_file_fops;
 EXTERN struct file_operations dc_stats_file_fops;

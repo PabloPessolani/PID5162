@@ -24,16 +24,12 @@ static const LZ4F_preferences_t lz4_preferences = {
 };
 
 #define HEADER_SIZE sizeof(proxy_hdr_t)
-#define BASE_PORT      3000
-#define SERVER_TYPE  18888
-#define SERVER_INST  17
-#define BASE_TYPE      	3000
-#define BASE_OFFSET		1000
+#define BASE_PORT     		3000
 
-#define PWS_BUFSIZE 65536
-#define ERROR 42
-#define SORRY 43
-#define LOG   44
+#define PWS_ENABLED			1 			// Proxy Web Server (statistics) ENABLED 
+#define BASE_PWS_SPORT 		4000		// SENDER proxy web server base port
+#define BASE_PWS_RPORT		5000		// RECEIVER proxy web server base port
+#define PWS_BUFSIZE 		65536
 
 #define BATCH_NO			0
 #define BATCH_YES	 		1
@@ -83,7 +79,8 @@ int pws_port;
 pthread_mutex_t px_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t px_rcond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t px_scond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t pws_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t pws_scond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t pws_rcond = PTHREAD_COND_INITIALIZER;
 
 static char pws_buffer[PWS_BUFSIZE+1]; /* static so zero filled */
 static char pws_html[PWS_BUFSIZE+1]; /* static so zero filled */
@@ -446,7 +443,7 @@ int pr_process_message(void) {
 		}
 	}
 
-#ifdef ANULADO 	
+#if PWS_ENABLED 	
 	if( compress_opt) {
 		if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) 
 			update_stats(p_header,  p_decomp_pl, CONNECT_RPROXY);
@@ -455,7 +452,7 @@ int pr_process_message(void) {
 	}else {
 		update_stats(p_header,  p_payload, CONNECT_RPROXY);
 	}
-#endif // ANULADO 	
+#endif // PWS_ENABLED 	
 	
     return(OK);    
 }
@@ -555,17 +552,17 @@ void pr_init(void)
 	PXYDEBUG("p_header=%p p_payload=%p diff=%d\n", 
 			p_header, p_payload, ((char*) p_payload - (char*) p_header));
 
-#ifdef ANULADO 	
-	pws_port = ((BASE_TYPE+BASE_OFFSET) +  px.px_id);
+#if PWS_ENABLED 	
+	pws_port = (BASE_PWS_RPORT +  px.px_id);
 	rcode = pthread_create( &pws_pth, NULL, main_pws, pws_port );
 	if(rcode) ERROR_EXIT(rcode);
 	PXYDEBUG("pws_pth=%u\n",pws_pth);		
 
 	MTX_LOCK(px_mutex);
 	COND_WAIT(px_rcond, px_mutex);
-	COND_SIGNAL(pws_cond);
+	COND_SIGNAL(pws_rcond);
 	MTX_UNLOCK(px_mutex);
-#endif // ANULADO 	
+#endif // PWS_ENABLED 	
 	
     if( pr_setup_connection() == OK) {
       	pr_start_serving();
@@ -691,6 +688,7 @@ int  ps_send_payload(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
     return(OK);
 }
 
+#if PWS_ENABLED
 void update_stats(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr, int px_type)
 {
 	px_stats_t *pxs_ptr;
@@ -739,6 +737,7 @@ void update_stats(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr, int px_type)
 	PXYDEBUG(PXS_FORMAT, PXS_FIELDS(pxs_ptr));
 	MTX_UNLOCK(px_mutex);
 }
+#endif  // PWS_ENABLED
 
 /* 
  * ps_send_remote: send a message (header + payload if existing) 
@@ -790,9 +789,9 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 		if ( rcode != OK)  ERROR_RETURN(rcode);
 	}
 
-#ifdef ANULADO 	
+#if PWS_ENABLED 	
 	update_stats(hd_ptr, pl_ptr, CONNECT_SPROXY) ;
-#endif // ANULADO 	
+#endif // PWS_ENABLED 	
 
     return(OK);
 }
@@ -1025,8 +1024,8 @@ void  ps_init(void)
        	ERROR_EXIT(errno)
     }
 	
-#ifdef ANULADO 	
-	pws_port = (BASE_TYPE + px.px_id);
+#if PWS_ENABLED 	
+	pws_port = (BASE_PWS_SPORT + px.px_id);
 	rcode = pthread_create( &pws_pth, NULL, main_pws, pws_port );
 	if(rcode) ERROR_EXIT(rcode);
 	PXYDEBUG("pws_pth=%u\n",pws_pth);
@@ -1037,9 +1036,9 @@ void  ps_init(void)
 
 	MTX_LOCK(px_mutex);
 	COND_WAIT(px_scond, px_mutex);
-	COND_SIGNAL(pws_cond);	
+	COND_SIGNAL(pws_scond);	
 	MTX_UNLOCK(px_mutex);
-#endif //ANULADO 	
+#endif //PWS_ENABLED 	
 
 	while(1) {
 		do {
@@ -1174,6 +1173,7 @@ void  main ( int argc, char *argv[] )
     exit(0);
 }
 
+#if PWS_ENABLED
 /*===========================================================================*
  *				PWS web server					     *
  *===========================================================================*/
@@ -1284,7 +1284,8 @@ void main_pws(void *arg_port)
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(pws_port);
-		
+	PXYDEBUG("pws_port=%d\n", pws_port);
+	
 	if(bind(pws_listenfd, (struct sockaddr *)&serv_addr,sizeof(serv_addr)) <0){
 		ERROR_PT_EXIT(errno);
 	}
@@ -1294,13 +1295,23 @@ void main_pws(void *arg_port)
 	}
 	
 	MTX_LOCK(px_mutex);
-	COND_SIGNAL(px_scond);
-	COND_WAIT(pws_cond, px_mutex);
-	COND_SIGNAL(px_rcond);
-	COND_WAIT(pws_cond, px_mutex);
+	if( pws_port < BASE_PWS_RPORT){
+		COND_SIGNAL(px_scond);
+		px_type = CONNECT_SPROXY;
+		COND_WAIT(pws_scond, px_mutex);
+	}else{
+		COND_SIGNAL(px_rcond);
+		px_type = CONNECT_RPROXY;
+		COND_WAIT(pws_rcond, px_mutex);
+	}
 	MTX_UNLOCK(px_mutex);
 	
-	PXYDEBUG("Starting PWS server main loop\n");
+	if(px_type == CONNECT_SPROXY){
+		PXYDEBUG("Starting SENDER PWS server main loop\n");
+	}else{
+		PXYDEBUG("Starting RECEIVER PWS server main loop\n");
+	}
+	
 	for(pws_hit=1; ;pws_hit++) {
 		length = sizeof(pws_cli_addr);
 		PXYDEBUG("Conection accept\n");
@@ -1309,7 +1320,6 @@ void main_pws(void *arg_port)
 			rcode = -errno;
 			ERROR_PT_EXIT(rcode);
 		}
-		px_type = (pws_port < (BASE_TYPE+BASE_OFFSET))?CONNECT_SPROXY:CONNECT_RPROXY;
 		pws_server(pws_sfd, pws_hit, px_type);
 		close(pws_sfd);
 	}
@@ -1372,5 +1382,6 @@ void wdmp_px_stats(void)
 	PXYDEBUG("strlen(page_ptr)=%d\n", strlen(page_ptr));	
 }
 
+#endif //  PWS_ENABLED
 
 

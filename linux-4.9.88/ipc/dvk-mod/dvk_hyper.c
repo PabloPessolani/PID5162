@@ -206,7 +206,30 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 			}else{
 				DVKDEBUG(GENERIC,"/proc/dvs/proxies/procs installed\n");
 			}
-			
+
+			/* create the file ipcto  under /proc/dvs/proxies */
+			proxies_ipcto_entry = proc_create( "ipcto", 0444, proxies_dir, &proxies_ipcto_file_fops);
+			if (proxies_ipcto_entry == NULL) {
+				printk("ERROR: %d:%s:%u: Couldn't create file ipcto into /proc/dvs/proxies\n",
+					task_pid_nr(current), __FUNCTION__ ,__LINE__); 
+				dvs_release(NULL);
+				WUNLOCK_DVS;
+				ERROR_RETURN(EDVSBADFILE);
+			}else{
+				DVKDEBUG(GENERIC,"/proc/dvs/proxies/ipcto installed\n");
+			}
+
+			/* create the file dvkcalls  under /proc/dvs/proxies */
+			proxies_dvkcalls_entry = proc_create( "dvkcalls", 0444, proxies_dir, &proxies_dvkcalls_file_fops);
+			if (proxies_dvkcalls_entry == NULL) {
+				printk("ERROR: %d:%s:%u: Couldn't create file dvkcalls into /proc/dvs/proxies\n",
+					task_pid_nr(current), __FUNCTION__ ,__LINE__); 
+				dvs_release(NULL);
+				WUNLOCK_DVS;
+				ERROR_RETURN(EDVSBADFILE);
+			}else{
+				DVKDEBUG(GENERIC,"/proc/dvs/proxies/dvkcalls installed\n");
+			}			
 		}
     }
 		

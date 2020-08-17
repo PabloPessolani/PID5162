@@ -107,9 +107,10 @@ int node_stats_read( char *page, char **start, off_t off, int count, int *eof, v
 
 //int proxies_info_read( char *page, char **start, off_t off, int count, int *eof, void *data );
 ssize_t proxies_info_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
-
 //int proxies_procs_read( char *page, char **start, off_t off, int count, int *eof, void *data );
 ssize_t proxies_procs_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
+ssize_t proxies_ipcto_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
+ssize_t proxies_dvkcalls_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
 
 /* debugfs functions */
 int proc_dbg_mmap(struct file *filp, struct vm_area_struct *vma);

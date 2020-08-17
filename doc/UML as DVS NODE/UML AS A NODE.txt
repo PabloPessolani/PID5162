@@ -137,8 +137,6 @@ EN OTRA SESION, ARRANCAR UML
 		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd 
 		
 EN UML (node1)
-		Para montar el disco en RDWR
-			mount -o remount,rw /dev/ubda /
 			
 		Comprobar configuracion de red 
 			ifconfig 
