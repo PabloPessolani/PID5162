@@ -1,0 +1,1024 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2020.08.20 00:59:13 =~=~=~=~=~=~=~=~=~=~=~=
+login as: root
+root@192.168.1.100's password: 
+Linux node0 4.9.88 #51 SMP Tue Aug 18 21:14:31 -03 2020 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Thu Aug 20 00:54:48 2020 from 192.168.1.11
+root@node0:~# . /dev/shm/DC0.sh
+root@node0:~# cd /usr/src/linux
+root@node0:/usr/src/linux# 
+root@node0:/usr/src/linux#   nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 uubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rhs_ep: rhs_ep=1
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+	soft - 0
+	hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 27619328 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=380 TID=380 uml_ep=-2
+** 3 printk messages dropped ** Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 266786
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033640K/1075548K available (2948K kernel code, 835K rwdata, 840K rodata, 84K init, 180K bss, 41908K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1816.98 BogoMIPS (lpj=9084928)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:270: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:275: UML-kernel PID=380  UML-kernel TID=380
+DEBUG dvk_driver_init:242: 
+start_dvk_thread - sp=1229766652
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at fs/proc/generic.c:345 proc_register+0xa9/0xc2
+proc_dir_entry 'sysvipc/sem' already registered
+CPU: 0 PID: 1 Comm: swapper Not tainted 4.9.88 #66
+Stack:
+ 083e1c06 083c7f92 49489ea0 083c7f2a 49489e4c 08259ff2 00000000 00000000
+ 083e1c06 49489e64 080719da 00000000 494b6720 494514f1 00000000 49489e8c
+ 08071a1b 083c7f2a 00000159 0811d43b 00000009 00000000 49489e84 083c7f92
+Call Trace:
+ [<0805bf97>] 
+show_stack+0xaf/0xf7
+ [<08259ff2>] 
+dump_stack+0x16/0x1b
+ [<080719da>] 
+__warn+0xa5/0xbe
+ [<08071a1b>] 
+warn_slowpath_fmt+0x28/0x2d
+ [<0811d43b>] ? 
+proc_register+0xa9/0xc2
+ [<0811d43b>] 
+proc_register+0xa9/0xc2
+ [<0811d6d4>] 
+proc_create_data+0x98/0xae
+ [<0805385b>] 
+ipc_init_proc_interface+0x47/0x5c
+ [<080538bb>] 
+sem_init+0x23/0x28
+ [<082057be>] ? 
+sysvipc_sem_proc_show+0x0/0x9e
+ [<08067a46>] 
+os_sem_init+0x10/0x12
+ [<08067b0a>] 
+start_dvk_thread+0x44/0xac
+ [<0804af3a>] 
+uml_dvk_init_module+0x8e/0x104
+ [<0804aeac>] ? 
+uml_dvk_init_module+0x0/0x104
+ [<080497f8>] 
+do_one_initcall+0x9a/0x117
+ [<080847d8>] ? 
+parse_args+0x1ae/0x271
+ [<08049992>] ? 
+kernel_init_freeable+0x11d/0x1ba
+ [<080499b5>] 
+kernel_init_freeable+0x140/0x1ba
+ [<0804aeac>] ? 
+uml_dvk_init_module+0x0/0x104
+ [<083376c6>] 
+kernel_init+0x8/0xb6
+ [<0805b05f>] 
+new_thread_handler+0x63/0x7c
+
+---[ end trace 4837157f98722e6b ]---
+dvk_thread pid=388
+DEBUG init_dvk_thread:171: uml_pid=388
+DEBUG 388:dvk_open:104: 
+DEBUG 388:dvk_getdvsinfo:255: 
+DEBUG 388:dvk_getdvsinfo:259: ipc ret=0
+DEBUG init_dvk_thread:180: local_nodeid=0
+DEBUG init_dvk_thread:181: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 388:dvk_getdcinfo:356: dcid=0
+DEBUG 388:dvk_getdcinfo:360: ipc ret=0
+DEBUG init_dvk_thread:186: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG init_dvk_thread:187: flags=0 dc_nodes=1 dc_pid=622 dc_name=DC0
+DEBUG 388:dvk_bind_X:1206: cmd=1 dcid=0 pid=388 endpoint=-2 nodeid=-1
+DEBUG 388:dvk_bind_X:1210: ipc ret=-1 errno=0
+ERROR: 388:init_dvk_thread:190: rcode=-1
+up_kernel
+down_thread
+start_dvk_thread dvk_pid=388
+down_kernel
+up_thread
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+DEBUG dvk_thread:219: READY to process requests
+down_thread
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+Initilizing Remote DVS HOSTFS
+DEBUG init_rh_client:1169: local_nodeid=0
+DEBUG 380:dvk_open:104: 
+DEBUG 380:dvk_getdvsinfo:255: 
+DEBUG 380:dvk_getdvsinfo:259: ipc ret=0
+DEBUG init_rh_client:1180: rhclient_nodeid=0
+DEBUG init_rh_client:1181: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 380:dvk_getdcinfo:356: dcid=0
+DEBUG 380:dvk_getdcinfo:360: ipc ret=0
+DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG init_rh_client:1193: flags=0 dc_nodes=1 dc_pid=622 dc_name=DC0
+DEBUG 380:dvk_bind_X:1206: cmd=0 dcid=0 pid=380 endpoint=10 nodeid=-1
+DEBUG 380:dvk_bind_X:1210: ipc ret=10 errno=0
+DEBUG init_rh_client:1206: rhostfs bind rhc_ep=10
+DEBUG 380:dvk_getprocinfo:1163: dcid=0 p_nr=10 
+DEBUG 380:dvk_getprocinfo:1167: ipc ret=0
+DEBUG init_rh_client:1211: rhostfs CLIENT: nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1075 vpid=380 nodeid=0 name=linux 
+DEBUG 380:dvk_getprocinfo:1163: dcid=0 p_nr=1 
+DEBUG 380:dvk_getprocinfo:1167: ipc ret=0
+DEBUG init_rh_client:1217: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+ERROR: init_rh_client:1219: rcode=-310
+ERROR: init_rhostfs:1230: rcode=-310
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1 at fs/proc/generic.c:345 proc_register+0xa9/0xc2
+proc_dir_entry 'sysvipc/sem' already registered
+CPU: 0 PID: 1 Comm: swapper Tainted: G        W       4.9.88 #66
+Stack:
+ 083e1c06 083c7f92 49489edc 083c7f2a 49489e88 08259ff2 00000000 00000000
+ 083e1c06 49489ea0 080719da 00000000 494a7080 494514f1 00000000 49489ec8
+ 08071a1b 083c7f2a 00000159 0811d43b 00000009 00000000 49489ec0 083c7f92
+Call Trace:
+ [<0805bf97>] 
+show_stack+0xaf/0xf7
+ [<08259ff2>] 
+dump_stack+0x16/0x1b
+ [<080719da>] 
+__warn+0xa5/0xbe
+ [<08071a1b>] 
+warn_slowpath_fmt+0x28/0x2d
+ [<0811d43b>] ? 
+proc_register+0xa9/0xc2
+ [<0811d43b>] 
+proc_register+0xa9/0xc2
+ [<0811d6d4>] 
+proc_create_data+0x98/0xae
+ [<0805385b>] 
+ipc_init_proc_interface+0x47/0x5c
+ [<080537fe>] ? 
+ipc_init+0x0/0x16
+ [<080538bb>] 
+sem_init+0x23/0x28
+ [<082057be>] ? 
+sysvipc_sem_proc_show+0x0/0x9e
+ [<08053806>] 
+ipc_init+0x8/0x16
+ [<080497f8>] 
+do_one_initcall+0x9a/0x117
+ [<080847d8>] ? 
+parse_args+0x1ae/0x271
+ [<08049992>] ? 
+kernel_init_freeable+0x11d/0x1ba
+ [<080499b5>] 
+kernel_init_freeable+0x140/0x1ba
+ [<080537fe>] ? 
+ipc_init+0x0/0x16
+ [<083376c6>] 
+kernel_init+0x8/0xb6
+ [<0805b05f>] 
+new_thread_handler+0x63/0x7c
+
+---[ end trace 4837157f98722e6c ]---
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+loop: module loaded
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+console [tty0] enabled
+Initializing software serial port version 1
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+console [mc-1] enabled
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): warning: mounting unchecked fs, running e2fsck is recommended
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to [1mDebian GNU/Linux 10 (buster)[0m!
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+systemd[1]: Reached target Remote File Systems.
+[[0;32m  OK  [0m] Reached target [0;1;39mRemote File Systems[0m.
+systemd[1]: Listening on Journal Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket[0m.
+systemd[1]: Condition check resulted in Journal Audit Socket being skipped.
+systemd[1]: Listening on udev Kernel Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Kernel Socket[0m.
+systemd[1]: Listening on initctl Compatibility Named Pipe.
+[[0;32m  OK  [0m] Listening on [0;1;39minitctl Compatibility Named Pipe[0m.
+systemd[1]: Mounting Kernel Debug File System...
+         Mounting [0;1;39mKernel Debug File System[0m...
+systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+systemd[1]: Listening on udev Control Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Control Socket[0m.
+systemd[1]: Mounting POSIX Message Queue File System...
+         Mounting [0;1;39mPOSIX Message Queue File System[0m...
+systemd[1]: Starting of Arbitrary Executable File Formats File System Automount Point not supported.
+[[0;1;33mUNSUPP[0m] Starting of [0;1;39mArbitrary Exec…Automount Point[0m not supported.
+[[0;32m  OK  [0m] Created slice [0;1;39msystem-getty.slice[0m.
+[[0;32m  OK  [0m] Created slice [0;1;39mUser and Session Slice[0m.
+         Starting [0;1;39mLoad Kernel Modules[0m...
+[[0;32m  OK  [0m] Reached target [0;1;39mSlices[0m.
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket (/dev/log)[0m.
+         Starting [0;1;39mRemount Root and Kernel File Systems[0m...
+[[0;32m  OK  [0m] Listening on [0;1;39mSyslog Socket[0m.
+         Starting [0;1;39mJournal Service[0m...
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mDispatch Password …ts to Console Directory Watch[0m.
+[[0;32m  OK  [0m] Started [0;1;39mForward Password R…uests to Wall Directory Watch[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mPaths[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal Encrypted Volumes[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSwap[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Mounted [0;1;39mKernel Debug File System[0m.
+[[0;32m  OK  [0m] Mounted [0;1;39mPOSIX Message Queue File System[0m.
+[[0;32m  OK  [0m] Started [0;1;39mLoad Kernel Modules[0m.
+do_exit: local_nodeid:0
+         Mounting [0;1;39mFUSE Control File System[0m...
+         Starting [0;1;39mApply Kernel Variables[0m...
+[[0;32m  OK  [0m] Started [0;1;39mRemount Root and Kernel File Systems[0m.
+         Starting [0;1;39mCreate System Users[0m...
+         Starting [0;1;39mudev Coldplug all Devices[0m...
+         Starting [0;1;39mLoad/Save Random Seed[0m...
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mApply Kernel Variables[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Mounted [0;1;39mFUSE Control File System[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mCreate System Users[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mLoad/Save Random Seed[0m.
+         Starting [0;1;39mCreate Static Device Nodes in /dev[0m...
+[[0;32m  OK  [0m] Started [0;1;39mJournal Service[0m.
+         Starting [0;1;39mFlush Journal to Persistent Storage[0m...
+random: crng init done
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mCreate Static Device Nodes in /dev[0m.
+         Starting [0;1;39mudev Kernel Device Manager[0m...
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal File Systems (Pre)[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal File Systems[0m.
+         Starting [0;1;39mRaise network interfaces[0m...
+systemd-journald[396]: Received request to flush runtime journal from PID 1
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mFlush Journal to Persistent Storage[0m.
+         Starting [0;1;39mCreate Volatile Files and Directories[0m...
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mudev Kernel Device Manager[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mudev Coldplug all Devices[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mCreate Volatile Files and Directories[0m.
+         Starting [0;1;39mUpdate UTMP about System Boot/Shutdown[0m...
+         Starting [0;1;39mNetwork Time Synchronization[0m...
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mUpdate UTMP about System Boot/Shutdown[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mNetwork Time Synchronization[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mRaise network interfaces[0m.
+See 'systemctl status networking.service' for details.
+[[0;32m  OK  [0m] Reached target [0;1;39mNetwork[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Initialization[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily Cleanup of Temporary Directories[0m.
+[[0;32m  OK  [0m] Listening on [0;1;39mD-Bus System Message Bus Socket[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSockets[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mBasic System[0m.
+         Starting [0;1;39mLogin Service[0m...
+         Starting [0;1;39mPermit User Sessions[0m...
+[[0;32m  OK  [0m] Started [0;1;39mRegular background program processing daemon[0m.
+         Starting [0;1;39mOpenBSD Secure Shell server[0m...
+         Starting [0;1;39mSystem Logging Service[0m...
+[[0;32m  OK  [0m] Started [0;1;39mD-Bus System Message Bus[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Time Synchronized[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily apt download activities[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily apt upgrade and clean activities[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mTimers[0m.
+[[0;32m  OK  [0m] Started [0;1;39mSystem Logging Service[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mPermit User Sessions[0m.
+[[0;32m  OK  [0m] Started [0;1;39mGetty on tty1[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLogin Prompts[0m.
+[[0;32m  OK  [0m] Started [0;1;39mLogin Service[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mOpenBSD Secure Shell server[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mMulti-User System[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mGraphical Interface[0m.
+         Starting [0;1;39mUpdate UTMP about System Runlevel Changes[0m...
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mUpdate UTMP about System Runlevel Changes[0m.
+winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+Debian GNU/Linux 10 node1 tty1
+
+node1 login: root
+Password: 
+Last login: Thu Aug 20 03:40:21 UTC 2020 on tty1
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+Linux node1 4.9.88 #66 Thu Aug 20 00:24:52 -03 2020 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+root@node1:~# sync
+do_exit: local_nodeid:0
+root@node1:~# sync
+do_exit: local_nodeid:0
+root@node1:~# halt
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+root@node1:~# [[0;32m  OK  [0m] Reached target [0;1;39mUnmount All Filesystems[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mTimers[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mDaily Cleanup of Temporary Directories[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mDaily apt upgrade and clean activities[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mDaily apt download activities[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mSystem Time Synchronized[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mGraphical Interface[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mMulti-User System[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+         Stopping [0;1;39mSystem Logging Service[0m...
+do_exit: local_nodeid:0
+         Stopping [0;1;39mRegular background program processing daemon[0m...
+do_exit: local_nodeid:0
+         Stopping [0;1;39mOpenBSD Secure Shell server[0m...
+[[0;32m  OK  [0m] Stopped target [0;1;39mLogin Prompts[0m.
+do_exit: local_nodeid:0
+         Stopping [0;1;39mGetty on tty1[0m...
+do_exit: local_nodeid:0
+         Stopping [0;1;39mD-Bus System Message Bus[0m...
+         Stopping [0;1;39mLogin Service[0m...
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Stopped [0;1;39mLogin Service[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mRegular background program processing daemon[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mSystem Logging Service[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mD-Bus System Message Bus[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mGetty on tty1[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mOpenBSD Secure Shell server[0m.
+         Stopping [0;1;39mPermit User Sessions[0m...
+[[0;32m  OK  [0m] Removed slice [0;1;39msystem-getty.slice[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Stopped [0;1;39mPermit User Sessions[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mRemote File Systems[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mBasic System[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mSockets[0m.
+[[0;32m  OK  [0m] Closed [0;1;39mSyslog Socket[0m.
+[[0;32m  OK  [0m] Closed [0;1;39mD-Bus System Message Bus Socket[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mSlices[0m.
+[[0;32m  OK  [0m] Removed slice [0;1;39mUser and Session Slice[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mPaths[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mNetwork[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mSystem Initialization[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+         Stopping [0;1;39mNetwork Time Synchronization[0m...
+[[0;32m  OK  [0m] Stopped [0;1;39mApply Kernel Variables[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mLoad Kernel Modules[0m.
+         Stopping [0;1;39mUpdate UTMP about System Boot/Shutdown[0m...
+[[0;32m  OK  [0m] Stopped target [0;1;39mSwap[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mLocal Encrypted Volumes[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mForward Password R…uests to Wall Directory Watch[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mDispatch Password …ts to Console Directory Watch[0m.
+         Stopping [0;1;39mLoad/Save Random Seed[0m...
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Stopped [0;1;39mUpdate UTMP about System Boot/Shutdown[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mLoad/Save Random Seed[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mCreate Volatile Files and Directories[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mLocal File Systems[0m.
+[[0;32m  OK  [0m] Stopped target [0;1;39mLocal File Systems (Pre)[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mCreate Static Device Nodes in /dev[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mCreate System Users[0m.
+[[0;32m  OK  [0m] Stopped [0;1;39mRemount Root and Kernel File Systems[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mShutdown[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mFinal Step[0m.
+         Starting [0;1;39mHalt[0m...
+do_exit: local_nodeid:0
+systemd-shutdow: 32 output lines suppressed due to ratelimiting
+systemd-shutdown[1]: Syncing filesystems and block devices.
+do_exit: local_nodeid:0
+systemd-shutdown[1]: Sending SIGTERM to remaining processes...
+systemd-journald[396]: Received SIGTERM from PID 1 (systemd-shutdow).
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+systemd-shutdown[1]: Sending SIGKILL to remaining processes...
+systemd-shutdown[1]: Unmounting file systems.
+[715]: Remounting '/' read-only in with options 'block_validity,delalloc,barrier,user_xattr,acl'.
+EXT4-fs (ubda): re-mounted. Opts: block_validity,delalloc,barrier,user_xattr,acl
+do_exit: local_nodeid:0
+systemd-shutdown[1]: All filesystems unmounted.
+systemd-shutdown[1]: Deactivating swaps.
+systemd-shutdown[1]: All swaps deactivated.
+systemd-shutdown[1]: Detaching loop devices.
+systemd-shutdown[1]: All loop devices detached.
+systemd-shutdown[1]: Detaching DM devices.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+reboot: System halted
+
+root@node0:/usr/src/linux# logout

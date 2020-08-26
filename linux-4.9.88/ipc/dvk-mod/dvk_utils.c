@@ -350,6 +350,7 @@ int sleep_proc(struct proc *proc, long timeout)
 	proc_usr_t *pu_ptr; 
 	int rcode = OK;
 	int ret = OK;
+	sigset_t new_set, old_set;
 
 	DVKDEBUG(INTERNAL,"timeout=%ld\n", timeout); 
 
@@ -366,6 +367,15 @@ int sleep_proc(struct proc *proc, long timeout)
 	proc->p_pseudosem = -1; 
 	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		sigaddset(&new_set, SIGALRM);
+		sigaddset(&new_set, SIGIO);
+		old_set = current->blocked;
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+	}
+	
 	do {
 		proc->p_rcode = OK; 
 		WUNLOCK_PROC(proc); 	
@@ -375,6 +385,16 @@ int sleep_proc(struct proc *proc, long timeout)
 			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
 				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
 		}
+		DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+			current->pending.signal.sig[0], current->pending.signal.sig[1]);
+		DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+			current->signal->shared_pending.signal.sig[0], 
+			current->signal->shared_pending.signal.sig[1]);	
+#ifdef ONLY_FOR_TEST				
+		if( sigismember(&current->pending.signal,  SIGUSR1) ||
+			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
+			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");
+#endif // ONLY_FOR_TEST				
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
 		WLOCK_PROC(proc); 
@@ -385,8 +405,14 @@ int sleep_proc(struct proc *proc, long timeout)
 		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
 		if ( ret < 0) break;
 	}while(1);
+
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+	}
 	
-	if( proc->p_rcode < 0) {
+	if( ret == -ERESTARTSYS){
+		ret = -EINTR;
+	}else if( proc->p_rcode < 0) {
 		ret = proc->p_rcode;
 	} else if( ret < 0) {
 		proc->p_rcode = ret;
@@ -755,6 +781,7 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	proc_usr_t *pu_ptr; 
 	int ret = OK;
 	int rcode = OK;
+	sigset_t	new_set, old_set;
 
 	if( timeout == TIMEOUT_NOWAIT) {
 		if( test_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags)){
@@ -769,6 +796,15 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	proc->p_pseudosem = -1; 
 	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 	
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		sigaddset(&new_set, SIGALRM);
+		sigaddset(&new_set, SIGIO);
+		old_set = current->blocked;
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+	}
+
 	do {
 		proc->p_rcode = OK; 
 		WUNLOCK_PROC2(proc, other); 
@@ -780,6 +816,17 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
 				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
 		}
+		DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+			current->pending.signal.sig[0], current->pending.signal.sig[1]);
+		DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+			current->signal->shared_pending.signal.sig[0], 
+			current->signal->shared_pending.signal.sig[1]);	
+#ifdef ONLY_FOR_TEST							
+		if( sigismember(&current->pending.signal,  SIGUSR1) ||
+			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
+			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");		
+#endif //ONLY_FOR_TEST				
+
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
 
@@ -792,7 +839,13 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 		if ( ret < 0) break;
 	}while(1);
 	
-	if( proc->p_rcode < 0) {
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+	}
+	
+	if( ret == -ERESTARTSYS){
+		ret = -EINTR;
+	}else if( proc->p_rcode < 0) {
 		ret = proc->p_rcode;
 	}else if( ret < 0) {
 		proc->p_rcode = ret;
@@ -836,17 +889,12 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	return(ret);
 }
 
-/****************************************************************
- *  Sleep process proc waiting for an event 
- *  On entry: processes proc and other must be Write LOCKED
- *  On exit: process is Write LOCKED
- *  the result is in proc->p_rcode
-*****************************************************************/
 int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , long timeout) 
 {
 	proc_usr_t *pu_ptr; 
 	int ret = OK;
 	int rcode = OK;
+	sigset_t	new_set, old_set;
 
 	if( timeout == TIMEOUT_NOWAIT) {
 		if( test_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags)){
@@ -857,43 +905,82 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 		return(EDVSAGAIN);
 	}
 	
-DVKDEBUG(INTERNAL,"BEFORE DOWN lpid=%d p_sem=%d\n",proc->p_usr.p_lpid,proc->p_pseudosem); 
+	DVKDEBUG(INTERNAL,"BEFORE DOWN lpid=%d p_sem=%d timeout=%ld\n",proc->p_usr.p_lpid,proc->p_pseudosem, timeout); 
 	proc->p_pseudosem = -1; 
-	proc->p_rcode = OK; 
-	WUNLOCK_PROC3(proc, other1, other2); 
-DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags);  
-	if( timeout < 0) {
-		ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
-	} else {
-		ret = wait_event_interruptible_timeout(proc->p_wqhead, 
-			(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
-	}
-	DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 	
-	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		sigaddset(&new_set, SIGALRM);
+		sigaddset(&new_set, SIGIO);
+		old_set = current->blocked;
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+	}
 
-	WLOCK_PROC3(proc, other1, other2); 
-	if( proc->p_rcode < 0) {
+	do {
+		proc->p_rcode = OK; 
+		WUNLOCK_PROC3(proc, other1, other2); 
+		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
+
+		if( timeout < 0) {
+			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+		} else {
+			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
+		}
+		DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+			current->pending.signal.sig[0], current->pending.signal.sig[1]);
+		DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+			current->signal->shared_pending.signal.sig[0], 
+			current->signal->shared_pending.signal.sig[1]);	
+#ifdef ONLY_FOR_TEST							
+		if( sigismember(&current->pending.signal,  SIGUSR1) ||
+			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
+			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");		
+#endif //ONLY_FOR_TEST				
+
+		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
+
+		WLOCK_PROC3(proc, other1, other2); 
+		if( proc->p_rcode != EDVSUSR2USR &&
+			proc->p_rcode != EDVSKRN2USR && 
+			proc->p_rcode != EDVSUSR2KRN ) break;
+		ret = copy_trampoline(proc);
+		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
+		if ( ret < 0) break;
+	}while(1);
+	
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+	}
+	
+	if( ret == -ERESTARTSYS){
+		ret = -EINTR;
+	}else if( proc->p_rcode < 0) {
 		ret = proc->p_rcode;
-	} else if( ret < 0) {
+	}else if( ret < 0) {
 		proc->p_rcode = ret;
-	} else if (ret == 0){
+	}else if (ret == 0){
 		if (timeout >= 0 ) ret = EDVSTIMEDOUT;
 		proc->p_rcode = ret;
-	} else{ /* ret > 0 */
+	}else{ /* ret > 0 */
 		ret = OK;
 		proc->p_rcode = ret;
 	}
-	
+		
 	if( ret) {
-DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);  
-		if(proc->p_pseudosem < 0) proc->p_pseudosem = 0; 
+		DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);  
+		if(proc->p_pseudosem < 0) proc->p_pseudosem++; 
 //		del_timer_sync(&proc->p_timer);
 		proc->p_rcode = ret; 
-		while(test_bit(BIT_ONCOPY, &proc->p_usr.p_rts_flags)) {
-			WUNLOCK_PROC3(proc, other1, other2);
-			schedule();
-			WLOCK_PROC3(proc, other1, other2);
+		if( timeout < 0) {
+			while(test_bit(BIT_ONCOPY, &proc->p_usr.p_rts_flags)) {
+				WUNLOCK_PROC3(proc, other1, other2); 
+				schedule();
+				WLOCK_PROC3(proc, other1, other2); 
+			}	
 		}
 	}
 
@@ -905,7 +992,7 @@ DVKDEBUG(INTERNAL,"pid=%d ret=%d\n",task_pid_nr(current), ret);
 	/* reset the process CPU mask */
 #ifdef SET_SETAFFINITY 
 	if ( (rcode = setaffinity_ptr(proc->p_usr.p_vpid, &proc->p_usr.p_cpumask)))
-		ERROR_PRINT(rcode);	
+			ERROR_PRINT(rcode);	
 #endif // SET_SETAFFINITY 
 			
 	pu_ptr = &proc->p_usr;
@@ -995,6 +1082,7 @@ long copy_usr2usr(int rqtr_ep, struct proc *src_ptr, char __user *src_addr,
 			ret = wait_event_interruptible_timeout(rqtr_ptr->p_wqhead, 
 				(rqtr_ptr->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
 		}
+		if( ret == -ERESTARTSYS) ret = -EINTR;
 		WLOCK_PROC3(rqtr_ptr,src_ptr,dst_ptr);
 		len = rqtr_ptr->p_rcode;
 	}

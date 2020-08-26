@@ -82,10 +82,6 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 		} 
-	} else {
-		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
-		}
 	}
  	RUNLOCK_PROC(caller_ptr);
 
@@ -578,11 +574,7 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (srcdst_nr+dc_max_nr_tasks) )){
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 		} 
-	} else {
-		if( (srcdst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
-		}
-	}
+	} 
  	RUNLOCK_PROC(caller_ptr);
 	
 sendrec_replay:
@@ -731,7 +723,7 @@ sendrec_replay:
 			if(srcdst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(srcdst_ptr, ret); 
 			if(ret < 0) {
-				caller_ptr->p_usr.p_getfrom  	= NONE;
+				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
 				WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
 				ERROR_RETURN(ret);
@@ -743,7 +735,7 @@ sendrec_replay:
 			if( ret) {
 				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
-				caller_ptr->p_usr.p_getfrom    	= NONE;
+				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
 			}else {
 				caller_ptr->p_usr.p_lclsent++;
@@ -907,9 +899,7 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 		} 
 	} else {
-		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
-		}
+		ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 	}
  	RUNLOCK_PROC(caller_ptr);
 	
@@ -1203,15 +1193,16 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	RUNLOCK_DC(dc_ptr);
 
-	// CHECK if the caller is a SYSTEM process 
-	if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-		ERROR_RETURN(EDVSTRAPDENIED);
-	}
-
 	// CHECK if the caller can COPY to other SYSTEM processes 
 	RLOCK_PROC(caller_ptr);
 	caller_nr = caller_ptr->p_usr.p_nr;
 	caller_ep = caller_ptr->p_usr.p_endpoint;
+
+	// CHECK if the caller is a SYSTEM process 
+	if( (caller_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+		ERROR_RUNLOCK_PROC(caller_ptr, EDVSTRAPDENIED);
+	}
+
 	if( dst_nr != caller_nr) {
 		if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
 			DVKDEBUG(INTERNAL,"(dst_nr+dc_max_nr_tasks)=%d\n", (dst_nr+dc_max_nr_tasks));
@@ -1222,6 +1213,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	}
 	if( src_nr != caller_nr) {
 		if( (src_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+			DVKDEBUG(INTERNAL,"(src_nr+dc_max_nr_tasks)=%d\n", (src_nr+dc_max_nr_tasks));		
 			if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (src_nr+dc_max_nr_tasks) )){
 				ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 			}			
@@ -1696,7 +1688,7 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;	
 	RUNLOCK_DC(dc_ptr);	
 
-	// check if the CALLER has the priviledges to RECEIVE a message 
+	// check if the CALLER has the priviledges to RECEIVE REQUEST message 
 	if( (caller_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
 		ERROR_RETURN(EDVSTRAPDENIED);
 	}
@@ -1832,6 +1824,10 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	RUNLOCK_DC(dc_ptr);	
 
+	if( (caller_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
+		ERROR_RETURN(EDVSTRAPDENIED);
+	}
+	
 	/*------------------------------------------
 	 * get the destination process number
 	*------------------------------------------*/
@@ -1852,11 +1848,7 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 		if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_ipc_to, (dst_nr+dc_max_nr_tasks) )){
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
 		} 
-	} else {
-		if( (dst_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-			ERROR_RUNLOCK_PROC(caller_ptr,EDVSTRAPDENIED);
-		}
-	}
+	} 
  	RUNLOCK_PROC(caller_ptr);
 
 reply_replay: /* Return point for a migrated destination process */

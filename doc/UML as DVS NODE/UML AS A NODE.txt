@@ -267,6 +267,10 @@ total_bytes = 69227508
 FTP_GET [vmlinux] Throuhput = 1682237.536407 [bytes/s]
 
 
+============================================================================
+				
+TODO:	PROBAR UN CLUSTER DE 3 NODOS UML !!!
+
 
 
 

@@ -9980,6 +9980,63 @@ ERROR AL TRATAR DE EJECUTAR EL SERVER EN UML
 	
 	
 ======================================================================================================
+20200819:
+		Tratando de hacer un THREAD EN UML que de tratamiento al SENDREC 
+		
+<6>Checking host MADV_REMOVE support...OK
+<4>UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+<4>DEBUG uml_dvk_init_module:240: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+<4>DEBUG uml_dvk_init_module:245: UML-kernel PID=2  UML-kernel TID=2
+<4>DEBUG dvk_driver_init:209: 
+<4>DEBUG dvk_driver_init:215: 	MUTEX_LOCK(&kernel_mutex)
+<4>DEBUG dvk_thread:170: 				MUTEX_LOCK(&thread_mutex)
+<4>DEBUG dvk_thread:172: 		MUTEX_UNLOCK(&kernel_mutex)
+<1>do_exit: local_nodeid:0
+<4>start_dvk_thread dvk_pid=10
+<4>DEBUG dvk_driver_init:227:	MUTEX_LOCK(&kernel_mutex)
+<4>DEBUG dvk_driver_init:229:		 	MUTEX_UNLOCK(&thread_mutex)
+<4>BUG: failure at kernel/sched/core.c:460/wake_up_q()!
+<0>Kernel panic - not syncing: BUG!
+<4>CPU: 0 PID: 1 Comm: swapper Not tainted 4.9.88 #56
+<6>Stack:
+<4> 083e1a78 00000200 00000000 00000000 48c89ee0 08259cc4 00000000 00000000
+<4> 083e1a78 48c89ef8 080b2621 00000000 000002e8 00000000 00000000 48c89f20
+<4> 08088016 083b025d 083b0240 083c0258 000001cc 0833e08c 48c89f2c ffffffff
+<6>Call Trace:
+<6> [<0805bf27>] 
+<4>show_stack+0xaf/0xf7
+<6> [<08259cc4>] 
+<4>dump_stack+0x16/0x1b
+<6> [<080b2621>] 
+<4>panic+0x84/0x18a
+<6> [<08088016>] 
+<4>wake_up_q+0x3d/0x6c
+<6> [<0833877d>] 
+<4>__mutex_unlock_slowpath+0x3b/0x41
+<6> [<0833879c>] 
+<4>mutex_unlock+0x19/0x1c
+<6> [<0804aff4>] 
+<4>uml_dvk_init_module+0x148/0x186
+<6> [<0804aeac>] ? 
+<4>uml_dvk_init_module+0x0/0x186
+<6> [<080497f8>] 
+<4>do_one_initcall+0x9a/0x117
+<6> [<080844a8>] ? 
+<4>parse_args+0x1ae/0x271
+<6> [<08049992>] ? 
+<4>kernel_init_freeable+0x11d/0x1ba
+<6> [<080499b5>] 
+<4>kernel_init_freeable+0x140/0x1ba
+<6> [<0804aeac>] ? 
+<4>uml_dvk_init_module+0x0/0x186
+<6> [<08337396>] 
+<4>kernel_init+0x8/0xb6
+<6> [<0805afef>] 
+<4>new_thread_handler+0x63/0x7c
+ 
+ 
+
+
  
 		
 hacer 		
@@ -11333,7 +11390,7 @@ mqueue on /dev/mqueue type mqueue (rw,relatime)
 fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
 /dev/rdiska on /mnt type ext2 (rw,relatime,errors=continue,user_xattr,acl) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIOCTL/g'
+	grep -RiIl 'CONFIG_DVKIOCTLIPC' | xargs sed -i 's/CONFIG_DVKIOCTLIPC/CONFIG_DVKIPC/g'
 
 
 

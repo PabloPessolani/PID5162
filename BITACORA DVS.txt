@@ -1247,11 +1247,312 @@ OTRA PRUEBA: CAMBIAR EL WARN ENDPOINT Y EL LEVEL
 						1			0			0			15			0		40			
 
 		
+		
+		
+======================================================================================================
+
+Aug 18 16:50:08 node0 kernel: [  352.545296] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+Aug 18 16:50:08 node0 kernel: [  352.545297] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+Aug 18 16:50:08 node0 kernel: [  352.545299] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+Aug 18 16:50:08 node0 kernel: [  352.545302] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+Aug 18 16:50:08 node0 kernel: [  352.545303] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545305] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545306] DEBUG 999:check_caller:615: dcid=0
+Aug 18 16:50:08 node0 kernel: [  352.545308] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545309] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545311] DEBUG 999:check_caller:629: caller_pid=999 
+Aug 18 16:50:08 node0 kernel: [  352.545312] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545314] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+Aug 18 16:50:08 node0 kernel: [  352.545316] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545317] DEBUG 999:new_mini_sendrec:552: dcid=0
+Aug 18 16:50:08 node0 kernel: [  352.545319] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545320] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545322] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545324] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=4
+Aug 18 16:50:08 node0 kernel: [  352.545325] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=5
+Aug 18 16:50:08 node0 kernel: [  352.545327] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.545328] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=5
+Aug 18 16:50:08 node0 kernel: [  352.545329] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+Aug 18 16:50:08 node0 kernel: [  352.545331] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+Aug 18 16:50:08 node0 kernel: [  352.545332] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545334] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.545336] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+Aug 18 16:50:08 node0 kernel: [  352.545337] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+Aug 18 16:50:08 node0 kernel: [  352.545338] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+Aug 18 16:50:08 node0 kernel: [  352.545341] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+Aug 18 16:50:08 node0 kernel: [  352.545342] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+Aug 18 16:50:08 node0 kernel: [  352.545344] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=5
+Aug 18 16:50:08 node0 kernel: [  352.545592] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.545632] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+
+Aug 18 16:50:08 node0 kernel: [  352.546320] DEBUG 644:SYSC_ipc:165: ipc_mini_send: call=512 first=10 second=0 third=0 fifth=30000 
+Aug 18 16:50:08 node0 kernel: [  352.546323] DEBUG 644:ipc_mini_send:61: dst_ep=10 timeout_ms=30000
+Aug 18 16:50:08 node0 kernel: [  352.546325] DEBUG 644:new_mini_send:32: dst_ep=10
+Aug 18 16:50:08 node0 kernel: [  352.546327] DEBUG 644:check_caller:546: caller_pid=644 caller_tgid=644
+Aug 18 16:50:08 node0 kernel: [  352.546329] DEBUG 644:check_caller:582: WLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546330] DEBUG 644:check_caller:612: WUNLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546331] DEBUG 644:check_caller:615: dcid=0
+Aug 18 16:50:08 node0 kernel: [  352.546333] DEBUG 644:check_caller:619: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546335] DEBUG 644:check_caller:623: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546336] DEBUG 644:check_caller:629: caller_pid=644 
+Aug 18 16:50:08 node0 kernel: [  352.546338] DEBUG 644:new_mini_send:44: RLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546339] DEBUG 644:new_mini_send:48: caller_nr=1 caller_ep=1 dst_ep=10 
+Aug 18 16:50:08 node0 kernel: [  352.546340] DEBUG 644:new_mini_send:53: RUNLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546342] DEBUG 644:new_mini_send:55: dcid=0
+Aug 18 16:50:08 node0 kernel: [  352.546343] DEBUG 644:new_mini_send:59: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546344] DEBUG 644:new_mini_send:64: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546346] DEBUG 644:new_mini_send:79: RLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546347] DEBUG 644:new_mini_send:90: RUNLOCK_PROC ep=1 count=3
+Aug 18 16:50:08 node0 kernel: [  352.546349] DEBUG 644:new_mini_send:93: WLOCK_PROC ep=10 count=5
+Aug 18 16:50:08 node0 kernel: [  352.546350] DEBUG 644:new_mini_send:98: dst_nr=10 dst_ep=10
+Aug 18 16:50:08 node0 kernel: [  352.546351] DEBUG 644:new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+Aug 18 16:50:08 node0 kernel: [  352.546352] DEBUG 644:new_mini_send:121: RLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546354] DEBUG 644:new_mini_send:125: RUNLOCK_DC dc=0 count=0
+Aug 18 16:50:08 node0 kernel: [  352.546356] DEBUG 644:new_mini_send:140: dcid=0 caller_pid=644 caller_nr=1 dst_ep=10 
+Aug 18 16:50:08 node0 kernel: [  352.546357] DEBUG 644:new_mini_send:238: destination is not waiting dst_flags=C. Enqueue at the TAIL.
+Aug 18 16:50:08 node0 kernel: [  352.546359] DEBUG 644:sleep_proc2:731: BEFORE DOWN lpid=644 p_sem=0 timeout=30000
+Aug 18 16:50:08 node0 kernel: [  352.546360] DEBUG 644:sleep_proc2:733: endpoint=1 flags=4
+Aug 18 16:50:08 node0 kernel: [  352.546361] DEBUG 644:sleep_proc2:737: WUNLOCK_PROC ep=1 count=4
+Aug 18 16:50:08 node0 kernel: [  352.546363] DEBUG 644:sleep_proc2:737: WUNLOCK_PROC ep=10 count=5
+Aug 18 16:50:08 node0 kernel: [  352.546364] DEBUG 644:sleep_proc2:738: endpoint=1 flags=4		
+
+SE MODIFICARON LOS sleep_proc() 
+	Se ejecuto ./rhostfsd rhostfs.cfg  para que quede en un dvk_receive() esperando
+	y se le hizo kill -SIGUSR1 <PID>
 	
+[  197.331425] DEBUG 954:sleep_proc:379: sig[0]:0x00000100, sig[1]:0x00000000
+[  197.331430] DEBUG 954:sleep_proc:382: endpoint=1 ret=-512 p_rcode=0
+[  197.331432] DEBUG 954:sleep_proc:383: endpoint=1 flags=8 cpuid=2
+[  197.331434] DEBUG 954:sleep_proc:384: WLOCK_PROC ep=1 count=0
+[  197.331436] DEBUG 954:sleep_proc:408: pid=954 ret=-4
+[  197.331438] DEBUG 954:sleep_proc:433: nr=1 endp=1 dcid=0 lpid=954 p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+[  197.331440] DEBUG 954:sleep_proc:435: someone wakeups me: sem=0 p_rcode=-4
+[  197.331442] DEBUG 954:new_mini_receive:503: WUNLOCK_PROC ep=1 count=0
+[  197.331443] ERROR: 954:new_mini_receive:504: rcode=-4
+[  197.331450] do_exit: local_nodeid:0
+
+ERROR: 
+	Deberia haber detectado el SIGUSR1 
+	if( sigismember(&current->pending.signal, SIGUSR1)	)
+		DVKDEBUG(INTERNAL,"SIGUSR1 received\n");
+	Los numeros de SIGNALS ESTAN EN /arch/x86/include/uapi/asm/signal.h
+
+tambien inclui el bind tipo UNIKERNEL_BIND que cambia el flag p_misc_flags
+		root@node0:~# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  11    11  1789/2      0    0  420 27342 27342 27342 27342 test_ukbind   <<< 0x0420 = 0000 0100 0010 0000
+		donde 
+			MIS_BIT_UNIKERNEL	10
+			MIS_BIT_GRPLEADER	5
+
+SOLUCION: Ahora se arreglo lo del SIGUSR1
+			if( sigismember(&current->pending.signal,  SIGUSR1) ||				<<< EN ESTA SOLA NO DETECTABA
+				sigismember(&current->signal->shared_pending.signal, SIGUSR1)) <<< ESTA IMPRIMIENDO POR ESTA
+				DVKDEBUG(INTERNAL,"SIGUSR1 received\n")
+		
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0   1     1   730/730    0    8   20 31438 27342 27342 27342 rhostfsd       
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# dmesg -c > /dev/null
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# kill -SIGUSR1 730
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		[1]+  SeÃ±al definida por el usuario 1        ./rhostfsd rhostfs.cfg
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# dmesg | grep SIGUSR 
+		[ 1464.205878] DEBUG 730:sleep_proc:382: SIGUSR1 received
+
+TODO: REMOVER LO DEL SIGUSR1  Y LUEGO PROBAR QUE PASA CON UML 
+
+ESTE ES EL PRIMERO QUE APARECIO 
+Aug 24 23:53:11 node0 kernel: [  197.280044] DEBUG 683:sleep_proc2:799: shared_pending sig[0]:0x00002000, sig[1]:0x00000000
+SIGNAL 14 = #define SIGALRM		14		
+
+Aug 24 23:53:11 node0 kernel: [  197.706772] DEBUG 659:sleep_proc2:796: pending: sig[0]:0x00000100, sig[1]:0x00000000
+SIGNAL 9 = #define SIGKILL		 9		
+
+Aug 24 23:53:11 node0 kernel: [  197.275254] DEBUG 683:sleep_proc2:799: shared_pending sig[0]:0x10000000, sig[1]:0x00000000
+SIGNAL 29 = #define SIGIO		29
+
+Aug 24 23:53:11 node0 kernel: [  197.706776] DEBUG 659:sleep_proc2:799: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+SIGNAL 2 = #define SIGINT		 2		 		
+
+Aug 24 23:53:07 node0 kernel: [  193.690104] DEBUG 683:sleep_proc2:799: shared_pending sig[0]:0x10002000, sig[1]:0x00000000
+SIGNAL 29 = #define SIGIO		29
+SIGNAL 14 = #define SIGALRM		14		
+
+Aug 24 23:53:00 node0 kernel: [  186.290151] ERROR: 683:new_mini_sendrec:806: rcode=-4
+
+DESCRIPCION DEL PROBLEMA:
+========================
+
+		SERVER					CLIENT
+1		recvrqst()		
+2								sendrec() => p_rts_flags=0x08 (RECEIVING)
+3		process_rqst()			
+4								SIGALARM
+5								Sale con p_rts_flags=0
+6								UML_reitera
+7								sendrec() => Server no esta esperando => p_rts_flags=0x0C
+8		reply()   encuentra a CLIENT en estado erroneo. (deberia estar en 0x08)
+		SE PUDRE TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+POSIBLE SOLUCION 
+	DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+		current->pending.signal.sig[0], current->pending.signal.sig[1]);
+	DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+		current->signal->shared_pending.signal.sig[0], 
+		current->signal->shared_pending.signal.sig[1]);	
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		if( sigismember(&current->pending.signal,  SIGALRM	) ||
+			sigismember(&current->signal->shared_pending.signal, SIGALRM	)){
+			DVKDEBUG(INTERNAL,"SIGALRM	 received\n");
+			continue;
+		}
+	}
+EL PROBLEMA SIGUE ESTANDO AUN CUANDO SE SUPRIMA LA SIGALRM 
+	Aug 25 14:49:51 node0 kernel: [  262.825712] DEBUG 681:sleep_proc:354: timeout=-1
+	Aug 25 14:49:51 node0 kernel: [  262.825713] DEBUG 681:sleep_proc:365: BEFORE DOWN lpid=681 p_sem=0 timeout=-1
+	Aug 25 14:49:51 node0 kernel: [  262.825714] DEBUG 681:sleep_proc:367: endpoint=10 flags=8
+	Aug 25 14:49:51 node0 kernel: [  262.825716] DEBUG 681:sleep_proc:371: WUNLOCK_PROC ep=10 count=9
+	Aug 25 14:49:51 node0 kernel: [  262.825717] DEBUG 681:sleep_proc:379: pending: sig[0]:0x00000000, sig[1]:0x00000000
+	Aug 25 14:49:51 node0 kernel: [  262.825719] DEBUG 681:sleep_proc:382: shared_pending sig[0]:0x00002000, sig[1]:0x00000000
+	Aug 25 14:49:51 node0 kernel: [  262.825720] DEBUG 681:sleep_proc:386: SIGALRM	 received
+	Aug 25 14:49:51 node0 kernel: [  262.825721] DEBUG 681:sleep_proc:371: WUNLOCK_PROC ep=10 count=10
+	Aug 25 14:49:51 node0 kernel: [  262.825722] DEBUG 681:sleep_proc:379: pending: sig[0]:0x00000000, sig[1]:0x00000000
+	Aug 25 14:49:51 node0 kernel: [  262.825723] DEBUG 681:sleep_proc:382: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+	Aug 25 14:49:51 node0 kernel: [  262.825725] DEBUG 681:sleep_proc:397: endpoint=10 ret=-512 p_rcode=0
+	Aug 25 14:49:51 node0 kernel: [  262.825726] DEBUG 681:sleep_proc:398: endpoint=10 flags=8 cpuid=1
+	Aug 25 14:49:51 node0 kernel: [  262.825727] DEBUG 681:sleep_proc:399: WLOCK_PROC ep=10 count=10
+	Aug 25 14:49:51 node0 kernel: [  262.825729] DEBUG 681:sleep_proc:423: pid=681 ret=-4
+
+===============================================================================================================
+20200825:
+		DA ERROR EL UNBIND 
+		[ 1455.424182] DEBUG 746:new_exit_unbind:266: code=-1015034154
+		[ 1455.424183] DEBUG 746:new_exit_unbind:270: WLOCK_TASK pid=746 count=0
+		[ 1455.424185] DEBUG 746:new_exit_unbind:276: RLOCK_PROC ep=10 count=4125
+		[ 1455.424188] DEBUG 746:new_exit_unbind:277: nr=10 endp=10 dcid=0 flags=0 misc=420 lpid=746 vpid=2 nodeid=0 name=uml.linux 
+		[ 1455.424190] DEBUG 746:new_exit_unbind:310:  Exiting endpoint=10 lpid=746
+		[ 1455.424192] DEBUG 746:new_exit_unbind:312: RUNLOCK_PROC ep=10 count=4125
+		[ 1455.424194] DEBUG 746:new_exit_unbind:313: WLOCK_DC dc=0 count=0
+		[ 1455.424195] DEBUG 746:new_exit_unbind:314: WLOCK_PROC ep=10 count=4125
+		[ 1455.424197] DEBUG 746:new_exit_unbind:321:  endpoint=10 lpid=746
+		[ 1455.424200] DEBUG 746:do_unbind:731: nr=10 endp=10 dcid=0 flags=0 misc=420 lpid=746 vpid=2 nodeid=0 name=uml.linux 
+		[ 1455.424203] DEBUG 746:do_unbind:760: Caller nr=10 endp=10 dcid=0 flags=0 misc=420 lpid=746 vpid=2 nodeid=0 name=uml.linux 
+		[ 1455.424204] DEBUG 746:do_unbind:799: wakeup with error those processes trying to send a message to the proc
+		[ 1455.424206] DEBUG 746:do_unbind:805: WUNLOCK_PROC ep=10 count=4125
+		[ 1455.424207] DEBUG 746:do_unbind:806: WLOCK_PROC ep=1 count=352
+		[ 1455.424209] DEBUG 746:do_unbind:807: WLOCK_PROC ep=10 count=4125
+		[ 1455.424210] DEBUG 746:do_unbind:810: LIST_DEL
+		[ 1455.424211] DEBUG 746:do_unbind:813: Find process 1 trying to send a message to 10
+		[ 1455.424212] DEBUG 746:do_unbind:817: Wakeup SENDER with error ep=1  pid=-1
+		[ 1455.424215] DEBUG 746:inherit_cpu:298: cpuid=2 vpid=-1
+		[ 1455.424217] ERROR: 746:inherit_cpu:302: rcode=-3
+		[ 1455.424220] DEBUG 746:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=-1 p_cpumask=FFFFFFFF nodemap=0 name=$noname 
+		[ 1455.424221] DEBUG 746:do_unbind:818: BEFORE UP lpid=-1 p_sem=0 rcode=-109
+		[ 1455.424223] DEBUG 746:do_unbind:823: WUNLOCK_PROC ep=1 count=352
+		[ 1455.424224] DEBUG 746:do_unbind:805: WUNLOCK_PROC ep=10 count=4125
+		[ 1455.424225] DEBUG 746:do_unbind:806: WLOCK_PROC ep=1 count=352
+		[ 1455.424226] DEBUG 746:do_unbind:807: WLOCK_PROC ep=10 count=4125
+		[ 1455.424227] DEBUG 746:do_unbind:810: LIST_DEL
+		[ 1455.424229] ------------[ cut here ]------------
+		[ 1455.424238] WARNING: CPU: 2 PID: 746 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+		[ 1455.424240] list_del corruption, e78e46b4->next is LIST_POISON1 (00000100)
+		[ 1455.424241] Modules linked in: iptable_filter fuse vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device snd_pcm snd_timer snd joydev ttm drm_kms_helper vmw_balloon serio_raw pcspkr evdev drm sg soundcore shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid uhci_hcd ehci_pci ehci_hcd ata_piix libata xhci_pci psmouse xhci_hcd usbcore pcnet32 mii mptspi scsi_transport_spi mptscsih mptbase scsi_mod i2c_piix4
+		[ 1455.424299] CPU: 2 PID: 746 Comm: uml.linux Tainted: G        W       4.9.88 #83
+		[ 1455.424300] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+		[ 1455.424302]  e8e4be10 c332e222 e8e4be24 00000000 c3067a3a c382dd50 e8e4be44 000002ea
+		[ 1455.424307]  c382d634 00000035 c334cf40 00000035 00000009 c334cf40 e78e46b4 e78e47d8
+		[ 1455.424312]  0000004c e8e4be30 c3067aa6 00000009 00000000 e8e4be24 c382dd50 e8e4be44
+		[ 1455.424316] Call Trace:
+		[ 1455.424323]  [<c332e222>] ? dump_stack+0x55/0x73
+		[ 1455.424328]  [<c3067a3a>] ? __warn+0xea/0x110
+		[ 1455.424330]  [<c334cf40>] ? __list_del_entry+0x60/0x100
+		[ 1455.424332]  [<c334cf40>] ? __list_del_entry+0x60/0x100
+		[ 1455.424335]  [<c3067aa6>] ? warn_slowpath_fmt+0x46/0x60
+		[ 1455.424337]  [<c334cf40>] ? __list_del_entry+0x60/0x100
+		[ 1455.424339]  [<c334cfe8>] ? list_del+0x8/0x20
+		[ 1455.424343]  [<c32693ed>] ? do_unbind+0x1dd/0x20c0
+		[ 1455.424414]  [<c30c32f7>] ? vprintk_default+0x37/0x40
+		[ 1455.424419]  [<c326d505>] ? new_exit_unbind+0x395/0x1210
+		[ 1455.424421]  [<c306c5f2>] ? do_exit+0xa42/0xa50
+		[ 1455.424424]  [<c306c677>] ? do_group_exit+0x37/0x90
+		[ 1455.424426]  [<c306c6e6>] ? SyS_exit_group+0x16/0x20
+		[ 1455.424428]  [<c3003728>] ? do_fast_syscall_32+0x98/0x160
+		[ 1455.424432]  [<c363e282>] ? sysenter_past_esp+0x47/0x75
+		[ 1455.424434] ---[ end trace 99bb2494cf383978 ]---
+		[ 1455.424436] DEBUG 746:do_unbind:813: Find process 1 trying to send a message to 10
+		[ 1455.424438] DEBUG 746:do_unbind:817: Wakeup SENDER with error ep=1  pid=-1
+		
+	
+Aug 24 23:52:40 node0 kernel: [  165.990199] list_del corruption, e79058b4->next is LIST_POISON1 (00000100)
+	
+		
 ===============================================================================================================
 ULTIMO_LOG
 ===============================================================================================================
 
+TODO:		Modificicar los tipos de BIND que se usan en dvk_bind_X()
+
+ACTUALMENTE SON:
+#define SELF_BIND		0
+#define LCL_BIND		1
+#define RMT_BIND		2
+#define BKUP_BIND		3
+#define REPLICA_BIND	4
+#define UNIKERNEL_BIND	5		// IDEM LOCAL pero set_bit(p_misc_flags, MIS_BIT_UNIKERNEL)
+#define MAX_BIND_TYPE	UNIKERNEL_BIND
+
+
+		
+PROBLEMON:
+			El problema es el siguiente. fundamentalmente en UML que seguro le manda un SIGALRM para que hacer
+			el scheduling.
+			De todos modos tambien es general.
+			Si un proceso CLIENT hizo un sendrec() a un SERVER que hizo el receive() y el SERVER esta laburando
+			, en la cola de procesos tratando de enviar del SERVER se inserta al proceso CLIENT.
+			Si durante ese tiempo el CLIENT recibe un SIGNAL, pone su estado en RUNNING y retorna con -ERESTARTSYS.
+			PERO LA LISTA DEL SERVER QUEDO CORRUPTA.
+			
+			EL CASO DE UML 
+			SERVER esta en receive()
+			CLIENT hace sendrec(), el SERVER se pone en RUNNING, y el CLIENT se pone RECEIVING
+			CLIENTE recibe SIGNAL = -ERESTARTSYS 
+			CLIENTE flags = RUNNING 
+			y se vuelve a ejecutar sendrec()
+			Ahora el SERVER no esta esperando, entonces el CLIENT se pone en la cola de sending del SERVER
+			Cuando el server intenta hacer send() ve que el CLIENT no esta esperando el mensaje y se pone en la cola de CLIENT
+			
+POSIBLE SOLUCION:
+			Dependiendo del lugar donde produjo el ERESTARTSYS, se setea un flag BIT_RESTART
+			De esa forma, se dejan los flags anteriores en el mismo estado, pero se le agrega el BIT_RESTART.
+			Una vez que se han comprobado todos los parametros de ingreso, 
+		PROBLEMA: Ante cualquier error hay que salir borrando el BIT_RESTART 
+		SOLUCION: Al entrar, luego que se ha chequeado, variable 
+				lcl_restart = (BIT_RESTART)?1:0;
+				clear_bit(BIT_RESTART)
+				y luego seguir manejandose con el valor de lcl_restart;
+		PROBLEMA: Que pasa si no vuelve a ejecutar la SYSCALL ??		
+				
+OTRA POSIBLE SOLUCION:
+			Si la salidad del sleep_proc() es ERESTARTSYS entonces ver que signal fue la que lo provoco.
+			si es una boludez, entonces ignorarla.
+	
+ATENCION: After the signal has been handled, the system call will be restarted (from the beginning), 
+		and the user-space application need not deal with "interrupted system call" errors. 
+		For cases where restarting is not appropriate, a -EINTR return status will cause a (post-signal) 
+		return to user space without restarting the system call.	
+	
+
+TODO TODO TODO TODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO 
+
+ATENCION!! EN dvk_calls.h estan los dvk_calls reales, y en kipc tambien estan definidos pero con los VOID 
+Hay muchos programas que utilizan kipc.h !!!
+
+NORMALIZAR TODO!!
+
+TODO TODO TODO TODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO TODO TODOTODO 
+	
 	
 TODO:  Probar proxies 
 
@@ -1325,4 +1626,17 @@ TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD 
 		Si es asi, hace COPY_KRN_USR y luego vuelve.
 		Es decir, hay una doble copia.
 		
-	
+https://spankbang.com/stream/Mzg1MDE5MQ.-RUStj3g9mCzj7HLqgQs5x0y4K8.mp4
+https://spankbang.com/stream/MTg4NzcxNw.Cnen9-WNmoPdvwKoVPp024eqPUs.mp4
+https://spankbang.com/stream/MjM1MDk0Nw.bsGkMBr4_LoCv2qSktJO7qbCcaQ.mp4
+https://spankbang.com/stream/NzIyMjA1Ng.u_EmgiwEWuiD50eUiTEaOzt2cM8.mp4
+https://spankbang.com/stream/NTc3NjIwNQ.NtSQyR7Q2kUn23py-twVesZKuYY.mp4
+https://spankbang.com/stream/NzIyMjA1MQ.xG3V_xUDxWCB_LKzARN1_MgLtfE.mp4
+https://spankbang.com/stream/NjgxOTY0MQ.aabWw-nh1Px2BvvI-V7Uf3tSUA8.mp4
+https://spankbang.com/stream/NjgxMDIzOQ.O7TftzUpdTYu_1K7s74jx-GCuk8.mp4
+https://spankbang.com/stream/Njk3NzMzOQ._wu98vhc1ECI-alXA7BZvGlXGS8.mp4
+https://vdownload-21.sb-cd.com/6/7/6765843-720p.mp4?st=PFlWmcDTodsIjTauKUdVJA&e=1598334060&d=4
+https://spankbang.com/stream/NjY2MzQzNA.t-YlUpVJ4ySnsDM9TPD6WAStHt4.mp4
+https://spankbang.com/stream/NjY2MzQ3Nw.RTCPvI_b6BJ29vqLfqNHRuiarH8.mp4
+https://spankbang.com/stream/NjU4MDkyMA.-IHiriK50GmHjT9Tws4FURLUBaI.mp4
+

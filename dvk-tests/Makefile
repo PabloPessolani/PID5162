@@ -3,8 +3,7 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
 		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
-		uml_test test_priv_info test_set_priv
-		
+		uml_test test_priv_info test_set_priv test_ukbind
 	
 INCLUDE = ..
 #LIBS = ../dvk-lib//stub_dvkcall.o
@@ -36,6 +35,9 @@ test_bind: test_bind.c
 
 test_rmtbind: test_rmtbind.c 
 	$(CC)  $(CFLAGS) -o test_rmtbind test_rmtbind.c  $(LIBS) -I$(INCLUDE)
+
+test_ukbind: test_ukbind.c 
+	$(CC)  $(CFLAGS) -o test_ukbind test_ukbind.c  $(LIBS) -I$(INCLUDE)
 	
 test_tbind: test_tbind.c 
 	$(CC)  $(CFLAGS) -o test_tbind test_tbind.c  $(LIBS) -I$(INCLUDE)

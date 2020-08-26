@@ -39,6 +39,8 @@
 
 #include "../../include/com/dvs_config.h"
 #include "../../include/com/config.h"
+#include "../../include/com/com.h"
+#include "../../include/com/dvk_calls.h"
 #include "../../include/com/const.h"
 #include "../../include/com/types.h"
 #include "../../include/com/timers.h"
@@ -47,7 +49,6 @@
 #include "../../include/com/node_usr.h"
 #include "../../include/com/proc_usr.h"
 #include "../../include/com/proc_sts.h"
-#include "../../include/com/com.h"
 #include "../../include/com/ipc.h"
 #include "../../include/com/cmd.h"
 #include "../../include/com/proxy_usr.h"

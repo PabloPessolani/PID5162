@@ -41,7 +41,7 @@ extern int local_nodeid;
 extern int uml_ep;
 extern int dcid;
 
-
+#ifdef ANULADO
 long uml_getdvsinfo(dvs_usr_t *dvsu_ptr)
 {
     long ret;
@@ -70,6 +70,8 @@ long uml_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	if ( ret < EDVSERRCODE) ERROR_RETURN(ret); 
 	return(ret);
 }
+#endif //  ANULADO
+
 #endif // CONFIG_UML_DVK
 
 
@@ -81,7 +83,6 @@ static int __init start_kernel_proc(void *unused)
 
 	block_signals();
 	
-#ifdef CONFIG_UML_DVK
 	int rcode;
 	dvs_usr_t *dvsu_ptr, dvs;
 
@@ -90,6 +91,7 @@ static int __init start_kernel_proc(void *unused)
 	UMLDEBUG("UML-kernel PID=%d TID=%d uml_ep=%d\n", pid, tid, uml_ep);
 	os_flush_stdout();
 	
+#ifdef CONFIG_UML_DVK_ANULADO
 #define UML_DVK_DEV "/dev/dvk"
 	dvk_fd = (-1);
 	dvk_fd = os_open_file(UML_DVK_DEV, of_set_rw(OPENFLAGS(), 1, 1), 0);
@@ -105,10 +107,10 @@ static int __init start_kernel_proc(void *unused)
 //	local_nodeid = uml_getdvsinfo(dvsu_ptr);
 //	if (local_nodeid < 0) ERROR_PRINT(local_nodeid);
 	
-	ep = uml_bind_X(SELF_BIND, dcid, tid, uml_ep, LOCALNODE);
+//	ep = uml_bind_X(SELF_BIND, dcid, tid, uml_ep, LOCALNODE);
+	ep = dvk_bind_X(SELF_BIND, dcid, tid, uml_ep, LOCALNODE);
 	if( ep != uml_ep) ERROR_PRINT(ep);
-	
-#endif // CONFIG_UML_DVK
+#endif // CONFIG_UML_DVK_ANULADO
 		
 	cpu_tasks[0].pid = pid;
 	cpu_tasks[0].task = current;

@@ -116,17 +116,6 @@ static DEFINE_MUTEX(rd_lock);
 static DEFINE_MUTEX(rd_mutex); /* replaces BKL, might not be needed */
 static DEFINE_MUTEX(rd_ksync);
 
-#define MUTEX_LOCK(mutex) 	\
-do {\
-	mutex_lock(mutex);\
-	DVKDEBUG(INTERNAL ,"MUTEX_LOCK(%s)\n", #mutex);\
-}while(0);
-
-#define MUTEX_UNLOCK(mutex) 	\
-do {\
-	DVKDEBUG(INTERNAL ,"MUTEX_UNLOCK(%s)\n", #mutex);\
-	mutex_unlock(mutex);\
-}while(0);
 
 #define MAX_SG 			1
 
@@ -395,7 +384,6 @@ static int rd_close_dev( int minor)
 	m_ptr->DEVICE   = minor;
 	m_ptr->POSITION = 0;
 	m_ptr->IO_ENDPT = rdc_ep;
-//	m_ptr->IO_ENDPT = uml_ep;
 	m_ptr->ADDRESS  = NULL;
 	m_ptr->COUNT    = 0;
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
@@ -1095,8 +1083,6 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 	m_ptr->DEVICE   = minor;
 	m_ptr->POSITION = (int) off;
 	m_ptr->IO_ENDPT = my_ep;
-//	m_ptr->IO_ENDPT = rdc_ep;
-//	m_ptr->IO_ENDPT = uml_ep;
 	m_ptr->ADDRESS  = buf;
 	m_ptr->COUNT    = len;
 	m_ptr->TTY_FLAGS = 0;

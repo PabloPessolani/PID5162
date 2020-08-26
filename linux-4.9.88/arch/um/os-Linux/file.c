@@ -14,7 +14,8 @@
 #include <sys/stat.h>
 #include <sys/un.h>
 #include <sys/types.h>
-
+#include <sys/syscall.h>
+#include <sys/ipc.h>
 #include <os.h>
 
 static void copy_stat(struct uml_stat *dst, const struct stat64 *src)
@@ -33,6 +34,14 @@ static void copy_stat(struct uml_stat *dst, const struct stat64 *src)
 		.ust_mtime   = src->st_mtime,   /* time of last modification */
 		.ust_ctime   = src->st_ctime,   /* time of last change */
 	});
+}
+
+extern int ipc(unsigned int call, int first, int second, int third,
+               void *ptr, long fifth);
+int os_ipc(unsigned int call, int first, int second, int third,
+               void *ptr, long fifth)
+{
+	return(syscall( SYS_ipc,call, first, second, third, ptr, fifth));
 }
 
 

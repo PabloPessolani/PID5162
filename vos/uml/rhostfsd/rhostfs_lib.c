@@ -30,7 +30,7 @@ long lcl_gethostname(message *mptr)
 {
 	int rcode;
 	int len; 
-	char *hname[HOST_NAME_MAX+1]; 
+	char hname[HOST_NAME_MAX+1]; 
 
 	len = mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
@@ -45,7 +45,7 @@ long lcl_gethostname(message *mptr)
 long lcl_open(message *mptr)
 {
 	int rcode;
-	char *name[PATH_MAX+1]; 
+	char name[PATH_MAX+1]; 
 	
 	int len 	= mptr->m1_i1;
 	int flags 	= mptr->m1_i2;
@@ -64,7 +64,7 @@ long lcl_open(message *mptr)
 long lcl_access(message *mptr)
 {
 	int rcode;
-	char *name[PATH_MAX+1]; 
+	char name[PATH_MAX+1]; 
 
 	int len 	= mptr->m1_i1;
 	int mode 	= mptr->m1_i2;
@@ -377,7 +377,7 @@ long lcl_link(message *mptr)
 long lcl_readlink(message *mptr)
 {
 	int rcode;
-	char *filename[PATH_MAX+1];
+	char filename[PATH_MAX+1];
 	char *buf;
 	
 	int len = mptr->m1_i1;

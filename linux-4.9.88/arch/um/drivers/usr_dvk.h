@@ -7,3 +7,4 @@ long usr_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr);
 long usr_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid);
 #define usr_lclbind(dcid,pid,endpoint) 	usr_bind_X(LCL_BIND, dcid, pid, endpoint, LOCALNODE)
 
+

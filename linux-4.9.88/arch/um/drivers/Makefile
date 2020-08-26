@@ -17,7 +17,7 @@ ubd-objs := ubd_kern.o ubd_user.o
 rdisk-objs := rdisk_kern.o rdisk_user.o
 port-objs := port_kern.o port_user.o
 harddog-objs := harddog_kern.o harddog_user.o
-dvk-objs := um_dvk.o 
+dvk-objs := dvk_kernel.o dvk_user.o
 
 LDFLAGS_pcap.o := -r $(shell $(CC) $(KBUILD_CFLAGS) -print-file-name=libpcap.a)
 

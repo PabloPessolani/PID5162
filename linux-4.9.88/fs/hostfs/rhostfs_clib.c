@@ -16,7 +16,7 @@
 #include <kern.h>
 #include "rhostfs.h"
 
-
+int UML_sendrec_T(int srcdst_ep, message *m_ptr, long timeout);
 void print_sigset(void);
 
 
@@ -27,8 +27,9 @@ long rmt_syscall(int who, int syscallnr, message *mptr)
 	rmt_errno = 0;
 	RHDEBUG("who=%d syscallnr=%d\n", who, syscallnr);
 	mptr->m_type = syscallnr;
-	rcode = dvk_sendrec(who, mptr); // TIMEOUT_RMTCALL);
-	if( rcode == (-ERESTARTSYS)) {
+	//	rcode = UML_sendrec_T(who, mptr, TIMEOUT_FOREVER); // TIMEOUT_RMTCALL);
+	rcode = dvk_sendrec_T(who, mptr, TIMEOUT_FOREVER); // TIMEOUT_RMTCALL);
+	if( rcode == (-EINTR)) {
 		print_sigset();
 	} 
 	if (rcode < 0) ERROR_RETURN(rcode);

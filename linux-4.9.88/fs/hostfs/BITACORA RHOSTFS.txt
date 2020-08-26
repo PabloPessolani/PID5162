@@ -442,7 +442,7 @@ root@node0:/usr/src/dvs/vos/uml/rhostfsd# ./rhostfsd rhostfs.cfg
 
 ARRANCO CLIENT
 root@node0:/usr/src/linux# 
-nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
  
 root@node0:/tmp# cat /proc/dvs/DC0/procs 
@@ -3188,111 +3188,568 @@ El dueño de la lista es 1) el proceso destinatario del mensaje (LOCAL) o 2) el 
 		}
 	}
 	
-HAY QUE PROBAR RECOMPILARLO 
-
-
-
-
 
 -------------------------------------------------------------------------------
+20200817:
+			Retomando RHOSTFS con varias cosas nuevas. 
+			Despues de haber arrancado el rhostfsd y el UML da varios errores.
+			
+			Initilizing Remote DVS HOSTFS
+			DEBUG init_rh_client:1169: local_nodeid=-1
+			DEBUG 285:dvk_open:103: 
+			DEBUG 285:dvk_getdvsinfo:254: 
+			DEBUG 1:SYSC_ipc:165: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+			DEBUG 1:new_getdvsinfo:1899: local_nodeid=-1 
+			DEBUG 285:dvk_getdvsinfo:258: ipc ret=-1
+			ERROR: 285:dvk_getdvsinfo:259: rcode=0
+			
+			DEBUG init_rh_client:1180: rhclient_nodeid=0
+			DEBUG init_rh_client:1181: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			DEBUG 285:dvk_getdcinfo:355: dcid=0
+			DEBUG 1:SYSC_ipc:165: ipc_getdcinfo: call=3584 first=0 second=0 third=0 fifth=0 
+			DEBUG 1:new_getdcinfo:1928: dcid=0 
+			ERROR: 1:new_getdcinfo:1936: rcode=-318
+			DEBUG 285:dvk_getdcinfo:359: ipc ret=-318
+			ERROR: 285:dvk_getdcinfo:360: rcode=0
+			DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+			DEBUG init_rh_client:1193: flags=0 dc_nodes=0 dc_pid=0 dc_name=
+			ERROR: init_rh_client:1200: rcode=-337
+			ERROR: init_rhostfs:1225: rcode=-337
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PROBLEMA:	ESTA USANDO LAS DVK_CALLS DEL KERNEL UML.
+		dvk_xxxx se transforma en new_xxxx en UML 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+Aug 18 01:29:17 node1 kernel: Initilizing Remote DVS HOSTFS
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1169: local_nodeid=-1
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_open:103:
+ 
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdvsinfo:254: 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:SYSC_ipc:165: ipc_getdvsinfo: call=6912 first=0 second=0  third=0 fifth=0 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:new_getdvsinfo:1899: local_nodeid=-1 
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdvsinfo:258: ipc ret=-1
+Aug 18 01:29:17 node1 kernel: ERROR: 1228:dvk_getdvsinfo:259: rcode=0
+
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1180: rhclient_nodeid=0
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1181: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes =32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdcinfo:355: dcid=0
+Aug 18 01:29:17 node1 kernel: DEBUG 1:SYSC_ipc:165: ipc_getdcinfo: call=3584 first=0 second=0 third=0 fifth=0 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:new_getdcinfo:1928: dcid=0 
+Aug 18 01:29:17 node1 kernel: ERROR: 1:new_getdcinfo:1936: rcode=-318
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdcinfo:359: ipc ret=-318
+Aug 18 01:29:17 node1 kernel: ERROR: 1228:dvk_getdcinfo:360: rcode=0
+
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1193: flags=0 dc_nodes=0 dc_pid=0 dc_name=
+Aug 18 01:29:17 node1 kernel: ERROR: init_rh_client:1200: rcode=-337
+Aug 18 01:29:17 node1 kernel: ERROR: init_rhostfs:1225: rcode=-337
+
+-------------------------------------------------------------------------------
+20200818:
+			Arregle el problema de la invocacion al DVK de UML por el DVK del HOST.
+			
+			mount none /rhost -t rhostfs <<<< FUNCIONA 
+			
+			cuando hago ls /rhost 
+			HOST
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 10696:dvk_receive_T:882: endpoint=31438 timeout=-1
+			DEBUG 10696:dvk_receive_T:886: ipc ret=0
+			 rhostfs_svr.c:main:187:dvk_receive rcode=0
+			 rhostfs_svr.c:main:191:RECEIVE msg:source=10 type=4096 m2i1=3 m2i2=1 m2i3=0 m2l1=1187344384 m2l2=1187344384 m2p1=0x48254ea0
+			 rhostfs_svr.c:main:199:call_nr=4096 rhs_who_e=10
+			 rhostfs_svr.c:main:210:RHOSTFS Calling vector 0
+			 rhostfs_lib.c:lcl_opendir:661:len=3
+			DEBUG 10696:dvk_vcopy:124: src_ep=10 dst_ep=1 bytes=3
+			DEBUG 10696:dvk_vcopy:128: ipc ret=-1
+			ERROR: 10696:dvk_vcopy:129: rcode=-324  <<<<<<< EDVSPROCSTS (_SIGN 324)  	/* Bad process status  */
+			ERROR: 10696:dvk_vcopy:155: rcode=-324
+			ERROR: rhostfs_lib.c:lcl_opendir:664: rcode=-324
+			 rhostfs_svr.c:main:225:REPLY msg:source=10 type=-324 m2i1=3 m2i2=1 m2i3=0 m2l1=1187344384 m2l2=1187344384 m2p1=0x48254ea0
+			DEBUG 10696:dvk_send_T:849: endpoint=10 timeout=30000
+			DEBUG 10696:dvk_send_T:853: ipc ret=-1
+			ERROR: 10696:dvk_send_T:854: rcode=-61
+			ERROR: 10696:dvk_send_T:873: rcode=-61
+			ERROR: rhostfs_svr.c:main:227: rcode=-61
+
+			UML ESTA ENVIANDO ERESTARTSYS (-512) Y DVK LO CONVIERTE EN -EINTR (-4) para indicar que no debe reejecutar la SYSCALL 
+			!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[ 2207.562807] DEBUG CLIENT:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[ 2207.562809] DEBUG CLIENT:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[ 2207.562811] DEBUG CLIENT:new_mini_sendrec:523: srcdst_ep=1
+[ 2207.562812] DEBUG CLIENT:check_caller:585: caller_pid=CLIENT caller_tgid=CLIENT
+[ 2207.562814] DEBUG CLIENT:check_caller:621: WLOCK_PROC ep=10 count=1377
+[ 2207.562815] DEBUG CLIENT:check_caller:651: WUNLOCK_PROC ep=10 count=1377
+[ 2207.562816] DEBUG CLIENT:check_caller:654: dcid=0
+[ 2207.562819] DEBUG CLIENT:check_caller:658: RLOCK_DC dc=0 count=0
+[ 2207.562820] DEBUG CLIENT:check_caller:662: RUNLOCK_DC dc=0 count=0
+[ 2207.562821] DEBUG CLIENT:check_caller:668: caller_pid=CLIENT 
+[ 2207.562823] DEBUG CLIENT:new_mini_sendrec:534: RLOCK_PROC ep=10 count=1377
+[ 2207.562824] DEBUG CLIENT:new_mini_sendrec:539: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[ 2207.562826] DEBUG CLIENT:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=1377
+[ 2207.562827] DEBUG CLIENT:new_mini_sendrec:548: dcid=0
+[ 2207.562828] DEBUG CLIENT:new_mini_sendrec:552: RLOCK_DC dc=0 count=0
+[ 2207.562829] DEBUG CLIENT:new_mini_sendrec:556: RUNLOCK_DC dc=0 count=0
+[ 2207.562831] DEBUG CLIENT:new_mini_sendrec:571: RLOCK_PROC ep=10 count=1377
+[ 2207.562832] DEBUG CLIENT:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=1377
+[ 2207.562833] DEBUG CLIENT:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1378
+[ 2207.562835] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=1 count=8
+[ 2207.562836] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1378
+[ 2207.562837] DEBUG CLIENT:new_mini_sendrec:586: srcdst_nr=1 srcdst_ep=1
+[ 2207.562839] DEBUG CLIENT:new_mini_sendrec:606: srcdst_ptr->p_usr.p_nodeid=0
+[ 2207.562840] DEBUG CLIENT:new_mini_sendrec:610: RLOCK_DC dc=0 count=0
+[ 2207.562841] DEBUG CLIENT:new_mini_sendrec:614: RUNLOCK_DC dc=0 count=0
+[ 2207.562843] DEBUG CLIENT:new_mini_sendrec:629: dcid=0 caller_pid=CLIENT caller_nr=10 srcdst_ep=1 
+[ 2207.562844] DEBUG CLIENT:new_mini_sendrec:634: SENDING HALF
+[ 2207.562845] DEBUG CLIENT:new_mini_sendrec:767: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[ 2207.562847] DEBUG CLIENT:sleep_proc2:770: BEFORE DOWN lpid=CLIENT p_sem=0 timeout=-1
+[ 2207.562848] DEBUG CLIENT:sleep_proc2:772: endpoint=10 flags=C
+[ 2207.562849] DEBUG CLIENT:sleep_proc2:776: WUNLOCK_PROC ep=10 count=1378
+[ 2207.562850] DEBUG CLIENT:sleep_proc2:776: WUNLOCK_PROC ep=1 count=8
+[ 2207.562852] DEBUG CLIENT:sleep_proc2:777: endpoint=10 flags=C
+[ 2207.572470] DEBUG CLIENT:sleep_proc2:785: endpoint=10 ret=-512 p_rcode=0
+[ 2207.572475] DEBUG CLIENT:sleep_proc2:786: endpoint=10 flags=C cpuid=2
+[ 2207.572477] DEBUG CLIENT:sleep_proc2:788: WLOCK_PROC ep=1 count=8
+[ 2207.572479] DEBUG CLIENT:sleep_proc2:788: WLOCK_PROC ep=10 count=1378
+[ 2207.572481] DEBUG CLIENT:sleep_proc2:812: pid=CLIENT ret=-4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+[ 2207.572483] DEBUG CLIENT:sleep_proc2:837: nr=10 endp=10 dcid=0 lpid=CLIENT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[ 2207.572485] DEBUG CLIENT:sleep_proc2:839: someone wakeups me: sem=0 p_rcode=-4<<<<<<<<<<<<<<<<<<<<<<<<<<
+[ 2207.572487] DEBUG CLIENT:new_mini_sendrec:784: removing 10 link from 1 list.
+[ 2207.572488] DEBUG CLIENT:new_mini_sendrec:785: LIST_DEL
+[ 2207.572489] DEBUG CLIENT:new_mini_sendrec:789: WUNLOCK_PROC ep=1 count=8
+[ 2207.572491] DEBUG CLIENT:new_mini_sendrec:805: WUNLOCK_PROC ep=10 count=1378
+[ 2207.572492] ERROR: CLIENT:new_mini_sendrec:806: rcode=-4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		
+		
+POSIBLE SOLUCION:!!!!!!
+Crear un THREAD que se encargue de hacer el SENDREC al servidor. 
+1) Se puede utilizar el driver um-dvk para crear el thread el cual se registra con el endpoint SYSTASK 
+2) Para ello, los "clientes" utilizaran 
+		int DVK_sendrec_T(int srcdst_ep, message *m_ptr, long timeout)
+		{
+			Task *t;
+			proc_usr_t *p_ptr;
+			
+			t = current_task();
+			assert(t->p_proc != NULL);
+			p_ptr = t->p_proc;
+			LIBDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
+			
+			t->p_rqst.rq_oper 		= SENDREC;
+			t->p_rqst.rq_other_ep 	= srcdst_ep;
+			t->p_rqst.rq_mptr		= m_ptr;
+			t->p_rqst.rq_timeout	= timeout;
+			t->p_rqst.rq_rcode 		= OK;
+			
+			PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  the thread 
+			PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
+			
+			tasksleep(&t->p_rendez);
+			if( t->p_rqst.rq_rcode < 0 )
+				ERROR_RETURN(t->p_rqst.rq_rcode);
+			return(t->p_rqst.rq_rcode);
+		}
+		
+static void pth_dvk(void *t_arg)
+{
+	Task *t;
+	dvk_request_t *r_ptr;
+	vcopy_t		 *v_ptr;
+	int rcode;
+	
+	t = (Task *) t_arg;
+	LIBDEBUG("DVK thread for %d\n", t->id);	
+	PH_MTX_LOCK(t->p_th_mutex);
+	PH_MTX_UNLOCK(t->p_tsk_mutex);
+	
+	t->p_proc->p_lpid = t->pid;
+	t->p_proc->p_vpid = syscall(SYS_gettid);
+	rcode = dvk_tbind(t->p_proc->p_dcid, t->p_proc->p_endpoint);
+	if( rcode < EDVSERRCODE) {
+		ERROR_PRINT(errno);
+		if( (-errno) !=  t->p_proc->p_endpoint)
+			ERROR_EXIT(rcode);
+		rcode = t->p_proc->p_endpoint;
+	}
+	
+	LIBDEBUG("DVK thread for %d READY to process requests on endpoint=%d\n", 
+			t->id, rcode);	
+			
+	while(TRUE){
+		PH_MTX_LOCK(t->p_th_mutex);
+		PH_MTX_UNLOCK(t->p_tsk_mutex);
+		r_ptr = &t->p_rqst;
+		LIBDEBUG("%d: " DVK_RQST_FORMAT, t->id, DVK_RQST_FIELDS(r_ptr));
+		switch(r_ptr->rq_oper) {
+			case SEND:
+				rcode = dvk_send_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case SENDREC:
+				rcode = dvk_sendrec_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case RECEIVE:
+				rcode = dvk_receive_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case NOTIFY:
+				rcode = dvk_notify(r_ptr->rq_other_ep);
+				break;
+			case VCOPY:
+				v_ptr = &r_ptr->rq_vcopy;
+				LIBDEBUG("%s: " MUK_VCOPY_FORMAT, t->p_proc->p_name, MUK_VCOPY_FIELDS(v_ptr));
+				rcode = dvk_vcopy(v_ptr->v_src,v_ptr->v_saddr,
+										v_ptr->v_dst,v_ptr->v_daddr,
+										v_ptr->v_bytes);
+				break;
+			default:
+				rcode = EDVSNOSYS;
+				break;
+		}
+		r_ptr->rq_rcode = rcode;			
+		LIBDEBUG("pid=%d id=%d name=%s rcode=%d\n", t->pid, t->id, t->name, rcode);
+		PH_MTX_LOCK(muk2_mutex);
+//		TAILQ_INSERT_TAIL(&tout_head, t, p_entries);
+//		pthread_kill(t->pid, SIGIO);
+		SET_BIT(dvk_bitmap, t->id);
+		PH_MTX_UNLOCK(muk2_mutex);
+	}
+}
+
+  3) utilizar p_rmtcmd (en lugar de p_rqst de arriba) para almacenar el comando a enviar al thread 
+ 
+-------------------------------------------------------------------------------
+20200820:
+		EN HOST SESION 1:
+		 cd /usr/src/dvs/dvk-tests/
+		  ./tests.sh 0 0
+		  . /dev/shm/DC0.sh
+		  cd /usr/src/dvs/vos/uml/rhostfsd
+		  ./rhostfsd rhostfs.cfg 
+		  
+		EN HOST SESION 2:
+		  . /dev/shm/DC0.sh
+		  cd /usr/src/linux
+		  nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1
+		  
+		EN UML (SESION 2):
+			mount none /rhost -t rhostfs
+
+	
+EN HOST 
+		rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 647:dvk_receive_T:882: endpoint=31438 timeout=-1
+		DEBUG 647:dvk_receive_T:886: ipc ret=0
+		 rhostfs_svr.c:main:187:dvk_receive rcode=0
+		 rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=4100 m2i1=1 m2i2=134652689 m2i3=4171936 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+		 rhostfs_svr.c:main:199:call_nr=4100 rhs_who_e=-2
+		 rhostfs_svr.c:main:210:RHOSTFS Calling vector 4
+		 rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+		DEBUG 647:dvk_vcopy:124: src_ep=1 dst_ep=-2 bytes=24
+		DEBUG 647:dvk_vcopy:128: ipc ret=24
+		 rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=1 m2i2=134652689 m2i3=4171936 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+		DEBUG 647:dvk_send_T:849: endpoint=-2 timeout=30000
+		DEBUG 647:dvk_send_T:853: ipc ret=76
+		 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 647:dvk_receive_T:882: endpoint=31438 timeout=-1
+
+EN UML (USAR PUTTY QUE DEJA LOG)
+		Initilizing Remote DVS HOSTFS
+		DEBUG init_rh_client:1169: local_nodeid=0
+		DEBUG 582:dvk_open:104:
+		DEBUG 582:dvk_getdvsinfo:255:
+		DEBUG 582:dvk_getdvsinfo:259: ipc ret=0
+		DEBUG init_rh_client:1180: rhclient_nodeid=0
+		DEBUG init_rh_client:1181: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		DEBUG 582:dvk_getdcinfo:356: dcid=0
+		DEBUG 582:dvk_getdcinfo:360: ipc ret=0
+		DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		DEBUG init_rh_client:1193: flags=0 dc_nodes=1 dc_pid=622 dc_name=DC0
+		DEBUG 582:dvk_bind_X:1206: cmd=0 dcid=0 pid=582 endpoint=10 nodeid=-1
+		DEBUG 582:dvk_bind_X:1210: ipc ret=10 errno=0
+		DEBUG init_rh_client:1206: rhostfs bind rhc_ep=10
+		DEBUG 582:dvk_getprocinfo:1163: dcid=0 p_nr=10
+		DEBUG 582:dvk_getprocinfo:1167: ipc ret=0
+		DEBUG init_rh_client:1211: rhostfs CLIENT: nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1295 vpid=582 nodeid=0 name=linux
+		DEBUG 582:dvk_getprocinfo:1163: dcid=0 p_nr=1
+		DEBUG 582:dvk_getprocinfo:1167: ipc ret=0
+		DEBUG init_rh_client:1217: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=1293 vpid=1293 nodeid=0 name=rhostfsd
+		DEBUG init_rhostfs:1231: Remote DVS HOSTFS server is bound on endpoint:1
+		DEBUG init_rhostfs:1233: register_filesystem rhostfs_type rcode:0
+
+
+		root@node1:~# mount none /rhost -t rhostfs
+		DEBUG rhostfs_read_sb:1135: 
+		DEBUG rh_get_rootpath:488: 
+		DEBUG rmt_syscall:28: who=1 syscallnr=4100
+		DEBUG UML_sendrec_T:129: srcdst_ep=1
+		DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+		DEBUG UML_sendrec_T:151: Request: source=1200356800 type=4100 m1i1=1 m1i2=134652689 m1i3=4171936 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660 
+		up_thread
+		DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+		DEBUG dvk_thread:227: Request: source=1200356800 type=4100 m1i1=1 m1i2=134652689 m1i3=4171936 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660 
+		DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+		down_kernel
+		DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+		
+ ======================================================================================================
+20200822:
+
+
+EN UML:
+root@node1:~# mount none /rhost -t rhostfs
+DEBUG rhostfs_read_sb:1135:
+DEBUG rh_get_rootpath:488:
+DEBUG rmt_syscall:28: who=1 syscallnr=4100
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1214569920 type=4100 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1214569920 type=4100 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+DEBUG dvk_thread:231: Reply rcode=0: source=1 type=0 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+up_kernel
+DEBUG dvk_thread:219: READY to process requests
+down_thread
+DEBUG rmt_syscall:40: m_type=4100
+DEBUG rh_get_rootpath:492: dirp=/usr/src/dvs/vos/rootfs
+DEBUG rhostfs_fill_sb_common:1076: req_root=(null)
+DEBUG rhostfs_alloc_inode:254:
+DEBUG rhostfs_show_options:295:
+DEBUG rhostfs_show_options:300: root_path=/
+do_exit: local_nodeid:0
+root@node1:~# ls /rhost
+DEBUG rhostfs_permission:924:
+DEBUG inode_name:147:
+DEBUG dentry_name:132:
+DEBUG dentry_name:138: name= ÊH
+DEBUG __dentry_name:103:
+DEBUG rh_access_file:92: path=// r=1 w=0 x=0
+DEBUG rmt_access:60: filename=// mode=4
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1224998076 type=33 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1224998076 type=33 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+DEBUG dvk_thread:231: Reply rcode=0: source=1 type=0 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_kernel
+DEBUG dvk_thread:219: READY to process requests
+down_thread
+DEBUG rmt_syscall:40: m_type=33
+ERROR: rh_access_file:102: rcode=0
+DEBUG rhostfs_open:352: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG dentry_name:132:
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103:
+DEBUG rmt_open64:48: filename=// flags=0 mode=0
+DEBUG rmt_syscall:28: who=1 syscallnr=5
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1224998076 type=5 m1i1=3 m1i2=0 m1i3=0 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1224998076 type=5 m1i1=3 m1i2=0 m1i3=0 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+
+EN HOST 
+
+ rhostfs_svr.c:main:159:SYS_statfs->lcl_statfs
+ rhostfs_svr.c:main:161:Initialize the RHOSTFS own call vector to a safe default handler.
+#####
+ rhostfs_svr.c:main:168:RMT_get_rootpath->lcl_get_rootpath
+ rhostfs_svr.c:main:169:RMT_readdir->lcl_readdir
+ rhostfs_svr.c:main:170:RMT_opendir->lcl_opendir
+ rhostfs_svr.c:main:171:RMT_seekdir->lcl_seekdir
+ rhostfs_svr.c:main:172:RMT_closedir->lcl_closedir
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=4100 m2i1=1 m2i2=134652689 m2i3=5145712 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+ rhostfs_svr.c:main:199:call_nr=4100 rhs_who_e=-2
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 4
+ rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+DEBUG 716:dvk_vcopy:124: src_ep=1 dst_ep=-2 bytes=24
+DEBUG 716:dvk_vcopy:128: ipc ret=24
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=1 m2i2=134652689 m2i3=5145712 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=33 m2i1=3 m2i2=4 m2i3=1224998084 m2l1=1221238784 m2l2=0 m2p1=0x4
+ rhostfs_svr.c:main:199:call_nr=33 rhs_who_e=-2
+ rhostfs_svr.c:main:215:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=4
+DEBUG 716:dvk_vcopy:124: src_ep=-2 dst_ep=1 bytes=3
+DEBUG 716:dvk_vcopy:128: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=3 m2i2=4 m2i3=1224998084 m2l1=1221238784 m2l2=0 m2p1=0x4
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=5 m2i1=3 m2i2=0 m2i3=0 m2l1=1221238784 m2l2=0 m2p1=0x4
+ rhostfs_svr.c:main:199:call_nr=5 rhs_who_e=-2
+ rhostfs_svr.c:main:215:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open:53:len=3 flags=0 mode=0
+DEBUG 716:dvk_vcopy:124: src_ep=-2 dst_ep=1 bytes=3
+DEBUG 716:dvk_vcopy:128: ipc ret=3
+ rhostfs_lib.c:lcl_open:57:name=//
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=3 m2i1=3 m2i2=0 m2i3=0 m2l1=1221238784 m2l2=0 m2p1=0x4
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+
+	
+	
+-------------------------------------------------------------------------------
+20200824:
+		Se volvio nuevamente a utilizar dvk_xxxxx, es decir las IPC del HOST, sin usar el dvk_thread
+		
+		SERVER ES DESPERTADO DE SU RECEIVE POR EL SENDREC DEL CLIENTE
+		Aug 24 09:22:19 node0 kernel: [  891.296807] DEBUG SVR:sleep_proc:431: someone wakeups me: sem=0 p_rcode=0
+		
+		CLIENT ES DESPERTADO POR ERESTARTSYS(EINTR)
+		Aug 24 09:22:19 node0 kernel: [  891.296808] DEBUG CLT:sleep_proc:404: pid=CLT ret=-4
+		Aug 24 09:22:19 node0 kernel: [  891.296811] DEBUG CLT:sleep_proc:429: nr=10 endp=10 dcid=0 lpid=CLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+		Aug 24 09:22:19 node0 kernel: [  891.296812] DEBUG CLT:sleep_proc:431: someone wakeups me: sem=0 p_rcode=-4
+		Aug 24 09:22:19 node0 kernel: [  891.296815] DEBUG CLT:new_mini_sendrec:805: WUNLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.296818] DEBUG SVR:new_mini_receive:503: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.296820] ERROR: CLT:new_mini_sendrec:806: rcode=-4
+		
+		SERVER TRATA DE HACER UN VCOPY, PERO LO ENCUENTRA EN ESTADO RUNNING!! 
+		Aug 24 09:22:19 node0 kernel: [  891.320649] DEBUG SVR:SYSC_ipc:165: ipc_vcopy: call=3328 first=10 second=1225408512 third=1 fifth=3 
+		Aug 24 09:22:19 node0 kernel: [  891.320653] DEBUG SVR:ipc_vcopy:259: src_ep=10 dst_ep=1 bytes=3
+		Aug 24 09:22:19 node0 kernel: [  891.320656] DEBUG SVR:new_vcopy:1124: src_ep=10 dst_ep=1 bytes=3
+		Aug 24 09:22:19 node0 kernel: [  891.320659] DEBUG SVR:check_caller:585: caller_pid=SVR caller_tgid=SVR
+		Aug 24 09:22:19 node0 kernel: [  891.320661] DEBUG SVR:check_caller:621: WLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320663] DEBUG SVR:check_caller:651: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320664] DEBUG SVR:check_caller:654: dcid=0
+		Aug 24 09:22:19 node0 kernel: [  891.320665] DEBUG SVR:check_caller:658: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320667] DEBUG SVR:check_caller:662: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320668] DEBUG SVR:check_caller:668: caller_pid=SVR 
+		Aug 24 09:22:19 node0 kernel: [  891.320670] DEBUG SVR:new_vcopy:1138: RLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320671] DEBUG SVR:new_vcopy:1159: dcid=0
+		Aug 24 09:22:19 node0 kernel: [  891.320672] DEBUG SVR:new_vcopy:1169: RUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320674] DEBUG SVR:new_vcopy:1171: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320675] DEBUG SVR:new_vcopy:1194: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320676] DEBUG SVR:new_vcopy:1197: RLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320678] DEBUG SVR:new_vcopy:1216: (src_nr+dc_max_nr_tasks)=44
+		Aug 24 09:22:19 node0 kernel: [  891.320679] DEBUG SVR:new_vcopy:1222: RUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320680] DEBUG SVR:new_vcopy:1227: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320681] DEBUG SVR:new_vcopy:1228: LOCK PROCESSES IN ASCENDENT ORDER
+		Aug 24 09:22:19 node0 kernel: [  891.320683] DEBUG SVR:new_vcopy:1235: WLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320684] DEBUG SVR:new_vcopy:1235: WLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.320686] DEBUG SVR:new_vcopy:1239: CHECK FOR SOURCE/DESTINATION STATUS
+		Aug 24 09:22:19 node0 kernel: [  891.320687] DEBUG SVR:new_vcopy:1322: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320689] DEBUG SVR:new_vcopy:1331: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320690] DEBUG SVR:new_vcopy:1331: WUNLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.320692] ERROR: SVR:new_vcopy:1334: rcode=-324 << EDVSPROCSTS (_SIGN 324)  	/* Bad process status  */
+
+		Se modifico el kernel del HOST (y de UML tambien) para soportar el UNIKERNEL_BIND.
+		Se modifico el rhostfs_kernel.c   
+			rhc_ep = dvk_bind_X(UNIKERNEL_BIND, dcid, (pid_t) os_gettid(), RH_CLIENT_EP, LOCALNODE);
+
+		
+------------------------------------------------------------------------------
+20200825: 
+
+DESPUES DE MONTADO Y CUANDO SE HACE UN "ls /rhost" entre los logs sale lo siguiente
+	DEBUG rmt_readdir:466: ino_dire=0 pos_dire=0 len_dire=0 type_dire=0 name_dire=
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+	DEBUG rmt_readdir:466: ino_dire=1173490 pos_dire=1124126938 len_dire=16 type_dire=4 name_dire=..
+	DEBUG rmt_readdir:466: ino_dire=1056365 pos_dire=1195081311 len_dire=24 type_dire=8 name_dire=error.txt
+	DEBUG rmt_readdir:466: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+	DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+	DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+
+	PARECIERA SER QUE NO HAY ERROR DE M3IPC (rcode=-4 EINTR) sino otro error de interpretacion.
+	ESTO ES LO ULTIMO QUE HACE PARA LUEGO ENTRAR EN LOOP 
+		DEBUG rmt_syscall:28: who=1 syscallnr=4098
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=-1
+		ERROR: 2:dvk_sendrec_T:923: rcode=0
+		DEBUG rmt_syscall:41: m_type=4098
+		DEBUG rmt_readdir:458: d_ino=1173481 d_off=1779754718 d_reclen=16 d_type=4 d_name=.
+		DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+		DEBUG rh_read_dir:166: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+		DEBUG rh_read_dir:156: 
+		DEBUG rmt_readdir:449: 
+		
+		DEBUG rmt_syscall:28: who=1 syscallnr=4098
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=76
+		ERROR: rmt_syscall:38: rcode=324  			<< EDVSPROCSTS (_SIGN 324)  /* Bad process status  */
+		ERROR: rmt_readdir:455: rcode=-1
+		ERROR: rh_read_dir:160: rcode=-2
+		DEBUG rh_close_dir:245: 
+		DEBUG rmt_closedir:476: 
+
+---------------------------------------------------------------------------------------------------
+FUNCIONA EL BLOQUEO DE LA SIGALRM JUNTO CON SIGIO
+
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		sigaddset(&new_set, SIGALRM);
+		sigaddset(&new_set, SIGIO);
+		old_set = current->blocked;
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+	}
+	
+	/////////// AQUI VA EL LOOP DE ESPERA ////////////////////////////
+	
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+	}
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PROBLEMA. 
+	Todo el contenido del directorio /usr/src/dvs/vos/rootfs lo recibe el CLIENT pero:
+		1) no se detiene porque no sabe cual es el final
+		2) no se detiene porque reejecuta la misma dvk_sendrec() hacia el server y repite
+		
+
+===========================================================================================================
 ULTIMO_LOG 
 
-PROBLEMA: ERROR EN EL TAMAÑO DEL ARCHIVO, PERO ESO ESTA EN EL INODE, NO EN LA ENTRADA DE DIRECTORIO 
-			ERROR EN EL INODE 
-			
-PROBLEMA: LENTITUD EN EL INTERCAMBIO DE MENSAJES
-PROBLEMA: ERROR EN EL RECEIVE VER ABAJO 
+POSIBLE SOLUCION:
+1) PROBAR CON wait_event_killable en sleep_proc
 
-
-PROBLEMA DE LENTI
-
-
-root@node1:~# mount none /rhost -t rhostfs
-
-
-ERROR EN EL RECEIVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
-
-
-[17544.084419] DEBUG 13574:SYSC_ipc:163: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
-[17544.084421] DEBUG 13574:ipc_mini_receive:299: src_ep=31438
-[17544.084423] DEBUG 13574:check_caller:545: caller_pid=13574 caller_tgid=13574
-[17544.084424] DEBUG 13574:check_caller:581: WLOCK_PROC ep=1 count=0
-[17544.084426] DEBUG 13574:check_caller:610: WUNLOCK_PROC ep=1 count=0
-[17544.084723] DEBUG 13574:check_caller:613: dcid=0
-[17544.084737] DEBUG 12476:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=-1
-[17544.084739] DEBUG 12476:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
-[17544.084740] DEBUG 12476:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
-[17544.084742] DEBUG 12476:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
-[17544.084743] DEBUG 12476:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
-[17544.084745] DEBUG 12476:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
-[17544.084746] DEBUG 12476:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
-[17544.084748] DEBUG 12476:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
-[17544.084749] DEBUG 12476:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
-[17544.084752] DEBUG 12476:ipc_mini_sendrec:617: dcid=0 caller_pid=12476 caller_nr=30 srcdst_ep=1 
-[17544.085037] DEBUG 13574:check_caller:617: RLOCK_DC dc=0 count=0
-[17544.085097] DEBUG 13574:check_caller:621: RUNLOCK_DC dc=0 count=0
-[17544.085102] DEBUG 13574:check_caller:627: caller_pid=13574 
-[17544.085117] DEBUG 12476:ipc_mini_sendrec:622: SENDING HALF
-[17544.085119] DEBUG 12476:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=0. Enqueue at TAIL.
-[17544.085122] DEBUG 12476:sleep_proc2:729: BEFORE DOWN lpid=12476 p_sem=0 timeout=-1
-[17544.085123] DEBUG 12476:sleep_proc2:731: endpoint=30 flags=C
-[17544.085125] DEBUG 12476:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
-[17544.085127] DEBUG 12476:sleep_proc2:735: WUNLOCK_PROC ep=1 count=-1
-[17544.085128] DEBUG 12476:sleep_proc2:736: endpoint=30 flags=C
-[17544.085130] DEBUG 12476:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
-[17544.085134] DEBUG 13574:ipc_mini_receive:310: RLOCK_PROC ep=1 count=0
-[17544.085136] DEBUG 12476:sleep_proc2:745: endpoint=30 flags=C cpuid=3
-[17544.085139] DEBUG 13574:ipc_mini_receive:314: caller_nr=1 caller_ep=1 src_ep=31438 
-[17544.085141] DEBUG 13574:ipc_mini_receive:318: dcid=0
-[17544.085142] DEBUG 13574:ipc_mini_receive:322: RUNLOCK_PROC ep=1 count=-1
-[17544.085145] DEBUG 13574:ipc_mini_receive:324: RLOCK_DC dc=0 count=0
-[17544.085146] DEBUG 12476:sleep_proc2:747: WLOCK_PROC ep=1 count=0
-[17544.085148] DEBUG 12476:sleep_proc2:747: WLOCK_PROC ep=30 count=0
-[17544.085152] DEBUG 13574:ipc_mini_receive:327: RUNLOCK_DC dc=0 count=0
-[17544.085166] DEBUG 12476:sleep_proc2:769: pid=12476 ret=-512
-[17544.085169] DEBUG 12476:sleep_proc2:794: nr=30 endp=30 dcid=0 lpid=12476 p_cpumask=FFFFFFFF nodemap=1 name=linux 
-[17544.085170] DEBUG 12476:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
-
-[17544.085172] DEBUG 12476:ipc_mini_sendrec:743: WUNLOCK_PROC ep=1 count=-1
-[17544.085174] DEBUG 12476:ipc_mini_sendrec:747: removing 30 link from 1 list.  
-[17544.085175] DEBUG 12476:ipc_mini_sendrec:748: LIST_DEL				<<<<<<<<<<<<<<<<<<<<<<<<<<  ACA PARECE QUE REMUEVE DE LA LISTA 
-[17544.085178] DEBUG 13574:ipc_mini_receive:377: WLOCK_PROC ep=1 count=0
-[17544.085181] DEBUG 12476:ipc_mini_sendrec:764: WUNLOCK_PROC ep=30 count=-1
-[17544.085183] ERROR: 12476:ipc_mini_sendrec:765: rcode=-512
-[17544.085185] DEBUG 13574:ipc_mini_receive:424: WLOCK_PROC ep=30 count=0
-[17544.085188] DEBUG 13574:ipc_mini_receive:432: Found acceptable message from 30. Copy it and update status.
-[17544.085190] DEBUG 13574:ipc_mini_receive:435: LIST_DEL <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ACA OTRA VEZ REMUEVE DE LA LISTA!!!!!!!!!!!!!
-[17544.085249] DEBUG 12476:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
-[17544.085250] DEBUG 12476:ipc_mini_sendrec:523: srcdst_ep=1
-[17544.085251] DEBUG 12476:check_caller:545: caller_pid=12476 caller_tgid=12476
-[17544.085306] ------------[ cut here ]------------
-[17544.085490] WARNING: CPU: 2 PID: 13574 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
-[17544.085492] list_del corruption, e7c880b4->next is LIST_POISON1 (00000100)
-[17544.085493] Modules linked in: snd_ens1371 snd_ac97_codec iptable_filter ac97_bus gameport snd_rawmidi snd_seq_device snd_pcm fuse snd_timer snd joydev vmw_balloon serio_raw pcspkr evdev soundcore sg vmwgfx ttm drm_kms_helper drm shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sd_mod sr_mod cdrom ata_generic psmouse xhci_pci ehci_pci uhci_hcd xhci_hcd ehci_hcd usbcore pcnet32 mii mptspi ata_piix scsi_transport_spi mptscsih libata mptbase scsi_mod i2c_piix4
-[17544.145393] CPU: 2 PID: 13574 Comm: rhostfsd Not tainted 4.9.88 #39
-[17544.145396] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/02/2015
-[17544.148967]  e5eafe8c da328f02 e5eafea0 00000000 da067a3a da827c2c e5eafec0 00003506
-[17544.148981]  da827510 00000035 da347c00 00000035 00000009 da347c00 e7c880b4 ffffff94
-[17544.148986]  e7c881d8 e5eafeac da067aa6 00000009 00000000 e5eafea0 da827c2c e5eafec0
-[17544.148991] Call Trace:
-[17544.151505]  [<da328f02>] ? dump_stack+0x55/0x73
-[17544.157658]  [<da067a3a>] ? __warn+0xea/0x110
-[17544.157672]  [<da347c00>] ? __list_del_entry+0x60/0x100
-[17544.157675]  [<da347c00>] ? __list_del_entry+0x60/0x100
-[17544.157678]  [<da067aa6>] ? warn_slowpath_fmt+0x46/0x60
-[17544.157680]  [<da347c00>] ? __list_del_entry+0x60/0x100
-[17544.157682]  [<da347ca8>] ? list_del+0x8/0x20
-[17544.157978]  [<da27a10a>] ? ipc_mini_receive+0x70a/0x1940
-[17544.157999]  [<da279a00>] ? ipc_mini_send+0x1530/0x1530
-[17544.158002]  [<da263b81>] ? SyS_ipc+0x61/0x3a0
-[17544.158080]  [<da003728>] ? do_fast_syscall_32+0x98/0x160
-[17544.158512]  [<da638f42>] ? sysenter_past_esp+0x47/0x75
-[17544.158612] ---[ end trace 054f6ed7f44bcd13 ]---
-[17544.158617] DEBUG 13574:ipc_mini_receive:467: WUNLOCK_PROC ep=30 count=-1
-[17544.158621] DEBUG 13574:ipc_mini_receive:468: WUNLOCK_PROC ep=1 count=0
-[17544.158622] ERROR: 13574:ipc_mini_receive:469: rcode=-324
-
-
+2)		Utilizar el dvk_thread() para que no se bloquee el UML. 
+		Cuando la salida del sleep_procX() es por ERESTARTSYS y el proceso es de tipo #define MIS_BIT_UNIKERNEL	10
+		ignorarla o directamente reemplazar 
+					ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+	PROBLEMA: Como setear MIS_BIT_UNIKERNEL en p_misc_flags??
+	SOLUCION: Se deberia poner el el bind.
+	
 
 TODO: HABILITAR CONFIG_STATIC_LINK
 

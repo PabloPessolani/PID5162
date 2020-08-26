@@ -50,8 +50,8 @@
 
 #include "./dvk-mod/dvk_debug.h"
 #include "./dvk-mod/dvk_macros.h"
-#include "dvk_proto.h"
-#include "dvk_glo.h"
+#include "./dvk-mod/dvk_proto.h"
+#include "./dvk-mod/dvk_glo.h"
 //#include "dvk_ipcproto.h"
 
 extern atomic_t local_nodeid;

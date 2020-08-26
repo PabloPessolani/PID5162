@@ -397,7 +397,9 @@ void pr_start_serving(void)
 			continue ;
 		}else if(rcode == NONE) { /* proxies have not endpoint */
 			break;	
-		} if( rcode < 0) 
+		} else if(rcode == -EINTR) {
+			continue;
+		}if( rcode < 0) 
 			exit(EXIT_FAILURE);
 	} while	(rcode < OK);
 	
@@ -692,6 +694,8 @@ int ps_connect_to_remote(void)
 			continue ;
 		}else if(rcode == NONE) { /* proxies have not endpoint */
 			break;	
+		}else if(rcode == -EINTR) {
+			continue;
 		} if( rcode < 0) 
 			exit(EXIT_FAILURE);
 	} while	(rcode < OK);

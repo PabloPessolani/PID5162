@@ -1085,8 +1085,9 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 				ret = wait_event_interruptible(wqhead,(other_pid != rproxy_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, rproxy_ptr->p_usr.p_lpid);
 				}while(ret != 0);
-			WLOCK_PROC(rproxy_ptr);
-			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, rproxy_ptr->p_usr.p_lpid);
+		if( ret == -ERESTARTSYS) ret = -EINTR;
+		WLOCK_PROC(rproxy_ptr);
+			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, rproxy_ptr->p_usr.p_lpid, ret);
 		}
 		WUNLOCK_TASK(task_ptr);
 
@@ -1123,8 +1124,9 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 				ret = wait_event_interruptible(wqhead,(other_pid != sproxy_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, sproxy_ptr->p_usr.p_lpid);
 				}while(ret != 0);
+			if( ret == -ERESTARTSYS) ret = -EINTR;	
 			WLOCK_PROC(sproxy_ptr);
-			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, sproxy_ptr->p_usr.p_lpid);
+			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, sproxy_ptr->p_usr.p_lpid, ret);
 		}
 		WUNLOCK_TASK(task_ptr);
 
@@ -1143,7 +1145,7 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 	px_ptr->px_usr.px_flags = PROXIES_FREE;
 	WUNLOCK_PROXY(px_ptr);
 	
-	return(OK);
+	return(ret);
 }
 
 /*--------------------------------------------------------------*/
@@ -1289,15 +1291,17 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 		WUNLOCK_TASK(current);
 	// REMOTE: the SPROXY wakes up me when the message was sent.
 	// LOCAL: The WARN PROC wakes up me when the message was sent.
-	wait_event_interruptible(caller_ptr->p_wqhead, (caller_ptr->p_pseudosem >= 0));
+	ret = wait_event_interruptible(caller_ptr->p_wqhead, (caller_ptr->p_pseudosem >= 0));
+	if( ret == -ERESTARTSYS) ret = -EINTR;
+	DVKDEBUG(INTERNAL,"ret=%d\n",ret);
 	if( IT_IS_LOCAL(warn_ptr))
 		WLOCK_TASK(current);
 	WLOCK_DC(dc_ptr);
 	WLOCK_PROC2(caller_ptr, warn_ptr); 
 	cu_ptr = &caller_ptr->p_usr;
 	DVKDEBUG(DBGPARAMS, PROC_USR_FORMAT,PROC_USR_FIELDS(cu_ptr));
-	
-	return(OK);
+	if(ret < 0) ERROR_RETURN(ret);
+	return(ret);
 }
 
 /*----------------------------------------------------------------*/
@@ -1420,15 +1424,16 @@ void dc_release(struct kref *kref)
 /*			new_bind				*/
 /* Binds (an Initialize) a Linux process to the IPC Kernel	*/
 /* Who can call bind?:						*/
-/* - The main thread of a process to bind itself (mnx_bind)	*/
-/* - The child thread of a process to bind itself (mnx_tbind)	*/
-/* - A DVK process that bind a local process (mnx_lclbind)	*/
-/* - A DVK process that bind a remote process (mnx_rmtbind)	*/
+/* - The main thread of a process to bind itself (dvk_bind)	*/
+/* - The child thread of a process to bind itself (dvk_tbind)	*/
+/* - A DVK process that bind a local process (dvk_lclbind)	*/
+/* - A DVK process that bind a remote process (dvk_rmtbind)	*/
 /* - A DVK process that bind a local process that is a backup of*/
-/*	a remote active process (mnx_bkupbind). Then, with	*/
+/*	a remote active process (dvk_bkupbind). Then, with	*/
 /*	new_migrate, the backup process can be converted into   */
 /*	the primary process					*/
-/* -  A DVK process that bind a local REPLICATED process (mnx_repbind)	*/
+/* -  A DVK process that bind a local REPLICATED process (dvk_repbind)	*/
+/* -  A DVK process that bind a local UNIKERNEL process (dvk_ukbind)	*/
 /* Local process: proc = proc number				*/
 /* Remote  process: proc = endpoint 				*/
 /*--------------------------------------------------------------*/
@@ -1458,6 +1463,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 		case SELF_BIND:
 		case LCL_BIND:
 		case REPLICA_BIND:	
+		case UNIKERNEL_BIND:	
 			if( nodeid != LOCALNODE) ERROR_RETURN(EDVSBADNODEID);
 			nodeid = atomic_read(&local_nodeid);
 			p_nr = _ENDPOINT_P(endpoint);
@@ -1500,10 +1506,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 		}
 	} 
 
-	/* Initialize all process' descriptor fields */
-	init_proc_desc(proc_ptr, dcid, i);		
-	// DVKDEBUG(DBGPARAMS,"init_proc_desc finished\n");
-		
+
 	if( oper != RMT_BIND ) {	/* LOCAL PROCESS */
 		/*
 		* INPUT: process PID : param_pid
@@ -1521,30 +1524,19 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 			task_ptr = current;
 		}
 		
+		// IS the task already bound ?
+		if (task_ptr->task_proc != NULL){
+				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
+				WUNLOCK_PROC(proc_ptr);
+				ERROR_RUNLOCK_DC(dc_ptr, EDVSSLOTUSED);
+		}	
+		
 		//DVKDEBUG(DBGPARAMS,"task_ptr=%p\n", task_ptr);
 		vpid = pid_vnr(get_task_pid(task_ptr, PIDTYPE_PID));	
 		lpid = task_pid_nr(task_ptr);
 		tid  = task_ptr->tgid;
 		DVKDEBUG(INTERNAL,"param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
 					param_pid, lpid, vpid, tid);		
-#ifdef INUTIL
-		if( param_pid == vpid) {  /* dvk_bind MAIN THREAD SELF BIND */
-			task_ptr = current;	
-		}else{			/* CHILD  THREAD BIND */
-			if( tid != lpid){	/* A child thread has called bind for it main thread	*/
-				task_ptr = pid_task(find_pid_ns(proc_ptr->p_usr.p_lpid, dc_ptr->dc_pid_ns), PIDTYPE_PID);  
-				if(task_ptr == NULL ) {
-					UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
-					WUNLOCK_PROC(proc_ptr);
-					ERROR_RUNLOCK_DC(dc_ptr, EDVSBADPROC);
-				}
-			}else{
-				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
-				WUNLOCK_PROC(proc_ptr);
-				ERROR_RUNLOCK_DC(dc_ptr, EDVSBADPROC);
-			}
-		}
-#endif  // INUTIL
 
 		//DVKDEBUG(DBGPARAMS,"oper=%d\n", oper);
 		switch(oper) {
@@ -1564,6 +1556,10 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 				DVKDEBUG(INTERNAL,"REPLICA_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
 					param_pid, lpid, vpid, tid);	
 				break;
+			case UNIKERNEL_BIND:
+				DVKDEBUG(INTERNAL,"UNIKERNEL_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
+					param_pid, lpid, vpid, tid);	
+				break;
 			default:
 				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 				WUNLOCK_PROC(proc_ptr);
@@ -1571,6 +1567,10 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 				break;
 		}
 
+		/* Initialize all process' descriptor fields */
+		init_proc_desc(proc_ptr, dcid, i);		
+		// DVKDEBUG(DBGPARAMS,"init_proc_desc finished\n");
+		
 		UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 		WUNLOCK_PROC(proc_ptr);
 
@@ -1632,6 +1632,8 @@ setaffinity_ptr(param_pid, &pap_mask);
 			proc_ptr->p_usr.p_misc_flags	|= MIS_RMTBACKUP;/* It is a remote process' backup 	*/
 			proc_ptr->p_usr.p_nodeid	= nodeid;	/* The primary process node's ID 	*/	
 		}else{
+			if( oper == UNIKERNEL_BIND)
+				proc_ptr->p_usr.p_misc_flags |= MIS_UNIKERNEL;/* It is a remote process' backup 	*/
 			proc_ptr->p_usr.p_rts_flags	= PROC_RUNNING;	/* set to RUNNING STATE	*/
 			proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);
 			if( oper == REPLICA_BIND)
@@ -1673,6 +1675,10 @@ setaffinity_ptr(param_pid, &pap_mask);
 	 		WUNLOCK_PROC(proc_ptr);
 			ERROR_RUNLOCK_DC(dc_ptr,EDVSNOPROXY);
 		}
+
+		/* Initialize all process' descriptor fields */
+		init_proc_desc(proc_ptr, dcid, i);		
+		// DVKDEBUG(DBGPARAMS,"init_proc_desc finished\n");
 		
 		proc_ptr->p_usr.p_rts_flags = REMOTE;			
 		proc_ptr->p_usr.p_nodeid   = nodeid;
@@ -1707,7 +1713,7 @@ setaffinity_ptr(param_pid, &pap_mask);
 
 	endpoint = proc_ptr->p_usr.p_endpoint;
 	
-	/* Wake up the waiting process on mnx_wait4bind() */
+	/* Wake up the waiting process on dvk_wait4bind() */
 	if( oper == LCL_BIND || oper == REPLICA_BIND || oper == BKUP_BIND){
 		if( current != task_ptr ){
 			/* Wakes up it as if has in wait4bind state  */
@@ -1872,8 +1878,10 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 				ret = wait_event_interruptible(caller_ptr->p_wqhead,(other_pid != proc_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, proc_ptr->p_usr.p_lpid);
 			}while(ret != 0);
-			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, proc_ptr->p_usr.p_lpid);
-			return(OK);
+			if( ret == -ERESTARTSYS) ret = -EINTR;
+			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, proc_ptr->p_usr.p_lpid, ret);
+			if( ret < 0) ERROR_RETURN(ret);
+			return(ret);
 		}else{
 			WUNLOCK_TASK(task_ptr);
 		}
@@ -2292,12 +2300,14 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 				ret = wait_event_interruptible_timeout(current->task_wqh, 
 						(other_ptr->p_usr.p_rts_flags != SLOT_FREE), 
 						msecs_to_jiffies(timeout_ms));
-			}			
+			}
 		}
-		
+		if( ret == -ERESTARTSYS) ret = -EINTR;
+		DVKDEBUG(INTERNAL,"ret=%d\n",ret);
 		if (ret == 0)
 			ERROR_RETURN(EDVSTIMEDOUT);		/* timeout */
-			
+		if(ret = -EINTR)  	
+			ERROR_RETURN(ret);		/* timeout */
 	}
 
 	/*here cames only WAIT4_UNBIND */
@@ -2313,7 +2323,8 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 	sleep_proc(caller_ptr, timeout_ms);
 
 	WLOCK_PROC2(caller_ptr,other_ptr);	
-	ret = caller_ptr->p_rcode;
+	if (ret != -EINTR)
+		ret = caller_ptr->p_rcode;
 	if(ret != EDVSTIMEDOUT) {
 		clear_bit(BIT_WAITUNBIND, &caller_ptr->p_usr.p_rts_flags);
 		uproc_ptr = &caller_ptr->p_usr;
@@ -2799,6 +2810,7 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 
 //	ret = copy_from_user(px_ptr->px_usr.px_name, px_name, MAXPROXYNAME);
 	COPY_FROM_USER_PROC(ret, px_ptr->px_usr.px_name, px_name, MAXPROXYNAME);
+	
 	RCU_READ_LOCK;
 	px_ptr->px_pid_ns 	= task_active_pid_ns(current);
 	rproxy_ptr->p_pid_ns= task_active_pid_ns(current);
@@ -3092,7 +3104,7 @@ long do_dc_end(dc_desc_t *dc_ptr)
 		if(!test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)) {
 			if( IT_IS_LOCAL(proc_ptr) || test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags) ) {
 				task_ptr = proc_ptr->p_task;
-				ret = send_sig_info(SIGKILL , SEND_SIG_NOINFO, task_ptr);
+				ret = send_sig_info(SIGPIPE , SEND_SIG_NOINFO, task_ptr);
 				if(ret) ERROR_PRINT(ret);
 			}else{
 				do_unbind(dc_ptr, proc_ptr);

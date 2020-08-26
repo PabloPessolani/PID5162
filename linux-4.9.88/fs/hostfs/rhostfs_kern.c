@@ -1166,25 +1166,25 @@ static int init_rh_client(void)
 	dc_usr_t *dcu_ptr;
 	proc_usr_t *proc_ptr;  
 	
-	RHDEBUG("\n",local_nodeid);	
+	RHDEBUG("local_nodeid=%d\n",local_nodeid);	
 
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
 	
 	dvsu_ptr = &dvs;
 
-#ifdef CONFIG_DVKIOCTLIPC
+#ifdef CONFIG_DVKIPC
 	int rhclient_nodeid;
 	rhclient_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( rhclient_nodeid < 0) ERROR_RETURN(rhclient_nodeid);
 	RHDEBUG("rhclient_nodeid=%d\n",rhclient_nodeid);	
 	RHDEBUG( DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#else  // CONFIG_DVKIOCTLIPC
+#else  // CONFIG_DVKIPC
 	local_nodeid = dvk_getdvsinfo(dvsu_ptr);
 	if( local_nodeid < 0) ERROR_RETURN(local_nodeid);
 	RHDEBUG("local_nodeid=%d\n",local_nodeid);	
 	RHDEBUG( DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
-#endif // CONFIG_DVKIOCTLIPC
+#endif // CONFIG_DVKIPC
 	
 	dcu_ptr = &dcu;
 	rcode = dvk_getdcinfo(dcid, dcu_ptr);
@@ -1192,12 +1192,18 @@ static int init_rh_client(void)
 	RHDEBUG( DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	RHDEBUG( DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
 	
+#ifdef HABILITAR_CUANDO_SE_COMPILE_KERNEL_DE_HOST	
 	for( i = dcu_ptr->dc_nr_sysprocs - dcu_ptr->dc_nr_tasks;
 		i < dcu_ptr->dc_nr_procs - dcu_ptr->dc_nr_tasks; i++){
 		rhc_ep = dvk_tbind(dcid, i);
 		if( rhc_ep == i ) break; 
 	}
 	if( i == dcu_ptr->dc_nr_procs) ERROR_RETURN(EDVSSLOTUSED);
+#else // HABILITAR_CUANDO_SE_COMPILE_KERNEL_DE_HOST	
+#define RH_CLIENT_EP	10
+	rhc_ep = dvk_bind_X(UNIKERNEL_BIND, dcid, (pid_t) os_gettid(), RH_CLIENT_EP, LOCALNODE);
+//	rhc_ep = dvk_tbind(dcid, RH_CLIENT_EP);	
+#endif // HABILITAR_CUANDO_SE_COMPILE_KERNEL_DE_HOST	
 	RHDEBUG("rhostfs bind rhc_ep=%d\n",rhc_ep);
 	
 	proc_ptr = &rhc_proc;
@@ -1205,7 +1211,7 @@ static int init_rh_client(void)
 	if(rcode < 0) ERROR_RETURN(rcode);
 	RHDEBUG("rhostfs CLIENT: " PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
 	
-//	rhs_ep = RHOSTFS_PROC_NR; 
+	rhs_ep = RHOSTFS_PROC_NR; 
 	proc_ptr = &rhs_proc;
 	rcode = dvk_getprocinfo(dcid, rhs_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);

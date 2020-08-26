@@ -79,9 +79,11 @@ int local_nodeid = DVS_NO_INIT;
 
 #else  // ------------------------------- CONFIG_UML_DVK 
 
-#define DVK_IOCTL(x, y, z)	os_ioctl_generic(x, y, z)
-#define DVK_IPC(x1,x2,x3,x4,x5,x6) os_ipc(x1,x2,x3,x4,x5,x6)
+#pragma message ("DVK access from UML Kernel")
+#define DVK_IOCTL(x, y, z)			os_ioctl_generic(x, y, z)
+#define DVK_IPC(x1,x2,x3,x4,x5,x6)	os_ipc(x1,x2,x3,x4,x5,x6)
 
+#define LIBDEBUG(x,y,...)		DVKDEBUG(x,y,...)
 extern  char *dvk_dev;
 extern int local_nodeid;
 int errno;
@@ -1195,6 +1197,7 @@ long dvk_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
 #define dvk_rmtbind(dcid,name,endpoint,nodeid) 	dvk_bind_X(RMT_BIND, dcid, (int) name, endpoint, nodeid)
 #define dvk_bkupbind(dcid,pid,endpoint,nodeid) 	dvk_bind_X(BKUP_BIND, dcid, pid, endpoint, nodeid)
 #define dvk_replbind(dcid,pid,endpoint) 	dvk_bind_X(REPLICA_BIND, dcid, pid, endpoint, LOCALNODE)
+#define dvk_ukbind(dcid,pid,endpoint) 	    dvk_bind_X(UNIKERNEL_BIND, dcid, pid, endpoint, LOCALNODE)
 
 
 long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
