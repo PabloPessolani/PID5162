@@ -1201,7 +1201,7 @@ static int init_rh_client(void)
 	if( i == dcu_ptr->dc_nr_procs) ERROR_RETURN(EDVSSLOTUSED);
 #else // HABILITAR_CUANDO_SE_COMPILE_KERNEL_DE_HOST	
 #define RH_CLIENT_EP	10
-	rhc_ep = dvk_bind_X(UNIKERNEL_BIND, dcid, (pid_t) os_gettid(), RH_CLIENT_EP, LOCALNODE);
+	rhc_ep = dvk_bind_X(USERMODE_BIND, dcid, (pid_t) os_gettid(), RH_CLIENT_EP, LOCALNODE);
 //	rhc_ep = dvk_tbind(dcid, RH_CLIENT_EP);	
 #endif // HABILITAR_CUANDO_SE_COMPILE_KERNEL_DE_HOST	
 	RHDEBUG("rhostfs bind rhc_ep=%d\n",rhc_ep);

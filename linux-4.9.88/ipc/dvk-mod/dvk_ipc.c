@@ -86,7 +86,7 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
  	RUNLOCK_PROC(caller_ptr);
 
 send_replay: /* Return point for a migrated destination process */
-	WLOCK_ORDERED2(caller_ptr,dst_ptr);
+	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
 	/*------------------------------------------
 	 * check the destination process status
@@ -581,7 +581,7 @@ sendrec_replay:
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
-	WLOCK_ORDERED2(caller_ptr,srcdst_ptr);
+	WLOCK_ORDERED2(caller_nr, srcdst_nr, caller_ptr,srcdst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
 	DVKDEBUG(DBGPARAMS,"srcdst_nr=%d srcdst_ep=%d\n",srcdst_nr, srcdst_ptr->p_usr.p_endpoint);
 
@@ -722,6 +722,7 @@ sendrec_replay:
 			COPY_USR2USR_PROC(ret, caller_ep, caller_ptr, (char *) m_ptr, srcdst_ptr, (char *) srcdst_ptr->p_umsg, sizeof(message) );
 			if(srcdst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(srcdst_ptr, ret); 
+			
 			if(ret < 0) {
 				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
@@ -908,7 +909,7 @@ notify_replay:
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
-	WLOCK_ORDERED2(caller_ptr,dst_ptr);
+	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	DVKDEBUG(DBGPARAMS,"dst_nr=%d dst_ep=%d\n",dst_nr, dst_ptr->p_usr.p_endpoint);
 	
 	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs){
@@ -1227,12 +1228,12 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	RLOCK_DC(dc_ptr);
 	DVKDEBUG(GENERIC,"LOCK PROCESSES IN ASCENDENT ORDER\n");
 	if( src_ptr != caller_ptr && dst_ptr != caller_ptr ) {	/* Requester is a third process */
-		WLOCK_PROC3(caller_ptr,src_ptr,dst_ptr);
+		WLOCK_ORDERED3(caller_nr, src_nr, dst_nr, caller_ptr,src_ptr,dst_ptr);
 	}else {
 		if( dst_ptr != caller_ptr) {					/* requester is the source	*/
-			WLOCK_PROC2(caller_ptr,dst_ptr);
+			WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 		}else{
-			WLOCK_PROC2(caller_ptr,src_ptr);			/* requester is the destination */
+			WLOCK_ORDERED2(caller_nr, src_nr, caller_ptr,src_ptr);			/* requester is the destination */
 		}
 	}
 		
@@ -1852,7 +1853,7 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
  	RUNLOCK_PROC(caller_ptr);
 
 reply_replay: /* Return point for a migrated destination process */
-	WLOCK_ORDERED2(caller_ptr,dst_ptr);
+	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
 	/*------------------------------------------
 	 * check the destination process status

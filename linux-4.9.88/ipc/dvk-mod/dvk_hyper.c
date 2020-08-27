@@ -83,9 +83,10 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 			WUNLOCK_DVS;
 			ERROR_RETURN(ret);
 		}
+		d_ptr->d_flags &= (DVK_IPC|DVK_IOCTL|DVK_USERMODE);
 		my_flags = dvs_ptr->d_flags;
 		memcpy(dvs_ptr, d_ptr, sizeof(dvs_usr_t));
-		dvs_ptr->d_flags = my_flags;
+		dvs_ptr->d_flags |= my_flags;
 	}
 	
 	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
@@ -241,8 +242,8 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 	DVKDEBUG(INTERNAL,"Initializing DVS. Local node ID %d\n", nodeid);
 	atomic_set(&local_nodeid, nodeid);		/* LUEGO DEBE SER OBTENIDO DE LA CONFIGURACION */
 
-	set_bit(BIT_INITIALIZED, &dvs_ptr->d_flags);
-	DVKDEBUG(INTERNAL,"Ser BIT_INITIALIZED\n");
+	set_bit(DVS_BIT_INITIALIZED, &dvs_ptr->d_flags);
+	DVKDEBUG(INTERNAL,"Ser DVS_BIT_INITIALIZED\n");
 	WUNLOCK_DVS;
 
 	return(atomic_read(&local_nodeid));
@@ -258,7 +259,7 @@ asmlinkage long new_exit_unbind(long code)
 	struct proc *caller_ptr, *warn_ptr;
 	proc_usr_t *uproc_ptr;
 	struct proc *sproxy_ptr, *rproxy_ptr;
-	int rcode, px_nr, warn_nr;
+	int rcode, px_nr, warn_nr, caller_nr;
 	proxies_t *px_ptr;
 	dc_desc_t *dc_ptr;
 	dc_usr_t *dcu_ptr;
@@ -275,7 +276,7 @@ asmlinkage long new_exit_unbind(long code)
 	if( caller_ptr != NULL) { // bound process 
 		RLOCK_PROC(caller_ptr);
 		DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
-
+		caller_nr = caller_ptr->p_usr.p_nr;
 			/* UNBINDING PROXIES */
 		if(test_bit(MIS_BIT_PROXY, &caller_ptr->p_usr.p_misc_flags)) {
 			DVKDEBUG(INTERNAL," Exiting PROXY px_nr=%d lpid=%d\n", 
@@ -344,7 +345,7 @@ asmlinkage long new_exit_unbind(long code)
 								break;
 							}
 							WUNLOCK_PROC(caller_ptr);
-							WLOCK_PROC2(warn_ptr,caller_ptr);
+							WLOCK_ORDERED2(warn_nr, caller_nr, warn_ptr,caller_ptr);
 							/* destination process is dead */
 							if(warn_ptr->p_usr.p_rts_flags == SLOT_FREE){
 								WUNLOCK_PROC(warn_ptr);
@@ -1044,6 +1045,8 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 	int px_nr;
 	int i, other_pid, ret = OK;
 	wait_queue_head_t wqhead;
+	sigset_t new_set, old_set;
+
 
 	if( proc_ptr == NULL) ERROR_RETURN(EDVSBADPROC);
 
@@ -1081,12 +1084,36 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 			}
 			
 			WUNLOCK_PROC(rproxy_ptr);
+			
+			if(test_bit(MIS_BIT_USERMODE, &rproxy_ptr->p_usr.p_misc_flags)){
+				sigaddset(&new_set, SIGALRM);
+				sigaddset(&new_set, SIGIO);
+				old_set = current->blocked;
+				DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+					new_set.sig[0], old_set.sig[0]); 
+				 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+			}
+		
 			do {
 				ret = wait_event_interruptible(wqhead,(other_pid != rproxy_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, rproxy_ptr->p_usr.p_lpid);
-				}while(ret != 0);
-		if( ret == -ERESTARTSYS) ret = -EINTR;
-		WLOCK_PROC(rproxy_ptr);
+				DVKDEBUG(INTERNAL,"ret=%d\n",ret);
+				DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+					current->pending.signal.sig[0], current->pending.signal.sig[1]);
+				DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+					current->signal->shared_pending.signal.sig[0], 
+					current->signal->shared_pending.signal.sig[1]);
+				if( ret == -ERESTARTSYS){ 
+					ret = -EINTR;
+					break;
+				}
+			}while(ret < 0);
+
+			if(test_bit(MIS_BIT_USERMODE, &rproxy_ptr->p_usr.p_misc_flags)){
+				sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+			}
+			
+			WLOCK_PROC(rproxy_ptr);
 			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, rproxy_ptr->p_usr.p_lpid, ret);
 		}
 		WUNLOCK_TASK(task_ptr);
@@ -1120,12 +1147,35 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 				LOCAL_PROC_UP(sproxy_ptr, EDVSSHUTDOWN);
 			}			
 			WUNLOCK_PROC(sproxy_ptr);
+			
+			if(test_bit(MIS_BIT_USERMODE, &sproxy_ptr->p_usr.p_misc_flags)){
+				sigaddset(&new_set, SIGALRM);
+				sigaddset(&new_set, SIGIO);
+				old_set = current->blocked;
+				DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+					new_set.sig[0], old_set.sig[0]); 
+				 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+			}
+		
 			do {
 				ret = wait_event_interruptible(wqhead,(other_pid != sproxy_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, sproxy_ptr->p_usr.p_lpid);
-				}while(ret != 0);
-			if( ret == -ERESTARTSYS) ret = -EINTR;	
-			WLOCK_PROC(sproxy_ptr);
+				DVKDEBUG(INTERNAL,"ret=%d\n",ret);
+				DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+					current->pending.signal.sig[0], current->pending.signal.sig[1]);
+				DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+					current->signal->shared_pending.signal.sig[0], 
+					current->signal->shared_pending.signal.sig[1]);
+				if( ret == -ERESTARTSYS){ 
+					ret = -EINTR;
+					break;
+				}
+			}while(ret < 0);
+
+			if(test_bit(MIS_BIT_USERMODE, &sproxy_ptr->p_usr.p_misc_flags)){
+				sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+			}
+			
 			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, sproxy_ptr->p_usr.p_lpid, ret);
 		}
 		WUNLOCK_TASK(task_ptr);
@@ -1161,11 +1211,13 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 	message *m_ptr;
 	struct proc *sproxy_ptr;
 	int ret;
-	
-	
+	int caller_nr, warn_nr;
+		
 	DVKDEBUG(DBGPARAMS,"caller_ep=%d warn_ep=%d \n", 
 		caller_ptr->p_usr.p_endpoint, warn_ptr->p_usr.p_endpoint);
-			
+	caller_nr = caller_ptr->p_usr.p_nr;
+	warn_nr   = warn_ptr->p_usr.p_nr;
+	
 	wu_ptr = &warn_ptr->p_usr;
 	DVKDEBUG(DBGPARAMS, PROC_USR_FORMAT,PROC_USR_FIELDS(wu_ptr));
 	
@@ -1297,7 +1349,7 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 	if( IT_IS_LOCAL(warn_ptr))
 		WLOCK_TASK(current);
 	WLOCK_DC(dc_ptr);
-	WLOCK_PROC2(caller_ptr, warn_ptr); 
+	WLOCK_ORDERED2(caller_nr, warn_nr, caller_ptr, warn_ptr); 
 	cu_ptr = &caller_ptr->p_usr;
 	DVKDEBUG(DBGPARAMS, PROC_USR_FORMAT,PROC_USR_FIELDS(cu_ptr));
 	if(ret < 0) ERROR_RETURN(ret);
@@ -1433,7 +1485,7 @@ void dc_release(struct kref *kref)
 /*	new_migrate, the backup process can be converted into   */
 /*	the primary process					*/
 /* -  A DVK process that bind a local REPLICATED process (dvk_repbind)	*/
-/* -  A DVK process that bind a local UNIKERNEL process (dvk_ukbind)	*/
+/* -  A DVK process that bind a local USERMODE process (dvk_umbind)	*/
 /* Local process: proc = proc number				*/
 /* Remote  process: proc = endpoint 				*/
 /*--------------------------------------------------------------*/
@@ -1463,7 +1515,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 		case SELF_BIND:
 		case LCL_BIND:
 		case REPLICA_BIND:	
-		case UNIKERNEL_BIND:	
+		case USERMODE_BIND:	
 			if( nodeid != LOCALNODE) ERROR_RETURN(EDVSBADNODEID);
 			nodeid = atomic_read(&local_nodeid);
 			p_nr = _ENDPOINT_P(endpoint);
@@ -1505,7 +1557,6 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 			ERROR_RUNLOCK_DC(dc_ptr,EDVSSLOTUSED);
 		}
 	} 
-
 
 	if( oper != RMT_BIND ) {	/* LOCAL PROCESS */
 		/*
@@ -1556,8 +1607,8 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 				DVKDEBUG(INTERNAL,"REPLICA_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
 					param_pid, lpid, vpid, tid);	
 				break;
-			case UNIKERNEL_BIND:
-				DVKDEBUG(INTERNAL,"UNIKERNEL_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
+			case USERMODE_BIND:
+				DVKDEBUG(INTERNAL,"USERMODE_BIND param_pid=%ld lpid=%ld vpid=%ld tid=%d\n", 
 					param_pid, lpid, vpid, tid);	
 				break;
 			default:
@@ -1632,8 +1683,10 @@ setaffinity_ptr(param_pid, &pap_mask);
 			proc_ptr->p_usr.p_misc_flags	|= MIS_RMTBACKUP;/* It is a remote process' backup 	*/
 			proc_ptr->p_usr.p_nodeid	= nodeid;	/* The primary process node's ID 	*/	
 		}else{
-			if( oper == UNIKERNEL_BIND)
-				proc_ptr->p_usr.p_misc_flags |= MIS_UNIKERNEL;/* It is a remote process' backup 	*/
+			if( (oper == USERMODE_BIND)
+			||  (test_bit(DVS_BIT_USERMODE, &dvs.d_flags)))  {
+				proc_ptr->p_usr.p_misc_flags |= MIS_USERMODE;/* It is a USERMODE VOS or PROCESS	*/
+			}
 			proc_ptr->p_usr.p_rts_flags	= PROC_RUNNING;	/* set to RUNNING STATE	*/
 			proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);
 			if( oper == REPLICA_BIND)
@@ -1750,7 +1803,7 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 	dc_desc_t *dc_ptr;
 	long unsigned int *bm_ptr;
 	struct proc *proc_ptr,  *caller_ptr;
-	int p_nr, nodeid, other_pid;
+	int p_nr, nodeid, other_pid, caller_nr;
 	proc_usr_t *uproc_ptr;
 	struct task_struct *task_ptr = NULL;
 	int ret = OK;
@@ -1820,7 +1873,10 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 				}
 				/*  LOCK_TASK(task_ptr) same as LOCK_TASK(current) already locked */
 			}
-		}else{
+		}else{ //  caller_ptr != proc_ptr
+			RLOCK_PROC(caller_ptr);
+			caller_nr = caller_ptr->p_usr.p_nr;
+			RUNLOCK_PROC(caller_ptr);
 			task_ptr = proc_ptr->p_task;
 			RUNLOCK_PROC(proc_ptr);
 			WUNLOCK_TASK(current);
@@ -1836,7 +1892,11 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 
 	/* LOCAL process enter here with task struct locked */
 	WLOCK_DC(dc_ptr);
-	WLOCK_PROC(proc_ptr);
+	if( caller_nr != p_nr ){
+		WLOCK_PROC(proc_ptr);
+	}else{ 
+		WLOCK_ORDERED2(caller_nr, p_nr, caller_ptr, proc_ptr);
+	}
 //	set_bit(BIT_NO_MAP, &caller_ptr->p_usr.p_rts_flags);
 	ret = do_unbind(dc_ptr, proc_ptr);
 	/* WARNING!! from here, all proc_ptr fields were CLEARED !!! */
@@ -1853,16 +1913,20 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 				uproc_ptr = &caller_ptr->p_usr;
 				DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
 				sleep_proc(caller_ptr, timeout_ms);
+				if( caller_nr != p_nr )
+					WUNLOCK_PROC(caller_ptr);
 				ERROR_RETURN(caller_ptr->p_rcode);
 			}
 		} 
 		WUNLOCK_PROC(proc_ptr);
+		if( caller_nr != p_nr )
+			WUNLOCK_PROC(caller_ptr);
 		WUNLOCK_DC(dc_ptr);
 		if(ret)	ERROR_RETURN(ret);
 		return(OK);
 	}
 	
-	if( atomic_read(&local_nodeid) == nodeid ) {
+	if( atomic_read(&local_nodeid) == nodeid ) { // LOCAL 
 		if ( caller_ptr != proc_ptr) {
 			WUNLOCK_PROC(proc_ptr);	
 			WUNLOCK_DC(dc_ptr);
@@ -1874,11 +1938,15 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 //			schedule();				
 // ANALIZAR si el proceso que se esta matando es HIJO del MATADOR de tal modo de hacer el  sys_wait4_ptr necesario para no quedar ZOMBIE.
 			/* Waits until the target process unbinds by itself after sending it a SIGPIPE */
+			WUNLOCK_PROC(caller_ptr);
 			do {
 				ret = wait_event_interruptible(caller_ptr->p_wqhead,(other_pid != proc_ptr->p_usr.p_lpid));
 				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, proc_ptr->p_usr.p_lpid);
-			}while(ret != 0);
-			if( ret == -ERESTARTSYS) ret = -EINTR;
+				if( ret == -ERESTARTSYS) {
+					ret = -EINTR;
+					break;
+				}
+			}while(ret < 0);
 			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, proc_ptr->p_usr.p_lpid, ret);
 			if( ret < 0) ERROR_RETURN(ret);
 			return(ret);
@@ -1888,6 +1956,8 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 	}
 	
 	WUNLOCK_PROC(proc_ptr);
+	if( caller_nr != p_nr )
+		WUNLOCK_PROC(caller_ptr);
 	WUNLOCK_DC(dc_ptr);
 
 	return(OK);
@@ -2175,6 +2245,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 	int dcid;
 	int caller_pid, caller_nr, caller_ep, other_nr;
 	struct task_struct *task_ptr;
+	sigset_t new_set, old_set;
 	
 	DVKDEBUG(INTERNAL,"oper=%d other_ep=%d timeout_ms=%ld\n", 
 		oper, other_ep, timeout_ms);
@@ -2239,7 +2310,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 			other_ptr   = NBR2PTR(dc_ptr, other_nr);
 			RUNLOCK_DC(dc_ptr);	
 
-			WLOCK_PROC2(caller_ptr,other_ptr);	
+			WLOCK_ORDERED2(caller_nr, other_nr, caller_ptr,other_ptr);	
 			if( !test_bit(BIT_SLOT_FREE, &other_ptr->p_usr.p_rts_flags)){
 				if( oper == WAIT_BIND) {	
 					if( other_ptr->p_usr.p_endpoint != other_ep){
@@ -2281,33 +2352,50 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		WUNLOCK_TASK(current);
 
 		/* here cames only WAIT_BIND */
-		if(other_ep == SELF){
-			DVKDEBUG(INTERNAL,"Self process bind waiting\n");
-			if( timeout_ms < 0) {
-				ret = wait_event_interruptible(current->task_wqh, 
-						(current->task_proc != NULL));
-			} else {
-				ret = wait_event_interruptible_timeout(current->task_wqh, 
-						(current->task_proc != NULL), 
-						msecs_to_jiffies(timeout_ms));
-			}
-		}else{
-			DVKDEBUG(INTERNAL,"Other process bind waiting\n");
-			if( timeout_ms < 0) {
-				ret = wait_event_interruptible(current->task_wqh, 
-						(other_ptr->p_usr.p_rts_flags != SLOT_FREE));
-			} else {
-				ret = wait_event_interruptible_timeout(current->task_wqh, 
-						(other_ptr->p_usr.p_rts_flags != SLOT_FREE), 
-						msecs_to_jiffies(timeout_ms));
-			}
+		if(test_bit(DVS_BIT_USERMODE, &dvs.d_flags)){
+			sigaddset(&new_set, SIGALRM);
+			sigaddset(&new_set, SIGIO);
+			old_set = current->blocked;
+			DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+				new_set.sig[0], old_set.sig[0]); 
+			 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 		}
-		if( ret == -ERESTARTSYS) ret = -EINTR;
-		DVKDEBUG(INTERNAL,"ret=%d\n",ret);
-		if (ret == 0)
-			ERROR_RETURN(EDVSTIMEDOUT);		/* timeout */
-		if(ret = -EINTR)  	
-			ERROR_RETURN(ret);		/* timeout */
+		do {
+			if(other_ep == SELF){
+				DVKDEBUG(INTERNAL,"Self process bind waiting\n");
+				if( timeout_ms < 0) {
+					ret = wait_event_interruptible(current->task_wqh, 
+							(current->task_proc != NULL));
+				} else {
+					ret = wait_event_interruptible_timeout(current->task_wqh, 
+							(current->task_proc != NULL), 
+							msecs_to_jiffies(timeout_ms));
+				}
+			}else{
+				DVKDEBUG(INTERNAL,"Other process bind waiting\n");
+				if( timeout_ms < 0) {
+					ret = wait_event_interruptible(current->task_wqh, 
+							(other_ptr->p_usr.p_rts_flags != SLOT_FREE));
+				} else {
+					ret = wait_event_interruptible_timeout(current->task_wqh, 
+							(other_ptr->p_usr.p_rts_flags != SLOT_FREE), 
+							msecs_to_jiffies(timeout_ms));
+				}
+			}
+			DVKDEBUG(INTERNAL,"ret=%d\n",ret);
+			DVKDEBUG(INTERNAL,"pending: sig[0]:0x%08x, sig[1]:0x%08x\n", 
+				current->pending.signal.sig[0], current->pending.signal.sig[1]);
+			DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
+				current->signal->shared_pending.signal.sig[0], 
+				current->signal->shared_pending.signal.sig[1]);	
+			if( ret == -ERESTARTSYS) ret = -EINTR;
+			if (ret == 0) ret = EDVSTIMEDOUT;		/* timeout */
+		}while(ret < 0);
+		if(test_bit(DVS_BIT_USERMODE, &dvs.d_flags)){
+			sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		}
+		if( ret < 0) ERROR_RETURN(ret);
+		return(ret);
 	}
 
 	/*here cames only WAIT4_UNBIND */
@@ -2322,7 +2410,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 
 	sleep_proc(caller_ptr, timeout_ms);
 
-	WLOCK_PROC2(caller_ptr,other_ptr);	
+	WLOCK_ORDERED2(caller_nr, other_nr, caller_ptr,other_ptr);	
 	if (ret != -EINTR)
 		ret = caller_ptr->p_rcode;
 	if(ret != EDVSTIMEDOUT) {
@@ -2769,7 +2857,9 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
 	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
 	set_sys_bit(sproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_GET2RMT);
-		
+	if( test_bit(DVS_BIT_USERMODE, &dvs.d_flags))  {
+			sproxy_ptr->p_usr.p_misc_flags |= MIS_USERMODE;/* It is a USERMODE VOS or PROCESS	*/
+	}
 	sp_ptr = &sproxy_ptr->p_usr;
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(sp_ptr));
 	WUNLOCK_TASK(stask_ptr);
@@ -2801,6 +2891,9 @@ asmlinkage long new_proxies_bind(char *px_name, int px_nr, int spid, int rpid, i
 	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYBIND); 
 	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PROXYUNBIND); 
 	set_sys_bit(rproxy_ptr->p_priv.priv_usr.priv_dvk_allowed,DVK_PUT2LCL);
+	if( test_bit(DVS_BIT_USERMODE, &dvs.d_flags))  {
+			rproxy_ptr->p_usr.p_misc_flags |= MIS_USERMODE;/* It is a USERMODE VOS or PROCESS	*/
+	}
 	rp_ptr = &rproxy_ptr->p_usr;
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(rp_ptr));
 	WUNLOCK_TASK(rtask_ptr);

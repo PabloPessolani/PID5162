@@ -183,8 +183,10 @@ int main ( int argc, char *argv[] )
 		* Receive Request 
 	 	*------------------------------------*/
 		RHSDEBUG("RHOSTFSD is waiting for requests\n");
-		rcode = dvk_rcvrqst(&rhs_m);
-		RHSDEBUG("dvk_rcvrqst rcode=%d\n", rcode);
+//		rcode = dvk_rcvrqst(&rhs_m);
+//		RHSDEBUG("dvk_rcvrqst rcode=%d\n", rcode);
+		rcode = dvk_receive(ANY, &rhs_m);
+		RHSDEBUG("dvk_receive rcode=%d\n", rcode);
 		if(rcode < 0 ) ERROR_EXIT(rcode);
 
 		m_ptr = &rhs_m;
@@ -223,7 +225,8 @@ int main ( int argc, char *argv[] )
 		if (result != EDVSDONTREPLY) {
   	  		m_ptr->m_type = result;		/* report status of call */
 			RHSDEBUG("REPLY msg:"MSG2_FORMAT,MSG2_FIELDS(m_ptr));
-    		rcode = dvk_reply_T(rhs_m.m_source, (long) &rhs_m, TIMEOUT_RMTCALL);
+//    		rcode = dvk_reply_T(rhs_m.m_source, (long) &rhs_m, TIMEOUT_RMTCALL);
+    		rcode = dvk_send_T(rhs_m.m_source, (long) &rhs_m, TIMEOUT_RMTCALL);
 			if( rcode < 0) ERROR_PRINT(rcode);
 		}
 	}		

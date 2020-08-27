@@ -159,18 +159,18 @@ DVKDEBUG(DBGPROCSEM,"BEFORE UP lpid=%d p_sem=%d\n",proc->p_usr.p_lpid,proc->p_ps
 		}\
 	}while(0); 
 
-/* !!!! ATENTION !!! p MUST BE WLOCKED !!! */
-#define WLOCK_ORDERED2(p,q)		\
+#define WLOCK_ORDERED2(a,b,ptr,qtr)		\
 do {\
-	if( p->p_usr.p_nr < q->p_usr.p_nr) { \
-		WLOCK_PROC(q);\
+	if( a < b) { \
+		WLOCK_PROC(ptr);\
+		WLOCK_PROC(qtr);\
 	}else{\
-		WUNLOCK_PROC(p);\
-		WLOCK_PROC(q);\
-		WLOCK_PROC(p);\
+		WLOCK_PROC(qtr);\
+		WLOCK_PROC(ptr);\
 	}\
 }while(0);
 
+#ifdef ANULADO
 #define WLOCK_PROC2(p,q)		\
 do {\
 	if( p->p_usr.p_nr < q->p_usr.p_nr) { \
@@ -181,6 +181,7 @@ do {\
 		WLOCK_PROC(p);\
 	}\
 }while(0);
+#endif // ANULADO
 
 #define WUNLOCK_PROC2(p,q)	\
 do {\
@@ -188,23 +189,23 @@ do {\
 	WUNLOCK_PROC(q);\
 }while(0); 
 
-#define WLOCK_PROC3(p,q,r)		\
+#define WLOCK_ORDERED3(p,q,r,ptr, qtr, rtr)		\
 do {\
-	if( p->p_usr.p_nr < q->p_usr.p_nr) { \
-		if( r->p_usr.p_nr < q->p_usr.p_nr) {\
-			WLOCK_PROC2(p,r);\
-			WLOCK_PROC(q);\
+	if( p < q) { \
+		if( r < q) {\
+			WLOCK_ORDERED2(p,r, ptr, rtr);\
+			WLOCK_PROC(qtr);\
 		}else{ \
-			WLOCK_PROC2(p,q);\
-			WLOCK_PROC(r);\
+			WLOCK_ORDERED2(p,q, ptr, qtr);\
+			WLOCK_PROC(rtr);\
 		}\
 	}else{\
-		if( r->p_usr.p_nr < p->p_usr.p_nr) {\
-			WLOCK_PROC2(q,r);\
-			WLOCK_PROC(p);\
+		if( r < p) {\
+			WLOCK_ORDERED2(q,r, qtr, rtr);\
+			WLOCK_PROC(ptr);\
 		}else{ \
-			WLOCK_PROC2(q,p);\
-			WLOCK_PROC(r);\
+			WLOCK_ORDERED2(q,p, qtr, ptr);\
+			WLOCK_PROC(rtr);\
 		}\
 	}\
 }while(0);

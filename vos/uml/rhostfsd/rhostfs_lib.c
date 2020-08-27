@@ -75,7 +75,8 @@ long lcl_access(message *mptr)
 	RHSDEBUG("name=%s\n", name);
 
 	rcode = access(name, mode);
-	if( rcode < 0) ERROR_RETURN(-errno);
+	if( rcode < 0)
+		ERROR_RETURN(-errno);
 	return(rcode);
 }
 
@@ -686,6 +687,11 @@ int lcl_seekdir(message *mptr)
 	return(OK);
 }
 
+//       If the end of the directory stream is reached, NULL is returned and
+//       errno is not changed.  If an error occurs, NULL is returned and errno
+//       is set appropriately.  To distinguish end of stream from an error,
+//       set errno to zero before calling readdir() and then check the value
+//       of errno if NULL is returned.
 int lcl_readdir(message *mptr)
 {
 	message m;
@@ -695,15 +701,19 @@ int lcl_readdir(message *mptr)
 	RHSDEBUG("\n");
 	DIR *dirp = mptr->m1_p1;
 	RHSDEBUG("dirp=%p\n", dirp);
-
+	
+	errno = 0;
 	dire_ptr = readdir(dirp);
-	if( dire_ptr == NULL) ERROR_RETURN(-errno);
-	RHSDEBUG(DIRE_FORMAT, DIRE_FIELDS(dire_ptr));
+	if( dire_ptr == NULL && errno != 0) ERROR_RETURN(-errno);
 
-	rcode = dvk_vcopy(rhs_ep, dire_ptr, mptr->m_source, mptr->m1_p2, sizeof(struct dirent));
-	if( rcode < 0) ERROR_RETURN(rcode);
+	if(  dire_ptr != NULL ){
+		RHSDEBUG(DIRE_FORMAT, DIRE_FIELDS(dire_ptr));
+		rcode = dvk_vcopy(rhs_ep, dire_ptr, mptr->m_source, 
+						mptr->m1_p2, sizeof(struct dirent));
+		if( rcode < 0) ERROR_RETURN(rcode);
+	}
 	mptr->m1_p3 = dire_ptr;
-	return(rcode);
+	ERROR_RETURN(0); // End of directory
 }
 
 int lcl_closedir(message *mptr)

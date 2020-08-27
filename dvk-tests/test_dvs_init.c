@@ -24,11 +24,15 @@ void  main ( int argc, char *argv[] )
 	dvs_usr_t  *d_ptr; 
 extern char *optarg;
 extern int optind, optopt, opterr;
-
+	unsigned long flags;
 	nodeid = (-1);
 
-	while ((c = getopt(argc, argv, "n:V:N:P:T:S:B:L:D:C:")) != -1) {
+	while ((c = getopt(argc, argv, "un:V:N:P:T:S:B:L:D:C:")) != -1) {
 		switch(c) {
+			case 'u': 
+				dvs.d_flags  |= DVK_USERMODE;
+				printf("DVK_USERMODE\n");
+				break;
 			case 'n':
 				nodeid = atoi(optarg);
 				if( nodeid < 0 || nodeid >= NR_NODES) {
@@ -100,7 +104,7 @@ extern int optind, optopt, opterr;
 				strncpy(dvs.d_name, optarg, MAXPROCNAME-1);
 				break;
 			default:
-				fprintf (stderr,"usage: %s \n\t [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
+				fprintf (stderr,"usage: %s \n\t [-u] [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
 						" [-B max_copybuf] [-L max_copylen] [-S nr_sysprocs] [-D dbglvl] \n"
 						, argv[0]);
 				exit(EXIT_FAILURE);
@@ -109,7 +113,7 @@ extern int optind, optopt, opterr;
 	
 
 	if( argv[optind] != NULL || nodeid == (-1)){
-		fprintf (stderr,"usage: %s \n\t [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
+		fprintf (stderr,"usage: %s \n\t  [-u] [-C dvs_name] [-n nodeid] [-V nr_dcs] [-N nr_nodes] [-P nr_procs] [-T nr_tasks] \n\t"
 				" [-B max_copybuf] [-L max_copylen] [-S nr_sysprocs] [-D dbglvl] \n"
 				, argv[0]);
 		exit(EXIT_FAILURE);

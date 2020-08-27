@@ -27,8 +27,8 @@ void  main ( int argc, char *argv[] )
 	if (ret < 0)  ERROR_EXIT(ret);
 
 	pid = getpid();
-    printf(" dvk_ukbind (%d): p_nr=%d DC%d \n", pid, p_nr,dcid);
-	ep = dvk_ukbind(dcid,pid,p_nr);
+    printf(" dvk_umbind (%d): p_nr=%d DC%d \n", pid, p_nr,dcid);
+	ep = dvk_umbind(dcid,pid,p_nr);
 	if( ep < EDVSERRCODE) ERROR_EXIT(ep);
 	sleep(60);
 	exit(0);

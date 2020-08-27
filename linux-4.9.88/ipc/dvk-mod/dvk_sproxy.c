@@ -80,6 +80,7 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	proxies_t *px_ptr;
 	cmd_t *c_ptr;
 	message *m_ptr;
+	int src_nr, dst_nr, xpp_nr;
 
 	DVKDEBUG(GENERIC,"\n");
 
@@ -137,6 +138,7 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			RUNLOCK_PROC(sproxy_ptr);
 			WLOCK_PROC(xpp);
 			WLOCK_PROC(sproxy_ptr);
+			xpp_nr = xpp->p_usr.p_nr;
 
 			DVKDEBUG(GENERIC,"Found a message. p_endpoint=%d c_cmd=%d\n",
 				xpp->p_usr.p_endpoint,xpp->p_rmtcmd.c_cmd);
@@ -234,7 +236,9 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			*/
 			if( IT_IS_LOCAL(xpp) ) {
 				dst_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_dst);
-				WLOCK_ORDERED2(xpp, dst_ptr);							
+				dst_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_dst);
+				WUNLOCK_PROC(xpp);					
+				WLOCK_ORDERED2(xpp_nr, dst_nr, xpp, dst_ptr);							
 				if( h_ptr->c_dnode != dst_ptr->p_usr.p_nodeid ){ /* It means that the dest process has migrated */
 					WUNLOCK_PROC(dst_ptr);		
 					/*
@@ -275,7 +279,9 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
 						/* Other  process could be in the same slot  */
 						/*!! the source of the ACK was the destination of the COPY !!*/
-						WLOCK_ORDERED2(xpp, src_ptr);							
+						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
+						WUNLOCK_PROC(xpp);
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);							
 						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
 							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
 						}else{
@@ -290,7 +296,9 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						/*  Copy the payload from source's user space to proxy's user space */
 						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
 						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
-						WLOCK_ORDERED2(xpp, src_ptr);
+						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+						WUNLOCK_PROC(xpp);
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);
 						/* Other  process could be in the same slot  */
 						/*!! the source of the DATA is the source of the COPY !!*/
 						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
@@ -320,7 +328,9 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						/*  Copy the payload from source's user space to proxy's user space */
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
 						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
-						WLOCK_ORDERED2(xpp, src_ptr);	
+						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+						WUNLOCK_PROC(xpp);			
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);	
 						/* Other  process could be in the same slot  */
 						/*!! the source of the RQST is the source of the COPY !!*/
 						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
@@ -349,8 +359,10 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);				
-						WLOCK_ORDERED2(xpp, src_ptr);						
+						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+						WUNLOCK_PROC(xpp);
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);						
 						/* Other  process could be in the same slot  */
 						/* !!! The source of the ACK was the source of the copy  !!!*/
 						if( src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
@@ -368,8 +380,11 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
 						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);				
 						dst_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
+						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+						dst_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+
 						WUNLOCK_PROC(xpp);
-						WLOCK_PROC3(xpp, src_ptr, dst_ptr);	
+						WLOCK_ORDERED3(xpp_nr, src_nr, dst_nr, xpp, src_ptr, dst_ptr);	
 						/* Other  process could be in the same slot  */
 						/*!!! the source of the ACK was the destination of the copy !!!*/
 						if( (dst_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) 
@@ -416,7 +431,9 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						/*!! the source of the REQUEST is the source of the COPY !!*/				
 						if(src_ptr != xpp) { 
-							WLOCK_ORDERED2(xpp, src_ptr);
+							src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
+							WUNLOCK_PROC(xpp);	
+							WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);
 							if(xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes > NODE2MAXBYTES(xpp->p_rmtcmd.c_dnode))
 								ret = EDVS2BIG;
 							if (ret == OK) {

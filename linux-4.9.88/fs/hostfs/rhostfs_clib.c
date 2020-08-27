@@ -455,8 +455,13 @@ struct dirent *rmt_readdir(void *dirp)
 		ERROR_PRINT(rcode);
 		return(NULL);
 	}
+	if( m.m1_p3 == NULL) {
+		RHDEBUG("END OF DIR\n");
+		rmt_errno = 0;
+		return(NULL);
+	}
 	RHDEBUG(DIRE_FORMAT, DIRE_FIELDS(udire_ptr));
-
+	
 	udi_ptr =  &UML_di;
 	udi_ptr->ino_dire  = udire_ptr->d_ino;
 	udi_ptr->pos_dire  = udire_ptr->d_off;

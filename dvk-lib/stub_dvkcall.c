@@ -1197,7 +1197,7 @@ long dvk_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
 #define dvk_rmtbind(dcid,name,endpoint,nodeid) 	dvk_bind_X(RMT_BIND, dcid, (int) name, endpoint, nodeid)
 #define dvk_bkupbind(dcid,pid,endpoint,nodeid) 	dvk_bind_X(BKUP_BIND, dcid, pid, endpoint, nodeid)
 #define dvk_replbind(dcid,pid,endpoint) 	dvk_bind_X(REPLICA_BIND, dcid, pid, endpoint, LOCALNODE)
-#define dvk_ukbind(dcid,pid,endpoint) 	    dvk_bind_X(UNIKERNEL_BIND, dcid, pid, endpoint, LOCALNODE)
+#define dvk_umbind(dcid,pid,endpoint) 	    dvk_bind_X(USERMODE_BIND, dcid, pid, endpoint, LOCALNODE)
 
 
 long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)

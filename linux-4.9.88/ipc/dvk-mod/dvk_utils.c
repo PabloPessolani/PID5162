@@ -367,7 +367,7 @@ int sleep_proc(struct proc *proc, long timeout)
 	proc->p_pseudosem = -1; 
 	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
 		old_set = current->blocked;
@@ -403,10 +403,9 @@ int sleep_proc(struct proc *proc, long timeout)
 			proc->p_rcode != EDVSUSR2KRN ) break;
 		ret = copy_trampoline(proc);
 		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
-		if ( ret < 0) break;
-	}while(1);
+	}while(ret < 0);
 
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
 	}
 	
@@ -773,7 +772,7 @@ int lock_sr_proxies(int px_nr,  struct proc **spxy_ptr,  struct proc **rpxy_ptr)
 /****************************************************************
  *  Sleep process proc waiting for an event 
  *  On entry: processes proc and other must be Write LOCKED
- *  On exit: process is Write LOCKED
+ *  On exit: processes proc and other must be Write LOCKED
  *  the result is in proc->p_rcode
 *****************************************************************/
 int sleep_proc2(struct proc *proc, struct proc *other , long timeout)  
@@ -782,13 +781,14 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	int ret = OK;
 	int rcode = OK;
 	sigset_t	new_set, old_set;
+	int proc_nr, other_nr;
 
 	if( timeout == TIMEOUT_NOWAIT) {
 		if( test_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags)){
 			clear_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags);
 			set_bit(BIT_MIGRATE, &proc->p_usr.p_rts_flags);
 		}
-		proc->p_rcode = EDVSAGAIN; 
+		proc->p_rcode = EDVSAGAIN;
 		return(EDVSAGAIN);
 	}
 	
@@ -796,7 +796,7 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	proc->p_pseudosem = -1; 
 	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 	
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
 		old_set = current->blocked;
@@ -805,6 +805,9 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 	}
 
+	proc_nr = proc->p_usr.p_nr;
+	other_nr= other->p_usr.p_nr;
+	
 	do {
 		proc->p_rcode = OK; 
 		WUNLOCK_PROC2(proc, other); 
@@ -830,16 +833,15 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
 
-		WLOCK_PROC2(proc, other); 
+		WLOCK_ORDERED2(proc_nr, other_nr, proc, other); 
 		if( proc->p_rcode != EDVSUSR2USR &&
 			proc->p_rcode != EDVSKRN2USR && 
 			proc->p_rcode != EDVSUSR2KRN ) break;
 		ret = copy_trampoline(proc);
 		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
-		if ( ret < 0) break;
-	}while(1);
+	}while(ret < 0);
 	
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
 	}
 	
@@ -866,7 +868,7 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 			while(test_bit(BIT_ONCOPY, &proc->p_usr.p_rts_flags)) {
 				WUNLOCK_PROC2(proc, other);
 				schedule();
-				WLOCK_PROC2(proc, other);
+				WLOCK_ORDERED2(proc_nr, other_nr,  proc, other);
 			}	
 		}
 	}
@@ -895,7 +897,8 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 	int ret = OK;
 	int rcode = OK;
 	sigset_t	new_set, old_set;
-
+    int proc_nr, other1_nr, other2_nr; 
+	
 	if( timeout == TIMEOUT_NOWAIT) {
 		if( test_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags)){
 			clear_bit(MIS_BIT_NEEDMIGR, &proc->p_usr.p_misc_flags);
@@ -909,7 +912,7 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 	proc->p_pseudosem = -1; 
 	DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags); 
 	
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
 		old_set = current->blocked;
@@ -917,7 +920,9 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 			new_set.sig[0], old_set.sig[0]); 
 		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 	}
-
+	proc_nr = proc->p_usr.p_nr;
+	other1_nr = other1->p_usr.p_nr;
+	other2_nr = other2->p_usr.p_nr;
 	do {
 		proc->p_rcode = OK; 
 		WUNLOCK_PROC3(proc, other1, other2); 
@@ -943,16 +948,15 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
 
-		WLOCK_PROC3(proc, other1, other2); 
+		WLOCK_ORDERED3(proc_nr, other1_nr, other2_nr, proc, other1, other2); 
 		if( proc->p_rcode != EDVSUSR2USR &&
 			proc->p_rcode != EDVSKRN2USR && 
 			proc->p_rcode != EDVSUSR2KRN ) break;
 		ret = copy_trampoline(proc);
 		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
-		if ( ret < 0) break;
-	}while(1);
+	}while(ret < 0);
 	
-	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
 	}
 	
@@ -979,7 +983,7 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 			while(test_bit(BIT_ONCOPY, &proc->p_usr.p_rts_flags)) {
 				WUNLOCK_PROC3(proc, other1, other2); 
 				schedule();
-				WLOCK_PROC3(proc, other1, other2); 
+				WLOCK_ORDERED3(proc_nr, other1_nr, other2_nr, proc, other1, other2); 
 			}	
 		}
 	}
@@ -1016,7 +1020,8 @@ long copy_usr2usr(int rqtr_ep, struct proc *src_ptr, char __user *src_addr,
 	int len;
 	long timeout;
 	struct iovec lvec[1], rvec[1];
-
+	int rqtr_nr, src_nr, dst_nr; 
+	
 	DVKDEBUG(DBGPARAMS,"rqtr_ep=%d src_ep=%d src_lpid=%d src_vpid=%d src_addr=%p\n",
 		rqtr_ep,src_ptr->p_usr.p_endpoint, src_ptr->p_usr.p_lpid, src_ptr->p_usr.p_vpid, src_addr);
 	
@@ -1075,6 +1080,10 @@ long copy_usr2usr(int rqtr_ep, struct proc *src_ptr, char __user *src_addr,
 		rqtr_ptr->p_pseudosem = -1; 
 		rqtr_ptr->p_rcode = 0; 
 		timeout = TIMEOUT_FOREVER;
+		rqtr_nr = rqtr_ptr->p_usr.p_nr;
+		src_nr = src_ptr->p_usr.p_nr;
+		dst_nr = dst_ptr->p_usr.p_nr;
+
 		WUNLOCK_PROC3(rqtr_ptr,src_ptr,dst_ptr);
 		if( timeout < 0) {
 			ret = wait_event_interruptible(rqtr_ptr->p_wqhead, (rqtr_ptr->p_pseudosem >= 0));
@@ -1083,7 +1092,7 @@ long copy_usr2usr(int rqtr_ep, struct proc *src_ptr, char __user *src_addr,
 				(rqtr_ptr->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
 		}
 		if( ret == -ERESTARTSYS) ret = -EINTR;
-		WLOCK_PROC3(rqtr_ptr,src_ptr,dst_ptr);
+		WLOCK_ORDERED3(rqtr_nr,src_nr,dst_nr,rqtr_ptr,src_ptr,dst_ptr);
 		len = rqtr_ptr->p_rcode;
 	}
 	

@@ -30,11 +30,18 @@ extern struct cpuinfo_x86 boot_cpu_data;
 void flush_migr_list( struct proc *proc_ptr)
 {
 	struct proc *xpp, *tmp_ptr;
+	int proc_nr, x_nr; 
 	
 	DVKDEBUG(GENERIC,"Searchs all processes at the MIGRATING list of ep=%d\n", proc_ptr->p_usr.p_endpoint);		
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &proc_ptr->p_mlist, p_mlink) {
-	
-		WLOCK_ORDERED2(proc_ptr, xpp);
+		proc_nr= proc_ptr->p_usr.p_nr;
+		WUNLOCK_PROC(proc_ptr);
+
+		RLOCK_PROC(xpp);
+		x_nr = xpp->p_usr.p_nr;
+		RUNLOCK_PROC(xpp);
+
+		WLOCK_ORDERED2(proc_nr, x_nr, proc_ptr, xpp);
 		LIST_DEL(&xpp->p_mlink); /* remove from queue */	
 		if( xpp->p_usr.p_waitmigr == proc_ptr->p_usr.p_endpoint) {
 			DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
@@ -60,10 +67,18 @@ void flush_sending_list(struct proc *proc_ptr)
 {
 	struct proc *xpp, *tmp_ptr;
 	proxy_hdr_t header, *h_ptr;
+	int xpp_nr, proc_nr;
 
-	DVKDEBUG(GENERIC,"Searchs all processes at the process sending list of ep=%d\n", proc_ptr->p_usr.p_endpoint);		
+	DVKDEBUG(GENERIC,"Searchs all processes at the process sending list of ep=%d\n", proc_ptr->p_usr.p_endpoint);	
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &proc_ptr->p_list, p_link) {
-		WLOCK_ORDERED2(proc_ptr, xpp);
+		proc_nr = proc_ptr->p_usr.p_nr;
+		WUNLOCK_PROC(proc_ptr);
+
+		RLOCK_PROC(xpp);
+		xpp_nr = xpp->p_usr.p_nr;
+		RUNLOCK_PROC(xpp);
+
+		WLOCK_ORDERED2(proc_nr, xpp_nr, proc_ptr, xpp);
 		DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
 		LIST_DEL(&xpp->p_link); /* remove from queue */	
 		if( IT_IS_LOCAL(xpp)) {

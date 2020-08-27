@@ -31,7 +31,7 @@ read  -p "mount Enter para continuar... "
 #mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
 cd /usr/src/dvs/dvk-tests
 read  -p "local_nodeid=$lcl Enter para continuar... "
-./test_dvs_init -n $lcl -D 16777215 -C TEST_CLUSTER
+./test_dvs_init -u -n $lcl -D 16777215 -C TEST_CLUSTER
 read  -p "DC$dcid Enter para continuar... "
 ./test_dc_init -d $dcid
 dmesg -c >> /tmp/dvs/dmesg.txt

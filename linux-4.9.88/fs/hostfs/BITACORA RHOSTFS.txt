@@ -3712,6 +3712,8 @@ DESPUES DE MONTADO Y CUANDO SE HACE UN "ls /rhost" entre los logs sale lo siguie
 		DEBUG rmt_closedir:476: 
 
 ---------------------------------------------------------------------------------------------------
+20200825:
+
 FUNCIONA EL BLOQUEO DE LA SIGALRM JUNTO CON SIGIO
 
 	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
@@ -3737,6 +3739,91 @@ PROBLEMA.
 		2) no se detiene porque reejecuta la misma dvk_sendrec() hacia el server y repite
 		
 
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x605880
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x605890
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x6058a0
+ rhostfs_svr.c:main:225:REPLY msg:source=10 >>type=0<< m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x4816bde0
+
+EN EL SERVER RHOSTFSD 
+	Analizar cada una de las syscalls para ver cual es el valor de retorno
+	Hay que devolver el rcode y errno en diferentes campos
+	
+lcl_get_rootpath: OK
+lcl_access:
+lcl_open
+lcl_opendir
+lcl_seekdir
+lcl_readdir
+
+---------------------------------------------------------------------------------------------------
+20200825:
+			Se arreglo el protocolo entre cliente y servidor particularmente la funcion readdir()
+			cuyo valor de retorno es bastante complicadito
+			//       If the end of the directory stream is reached, NULL is returned and
+			//       errno is not changed.  If an error occurs, NULL is returned and errno
+			//       is set appropriately.  To distinguish end of stream from an error,
+			//       set errno to zero before calling readdir() and then check the value
+			//       of errno if NULL is returned.
+
+		FUNCIONO PERFECTAMENTE: mount, ls, cat, cp 
+		FALLO EN UN cp largo entre cp /var/log/messages.1 /rhost 
+		
+		POR FUNCIONAMIENTO MAL de dvk_rcvrqst() 
+		En rhostfsd se reemplazo dvk_rcvrqst_T() por dvk_receive_T() y
+			dvk_reply_T() x dvk_send_T()
+	
+		Cuando se intenta hacer un df tira 
+				root@node1:/rhost# df
+				DEBUG rhostfs_show_options:295:
+				DEBUG rhostfs_show_options:300: root_path=/
+				DEBUG rhostfs_show_options:295:
+				DEBUG rhostfs_show_options:300: root_path=/
+				DEBUG rhostfs_statfs:233:
+				DEBUG rmt_statfs64:376: filename=/
+				DEBUG rmt_syscall:28: who=1 syscallnr=268
+				DEBUG 440:dvk_sendrec_T:918: endpoint=1 timeout=-1
+				DEBUG 440:dvk_sendrec_T:922: ipc ret=0
+				ERROR: rmt_syscall:38: rcode=107
+				ERROR: rh_do_statfs:476: rcode=-107 <<<<<<<< EDVSBADREQUEST
+				df: /rhost: Transport endpoint is not connected
+				Filesystem     1K-blocks   Used Available Use% Mounted on
+				/dev/root        1032088 615880    363780  63% /
+				devtmpfs          516884      0    516884   0% /dev
+				tmpfs             516884      0    516884   0% /dev/shm
+				tmpfs             516884   7020    509864   2% /run
+				tmpfs               5120      0      5120   0% /run/lock
+				tmpfs             516884      0    516884   0% /sys/fs/cgroup
+		EN EL SERVER 
+			rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 13314:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 13314:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=0 m2i3=1214714560 m2l1=1216487872 m2l2=1206623576 m2p1=0x841d9c0
+			 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 268
+			RHOSTFSD: got unused request 268 from 10
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-107 m2i1=2 m2i2=0 m2i3=1214714560 m2l1=1216487872 m2l2=1206623576 m2p1=0x841d9c0
+			DEBUG 13314:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 13314:dvk_send_T:855: ipc ret=76
+
+ERROR, ADEMAS SIGUE EL ERROR -324 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 13314:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 13314:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=181 m2i1=5 m2i2=4096 m2i3=2 m2l1=2568192 m2l2=0 m2p1=0x4582e000
+			 rhostfs_svr.c:main:201:call_nr=181 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 181
+			 rhostfs_lib.c:lcl_pwrite:130:fd=5 count=4096 pos=2568192
+			DEBUG 13314:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=4096
+			DEBUG 13314:dvk_vcopy:130: ipc ret=-1
+			ERROR: 13314:dvk_vcopy:131: rcode=-324
+			ERROR: 13314:dvk_vcopy:157: rcode=-324
+			ERROR: rhostfs_lib.c:lcl_pwrite:148: rcode=-324
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-324 m2i1=5 m2i2=4096 m2i3=2 m2l1=2568192 m2l2=0 m2p1=0x4582e000
+			DEBUG 13314:dvk_send_T:851: endpoint=10 timeout=30000
+
+	
 ===========================================================================================================
 ULTIMO_LOG 
 

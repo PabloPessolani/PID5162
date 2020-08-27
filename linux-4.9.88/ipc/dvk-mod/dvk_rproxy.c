@@ -204,7 +204,7 @@ asmlinkage long copyrmt_rqst_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 {
 	int ret;
 	dc_desc_t *dc_ptr;
-	int dst_nr;
+	int dst_nr, lcl_nr, rmt_nr;
 	struct proc *dst_ptr;
 
 	DVKDEBUG(DBGCMD,CMD_FORMAT,CMD_FIELDS(h_ptr));
@@ -234,9 +234,11 @@ asmlinkage long copyrmt_rqst_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 	/* Set ONCOPY bits to protect the descriptors while they are UNLOCKED */
 	set_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	set_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
+	lcl_nr = lcl_ptr->p_usr.p_nr;
+	rmt_nr = rmt_ptr->p_usr.p_nr;
 	WUNLOCK_PROC2(lcl_ptr, rmt_ptr);
 
-	WLOCK_PROC3(lcl_ptr, rmt_ptr, dst_ptr);
+	WLOCK_ORDERED3(lcl_nr, rmt_nr, dst_nr, lcl_ptr, rmt_ptr, dst_ptr);
 	clear_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	clear_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
 	do {
@@ -279,7 +281,7 @@ asmlinkage long copylcl_rqst_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 {
 	int ret;
 	dc_desc_t *dc_ptr;
-	int dst_nr;
+	int lcl_nr, rmt_nr, dst_nr;
 	struct proc *dst_ptr;
 
 	DVKDEBUG(DBGCMD,CMD_FORMAT,CMD_FIELDS(h_ptr));
@@ -309,9 +311,11 @@ asmlinkage long copylcl_rqst_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 	/* Set ONCOPY bits to protect the descriptors while they are UNLOCKED */
 	set_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	set_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
+	lcl_nr = lcl_ptr->p_usr.p_nr;
+	rmt_nr = rmt_ptr->p_usr.p_nr;
 	WUNLOCK_PROC2(lcl_ptr, rmt_ptr);
 
-	WLOCK_PROC3(lcl_ptr, rmt_ptr, dst_ptr);
+	WLOCK_ORDERED3(lcl_nr, rmt_nr, dst_nr, lcl_ptr, rmt_ptr, dst_ptr);
 	clear_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	clear_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
 	do {
@@ -387,19 +391,23 @@ asmlinkage long copyin_rqst_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_pt
 	int ret;
 	struct proc *rqtr_ptr;
 	dc_desc_t *dc_ptr;
+	int rmt_nr, lcl_nr, rqtr_nr;
 
 	DVKDEBUG(DBGCMD,CMD_FORMAT,CMD_FIELDS(h_ptr));
 	DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 
 	dc_ptr 	= &dc[h_ptr->c_dcid];
 	rqtr_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_rqtr);
-
+	rqtr_nr = _ENDPOINT_P(h_ptr->c_u.cu_vcopy.v_rqtr);
+	
 	/* set the ONCOPY bits to protect the descriptor while unlocked */
 	set_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	set_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
+	lcl_nr = lcl_ptr->p_usr.p_nr;
+	rmt_nr = rmt_ptr->p_usr.p_nr;
 	WUNLOCK_PROC2(rmt_ptr, lcl_ptr);
 
-	WLOCK_PROC3(rqtr_ptr, rmt_ptr, lcl_ptr);
+	WLOCK_ORDERED3(rqtr_nr, rmt_nr, lcl_nr, rqtr_ptr, rmt_ptr, lcl_ptr);
 	clear_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags);
 	clear_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags);
 	do {
@@ -470,7 +478,8 @@ asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 	int ret;
 	struct proc *sproxy_ptr, *dst_ptr;
 	dc_desc_t *dc_ptr;
-
+	int rmt_nr, lcl_nr, dst_nr;
+	
 	DVKDEBUG(DBGCMD,CMD_FORMAT,CMD_FIELDS(h_ptr));
 	DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 
@@ -484,8 +493,11 @@ asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 
 	dst_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_dst);
 	if( dst_ptr->p_usr.p_endpoint != lcl_ptr->p_usr.p_endpoint) {
+		rmt_nr = rmt_ptr->p_usr.p_nr;
+		lcl_nr = lcl_ptr->p_usr.p_nr;
+		dst_nr = dst_ptr->p_usr.p_nr;
 		WUNLOCK_PROC2(rmt_ptr, lcl_ptr);
-		WLOCK_PROC3(rmt_ptr, lcl_ptr, dst_ptr);
+		WLOCK_ORDERED3(rmt_nr, lcl_nr, dst_nr, rmt_ptr, lcl_ptr, dst_ptr);
 	}
 	
 	do {
@@ -638,7 +650,7 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	rmt_ptr  = NBR2PTR(dc_ptr, rmt_nr);
 	lcl_ptr  = NBR2PTR(dc_ptr, lcl_nr);
 
-	WLOCK_PROC2(lcl_ptr, rmt_ptr);
+	WLOCK_ORDERED2(lcl_nr, rmt_nr, lcl_ptr, rmt_ptr);
 	do{ 
 
 #ifdef MOL_AUTOBIND 	

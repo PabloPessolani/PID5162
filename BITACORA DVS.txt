@@ -1487,10 +1487,397 @@ EL PROBLEMA SIGUE ESTANDO AUN CUANDO SE SUPRIMA LA SIGALRM
 	
 Aug 24 23:52:40 node0 kernel: [  165.990199] list_del corruption, e79058b4->next is LIST_POISON1 (00000100)
 	
+ERROR: 	El funcionamiento del dvk_rcvrqst es erroneo frente al dvk_receive!!
+				BUSCAR DIFF
+		POR LAS DUDAS comprobar dvk_reply() vs dvk_send()
+
+	CLIENT->sendrec()
+			DEBUG CLIENT:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+			DEBUG CLIENT:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+			DEBUG CLIENT:new_mini_sendrec:523: srcdst_ep=1
+			DEBUG CLIENT:check_caller:609: caller_pid=CLIENT caller_tgid=CLIENT
+			DEBUG CLIENT:check_caller:645: WLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:check_caller:675: WUNLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:check_caller:678: dcid=0
+			DEBUG CLIENT:check_caller:682: RLOCK_DC dc=0 count=0
+			DEBUG CLIENT:check_caller:686: RUNLOCK_DC dc=0 count=0
+			DEBUG CLIENT:check_caller:692: caller_pid=CLIENT 
+			DEBUG CLIENT:new_mini_sendrec:534: RLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:new_mini_sendrec:539: caller_nr=10 caller_ep=10 srcdst_ep=1 
+			DEBUG CLIENT:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:new_mini_sendrec:548: dcid=0
+			DEBUG CLIENT:new_mini_sendrec:552: RLOCK_DC dc=0 count=0
+			DEBUG CLIENT:new_mini_sendrec:556: RUNLOCK_DC dc=0 count=0
+			DEBUG CLIENT:new_mini_sendrec:571: RLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=702
+			DEBUG CLIENT:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=703
+			DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=1 count=702
+			DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=10 count=703
+			DEBUG CLIENT:new_mini_sendrec:586: srcdst_nr=1 srcdst_ep=1
+			DEBUG CLIENT:new_mini_sendrec:606: srcdst_ptr->p_usr.p_nodeid=0
+			DEBUG CLIENT:new_mini_sendrec:610: RLOCK_DC dc=0 count=0
+			DEBUG CLIENT:new_mini_sendrec:614: RUNLOCK_DC dc=0 count=0
+			DEBUG CLIENT:new_mini_sendrec:629: dcid=0 caller_pid=CLIENT caller_nr=10 srcdst_ep=1 
+			DEBUG CLIENT:new_mini_sendrec:634: SENDING HALF
+			DEBUG CLIENT:new_mini_sendrec:718: destination is waiting. Copy the message and wakeup destination
+			DEBUG CLIENT:copy_usr2usr:1021: rqtr_ep=10 src_ep=10 src_lpid=CLIENT src_vpid=2 src_addr=48c91c58
+			DEBUG CLIENT:copy_usr2usr:1024: dst_ep=1 dst_lpid=SERVER dst_vpid=SERVER dst_addr=004bf200 bytes=76
+			DEBUG CLIENT:copy_usr2usr:1028: task_pid_nr(current)=CLIENT
+			DEBUG CLIENT:copy_usr2usr:1031: WRITE
+			DEBUG CLIENT:copy_usr2usr:1036: task_pid_nr(dst_ptr->p_task)=SERVER
+			DEBUG CLIENT:dvk_vm_rw:451: pid=SERVER liovcnt=1 riovcnt=1 flags=0 vm_write=1
+			DEBUG CLIENT:dvk_check_iovect:1283: type=1 nr_segs=1
+			DEBUG CLIENT:dvk_rw_check_kvector:865: type=1 nr_segs=1
+			DEBUG CLIENT:dvk_rw_check_kvector:865: type=-1 nr_segs=1
+			DEBUG CLIENT:dvk_vm_rw_core:286: pid=SERVER riovcnt=1 flags=0 vm_write=1
+			DEBUG CLIENT:dvk_vm_rw_core:340: i=0 rc=0
+			DEBUG CLIENT:dvk_vm_rw_core:358: rc=76
+			DEBUG CLIENT:dvk_vm_rw_core:365: rc=76
+			DEBUG CLIENT:copy_usr2usr:1090: len=76
+			DEBUG CLIENT:inherit_cpu:298: cpuid=2 vpid=SERVER
+			ERROR: CLIENT:inherit_cpu:302: rcode=-3
+			DEBUG CLIENT:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=SERVER p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+			DEBUG CLIENT:new_mini_sendrec:724: BEFORE UP lpid=SERVER p_sem=-1 rcode=76
+					Se supone que todavia NO HIZO el 
+					WUNLOCK_PROC(srcdst_ptr);
+			
+		SERVER rcvrqst()	
+			DEBUG SERVER:sleep_proc:389: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			DEBUG SERVER:sleep_proc:392: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			DEBUG SERVER:sleep_proc:398: endpoint=1 ret=0 p_rcode=76
+			DEBUG SERVER:sleep_proc:399: endpoint=1 flags=0 cpuid=3
+			DEBUG SERVER:sleep_proc:400: WLOCK_PROC ep=1 count=701 
+			<<<<<<<<<<<<<< PORQUE PUDO HACER ESTO SI SE SUPONE QUE ESTA BLOQUEADO AUN!! 
+			DEBUG SERVER:sleep_proc:453: nr=1 endp=1 dcid=0 lpid=SERVER p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+			DEBUG SERVER:sleep_proc:455: someone wakeups me: sem=0 p_rcode=0
+			DEBUG SERVER:new_mini_rcvrqst:1771: WUNLOCK_PROC ep=1 count=701
+			
+		SERVER vcopy()	- FALLA el estado de CLIENT no es correcto 
+			DEBUG SERVER:SYSC_ipc:165: ipc_vcopy: call=3328 first=10 second=1115267072 third=1 fifth=4096 
+			DEBUG SERVER:ipc_vcopy:259: src_ep=10 dst_ep=1 bytes=4096
+			DEBUG SERVER:new_vcopy:1124: src_ep=10 dst_ep=1 bytes=4096
+			DEBUG SERVER:check_caller:609: caller_pid=SERVER caller_tgid=SERVER
+			DEBUG SERVER:check_caller:645: WLOCK_PROC ep=1 count=701
+			DEBUG SERVER:check_caller:675: WUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:check_caller:678: dcid=0
+			DEBUG SERVER:check_caller:682: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:check_caller:686: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:check_caller:692: caller_pid=SERVER 
+			DEBUG SERVER:new_vcopy:1138: RLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1159: dcid=0
+			DEBUG SERVER:new_vcopy:1169: RUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1171: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_vcopy:1194: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_vcopy:1197: RLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1216: (src_nr+dc_max_nr_tasks)=44
+			DEBUG SERVER:new_vcopy:1222: RUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1227: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_vcopy:1228: LOCK PROCESSES IN ASCENDENT ORDER
+			DEBUG SERVER:new_vcopy:1235: WLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1235: WLOCK_PROC ep=10 count=702
+			DEBUG SERVER:new_vcopy:1239: CHECK FOR SOURCE/DESTINATION STATUS
+			DEBUG SERVER:new_vcopy:1322: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_vcopy:1331: WUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_vcopy:1331: WUNLOCK_PROC ep=10 count=702
+			ERROR: SERVER:new_vcopy:1334: rcode=-324
+			
+		SE PUDRE TODO 	
+			DEBUG SERVER:SYSC_ipc:165: ipc_mini_reply: call=1792 first=10 second=0 third=0 fifth=30000 
+			DEBUG SERVER:ipc_mini_reply:152: dst_ep=10 timeout_ms=30000
+			DEBUG SERVER:new_mini_reply:1793: dst_ep=10
+			DEBUG SERVER:check_caller:609: caller_pid=SERVER caller_tgid=SERVER
+			DEBUG SERVER:check_caller:645: WLOCK_PROC ep=1 count=701
+			DEBUG SERVER:check_caller:675: WUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:check_caller:678: dcid=0
+			DEBUG SERVER:check_caller:682: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:check_caller:686: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:check_caller:692: caller_pid=SERVER 
+			DEBUG SERVER:new_mini_reply:1803: RLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_mini_reply:1807: caller_nr=1 caller_ep=1 dst_ep=10 
+			DEBUG SERVER:new_mini_reply:1814: RUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_mini_reply:1816: dcid=0
+			DEBUG SERVER:new_mini_reply:1820: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_mini_reply:1825: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_mini_reply:1845: RLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_mini_reply:1852: RUNLOCK_PROC ep=1 count=701
+			DEBUG SERVER:new_mini_reply:1855: WLOCK_PROC ep=10 count=702
+			DEBUG SERVER:new_mini_reply:1860: dst_nr=10 dst_ep=10
+			DEBUG SERVER:new_mini_reply:1879: dst_ptr->p_usr.p_nodeid=0
+			DEBUG SERVER:new_mini_reply:1883: RLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_mini_reply:1887: RUNLOCK_DC dc=0 count=0
+			DEBUG SERVER:new_mini_reply:1902: dcid=0 caller_pid=SERVER caller_nr=1 dst_ep=10 
+			DEBUG SERVER:new_mini_reply:1996: destination is not waiting dst_flags=0. Enqueue at the TAIL.
+			DEBUG SERVER:new_mini_reply:2002: WUNLOCK_PROC ep=10 count=702
+			DEBUG SERVER:new_mini_reply:2004: WUNLOCK_PROC ep=1 count=702
+			ERROR: SERVER:new_mini_reply:2005: rcode=-324
+			DEBUG CLIENT:new_mini_sendrec:732: WUNLOCK_PROC ep=1 count=703
+			DEBUG CLIENT:sleep_proc:355: timeout=-1
+			DEBUG CLIENT:sleep_proc:366: BEFORE DOWN lpid=CLIENT p_sem=0 timeout=-1
+			DEBUG CLIENT:sleep_proc:368: endpoint=10 flags=8
+			DEBUG CLIENT:sleep_proc:375: new_set.sig[0]=0x10002000 old_set.sig[0]=0x00001000
+			DEBUG CLIENT:sleep_proc:381: WUNLOCK_PROC ep=10 count=703
+
+TAMBIEN PASA CON dvk_receive() O EL PROBLEMA ESTARA EN dvk_sendrec() ?????????????
+		CLIENT dvk_sendrec() 
+			Aug 26 19:41:57 node0 kernel: [32724.226140] DEBUG CLIENT:new_mini_sendrec:805: WUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226391] DEBUG CLIENT:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+			Aug 26 19:41:57 node0 kernel: [32724.226393] DEBUG CLIENT:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+			Aug 26 19:41:57 node0 kernel: [32724.226395] DEBUG CLIENT:new_mini_sendrec:523: srcdst_ep=1
+			Aug 26 19:41:57 node0 kernel: [32724.226397] DEBUG CLIENT:check_caller:609: caller_pid=CLIENT caller_tgid=CLIENT
+			Aug 26 19:41:57 node0 kernel: [32724.226399] DEBUG CLIENT:check_caller:645: WLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226400] DEBUG CLIENT:check_caller:675: WUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226401] DEBUG CLIENT:check_caller:678: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.226403] DEBUG CLIENT:check_caller:682: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226404] DEBUG CLIENT:check_caller:686: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226405] DEBUG CLIENT:check_caller:692: caller_pid=CLIENT 
+			Aug 26 19:41:57 node0 kernel: [32724.226407] DEBUG CLIENT:new_mini_sendrec:534: RLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226408] DEBUG CLIENT:new_mini_sendrec:539: caller_nr=10 caller_ep=10 srcdst_ep=1 
+			Aug 26 19:41:57 node0 kernel: [32724.226410] DEBUG CLIENT:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226411] DEBUG CLIENT:new_mini_sendrec:548: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.226412] DEBUG CLIENT:new_mini_sendrec:552: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226414] DEBUG CLIENT:new_mini_sendrec:556: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226415] DEBUG CLIENT:new_mini_sendrec:571: RLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226417] DEBUG CLIENT:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.226418] DEBUG CLIENT:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1647
+			Aug 26 19:41:57 node0 kernel: [32724.226420] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=1 count=1510
+			Aug 26 19:41:57 node0 kernel: [32724.226421] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1647
+			Aug 26 19:41:57 node0 kernel: [32724.226422] DEBUG CLIENT:new_mini_sendrec:586: srcdst_nr=1 srcdst_ep=1
+			Aug 26 19:41:57 node0 kernel: [32724.226424] DEBUG CLIENT:new_mini_sendrec:606: srcdst_ptr->p_usr.p_nodeid=0
+			Aug 26 19:41:57 node0 kernel: [32724.226425] DEBUG CLIENT:new_mini_sendrec:610: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226426] DEBUG CLIENT:new_mini_sendrec:614: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.226428] DEBUG CLIENT:new_mini_sendrec:629: dcid=0 caller_pid=CLIENT caller_nr=10 srcdst_ep=1 
+			Aug 26 19:41:57 node0 kernel: [32724.226429] DEBUG CLIENT:new_mini_sendrec:634: SENDING HALF
+			Aug 26 19:41:57 node0 kernel: [32724.226430] DEBUG CLIENT:new_mini_sendrec:718: destination is waiting. Copy the message and wakeup destination
+			Aug 26 19:41:57 node0 kernel: [32724.226433] DEBUG CLIENT:copy_usr2usr:1021: rqtr_ep=10 src_ep=10 src_lpid=CLIENT src_vpid=440 src_addr=47eb9c58
+			Aug 26 19:41:57 node0 kernel: [32724.226435] DEBUG CLIENT:copy_usr2usr:1024: dst_ep=1 dst_lpid=SERVER dst_vpid=SERVER dst_addr=00428200 bytes=76
+			Aug 26 19:41:57 node0 kernel: [32724.226436] DEBUG CLIENT:copy_usr2usr:1028: task_pid_nr(current)=CLIENT
+			Aug 26 19:41:57 node0 kernel: [32724.226437] DEBUG CLIENT:copy_usr2usr:1031: WRITE
+			Aug 26 19:41:57 node0 kernel: [32724.226439] DEBUG CLIENT:copy_usr2usr:1036: task_pid_nr(dst_ptr->p_task)=SERVER
+			Aug 26 19:41:57 node0 kernel: [32724.226441] DEBUG CLIENT:dvk_vm_rw:451: pid=SERVER liovcnt=1 riovcnt=1 flags=0 vm_write=1
+			Aug 26 19:41:57 node0 kernel: [32724.226443] DEBUG CLIENT:dvk_check_iovect:1283: type=1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.226445] DEBUG CLIENT:dvk_rw_check_kvector:865: type=1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.226447] DEBUG CLIENT:dvk_rw_check_kvector:865: type=-1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.226448] DEBUG CLIENT:dvk_vm_rw_core:286: pid=SERVER riovcnt=1 flags=0 vm_write=1
+			Aug 26 19:41:57 node0 kernel: [32724.226455] DEBUG CLIENT:dvk_vm_rw_core:340: i=0 rc=0
+			Aug 26 19:41:57 node0 kernel: [32724.226467] DEBUG CLIENT:dvk_vm_rw_core:358: rc=76
+			Aug 26 19:41:57 node0 kernel: [32724.226468] DEBUG CLIENT:dvk_vm_rw_core:365: rc=76
+			Aug 26 19:41:57 node0 kernel: [32724.226469] DEBUG CLIENT:copy_usr2usr:1090: len=76
+			Aug 26 19:41:57 node0 kernel: [32724.226471] DEBUG CLIENT:inherit_cpu:298: cpuid=2 vpid=SERVER
+			Aug 26 19:41:57 node0 kernel: [32724.226473] ERROR: CLIENT:inherit_cpu:302: rcode=-3
+			Aug 26 19:41:57 node0 kernel: [32724.226475] DEBUG CLIENT:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=SERVER p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+			Aug 26 19:41:57 node0 kernel: [32724.226477] DEBUG CLIENT:new_mini_sendrec:724: BEFORE UP lpid=SERVER p_sem=-1 rcode=76
+		DESPERTO AL SERVER PERO TODAVIA NO LO LIBERO!!
+
+		SERVER despierta del dvk_receive()
+			Aug 26 19:41:57 node0 kernel: [32724.229355] DEBUG SERVER:sleep_proc:389: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			Aug 26 19:41:57 node0 kernel: [32724.229360] DEBUG SERVER:sleep_proc:392: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			Aug 26 19:41:57 node0 kernel: [32724.229361] DEBUG SERVER:sleep_proc:398: endpoint=1 ret=0 p_rcode=76
+			Aug 26 19:41:57 node0 kernel: [32724.229363] DEBUG SERVER:sleep_proc:399: endpoint=1 flags=0 cpuid=0
+			
+		PORQUE PUEDE HACER EL LOCK !!!!!!????????	QUE CARAJO ES count????
+			Aug 26 19:41:57 node0 kernel: [32724.229365] DEBUG SERVER:sleep_proc:400: WLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229368] DEBUG SERVER:sleep_proc:453: nr=1 endp=1 dcid=0 lpid=SERVER p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+			Aug 26 19:41:57 node0 kernel: [32724.229370] DEBUG SERVER:sleep_proc:455: someone wakeups me: sem=0 p_rcode=0
+			Aug 26 19:41:57 node0 kernel: [32724.229372] DEBUG SERVER:new_mini_receive:503: WUNLOCK_PROC ep=1 count=1509
+			
+			Aug 26 19:41:57 node0 kernel: [32724.229455] DEBUG SERVER:SYSC_ipc:165: ipc_vcopy: call=3328 first=10 second=1166204928 third=1 fifth=4096 
+			Aug 26 19:41:57 node0 kernel: [32724.229457] DEBUG SERVER:ipc_vcopy:259: src_ep=10 dst_ep=1 bytes=4096
+			Aug 26 19:41:57 node0 kernel: [32724.229459] DEBUG SERVER:new_vcopy:1124: src_ep=10 dst_ep=1 bytes=4096
+			Aug 26 19:41:57 node0 kernel: [32724.229463] DEBUG SERVER:check_caller:609: caller_pid=SERVER caller_tgid=SERVER
+			Aug 26 19:41:57 node0 kernel: [32724.229464] DEBUG SERVER:check_caller:645: WLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229466] DEBUG SERVER:check_caller:675: WUNLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229467] DEBUG SERVER:check_caller:678: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.229469] DEBUG SERVER:check_caller:682: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229470] DEBUG SERVER:check_caller:686: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229471] DEBUG SERVER:check_caller:692: caller_pid=SERVER 
+			Aug 26 19:41:57 node0 kernel: [32724.229473] DEBUG SERVER:new_vcopy:1138: RLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229474] DEBUG SERVER:new_vcopy:1159: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.229475] DEBUG SERVER:new_vcopy:1169: RUNLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229477] DEBUG SERVER:new_vcopy:1171: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229478] DEBUG SERVER:new_vcopy:1194: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229480] DEBUG SERVER:new_vcopy:1197: RLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229481] DEBUG SERVER:new_vcopy:1216: (src_nr+dc_max_nr_tasks)=44
+			Aug 26 19:41:57 node0 kernel: [32724.229482] DEBUG SERVER:new_vcopy:1222: RUNLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229484] DEBUG SERVER:new_vcopy:1227: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229486] DEBUG SERVER:new_vcopy:1228: LOCK PROCESSES IN ASCENDENT ORDER
+			Aug 26 19:41:57 node0 kernel: [32724.229487] DEBUG SERVER:new_vcopy:1235: WLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229489] DEBUG SERVER:new_vcopy:1235: WLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.229490] DEBUG SERVER:new_vcopy:1239: CHECK FOR SOURCE/DESTINATION STATUS
+			Aug 26 19:41:57 node0 kernel: [32724.229494] DEBUG SERVER:new_vcopy:1322: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.229495] DEBUG SERVER:new_vcopy:1331: WUNLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.229496] DEBUG SERVER:new_vcopy:1331: WUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.229498] ERROR: SERVER:new_vcopy:1334: rcode=-324
+
+				
+				
+		ESTE ES EL FUNCIONAMIENTO CUANDO ANDA BIEN 
+		CLIENT dvk_sendrec()
+			Aug 26 19:41:57 node0 kernel: [32724.221359] DEBUG CLIENT:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+			Aug 26 19:41:57 node0 kernel: [32724.221363] DEBUG CLIENT:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+			Aug 26 19:41:57 node0 kernel: [32724.221366] DEBUG CLIENT:new_mini_sendrec:523: srcdst_ep=1
+			Aug 26 19:41:57 node0 kernel: [32724.221370] DEBUG CLIENT:check_caller:609: caller_pid=CLIENT caller_tgid=CLIENT
+			Aug 26 19:41:57 node0 kernel: [32724.221372] DEBUG CLIENT:check_caller:645: WLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221373] DEBUG CLIENT:check_caller:675: WUNLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221375] DEBUG CLIENT:check_caller:678: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.221377] DEBUG CLIENT:check_caller:682: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221378] DEBUG CLIENT:check_caller:686: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221379] DEBUG CLIENT:check_caller:692: caller_pid=CLIENT 
+			Aug 26 19:41:57 node0 kernel: [32724.221381] DEBUG CLIENT:new_mini_sendrec:534: RLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221382] DEBUG CLIENT:new_mini_sendrec:539: caller_nr=10 caller_ep=10 srcdst_ep=1 
+			Aug 26 19:41:57 node0 kernel: [32724.221384] DEBUG CLIENT:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221385] DEBUG CLIENT:new_mini_sendrec:548: dcid=0
+			Aug 26 19:41:57 node0 kernel: [32724.221386] DEBUG CLIENT:new_mini_sendrec:552: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221387] DEBUG CLIENT:new_mini_sendrec:556: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221389] DEBUG CLIENT:new_mini_sendrec:571: RLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221390] DEBUG CLIENT:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=1645
+			Aug 26 19:41:57 node0 kernel: [32724.221391] DEBUG CLIENT:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.221393] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.221394] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1646
+			Aug 26 19:41:57 node0 kernel: [32724.221396] DEBUG CLIENT:new_mini_sendrec:586: srcdst_nr=1 srcdst_ep=1
+			Aug 26 19:41:57 node0 kernel: [32724.221397] DEBUG CLIENT:new_mini_sendrec:606: srcdst_ptr->p_usr.p_nodeid=0
+			Aug 26 19:41:57 node0 kernel: [32724.221398] DEBUG CLIENT:new_mini_sendrec:610: RLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221400] DEBUG CLIENT:new_mini_sendrec:614: RUNLOCK_DC dc=0 count=0
+			Aug 26 19:41:57 node0 kernel: [32724.221401] DEBUG CLIENT:new_mini_sendrec:629: dcid=0 caller_pid=CLIENT caller_nr=10 srcdst_ep=1 
+			Aug 26 19:41:57 node0 kernel: [32724.221402] DEBUG CLIENT:new_mini_sendrec:634: SENDING HALF
+			Aug 26 19:41:57 node0 kernel: [32724.221404] DEBUG CLIENT:new_mini_sendrec:718: destination is waiting. Copy the message and wakeup destination
+			Aug 26 19:41:57 node0 kernel: [32724.221407] DEBUG CLIENT:copy_usr2usr:1021: rqtr_ep=10 src_ep=10 src_lpid=CLIENT src_vpid=440 src_addr=47eb9c58
+			Aug 26 19:41:57 node0 kernel: [32724.221409] DEBUG CLIENT:copy_usr2usr:1024: dst_ep=1 dst_lpid=13314 dst_vpid=13314 dst_addr=00428200 bytes=76
+			Aug 26 19:41:57 node0 kernel: [32724.221410] DEBUG CLIENT:copy_usr2usr:1028: task_pid_nr(current)=CLIENT
+			Aug 26 19:41:57 node0 kernel: [32724.221411] DEBUG CLIENT:copy_usr2usr:1031: WRITE
+			Aug 26 19:41:57 node0 kernel: [32724.221413] DEBUG CLIENT:copy_usr2usr:1036: task_pid_nr(dst_ptr->p_task)=13314
+			Aug 26 19:41:57 node0 kernel: [32724.221416] DEBUG CLIENT:dvk_vm_rw:451: pid=13314 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+			Aug 26 19:41:57 node0 kernel: [32724.221418] DEBUG CLIENT:dvk_check_iovect:1283: type=1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.221419] DEBUG CLIENT:dvk_rw_check_kvector:865: type=1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.221422] DEBUG CLIENT:dvk_rw_check_kvector:865: type=-1 nr_segs=1
+			Aug 26 19:41:57 node0 kernel: [32724.221424] DEBUG CLIENT:dvk_vm_rw_core:286: pid=13314 riovcnt=1 flags=0 vm_write=1
+			Aug 26 19:41:57 node0 kernel: [32724.221430] DEBUG CLIENT:dvk_vm_rw_core:340: i=0 rc=0
+			Aug 26 19:41:57 node0 kernel: [32724.221445] DEBUG CLIENT:dvk_vm_rw_core:358: rc=76
+			Aug 26 19:41:57 node0 kernel: [32724.221446] DEBUG CLIENT:dvk_vm_rw_core:365: rc=76
+			Aug 26 19:41:57 node0 kernel: [32724.221447] DEBUG CLIENT:copy_usr2usr:1090: len=76
+			Aug 26 19:41:57 node0 kernel: [32724.221449] DEBUG CLIENT:inherit_cpu:298: cpuid=2 vpid=13314
+			Aug 26 19:41:57 node0 kernel: [32724.221451] ERROR: CLIENT:inherit_cpu:302: rcode=-3
+			Aug 26 19:41:57 node0 kernel: [32724.221454] DEBUG CLIENT:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=13314 p_cpumask=FFFFFFFF nodemap=1 name=rhostfsd 
+			Aug 26 19:41:57 node0 kernel: [32724.221456] DEBUG CLIENT:new_mini_sendrec:724: BEFORE UP lpid=13314 p_sem=-1 rcode=76
+		AQUI LIBERA AL SERVER!!!! ESTA BIEN 
+			Aug 26 19:41:57 node0 kernel: [32724.221491] DEBUG CLIENT:new_mini_sendrec:732: WUNLOCK_PROC ep=1 count=1509
+			Aug 26 19:41:57 node0 kernel: [32724.221493] DEBUG CLIENT:sleep_proc:355: timeout=-1
+			Aug 26 19:41:57 node0 kernel: [32724.221494] DEBUG CLIENT:sleep_proc:366: BEFORE DOWN lpid=CLIENT p_sem=0 timeout=-1
+			Aug 26 19:41:57 node0 kernel: [32724.221496] DEBUG CLIENT:sleep_proc:368: endpoint=10 flags=8
+			Aug 26 19:41:57 node0 kernel: [32724.221497] DEBUG CLIENT:sleep_proc:375: new_set.sig[0]=0x10002000 old_set.sig[0]=0x00001000
+			Aug 26 19:41:57 node0 kernel: [32724.221499] DEBUG CLIENT:sleep_proc:381: WUNLOCK_PROC ep=10 count=1646
+
+
+	ERROR!! Hay un WUNLOCK_PROC adicional 
+
+	root@node0:/var/log# grep "WLOCK_PROC ep=10" kern.log | wc 
+>>>>>  7537   82907  774089
+	root@node0:/var/log# grep "WUNLOCK_PROC ep=10" kern.log | wc 
+>>>>>  9045   99495  953368
+
+	root@node0:/var/log# grep "WLOCK_PROC ep=1 " kern.log | wc 
+>>>>>  10427  114697 1062920
+	root@node0:/var/log# grep "WUNLOCK_PROC ep=1 " kern.log | wc 
+>>>>   11936  131296 1242511
+
+Aug 26 20:11:04 node0 kernel: [34471.573473] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1942
+Aug 26 20:11:15 node0 kernel: [34482.042370] DEBUG 13328:check_caller:645: WLOCK_PROC ep=10 count=1942
+Aug 26 20:11:15 node0 kernel: [34482.042393] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1943
+Aug 26 20:11:16 node0 kernel: [34483.350879] DEBUG 13328:check_caller:645: WLOCK_PROC ep=10 count=1943
+Aug 26 20:11:16 node0 kernel: [34483.350901] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1944
+Aug 26 20:11:20 node0 kernel: [34486.897860] DEBUG 13328:check_caller:645: WLOCK_PROC ep=10 count=1944
+Aug 26 20:11:20 node0 kernel: [34486.897883] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1945
+Aug 26 20:11:20 node0 kernel: [34487.179489] DEBUG 13328:check_caller:645: WLOCK_PROC ep=10 count=1945
+Aug 26 20:11:20 node0 kernel: [34487.179512] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1946
+Aug 26 20:11:23 node0 kernel: [34489.947227] DEBUG 13328:new_exit_unbind:314: WLOCK_PROC ep=10 count=1946
+
+Aug 26 20:11:04 node0 kernel: [34471.573475] DEBUG 13328:new_mini_sendrec:617: WUNLOCK_PROC ep=10 count=1942
+Aug 26 20:11:15 node0 kernel: [34482.042371] DEBUG 13328:check_caller:675: WUNLOCK_PROC ep=10 count=1942
+Aug 26 20:11:15 node0 kernel: [34482.042390] DEBUG 13328:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1943
+Aug 26 20:11:15 node0 kernel: [34482.042395] DEBUG 13328:new_mini_sendrec:617: WUNLOCK_PROC ep=10 count=1943
+Aug 26 20:11:16 node0 kernel: [34483.350880] DEBUG 13328:check_caller:675: WUNLOCK_PROC ep=10 count=1943
+Aug 26 20:11:16 node0 kernel: [34483.350898] DEBUG 13328:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1944
+Aug 26 20:11:16 node0 kernel: [34483.350904] DEBUG 13328:new_mini_sendrec:617: WUNLOCK_PROC ep=10 count=1944
+Aug 26 20:11:20 node0 kernel: [34486.897862] DEBUG 13328:check_caller:675: WUNLOCK_PROC ep=10 count=1944
+Aug 26 20:11:20 node0 kernel: [34486.897880] DEBUG 13328:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1945
+Aug 26 20:11:20 node0 kernel: [34486.897885] DEBUG 13328:new_mini_sendrec:617: WUNLOCK_PROC ep=10 count=1945
+Aug 26 20:11:20 node0 kernel: [34487.179490] DEBUG 13328:check_caller:675: WUNLOCK_PROC ep=10 count=1945
+Aug 26 20:11:20 node0 kernel: [34487.179509] DEBUG 13328:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1946
+Aug 26 20:11:20 node0 kernel: [34487.179514] DEBUG 13328:new_mini_sendrec:617: WUNLOCK_PROC ep=10 count=1946
+Aug 26 20:11:23 node0 kernel: [34489.947282] DEBUG 13328:new_exit_unbind:385: WUNLOCK_PROC ep=10 count=1946
 		
+
+
+Aug 26 19:38:49 node0 kernel: [32536.500245] DEBUG 13328:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+
+Aug 26 19:38:49 node0 kernel: [32536.500251] DEBUG 13328:check_caller:645: WLOCK_PROC ep=10 count=955
+Aug 26 19:38:49 node0 kernel: [32536.500253] DEBUG 13328:check_caller:675: WUNLOCK_PROC ep=10 count=955
+
+Aug 26 19:38:49 node0 kernel: [32536.500259] DEBUG 13328:new_mini_sendrec:534: RLOCK_PROC ep=10 count=955
+Aug 26 19:38:49 node0 kernel: [32536.500262] DEBUG 13328:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=955
+
+AQUI ESTA EL PROBLEMA!!! 
+Aug 26 19:38:49 node0 kernel: [32536.500267] DEBUG 13328:new_mini_sendrec:571: RLOCK_PROC ep=10 count=955
+Aug 26 19:38:49 node0 kernel: [32536.500268] DEBUG 13328:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=955
+Aug 26 19:38:49 node0 kernel: [32536.500269] DEBUG 13328:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=956
+
+Aug 26 19:38:49 node0 kernel: [32536.500272] DEBUG 13328:new_mini_sendrec:584: WLOCK_PROC ep=10 count=956
+Aug 26 19:38:49 node0 kernel: [32536.500343] DEBUG 13328:sleep_proc:381: WUNLOCK_PROC ep=10 count=956
+===============================================================================================================
+20200827:
+	
+SE MODIFICARON VARIOS ARCHIVOS DEL DVK-MOD 
+ERRORES IMPORTANTES DE LOCK/UNLOCK 
+TODO IPC AFECTADO 
+
+SE  PROBARON LOS IPC BASICOS EN UML 
+	
+Se modifico test_dvs_init para que se pueda setear que esta en USERSPACE
+TODOS LOS PROCESOS LOCALES BINDEADOS EN UN DVS USERSPACE DEBEN SETEARSE CON EL BIT_USERSPACE
+	
+EN UML 
+	name=TEST_CLUSTER
+	nodeid=1
+	nr_dcs=32
+	nr_nodes=32
+	max_nr_procs=221
+	max_nr_tasks=35
+	max_sys_procs=64
+	max_copy_buf=65536
+	max_copy_len=1048576
+	dbglvl=FFFFFF
+	version=5
+	flags=105 <<<<<<<<<<<<<<<<<<<<<<< USERMODE=KERNEL DE UML 
+	sizeof(proc)=488
+	sizeof(proc) aligned=512
+	sizeof(dc)=152
+	sizeof(node)=80
+
+EL HOST
+	name=TEST_CLUSTER
+	nodeid=0
+	nr_dcs=32
+	nr_nodes=32
+	max_nr_procs=221
+	max_nr_tasks=35
+	max_sys_procs=64
+	max_copy_buf=65536
+	max_copy_len=1048576
+	dbglvl=FFFFFF
+	version=5
+	flags=101 <<<<<<<<<<<<<<<<<<<<<<<<< KERNEL DE HOST 
+	sizeof(proc)=504
+	sizeof(proc) aligned=512
+	sizeof(dc)=164
+	sizeof(node)=92
+
+
+	
+
 ===============================================================================================================
 ULTIMO_LOG
 ===============================================================================================================
+
+PROBAR EL KERNEL DEL HOST !! HUBO MUCHOS CAMBIOS 
 
 TODO:		Modificicar los tipos de BIND que se usan en dvk_bind_X()
 

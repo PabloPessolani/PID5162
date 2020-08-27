@@ -4,16 +4,16 @@
 #define DVS_RUNNING	0x00	/* DVS is RUNNING*/
 #define DVS_NO_INIT	(-1)	/* DVS has not been initialized */
 
-#define BIT_IPC     	0	/* The DVK is embedded in the linux kernel as a new System V IPC  */
-#define BIT_IOCTL		1	/* The DVK was loaded as a kernel module */ 
-#define BIT_USERSPACE	2 	/* Kernel running in user space i.e. UML */
-#define BIT_INITIALIZED 8 	/* Kernel running in user space i.e. UML */
+#define DVS_BIT_IPC     	0	/* The DVK is embedded in the linux kernel as a new System V IPC  */
+#define DVS_BIT_IOCTL		1	/* The DVK was loaded as a kernel module */ 
+#define DVS_BIT_USERMODE	2 	/* Kernel running in user space i.e. UML */
+#define DVS_BIT_INITIALIZED 8 	
 
 enum dvs_flags {
-		DVK_IPC 		= (1<<BIT_IPC),	
-		DVK_IOCTL		= (1<<BIT_IOCTL),		
-		DVK_USERSPACE	= (1<<BIT_USERSPACE),	
-		DVK_INITIALIZED	= (1<<BIT_INITIALIZED),	
+		DVK_IPC 		= (1<<DVS_BIT_IPC),	
+		DVK_IOCTL		= (1<<DVS_BIT_IOCTL),		
+		DVK_USERMODE	= (1<<DVS_BIT_USERMODE),	
+		DVK_INITIALIZED	= (1<<DVS_BIT_INITIALIZED),	
 };
 
 struct dvs_usr {

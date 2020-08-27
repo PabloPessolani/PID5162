@@ -10046,12 +10046,17 @@ Reemplazo en vi
 	:g/original/s//nuevo/g
 	
 
-				 
+===============================================================================================================
+20200827:
+
+Ahora en los flags del DVS se setea MIS_USERMODE para que todos los procesos internos
+lleven el bit MIS_BIT_USERMODE.
+			 
  
 		 
  ====================================  ULTIMO_LOG ===================================
 
- TODO 
+ TODO:  Buscar como detectar desde UML que se esta en UML 
  =====
  	
 		
