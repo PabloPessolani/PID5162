@@ -42,7 +42,7 @@
 
 
 /* These may not be any valid endpoint (see <minix/endpoint.h>). */
-#define ANY		0x7ace	/* used to indicate 'any process' */
+#define ANY			0x7ace	/* used to indicate 'any process' */
 #define NONE 		0x6ace  /* used to indicate 'no process at all' */
 #define SELF		0x8ace 	/* used to indicate 'own process' */
 #define _MAX_MAGIC_PROC (SELF)	/* used by <minix/endpoint.h> 

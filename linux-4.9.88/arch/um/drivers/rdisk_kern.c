@@ -114,7 +114,7 @@ struct rd_thread_req {
 
 static DEFINE_MUTEX(rd_lock);
 static DEFINE_MUTEX(rd_mutex); /* replaces BKL, might not be needed */
-static DEFINE_MUTEX(rd_ksync);
+//static DEFINE_MUTEX(rd_ksync);
 
 
 #define MAX_SG 			1
@@ -410,7 +410,6 @@ static int rd_open_dev(int minor)
 	m_ptr->m_type   = DEV_OPEN;
 	m_ptr->DEVICE   = minor;
 	m_ptr->POSITION = 0;
-//	m_ptr->IO_ENDPT = rdc_ep;
 	m_ptr->IO_ENDPT = rdc_ep;
 	m_ptr->ADDRESS  = NULL;
 	m_ptr->COUNT    = NULL;
@@ -438,7 +437,7 @@ static int rd_disk_register(int major, u64 size, int unit,
 	struct device *parent = NULL;
 	struct gendisk *disk;
 
-	DVKDEBUG(INTERNAL,"major=%d unit=%d\n", major, unit);
+	DVKDEBUG(INTERNAL,"major=%d unit=%d size=%lld\n", major, unit, size);
 // The argument minors is the maximum number of minor numbers that this disk can have
 	disk = alloc_disk(1 << RD_SHIFT);
 	if(disk == NULL)
@@ -554,9 +553,9 @@ static int rd_config(char *str, char **error_out)
 		goto err_free;
 	}
 
-	MUTEX_LOCK(&rd_lock);
+	mutex_lock(&rd_lock);
 	ret = rd_add(n, error_out);
-	MUTEX_UNLOCK(&rd_lock);
+	mutex_unlock(&rd_lock);
 
 out:
 	return ret;
@@ -599,11 +598,11 @@ static int rd_get_config(char *name, char *str, int size, char **error_out)
 	}
 
 	rd_dev = &rd_devs[n];
-	MUTEX_LOCK(&rd_lock);
+	mutex_lock(&rd_lock);
 	CONFIG_CHUNK(str, size, len, "", 1);
 
  out:
-	MUTEX_UNLOCK(&rd_lock);
+	mutex_unlock(&rd_lock);
 	return len;
 }
 
@@ -627,7 +626,7 @@ static int rd_remove(int n, char **error_out)
 
 	DVKDEBUG(INTERNAL,"n=%d\n", n);
 
-	MUTEX_LOCK(&rd_lock);
+	mutex_lock(&rd_lock);
 
 	rd_dev = &rd_devs[n];
 
@@ -651,7 +650,7 @@ static int rd_remove(int n, char **error_out)
 	err = 0;
 	platform_device_unregister(&rd_dev->pdev);
 out:
-	MUTEX_UNLOCK(&rd_lock);
+	mutex_unlock(&rd_lock);
 	return err;
 	
 }
@@ -699,9 +698,15 @@ static int __init rd_init(void)
 {
 	char *error;
 	int i, err;
+	pid_t my_tid;
 
-	DVKDEBUG(INTERNAL,"\n");
-
+	my_tid = os_gettid();
+	DVKDEBUG(INTERNAL,"dcid=%d my_tid=%d uml_ep=%d\n",dcid, my_tid, uml_ep);
+	
+	err = dvk_umbind(dcid, my_tid, uml_ep);
+	if( err != uml_ep)
+		ERROR_PRINT(err);
+	
 	if (register_blkdev(RD_MAJOR, "rdisk"))
 		return -1;
 
@@ -713,17 +718,14 @@ static int __init rd_init(void)
 			return -1;
 	}
 	platform_driver_register(&rd_driver);
-	MUTEX_LOCK(&rd_lock);
+	mutex_lock(&rd_lock);
 	for (i = 0; i < RD_MAX_DEV; i++){
 		err = rd_add(i, &error);
 		if(err)
 			printk(KERN_ERR "Failed to initialize rdisk device %d :"
 			       "%s\n", i, error);
 	}
-	
-	MUTEX_UNLOCK(&rd_lock);
-	MUTEX_LOCK(&rd_ksync);
-
+	mutex_unlock(&rd_lock);
 	return 0;
 }
 
@@ -800,7 +802,7 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 	my_ep = dvk_getep(my_tid);
 	DVKDEBUG(INTERNAL,"mode=%d my_tid=%d my_ep=%d\n", mode, my_tid, my_ep);
 	
-	MUTEX_LOCK(&rd_mutex);
+	mutex_lock(&rd_mutex);
 	if(rd_dev->count == 0){
 		DVKDEBUG(INTERNAL,"REQ_OP_OPEN\n");
 		rd_req = kmalloc(sizeof(struct rd_thread_req),
@@ -813,8 +815,8 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 		rd_prepare_open_request(REQ_OP_OPEN, rd_req);
 		if (rd_submit_request(rd_req, rd_dev) != false) {
 			rd_dev->count++;
-			MUTEX_LOCK(&rd_ksync);
-			MUTEX_UNLOCK(&rd_mutex);
+//			mutex_lock(&rd_ksync);
+			mutex_unlock(&rd_mutex);
 			return(OK);
 		}
 		goto out;
@@ -829,7 +831,7 @@ static int rd_open(struct block_device *bdev, fmode_t mode)
 	        err = -EROFS;
 	}*/
 out:
-	MUTEX_UNLOCK(&rd_mutex);
+	mutex_unlock(&rd_mutex);
 	return err;
 }
 
@@ -843,7 +845,7 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 	my_ep = dvk_getep(my_tid);
 	DVKDEBUG(INTERNAL,"mode=%d my_tid=%d my_ep=%d\n", mode, my_tid, my_ep);
 
-	MUTEX_LOCK(&rd_mutex);
+	mutex_lock(&rd_mutex);
 	if(--rd_dev->count == 0){
 		DVKDEBUG(INTERNAL,"REQ_OP_CLOSE\n");
 		rd_req = kmalloc(sizeof(struct rd_thread_req),
@@ -855,14 +857,14 @@ static void rd_release(struct gendisk *disk, fmode_t mode)
 		}
 		rd_prepare_close_request(REQ_OP_CLOSE, rd_req);
 		if (rd_submit_request(rd_req, rd_dev) != false){
-			MUTEX_LOCK(&rd_ksync);
-			MUTEX_UNLOCK(&rd_mutex);
+//			mutex_lock(&rd_ksync);
+			mutex_unlock(&rd_mutex);
 			return(OK);			
 		}
 		goto out;
 	}
 out:
-	MUTEX_UNLOCK(&rd_mutex);
+	mutex_unlock(&rd_mutex);
 }
 
 /* Called with dev->lock held */
@@ -1021,7 +1023,7 @@ int rd_get_geometry(struct rdisk *rd_dev, int minor, struct hd_geometry *geo)
 	m_ptr->m_type   = DEV_IOCTL;
 	m_ptr->REQUEST	= DIOCGETP;
 	m_ptr->DEVICE   = minor;
-	m_ptr->IO_ENDPT = my_ep;
+	m_ptr->IO_ENDPT = uml_ep;
 	m_ptr->ADDRESS  = (char *) part_ptr; 
 	DVKDEBUG(INTERNAL,MSG2_FORMAT, MSG2_FIELDS(m_ptr));
 	rcode = dvk_sendrec_T(rd_ep, m_ptr, TIMEOUT_MOLCALL);
@@ -1072,8 +1074,8 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 		
 	my_tid = os_gettid();
 	my_ep = dvk_getep(my_tid);
-	DVKDEBUG(INTERNAL,"oper=%d minor=%d len=%ld rd_tid=%d my_ep=%d\n",
-		oper, minor, len, my_tid, my_ep);
+	DVKDEBUG(INTERNAL,"oper=%d minor=%d len=%ld rd_tid=%d my_ep=%d rdc_ep=%d\n",
+		oper, minor, len, my_tid, my_ep, rdc_ep);
 	/* Set up the message passed to task. */
 	m_ptr= &dev_mess;
 	if( oper == REQ_OP_READ)
@@ -1082,7 +1084,7 @@ int rdisk_rw(int oper, int minor, char *buf, unsigned long len, __u64  off)
 		m_ptr->m_type   = DEV_WRITE;
 	m_ptr->DEVICE   = minor;
 	m_ptr->POSITION = (int) off;
-	m_ptr->IO_ENDPT = my_ep;
+	m_ptr->IO_ENDPT = rdc_ep;
 	m_ptr->ADDRESS  = buf;
 	m_ptr->COUNT    = len;
 	m_ptr->TTY_FLAGS = 0;
@@ -1106,7 +1108,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 		return;
 	}
 
-	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
+//	DVKDEBUG(INTERNAL,RD_REQ_FORMAT,RD_REQ_FIELDS(req));
 	minor = req->req->rq_disk->first_minor;
 	len = req->length;
 
@@ -1116,7 +1118,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 			ERROR_PRINT(err);
 		}
 		req->error = err;
-		MUTEX_UNLOCK(&rd_ksync);
+//		mutex_unlock(&rd_ksync);
 		return;
 	}
 
@@ -1126,8 +1128,8 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 			ERROR_PRINT(err);
 		}
 		req->error = err;
-		MUTEX_UNLOCK(&rd_ksync);
-//		MUTEX_LOCK(&rd_tsync);
+//		mutex_unlock(&rd_ksync);
+//		mutex_lock(&rd_tsync);
 		return;
 	}
 		
@@ -1176,6 +1178,7 @@ static void do_rdisk_rqst(struct rd_thread_req *req)
 static int init_rdisk(void)
 {
 	int rcode, i;
+	char *error;
 	dvs_usr_t *dvsu_ptr;
 	dc_usr_t *dcu_ptr;
 	proc_usr_t *proc_ptr;  
@@ -1203,8 +1206,9 @@ static int init_rdisk(void)
  
 #define RDC_IS_FS_PROC_NR 
 #ifdef RDC_IS_FS_PROC_NR 
-	rdc_ep = dvk_lclbind(dcid, my_tid, FS_PROC_NR);
-#else // RDC_IS_FS_PROC_NR 
+//	rdc_ep = dvk_lclbind(dcid, my_tid, FS_PROC_NR);
+	rdc_ep = dvk_umbind(dcid, my_tid, FS_PROC_NR);
+#else // RDC_IS_FS_PROC_NR -  FREE USER ENDPOINT SEARCH
 	for( i = dcu_ptr->dc_nr_sysprocs - dcu_ptr->dc_nr_tasks;
 		i < dcu_ptr->dc_nr_procs - dcu_ptr->dc_nr_tasks; i++){
 		rdc_ep = dvk_lcltbind(dcid, my_tid, i);
@@ -1218,6 +1222,7 @@ static int init_rdisk(void)
 	rcode = dvk_getprocinfo(dcid, rdc_ep, proc_ptr);
 	if(rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
+	
 	return(rcode);
 }
 
@@ -1238,7 +1243,7 @@ int rd_thread(void *arg)
 
 //while(1){
 	
-//	MUTEX_LOCK(&rd_tsync);	
+//	mutex_lock(&rd_tsync);	
 	
 	while(1){
 		DVKDEBUG(INTERNAL,"\n");

@@ -595,10 +595,6 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	proc_usr_t *s_ptr;
 	dc_desc_t *dc_ptr;
 	proc_usr_t  *up_ptr;
-
-#define STRINGIFY(s) XSTRINGIFY(s)
-#define XSTRINGIFY(s) #s
-#pragma message ("LOCK_TASK_TYPE=" STRINGIFY(LOCK_TASK_TYPE))
 	
 	task_ptr = current;
 
@@ -1383,12 +1379,12 @@ DVKDEBUG(DBGLVL1,"parent_ep=%d child_lpid=%d \n",proc_ptr->p_usr.p_endpoint, chi
 DVKDEBUG(DBGLVL1,"dcid=%d\n", dcid);
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 	return(NULL);
 	dc_ptr 	= &dc[dcid];
-	if( dc_ptr->dc_usr.dc_flags)  		return(NULL);
+	if( dc_ptr->dc_usr.dc_flags) return(NULL);
 
 	/* Gets the endpoint of the binder   (i.e. PM) */
 	warn_ep = proc_ptr->p_priv.priv_usr.priv_warn;
 	if( warn_ep == NONE || warn_ep == ANY || warn_ep == SELF) 
-						return(NULL); 
+		return(NULL); 
 	warn_ptr = ENDPOINT2PTR(dc_ptr,warn_ep);
 	src_ep = proc_ptr->p_usr.p_endpoint;
 DVKDEBUG(DBGLVL1,"src_ep=%d warn_ep=%d \n",src_ep, warn_ep);
@@ -1397,11 +1393,11 @@ DVKDEBUG(DBGLVL1,"src_ep=%d warn_ep=%d \n",src_ep, warn_ep);
 	m_ptr = &m;
 	m_ptr->m_type  = MOLFREEPROC;
 	ret = kernel_sendrec(warn_ep, m_ptr);	
-	if(ret) 				return(NULL);
+	if(ret) return(NULL);
 	child_nr = m_ptr->PR_SLOT;
 DVKDEBUG(DBGLVL1,"child_nr=%d\n",child_nr);
 	if( child_nr < 0 || child_nr > dc_ptr->dc_usr.dc_nr_procs)
-						return(NULL);
+		return(NULL);
 
 	child_ep = kernel_lclbind(dcid, child_lpid, child_nr);
 	if(child_ep < 0) 			return(NULL);

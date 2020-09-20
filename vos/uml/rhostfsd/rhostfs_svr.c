@@ -156,7 +156,7 @@ int main ( int argc, char *argv[] )
 	map(SYS_mknod, lcl_mknod);
 	map(SYS_futimesat, lcl_futimes);
 	map(SYS_utimes, lcl_utimes);
-	map(SYS_statfs, lcl_statfs);
+	map(SYS_statfs64, lcl_statfs);
 	
 	RHSDEBUG( "Initialize the RHOSTFS own call vector to a safe default handler.\n");
   	for (i=0; i < RH_MAX_CALL; i++) {

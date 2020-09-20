@@ -234,8 +234,9 @@ long dvk_getep(int pid)
 #ifdef	CONFIG_DVKIPC
 	int ipc_op = ((DVKIPC_VERSION)<<16 | (DVK_GETEP << 8));
 	ret = DVK_IPC(	ipc_op, pid , 0L, 0L, NULL, 0L);
-	LIBDEBUG(DBGPARAMS,"ipc ret=%d\n",ret);	
-	if (ret < 0) {ret = (-errno); ERROR_PRINT(ret);}
+	LIBDEBUG(DBGPARAMS,"ipc ret=%d errno=%d\n", ret, errno);
+	if (ret < EDVSERRCODE) 
+		{ret = (-errno); ERROR_PRINT(ret);}
 	errno = 0;
 #else // CONFIG_DVKIPC	
 	ret = DVK_IOCTL(dvk_fd,DVK_IOCQGETEP, pid);
@@ -247,6 +248,7 @@ long dvk_getep(int pid)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 #endif // CONFIG_DVKIPC	
 	if (ret < EDVSERRCODE) ERROR_RETURN(ret);
+	LIBDEBUG(DBGPARAMS,"ret=%d\n",ret);	
 	return(ret);
 }
 
@@ -1210,13 +1212,6 @@ long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	int ipc_op = ((DVKIPC_VERSION)<<16 | (DVK_BIND << 8));
 	ret = DVK_IPC(	ipc_op, cmd, dcid, pid, endpoint, nodeid);
 	LIBDEBUG(DBGPARAMS,"ipc ret=%d errno=%d\n",ret, errno);	
- 	if( ret == (-1)){
-		if( -errno == endpoint){
-			errno = 0;
-			ret = endpoint;
-		} 
-		if (  -errno < EDVSERRCODE) ERROR_PRINT(-errno); 
-	}
 	errno = 0;
 #else // CONFIG_DVKIPC		
 	parm_bind_t parm;
@@ -1242,6 +1237,7 @@ bind_return:
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 #endif // CONFIG_DVKIPC		
 	if ( ret < EDVSERRCODE) ERROR_RETURN(ret); 
+	LIBDEBUG(DBGPARAMS,"ret=%d\n",ret);	
 	return(ret);
 }
 

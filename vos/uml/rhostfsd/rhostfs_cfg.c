@@ -3,7 +3,7 @@
 *  Sample File format
 # this is a comment 
 rhs SERVER1 {
-	dcid			0;
+	rhs_dcid			0;
 	rhs_ep		0;
 	rhs_dir		"/xxx/yyyy"
 };
@@ -17,13 +17,13 @@ int rhs_mandatory = 0;
 #define EXIT_CODE		1
 #define NEXT_CODE		2
 
-#define TKN_DCID		0
+#define TKN_RHS_DCID	0
 #define TKN_RHS_EP		1
 #define TKN_RHS_DIR		2
 #define NR_IDENT		3
 
 char *rhs_cfg_ident[] = {
-	"dcid",
+	"rhs_dcid",
 	"rhs_ep",
 	"rhs_dir",
 };
@@ -44,23 +44,23 @@ int rhs_search_ident(config_t *cfg)
 					if( cfg->next == nil)
 						fprintf(stderr, "Void value found at line %d\n", cfg->line);
 					cfg = cfg->next;
-					if( (ident_nr != TKN_DCID) && (TEST_BIT(rhs_mandatory, TKN_DCID))){
-							fprintf(stderr, "dcid must be the first parameter set: %d\n", cfg->line);
+					if( (ident_nr != TKN_RHS_DCID) && (TEST_BIT(rhs_mandatory, TKN_RHS_DCID))){
+							fprintf(stderr, "rhs_dcid must be the first parameter set: %d\n", cfg->line);
 							ERROR_RETURN(EXIT_CODE);
 					}
 					switch(ident_nr){
-						case TKN_DCID:
+						case TKN_RHS_DCID:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								ERROR_RETURN(EXIT_CODE);
 							}
-							RHSDEBUG("\t TKN_DCID=%d\n", atoi(cfg->word));
-							CLR_BIT(rhs_mandatory, TKN_DCID);					
-							dcid =  atoi(cfg->word);
-							if(dcid  < 0 || dcid >= dvs_ptr->d_nr_dcs)
+							RHSDEBUG("\t TKN_RHS_DCID=%d\n", atoi(cfg->word));
+							CLR_BIT(rhs_mandatory, TKN_RHS_DCID);					
+							rhs_dcid =  atoi(cfg->word);
+							if(rhs_dcid  < 0 || rhs_dcid >= dvs_ptr->d_nr_dcs)
 								ERROR_RETURN(EXIT_CODE);	
-							RHSDEBUG("dcid=%d\n", dcid);
-							get_dc_params(dcid);							
+							RHSDEBUG("rhs_dcid=%d\n", rhs_dcid);
+							get_dc_params(rhs_dcid);							
 							break;
 						case TKN_RHS_EP:
 							if (!config_isatom(cfg)) {
@@ -159,7 +159,7 @@ int rhs_search_config(config_t *cfg)
 	
 	RHSDEBUG("\n");
 
-	SET_BIT(rhs_mandatory, TKN_DCID);
+	SET_BIT(rhs_mandatory, TKN_RHS_DCID);
 	SET_BIT(rhs_mandatory, TKN_RHS_EP);
 	SET_BIT(rhs_mandatory, TKN_RHS_DIR);
 

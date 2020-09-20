@@ -171,7 +171,7 @@
 }
 
 /*--------------------------------------------------------------*/
-/*			ipc_bind				*/
+/*			ipc_bind_X				*/
 /* Binds (an Initialize) a Linux process to the IPC Kernel	*/
 /* Who can call bind?:						*/
 /* - The main thread of a process to bind itself (mnx_bind)	*/
@@ -187,7 +187,7 @@
 /* Remote  process: proc = endpoint 				*/
 /*--------------------------------------------------------------*/
 // int first, unsigned long second,unsigned long third, void __user * ptr, long fifth)
- long ipc_bind(int oper, int dcid, int param_pid, int endpoint, int nodeid)
+ long ipc_bind_X(int oper, int dcid, int param_pid, int endpoint, int nodeid)
 {  
 	long rcode;
 	DVKDEBUG(DBGPARAMS,"oper=%d dcid=%d param_pid=%d endpoint=%d nodeid=%d\n",oper, dcid, param_pid,
@@ -451,7 +451,7 @@ long ipc_vcopy( int src_ep,
 	long rcode=0; 
 	DVKDEBUG(DBGPARAMS,"\n");
 	rcode = new_dvs_end();
-	return(rcode);
+	return(rcode); 
 }
 
 /*--------------------------------------------------------------*/
@@ -465,8 +465,9 @@ long ipc_vcopy( int src_ep,
 							long fifth)
 { 
 	long rcode=0; 
-	DVKDEBUG(DBGPARAMS,"pid=%d\n",pid);
+	DVKDEBUG(DBGPARAMS,"before pid=%d\n",pid);
 	rcode = new_getep(pid);
+	DVKDEBUG(DBGPARAMS,"after rcode=%d\n",rcode);
 	return(rcode);
 }
 	
@@ -511,7 +512,7 @@ long ipc_vcopy( int src_ep,
 }
 
 /*--------------------------------------------------------------*/
-/*			ipc_wait4bind										*/
+/*			ipc_wait4bind_X										*/
 /* IT waits for self process binding or other process unbining 	*/
 /*  WAIT4BIND block until bind. It returns process endpoint */
 /*  WAIT4BIND_T block until bind. It returns process endpoint */
@@ -521,7 +522,7 @@ long ipc_vcopy( int src_ep,
 /*		returning =0 or (-1) on timed out 		*/
 /*--------------------------------------------------------------*/
 // int first, unsigned long second,unsigned long third, void __user * ptr, long fifth)
- long ipc_wait4bind(int oper, 
+ long ipc_wait4bind_X(int oper, 
 							int other_ep, 
 							long timeout_ms,
 							void __user * ptr, 

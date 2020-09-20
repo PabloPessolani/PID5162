@@ -158,10 +158,10 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 		mount -o remount,rw /dev/ubda /
 
 
-nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 	
 	
-	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu 
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu 
 			uml_dcid: dcid=0
 			uml_uml_ep: uml_ep=-2
 			uml_rd_ep: rd_ep=3
@@ -185,7 +185,7 @@ nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=
 			ERROR: 0:start_kernel_proc:109: rcode=-9
 			Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #15 Sat Aug 17 20:28:26 -03 2019
 			Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 265530
-			Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu root=98:0
+			Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu root=98:0
 			PID hash table entries: 4096 (order: 2, 16384 bytes)
 			Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
 			Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
@@ -3825,6 +3825,154 @@ ERROR, ADEMAS SIGUE EL ERROR -324
 
 	
 ===========================================================================================================
+20200828:
+		Esta fallando el DF, pero aparentemente es porque hay una SYSCALL no implementada 
+	
+	EN UML 
+		root@node1:/rhost# df
+		DEBUG rhostfs_show_options:295:
+		DEBUG rhostfs_show_options:300: root_path=/
+		DEBUG rhostfs_statfs:233:
+		DEBUG rmt_statfs64:376: filename=/
+		DEBUG rmt_syscall:28: who=1 syscallnr=268 <<<<<<<<<<<<<< #define __NR_statfs64		268
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+		ERROR: rmt_syscall:38: rcode=107
+		ERROR: rh_do_statfs:476: rcode=-107 <<<<<  EDVSBADREQUEST  (_SIGN 107)  /* destination cannot handle request */
+		df: /rhost: Transport endpoint is not connected
+		Filesystem     1K-blocks   Used Available Use% Mounted on
+		/dev/root        1032088 643628    336032  66% /
+		devtmpfs          516884      0    516884   0% /dev
+		tmpfs             516884      0    516884   0% /dev/shm
+		tmpfs             516884   7020    509864   2% /run
+		tmpfs               5120      0      5120   0% /run/lock
+		tmpfs             516884      0    516884   0% /sys/fs/cgroup
+
+	EN HOST 
+		rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 628:dvk_receive_T:884: endpoint=31438 timeout=-1
+		DEBUG 628:dvk_receive_T:888: ipc ret=0
+		 rhostfs_svr.c:main:189:dvk_receive rcode=0
+		 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=0 m2i3=1214235200 m2l1=1205199328 m2l2=1213226328 m2p1=0x841d9c0
+		 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+		 rhostfs_svr.c:main:217:LINUX Calling vector 268 <<<<<<<<<<<<<<<<<
+		RHOSTFSD: got unused request 268 from 10 <<<<<<<<<<<<<<<<<<<<<<<<<<
+		 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-107 m2i1=2 m2i2=0 m2i3=1214235200 m2l1=1205199328 m2l2=1213226328 m2p1=0x841d9c0
+		DEBUG 628:dvk_send_T:851: endpoint=10 timeout=30000
+		DEBUG 628:dvk_send_T:855: ipc ret=76
+		 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 628:dvk_receive_T:884: endpoint=31438 timeout=-1
+
+#define SYS_statfs64 	__NR_statfs64
+#define __NR_statfs64	268
+
+	LA TRANSFERENCIA DE DATOS HACIA Y DESDE RHOSTFS FUCIONO PERFECTAMENTE !!!! 
+	
+MODIFICADO AHORA TIRA CUALQUIER HUEVADA 
+		UML
+			root@node1:/rhost# df
+			DEBUG rhostfs_show_options:295:
+			DEBUG rhostfs_show_options:300: root_path=/
+			DEBUG rhostfs_statfs:233:
+			DEBUG rmt_statfs64:376: filename=/
+			DEBUG rmt_syscall:28: who=1 syscallnr=268
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			DEBUG rmt_syscall:41: m_type=0
+			Filesystem            1K-blocks               Used             Available Use% Mounted on
+			/dev/root               1032088             587140                392520  60% /
+			devtmpfs                 516884                  0                516884   0% /dev
+			tmpfs                    516884                  0                516884   0% /dev/shm
+			tmpfs                    516884              13484                503400   3% /run
+			tmpfs                      5120                  0                  5120   0% /run/lock
+			tmpfs                    516884                  0                516884   0% /sys/fs/cgroup
+			none           9847604115478128 -12107444069207172 -33437207499081838056   1% /rhost
+
+		HOST 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1370:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 1370:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=1205551104 m2i3=1205935400 m2l1=1205199328 m2l2=1205935448 m2p1=0x47e11d2c
+			 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 268
+			 rhostfs_lib.c:lcl_statfs:567:len=2
+			DEBUG 1370:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=2
+			DEBUG 1370:dvk_vcopy:130: ipc ret=2
+			 rhostfs_lib.c:lcl_statfs:571:pathname=/
+			DEBUG 1370:dvk_vcopy:126: src_ep=1 dst_ep=10 bytes=64
+			DEBUG 1370:dvk_vcopy:130: ipc ret=64
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=0 m2i1=2 m2i2=1205551104 m2i3=1205935400 m2l1=1205199328 m2l2=1205935448 m2p1=0x47e11d2c
+			DEBUG 1370:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 1370:dvk_send_T:855: ipc ret=76
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1370:dvk_receive_T:884: endpoint=31438 timeout=-1
+
+LISTO!!! AHORA FUNCIONA 
+			root@node1:/rhost# df
+			DEBUG rhostfs_show_options:295:
+			DEBUG rhostfs_show_options:300: root_path=/
+			DEBUG rhostfs_statfs:233:
+			DEBUG rmt_statfs64:376: filename=/
+			DEBUG rmt_syscall:28: who=1 syscallnr=268
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			DEBUG rmt_syscall:41: m_type=0
+			Filesystem     1K-blocks     Used Available Use% Mounted on
+			/dev/root        1032088   587312    392348  60% /
+			devtmpfs          516884        0    516884   0% /dev
+			tmpfs             516884        0    516884   0% /dev/shm
+			tmpfs             516884    13484    503400   3% /run
+			tmpfs               5120        0      5120   0% /run/lock
+			tmpfs             516884        0    516884   0% /sys/fs/cgroup
+			none            19994224 17705184   1250348  94% /rhost
+			
+	
+OTRO ERROR- SEGURAMENTE POR DIFERENCIA CON LA VERSION DE 64 BITS
+
+		UML 
+			DEBUG rmt_lstat64:358: filename=//none
+			DEBUG rmt_syscall:28: who=1 syscallnr=196
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			ERROR: rmt_syscall:38: rcode=2
+			ERROR: rmt_lstat64:364: rcode=-1
+			ERROR: rh_stat_file:82: rcode=-2
+			ERROR: rh_read_name:580: rcode=-2 <<<< EDVSNOENT A component of path does not exist, or path is an empty string.
+			DEBUG rhostfs_evict_inode:270:
+			DEBUG RHOSTFS_I:40: i_ino=0
+			DEBUG rhostfs_destroy_inode:288:
+			ERROR: rhostfs_lookup:751: rcode=-2
+			DEBUG RHOSTFS_I:40: i_ino=0
+			none on /rhost type rhostfs (rw,relatime)
+
+		SERVER 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1407:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 1407:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=196 m2i1=7 m2i2=1 m2i3=1213250528 m2l1=1206226944 m2l2=1213250588 m2p1=0x1
+			 rhostfs_svr.c:main:201:call_nr=196 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 196
+			 rhostfs_lib.c:lcl_lstat:603:len=7
+			DEBUG 1407:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=7
+			DEBUG 1407:dvk_vcopy:130: ipc ret=7
+			 rhostfs_lib.c:lcl_lstat:607:pathname=//none
+			ERROR: rhostfs_lib.c:lcl_lstat:610: rcode=-2
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-2 m2i1=7 m2i2=1 m2i3=1213250528 m2l1=1206226944 m2l2=1213250588 m2p1=0x1
+			DEBUG 1407:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 1407:dvk_send_T:855: ipc ret=76
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1407:dvk_receive_T:884: endpoint=31438 timeout=-1
+				
+	
+TODO !!!!!!!!!!!!!!!!!!!!!!!!!1111
+		Habria que poner en la linea de comandos el endpoint del server RHOSTFSD 
+		Si no esta ese valor, no inicializa.
+		
+	
+	
+==============================================================================================================
 ULTIMO_LOG 
 
 POSIBLE SOLUCION:

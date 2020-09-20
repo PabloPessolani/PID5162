@@ -382,22 +382,26 @@ do {\
 
 #define RUNLOCK_PROC(p)	\
 	do {\
+		DVKDEBUG(DBGPROCLOCK,"RUNLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 		read_unlock(&p->p_rwlock);\
 	}while(0); 
 
 #define WUNLOCK_PROC(p)	\
 do {\
+	DVKDEBUG(DBGPROCLOCK,"WUNLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 	write_unlock(&p->p_rwlock);\
 }while(0); 
 
 #define WLOCK_PROC(p)		\
 do {\
 	write_lock(&p->p_rwlock);\
+	DVKDEBUG(DBGPROCLOCK,"WLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 }while(0);
 
 #define RLOCK_PROC(p)		\
 do {\
 	read_lock(&p->p_rwlock);\
+	DVKDEBUG(DBGPROCLOCK,"RLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
 }while(0);
 
 #define COPY_TO_USER_PROC(ret, kaddr, uaddr, len )		\
@@ -425,6 +429,11 @@ do {\
 	ret = copy_usr2usr(endpoint, src, saddr, dst, daddr, len);
 
 #define PROC_LOCK_INIT(p)	rwlock_init(&(p->p_rwlock));
+
+#define PLOCK_PROC(p)		\
+do {\
+	DVKDEBUG(DBGPROCLOCK,"PLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
+}while(0);
 
 /*--------------------------------------------------------- USE_PROC_MUTEX  ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_MUTEX
@@ -481,6 +490,11 @@ do {\
 
 #define PROC_LOCK_INIT(p)	mutex_init(&(p->p_mutex));
 
+#define PLOCK_PROC(p)		\
+do {\
+	DVKDEBUG(DBGPROCLOCK,"PLOCK_PROC ep=%d count=%d\n",p->p_usr.p_endpoint,atomic_read(&p->p_mutex.count));\
+}while(0);
+
 /*--------------------------------------------------------- USE_PROC_SPINLOCK ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_SPINLOCK
 
@@ -535,6 +549,11 @@ do {\
 }while(0)
 
 #define PROC_LOCK_INIT(p)	spin_lock_init(&(p->p_spinlock));
+
+#define PLOCK_PROC(p)		\
+do {\
+	DVKDEBUG(DBGPROCLOCK,"PLOCK_PROC ep=%d\n",p->p_usr.p_endpoint);\
+}while(0);
 
 /*--------------------------------------------------------- USE_PROC_RWSEM  ---------------------------------------*/
 #elif LOCK_PROC_TYPE == USE_PROC_RWSEM
@@ -611,6 +630,10 @@ do {\
 #define FOR_EACH_PROC(dc_ptr, i) \
 	for (i = 0; i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs); i++) \
 
+#define PLOCK_PROC(p)		\
+do {\
+	DVKDEBUG(DBGPROCLOCK,"PLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint,p->p_rwsem.count);\
+}while(0);
 
 /*--------------------------------------------------------- USE_DC_RWLOCKS ---------------------------------------*/
 #if LOCK_DC_TYPE == USE_DC_RWLOCK

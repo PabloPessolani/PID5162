@@ -345,7 +345,7 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 /*		new_node_migrate				*/
 /* LOCAL node is NEW node				*/
 /*------------------------------------------------------*/
-long int new_node_migrate(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid)
+long int new_node_migrate(struct proc *proc_ptr, int pid)
 {
 	struct task_struct *task_ptr;
 
@@ -389,7 +389,7 @@ long int new_node_migrate(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid)
 /* ON INPUT: proc WLOCKED				*/
 /* ON OUTPUT: proc WLOCKED				*/
 /*------------------------------------------------------*/
-long int migr_commit(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid, int new_nodeid)
+long int migr_commit(unsigned long int dc_bitmap_nodes, struct proc *proc_ptr, int pid, int new_nodeid)
 {
 	int ret;
 	proc_usr_t *pu_ptr;
@@ -405,9 +405,10 @@ long int migr_commit(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid, int new_
 	RLOCK_NODE(newnode_ptr);
 	ret = OK;
 	do {
-		if(newnode_ptr->n_usr.n_flags == NODE_FREE) 		{ret = EDVSNOPROXY; break;}
-		if(!test_bit(new_nodeid, &dc_ptr->dc_usr.dc_nodes))	{ret = EDVSDCNODE; break;}
-		if(!test_bit(dc->dc_usr.dc_dcid, &newnode_ptr->n_usr.n_dcs)) 		{ret = EDVSDCNODE; break;} 
+		if(newnode_ptr->n_usr.n_flags == NODE_FREE) {ret = EDVSNOPROXY; break;}
+		if(!test_bit(new_nodeid, &dc_bitmap_nodes))	{ret = EDVSDCNODE; break;}
+		if(!test_bit(proc_ptr->p_usr.p_dcid, &newnode_ptr->n_usr.n_dcs))
+													{ret = EDVSDCNODE; break;} 
 	}while(0);
 	RUNLOCK_NODE(newnode_ptr);
 	if(ret) ERROR_RETURN(ret);
@@ -415,7 +416,7 @@ long int migr_commit(dc_desc_t *dc_ptr, struct proc *proc_ptr, int pid, int new_
 	if( atomic_read(&local_nodeid) == proc_ptr->p_usr.p_nodeid) {
 		ret = old_node_migrate(proc_ptr, new_nodeid);
 	}else if(atomic_read(&local_nodeid) == new_nodeid) {		
-		ret = new_node_migrate(dc_ptr, proc_ptr, pid);
+		ret = new_node_migrate(proc_ptr, pid);
 	}else{
 		proc_ptr->p_usr.p_nodeid = new_nodeid;
 		flush_migr_list(proc_ptr);
@@ -457,7 +458,8 @@ asmlinkage long new_migrate(int oper, int pid, int dcid, int endpoint, int new_n
 	int ret, p_nr;
 	struct proc *proc_ptr;
 	struct task_struct *task_ptr;
-
+	unsigned long int dc_bitmap_nodes;
+	
 #ifdef DVS_CAPABILITIES
 	 if ( !capable(CAP_VOS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
 #else
@@ -476,7 +478,6 @@ asmlinkage long new_migrate(int oper, int pid, int dcid, int endpoint, int new_n
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
 	RLOCK_DC(dc_ptr);
-
 	ret = OK;  	
 	p_nr = _ENDPOINT_P(endpoint);
 	DVKDEBUG(GENERIC,"check endpoint=%d p_nr=%d \n", endpoint, p_nr);
@@ -490,13 +491,14 @@ asmlinkage long new_migrate(int oper, int pid, int dcid, int endpoint, int new_n
 		RUNLOCK_DC(dc_ptr);
 		ERROR_RETURN(ret);
 	}
-	
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
+	RUNLOCK_DC(dc_ptr);
+
 	WLOCK_PROC(proc_ptr);
 	if(IT_IS_LOCAL(proc_ptr) ){
 		task_ptr = proc_ptr->p_task;
 		if(task_ptr == NULL) {
 			WUNLOCK_PROC(proc_ptr);
-			RUNLOCK_DC(dc_ptr);
 			ERROR_RETURN(EDVSBADPROC);
 		}
 	}  	
@@ -510,7 +512,7 @@ asmlinkage long new_migrate(int oper, int pid, int dcid, int endpoint, int new_n
 			ret = migr_rollback(proc_ptr);
 			break;
 		case MIGR_COMMIT:
-			ret = migr_commit(dc_ptr, proc_ptr, pid, new_nodeid);
+			ret = migr_commit(dc_bitmap_nodes, proc_ptr, pid, new_nodeid);
 			break;
 		default:
 			ret = EDVSNOSYS;
@@ -518,7 +520,6 @@ asmlinkage long new_migrate(int oper, int pid, int dcid, int endpoint, int new_n
 	}
 	
 	WUNLOCK_PROC(proc_ptr);
-	RUNLOCK_DC(dc_ptr);
 
 	if(ret) ERROR_RETURN(ret);	
 

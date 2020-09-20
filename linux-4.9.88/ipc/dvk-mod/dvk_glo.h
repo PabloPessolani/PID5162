@@ -2,8 +2,7 @@
 /*				GLOBAL VARIABLES		*/
 /*----------------------------------------------------------------*/
 
-EXTERN int dvk_iface_type; 
-
+EXTERN unsigned long int dbglvl;
 EXTERN dc_desc_t dc[NR_DCS];		/* an array of DC structs */
 EXTERN cluster_node_t node[NR_NODES];	/* an array of NODE structs */
 EXTERN proxies_t proxies[NR_NODES];		/* an array of PROXY PAIR structs */
@@ -152,7 +151,6 @@ dvs_usr_t dvs = {
 		NR_SYS_PROCS,
 		MAXCOPYBUF,
 		MAXCOPYLEN,
-
 		(GENERIC|INTERNAL|DBGPROCLOCK|DBGDCLOCK|DBGMESSAGE|DBGCMD|DBGVCOPY|DBGPARAMS|DBGPROC|\
 		 DBGPRIV|DBGPROCSEM),
 		DVS_VERSION,

@@ -37,6 +37,10 @@ static const LZ4F_preferences_t lz4_preferences = {
 #define COMPRESS_YES 		1
 #define AUTOBIND_NO			0
 #define AUTOBIND_YES 		1
+#define PID_NO				0
+#define PID_YES 			1
+#define TIMESTAMP_NO		0
+#define TIMESTAMP_YES		1
 
 // makes remotes clients automatic bind when they send a message to local receiver proxy 
 // if local  SYSTASK is running, it does not work 
@@ -59,6 +63,8 @@ proxy_payload_t *p_payload2;
 proxy_payload_t *p_batch;
 char 			*p_comp_pl;
 char 			*p_decomp_pl;
+proc_usr_t		*src_ptr;
+proc_usr_t		*dst_ptr;
 
 LZ4F_errorCode_t p_lz4err;
 size_t			p_offset;
@@ -75,6 +81,7 @@ int rmsg_fail = 0;
 int smsg_ok   = 0;
 int smsg_fail = 0; 
 int pws_port;
+pid_t spid, rpid;
 
 pthread_mutex_t px_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t px_rcond = PTHREAD_COND_INITIALIZER;
@@ -98,6 +105,12 @@ pthread_t pws_pth;
 int compress_opt;
 int batch_opt;
 int autobind_opt;
+int pid_opt;
+#ifdef PROXY_TIMESTAMP
+int timestamp_opt;
+#endif // PROXY_TIMESTAMP
+
+clockid_t clk_id = CLOCK_REALTIME;
 
 void main_pws(void *arg_port);
 void wdmp_px_stats(void);
@@ -115,9 +128,28 @@ struct  px_stats_s {
 typedef struct px_stats_s px_stats_t;
 static px_stats_t px_stats[NR_NODES][NR_DCS];
 
-#define PXS_FORMAT "snode=%d dnode=%d dcid=%d nr_msg=%ld nr_data=%ld nr_cmd=%ld\n" 
-#define PXS_FIELDS(p) 	 p->pst_snode, p->pst_dnode, p->pst_dcid \
-						, p->pst_nr_msg, p->pst_nr_data, p->pst_nr_cmd
+#if PX_ADD_TIMESTAMP
+int timespec2str(char *buf, uint len, struct timespec *ts) {
+    int ret;
+    struct tm t;
+
+    tzset();
+    if (localtime_r(&(ts->tv_sec), &t) == NULL)
+        return 1;
+
+    ret = strftime(buf, len, "%F %T", &t);
+    if (ret == 0)
+        return 2;
+    len -= ret - 1;
+
+    ret = snprintf(&buf[strlen(buf)], len, ".%09ld", ts->tv_nsec);
+    if (ret >= len)
+        return 3;
+
+    return 0;
+}
+#endif // PX_ADD_TIMESTAMP
+					
 	
 /*----------------------------------------------*/
 /*      PROXY RECEIVER FUNCTIONS               */
@@ -242,7 +274,7 @@ int pr_receive_payload(proxy_payload_t *pl_ptr, int pl_size)
        	p_ptr += n;
    	}
     
-    if(n < 0) ERROR_RETURN(errno);
+    if(n < 0) ERROR_RETURN(-errno);
  	return(OK);
 }
 
@@ -268,7 +300,7 @@ int pr_receive_header(void)
         	p_ptr += n;
         }
    	}
-    if( n < 0)  ERROR_RETURN(errno);
+    if( n < 0)  ERROR_RETURN(-errno);
 	return(OK);
 }
 
@@ -284,8 +316,17 @@ int pr_process_message(void) {
 		PXYDEBUG("RPROXY: About to receive header\n");
     	rcode = pr_receive_header();
     	if (rcode != 0) ERROR_RETURN(rcode);
-		PXYDEBUG("RPROXY:" CMD_FORMAT,CMD_FIELDS(p_header));
-		PXYDEBUG("RPROXY:" CMD_XFORMAT,CMD_XFIELDS(p_header));
+
+		if( p_header->c_cmd != CMD_NONE) {
+			PXYDEBUG("RPROXY:" CMD_FORMAT,CMD_FIELDS(p_header));
+			PXYDEBUG("RPROXY:" CMD_XFORMAT,CMD_XFIELDS(p_header));
+			PXYDEBUG("RPROXY: %d "CMD_TSFORMAT, rpid, CMD_TSFIELDS(p_header)); 
+			if( pid_opt)
+				PXYDEBUG("RPROXY: %d "CMD_PIDFORMAT, rpid, CMD_PIDFIELDS(p_header)); 
+		} else {
+				PXYDEBUG("RPROXY: %d NONE\n", rpid); 			
+		}
+		
 		switch(p_header->c_cmd){
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
@@ -435,6 +476,12 @@ int pr_process_message(void) {
 			for( i = 0; i < batch_nr; i++){
 				bat_ptr = &bat_cmd[i];
 				PXYDEBUG("RPROXY: bat_cmd[%d]:" CMD_FORMAT, i, CMD_FIELDS(bat_ptr));
+				PXYDEBUG("RPROXY:" CMD_FORMAT,CMD_FIELDS(bat_ptr));
+				PXYDEBUG("RPROXY:" CMD_XFORMAT,CMD_XFIELDS(bat_ptr));
+				PXYDEBUG("RPROXY: %d "CMD_TSFORMAT, rpid, CMD_TSFIELDS(bat_ptr)); 
+				if( pid_opt){
+					PXYDEBUG("RPROXY: %d "CMD_PIDFORMAT, rpid, CMD_PIDFIELDS(bat_ptr)); 
+				}
 				rcode = dvk_put2lcl(bat_ptr, p_payload);
 				if( rcode < 0) {
 					ERROR_RETURN(rcode);
@@ -566,6 +613,7 @@ void pr_init(void)
 	MTX_UNLOCK(px_mutex);
 #endif // PWS_ENABLED 	
 	
+	rpid = getpid();
     if( pr_setup_connection() == OK) {
       	pr_start_serving();
  	} else {
@@ -639,12 +687,13 @@ int  ps_send_header(proxy_hdr_t *hd_ptr )
     while(sent < total) {
         n = send(sproxy_sd, p_ptr, bytesleft, 0);
         if (n < 0) {
+			ERROR_PRINT(n);
 			if(errno == EALREADY) {
 				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
 			}else{
-				ERROR_RETURN(errno);
+				ERROR_RETURN(-errno);
 			}
 		}
         sent += n;
@@ -679,7 +728,7 @@ int  ps_send_payload(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 				sleep(1);
 				continue;
 			}else{
-				ERROR_RETURN(errno);
+				ERROR_RETURN(-errno);
 			}
 		}
         sent += n;
@@ -776,7 +825,7 @@ int  ps_send_remote(proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr )
 	
 	/* send the header */
 	rcode =  ps_send_header(hd_ptr);
-	if ( rcode != OK)  ERROR_RETURN(rcode);
+	if ( rcode < 0)  ERROR_RETURN(rcode);
 
 	if( hd_ptr->c_len > 0) {
 		PXYDEBUG("SPROXY: send payload len=%d\n", hd_ptr->c_len );
@@ -807,18 +856,16 @@ int  ps_start_serving(void)
 	proxy_hdr_t *bat_vect;
     int rcode;
     message *m_ptr;
-    int pid, ret;
+    int ret;
 
 	if( compress_opt)
 		init_compression();
-	
-    pid = getpid();
 	
     while(1) {
 		cmd_flag = 0;
 		batch_nr = 0;		// nr_cmd the number of batching commands in the buffer
 			
-		PXYDEBUG("SPROXY %d: Waiting a message\n", pid);
+		PXYDEBUG("SPROXY %d: Waiting a message\n", spid);
 		ret = dvk_get2rmt(p_header, p_payload); 
 
 //		p_header->c_flags   = 0;
@@ -834,8 +881,12 @@ int  ps_start_serving(void)
 				p_header->c_rcode = 0;
 				rcode =  ps_send_remote(p_header, p_payload);
 				cmd_flag = 0;
-				if (rcode == 0) smsg_ok++;
-				else smsg_fail++;
+				if (rcode == 0) {
+					smsg_ok++;
+				}else{
+					smsg_fail++;
+					ERROR_RETURN(rcode);
+				}
 				break;
 			case EDVSNOTCONN:
 				ERROR_RETURN(EDVSNOTCONN);
@@ -845,24 +896,47 @@ int  ps_start_serving(void)
 		}
 		if( ret == EDVSTIMEDOUT) continue;
 
-		PXYDEBUG("SPROXY: %d "CMD_FORMAT,pid, CMD_FIELDS(p_header)); 
-		PXYDEBUG("SPROXY: %d "CMD_XFORMAT,pid, CMD_XFIELDS(p_header)); 
+		PXYDEBUG("SPROXY: %d "CMD_FORMAT,spid, CMD_FIELDS(p_header)); 
+		PXYDEBUG("SPROXY: %d "CMD_XFORMAT,spid, CMD_XFIELDS(p_header)); 
+	
+#ifdef PROXY_TIMESTAMP	
+		if( timestamp_opt){
+			clock_gettime(clk_id, &p_header->c_timestamp);
+			PXYDEBUG("SPROXY: %d "CMD_TSFORMAT, spid, CMD_TSFIELDS(p_header)); 
+		}
+#endif // PROXY_TIMESTAMP	
+		
+		if( pid_opt){
+			ret = dvk_getprocinfo(p_header->c_dcid, _ENDPOINT_P(p_header->c_src), src_ptr);
+			if(ret == 0){
+				p_header->c_src_pid = src_ptr->p_lpid;
+			}else {
+				p_header->c_src_pid = ret;
+			}
+			ret = dvk_getprocinfo(p_header->c_dcid, _ENDPOINT_P(p_header->c_dst), dst_ptr);
+			if(ret == 0){
+				p_header->c_dst_pid = dst_ptr->p_lpid;
+			}else {
+				p_header->c_dst_pid = ret;
+			}
+			PXYDEBUG("SPROXY: %d "CMD_PIDFORMAT, spid, CMD_PIDFIELDS(p_header)); 
+		}
+				
 		//------------------------ BATCHEABLE COMMAND -------------------------------
 		if (batch_opt) {
 			if(  (p_header->c_cmd != CMD_COPYIN_DATA )     // is a batcheable command ??
 			  && (p_header->c_cmd != CMD_COPYOUT_DATA)){	// YESSSSS
-
 				if ( (p_header->c_cmd  == CMD_SEND_MSG) 
 					||(p_header->c_cmd == CMD_SNDREC_MSG)
 					||(p_header->c_cmd == CMD_REPLY_MSG)){
 					m_ptr = &p_header->c_u.cu_msg;
 					PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
-				}
+				}			
 				// store original header into batched header 
 				memcpy( (char*) p_header3, p_header, sizeof(proxy_hdr_t));
 				bat_vect = (proxy_hdr_t*) p_batch;	
 				do{
-					PXYDEBUG("SPROXY %d: Getting more messages\n", pid);
+					PXYDEBUG("SPROXY %d: Getting more messages\n", spid);
 					ret = dvk_get2rmt_T(p_header2, p_payload2, TIMEOUT_NOWAIT);            
 					if( ret != OK) {
 						switch(ret) {
@@ -903,8 +977,12 @@ int  ps_start_serving(void)
 			p_header3->c_batch_nr = batch_nr;
 			p_header3->c_len      = batch_nr * sizeof(proxy_hdr_t);
 			rcode =  ps_send_remote(p_header3, p_batch);
-			if (rcode == 0) smsg_ok++;
-			else smsg_fail++;
+			if (rcode == 0) {
+				smsg_ok++;
+			}else{
+				smsg_fail++;
+				ERROR_RETURN(rcode);
+			}
 			batch_nr = 0;		// nr_cmd the number of batching commands in the buffer
 		} else {
 			PXYDEBUG("SPROXY:" CMD_FORMAT, CMD_FIELDS(p_header));
@@ -918,8 +996,12 @@ int  ps_start_serving(void)
 		if( cmd_flag == CMD_PENDING) { 
 			rcode =  ps_send_remote(p_header2, p_payload2);
 			cmd_flag = 0;
-			if (rcode == 0) smsg_ok++;
-			else smsg_fail++;
+			if (rcode == 0) {
+				smsg_ok++;
+			}else{
+				smsg_fail++;
+				ERROR_RETURN(rcode);
+			}
 		}
 	}
 
@@ -951,13 +1033,13 @@ int ps_connect_to_remote(void)
 	}
 
     if((inet_pton(AF_INET,inet_ntoa( *( struct in_addr*)(rmthost->h_addr_list[0])), (struct sockaddr*) &rmtserver_addr.sin_addr)) <= 0)
-    	ERROR_RETURN(errno);
+    	ERROR_RETURN(-errno);
 
     inet_ntop(AF_INET, (struct sockaddr*) &rmtserver_addr.sin_addr, rmt_ipaddr, INET_ADDRSTRLEN);
 	PXYDEBUG("SPROXY: for node %s running at  IP=%s\n", px.px_name, rmt_ipaddr);    
 
 	rcode = connect(sproxy_sd, (struct sockaddr *) &rmtserver_addr, sizeof(rmtserver_addr));
-    if (rcode != 0) ERROR_RETURN(errno);
+    if (rcode != 0) ERROR_RETURN(-errno);
     return(OK);
 }
 
@@ -967,7 +1049,7 @@ int ps_connect_to_remote(void)
  */
 void  ps_init(void) 
 {
-    int rcode = 0, n, d;
+    int rcode = 0, ret , n, d;
 
 	PXYDEBUG("SPROXY: Initializing on PID:%d\n", getpid());
     
@@ -1023,6 +1105,16 @@ void  ps_init(void)
 		}
 	}
 	
+
+	if( pid_opt) {
+		posix_memalign( (void**) &src_ptr, getpagesize(), (sizeof(proc_usr_t)));
+		if (src_ptr== NULL) {
+				perror("src_ptr posix_memalign");
+				exit(1);
+		}
+	}
+
+
     // Create server socket.
     if ( (sproxy_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
        	ERROR_EXIT(errno)
@@ -1044,6 +1136,8 @@ void  ps_init(void)
 	MTX_UNLOCK(px_mutex);
 #endif //PWS_ENABLED 	
 
+	spid = getpid();
+
 	while(1) {
 		do {
 			if (rcode < 0)
@@ -1059,12 +1153,14 @@ void  ps_init(void)
 			ERROR_EXIT(rcode);
 		} 
 		
-		ps_start_serving();
+		ret = ps_start_serving();
 	
 		rcode = dvk_proxy_conn(px.px_id, DISCONNECT_SPROXY);
 		if(rcode){
 			ERROR_EXIT(rcode);
-		} 	
+		} 
+		ERROR_PRINT(ret);
+		close(rconn_sd);
 		close(sproxy_sd);
 	}
 
@@ -1074,10 +1170,12 @@ void  ps_init(void)
 
 void usage(void)
 {
-   	fprintf(stderr,"Usage: lz4tcp_proxy_bat -[bBZ] -n <px_name> -i <px_id> \n");
+   	fprintf(stderr,"Usage: lz4tcp_proxy_bat -[bBZPT] -n <px_name> -i <px_id> \n");
    	fprintf(stderr,"/t b: Remote Client auto-binding\n");
    	fprintf(stderr,"/t B: Message Batching\n");
    	fprintf(stderr,"/t Z: LZ4 Data Compression\n");
+   	fprintf(stderr,"/t P: Add sender PID on command\n");
+   	fprintf(stderr,"/t T: Add Timestamp on command\n");
    	fprintf(stderr,"/t n: Proxy name\n");
    	fprintf(stderr,"/t i: Proxy ID\n");
 	exit(1);
@@ -1088,7 +1186,7 @@ void usage(void)
 /*----------------------------------------------*/
 void  main ( int argc, char *argv[] )
 {
-    int spid, rpid, pid, status;
+    int pid, status;
     int ret, c;
     dvs_usr_t *d_ptr;    
 	struct option long_options[] = {
@@ -1097,16 +1195,23 @@ void  main ( int argc, char *argv[] )
 		{ "autobind", 	no_argument, 		NULL, 'b' },
 		{ "batch", 		no_argument, 		NULL, 'B' },
 		{ "compress", 	no_argument, 		NULL, 'Z' },
+		{ "PID", 		no_argument, 		NULL, 'P' },		
+		{ "Timestamp", 	no_argument, 		NULL, 'T' },
 		{ 0, 0, 0, 0 }, 		
 	};
 	
 	compress_opt    = COMPRESS_NO;
 	batch_opt    	= BATCH_NO;
 	autobind_opt   	= AUTOBIND_NO;
+	pid_opt 	  	= PID_NO;
+#ifdef PROXY_TIMESTAMP	
+	timestamp_opt  	= TIMESTAMP_NO;
+#endif // PROXY_TIMESTAMP	
+
 	px.px_id 		= (-1);
 	px.px_name[0]	= '\0';
 	
-	while((c = getopt_long_only(argc, argv, "n:i:bBZ", long_options, NULL)) >= 0) {
+	while((c = getopt_long_only(argc, argv, "n:i:bBZP", long_options, NULL)) >= 0) {
 		switch(c) {
 			case 'b': 
 				autobind_opt =  AUTOBIND_YES;
@@ -1128,7 +1233,17 @@ void  main ( int argc, char *argv[] )
 				strncpy(px.px_name,optarg, MAXPROXYNAME);
 				px.px_name[MAXPROCNAME-1]= '\0';
 				printf("TCP Proxy Pair name: %s\n",px.px_name);
-				break;							
+				break;	
+			case 'P':			
+				pid_opt =  PID_YES;
+				PXYDEBUG("Option P: pid_opt=PID_YES\n");
+				break;
+#ifdef PROXY_TIMESTAMP
+			case 'T':			
+				timestamp_opt =  TIMESTAMP_YES;
+				PXYDEBUG("Option P: timestamp_opt=TIMESTAMP_YES\n");
+				break;
+#endif // PROXY_TIMESTAMP
 			default:
 				usage();
 				exit(EXIT_FAILURE);
@@ -1147,7 +1262,6 @@ void  main ( int argc, char *argv[] )
 		}
 	}
 
-
 	ret = dvk_open();
 	if (ret < 0)  ERROR_PRINT(ret);
 	
@@ -1157,7 +1271,7 @@ void  main ( int argc, char *argv[] )
 
     pid = getpid();
 	PXYDEBUG("MAIN: pid=%d local_nodeid=%d\n", pid, local_nodeid);
-	
+		
     /* creates SENDER and RECEIVER Proxies as children */
     if ( (spid = fork()) == 0) ps_init();
     if ( (rpid = fork()) == 0) pr_init();

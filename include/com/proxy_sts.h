@@ -2,7 +2,6 @@
 #ifndef _COM_PROXY_STS_H
 #define _COM_PROXY_STS_H
 
-
 #define MIS_BIT_PROXY		0
 #define MIS_BIT_CONNECTED	1
 #define MIS_BIT_NOTIFY		2
@@ -15,8 +14,8 @@
 
 #define MIS_BIT_KILLED	 	8
 #define MIS_BIT_WOKENUP		9
-
 #define MIS_BIT_USERMODE	10
+#define MIS_BIT_RMTINFO		11
 
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/
@@ -30,6 +29,7 @@ enum mis_status {
 		MIS_KILLED		= (1<<MIS_BIT_KILLED), 		/* The process has been killed 		*/
 		MIS_WOKENUP 	= (1<<MIS_BIT_WOKENUP), 	/* The process has been signaled 	*/
 		MIS_USERMODE 	= (1<<MIS_BIT_USERMODE), 	/* The process is running inside a local USERMODE VOS */
+		MIS_USERMODE 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
 };
 
 #define PX_BIT_INUSE		0

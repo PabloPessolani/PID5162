@@ -1,6 +1,8 @@
 
 #ifdef CONFIG_UML_DVK 
 
+#pragma message ("Including header files")
+
 #include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
 
 #include "/usr/src/dvs/include/com/dvs_config.h"
@@ -40,6 +42,7 @@
 
 int dvk_thread(void *arg);
 int start_dvk_thread(unsigned long sp, int *fd_out);
+#ifdef ANULADO
 int os_sem_init(sem_t *sem, unsigned int value);
 int os_sem_post(sem_t *sem);
 int os_sem_wait(sem_t *sem);
@@ -47,6 +50,7 @@ int down_kernel(void);
 int down_thread(void);
 int up_kernel(void);
 int up_thread(void);
+#endif // ANULADO
 
 
 #endif // CONFIG_UML_DVK

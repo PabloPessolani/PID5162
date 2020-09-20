@@ -96,7 +96,7 @@ NO PUDE USAR NI LOS KERNELS NI LOS ROOTFS DE LAS PAGINAS DE UML
 
 TUVE MUCHOS INCONVENIENTES PERO PUDE BOOTEAR CON (tanto de CONSOLA HOST como desde SSH ) 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M 
+ ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw   mem=1024M 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  
 En mi caso, /dev/sdc5, /dev/sdc6 y /dev/sdc7 es un Debian pristino instalado directamente desde la red
@@ -1083,7 +1083,7 @@ con=pty con0=fd:0,fd:1 eth0=tuntap,tap0,,192.168.1.1 umid=uml1
 Se compilo el 
 
 
- ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M 
+ ./linux-dvk-uml con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw   mem=1024M 
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -1236,7 +1236,7 @@ in to each new thread that runs.
 20190511:
 		Pruebas para determinar como trabaja la memoria y los PIDs.
 		
-root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M 
+root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw   mem=1024M 
 		
 
 
@@ -1975,7 +1975,7 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 
 			SE INCORPORO LA LECTURA DE PARAMETROS EN LA LINEA DE COMANDOS (dcid=23 uml_ep=-4 rd_ep=3)
 			
-			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
+			root@node0:/usr/src/linux#  ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
 		>>>>	uml_dcid: dcid=0
 		>>>>	uml_ep: uml_ep=-2
 		>>>>	uml_rd_ep: rd_ep=3
@@ -1995,7 +1995,7 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 				DEBUG 0:start_kernel_proc:36: DVK device file successfully opened!! dvk_fd=3
 				Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #29 Tue May 14 00:01:20 -03 2019
 				Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 262981
-				Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+				Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
 				PID hash table entries: 4096 (order: 2, 16384 bytes)
 				Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
 				Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
@@ -2207,7 +2207,7 @@ POR LO TANTO, aqui se puede ver cuando el proceso hace un IOCTL al DVK
 		# ./tests.sh 0 0
 		# . /dev/shm/DC0.sh 
 		# cd /usr/src/linux 
-		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg="rdisk.cfg"
+		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rd_cfg="rdisk.cfg"
 
 		EN UML 
 		UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
@@ -2347,11 +2347,11 @@ config UML_DVK
 		# nsenter -p -u -F -t$DC0 /usr/src/dvs/vos/mol/drivers/rdisk/rdisk -d 0 -e 3 -c /dev/shm/rdisk.cfg > /dev/shm/rdisk.out 2> /dev/shm/rdisk.err &
 		# cat /proc/dvs/DC0/procs 
 		# cd /usr/src/linux 
-		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
+		# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 
 		
 
 
-root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 				uml_dcid: dcid=0
 				uml_uml_ep: uml_ep=-2
 				uml_rd_ep: rd_ep=3
@@ -2411,7 +2411,7 @@ printf("DVK device file successfully opened!! dvk_fd=%d\n", dvk_fd);
 }
 
 
-root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 uml_dcid: dcid=0
 uml_uml_ep: uml_ep=-2
 uml_rd_ep: rd_ep=3
@@ -2436,7 +2436,7 @@ Abortado
 20190523:
 			Se termino parcialmente rdisk driver .
 			
-root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 uml_dcid: dcid=0
 uml_uml_ep: uml_ep=-2
 uml_rd_ep: rd_ep=3
@@ -2762,7 +2762,7 @@ root@node0:~#
 	Sesion 2:
 		. /dev/shm/DC0.sh
 		cd /usr/src/linux 
-		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 		
 	Aqui se bindea RDISK CLIENT con el mayor nombre disponible
 		root@node0:/usr/src/linux/arch/um# cat /proc/dvs/DC0/procs 
@@ -4912,7 +4912,7 @@ Quizas hay que hacer un doble ptrace
 ==============================================================================================
 20190610:
 
-root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 nosysemu 
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 nosysemu 
 
 		root@node0:/usr/src/dvs/dvk-tests# ./uml_bind 0 76
 		UML user-mode pid=685 DVK_FILE_NAME=/dev/dvk
@@ -6507,7 +6507,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 		EN OTRA SESION, ARRANCAR UML 
 		cd /usr/src/linux
 		. /dev/shm/DC0.sh
-		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
 		EN UML (node0)
 		ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
@@ -6542,7 +6542,7 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 	EN OTRA SESION, ARRANCAR UML 
 		cd /usr/src/linux
 		. /dev/shm/DC0.sh
-		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
 	EN UML (node0)
 		Para montar el disco en RDWR
@@ -6744,7 +6744,7 @@ TODO:
 		EN OTRA SESION, ARRANCAR UML 
 		cd /usr/src/linux
 		. /dev/shm/DC0.sh
-		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
 		EN UML (node0)
 		Para montar el disco en RDWR
@@ -6963,7 +6963,7 @@ DEBUG 701:ipc_exit_unbind:361: WUNLOCK_DC dc=0 count=0
 		
 		
 		EN UML
-		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 
 		Adding 25542656 bytes to physical memory to account for exec-shield gap
 		DEBUG start_kernel_proc:90: UML-kernel PID=3 TID=3 uml_ep=-2 <<<<<<<<<<<<<<<<<<<<< viene de linea de comando uml_ep=-2
@@ -7776,7 +7776,7 @@ root@node0:~# . /dev/shm/DC0.sh
 root@node0:~# cd /usr/src/linux
 root@node0:/usr/src/linux# ls -l linux
 -rwxr-xr-x 1 root root 68240476 dic 13 14:07 linux
-root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+root@node0:/usr/src/linux# nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 uml_dcid: dcid=0
 uml_uml_ep: uml_ep=-2
 uml_rd_ep: rd_ep=3
@@ -7798,7 +7798,7 @@ DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=2 endpoint=-2 nodeid=-1
 DEBUG uml_bind_X:69: os_ioctl_generic ret=-2
 Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #1 Fri Dec 13 14:06:45 -03 2019
 Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 261852
-Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
 PID hash table entries: 4096 (order: 2, 16384 bytes)
 Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
 Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
@@ -9427,7 +9427,7 @@ PARA ENCONTRAR ARCHIVOS MAS GRANDES
 		. /dev/shm/DC0.sh
 		ifconfig eth0
 		ping -c 5 node1 
-		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+		nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
 
 		EN UML (node0)
 		Para montar el disco en RDWR
@@ -10052,10 +10052,47 @@ Reemplazo en vi
 Ahora en los flags del DVS se setea MIS_USERMODE para que todos los procesos internos
 lleven el bit MIS_BIT_USERMODE.
 			 
+			 
+
+===============================================================================================================
+20200831:
+		COMO DETECTAR QUE SE ESTA EJECUTANDO EN UML 
+		root@node1:/proc# more cpuinfo
+		processor       : 0
+		vendor_id       : User Mode Linux
+		model name      : UML
+		mode            : skas
+		host            : Linux node0 4.9.88 #98 SMP Fri Aug 28 09:52:14 -03 2020 i686
+		bogomips        : 1843.20
  
+	
+ATENCION, NO UTILIZA ENDPOINTS NEGATIVOS cuando se usa DVKIPC en el kernel del HOST !!
+	
 		 
  ====================================  ULTIMO_LOG ===================================
 
+ ERROR: En el kernel de UML (rdisk_kern.c) cuando se hace el dvk_umbind() no retorna 
+		El numero de endpoint. 
+	REVISAR COMO PASA EL ENDPOINT DESDE EL DRIVER DVK HASTA EL USUARIO 
+	LO MISMO OCURRE CON EL BIND .
+		
+	ADEMAS:  ALGO ESTA PODRIDO 
+		sendrec desde UMLKERNEL(-2) a RDISK(3)
+			Aug 29 18:09:08 node0 kernel: [ 4649.591790] DEBUG 10017:ipc_mini_sendrec:115: srcdst_ep=3 timeout_ms=30000
+			Aug 29 18:09:08 node0 kernel: [ 4649.591792] DEBUG 10017:new_mini_sendrec:523: srcdst_ep=3
+			Aug 29 18:09:08 node0 kernel: [ 4649.591794] DEBUG 10017:check_caller:608: caller_pid=10017 caller_tgid=10017
+			Aug 29 18:09:08 node0 kernel: [ 4649.591795] DEBUG 10017:check_caller:644: WLOCK_PROC ep=-2 count=0
+		LUEGO el RDISK RESPONDE!! 
+			Aug 29 18:09:08 node0 kernel: [ 4649.593621] DEBUG 625:SYSC_ipc:165: ipc_vcopy: call=3328 first=35534 second=5537908 third=-1 fifth=28 
+			Aug 29 18:09:08 node0 kernel: [ 4649.593625] DEBUG 625:ipc_vcopy:259: src_ep=35534 dst_ep=-1 bytes=28 <<<<<<<< dsp_ep=(-1)!!
+			Aug 29 18:09:08 node0 kernel: [ 4649.593628] DEBUG 625:new_vcopy:1125: src_ep=35534 dst_ep=-1 bytes=28		
+			....
+			Aug 29 18:09:08 node0 kernel: [ 4649.593661] DEBUG 625:new_vcopy:1330: WUNLOCK_PROC ep=3 count=0
+			Aug 29 18:09:08 node0 kernel: [ 4649.593662] DEBUG 625:new_vcopy:1330: WUNLOCK_PROC ep=-1 count=0 <<<<<<<<<<<<
+			Aug 29 18:09:08 node0 kernel: [ 4649.593664] ERROR: 625:new_vcopy:1335: rcode=-109	 <<<<<<<<<<<
+
+			
+ 
  TODO:  Buscar como detectar desde UML que se esta en UML 
  =====
  	
@@ -10091,6 +10128,14 @@ VIENDO QUE NO DA RESULTADO NADA, entonces la proxima opcion es generar un RAMDIS
 
 TAREAS A REALIZAR
 =================
+
+TODO: 		Sabiendo que se puede detectar si estoy utilizando UML o no desde modo usuario,
+			se puede modificar el script de arranque tests.sh 
+			if have_cpuinfo && grep -q 'UML' /proc/cpuinfo; then
+				echo uml
+			fi
+			https://www.cyberciti.biz/faq/linux-determine-virtualization-technology-command/
+			
 
 TODO: Revisar el codigo de UML DVK para que los tipos de CONFIG_XXXXX sean los correctos
 CONFIG_DVKIPC=y

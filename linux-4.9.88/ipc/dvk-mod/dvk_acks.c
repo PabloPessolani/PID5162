@@ -136,11 +136,9 @@ DVKDEBUG(INTERNAL,"rcode=%d\n", rcode);
 /*--------------------------------------------------------------*/
 asmlinkage long send_ack_rmt2lcl(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 {
-	dc_desc_t *dc_ptr;
-
-	dc_ptr 	= &dc[lcl_ptr->p_usr.p_dcid];
-
-DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d rcode=%d\n",dc_ptr->dc_usr.dc_dcid, rmt_ptr->p_usr.p_endpoint, lcl_ptr->p_usr.p_endpoint, rcode);
+	DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d rcode=%d\n",
+		lcl_ptr->p_usr.p_dcid, rmt_ptr->p_usr.p_endpoint, 
+		lcl_ptr->p_usr.p_endpoint, rcode);
 
 	/* checks if the remote source does not have pending operations */
 	if( test_bit(BIT_SENDING, &rmt_ptr->p_usr.p_rts_flags))	ERROR_RETURN(EDVSPROCSTS);
@@ -167,13 +165,11 @@ DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d rcode=%d\n",dc_ptr->dc_usr.dc_dc
 /*--------------------------------------------------------------*/
 long generic_ack_rmt2lcl(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 {
-	dc_desc_t *dc_ptr;
 	int ret;
 
-	dc_ptr 	= &dc[lcl_ptr->p_usr.p_dcid];
-
-DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d ack=%d rcode=%d\n",
-		dc_ptr->dc_usr.dc_dcid, rmt_ptr->p_usr.p_endpoint, lcl_ptr->p_usr.p_endpoint,ack, rcode);
+	DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d ack=%d rcode=%d\n",
+		lcl_ptr->p_usr.p_dcid, rmt_ptr->p_usr.p_endpoint, 
+		lcl_ptr->p_usr.p_endpoint,ack, rcode);
 	
 	do {
 		ret = OK;

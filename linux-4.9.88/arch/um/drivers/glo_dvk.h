@@ -1,6 +1,12 @@
 
+
+#define STRINGIFY(s) XSTRINGIFY(s)
+#define XSTRINGIFY(s) #s
+#pragma message ("CONFIG_UML_DVK=" STRINGIFY(CONFIG_UML_DVK))
+
 #ifdef CONFIG_UML_DVK
 
+#pragma message ("DVK_GLOBAL_HERE=" STRINGIFY(DVK_GLOBAL_HERE))
 #ifdef DVK_GLOBAL_HERE
 #define EXTERN
 char *dvk_dev = UML_DVK_DEV;
@@ -10,6 +16,8 @@ extern char *dvk_dev;
 #endif
 
 #ifndef CONFIG_DVKIPC
+#pragma message ("EXTERN=" STRINGIFY(EXTERN))
+#pragma message ("Defining dvs")
 EXTERN dvs_usr_t 	dvs;
 #else // CONFIG_DVKIPC
 extern dvs_usr_t 	dvs;

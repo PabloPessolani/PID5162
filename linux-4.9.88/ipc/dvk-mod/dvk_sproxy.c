@@ -68,7 +68,9 @@ long sproxy_enqueue(struct proc *proc_ptr)
 asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_ptr, long timeout_ms)
 {
 	dc_desc_t *dc_ptr;
-	struct proc *src_ptr, *dst_ptr, *xpp, *tmp_ptr,*sproxy_ptr;
+	struct proc *src_ptr, *dst_ptr;
+	struct proc *src_vc_ptr, *dst_vc_ptr;
+	struct proc	*xpp, *tmp_ptr,*sproxy_ptr;
 	proxy_hdr_t *h_ptr;
 	struct task_struct *task_ptr;	
 	int ret, dcid;
@@ -172,7 +174,7 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 				if( test_bit(BIT_SLOT_FREE, &xpp->p_usr.p_rts_flags)) 	{ret = EDVSNOTBIND; break;}
 				if(!test_bit(xpp->p_usr.p_dcid,&node_ptr->n_usr.n_dcs)) {ret = EDVSNODCNODE;break;}
 				if( (xpp->p_usr.p_dcid < 0 )
-				 || (xpp->p_usr.p_dcid >= dvs_ptr->d_nr_dcs))				{ret = EDVSBADDCID;break;} 	
+				 || (xpp->p_usr.p_dcid >= dvs_ptr->d_nr_dcs))			{ret = EDVSBADDCID;break;} 	
 				if( test_bit(BIT_MIGRATE, &xpp->p_usr.p_rts_flags)) 	{ret = EDVSMIGRATE; break;}
 				if(!test_bit(xpp->p_rmtcmd.c_dnode,&sproxy_ptr->p_usr.p_nodemap)) {ret = EDVSNONODE;break;}
 			}while(0);
@@ -180,17 +182,15 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			dc_ptr 	= &dc[xpp->p_usr.p_dcid];
 			WUNLOCK_PROC(xpp);	
 
+			RLOCK_DC(dc_ptr);
 			if( !ret) {	
 				/*-----------------------------------
 				 * Check DC status
 				 *----------------------------------*/	
-				RLOCK_DC(dc_ptr);
 				if(dc_ptr->dc_usr.dc_flags) {
-					RUNLOCK_DC(dc_ptr);
 					ret = EDVSDCNOTRUN; 
 				}else{
 					dcid = dc_ptr->dc_usr.dc_dcid;
-					RUNLOCK_DC(dc_ptr);				
 					WLOCK_PROC(sproxy_ptr);
 					/* The proxy takes the sender's DCID personality */
 					sproxy_ptr->p_usr.p_dcid = dcid;
@@ -198,6 +198,10 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 //					DC_INCREF(dc_ptr);
 				}
 			} 
+			dst_ptr 	= ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_dst);
+			src_vc_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);				
+			dst_vc_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
+			RUNLOCK_DC(dc_ptr);
 
 			WLOCK_PROC(xpp);	
 			/* do not replace by "else" !! */
@@ -235,7 +239,6 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			* Any ACK command must be in queue because the MIGRATING process is blocked on a SENDREC to its SYSTASK
 			*/
 			if( IT_IS_LOCAL(xpp) ) {
-				dst_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_dst);
 				dst_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_dst);
 				WUNLOCK_PROC(xpp);					
 				WLOCK_ORDERED2(xpp_nr, dst_nr, xpp, dst_ptr);							
@@ -271,55 +274,58 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						DVKDEBUG(GENERIC,"CMD_SNDREC_ACK\n");
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						break;
+#ifdef RMT_PROCINFO					
+					case CMD_PROCINFO_ACK:	
+						DVKDEBUG(GENERIC,"CMD_PROCINFO_ACK\n");
+						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));						
+						break;
+#endif //  RMT_PROCINFO
+						
 					case CMD_COPYIN_ACK:	
 						DVKDEBUG(GENERIC,"CMD_COPYIN_ACK\n");
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
-						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
 						/* Other  process could be in the same slot  */
 						/*!! the source of the ACK was the destination of the COPY !!*/
-						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
+						dst_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
 						WUNLOCK_PROC(xpp);
-						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);							
-						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
-							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, dst_vc_ptr);							
+						if(dst_vc_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
+							clear_bit(BIT_ONCOPY, &dst_vc_ptr->p_usr.p_rts_flags);
 						}else{
 							ret = EDVSBADPROC;
 						}
-						WUNLOCK_PROC(src_ptr);
+						WUNLOCK_PROC(dst_vc_ptr);
 						break;
 					case CMD_COPYOUT_DATA:	/* the remote process has requested to send local data */
 						DVKDEBUG(GENERIC,"CMD_COPYOUT_DATA\n");
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 						/*  Copy the payload from source's user space to proxy's user space */
-						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						WUNLOCK_PROC(xpp);
-						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_vc_ptr);
 						/* Other  process could be in the same slot  */
 						/*!! the source of the DATA is the source of the COPY !!*/
-						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
+						if(src_vc_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
 							if(xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes > NODE2MAXBYTES(xpp->p_rmtcmd.c_dnode))
 								ret = EDVS2BIG;
 							if( xpp->p_rmtcmd.c_rcode == OK){
 								RLOCK_PROC(sproxy_ptr);
 								if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags))	{
-									COPY_USR2KRN(ret, NONE, src_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr,
+									COPY_USR2KRN(ret, NONE, src_vc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr,
 										(char*) usr_pay_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes);
 								}else{
-									COPY_USR2USR_PROC(ret, NONE, src_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr, 
+									COPY_USR2USR_PROC(ret, NONE, src_vc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr, 
 										sproxy_ptr, (char*) usr_pay_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes);
 								}
 								RUNLOCK_PROC(sproxy_ptr);							
 							}	
-							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_ONCOPY, &src_vc_ptr->p_usr.p_rts_flags);
 						}else{
 							ret = EDVSBADPROC;
 						}
-						WUNLOCK_PROC(src_ptr);
+						WUNLOCK_PROC(src_vc_ptr);
 						break;
 					case CMD_COPYIN_RQST:
 						DVKDEBUG(GENERIC,"CMD_COPYIN_RQST\n");
@@ -327,75 +333,72 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 						/*  Copy the payload from source's user space to proxy's user space */
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						WUNLOCK_PROC(xpp);			
-						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);	
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_vc_ptr);	
 						/* Other  process could be in the same slot  */
 						/*!! the source of the RQST is the source of the COPY !!*/
-						if(src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
+						if(src_vc_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
 							if(xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes > NODE2MAXBYTES(xpp->p_rmtcmd.c_dnode))
 								ret = EDVS2BIG;
 							if( xpp->p_rmtcmd.c_rcode == OK){
 								RLOCK_PROC(sproxy_ptr);
 								if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags))	{
-									COPY_USR2KRN(ret, NONE, src_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr,
+									COPY_USR2KRN(ret, NONE, src_vc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr,
 											(char*) usr_pay_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes);
 								}else{
-									COPY_USR2USR_PROC(ret, NONE, src_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr, 
+									COPY_USR2USR_PROC(ret, NONE, src_vc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_saddr, 
 											sproxy_ptr, (char*) usr_pay_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes);
 								RUNLOCK_PROC(sproxy_ptr);
 								}
 							}
-							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_ONCOPY, &src_vc_ptr->p_usr.p_rts_flags);
 							clear_bit(BIT_ONCOPY, &xpp->p_usr.p_rts_flags);
 						}else{
 							ret = EDVSBADPROC;
 						}
-						WUNLOCK_PROC(src_ptr);
+						WUNLOCK_PROC(src_vc_ptr);
 						break;
 					case CMD_COPYLCL_ACK:	
 						DVKDEBUG(GENERIC,"CMD_COPYLCL_ACK\n");
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						WUNLOCK_PROC(xpp);
-						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);						
+						WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_vc_ptr);						
 						/* Other  process could be in the same slot  */
 						/* !!! The source of the ACK was the source of the copy  !!!*/
-						if( src_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
-							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
+						if( src_vc_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) {
+							clear_bit(BIT_ONCOPY, &src_vc_ptr->p_usr.p_rts_flags);
 							clear_bit(BIT_ONCOPY, &xpp->p_usr.p_rts_flags);
 						}else{
 							ret = EDVSBADPROC;
 						}
-						WUNLOCK_PROC(src_ptr);
+						WUNLOCK_PROC(src_vc_ptr);
 						break;
 					case CMD_COPYRMT_ACK:	
 						DVKDEBUG(GENERIC,"CMD_COPYRMT_ACK\n");
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 //						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);				
-						dst_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_dst);
+
 						src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						dst_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 
 						WUNLOCK_PROC(xpp);
-						WLOCK_ORDERED3(xpp_nr, src_nr, dst_nr, xpp, src_ptr, dst_ptr);	
+						WLOCK_ORDERED3(xpp_nr, src_nr, dst_nr, xpp, src_vc_ptr, dst_vc_ptr);	
 						/* Other  process could be in the same slot  */
 						/*!!! the source of the ACK was the destination of the copy !!!*/
-						if( (dst_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) 
+						if( (dst_vc_ptr->p_usr.p_endpoint == xpp->p_rmtcmd.c_src) 
 						 && (xpp->p_usr.p_endpoint == xpp->p_rmtcmd.c_u.cu_vcopy.v_rqtr)){		
-							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
-							clear_bit(BIT_ONCOPY, &dst_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_ONCOPY, &src_vc_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_ONCOPY, &dst_vc_ptr->p_usr.p_rts_flags);
 							clear_bit(BIT_ONCOPY, &xpp->p_usr.p_rts_flags);
 						}else{
 							ret = EDVSBADPROC;
 						}			
-						WUNLOCK_PROC2(src_ptr, dst_ptr);
+						WUNLOCK_PROC2(src_vc_ptr, dst_vc_ptr);
 						break;			
 					default:
 						DVKDEBUG(GENERIC,"BAD CMD=%d\n",xpp->p_rmtcmd.c_cmd);
@@ -427,37 +430,35 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						DVKDEBUG(DBGVCOPY,CMD_FORMAT,CMD_FIELDS(h_ptr));
 						DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
 						/*  Copy the payload from source's user space to proxy's user space */
-//						dc_ptr 	= &dc[xpp->p_usr.p_dcid];
-						src_ptr = ENDPOINT2PTR(dc_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 						/*!! the source of the REQUEST is the source of the COPY !!*/				
-						if(src_ptr != xpp) { 
+						if(src_vc_ptr != xpp) { 
 							src_nr = _ENDPOINT_P(xpp->p_rmtcmd.c_u.cu_vcopy.v_src);
 							WUNLOCK_PROC(xpp);	
-							WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_ptr);
+							WLOCK_ORDERED2(xpp_nr, src_nr, xpp, src_vc_ptr);
 							if(xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes > NODE2MAXBYTES(xpp->p_rmtcmd.c_dnode))
 								ret = EDVS2BIG;
 							if (ret == OK) {
 								RLOCK_PROC(sproxy_ptr);
 								if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags))	{
-									COPY_USR2KRN(ret, NONE, src_ptr, h_ptr->c_u.cu_vcopy.v_saddr,
+									COPY_USR2KRN(ret, NONE, src_vc_ptr, h_ptr->c_u.cu_vcopy.v_saddr,
 											(char*) usr_pay_ptr, xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes);
 								}else{
-									COPY_USR2USR_PROC(ret, NONE, src_ptr, h_ptr->c_u.cu_vcopy.v_saddr, 
+									COPY_USR2USR_PROC(ret, NONE, src_vc_ptr, h_ptr->c_u.cu_vcopy.v_saddr, 
 										sproxy_ptr, (char*) usr_pay_ptr, h_ptr->c_u.cu_vcopy.v_bytes);
 								}
 								RUNLOCK_PROC(sproxy_ptr);
 							}
-							WUNLOCK_PROC(src_ptr);
+							WUNLOCK_PROC(src_vc_ptr);
 						} else {
 							if(xpp->p_rmtcmd.c_u.cu_vcopy.v_bytes > NODE2MAXBYTES(xpp->p_rmtcmd.c_dnode))
 								ret = EDVS2BIG;
 							if (ret == OK) {
 								RLOCK_PROC(sproxy_ptr);
 								if( test_bit(MIS_BIT_KTHREAD, &sproxy_ptr->p_usr.p_misc_flags))	{
-									COPY_USR2KRN(ret, NONE, src_ptr, h_ptr->c_u.cu_vcopy.v_saddr,
+									COPY_USR2KRN(ret, NONE, src_vc_ptr, h_ptr->c_u.cu_vcopy.v_saddr,
 											(char*) usr_pay_ptr, h_ptr->c_u.cu_vcopy.v_bytes);
 								}else{							
-									COPY_USR2USR_PROC(ret, NONE, src_ptr, h_ptr->c_u.cu_vcopy.v_saddr, 
+									COPY_USR2USR_PROC(ret, NONE, src_vc_ptr, h_ptr->c_u.cu_vcopy.v_saddr, 
 										sproxy_ptr, (char*) usr_pay_ptr, h_ptr->c_u.cu_vcopy.v_bytes);
 								}
 								RUNLOCK_PROC(sproxy_ptr);
@@ -487,6 +488,15 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 						m_ptr->m_source = xpp->p_usr.p_endpoint;
 						DVKDEBUG(GENERIC, MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 						break;
+#ifdef RMT_PROCINFO					
+					case CMD_PROCINFO:
+						if (xpp->p_rmtcmd.c_cmd == CMD_PROCINFO) 
+							DVKDEBUG(GENERIC,"CMD_PROCINFO\n");				
+						clear_bit(BIT_SENDING, &xpp->p_usr.p_rts_flags);
+						m_ptr = &h_ptr->c_u.cu_msg;
+						break;
+#endif // RMT_PROCINFO
+
 					case CMD_REPLY_MSG:
 						DVKDEBUG(GENERIC,"CMD_REPLY_MSG\n");
 						m_ptr = &h_ptr->c_u.cu_msg;

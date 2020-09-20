@@ -1,0 +1,137 @@
+BITACORA DMTCP 
+
+http://dmtcp.sourceforge.net/index.html
+
+Bajar la version de http://downloads.sourceforge.net/dmtcp/
+dmtcp-2.6.0.tar.gz
+transferirla a la VM a /usr/src 
+
+cd /usr/src 
+tar xvzf dmtcp-2.6.0.tar.gz
+
+luego renombrar el directorio
+mv dmtcp-2.6.0 dmtcp
+cd tcp
+
+Seguir los instructivos https://github.com/dmtcp/dmtcp/blob/master/INSTALL.md
+
+ ./configure
+  make
+  make check
+  
+  
+== Tests ==
+dmtcp1         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dmtcp2         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dmtcp3         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dmtcp4         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+alarm          ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sched_test     ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dmtcp5         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+syscall-tester ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+file1          ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+file2          ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+stat           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+stack-growsdownckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+plugin-sleep2  ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+plugin-example-dbckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+plugin-init    ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+gettimeofday   ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sigchild       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+shared-fd1     ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+shared-fd2     ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+stale-fd       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+rlimit-restore ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+rlimit-nofile  ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+popen1         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+poll           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+epoll1         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+epoll2         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+environ        ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+forkexec       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+realpath       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread1       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread2       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread3       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread4       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread5       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread_atfork1ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pthread_atfork2ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+waitpid        ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+client-server  ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+frisbee        ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+shared-memory1 ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+shared-memory2 ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sysv-shm1      ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sysv-shm2      ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sysv-sem       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+sysv-msg       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+cma            ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+posix-mq1      ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+posix-mq2      ckpt:PASSED rstr:PASSED; ckpt:FAILED
+               root-pids: [2760] msg: checkpoint error, 2 expected, 1 found, running=1
+pty1           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+pty2           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+timer1         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+timer2         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+clock          ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dlopen1        ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+gzip           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+readline       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+perl           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+python         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+bash           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+dash           ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+script         ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+openmp-1       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+openmp-2       ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+nocheckpoint   ckpt:PASSED rstr:PASSED; ckpt:PASSED rstr:PASSED
+== Summary ==
+node0: 63 of 64 tests passed
+Makefile:133: fallo en las instrucciones para el objetivo 'check'
+make: *** [check] Error 1
+
+LUEGO:
+ make install
+
+============================================================================
+TODO
+============================================================================
+
+1- Probar DMTCP + DVKIOCTL en maquina local
+		PROBLEMA: Hay 3 lanzadores que hay que ejecutar:
+				- dkv_launch que hace un fork y bindea al proceso child
+				- nsenter para construir el Container 
+				- dmtcp_launch para contener el proceso a migrar.
+				
+			Hacer dkv_launch 
+
+2- Probar DMTCP + DVKIOCTL con migracion a maquina remota EXITOSA
+3- Probar DMTCP + DVKIOCTL con migracion a maquina remota FALLIDA 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

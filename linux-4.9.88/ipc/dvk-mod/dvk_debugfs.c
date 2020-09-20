@@ -21,7 +21,6 @@ int proc_dbg_mmap(struct file *filp, struct vm_area_struct *vma)
 	struct proc *caller_ptr;
 	int caller_pid;
 	int ret, dcid;
-	dc_desc_t *dc_ptr;
 	struct dentry    *parent_dir;    /* dentry object of parent */
 	static	char dc_name[8];
 	
@@ -39,7 +38,6 @@ int proc_dbg_mmap(struct file *filp, struct vm_area_struct *vma)
 	DVKDEBUG(INTERNAL,"caller's dcid=%d\n", dcid);
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
-	dc_ptr 	= &dc[dcid];
 	
 	sprintf(dc_name, "DC%d", dcid);
 	parent_dir = filp->f_path.dentry->d_parent;
@@ -90,10 +88,11 @@ int proc_dbg_open(struct inode *inode, struct file *filp)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
-	
+	WLOCK_DC(dc_ptr);
 	filp->private_data = dc_ptr->dc_proc;
 	dc_ptr->dc_ref_dgb++;  /* increment open reference count */
-	
+	WUNLOCK_DC(dc_ptr);
+
 #ifdef ANULADO
 	end_addr = (char *)dc_ptr->dc_proc;
 	end_addr += ((dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs) * sizeof_proc_aligned);
@@ -135,6 +134,7 @@ int proc_dbg_close(struct inode *inode, struct file *filp)
 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
 
+
 	sprintf(dc_name, "DC%d", dcid);
 	parent_dir = filp->f_path.dentry->d_parent;
 	DVKDEBUG(INTERNAL,"d_name=[%s] dc_name=[%s]\n",parent_dir->d_name.name, dc_name);
@@ -142,14 +142,18 @@ int proc_dbg_close(struct inode *inode, struct file *filp)
 		ERROR_RETURN(EDVSBADDCID);
 	}
 	
+	WLOCK_DC(dc_ptr);
 	dc_ptr->dc_ref_dgb--;  /* decrement open reference count */
-	if( dc_ptr->dc_ref_dgb) return (0);
-	
+	if( dc_ptr->dc_ref_dgb) {
+		WUNLOCK_DC(dc_ptr);
+		return (0);
+	}
 	proctab_size = sizeof_proc_aligned  * (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs);
 	for( order = 0; (PAGE_SIZE << order) < proctab_size; order++);
 	free_pages((long unsigned int)dc_ptr->dc_proc,  order);
 	filp->private_data = NULL;
-	
+	WUNLOCK_DC(dc_ptr);
+
 	return 0;
 }
 

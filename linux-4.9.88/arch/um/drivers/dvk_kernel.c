@@ -33,6 +33,24 @@ typedef struct sem_s{} sem_t;
 	#endif //CONFIG_DVKIOCTL
 #endif //CONFIG_DVKIPC
 
+#ifdef  CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=YES")
+#else // CONFIG_UML_DVK
+#pragma message ("CONFIG_UML_DVK=NO")
+#endif // CONFIG_UML_DVK
+
+#ifdef  CONFIG_UML_USER
+#pragma message ("CONFIG_UML_USER=YES")
+#else // CONFIG_UML_USER
+#pragma message ("CONFIG_UML_USER=NO")
+#endif // CONFIG_UML_USER
+
+#ifdef  CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=YES")
+#else // CONFIG_DVKIPC
+#pragma message ("CONFIG_DVKIPC=NO")
+#endif // CONFIG_DVKIPC
+
 #pragma message ("Including stub_dvkcall.c")
 
 #include "/usr/src/dvs/dvk-lib/stub_dvkcall.c"
@@ -181,13 +199,14 @@ static int init_dvk_thread(void)
 	DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);	
 	DVKDEBUG(INTERNAL, DVS_USR_FORMAT, DVS_USR_FIELDS(dvsu_ptr));	
 
-	dcu_ptr = &dcu;
+	dcu_ptr = &dcu; 
 	rcode = dvk_getdcinfo(dcid, dcu_ptr);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	DVKDEBUG(INTERNAL, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	DVKDEBUG(INTERNAL, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
  
-	rcode = dvk_lclbind(dcid, uml_pid, uml_ep);
+//	rcode = dvk_lclbind(dcid, uml_pid, uml_ep);
+	rcode = dvk_umbind(dcid,uml_pid,uml_ep);
 	if(rcode != uml_ep) ERROR_RETURN(rcode);
 		
 	DVKDEBUG(INTERNAL,"DVK bind uml_ep=%d\n",uml_ep);
@@ -258,9 +277,10 @@ static int dvk_driver_init(void)
 	down_kernel();
 	// Wake ups the thread 
 	up_thread();
+
 	return 0;
 }
-#endif // ANULADO
+
 
 static int __init uml_dvk_init_module(void)
 {
@@ -276,10 +296,8 @@ static int __init uml_dvk_init_module(void)
 	ktid = os_getpid();
 	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", kpid, ktid);
 
-#ifdef ANULADO
 	ret = dvk_driver_init();
 	if( ret < 0) return -ENODEV;
-#endif // ANULADO
 
 	module_dvk = register_chrdev(DVK_MAJOR, DEVICE_NAME, &uml_dvk_fops);
 	if (module_dvk < 0) {
@@ -297,5 +315,6 @@ static void __exit uml_dvk_cleanup_module (void)
 
 module_init(uml_dvk_init_module);
 module_exit(uml_dvk_cleanup_module);
+#endif // ANULADO
 
 #endif // CONFIG_UML_DVK

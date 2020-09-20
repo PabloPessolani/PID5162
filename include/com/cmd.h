@@ -24,7 +24,7 @@
         CMD_HELLO,			/* HELLO COMMAND used by proxies 				*/
 		CMD_SHUTDOWN,		/* Exit the waiting loop with error	EMOLINTR */
 
-		CMD_CHECKBIND,		/* Request remote RPROXY if a REMOTE process is binded */
+		CMD_PROCINFO,		/* Request remote RPROXY if a REMOTE process is bound  */
 		CMD_LAST_CMD		/* THIS MUST BE THE LAST COMMAND */
   };
 
@@ -36,7 +36,7 @@
 #define	CMD_COPYOUT_DATA 	(CMD_COPYOUT_RQST | MASK_ACKNOWLEDGE)
 #define	CMD_COPYLCL_ACK		(CMD_COPYLCL_RQST | MASK_ACKNOWLEDGE)
 #define CMD_COPYRMT_ACK 	(CMD_COPYRMT_RQST | MASK_ACKNOWLEDGE) /* From RECEIVER to REQUESTER */
-#define CMD_CHECKBIND_ACK	(CMD_CHECKBIND    | MASK_ACKNOWLEDGE) 
+#define CMD_PROCINFO_ACK	(CMD_PROCINFO    | MASK_ACKNOWLEDGE) 
   
 struct vcopy_s {
 	int	v_src;		    /* source endpoint		*/

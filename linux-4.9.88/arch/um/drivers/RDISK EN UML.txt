@@ -165,7 +165,7 @@ do_rd_request:
 		Una vez booteado, 
 		. /dev/shm/DC0.sh
 		cd /usr/src/linux 
-		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 		
 		EL dmesg de UML es:
 			root@node1:~# dmesg
@@ -244,7 +244,7 @@ EN SESION 1:
  EN SESION 2:
 		. /dev/shm/DC0.sh
 		cd /linux 
-		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+		nsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
 
 LUEGO DE BOOTEDO se hizo
 		fsck /dev/rdiska 
@@ -3187,6 +3187,9 @@ Abortado
 	
 TARDE:
 
+
+
+
 				
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 MAÑANA:
@@ -3240,8 +3243,311 @@ OPCION:
 				-------------
 	
 
+===================================================================================
+20200829:
+			Despues de haber modificado el DVK para que capture SIGALRM y SIGIO cuando esta en MIS_USERMODE
+			Ahora se podria probar.
+			1- Verificar que el driver RDISK haga bind con MIS_BIT_USERMODE 
+			2- De lo contrario bindearlo BIND_USERMODE 
+			3- Modificar el script rdisk, porque ahora las imagenes para las pruebas estan el /lkl 
+			
+EN SESION 1: 
+		Se arranca el dvs 
+			cd /usr/src/dvs/dvk-tests
+			./tests.sh 0 0
+			. /dev/shm/DC0.sh
+		Luego se arranca RDISK 
+			cd /usr/src/dvs/vos/mol/drivers/rdisk 
+			./rdisk.sh 0 
+			
+ EN SESION 2:
+		. /dev/shm/DC0.sh
+		cd /usr/src/linux 
+		nsenter -p -t$DC0 ./uml.linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+
+LUEGO DE BOOTEDO se hizo
+		fsck /dev/rdiska 
+		mount /dev/rdiska /mnt 
+		ls -l /dev/rdiska
+		
+	Cuando ejecuta fsck /dev/rdiska, parece que termina pero entra en loop 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND          
+ 8239 root      20   0 1051284  66524  66088 R 100,0  3,2 158:39.54 uml.linux        
+    7 root      20   0       0      0      0 S   1,0  0,0   0:27.70 rcu_sched        
+ 8506 root      20   0    8084   3432   2960 R   0,7  0,2   0:00.27 top       
+
+AL BOOTEAR  
+	DEBUG 3:dvk_getep:233: pid=3
+	DEBUG 3:dvk_getep:237: ipc ret=10
+	DEBUG rd_open:801: mode=93 my_tid=3 my_ep=10 <<<<< QUE HACE EL CLIENT DE RHOSTFS ???
+	DEBUG rd_open:805: REQ_OP_OPEN
+	DEBUG rd_prepare_open_request:776: 
+	DEBUG rd_submit_request:900: 
+	DEBUG rd_thread:1261: op=6 offset=0 length=0 sectorsize=0 error=0
+	DEBUG rd_open_dev:405: major=42 minor=0
+	DEBUG rd_open_dev:417: source=0 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+	DEBUG 11:dvk_sendrec_T:918: endpoint=3 timeout=30000
+	DEBUG 11:dvk_sendrec_T:922: ipc ret=0
+	DEBUG rd_open_dev:420: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+	DEBUG rd_thread:1263: op=6 offset=0 length=0 sectorsize=0 error=0
+	DEBUG rd_thread:1245: 
+	DEBUG rd_intr:353: 
+	DEBUG rd_handler:317: rd_handler=0
+	DEBUG rd_handler:331: req->op=6
+	DEBUG rd_handler:325: n=-11 sizeof(req)=4 <<< EDVSAGAIN
+	DEBUG 3:dvk_getep:233: pid=3
+	DEBUG 3:dvk_getep:237: ipc ret=10
+	DEBUG rd_release:844: mode=131165 my_tid=3 my_ep=10
+	DEBUG rd_release:848: REQ_OP_CLOSE
+	DEBUG rd_prepare_close_request:785: 
+	DEBUG rd_submit_request:900: 
+	DEBUG rd_thread:1261: op=7 offset=581535513996915140 length=0 sectorsize=0 error=0
+	DEBUG rd_close_dev:377: major=42 minor=0
+	DEBUG rd_close_dev:389: source=3 type=1031 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+	DEBUG 11:dvk_sendrec_T:918: endpoint=3 timeout=30000
+	DEBUG 11:dvk_sendrec_T:922: ipc ret=0
+	DEBUG rd_close_dev:394: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+	DEBUG rd_thread:1263: op=7 offset=581535513996915140 length=0 sectorsize=0 error=0
+	DEBUG rd_thread:1245: 
+	DEBUG rd_intr:353: 
+	DEBUG rd_handler:317: rd_handler=1
+	DEBUG rd_handler:331: req->op=7
+	DEBUG rd_handler:325: n=-11 sizeof(req)=4
+
+root@node0:/var/log# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1   655/11     0    0  420 27342 27342 27342 27342 uml.linux      
+ 0   3     3   625/625    0    8   20 31438 27342 27342 27342 rdisk          
+ 0  10    10   647/3      0    0  420 27342 27342 27342 27342 uml.linux 
+ 
+ARCHIVO CONFIG  
+		CONFIG_DVKIPC=y
+		CONFIG_UML_DVK=y
+		# CONFIG_RHOSTFS is not set
+		CONFIG_UML_RDISK=y
 
 
+
+===================================================================================
+20200830: 
+			VER en pap/tmp/ archivos kern.log y putty.log 
+
+
+ESTA CLARO QUE EL PROBLEMA ESTA EN 
+			Cuando el endpoint es negativo y se esta trabajando con DVKIPC 
+			todo lo que es negativo lo transforma en (-1).
+			DEBUG 627:dvk_getep:233: pid=627
+			DEBUG 627:dvk_getep:237: ipc ret=-1 errno=0
+			DEBUG 627:dvk_getep:253: ret=-1
+
+POR AHORA POR PRECAUCION UTILIZAR ENDPOINT NO NEGATIVOS cuando se usa DVKIPC en el kernel del HOST 
+
+EN SESION 1: 
+		Se arranca el dvs 
+			cd /usr/src/dvs/dvk-tests
+			./tests.sh 0 0
+			. /dev/shm/DC0.sh
+		Luego se arranca RDISK 
+			cd /usr/src/dvs/vos/mol/drivers/rdisk 
+			./rdisk.sh 0 
+			
+ EN SESION 2:
+		. /dev/shm/DC0.sh
+		cd /usr/src/linux 
+		nsenter -p -t$DC0 ./uml.linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=0 rd_ep=3
+
+LUEGO DE BOOTEDO se hizo
+		fsck /dev/rdiska 
+		mount /dev/rdiska /mnt 
+		ls -l /dev/rdiska
+		
+		
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0 29998/2096   0    0  420 27342 27342 27342 27342 uml.linux  <<< UML KERNEL 
+ 0   1     1 30006/2104   0    0  420 27342 27342 27342 27342 uml.linux  <<< CLIENT RDISK    
+ 0   3     3  3830/3830   0    8   20 31438 27342 27342 27342 rdisk 
+
+CUANDO PRUEBA EL TEST_BIND CON NUMEROS NEGATIVOS FUNCIONA BIEN 
+		root@node0:/usr/src/dvs/dvk-tests# nsenter -p -t$DC0 ./test_bind  0 -10
+		DEBUG 9:dvk_open:105: 
+		PARENT dvk_bind Binding process 9 to DC0 with p_nr=-10
+		DEBUG 9:dvk_bind_X:1212: cmd=0 dcid=0 pid=-1 endpoint=-10 nodeid=-1
+		DEBUG 9:dvk_bind_X:1216: ipc ret=-1 errno=10
+		DEBUG 9:dvk_bind_X:1253: ret=-10 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< BIEN 
+		
+		DEBUG 9:dvk_getep:233: pid=9
+		DEBUG 9:dvk_getep:237: ipc ret=-1 errno=10
+		DEBUG 9:dvk_getep:253: ret=-1
+		PARENT ep=-10 dvk_getep=-1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< BIEN  
+		
+		CHILD[1] dvk_lclbind
+		PARENT dvk_lclbind 10 to DC0 with p_nr+index=-9
+		DEBUG 9:dvk_bind_X:1212: cmd=1 dcid=0 pid=10 endpoint=-9 nodeid=-1
+		DEBUG 9:dvk_bind_X:1216: ipc ret=-1 errno=9
+		DEBUG 9:dvk_bind_X:1253: ret=-9
+		DEBUG 9:dvk_getep:233: pid=10
+		DEBUG 9:dvk_getep:237: ipc ret=-1 errno=9
+		DEBUG 9:dvk_getep:253: ret=-1
+		PARENT ep=-9 dvk_getep=-1
+		PARENT waiting child index=2
+		CHILD[2] dvk_replbind Binding process 11 to DC0 with p_nr=-8
+		DEBUG 11:dvk_bind_X:1212: cmd=4 dcid=0 pid=11 endpoint=-8 nodeid=-1
+		DEBUG 11:dvk_bind_X:1216: ipc ret=-1 errno=8
+		DEBUG 11:dvk_bind_X:1253: ret=-8
+		DEBUG 11:dvk_getep:233: pid=11
+		DEBUG 11:dvk_getep:237: ipc ret=-1 errno=8
+		DEBUG 11:dvk_getep:253: ret=-1
+		CHILD[2] ep=-8 dvk_getep=-1
+		DEBUG 10:dvk_getep:233: pid=10
+		DEBUG 10:dvk_getep:237: ipc ret=-1 errno=9
+		DEBUG 10:dvk_getep:253: ret=-1
+		CHILD[1] dvk_getep=-1
+
+
+
+root@node0:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0 -10   -10   885/9      0    0   20 27342 27342 27342 27342 test_bind      
+ 0  -9    -9   886/10     0    0   20 27342 27342 27342 27342 test_bind      
+ 0  -8    -8   887/11     0    0   A0 27342 27342 27342 27342 test_bind  
+ 
+ 
+ Sigue fallando 
+ 
+ EN UML
+	DEBUG 411:dvk_getep:233: pid=411
+	DEBUG 411:dvk_getep:237: ipc ret=-1 errno=0
+	DEBUG 411:dvk_getep:255: ret=-1
+
+ EL KERNEL REPORTA 
+ Correctamente el dvk_bind()
+			Aug 31 12:08:15 node0 kernel: [ 2934.972985] DEBUG 7360:SYSC_ipc:165: ipc_bind: call=2304 first=5 second=0 third=411 fifth=-1 
+			Aug 31 12:08:15 node0 kernel: [ 2934.972991] DEBUG 7360:ipc_bind:194: oper=5 dcid=0 param_pid=411 endpoint=-2 nodeid=-1
+			Aug 31 12:08:15 node0 kernel: [ 2934.972994] DEBUG 7360:new_bind:1512: oper=5 dcid=0 param_pid=411 endpoint=-2 nodeid=-1
+			Aug 31 12:08:15 node0 kernel: [ 2934.972998] DEBUG 7360:new_bind:1535: dc_ptr=d3a16260
+			Aug 31 12:08:15 node0 kernel: [ 2934.972999] DEBUG 7360:new_bind:1537: RLOCK_DC dc=0 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973001] DEBUG 7360:new_bind:1550: proc_ptr=ec7a4000
+			Aug 31 12:08:15 node0 kernel: [ 2934.973003] DEBUG 7360:new_bind:1551: WLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973005] DEBUG 7360:new_bind:1590: param_pid=411 lpid=7360 vpid=411 tid=7360
+			Aug 31 12:08:15 node0 kernel: [ 2934.973008] DEBUG 7360:new_bind:1612: USERMODE_BIND param_pid=411 lpid=7360 vpid=411 tid=7360
+			Aug 31 12:08:15 node0 kernel: [ 2934.973010] DEBUG 7360:init_proc_desc:16: p_name=$noname dcid=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973011] DEBUG 7360:init_proc_desc:27: Clearing Privileges
+			Aug 31 12:08:15 node0 kernel: [ 2934.973012] DEBUG 7360:init_proc_desc:35: Setting Default DVK calls privileges
+			Aug 31 12:08:15 node0 kernel: [ 2934.973013] DEBUG 7360:init_proc_desc:41: Clearing Process fields
+			Aug 31 12:08:15 node0 kernel: [ 2934.973015] DEBUG 7360:new_bind:1626: WUNLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973017] DEBUG 7360:new_bind:1630: WLOCK_TASK pid=7360 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973018] DEBUG 7360:new_bind:1631: WLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973020] DEBUG 7360:new_bind:1668: increment the reference count of the task struct=7360 count=2
+			Aug 31 12:08:15 node0 kernel: [ 2934.973021] DEBUG 7360:new_bind:1679: process p_name=uml.linux *p_name_ptr=uml.linux
+			Aug 31 12:08:15 node0 kernel: [ 2934.973022] DEBUG 7360:new_bind:1757: sizeof(priv_usr_t)=52
+			Aug 31 12:08:15 node0 kernel: [ 2934.973024] DEBUG 7360:new_bind:1758: priv_id=32 priv_warn=27342 priv_level=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973026] DEBUG 7360:new_bind:1759: PRINT_SYS_MAP: 7360:new_bind:1759:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973028] DEBUG 7360:new_bind:1759: PRINT_SYS_MAP: 7360:new_bind:1759:4:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973029] DEBUG 7360:new_bind:1759: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973029] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973030] DEBUG 7360:new_bind:1759: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973030] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973031] DEBUG 7360:new_bind:1759: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973031] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973033] DEBUG 7360:new_bind:1759: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973033] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973033] DEBUG 7360:new_bind:1759: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973035] DEBUG 7360:new_bind:1760: PRINT_DVKALLOWED_MAP: 7360:new_bind:1760:proc_ptr->p_priv.priv_usr.priv_dvk_allowed:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973037] DEBUG 7360:new_bind:1760: PRINT_DVKALLOWED_MAP: 7360:new_bind:1760:3:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973038] DEBUG 7360:new_bind:1760: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973038] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973039] DEBUG 7360:new_bind:1760: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973039] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973040] DEBUG 7360:new_bind:1760: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973040] FFFF:
+			Aug 31 12:08:15 node0 kernel: [ 2934.973041] DEBUG 7360:new_bind:1760: 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973075] DEBUG 7360:new_bind:1764: nr=-2 endp=-2 dcid=0 flags=0 misc=420 lpid=7360 vpid=411 nodeid=0 name=uml.linux 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973078] DEBUG 7360:new_bind:1765: nr=-2 endp=-2 dcid=0 lpid=7360 p_cpumask=FFFFFFFF nodemap=1 name=uml.linux 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973080] DEBUG 7360:new_bind:1779: WUNLOCK_TASK pid=7360 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973081] DEBUG 7360:new_bind:1785: WUNLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973082] DEBUG 7360:new_bind:1787: DC_INCREF counter=3
+			Aug 31 12:08:15 node0 kernel: [ 2934.973083] DEBUG 7360:new_bind:1788: RUNLOCK_DC dc=0 count=0
+
+	EL getep()
+			Aug 31 12:08:15 node0 kernel: [ 2934.973201] DEBUG 7360:SYSC_ipc:165: ipc_getep: call=6656 first=411 second=0 third=0 fifth=0 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973203] DEBUG 7360:ipc_getep:468: pid=411
+			Aug 31 12:08:15 node0 kernel: [ 2934.973204] DEBUG 7360:new_getep:2159: pid=411
+			Aug 31 12:08:15 node0 kernel: [ 2934.973206] DEBUG 7360:check_caller:608: caller_pid=7360 caller_tgid=7360
+			Aug 31 12:08:15 node0 kernel: [ 2934.973207] DEBUG 7360:check_caller:644: WLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973209] DEBUG 7360:check_caller:674: WUNLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973210] DEBUG 7360:check_caller:677: dcid=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973212] DEBUG 7360:check_caller:681: RLOCK_DC dc=0 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973213] DEBUG 7360:check_caller:685: RUNLOCK_DC dc=0 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973215] DEBUG 7360:check_caller:691: caller_pid=7360 
+			Aug 31 12:08:15 node0 kernel: [ 2934.973216] DEBUG 7360:new_getep:2174: caller_pid=7360 caller_vpid=411 dcid=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973218] DEBUG 7360:new_getep:2183: task_pid_nr(task_ptr)=7360 vpid=411
+			Aug 31 12:08:15 node0 kernel: [ 2934.973219] DEBUG 7360:new_getep:2196: RLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973220] DEBUG 7360:new_getep:2215: RUNLOCK_PROC ep=-2 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973221] DEBUG 7360:new_getep:2218: dcid=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973222] DEBUG 7360:new_getep:2219: RLOCK_DC dc=0 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973224] DEBUG 7360:new_getep:2222: RUNLOCK_DC dc=0 count=0
+			Aug 31 12:08:15 node0 kernel: [ 2934.973225] DEBUG 7360:new_getep:2225: endpoint=-2
+
+===================================================================================
+20200901:
+	EN UML 
+		DEBUG rd_init:705: dcid=0 my_tid=2 uml_ep=-2
+		DEBUG 2:dvk_bind_X:1209: cmd=5 dcid=0 pid=2 endpoint=-2 nodeid=-1
+		DEBUG 2:dvk_bind_X:1213: ipc ret=-2 errno=0
+		DEBUG 2:dvk_bind_X:1250: ret=-2 <<<<<<<<<<<<<<<<<< ENDPOINT -2 !!!!!!!
+		DEBUG rd_add:483: n=0
+		DEBUG rd_dev_size:191: 
+		DEBUG 2:dvk_getep:233: pid=2
+		DEBUG 2:dvk_getep:237: ipc ret=-2 errno=0
+		ERROR: 2:dvk_getep:238: rcode=0
+		DEBUG 2:dvk_getep:250: ret=0 <<<<<<<<<<<<<<<<<<<<<<<< ENDPOINT 0 !!!!!
+		
+		DEBUG rd_get_geometry:1022: minor=0 my_tid=2 my_ep=0
+		DEBUG rd_get_geometry:1032: source=23 type=1029 m2i1=0 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48489e1c
+		DEBUG 2:dvk_sendrec_T:919: endpoint=3 timeout=30000
+		DEBUG 2:dvk_sendrec_T:923: ipc ret=0
+		DEBUG rd_get_geometry:1035: source=3 type=68 m2i1=0 m2i2=-109  <<<<<<<<<<<<<<<<<< ERROR 
+									m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48489e1c
+		DEBUG rd_get_geometry:1037: base=7 size=103079215105 cyl=139392480 heads=16908290 sec=338
+		DEBUG rd_dev_size:200: cyl=62944 heads=2 sec=82
+		DEBUG rd_dev_size:202: RDISK size=990314496
+
+	EN HOST 
+	Sep  1 10:47:37 node0 kernel: [  217.823294] DEBUG RDISK:SYSC_ipc:165: ipc_vcopy: call=3328 first=35534 second=5931124 third=0 fifth=28 
+	Sep  1 10:47:37 node0 kernel: [  217.823297] DEBUG RDISK:ipc_vcopy:259: src_ep=35534 dst_ep=0 bytes=28
+	Sep  1 10:47:37 node0 kernel: [  217.823299] DEBUG RDISK:new_vcopy:1125: src_ep=35534 dst_ep=0 bytes=28
+	Sep  1 10:47:37 node0 kernel: [  217.823301] DEBUG RDISK:check_caller:608: caller_pid=719 caller_tgid=719
+	Sep  1 10:47:37 node0 kernel: [  217.823302] DEBUG RDISK:check_caller:644: WLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823304] DEBUG RDISK:check_caller:674: WUNLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823305] DEBUG RDISK:check_caller:677: dcid=0
+	Sep  1 10:47:37 node0 kernel: [  217.823307] DEBUG RDISK:check_caller:681: RLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823308] DEBUG RDISK:check_caller:685: RUNLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823309] DEBUG RDISK:check_caller:691: caller_pid=719 
+	Sep  1 10:47:37 node0 kernel: [  217.823311] DEBUG RDISK:new_vcopy:1139: RLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823312] DEBUG RDISK:new_vcopy:1160: dcid=0
+	Sep  1 10:47:37 node0 kernel: [  217.823314] DEBUG RDISK:new_vcopy:1170: RUNLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823315] DEBUG RDISK:new_vcopy:1172: RLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823316] DEBUG RDISK:new_vcopy:1195: RUNLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823317] DEBUG RDISK:new_vcopy:1198: RLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823319] DEBUG RDISK:new_vcopy:1209: (dst_nr+dc_max_nr_tasks)=34
+	Sep  1 10:47:37 node0 kernel: [  217.823321] DEBUG RDISK:new_vcopy:1223: RUNLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823322] DEBUG RDISK:new_vcopy:1228: RLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823323] DEBUG RDISK:new_vcopy:1229: LOCK PROCESSES IN ASCENDENT ORDER
+	Sep  1 10:47:37 node0 kernel: [  217.823325] DEBUG RDISK:new_vcopy:1234: WLOCK_PROC ep=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823326] DEBUG RDISK:new_vcopy:1234: WLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823327] DEBUG RDISK:new_vcopy:1240: CHECK FOR SOURCE/DESTINATION STATUS
+	Sep  1 10:47:37 node0 kernel: [  217.823329] DEBUG RDISK:new_vcopy:1323: RUNLOCK_DC dc=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823330] DEBUG RDISK:new_vcopy:1330: WUNLOCK_PROC ep=3 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823331] DEBUG RDISK:new_vcopy:1330: WUNLOCK_PROC ep=0 count=0
+	Sep  1 10:47:37 node0 kernel: [  217.823333] ERROR: RDISK:new_vcopy:1335: rcode=-109 <<<<<<<<<<<<<<<<<<<<<<<<<<< EDVSDSTDIED
+
+SOLUCIONADO
+===================================================================================
+20200901:
+		VER SALIDA DE ARCHIVO putty3.log kern3.log 
+			
 ===================================================================================
  ULTIMO_LOG
  

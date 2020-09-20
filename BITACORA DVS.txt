@@ -1870,14 +1870,976 @@ EL HOST
 	sizeof(dc)=164
 	sizeof(node)=92
 
+===============================================================================================================
+20200830:
+	Se hicierno MUCHAS modificaciones en el uso de DC (dc_ptr) y todo lo relacionado con el LOCK.
+	Para probar parcialmente estas modificaciones, primero se prueban en UML 
+	Al ejecutar test_uml.sh y tratar de ejecutar dc_init() se queda bloqueado.
+	Aparentemente debe haber un LOCK previo en el DC.
+
+		d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512
+		do_exit: local_nodeid:0
+		DC0 Enter para continuar... 
+		dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=35 dc_nr_sysprocs=64 dc_nr_nodes=32
+		flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+		dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+		DEBUG 723:dvk_open:101: 
+		before dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=35 dc_nr_sysprocs=64 dc_nr_nodes=32
+		before flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+		before dc_dcid=0 dc_warn2proc=27342 dc_warnmsg=-1
+		DEBUG 723:dvk_dc_init:177: 
+		DEBUG SYSC_ipc:165: ipc_dc_init: call=256 first=0 second=0 third=0 fifth=0 
+		DEBUG new_dc_init:425: Current user=0 
+		DEBUG new_dc_init:441: This process is running on cpu_id=0 
+		DEBUG new_dc_init:446: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=35 dc_nr_sysprocs=64 dc_nr_nodes=32
+		DEBUG new_dc_init:447: flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+
+	EN kern.log de UML 
+			Aug 30 23:20:13 node1 kernel: DEBUG SYSC_ipc:165: ipc_dvs_init: call=6144 first=1 second=0 third=0 fifth=0 
+			Aug 30 23:20:13 node1 kernel: ERROR: 718:new_dvs_init:35: rcode=-317  <<< EDVSDVSBUSY
+			Aug 30 23:20:13 node1 kernel: ERROR: 718:SYSC_ipc:167: rcode=-317
+	
+			Aug 30 23:20:13 node1 kernel: DEBUG SYSC_ipc:165: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+			Aug 30 23:20:13 node1 kernel: DEBUG new_getdvsinfo:1977: local_nodeid=0 
+			Aug 30 23:20:13 node1 kernel: ERROR: 718:SYSC_ipc:167: rcode=0
+			
+			Aug 30 23:20:13 node1 kernel: do_exit: local_nodeid:0 <<<<<<<<<< PORQUE LOCALNODEID = 0 SI YO PUSE 1 EN EL INIT_DVS !!!!
+			Aug 30 23:20:14 node1 kernel: do_exit: local_nodeid:0
+			Aug 30 23:20:26 node1 kernel: DEBUG SYSC_ipc:165: ipc_dc_init: call=256 first=0 second=0 third=0 fifth=0 
+			Aug 30 23:20:26 node1 kernel: DEBUG new_dc_init:425: Current user=0 
+			Aug 30 23:20:26 node1 kernel: DEBUG new_dc_init:441: This process is running on cpu_id=0 
+			Aug 30 23:20:26 node1 kernel: DEBUG new_dc_init:446: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=35 dc_nr_sysprocs=64 dc_nr_nodes=32
+			Aug 30 23:20:26 node1 kernel: DEBUG new_dc_init:447: flags=0 dc_nodes=0 dc_pid=0 dc_name=DC0
+	
+	HABRA ALGUN CONFLICTO ENTRE EL local_nodeid DEL KERNEL con el local_nodeid del DVK en USERSPACE ??
+	
+	
+===============================================================================================================
+20200901:
+		Cuando trate de hacer test_unbind de un uml.linux colgado da esto.
+		
+		Sep  1 14:10:29 node0 kernel: [12388.834839] DEBUG 17916:SYSC_ipc:165: ipc_unbind: call=2560 first=0 second=1 third=-1 fifth=0 
+		Sep  1 14:10:29 node0 kernel: [12388.834844] DEBUG 17916:ipc_unbind:215: dcid=0 proc_ep=1 timeout_ms=-1
+		Sep  1 14:10:29 node0 kernel: [12388.834846] DEBUG 17916:new_unbind:1811: dcid=0 proc_ep=1
+		Sep  1 14:10:29 node0 kernel: [12388.834849] DEBUG 17916:new_unbind:1824: RLOCK_DC dc=0 count=0
+		Sep  1 14:10:29 node0 kernel: [12388.834851] DEBUG 17916:new_unbind:1836: WLOCK_TASK pid=17916 count=0
+		Sep  1 14:10:29 node0 kernel: [12388.834853] DEBUG 17916:new_unbind:1837: RLOCK_PROC ep=1 count=0
+		Sep  1 14:10:29 node0 kernel: [12388.834854] DEBUG 17916:new_unbind:1838: RUNLOCK_DC dc=0 count=0
+		
+		Sep  1 14:10:29 node0 kernel: [12388.876700] BUG: unable to handle kernel NULL pointer dereference at 000001d8
+		Sep  1 14:10:29 node0 kernel: [12388.877178] IP: [<c45f4042>] mutex_lock+0x12/0x30 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		Sep  1 14:10:29 node0 kernel: [12388.888071] *pdpt = 00000000294ec001 *pde = 0000000000000000 
+		Sep  1 14:10:29 node0 kernel: [12388.888136] 
+		Sep  1 14:10:29 node0 kernel: [12388.888550] Oops: 0002 [#1] SMP
+		Sep  1 14:10:29 node0 kernel: [12388.889064] Modules linked in: fuse iptable_filter vmwgfx ttm drm_kms_helper evdev vmw_balloon drm joydev vmw_vmci serio_raw pcspkr sg shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom ata_generic hid_generic sd_mod usbhid hid ata_piix libata uhci_hcd xhci_pci psmouse xhci_hcd ehci_pci ehci_hcd usbcore pcnet32 mii mptspi scsi_transport_spi mptscsih mptbase scsi_mod i2c_piix4
+		Sep  1 14:10:29 node0 kernel: [12388.893578] CPU: 2 PID: 17916 Comm: test_unbind Not tainted 4.9.88 #98
+		Sep  1 14:10:29 node0 kernel: [12388.894680] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+		Sep  1 14:10:29 node0 kernel: [12388.897032] task: ebf41380 task.stack: e372a000
+		Sep  1 14:10:29 node0 kernel: [12388.898288] EIP: 0060:[<c45f4042>] EFLAGS: 00010286 CPU: 2
+		Sep  1 14:10:29 node0 kernel: [12388.899560] EIP is at mutex_lock+0x12/0x30
+		Sep  1 14:10:29 node0 kernel: [12388.900897] EAX: 000001d8 EBX: 000001d8 ECX: 00000000 EDX: 80000000
+		Sep  1 14:10:29 node0 kernel: [12388.902273] ESI: 00000000 EDI: ec384600 EBP: e372be94 ESP: e372be90
+		Sep  1 14:10:29 node0 kernel: [12388.903727]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+		Sep  1 14:10:29 node0 kernel: [12388.905210] CR0: 80050033 CR2: 000001d8 CR3: 2a463ea0 CR4: 000006f0
+		Sep  1 14:10:29 node0 kernel: [12388.906888] Stack:
+		Sep  1 14:10:29 node0 kernel: [12388.908697]  000001d8 e372bf14 c4263a1b c47c20f4 000045fc c4616f38 0000072e 00000000
+		Sep  1 14:10:29 node0 kernel: [12388.910415]  00000000 e372beec c40ba4fe 00000000 00000000 00000000 00000000 c49d8d00
+		Sep  1 14:10:29 node0 kernel: [12388.912174]  0000003a 00000040 ebf41380 c4a16260 ec3847d8 c4a162a0 00000001 00000000
+		Sep  1 14:10:29 node0 kernel: [12388.913986] Call Trace:
+		Sep  1 14:10:29 node0 kernel: [12388.916010]  [<c4263a1b>] ? new_unbind+0x36b/0x18a0
+		Sep  1 14:10:29 node0 kernel: [12388.920946]  [<c40ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+		Sep  1 14:10:29 node0 kernel: [12388.922917]  [<c40ba8e7>] ? vprintk_default+0x37/0x40
+		Sep  1 14:10:29 node0 kernel: [12388.925222]  [<c4290e57>] ? ipc_unbind+0x27/0x80
+		Sep  1 14:10:29 node0 kernel: [12388.927269]  [<c4290e30>] ? ipc_bind+0x90/0x90
+		Sep  1 14:10:29 node0 kernel: [12388.929242]  [<c4257111>] ? SyS_ipc+0x61/0x3a0
+		Sep  1 14:10:29 node0 kernel: [12388.931347]  [<c4003708>] ? do_fast_syscall_32+0x98/0x160
+		Sep  1 14:10:29 node0 kernel: [12388.933390]  [<c45f71c2>] ? sysenter_past_esp+0x47/0x75
+		Sep  1 14:10:29 node0 kernel: [12388.935444] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 f2 9a c4 89 43 10 5b 5d
+		Sep  1 14:10:29 node0 kernel: [12388.942227] EIP: [<c45f4042>] 
+		Sep  1 14:10:29 node0 kernel: [12388.942268] mutex_lock+0x12/0x30
+		Sep  1 14:10:29 node0 kernel: [12388.944561]  SS:ESP 0068:e372be90
+		Sep  1 14:10:29 node0 kernel: [12388.946858] CR2: 00000000000001d8
+		Sep  1 14:10:29 node0 kernel: [12388.957511] ---[ end trace ef874f8c3fc272ff ]---
+		Sep  1 14:10:29 node0 kernel: [12388.960205] do_exit: local_nodeid:0
+		Sep  1 14:10:29 node0 kernel: [12388.963317] DEBUG 17916:new_exit_unbind:267: code=-998595402
+
+
+	ATENCION MODIFIQUE SUSTANTIVAMENTE dvk_unbind() 
+
+
+===============================================================================================================
+20200902:
+
+			LA VERSION DE LINUX KERNEL ESTA EN Makefile de /usr/src/linux 
+				VERSION = 4
+				PATCHLEVEL = 9
+				SUBLEVEL = 88
+				EXTRAVERSION = -DVK  <<<<<<<<<<<<<<<<<<< 
+				NAME = Roaring Lionus
+				
+			root@node1:~# uname -a
+			Linux node1 4.9.88-DVK #138 Wed Sep 2 01:56:05 -03 2020 i686 GNU/Linux
+
+		TUVE QUE CAMBIAR LA OPCION DEFAULT DE GRUB 
+		Para ver cuales son las entradas de menu:
+			grep menuentry /boot/grub/grub.cfg
+		Copiar la $menuentry_id_option 
+		Luego editar 
+			joe /etc/default/grub
+		reemplazar la opcion GRUB_DEFAULT 
+			GRUB_DEFAULT="gnulinux-4.9.88-DVK-advanced-903d63e4-e4db-43ec-acf6-9e6fed2a55d0"
+		Luego ejecutar 
+			update-grub
+			update-grub2
+		
+===============================================================================================================
+20200907:
+		Modifique el lz4tcp_proxy_bat.c para que soporte envio del timestamp y de los PIDs de los procesos.
+		
+		YA RESUELTO:
+			PROXY SENDER 
+				 lz4tcp_proxy_bat.c:ps_start_serving:886:SPROXY: 593 cmd=0x1 dcid=0 src=2 dst=3 snode=0 dnode=1 rcode=0 len=0
+				 lz4tcp_proxy_bat.c:ps_start_serving:887:SPROXY: 593 c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+				 lz4tcp_proxy_bat.c:ps_start_serving:891:SPROXY: 593 c_timestamp=1599484979.731862643
+				DEBUG 593:dvk_getprocinfo:1165: dcid=0 p_nr=2 
+				DEBUG 593:dvk_getprocinfo:1169: ipc ret=0
+				DEBUG 593:dvk_getprocinfo:1165: dcid=0 p_nr=3 
+				DEBUG 593:dvk_getprocinfo:1169: ipc ret=92
+				 lz4tcp_proxy_bat.c:ps_start_serving:907:SPROXY: 593 c_flags=0x0 c_src_pid=619 c_dst_pid=92
+				 lz4tcp_proxy_bat.c:ps_start_serving:918:SPROXY: source=2 type=0 m1i1=7 m1i2=7 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+				 lz4tcp_proxy_bat.c:ps_start_serving:924:SPROXY 593: Getting more messages
+			PROXY RECEIVER 
+				 lz4tcp_proxy_bat.c:pr_process_message:321:RPROXY: 594 c_timestamp=1599484979.740854273
+				 lz4tcp_proxy_bat.c:pr_process_message:325:RPROXY: 594 c_flags=0x0 c_src_pid=638 c_dst_pid=92
+			
+	ATENCION: EL KERNEL SPROXY YA PONIA EL TIMESTAMP !!!
+	
+===============================================================================================================
+20200908:
+			Se compilo el kernel con ambas opciones: CONFIG_DVKIOCTL y CONFIG_DVKIPC
+			Se compilaron las herramientas para library IOCTL.
+			
+			root@node0:/usr/src/dvs/dvk-mod# mknod /dev/dvk c 33 0
+			root@node0:/usr/src/dvs/dvk-mod# cd /usr/src/dvs/dvk-mod/
+			root@node0:/usr/src/dvs/dvk-mod# insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
+			insmod: ERROR: could not insert module dvk.ko: Invalid module format
+
+			DMESG:
+			[  805.886264] dvk: disagrees about version of symbol module_layout
+		
+		
+===============================================================================================================
+20200909:		Ahora la version es 
+				Linux node0 4.9.88-DVK #147 SMP Wed Sep 9 19:29:29 -03 2020 i686 GNU/Linux
+				por lo que se cambio el main.c del modulo 
+				MODULE_VERSION("4.9.88-DVK");
+
+				Pero da este error 
+				root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0
+				lcl_nodeid=0 dcid=0
+				Enter para continuar... 
+				Spread Enter para continuar... 
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.442766] CPU: 2 PID: 1237 Comm: insmod Tainted: G           O    4.9.88-DVK #147
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.442852] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+				./tests.sh: lÃ­nea 20:  1237 Terminado (killed)      insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443009] task: ed464080 task.stack: eb8a4000
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443536] Stack:
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443567]  d08a5c80 000002b8 d014e19b 00000000 d08a5ee8 00000000 13e38bdc 00000000
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443684]  eb8a5e2c d0002195 00000000 f7bf21e0 00000000 d08a5c80 f7bf2150 d08a5d28
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443799]  00000000 eb8a5e2c d019856f f0652e40 00000001 f7bf3b30 00000246 13e38bdc
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443916] Call Trace:
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.443954]  [<d014e19b>] ? free_pcppages_bulk+0x35b/0x460
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444020]  [<d0002195>] ? do_one_initcall+0x45/0x180
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444082]  [<d019856f>] ? kmem_cache_alloc_trace+0x31f/0x4f0
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444151]  [<d0146b1f>] ? do_init_module+0x21/0x1c3
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444212]  [<d0146b4e>] ? do_init_module+0x50/0x1c3
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444294]  [<d00e3d96>] ? load_module+0x2066/0x2690
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444357]  [<d00e45f1>] ? SyS_finit_module+0xb1/0x100
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444420]  [<d00036a8>] ? do_fast_syscall_32+0x98/0x160
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444532]  [<d05cba82>] ? sysenter_past_esp+0x47/0x75
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.444597] Code: 7f 85 db 0f 84 ac 00 00 00 c7 05 80 a1 c1 f8 01 00 00 00 89 1d a0 fb c0 f8 f6 05 8c f2 c0 f8 01 0f 85 c0 04 00 00 a1 a0 fb c0 f8 <f0> 80 48 34 02 f6 05 8c f2 c0 f8 01 0f 85 21 05 00 00 bb ef ff
+
+				Message from syslogd@node0 at Sep  9 20:40:52 ...
+				 kernel:[  296.451734] EIP: [<f8bcb405>] 
+				dvk                   344064  1
+
+		Si cambio el test_dvs_init a usar IOCTL, da este error 
+			root@node0:/usr/src/dvs/dvk-tests# ./test_dvs_init -n 0  -D 16777215 -C TEST_CLUSTER
+			DEBUG 812:dvk_open:108: Open dvk device file /dev/dvk
+			ERROR: 812:dvk_open:111: rcode=-6
+			ERROR: test_dvs_init.c:main:179: rcode=-6
+			Initializing DVS. Local node ID 0... 
+			DEBUG 812:dvk_dvs_init:552: nodeid=0
+			DEBUG 812:dvk_dvs_init:564: ioctl ret=-1 errno=9
+			ERROR: 812:dvk_dvs_init:566: rcode=-9
+			DEBUG 812:dvk_dvs_init:569: ioctl ret=-9
+			ERROR: 812:dvk_dvs_init:571: rcode=-9
+			ERROR: test_dvs_init.c:main:183: rcode=-9
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+			Get DVS info
+			DEBUG 812:dvk_getdvsinfo:258: 
+			DEBUG 812:dvk_getdvsinfo:267: ioctl ret=-1 errno=9
+			ERROR: 812:dvk_getdvsinfo:269: rcode=-9
+			DEBUG 812:dvk_getdvsinfo:272: ioctl ret=-9
+			ERROR: 812:dvk_getdvsinfo:274: rcode=-9
+			local node ID -9... 
+			d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			d_max_copybuf=65536 d_max_copylen=1048576
+			d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+
+root@node0:~# cd /usr/src/dvs/dvk-tests/
+root@node0:/usr/src/dvs/dvk-tests# ./tests.sh 0 0 
+lcl_nodeid=0 dcid=0
+Enter para continuar... 
+Spread Enter para continuar... 
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.267314] CPU: 3 PID: 622 Comm: insmod Tainted: G           O    4.9.88-DVK #149
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.267399] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.267520] task: e511a980 task.stack: e40b6000
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268065] Stack:
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268095]  ce8a5c80 000002d2 ce14e067 00000000 ce8a5ee8 00000000 15ff1eb9 00000000
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268214]  e40b7e2c ce002195 00000000 f7bf2588 00000000 ce8a5c80 f7bf2564 ce8a5d28
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268330]  00000000 e40b7e2c ce19856f ebe92e00 00000001 f781a3c0 00000246 15ff1eb9
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268446] Call Trace:
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268485]  [<ce14e067>] ? free_pcppages_bulk+0x227/0x460
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268567]  [<ce002195>] ? do_one_initcall+0x45/0x180
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268632]  [<ce19856f>] ? kmem_cache_alloc_trace+0x31f/0x4f0
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268701]  [<ce146b1f>] ? do_init_module+0x21/0x1c3
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268761]  [<ce146b4e>] ? do_init_module+0x50/0x1c3
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268822]  [<ce0e3d96>] ? load_module+0x2066/0x2690
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268883]  [<ce0e45f1>] ? SyS_finit_module+0xb1/0x100
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.268946]  [<ce0036a8>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.269011]  [<ce5cba82>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.269071] Code: 7f 85 db 0f 84 ac 00 00 00 c7 05 80 61 8a f8 01 00 00 00 89 1d a0 bb 89 f8 f6 05 8c b2 89 f8 01 0f 85 c0 04 00 00 a1 a0 bb 89 f8 <f0> 80 48 34 02 f6 05 8c b2 89 f8 01 0f 85 21 05 00 00 bb ef ff
+
+Message from syslogd@node0 at Sep 10 07:45:57 ...
+ kernel:[  239.276689] EIP: [<f8857405>] 
+./tests.sh: lÃ­nea 20:   622 Terminado (killed)      insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1
+dvk                   344064  1
+
+
+			root@node0:/usr/src/dvs/dvk-tests# dmesg 
+			[  239.252341] dvk: loading out-of-tree module taints kernel.
+			[  239.266357] BUG: unable to handle kernel paging request at ce268a34
+			[  239.266456] IP: [<f8857405>] init_module+0x63/0x5d9 [dvk]
+			[  239.266534] *pdpt = 000000000e974001 *pde = 000000000e2001e1 
+			[  239.266650] Oops: 0003 [#1] SMP
+			[  239.266690] Modules linked in: dvk(O+) iptable_filter fuse joydev vmw_balloon serio_raw vmwgfx pcspkr evdev ttm drm_kms_helper shpchp sg drm vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sd_mod sr_mod cdrom ata_generic xhci_pci psmouse uhci_hcd ehci_pci xhci_hcd ehci_hcd mptspi scsi_transport_spi pcnet32 mptscsih mii usbcore i2c_piix4 ata_piix mptbase libata scsi_mod
+			[  239.267314] CPU: 3 PID: 622 Comm: insmod Tainted: G           O    4.9.88-DVK #149
+			[  239.267399] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+			[  239.267520] task: e511a980 task.stack: e40b6000
+			[  239.267593] EIP: 0060:[<f8857405>] EFLAGS: 00010246 CPU: 3
+			[  239.267664] EIP is at init_module+0x63/0x5d9 [dvk]
+			[  239.267720] EAX: ce268a00 EBX: ce268a00 ECX: 00000000 EDX: f8892a53
+			[  239.267791] ESI: f88573a2 EDI: ec3a2760 EBP: e40b7db8 ESP: e40b7d98
+			[  239.267862]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+			[  239.267925] CR0: 80050033 CR2: ce268a34 CR3: 2b4562c0 CR4: 000006f0
+			[  239.268065] Stack:
+			[  239.268095]  ce8a5c80 000002d2 ce14e067 00000000 ce8a5ee8 00000000 15ff1eb9 00000000
+			[  239.268214]  e40b7e2c ce002195 00000000 f7bf2588 00000000 ce8a5c80 f7bf2564 ce8a5d28
+			[  239.268330]  00000000 e40b7e2c ce19856f ebe92e00 00000001 f781a3c0 00000246 15ff1eb9
+			[  239.268446] Call Trace:
+			[  239.268485]  [<ce14e067>] ? free_pcppages_bulk+0x227/0x460
+			[  239.268567]  [<ce002195>] ? do_one_initcall+0x45/0x180
+			[  239.268632]  [<ce19856f>] ? kmem_cache_alloc_trace+0x31f/0x4f0
+			[  239.268701]  [<ce146b1f>] ? do_init_module+0x21/0x1c3
+			[  239.268761]  [<ce146b4e>] ? do_init_module+0x50/0x1c3
+			[  239.268822]  [<ce0e3d96>] ? load_module+0x2066/0x2690
+			[  239.268883]  [<ce0e45f1>] ? SyS_finit_module+0xb1/0x100
+			[  239.268946]  [<ce0036a8>] ? do_fast_syscall_32+0x98/0x160
+			[  239.269011]  [<ce5cba82>] ? sysenter_past_esp+0x47/0x75
+			[  239.269071] Code: 7f 85 db 0f 84 ac 00 00 00 c7 05 80 61 8a f8 01 00 00 00 89 1d a0 bb 89 f8 f6 05 8c b2 89 f8 01 0f 85 c0 04 00 00 a1 a0 bb 89 f8 <f0> 80 48 34 02 f6 05 8c b2 89 f8 01 0f 85 21 05 00 00 bb ef ff
+			[  239.276689] EIP: [<f8857405>] 
+			[  239.276744] init_module+0x63/0x5d9 [dvk]
+			[  239.279136]  SS:ESP 0068:e40b7d98
+			[  239.281698] CR2: 00000000ce268a34
+			[  239.284094] ---[ end trace e9cad1ec388614a7 ]---
+	
+===============================================================================================================
+20200910:
+			Probando  copia de datos 
+			root@node0:/usr/src/dvs/dvk-loops# nsenter -p -t$DC0 ./loop_dvk_copy1 10 65536
+
+			[  578.489118] DEBUG 964:SYSC_ipc:166: ipc_unbind: call=2560 first=0 second=2 third=-1 fifth=0 
+			[  578.489120] DEBUG 964:ipc_unbind:215: dcid=0 proc_ep=2 timeout_ms=-1
+			[  578.489123] DEBUG 964:new_unbind:1818: dcid=0 proc_ep=2
+			[  578.489126] DEBUG 964:check_caller:608: caller_pid=964 caller_tgid=964
+
+			[  578.489128] DEBUG 964:check_caller:644: WLOCK_PROC ep=2 count=0
+			[  578.489130] DEBUG 964:check_caller:674: WUNLOCK_PROC ep=2 count=0
+			
+			[  578.489132] DEBUG 964:check_caller:677: dcid=0
+			
+			[  578.489134] DEBUG 964:check_caller:681: RLOCK_DC dc=0 count=0
+			[  578.489136] DEBUG 964:check_caller:685: RUNLOCK_DC dc=0 count=0
+			
+			[  578.489138] DEBUG 964:check_caller:691: caller_pid=964 
+			
+			[  578.489140] DEBUG 964:new_unbind:1834: RLOCK_DC dc=0 count=0
+			[  578.489142] DEBUG 964:new_unbind:1846: RUNLOCK_DC dc=0 count=0
+			
+			[  578.489145] DEBUG 964:new_unbind:1848: RLOCK_PROC ep=2 count=0
+			[  578.489147] DEBUG 964:new_unbind:1870: RUNLOCK_PROC ep=2 count=0
+			
+			[  578.489149] DEBUG 964:new_unbind:1873: RLOCK_PROC ep=2 count=0
+			[  578.489151] DEBUG 964:new_unbind:1876: RUNLOCK_PROC ep=2 count=0
+			
+			[  578.489154] DEBUG 964:new_unbind:1888: WLOCK_TASK pid=964 count=0
+			
+			[  578.489156] DEBUG 964:new_unbind:1901: WLOCK_DC dc=0 count=0
+			[  578.489158] DEBUG 964:new_unbind:1903: WLOCK_PROC ep=2 count=0 <<<<< EL PROCESO QUEDA BLOQUEADO, NO EL KERNEL 
+			
+			[  578.489851] DEBUG 965:sleep_proc2:823: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			[  578.489857] DEBUG 965:sleep_proc2:826: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			[  578.489860] DEBUG 965:sleep_proc2:833: endpoint=1 ret=0 p_rcode=76
+			[  578.489863] DEBUG 965:sleep_proc2:834: endpoint=1 flags=0 cpuid=3
+			[  578.489866] DEBUG 965:sleep_proc2:836: WLOCK_PROC ep=1 count=0 
+
+		SOLUCIONADO en dvk_unbind()
+			Sep 10 08:54:37 node0 kernel: [  104.468228] DEBUG 695:new_exit_unbind:267: code=-948491534
+			Sep 10 08:54:37 node0 kernel: [  104.468232] DEBUG 695:new_exit_unbind:271: WLOCK_TASK pid=695 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468234] DEBUG 695:new_exit_unbind:277: RLOCK_PROC ep=1 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468238] DEBUG 695:new_exit_unbind:278: nr=1 endp=1 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+			Sep 10 08:54:37 node0 kernel: [  104.468241] DEBUG 695:new_exit_unbind:311:  Exiting endpoint=1 lpid=-1
+			Sep 10 08:54:37 node0 kernel: [  104.468243] DEBUG 695:new_exit_unbind:313: RUNLOCK_PROC ep=1 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468246] DEBUG 695:new_exit_unbind:314: WLOCK_DC dc=0 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468248] DEBUG 695:new_exit_unbind:315: WLOCK_PROC ep=1 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468250] DEBUG 695:new_exit_unbind:322:  endpoint=1 lpid=-1
+			Sep 10 08:54:37 node0 kernel: [  104.468253] DEBUG 695:new_exit_unbind:386: WUNLOCK_PROC ep=1 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468255] DEBUG 695:new_exit_unbind:387: WUNLOCK_TASK pid=695 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468258] DEBUG 695:new_exit_unbind:388: WUNLOCK_DC dc=0 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468618] do_exit: local_nodeid:0
+
+			Sep 10 08:54:37 node0 kernel: [  104.468696] DEBUG 694:new_exit_unbind:267: code=-948491534
+			Sep 10 08:54:37 node0 kernel: [  104.468699] DEBUG 694:new_exit_unbind:271: WLOCK_TASK pid=694 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468701] DEBUG 694:new_exit_unbind:277: RLOCK_PROC ep=2 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468705] DEBUG 694:new_exit_unbind:278: nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+			Sep 10 08:54:37 node0 kernel: [  104.468707] DEBUG 694:new_exit_unbind:311:  Exiting endpoint=2 lpid=-1
+			Sep 10 08:54:37 node0 kernel: [  104.468709] DEBUG 694:new_exit_unbind:313: RUNLOCK_PROC ep=2 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468711] DEBUG 694:new_exit_unbind:314: WLOCK_DC dc=0 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468714] DEBUG 694:new_exit_unbind:315: WLOCK_PROC ep=2 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468716] DEBUG 694:new_exit_unbind:322:  endpoint=2 lpid=-1
+			Sep 10 08:54:37 node0 kernel: [  104.468718] DEBUG 694:new_exit_unbind:386: WUNLOCK_PROC ep=2 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468720] DEBUG 694:new_exit_unbind:387: WUNLOCK_TASK pid=694 count=0
+			Sep 10 08:54:37 node0 kernel: [  104.468722] DEBUG 694:new_exit_unbind:388: WUNLOCK_DC dc=0 count=0
+
+==============================================================================================================
+20200910:
+	EN TRANSFERENCIA REMOTA NODO0 AL TERMINAR QUEDA ESPERANDO POR EL DEL NODO1 
+	
+			Sep 11 07:49:08 node0 kernel: [  243.322470] DEBUG 769:SYSC_ipc:166: ipc_unbind: call=2560 first=0 second=3 third=-1 fifth=0 
+			Sep 11 07:49:08 node0 kernel: [  243.322472] DEBUG 769:ipc_unbind:215: dcid=0 proc_ep=3 timeout_ms=-1
+			Sep 11 07:49:08 node0 kernel: [  243.322475] DEBUG 769:new_unbind:1818: dcid=0 proc_ep=3
+			Sep 11 07:49:08 node0 kernel: [  243.322478] DEBUG 769:check_caller:608: caller_pid=769 caller_tgid=769  
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322479] DEBUG 769:check_caller:644: WLOCK_PROC ep=2 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322481] DEBUG 769:check_caller:674: WUNLOCK_PROC ep=2 count=0
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322482] DEBUG 769:check_caller:677: dcid=0
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322483] DEBUG 769:check_caller:681: RLOCK_DC dc=0 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322484] DEBUG 769:check_caller:685: RUNLOCK_DC dc=0 count=0
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322485] DEBUG 769:check_caller:691: caller_pid=769 
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322487] DEBUG 769:new_unbind:1834: RLOCK_DC dc=0 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322488] DEBUG 769:new_unbind:1846: RUNLOCK_DC dc=0 count=0
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322491] DEBUG 769:new_unbind:1848: RLOCK_PROC ep=3 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322492] DEBUG 769:new_unbind:1870: RUNLOCK_PROC ep=3 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322493] DEBUG 769:new_unbind:1873: RLOCK_PROC ep=2 count=0
+			Sep 11 07:49:08 node0 kernel: [  243.322495] DEBUG 769:new_unbind:1894: RUNLOCK_PROC ep=2 count=0
+			
+		Sep 11 07:49:08 node0 kernel: [  243.322497] DEBUG 769:new_unbind:1901: WLOCK_DC dc=0 count=0 <<<<<<<<<<<<
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322498] DEBUG 769:new_unbind:1903: WLOCK_PROC ep=2 count=0  <<<< 2??
+			Sep 11 07:49:08 node0 kernel: [  243.322500] DEBUG 769:new_unbind:1903: WLOCK_PROC ep=3 count=0  <<<< 3??
+			
+			Sep 11 07:49:08 node0 kernel: [  243.322503] DEBUG 769:do_unbind:738: nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=client3 
+			Sep 11 07:49:08 node0 kernel: [  243.322506] DEBUG 769:do_unbind:767: Caller nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=769 vpid=3 nodeid=0 name=loop_r-s_server 
+			Sep 11 07:49:08 node0 kernel: [  243.322508] DEBUG 769:do_unbind:806: wakeup with error those processes trying to send a message to the proc
+			Sep 11 07:49:08 node0 kernel: [  243.322509] DEBUG 769:do_unbind:833: delete notify messages bits sent by the proc
+
+			Sep 11 07:49:08 node0 kernel: [  243.322521] DEBUG 769:do_unbind:881: WUNLOCK_PROC ep=0 count=0 <<<< 0??
+			Sep 11 07:49:08 node0 kernel: [  243.322523] DEBUG 769:do_unbind:881: WUNLOCK_PROC ep=1 count=0 <<<< 1??
+			
+		FALTA LIBERAR AL DC !!!!! 
+		
+	LUEGO, CUANDO SE HACE EL 
+			root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/DC0/procs 		
+			QUEDA COLGADO
+==============================================================================================================
+20200911:		Probando loop_copy_server en NODE0
+
+		Sep 11 12:11:15 node0 kernel: [  258.078789] DEBUG 668:SYSC_ipc:166: ipc_unbind: call=2560 first=0 second=2 third=-1 fifth=0 
+		Sep 11 12:11:15 node0 kernel: [  258.078790] DEBUG 668:ipc_unbind:215: dcid=0 proc_ep=2 timeout_ms=-1
+		Sep 11 12:11:15 node0 kernel: [  258.078791] DEBUG 668:new_unbind:1831: dcid=0 proc_ep=2
+		Sep 11 12:11:15 node0 kernel: [  258.078793] DEBUG 668:check_caller:608: caller_pid=668 caller_tgid=668
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078794] DEBUG 668:check_caller:644: WLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078795] DEBUG 668:check_caller:674: WUNLOCK_PROC ep=2 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078796] DEBUG 668:check_caller:677: dcid=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078798] DEBUG 668:check_caller:681: RLOCK_DC dc=0 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078799] DEBUG 668:check_caller:685: RUNLOCK_DC dc=0 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078800] DEBUG 668:check_caller:691: caller_pid=668 
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078801] DEBUG 668:new_unbind:1847: RLOCK_DC dc=0 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078802] DEBUG 668:new_unbind:1859: RUNLOCK_DC dc=0 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078804] DEBUG 668:new_unbind:1861: RLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078805] DEBUG 668:new_unbind:1883: RUNLOCK_PROC ep=2 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078806] DEBUG 668:new_unbind:1886: RLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078807] DEBUG 668:new_unbind:1889: RUNLOCK_PROC ep=2 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078809] DEBUG 668:new_unbind:1901: WLOCK_TASK pid=668 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078810] DEBUG 668:new_unbind:1914: WLOCK_DC dc=0 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078811] DEBUG 668:new_unbind:1918: WLOCK_PROC ep=2 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078814] DEBUG 668:do_unbind:738: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=668 vpid=3 nodeid=0 name=loop_copy_serve 
+		Sep 11 12:11:15 node0 kernel: [  258.078816] DEBUG 668:do_unbind:767: Caller nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=668 vpid=3 nodeid=0 name=loop_copy_serve 
+		Sep 11 12:11:15 node0 kernel: [  258.078817] DEBUG 668:do_unbind:806: wakeup with error those processes trying to send a message to the proc
+		Sep 11 12:11:15 node0 kernel: [  258.078818] DEBUG 668:do_unbind:835: delete notify messages bits sent by the proc
+		Sep 11 12:11:15 node0 kernel: [  258.078822] DEBUG 668:do_unbind:842: Skip, caller process
+		Sep 11 12:11:15 node0 kernel: [  258.078835] DEBUG 668:do_unbind:897: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=668 vpid=3 nodeid=0 name=loop_copy_serve 
+		Sep 11 12:11:15 node0 kernel: [  258.078836] DEBUG 668:do_unbind:953: wakeup with error those processes waiting this process MIGRATION
+		Sep 11 12:11:15 node0 kernel: [  258.078837] DEBUG 668:do_unbind:1003: wakeup those processes waiting this process UNBINDING
+		Sep 11 12:11:15 node0 kernel: [  258.078839] DEBUG 668:do_unbind:1037: nr=2 endp=2 dcid=0 flags=0 misc=20 lpid=668 vpid=3 nodeid=0 name=loop_copy_serve 
+		Sep 11 12:11:15 node0 kernel: [  258.078840] DEBUG 668:init_proc_desc:16: p_name=loop_copy_serve dcid=0
+		Sep 11 12:11:15 node0 kernel: [  258.078841] DEBUG 668:init_proc_desc:27: Clearing Privileges
+		Sep 11 12:11:15 node0 kernel: [  258.078842] DEBUG 668:init_proc_desc:35: Setting Default DVK calls privileges
+		Sep 11 12:11:15 node0 kernel: [  258.078843] DEBUG 668:init_proc_desc:41: Clearing Process fields
+		Sep 11 12:11:15 node0 kernel: [  258.078844] DEBUG 668:do_unbind:1039: initialized 
+		Sep 11 12:11:15 node0 kernel: [  258.078845] DEBUG 668:do_unbind:1040: DC_DECREF counter=3
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078846] DEBUG 668:new_unbind:1950: WUNLOCK_TASK pid=668 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078848] DEBUG 668:new_unbind:1978: WUNLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078849] DEBUG 668:new_unbind:1981: WUNLOCK_DC dc=0 count=0
+		===============================================================================================
+		Sep 11 12:11:15 node0 kernel: [  258.078850] DEBUG 668:SYSC_ipc:169: ipc_unbind: call=2560 rcode=0
+		Sep 11 12:11:15 node0 kernel: [  258.078851] ERROR: 668:SYSC_ipc:170: rcode=0
+		Sep 11 12:11:15 node0 kernel: [  258.078862] DEBUG 668:SYSC_ipc:166: ipc_unbind: call=2560 first=0 second=3 third=-1 fifth=0 
+		Sep 11 12:11:15 node0 kernel: [  258.078863] DEBUG 668:ipc_unbind:215: dcid=0 proc_ep=3 timeout_ms=-1
+		Sep 11 12:11:15 node0 kernel: [  258.078865] DEBUG 668:new_unbind:1831: dcid=0 proc_ep=3
+		Sep 11 12:11:15 node0 kernel: [  258.078866] DEBUG 668:check_caller:608: caller_pid=668 caller_tgid=668
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078867] DEBUG 668:check_caller:644: WLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078869] DEBUG 668:check_caller:668: nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+		Sep 11 12:11:15 node0 kernel: [  258.078871] DEBUG 668:check_caller:669: WUNLOCK_PROC ep=2 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078872] ERROR: 668:check_caller:669: rcode=-106 <<<<<<<<<<<<<<<<<<< EDVSNOTREADY ???
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078873] DEBUG 668:new_unbind:1847: RLOCK_DC dc=0 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078874] DEBUG 668:new_unbind:1859: RUNLOCK_DC dc=0 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078876] DEBUG 668:new_unbind:1861: RLOCK_PROC ep=3 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078877] DEBUG 668:new_unbind:1883: RUNLOCK_PROC ep=3 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.078878] DEBUG 668:new_unbind:1914: WLOCK_DC dc=0 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078879] DEBUG 668:new_unbind:1918: WLOCK_PROC ep=3 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.078881] DEBUG 668:do_unbind:738: nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=client3 
+		Sep 11 12:11:15 node0 kernel: [  258.078883] DEBUG 668:do_unbind:767: Caller nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+		Sep 11 12:11:15 node0 kernel: [  258.078885] DEBUG 668:do_unbind:806: wakeup with error those processes trying to send a message to the proc
+		Sep 11 12:11:15 node0 kernel: [  258.078885] DEBUG 668:do_unbind:835: delete notify messages bits sent by the proc
+		Sep 11 12:11:15 node0 kernel: [  258.078889] DEBUG 668:do_unbind:842: Skip, caller process
+		Sep 11 12:11:15 node0 kernel: [  258.078890] DEBUG 668:do_unbind:848: Skip, self process
+		Sep 11 12:11:15 node0 kernel: [  258.078902] DEBUG 668:do_unbind:897: nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=client3 
+		Sep 11 12:11:15 node0 kernel: [  258.078903] DEBUG 668:do_unbind:953: wakeup with error those processes waiting this process MIGRATION
+		Sep 11 12:11:15 node0 kernel: [  258.078904] DEBUG 668:do_unbind:1003: wakeup those processes waiting this process UNBINDING
+		Sep 11 12:11:15 node0 kernel: [  258.078906] DEBUG 668:do_unbind:1037: nr=3 endp=3 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=client3 
+		Sep 11 12:11:15 node0 kernel: [  258.078908] DEBUG 668:init_proc_desc:16: p_name=client3 dcid=0
+		Sep 11 12:11:15 node0 kernel: [  258.078909] DEBUG 668:init_proc_desc:27: Clearing Privileges
+		Sep 11 12:11:15 node0 kernel: [  258.078910] DEBUG 668:init_proc_desc:35: Setting Default DVK calls privileges
+		Sep 11 12:11:15 node0 kernel: [  258.078910] DEBUG 668:init_proc_desc:41: Clearing Process fields
+		Sep 11 12:11:15 node0 kernel: [  258.078912] DEBUG 668:do_unbind:1039: initialized 
+		Sep 11 12:11:15 node0 kernel: [  258.078913] DEBUG 668:do_unbind:1040: DC_DECREF counter=2
+		Sep 11 12:11:15 node0 kernel: [  258.078914] DEBUG 668:new_unbind:1978: WUNLOCK_PROC ep=3 count=0
+		
+		Sep 11 12:11:15 node0 kernel: [  258.079011] BUG: unable to handle kernel NULL pointer dereference at 00000bd8 <<<< 
+		Sep 11 12:11:15 node0 kernel: [  258.079822] IP: [<cb23c5fe>] new_unbind+0x13fe/0x17a0
+		Sep 11 12:11:15 node0 kernel: [  258.080064] *pdpt = 000000002b5df001 *pde = 0000000000000000 
+		Sep 11 12:11:15 node0 kernel: [  258.080177] 
+		Sep 11 12:11:15 node0 kernel: [  258.080208] Oops: 0000 [#1] SMP
+		Sep 11 12:11:15 node0 kernel: [  258.080253] Modules linked in: iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev serio_raw pcspkr drm vmw_balloon vmw_vmci sg shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sd_mod sr_mod cdrom ata_generic psmouse uhci_hcd ehci_pci xhci_pci ehci_hcd xhci_hcd pcnet32 usbcore mii mptspi scsi_transport_spi mptscsih mptbase ata_piix libata scsi_mod i2c_piix4
+		Sep 11 12:11:15 node0 kernel: [  258.101563] CPU: 2 PID: 668 Comm: loop_copy_serve Not tainted 4.9.88-DVK #152
+		Sep 11 12:11:15 node0 kernel: [  258.102666] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+		Sep 11 12:11:15 node0 kernel: [  258.113484] task: f5f53500 task.stack: e445e000
+		Sep 11 12:11:15 node0 kernel: [  258.114753] EIP: 0060:[<cb23c5fe>] EFLAGS: 00010202 CPU: 2
+		Sep 11 12:11:15 node0 kernel: [  258.117260] EIP is at new_unbind+0x13fe/0x17a0
+		Sep 11 12:11:15 node0 kernel: [  258.118696] EAX: 00000a00 EBX: ed1e4a00 ECX: f69d6840 EDX: f5f53500
+		Sep 11 12:11:15 node0 kernel: [  258.120445] ESI: 00000000 EDI: 00000000 EBP: e445ff0c ESP: e445fe7c
+		Sep 11 12:11:15 node0 kernel: [  258.122228]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+		Sep 11 12:11:15 node0 kernel: [  258.123721] CR0: 80050033 CR2: 00000bd8 CR3: 2b524c40 CR4: 000006f0
+		Sep 11 12:11:15 node0 kernel: [  258.125343] Stack:
+		Sep 11 12:11:15 node0 kernel: [  258.126915]  cb789894 0000029c cb5ea038 000007ba 00000003 00000000 cb0acf01 cb98a602
+		Sep 11 12:11:15 node0 kernel: [  258.128649]  00001b7d cb98a680 00000038 00000002 e445fee4 cb0b2b2e 00000000 00000040
+		Sep 11 12:11:15 node0 kernel: [  258.130661]  00000001 01000000 00000001 ffffff96 ffffffff cb9c6220 ed1e4bd8 00000003
+		Sep 11 12:11:15 node0 kernel: [  258.132890] Call Trace:
+		Sep 11 12:11:15 node0 kernel: [  258.135242]  [<cb0acf01>] ? mutex_optimistic_spin+0x161/0x190
+		Sep 11 12:11:15 node0 kernel: [  258.137107]  [<cb0b2b2e>] ? vprintk_emit+0x2ee/0x4f0
+		Sep 11 12:11:15 node0 kernel: [  258.139162]  [<cb0b2f17>] ? vprintk_default+0x37/0x40
+		Sep 11 12:11:15 node0 kernel: [  258.141080]  [<cb268e87>] ? ipc_unbind+0x27/0x80
+		Sep 11 12:11:15 node0 kernel: [  258.143108]  [<cb268e60>] ? ipc_bind_X+0x90/0x90
+		Sep 11 12:11:15 node0 kernel: [  258.145075]  [<cb22edf9>] ? SyS_ipc+0x69/0x410
+		Sep 11 12:11:15 node0 kernel: [  258.147145]  [<cb0036a8>] ? do_fast_syscall_32+0x98/0x160
+		Sep 11 12:11:15 node0 kernel: [  258.149162]  [<cb5cba82>] ? sysenter_past_esp+0x47/0x75
+		Sep 11 12:11:15 node0 kernel: [  258.151691] Code: 5e cb 89 54 24 10 8b 80 5c 03 00 00 c7 04 24 94 98 78 cb 89 44 24 04 e8 4d a3 f0 ff e9 d9 f2 ff ff 8b 45 d0 64 8b 15 48 42 96 cb <8b> 88 d8 01 00 00 89 4c 24 14 8b 40 04 c7 44 24 0c bc 07 00 00
+		Sep 11 12:11:15 node0 kernel: [  258.158860] EIP: [<cb23c5fe>] 
+		Sep 11 12:11:15 node0 kernel: [  258.158904] new_unbind+0x13fe/0x17a0
+		Sep 11 12:11:15 node0 kernel: [  258.161279]  SS:ESP 0068:e445fe7c
+		Sep 11 12:11:15 node0 kernel: [  258.163634] CR2: 0000000000000bd8
+		Sep 11 12:11:15 node0 kernel: [  258.166093] ---[ end trace 7fcabb079824b626 ]---
+		Sep 11 12:11:15 node0 kernel: [  258.168426] do_exit: local_nodeid:0
+		Sep 11 12:11:15 node0 kernel: [  258.170902] DEBUG 668:new_exit_unbind:267: code=-881382670
+		Sep 11 12:11:15 node0 kernel: [  258.174621] do_exit: local_nodeid:0
+		Sep 11 12:11:15 node0 kernel: [  258.176524] DEBUG 668:new_exit_unbind:271: WLOCK_TASK pid=668 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.176526] DEBUG 668:new_exit_unbind:277: RLOCK_PROC ep=2 count=0
+		Sep 11 12:11:15 node0 kernel: [  258.176529] DEBUG 668:new_exit_unbind:278: nr=2 endp=2 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+		Sep 11 12:11:15 node0 kernel: [  258.176531] DEBUG 668:new_exit_unbind:311:  Exiting endpoint=2 lpid=-1
+		Sep 11 12:11:15 node0 kernel: [  258.176533] DEBUG 668:new_exit_unbind:313: RUNLOCK_PROC ep=2 count=0	
+			
+			
+	PROBLEMA. El caller puede o no estar bindeado. controlar eso con 
+			if( (caller_bound) == TRUE && ( caller_nr != proc_nr ) ) 
+			
+	
+		if( caller_bound == TRUE){
+		if( caller_ptr->p_usr.p_dcid != proc_ptr->p_usr.p_dcid){
+			ERROR_RUNLOCK_PROC(proc_ptr,EDVSBADDCID);
+		}
+	}
+	
+		
+	SOLUCIONADO: Se probaron transferencias remotas y el test_unbind y funcionaron OK
+	
+==============================================================================================================
+20200913:
+			Tratar de hacer funcionar la interface DVKIOCTL cuando esta cargada y cuando no esta cargada la 
+			interface DVKIPC.
+
+1 ) CONFIG_DVKIOCTL CARGADA - CONFIG_DVKIPC NO CARGADA
+		# Linux/x86 4.9.88-DVK Kernel Configuration
+		# CONFIG_DVKIPC is not set
+		CONFIG_DVKIOCTL=y
+	
+	ATENCION, ALGO NECESARIO PARA REEMPLAZAR ETIQUETAS DEL MODULO QUE HABIA DESCONFIGURADO.
+		reljmp: failed to lookup jump_label_lock 
+		MODIFIQUE EL .config
+			root@node0:/usr/src/linux# grep JUMP .config
+			CONFIG_JUMP_LABEL=y
+			CONFIG_HAVE_ARCH_JUMP_LABEL=y
+			CONFIG_USB_STORAGE_JUMPSHOT=y
+
+			SE SOLUCIONO AHORA FALTA PROBAR APLICIONES LOCALES Y REMOTAS.
+			
+==============================================================================================================
+20200914:
+			SE PROBARON APLICIONES LOCALES Y REMOTAS con interface CONFIG_DVKIOCTL.
+
+		Cuando en NODE0 se ejecuta loop_copy_server y se detiene con CTRL-C y luego se hace
+		cat /proc/dvs/DC0/procs SE CUELGA.
+		
+		El SERVER YA HIZO EL SELF BIND, AHORA ESTA TRANTADO DE HACER EL BIND DEL CLIENTE REMOTO 
+		Sep 15 01:18:35 node0 kernel: [  844.494185] DEBUG 1337:dvk_ioctl:349: cmd=4004E309 arg=BFCBE628
+		Sep 15 01:18:35 node0 kernel: [  844.494186] DEBUG 1337:dvk_ioctl:369: DVK_CALL=9 (io_bind) 
+		Sep 15 01:18:35 node0 kernel: [  844.494187] DEBUG 1337:io_bind:97: 
+		Sep 15 01:18:35 node0 kernel: [  844.494190] DEBUG 1337:new_bind:1531: oper=2 dcid=0 param_pid=-1077156220 endpoint=1 nodeid=1
+		Sep 15 01:18:35 node0 kernel: [  844.494191] DEBUG 1337:new_bind:1554: dc_ptr=f89fdd00
+		Sep 15 01:18:35 node0 kernel: [  844.494193] DEBUG 1337:new_bind:1556: RLOCK_DC dc=0 count=0    		<<<<<<<<<<<   
+		Sep 15 01:18:35 node0 kernel: [  844.494194] DEBUG 1337:new_bind:1569: proc_ptr=f02e4600
+		Sep 15 01:18:35 node0 kernel: [  844.494195] DEBUG 1337:new_bind:1570: WLOCK_PROC ep=1 count=0
+		Sep 15 01:18:35 node0 kernel: [  844.494197] DEBUG 1337:lock_sr_proxies:745: px_nr=1
+		Sep 15 01:18:35 node0 kernel: [  844.494198] DEBUG 1337:lock_sr_proxies:753: WLOCK_PROXY pxid=1 count=0 <<<<<<<<<<<
+
+		APARENTEMENTE ESTA LOCKEADO EL DC 
+		Sep 15 01:20:33 node0 kernel: [  962.829623] DEBUG 1369:dc_procs_read:527: last_proc=0 count=131072 ppos=0
+		Sep 15 01:20:33 node0 kernel: [  962.829627] DEBUG 1369:dc_procs_read:542: dcid=0
+		
+	
+	AL ARRANCAR TODO POR PRIMERA VEZ 
+		root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     A       1        0        0 -------------------------------X node1
+	
+	CON NODE1 CAIDO 
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     A       1        0        1 -------------------------------X node1 
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/proxies/info 
+		Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+		  1     5    646      647           node1 ------------------------------X-
+	
+	 EN NODE1 AL LEVANTAR CON NODE0 LEVANTADO 
+		 root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6       0        0        0 -------------------------------X node0   PORQUE "6" = 4 + 2 = NODE_SCONNECTED + NODE_ATTACHED ????         
+		 1     6      -1        0        0 -------------------------------X node1 
+	 EN NODE0 AL LEVANTAR NODE1 
+		root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     A       1        0        1 -------------------------------X node1  	PORQUE "A" = 8 + 2 = NODE_BIT_RCONNECTED + NODE_ATTACHED???? 
+	 
+	 EN AMBOS CASOS DEBERIA SER:  NODE_BIT_RCONNECTED + NODE_SCONNECTED + NODE_ATTACHED = 8 + 4 + 2 = 14 = 0x0E 
+
+      ......................................................................................................
+	  AL ARRANCAR NODE0 SIN NODE1
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     2       1        0        0 -------------------------------X node1 
+	  AL CONECTAR NODE1 
+		 root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     E       1        0        0 -------------------------------X node1 
+	  DESPUES DE REALIZAR CORRECTAMENTE LA TRANSFERENCIA DE MENSAJES, SE REBOOTEA NODE1 
+	PERO EN NODE0 TODAVIA EL TCP NO INFORMO LA CAIDA POR ESO QUE SE MANTIENE EL ESTADO DEL node1 EN "E"
+		tcp        0      0 192.168.1.100:3001      192.168.1.101:34842     ESTABLISHED
+		tcp        0    264 192.168.1.100:41020     192.168.1.101:3000      ESTABLISHED
+		SE SIGUE MANTENIENDO UNA SESION ABIERTA A PESAR DE HABER REBOOTEADO !!!!!!!!!!!!!!!!!!!!!!!!!11
+	tcp        0      0 192.168.1.100:3001      192.168.1.101:34842     ESTABLISHED
+		root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/nodes 
+		ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		 0     6      -1        0        0 -------------------------------X node0           
+		 1     A       1      402      182 -------------------------------X node1 << conectado el RPROXY
+		 
+	
+
+	LUEGO, AL REBOOTEAR, SE ARRANCO TODO DE VUELTA Y FUNCIONO OK CON 2 THREADS POR SERVER Y CLIENT 
+	
+==============================================================================================================
+20200915; 
+			El problema parece suceder cuando se rearranca el NODE1.
+			Es decir: se hacen transferencia remota entre NODE0 y NODE1 
+					Luego se rearranca NODE1
+					Se intenta transferencia NODE0 y NODE1
+					Pero NODE0 queda colgado en el rmtbind()
+			Luego se hace CTRL-C y al hacer cat /proc/dvs/DC0/procs se CUELGA
+			
+			EL PROBLEMA ES QUE LOS PROXIES SERVERS QUEDAN CONECTADOS A NIVEL TCP A PESAR DE REARRANCAR EL OTRO NODO
+			PARA ELLO INCLUI EN EL SCRIPT tests.sh
+				# tcp_keepalive_time: the interval between the last data packet sent (simple ACKs are not considered data) 
+				#           and the first keepalive probe; after the connection is marked to need keepalive, this counter is not used any further
+				# tcp_keepalive_intvl:  the interval between subsequential keepalive probes, regardless of what the connection has exchanged in the meantime
+				# tcp_keepalive_probes: the number of unacknowledged probes to send before considering the connection dead and notifying the application layer
+				echo 60 > /proc/sys/net/ipv4/tcp_keepalive_time
+				echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
+				echo 3  > /proc/sys/net/ipv4/tcp_keepalive_probes
+			
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+			ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+			 0     6      -1        0        0 -------------------------------X node0           
+			 1     E       1        0        0 -------------------------------X node1 		
+
+			root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+			ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+			 0     E       0        0        0 -------------------------------X node0           
+			 1     6      -1        0        0 -------------------------------X node1 
+		
+			tcp        0      0 192.168.1.100:3001      192.168.1.101:48878     ESTABLISHED
+			tcp        0    232 192.168.1.100:22        192.168.1.11:52952      ESTABLISHED
+
+			Cuando vuelve a levantar el NODE1 sigue manteniendo la sesion anterior!!!!
+			tcp        0      0 192.168.1.100:3001      192.168.1.101:48878     ESTABLISHED <<<<<<<<<<<<< ANTERIOR
+			tcp        0      0 192.168.1.100:3001      192.168.1.101:45362     ESTABLISHED <<<<<<<<<<<<< NUEVA 
+			tcp        0    232 192.168.1.100:22        192.168.1.11:52952      ESTABLISHED
+
+			root@node0:/usr/src/dvs/dvk-proxies/test# netstat -nat
+			Active Internet connections (servers and established)
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+			tcp        0      0 0.0.0.0:4001            0.0.0.0:*               LISTEN     
+			tcp        0      0 0.0.0.0:16385           0.0.0.0:*               LISTEN     
+			tcp        0      0 0.0.0.0:4803            0.0.0.0:*               LISTEN     
+			tcp        0      0 0.0.0.0:5001            0.0.0.0:*               LISTEN     
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+			tcp        1      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+			tcp        0      0 192.168.1.100:3001      192.168.1.101:48878     ESTABLISHED
+			tcp        0      0 192.168.1.100:22        192.168.1.11:53074      ESTABLISHED
+			tcp      660      0 192.168.1.100:3001      192.168.1.101:45362     ESTABLISHED
+			tcp        0    232 192.168.1.100:22        192.168.1.11:52952      ESTABLISHED
+			tcp6       0      0 :::80                   :::*                    LISTEN     
+			tcp6       0      0 :::22                   :::*                    LISTEN     
+			root@node0:/usr/src/dvs/dvk-proxies/test# cat /proc/dvs/nodes 
+			ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+			 0     6      -1        0        0 -------------------------------X node0           
+			 1     A       1       12        9 -------------------------------X node1
+ 
+			EN NODE1
+			root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+			ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+			 0     6       0        0        0 -------------------------------X node0           
+			 1     6      -1        0        0 -------------------------------X node1 
+		
+	TODO: 	VER LA FORMA DE QUE SI UN CLIENT SE DESCONECTA: POR EJEMPLO EL SPROXY, ENTONCES MATA LA SESION DEL RPROXY.
+	
+		
+	ATENCION:  ESTA DANDO ESTO
+ERROR: 931:dvk_getprocinfo:1181: rcode=-302
+	
+Sep 15 16:42:21 node0 kernel: [  520.327473] DEBUG 654:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Sep 15 16:42:21 node0 kernel: [  520.327474] DEBUG 654:io_getprocinfo:164: 
+Sep 15 16:42:21 node0 kernel: [  520.327476] DEBUG 654:new_getprocinfo:2107: dcid=0 p_nr=0
+Sep 15 16:42:21 node0 kernel: [  520.327479] DEBUG 654:check_caller:608: caller_pid=654 caller_tgid=654
+Sep 15 16:42:21 node0 kernel: [  520.327481] DEBUG 654:check_caller:644: WLOCK_PROC ep=27342 count=0
+Sep 15 16:42:21 node0 kernel: [  520.327482] DEBUG 654:check_caller:674: WUNLOCK_PROC ep=27342 count=0
+Sep 15 16:42:21 node0 kernel: [  520.327483] DEBUG 654:check_caller:691: caller_pid=654 
+Sep 15 16:42:21 node0 kernel: [  520.327484] ERROR: 654:new_getprocinfo:2128: rcode=-302
+
+	
+	ATENCION, NO HAY FORMA DE QUE SE CORTE LA COMUNICACION TCP AUN REARRANCANDO EL NODE1 
+	
+		tcp        0      0 192.168.1.100:3001      192.168.1.101:36114     ESTABLISHED
+		tcp        0    264 192.168.1.100:49998     192.168.1.101:3000      ESTABLISHED
+
+		root@node0:/usr/src/dvs/dvk-proxies/test# netstat -nat
+		Active Internet connections (servers and established)
+		Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+		tcp        0      0 192.168.1.100:3001      192.168.1.101:36114     ESTABLISHED
+
+
+ULTIMO_LOG
+==============================================================================================================
+
+
+	ATENCION, NO HAY FORMA DE QUE SE CORTE LA COMUNICACION TCP AUN REARRANCANDO EL NODE1 
+
+	TODO: PROBAR APLICACIONES CON IOCTL CON KERNEL CONFIG_DVKIOCTL
+	DE ESTA FORMA SE PUEDEN PROBAR NUEVAS COSAS EN EL DVK.KO SIN TENER QUE RECOMPILAR EL KERNEL.
+	TAMBIEN SE PUEDE PROBAR DMTCP PORQUE USA IOCTL 
+
+TODO: RECOMPILAR EL KERNEL CON CONFIG_DVKIOCTL Y CONFIG_DVKIPC
+TODO: PROBAR APLICACIONES CON IOCTL CON KERNEL CONFIG_DVKIOCTL
+		
+
+
+
+TODO:	Queda solucionar el tema de la carga del modulo para poder usar CONFIG_DVKIOCTL
+
+Se implementa el CMD_PROCINFO el sproxy del CLIENT ---> SPROXY =====TCP=== RPROXY, lo informa como ERROR 
+																			y lo reinserta en la cola del 
+																			SPROXY.
+																			Este obtiene el procinfo 
+																			y lo envia al remoto
+									RPROXY           < ==============TCP ==== 						
+							lo inserta en el proceso 
+							LOCAL 
+		
+Modificar la llamada dvk_procinfo que tenga un ultimo parametro que sea el nodeid:
+			- LOCAL_NODEID (-1)
+			- nodeid donde se quiere averiguar.
+		1) el caller debe estar bindeado  ?? EN PRINCIPIO, SI! FACILITA LAS COSAS
+				A FUTURO: puede utilizar la cola wait4bind()
+				wait_queue_head_t p_wqhead;	/* LINUX process wait queue head		*/
+			Darle un tratamiento similar al dvk_sendrec() y a la copia de datos remotos.
+			
+		3) El DVK call es 
+			asmlinkage long new_getprocinfo_X(int dcid, int p_nr, struct proc_usr *proc_usr_ptr, int nodeid)
+			caso particular LOCAL_NODEID
+				#define new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_ptr)
+						new_getprocinfo_X(int dcid, int p_nr, struct proc_usr *proc_usr_ptr, LOCAL_NODEID)			
+				
+		4) El nuevo comando es CMD_PROCINFO 
+				Cuando sale: 
+						set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+						set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+						set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
+						set_bit(MIS_BIT_RMTINFO, &caller_ptr->p_usr.p_misc_flags);
+						caller_ptr->p_usr.p_sendto  = p_nr;
+						caller_ptr->p_usr.p_getfrom = p_nr;
+		
+				Los campos se completan
+						caller_ptr->p_rmtcmd.c_cmd 		= CMD_PROCINFO;
+						caller_ptr->p_rmtcmd.c_src 		= caller_ep;
+						caller_ptr->p_rmtcmd.c_dst 		= p_nr;
+						caller_ptr->p_rmtcmd.c_dcid		= caller_ptr->p_usr.p_dcid;
+						caller_ptr->p_rmtcmd.c_snode  	= atomic_read(&local_nodeid);
+						caller_ptr->p_rmtcmd.c_dnode  	= nodeid;
+						caller_ptr->p_rmtcmd.c_rcode  	= OK;
+						caller_ptr->p_rmtcmd.c_len  	= 0;
+						
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src   = caller_ep;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst   = p_nr;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr  = caller_ep;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = proc_usr_ptr;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = NULL;	
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = sizeof(proc_usr_t);
+						
+				EL PROXY SENDER, CUANDO EXTRAE EL MENSAJE CON get2rmt 
+						clr_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+						caller_ptr->p_usr.p_sendto  = NONE;
+
+		5) 	La vuelta trae 
+						caller_ptr->p_rmtcmd.c_cmd 		= CMD_PROCINFO_ACK;
+						caller_ptr->p_rmtcmd.c_src 		= p_nr;
+						caller_ptr->p_rmtcmd.c_dst 		= caller_ep;
+						caller_ptr->p_rmtcmd.c_dcid		= caller_ptr->p_usr.p_dcid;
+						caller_ptr->p_rmtcmd.c_snode  	= atomic_read(&local_nodeid);
+						caller_ptr->p_rmtcmd.c_dnode  	= nodeid; // del origen
+						caller_ptr->p_rmtcmd.c_rcode  	= rcode;
+						caller_ptr->p_rmtcmd.c_len  	= sizeof(proc_usr_t);	
+						
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src   = p_nr;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst   = caller_ep;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr  = caller_ep;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = NULL;		
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = proc_usr_ptr;	
+						caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = sizeof(proc_usr_t);
+						
+				EL PROXY RECEIVER:
+					Si no hay error en el c_rcode, 
+							copyin_rqst_rmt2lcl()
+					Si hay error, no copia nada 		
+						clr_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+						clr_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
+						clr_bit(MIS_BIT_RMTINFO, &caller_ptr->p_usr.p_misc_flags);
+						caller_ptr->p_usr.p_getfrom = NONE;
+					retorna el codigo de error c_rcode
+					
+
+PROBAR EL KERNEL DEL HOST !! HUBO MUCHOS CAMBIOS 
+
+TODO:		Modificar el formato del cmd_t de tal forma que tambien trasporte el PID del proceso local.
+			Agregar los campos c_src_pid y c_dst_pid
+			HAY que modificar dvk_sproxy.c 
+			Si el tipo de comando NO ES UN ACK
+				 c_ptr->c_src_pid = src_ptr->p_lpid;
+				 c_ptr->c_dst_pid = PROC_NO_PID;
+			Si el tipo de comando ES UN ACK
+				 c_ptr->c_dst_pid = proc_ptr->p_lpid;
+				 // c_ptr->c_src_pid SE MANTIENE EL ORIGINAL.
+
+TODO:		SOPORTE DE PROCINFO EN PROXIES 	
+			Comando:
+				test_procinfo <dcid> <endpoint> [nodeid]
+		Se podria modificar el 
+			long dvk_getprocinfo_X(int dcid, int p_nr, proc_usr_t *p_usr, int nodeid);
+			long dvk_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr) con NODEID=(-1);
+		- Cuando el PROXY RECEIVER recibe un CMD_PROCINFO
+		- responde OK, c_rcode y con proc_usr_t del proceso en payload si es que está bindeado.
+
+		RESTRICCION: EL proceso que lo invoca debe estar bindeado de tal forma de tener asociada
+			una cola de espera (por la respuesta). 
+
+
+PROBLEMAS A RESOLVER:
+
+1) De que manera el comando de usuario le pide al PROXY SENDER que solicite un  CMD_CHECKBIND
+
+2) De que manera el PROXY RECEIVER del nodo del comando le informa al comando respecto al estado del process descriptor
 
 	
 
-===============================================================================================================
-ULTIMO_LOG
-===============================================================================================================
+	
+TODO:	Hacer el nuevo dvk_getdcid() o modificar el getep() de tambien retornar el DCID 
+		del PID de parametro.
+		el new_getep() del kernel retornara tanto el endpoint como resultado 
+		como el dcid como parametro x direccion.
+		Si el &dcid es NULL no retorna el DCID.
+		
+		Entonces tendriamos 2 invocaciones: 
+		ret = dvk_getep_X(pid, &dcid) // no usada por procesos de usuario 
+		Por compatibilidad 
+		ret = dvk_getep(pid)  => ret = dvk_getep_X(pid, NULL)
+		Nuevo:
+		ret = dvk_getep_dcid(pid, &dcid) => ret = dvk_getep_X(pid, &dcid) 
+			
+		RECOMPILAR TODO 
+TODO:
+		IDEM para wait4bind_X que no incluye el DCID.
 
-PROBAR EL KERNEL DEL HOST !! HUBO MUCHOS CAMBIOS 
+TODO:	Habria que mejorar el tema del .config de tal forma de 
+		CONFIG_DVKIPC es solo cuando se quiere compilar UML o KERNEL con soporte DVKIPC 
+		CONFIG_DVKIOCTL es solo cuando se quiere compilar UML o KERNEL con soporte DVKIOCTL  
+		nuevo CONFIG_UML_DVKIPC 	el cual solo se usaria en UML indica que los drivers usaran IPC 
+		nuevo CONFIG_UML_DVKIOCTL 	el cual solo se usaria en UML indica que los drivers usaran IOCTL
+		CONFIG_DVS ??? 
+			Coincidencia en el fichero binario kernel/built-in.o
+			Coincidencia en el fichero binario kernel/config.o
+			kernel/skas/syscall.c:#ifdef CONFIG_DVS
+			kernel/skas/syscall.c:#endif // CONFIG_DVS
+			kernel/process.c:#ifdef CONFIG_DVS
+			kernel/process.c:#endif //      CONFIG_DVS
+
+
 
 TODO:		Modificicar los tipos de BIND que se usan en dvk_bind_X()
 
@@ -2013,17 +2975,14 @@ TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD 
 		Si es asi, hace COPY_KRN_USR y luego vuelve.
 		Es decir, hay una doble copia.
 		
-https://spankbang.com/stream/Mzg1MDE5MQ.-RUStj3g9mCzj7HLqgQs5x0y4K8.mp4
-https://spankbang.com/stream/MTg4NzcxNw.Cnen9-WNmoPdvwKoVPp024eqPUs.mp4
-https://spankbang.com/stream/MjM1MDk0Nw.bsGkMBr4_LoCv2qSktJO7qbCcaQ.mp4
-https://spankbang.com/stream/NzIyMjA1Ng.u_EmgiwEWuiD50eUiTEaOzt2cM8.mp4
-https://spankbang.com/stream/NTc3NjIwNQ.NtSQyR7Q2kUn23py-twVesZKuYY.mp4
-https://spankbang.com/stream/NzIyMjA1MQ.xG3V_xUDxWCB_LKzARN1_MgLtfE.mp4
-https://spankbang.com/stream/NjgxOTY0MQ.aabWw-nh1Px2BvvI-V7Uf3tSUA8.mp4
-https://spankbang.com/stream/NjgxMDIzOQ.O7TftzUpdTYu_1K7s74jx-GCuk8.mp4
-https://spankbang.com/stream/Njk3NzMzOQ._wu98vhc1ECI-alXA7BZvGlXGS8.mp4
-https://vdownload-21.sb-cd.com/6/7/6765843-720p.mp4?st=PFlWmcDTodsIjTauKUdVJA&e=1598334060&d=4
-https://spankbang.com/stream/NjY2MzQzNA.t-YlUpVJ4ySnsDM9TPD6WAStHt4.mp4
+https://vdownload-6.sb-cd.com/4/1/4112182-720p.mp4?secure=E4jJBqU7uLxFxunJu56bqA,1600223974&m=46&d=3&_tid=4112182		
 https://spankbang.com/stream/NjY2MzQ3Nw.RTCPvI_b6BJ29vqLfqNHRuiarH8.mp4
 https://spankbang.com/stream/NjU4MDkyMA.-IHiriK50GmHjT9Tws4FURLUBaI.mp4
+https://cd.phncdn.com/videos/202004/27/307943291/1080P_4000K_307943291.mp4?vOMTteoZSf1RZgHHGJhPfpkmpfOmdVFaf3ulrK4Hxf5wRrgbt-ylmR-wllTL_TYGwuBmA9oVlb5llkPU2OcH5youa60dgSl5Y73LYTLvmVi3prTStE9SWmfnk20A3V4GysQ3u3eVWX7rkF_n7ZZXRmM33RbFxPt9s_eoVc-2k859luUF39iffkNCNViKKA_0AfJ-XPLutM3tIOpjG97T55QdngaM4ndTEdwxfhEZkwi-g2Vz5v5FPQ
+https://spankbang.com/stream/NjUwODM0OA.2TOXIs58lN66NWa90XBasjr5h_Y.mp4
+https://spankbang.com/stream/Njk1NDI5Mg.cU8ZJ5xnHHFRHP76dlDi1aeMCY4.mp4
+https://spankbang.com/stream/NzAxNzkxOA.Pc7EPKCxvy2LHqxRVRQ_XiSCMkg.mp4
+https://spankbang.com/stream/Njg4NDY5MQ.LgOgx1yyuWdwR3Dtnozr3HGIKIM.mp4
+https://vdownload-2.sb-cd.com/6/8/6883526-720p.mp4?secure=VpEhRh6ROi2sWtvY6O-JyQ,1600186247&m=82&d=3&_tid=6883526
+
 

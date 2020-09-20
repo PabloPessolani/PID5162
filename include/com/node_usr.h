@@ -5,7 +5,7 @@
 #include <time.h>
 #endif // _UAPI_LINUX_TIME_H
 
-#define MAXNODENAME	16
+#define MAXNODENAME		16
 #define NODE_RUNNING	0x00000000
 
 #define NODE_BIT_ATTACHED		1	/* The node is attached to a pair of proxies 	*/

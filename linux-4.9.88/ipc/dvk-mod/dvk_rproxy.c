@@ -647,8 +647,22 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 	t_ptr = &node_ptr->n_usr.n_rtimestamp;
 	DVKDEBUG(INTERNAL,TIME_FORMAT, TIME_FIELDS(t_ptr));		
 
-	rmt_ptr  = NBR2PTR(dc_ptr, rmt_nr);
 	lcl_ptr  = NBR2PTR(dc_ptr, lcl_nr);
+	
+#ifdef RMT_PROCINFO
+	if (h_ptr->c_cmd == CMD_PROCINFO){
+		RLOCK_PROC(lcl_ptr);
+		h_ptr->c_cmd = CMD_PROCINFO_ACK;
+		h_ptr->c_dst = h_ptr->c_src;
+		h_ptr->c_src = lcl_nr;
+		h_ptr->c_len = strlen(proc_usr_t);
+		h_ptr->c_dnode = h_ptr->c_snode;
+		h_ptr->c_snode = local_nodeid;
+		
+	}
+#endif // RMT_PROCINFO
+		
+	rmt_ptr  = NBR2PTR(dc_ptr, rmt_nr);
 
 	WLOCK_ORDERED2(lcl_nr, rmt_nr, lcl_ptr, rmt_ptr);
 	do{ 

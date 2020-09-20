@@ -28,7 +28,7 @@
 #include "../ipc/dvk-mod/dvk_debug.h"
 #include "../ipc/dvk-mod/dvk_macros.h"
 
-#if  defined (CONFIG_DVKIOCTL) || defined (CONFIG_DVKIPC) 
+#if  defined (CONFIG_DVKIPC) || defined (CONFIG_UML_DVK) 
 extern dvs_usr_t dvs;
 #else 
 dvs_usr_t dvs;

@@ -67,6 +67,8 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	 * get the destination process number
 	*------------------------------------------*/
 	dst_nr = _ENDPOINT_P(dst_ep);
+	if(dst_nr == HARDWARE) 
+		ERROR_RETURN(EDVSBADDEST);
 	if( dst_nr < (-dc_ptr->dc_usr.dc_nr_tasks)		
 	 || dst_nr >= dc_ptr->dc_usr.dc_nr_procs)	
 			ERROR_RETURN(EDVSRANGE)
@@ -74,7 +76,7 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 	if( dst_ptr == NULL) 				
 		ERROR_RETURN(EDVSDSTDIED);
 	if( caller_ep == dst_ep) 			
-		ERROR_RETURN(EDVSENDPOINT);
+		ERROR_RETURN(EDVSBADDEST);
 	
  	RLOCK_PROC(caller_ptr);
 	// check if the CALLER has the priviledges to SEND a message to the  destination 
@@ -292,7 +294,8 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	struct task_struct *task_ptr;	
 	struct timespec *t_ptr;
 	message *mptr;
-
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
+	unsigned long int dc_bitmap_nodes;
 
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
 
@@ -328,18 +331,22 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_WUNLOCK_DC(dc_ptr, EDVSDCNOTRUN);
-	RUNLOCK_DC(dc_ptr);	
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	dc_max_nr_procs = dc_ptr->dc_usr.dc_nr_procs;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
 	
 	if( src_ep != ANY)	{
 		src_nr = _ENDPOINT_P(src_ep);
 		RLOCK_PROC(caller_ptr);
 		/* DC does not need  to be locked because this fields are inmutable */
-		if( src_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 
-		  || src_nr >= (dc_ptr->dc_usr.dc_nr_procs-dc_ptr->dc_usr.dc_nr_tasks)) 										
+		if( src_nr < (-dc_max_nr_tasks) 
+		  || src_nr >= (dc_max_nr_procs-dc_max_nr_tasks)) 										
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSRANGE);
 		if( caller_ep == src_ep) 					
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSENDPOINT);
 		src_ptr = NBR2PTR(dc_ptr, src_nr);
+		RUNLOCK_DC(dc_ptr);	
 		if( src_ptr == NULL) 
 			ERROR_RUNLOCK_PROC(caller_ptr,EDVSSRCDIED);
 		RUNLOCK_PROC(caller_ptr)
@@ -362,7 +369,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 				ERROR_RETURN(EDVSNOPROXY);
 
 			RLOCK_PROC(rproxy_ptr);
-			if( ! test_bit(src_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	
+			if( ! test_bit(src_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	
 				ERROR_RUNLOCK_PROC(rproxy_ptr,EDVSNODCNODE);
 			if( rproxy_ptr->p_usr.p_lpid == PROC_NO_PID)		
 				ERROR_RUNLOCK_PROC(rproxy_ptr,EDVSNOPROXY);
@@ -376,6 +383,8 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 		} else {
 			RUNLOCK_PROC(src_ptr);
 		}
+	}else{
+		RUNLOCK_DC(dc_ptr);	
 	}
 	
 	WLOCK_PROC(caller_ptr);
@@ -394,12 +403,14 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	/*--------------------------------------*/
 	caller_ptr->p_umsg 	= m_ptr;
     map = &caller_ptr->p_priv.priv_notify_pending;
+	WUNLOCK_PROC(caller_ptr);
+
     for (chunk=&map->chunk[0]; chunk<&map->chunk[NR_SYS_CHUNKS]; chunk++) {
     	if (! *chunk) continue; 			/* no bits in chunk */
     	for (i=0; ! (*chunk & (1<<i)); ++i) {} 	/* look up the bit */
     	sypriv_id = (chunk - &map->chunk[0]) * BITCHUNK_BITS + i;
-    	if (sypriv_id >= dc_ptr->dc_usr.dc_nr_sysprocs) break;		/* out of range */
-		sys_nr = (sypriv_id-dc_ptr->dc_usr.dc_nr_tasks);	/* get source endpoint */
+    	if (sypriv_id >= dc_max_sysprocs) break;		/* out of range */
+		sys_nr = (sypriv_id-dc_max_nr_tasks);	/* get source endpoint */
 		src_ep = sys_nr;
 		DVKDEBUG(INTERNAL  ,"sypriv_id=%d sys_nr=%d src_ep=%d\n", sypriv_id, sys_nr, src_ep);
 		if ( (src_ep != ANY) && (_ENDPOINT_P(src_ep) != sys_nr) ) 
@@ -408,7 +419,11 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 		DVKDEBUG(INTERNAL ,"deliver the notification message sypriv_id=%d src_ep=%d\n", 
 			sypriv_id, src_ep);
 	   	/* Found a suitable source, deliver the notification message. */
+		RLOCK_DC(dc_ptr);	
 		src_ptr = NBR2PTR(dc_ptr, sys_nr);
+		RUNLOCK_DC(dc_ptr);	
+
+		WLOCK_PROC(caller_ptr);
 		BUILD_NOTIFY_MSG(src_ptr, src_ep, sys_nr, caller_ptr);
 		t_ptr = &caller_ptr->p_message.m9_t1;
 		DVKDEBUG(INTERNAL,TIME_FORMAT,TIME_FIELDS(t_ptr) );
@@ -422,7 +437,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	/*-----------------------------------------*/
 	/* MESSAGE RECEIVE 		*/
 	/*-----------------------------------------*/
-
+	WLOCK_PROC(caller_ptr);
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &caller_ptr->p_list, p_link) {
 		if( caller_ptr->p_usr.p_nr < xpp->p_usr.p_nr) {
 			WLOCK_PROC(xpp);
@@ -431,6 +446,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 			WLOCK_PROC(xpp);
 			WLOCK_PROC(caller_ptr);
 		}
+		
 		if (src_ep == xpp->p_usr.p_endpoint || src_ep == ANY ) {
 			DVKDEBUG(GENERIC,"Found acceptable message from %d. Copy it and update status.\n"
 				,xpp->p_usr.p_endpoint );
@@ -481,8 +497,8 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 		
 	set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 	clear_bit(MIS_BIT_NOTIFY, &caller_ptr->p_usr.p_misc_flags);
-	caller_ptr->p_usr.p_getfrom 	= src_ep;
-	caller_ptr->p_rcode		= OK;
+	caller_ptr->p_usr.p_getfrom = src_ep;
+	caller_ptr->p_rcode			= OK;
 	DVKDEBUG(GENERIC,"Any suitable message from %d was not found.\n", src_ep);	
 
 	sleep_proc(caller_ptr, timeout_ms);
@@ -505,8 +521,6 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	return(ret);
 }	
 
-
-
 /*--------------------------------------------------------------*/
 /*			new_mini_sendrec			*/
 /*--------------------------------------------------------------*/
@@ -518,7 +532,8 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	int caller_nr, caller_pid, caller_ep;
 	int srcdst_nr;
 	struct task_struct *task_ptr;	
-	int dc_max_sysprocs, dc_max_nr_tasks;
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
+	unsigned long int dc_bitmap_nodes;
 
 	DVKDEBUG(DBGPARAMS,"srcdst_ep=%d\n", srcdst_ep);
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
@@ -549,24 +564,30 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
+	
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
 	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
-	RUNLOCK_DC(dc_ptr);	
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	dc_max_nr_procs = dc_ptr->dc_usr.dc_nr_procs;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
 
 	/*------------------------------------------
 	 * get the destination process number
 	*------------------------------------------*/
 	srcdst_nr = _ENDPOINT_P(srcdst_ep);
-	if( srcdst_nr < (-dc_ptr->dc_usr.dc_nr_tasks)		
-	 || srcdst_nr >= dc_ptr->dc_usr.dc_nr_procs)	
-		ERROR_RETURN(EDVSRANGE)
+	if(srcdst_nr == HARDWARE) 
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSBADDEST);
+	if( srcdst_nr < (-dc_max_nr_tasks)		
+	 || srcdst_nr >= dc_max_nr_procs)	
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSRANGE)
 	srcdst_ptr   = NBR2PTR(dc_ptr, srcdst_nr);
 	if( srcdst_ptr == NULL) 				
-		ERROR_RETURN(EDVSDSTDIED);
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSDSTDIED);
 	if( caller_ep == srcdst_ep) 			
-		ERROR_RETURN(EDVSENDPOINT);
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSENDPOINT);
+	RUNLOCK_DC(dc_ptr);	
 
 	RLOCK_PROC(caller_ptr);
 	// check if the CALLER has the priviledges to SENDREC a message to the  destination 
@@ -607,11 +628,11 @@ sendrec_replay:
 		if( srcdst_ptr->p_usr.p_nodeid < 0 
 			|| srcdst_ptr->p_usr.p_nodeid >= dvs_ptr->d_nr_nodes) 
 			{ret = EDVSBADNODEID; break;}	
-		RLOCK_DC(dc_ptr);
-		if( !test_bit(srcdst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	{
+//		RLOCK_DC(dc_ptr);
+		if( !test_bit(srcdst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	{
 			ret = EDVSNODCNODE;
 		}
-		RUNLOCK_DC(dc_ptr);
+//		RUNLOCK_DC(dc_ptr);
 	} while(retry);
 	if(ret < 0) {							
 		WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
@@ -645,7 +666,7 @@ sendrec_replay:
 		RLOCK_PROC(sproxy_ptr);
 		do {
 			ret = OK;
-			if( ! test_bit(srcdst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	
+			if( ! test_bit(srcdst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	
 				{ret = EDVSNODCNODE ;break;}
 			if( sproxy_ptr->p_usr.p_lpid == PROC_NO_PID)		
 				{ret = EDVSNOPROXY ;break;}
@@ -822,7 +843,8 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 	struct task_struct *task_ptr;	
 	struct timespec *t_ptr;
 	message *mptr;
-	int dc_max_sysprocs, dc_max_nr_tasks;
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
+	unsigned long int dc_bitmap_nodes;
 
 	DVKDEBUG(DBGPARAMS,"src_nr=%d dst_ep=%d update_proc=%d \n", src_nr, dst_ep, update_proc);
 	
@@ -860,6 +882,7 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 			
 		ERROR_RETURN(EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
+	
 	RLOCK_DC(dc_ptr);
 	if( dc_ptr->dc_usr.dc_flags)  
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
@@ -873,20 +896,25 @@ asmlinkage long new_mini_notify(int src_nr, int dst_ep, int update_proc)
 		RUNLOCK_PROC(src_ptr);
 	}
 	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
-	RUNLOCK_DC(dc_ptr);	
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	dc_max_nr_procs = dc_ptr->dc_usr.dc_nr_procs;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
 
 	/*------------------------------------------
 	 * get the destination process number
 	*------------------------------------------*/
 	dst_nr = _ENDPOINT_P(dst_ep);
-	if( dst_nr < (-dc_ptr->dc_usr.dc_nr_tasks)		
-	 || dst_nr >= dc_ptr->dc_usr.dc_nr_procs)	
+	if(dst_nr == HARDWARE) 
+		ERROR_RETURN(EDVSBADDEST);
+	if( dst_nr < (-dc_max_nr_tasks)		
+	 || dst_nr >= dc_max_nr_procs)	
 		ERROR_RETURN(EDVSRANGE)
 	dst_ptr   = NBR2PTR(dc_ptr, dst_nr);
 	if( dst_ptr == NULL) 				
 		ERROR_RETURN(EDVSDSTDIED);
 	if( caller_ep == dst_ep) 			
 		ERROR_RETURN(EDVSENDPOINT);
+	RUNLOCK_DC(dc_ptr);	
 
 // 	RLOCK_PROC(dst_ptr);
 //	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs) 
@@ -912,7 +940,7 @@ notify_replay:
 	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	DVKDEBUG(DBGPARAMS,"dst_nr=%d dst_ep=%d\n",dst_nr, dst_ptr->p_usr.p_endpoint);
 	
-	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_ptr->dc_usr.dc_nr_sysprocs){
+	if( dst_ptr->p_priv.priv_usr.priv_id >= dc_max_sysprocs){
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
 		ERROR_RETURN(EDVSPRIVILEGES);
 	}
@@ -930,7 +958,7 @@ notify_replay:
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
 		ERROR_RETURN(EDVSBADNODEID);
 	} 
-	if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)){ 	
+	if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)){ 	
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
 		ERROR_RETURN(EDVSNODCNODE);
 	}
@@ -1119,8 +1147,8 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	int retry, ret = OK;
 	struct task_struct *task_ptr;
 	cmd_t *cmd_ptr;
-	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_nodes;
-
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
+	unsigned long int dc_bitmap_nodes;
 	
 	DVKDEBUG(DBGPARAMS,"src_ep=%d dst_ep=%d bytes=%d\n",src_ep, dst_ep, bytes);
 
@@ -1141,9 +1169,9 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	if( src_ep == SELF) src_ep = caller_ptr->p_usr.p_endpoint;
 	else if( dst_ep == SELF) dst_ep = caller_ptr->p_usr.p_endpoint;
 
-	if( (src_ep == dst_ep) 	|| 	(src_ep == ANY)	|| 
-		(dst_ep == ANY) ||	(src_ep == NONE)|| 
-		(dst_ep == NONE) )	{
+	if( (src_ep == dst_ep) 	|| 	
+		(src_ep == ANY)	|| (dst_ep == ANY) ||
+		(src_ep == NONE)|| (dst_ep == NONE) )	{		
 			RUNLOCK_PROC(caller_ptr);
 			ERROR_RETURN(EDVSENDPOINT);
 	}
@@ -1160,7 +1188,6 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	DVKDEBUG(INTERNAL,"dcid=%d\n", dcid);
 	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) 		
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
-		
 	dc_ptr 	= &dc[dcid];
 	
 	// Check if the caller has the priviledges to DVK_VCOPY data blocks 
@@ -1177,21 +1204,27 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	/*	get info about SOURCE and DESTINATION processes */
 	/*-------------------------------------------------------------*/
 	src_nr  = _ENDPOINT_P(src_ep);
-	if( 	src_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 
-		|| 	src_nr >= dc_ptr->dc_usr.dc_nr_procs) {
+	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
+	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
+	dc_max_nr_procs = dc_ptr->dc_usr.dc_nr_procs;
+	
+	if(src_nr == HARDWARE) 
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSBADDEST);
+	if( 	src_nr < (-dc_max_nr_tasks) 
+		|| 	src_nr >= dc_max_nr_procs) {
 		ERROR_RUNLOCK_DC(dc_ptr, EDVSRANGE);
 	}
 	src_ptr = NBR2PTR(dc_ptr,src_nr);
 
-
 	dst_nr  = _ENDPOINT_P(dst_ep);
-	if( 	dst_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 
-		|| 	dst_nr >= dc_ptr->dc_usr.dc_nr_procs) {
+	if(dst_nr == HARDWARE) 
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSBADDEST);
+	if( 	dst_nr < (-dc_max_nr_tasks) 
+		|| 	dst_nr >= dc_max_nr_procs) {
 		ERROR_RUNLOCK_DC(dc_ptr, EDVSRANGE);
 	}
 	dst_ptr = NBR2PTR(dc_ptr, dst_nr);
-	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
-	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
 	RUNLOCK_DC(dc_ptr);
 
 	// CHECK if the caller can COPY to other SYSTEM processes 
@@ -1225,7 +1258,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 	/*-------------------------------------------------------------*/
 	/*	LOCK PROCESSES IN ASCENDENT ORDER		*/
 	/*-------------------------------------------------------------*/
-	RLOCK_DC(dc_ptr);
+//	RLOCK_DC(dc_ptr);
 	DVKDEBUG(GENERIC,"LOCK PROCESSES IN ASCENDENT ORDER\n");
 	if( src_ptr != caller_ptr && dst_ptr != caller_ptr ) {	/* Requester is a third process */
 		WLOCK_ORDERED3(caller_nr, src_nr, dst_nr, caller_ptr,src_ptr,dst_ptr);
@@ -1263,7 +1296,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		if( src_ptr->p_usr.p_nodeid < 0 	
 			|| src_ptr->p_usr.p_nodeid >= dvs_ptr->d_nr_nodes) 	 
 			{ ret = EDVSBADNODEID;break;}	
-		if( ! test_bit(src_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	
+		if( ! test_bit(src_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	
 			{ret = EDVSNODCNODE ;break;}	
 		if( src_ptr != caller_ptr ) {
 			if( test_bit(BIT_MIGRATE, &src_ptr->p_usr.p_rts_flags))	{
@@ -1302,7 +1335,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 		if( dst_ptr->p_usr.p_nodeid < 0 	
 			|| dst_ptr->p_usr.p_nodeid >= dvs_ptr->d_nr_nodes) 	 
 			{ ret = EDVSBADNODEID;break;}	
-		if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	
+		if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	
 			{ret = EDVSNODCNODE ;break;}
 		if( dst_ptr != caller_ptr ) {
 			if( test_bit(BIT_MIGRATE, &dst_ptr->p_usr.p_rts_flags))	{
@@ -1320,7 +1353,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 			}
 		}
 	} while(retry);
-	RUNLOCK_DC(dc_ptr);
+//	RUNLOCK_DC(dc_ptr);
 	
 	if(ret < 0) {	
 		if( src_ptr != caller_ptr && dst_ptr != caller_ptr ) {
@@ -1650,7 +1683,6 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 	struct task_struct *task_ptr;	
 	int dc_max_sysprocs, dc_max_nr_tasks;
 
-
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
 
 	DVKDEBUG(DBGPARAMS,"\n");
@@ -1786,7 +1818,8 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 	int caller_nr, caller_ep, caller_pid;
 	int dst_nr, dcid;
 	struct task_struct *task_ptr;
-	int dc_max_sysprocs, dc_max_nr_tasks;
+	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
+	unsigned long int dc_bitmap_nodes;
 
 	if( DVS_NOT_INIT() )
 		ERROR_RETURN(EDVSDVSINIT);
@@ -1823,25 +1856,29 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
 	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
 	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
-	RUNLOCK_DC(dc_ptr);	
+	dc_max_nr_procs = dc_ptr->dc_usr.dc_nr_procs;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
 
 	if( (caller_nr+dc_max_nr_tasks) >= dc_max_sysprocs) {
-		ERROR_RETURN(EDVSTRAPDENIED);
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSTRAPDENIED);
 	}
 	
 	/*------------------------------------------
 	 * get the destination process number
 	*------------------------------------------*/
 	dst_nr = _ENDPOINT_P(dst_ep);
-	if( dst_nr < (-dc_ptr->dc_usr.dc_nr_tasks)		
-	 || dst_nr >= dc_ptr->dc_usr.dc_nr_procs)	
-			ERROR_RETURN(EDVSRANGE)
+	if( dst_nr == HARDWARE)
+		ERROR_RUNLOCK_DC(dc_ptr, EDVSBADDEST);		
+	if( dst_nr < (-dc_max_nr_tasks)		
+	 || dst_nr >= dc_max_nr_procs)	
+			ERROR_RUNLOCK_DC(dc_ptr,EDVSRANGE)
 	dst_ptr   = NBR2PTR(dc_ptr, dst_nr);
+	RUNLOCK_DC(dc_ptr);	
 	if( dst_ptr == NULL) 				
 		ERROR_RETURN(EDVSDSTDIED);
 	if( caller_ep == dst_ep) 			
 		ERROR_RETURN(EDVSENDPOINT);
-	
+
 	
 	RLOCK_PROC(caller_ptr);
 	// check if the CALLER has the priviledges to REPLY a message to the  destination 
@@ -1881,11 +1918,9 @@ reply_replay: /* Return point for a migrated destination process */
 		if( dst_ptr->p_usr.p_nodeid < 0 
 			|| dst_ptr->p_usr.p_nodeid >= dvs_ptr->d_nr_nodes) 
 			{ret = EDVSBADNODEID; break;}	
-		RLOCK_DC(dc_ptr);
-		if( !test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)) 	{
+		if( !test_bit(dst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)) 	{
 			ret = EDVSNODCNODE;
 		}
-		RUNLOCK_DC(dc_ptr);
 	} while(retry);
 	if(ret < 0) {							
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
@@ -2019,7 +2054,8 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 	int dst_nr;
 	int ret;
 	message *mptr;
-	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nodes;
+	int dc_max_sysprocs, dc_max_nr_tasks;
+	unsigned long int dc_bitmap_nodes;
 
 	DVKDEBUG(DBGPARAMS,"dcid=%d dst_ep=%d \n", dcid, dst_ep);
 #ifdef DVS_CAPABILITIES
@@ -2039,7 +2075,7 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
 	dc_max_sysprocs = dc_ptr->dc_usr.dc_nr_sysprocs;
 	dc_max_nr_tasks = dc_ptr->dc_usr.dc_nr_tasks;
-	dc_max_nodes    = dc_ptr->dc_usr.dc_nodes;
+	dc_bitmap_nodes = dc_ptr->dc_usr.dc_nodes;
 
 	/*------------------------------------------
 	 * get the destination process number
@@ -2047,13 +2083,15 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 	dst_nr = _ENDPOINT_P(dst_ep);
 	if( dst_nr < (-dc_ptr->dc_usr.dc_nr_tasks)		
 	 || dst_nr >= dc_ptr->dc_usr.dc_nr_procs)	
-		ERROR_RETURN(EDVSRANGE)
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSRANGE)
 	dst_ptr   = NBR2PTR(dc_ptr, dst_nr);
 	if( dst_ptr == NULL) 				
-		ERROR_RETURN(EDVSDSTDIED);
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSDSTDIED);
 	if( HARDWARE == dst_ep) 			
-		ERROR_RETURN(EDVSENDPOINT);
-
+		ERROR_RUNLOCK_DC(dc_ptr, EDVSBADDEST);
+	hdw_ptr = NBR2PTR(dc_ptr, HARDWARE);
+	RUNLOCK_DC(dc_ptr);
+	
 	WLOCK_PROC(dst_ptr);
 	do {
 		ret = 0;
@@ -2068,7 +2106,7 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 			break;
 		}
 		
-		if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_ptr->dc_usr.dc_nodes)){
+		if( ! test_bit(dst_ptr->p_usr.p_nodeid, &dc_bitmap_nodes)){
 			ret = EDVSNODCNODE;
 			break;
 		}
@@ -2088,10 +2126,7 @@ asmlinkage long new_hdw_notify(int dcid, int dst_ep)
 			ret = EDVSRMTPROC;
 			break;
 		}			 		
-	}while(0);
-	
-	hdw_ptr = NBR2PTR(dc_ptr, HARDWARE);
-	RUNLOCK_DC(dc_ptr);	
+	}while(0);	
 	if (ret < 0) 
 		ERROR_WUNLOCK_PROC(dst_ptr, ret);	
 

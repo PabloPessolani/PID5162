@@ -378,9 +378,7 @@ asmlinkage long new_exit_unbind(long code)
 							if(code) ERROR_PRINT((int)code);							
 						}while(0);
 					}
-					if(caller_ptr->p_usr.p_rts_flags != SLOT_FREE){
-						rcode = do_unbind(dc_ptr, caller_ptr);
-					}
+					rcode = do_unbind(dc_ptr, caller_ptr);
 				}
 				if(rcode == OK){
 					WUNLOCK_PROC(caller_ptr);
@@ -465,14 +463,20 @@ asmlinkage long new_dc_init(dc_usr_t *dcu_addr)
 	/* checks for a repeated DC name or dcid already running */
 	for( i = 0; i < dvs_ptr->d_nr_dcs; i++) {
 		dc_ptr = &dc[i];
+		ret = OK;
+		
+DVKDEBUG(DBGDCLOCK,"RLOCK_DC dc=%d count=%d\n",
+	dc_ptr->dc_usr.dc_dcid, atomic_read(&dc_ptr->dc_mutex.count));
+		
 		RLOCK_DC(dc_ptr);
 		if(dc_ptr->dc_usr.dc_flags == DC_RUNNING) {
 			if(strcmp(dcu_ptr->dc_name, dc_ptr->dc_usr.dc_name) == 0)
-				ERROR_RUNLOCK_DC(dc_ptr,EDVSRSCBUSY);	
-			if( i == dcu_ptr->dc_dcid)
-				ERROR_RUNLOCK_DC(dc_ptr,EDVSRSCBUSY);	
+				ret = EDVSRSCBUSY;	
+			else if( i == dcu_ptr->dc_dcid)
+				ret = EDVSRSCBUSY;	
 		}
-		RUNLOCK_DC(dc_ptr);	
+		RUNLOCK_DC(dc_ptr);
+		if( ret != 0 ) ERROR_RETURN(ret);
 	}
 
 	DVKDEBUG(INTERNAL,"Initializing DC=%d DCname=%s on node=%d\n",
@@ -696,7 +700,7 @@ asmlinkage long new_dc_init(dc_usr_t *dcu_addr)
 /* LOCK IN THIS ORDER					*/
 /* TASK MUTEX must be LOCKED				*/
 /* DC MUTEX must be WRITE LOCKED	 		*/
-/* PROC MUTEX must be WRITE LOCKED			*/
+/* PROC MUTEX must be WRITE LOCKED		*/
 /* Who can invoke do_unbind ??				*/
 /* 1- the caller: calling new_unbind			*/
 /* 2- the caller: through exit() 			*/
@@ -785,6 +789,10 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			}
 			return(EDVSAGAIN); /* It means that the caller (!= proc_ptr) must wait proc_ptr self unbind */
 		}
+		if (test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) { /* it is a  BACKUP of a REMOTE  process */
+			clear_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags); // convert it into a REMOTE process 
+			return(OK);			
+		}
 	}else { /* REMOTE processes and BACKUP of a remote process  (stand by local processes) */
 		if (test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) { /* it is a  BACKUP of a REMOTE  process */
 			init_proc_desc(proc_ptr, proc_ptr->p_usr.p_dcid, (proc_ptr->p_usr.p_nr+dc_ptr->dc_usr.dc_nr_tasks));
@@ -799,6 +807,8 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 	/*--------------------------------------*/
 	DVKDEBUG(INTERNAL,"wakeup with error those processes trying to send a message to the proc\n");
 	LIST_FOR_EACH_ENTRY_SAFE(src_ptr, tmp_ptr, &proc_ptr->p_list, p_link) {
+
+		// locks and unlocks in lowercase to avoid kernel log saturation
 		if( proc_ptr->p_usr.p_nr < src_ptr->p_usr.p_nr) {
 			WLOCK_PROC(src_ptr); /* Caller LOCK is just locked */
 		}else{	
@@ -821,19 +831,28 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			/* REMOTE process descriptor are used for ACKNOWLEDGES 							 */
 			send_ack_lcl2rmt(src_ptr,proc_ptr,EDVSDSTDIED);
 		}
-		WUNLOCK_PROC(src_ptr);
+		wunlock_proc(src_ptr);
 	}
 	
 	DVKDEBUG(GENERIC,"delete notify messages bits sent by the proc\n");
 	/* ATENCION : Posible mejora.  Reducir el numero de proceso del loop a nr_sys_procs */
 	FOR_EACH_PROC(dc_ptr, i) {
 		rp = DC_PROC(dc_ptr,i);
+		
+		if( caller_ptr != NULL){
+			if( rp == caller_ptr){
+			DVKDEBUG(GENERIC,"Skip, caller process\n");
+			continue;
+			}
+		}
+		
 		if(rp == proc_ptr)	{
 			DVKDEBUG(GENERIC,"Skip, self process\n");
 			continue;
 		}
 		/* locking order compliance  */
 		
+		// locks and unlocks in lowercase to avoid kernel log saturation
 		if( proc_ptr->p_usr.p_nr < (i - dc_ptr->dc_usr.dc_nr_tasks)) {
 			wlock_proc(rp); /* Caller LOCK is just locked */
 		}else{	
@@ -842,6 +861,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			wlock_proc(rp);
 			wlock_proc(proc_ptr);
 		}
+		
 		if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
 			wunlock_proc(rp); 
 			continue;
@@ -872,7 +892,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 				send_ack_lcl2rmt(rp, proc_ptr, EDVSSRCDIED);
 			}
 		}
-		WUNLOCK_PROC(rp); 
+		wunlock_proc(rp); 
 	}
 
 	uproc_ptr = &proc_ptr->p_usr;
@@ -934,6 +954,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 	
 	DVKDEBUG(INTERNAL,"wakeup with error those processes waiting this process MIGRATION\n");
 	LIST_FOR_EACH_ENTRY_SAFE(rp, tmp_ptr, &proc_ptr->p_mlist, p_mlink) {
+		
 		if( proc_ptr->p_usr.p_nr < rp->p_usr.p_nr) {
 			WLOCK_PROC(rp); /* Caller LOCK is just locked */
 		}else{	
@@ -1680,7 +1701,7 @@ setaffinity_ptr(param_pid, &pap_mask);
 		
 		if( oper == BKUP_BIND) {
 			proc_ptr->p_usr.p_rts_flags	= REMOTE;	/* appears as if it is REMOTE		*/
-			proc_ptr->p_usr.p_misc_flags	|= MIS_RMTBACKUP;/* It is a remote process' backup 	*/
+			proc_ptr->p_usr.p_misc_flags|= MIS_RMTBACKUP;/* It is a remote process' backup 	*/
 			proc_ptr->p_usr.p_nodeid	= nodeid;	/* The primary process node's ID 	*/	
 		}else{
 			if( (oper == USERMODE_BIND)
@@ -1791,23 +1812,25 @@ setaffinity_ptr(param_pid, &pap_mask);
 }
 
 /*--------------------------------------------------------------*/
-/*			new_unbind				*/
-/* Unbind a  LOCAL/REMOTE  process from the DVS */
+/*			new_unbind				       */
+/* Unbind a  LOCAL/REMOTE  process from the DVS       */
 /* Who can new_unbind a process?:				*/
 /* - The main thread of a LOCAL process itself		*/
 /* - The child thread of a LOCAL process itself		*/
-/* - A system process that unbind a local/remote process	*/
+/* - A bound process in the same DC 				*/
+/* - An unbound process that unbinds a lcl/rmt process	*/
 /*--------------------------------------------------------------*/
 asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms) 
 {
 	dc_desc_t *dc_ptr;
 	long unsigned int *bm_ptr;
 	struct proc *proc_ptr,  *caller_ptr;
-	int p_nr, nodeid, other_pid, caller_nr;
+	int proc_nr, nodeid, other_pid, caller_nr, caller_pid, proc_pid;
 	proc_usr_t *uproc_ptr;
-	struct task_struct *task_ptr = NULL;
-	int ret = OK;
-	
+	struct task_struct *proc_task  = NULL;
+	struct task_struct *caller_task = NULL;
+	int ret = OK, caller_bound, proc_lcl;
+		
 	DVKDEBUG(DBGPARAMS,"dcid=%d proc_ep=%d\n",dcid, proc_ep);
 
 #ifdef DVS_CAPABILITIES
@@ -1818,6 +1841,9 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 
 	if( DVS_NOT_INIT() )  ERROR_RETURN(EDVSDVSINIT );
 
+	ret = check_caller(&caller_task, &caller_ptr, &caller_pid);
+	caller_bound = (ret == OK)?TRUE:FALSE;
+	
 	CHECK_DCID(dcid);	/* check DC ID limits 		*/
 	
 	dc_ptr 		= &dc[dcid];
@@ -1826,83 +1852,71 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 	if( dc_ptr->dc_usr.dc_flags) 					
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
 
-	p_nr = _ENDPOINT_P(proc_ep);
-	if( p_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 		
-	 || p_nr >= dc_ptr->dc_usr.dc_nr_procs) 		
+	proc_nr = _ENDPOINT_P(proc_ep);
+	if( proc_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 		
+	 || proc_nr >= dc_ptr->dc_usr.dc_nr_procs) 		
 		ERROR_RUNLOCK_DC(dc_ptr,EDVSENDPOINT);
 	bm_ptr = &dc_ptr->dc_usr.dc_nodes;
 	
  	proc_ptr     = ENDPOINT2PTR(dc_ptr, proc_ep);
-	WLOCK_TASK(current);
-	RLOCK_PROC(proc_ptr);
 	RUNLOCK_DC(dc_ptr);
 	
+	RLOCK_PROC(proc_ptr);
 	if( test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)){
-		WUNLOCK_TASK(current);	
 		ERROR_RUNLOCK_PROC(proc_ptr,EDVSNOTBIND);
 	}
     nodeid = proc_ptr->p_usr.p_nodeid; 
 	if( nodeid < 0 || nodeid >= dvs_ptr->d_nr_nodes)	{
-		WUNLOCK_TASK(current);	
 		ERROR_RUNLOCK_PROC(proc_ptr,EDVSBADNODEID);
 	}
+	if( proc_ptr->p_usr.p_dcid != dcid )	{
+		ERROR_RUNLOCK_PROC(proc_ptr,EDVSBADDCID);
+	}
 	if(!test_bit(nodeid, bm_ptr)) 	{
-		WUNLOCK_TASK(current);	
 		ERROR_RUNLOCK_PROC(proc_ptr,EDVSNODCNODE);
 	}
+	proc_pid = proc_ptr->p_usr.p_lpid;
+	proc_task= proc_ptr->p_task;
+	proc_lcl=(IT_IS_LOCAL(proc_ptr))?TRUE:FALSE;
+	RUNLOCK_PROC(proc_ptr);
 	
-	caller_ptr = current->task_proc;							/* may be NULL */
-	if( IT_IS_LOCAL(proc_ptr)) {
-		if( caller_ptr == proc_ptr ) {						/* Self unbind				*/
-			if( task_pid_nr(current) != proc_ptr->p_usr.p_lpid) {	/* the thread is not binded 		*/
-				if(current->tgid != proc_ptr->p_usr.p_lpid) {	/* the main thread is not binded too 	*/
-					WUNLOCK_TASK(current);	
-					ERROR_RUNLOCK_PROC(proc_ptr,EDVSNOTBIND);
-				}else{
-					task_ptr = caller_ptr->p_task;
-					RUNLOCK_PROC(proc_ptr);
-					WUNLOCK_TASK(current);
-					WLOCK_TASK(task_ptr);
-				}
-			}else{ 
-				task_ptr = caller_ptr->p_task;
-				RUNLOCK_PROC(proc_ptr);
-				if(task_ptr !=  current) {
-					WUNLOCK_TASK(current);
-					ERROR_RETURN(EDVSPROCSTS);					
-				}
-				/*  LOCK_TASK(task_ptr) same as LOCK_TASK(current) already locked */
-			}
-		}else{ //  caller_ptr != proc_ptr
-			RLOCK_PROC(caller_ptr);
-			caller_nr = caller_ptr->p_usr.p_nr;
-			RUNLOCK_PROC(caller_ptr);
-			task_ptr = proc_ptr->p_task;
-			RUNLOCK_PROC(proc_ptr);
-			WUNLOCK_TASK(current);
-			if( task_ptr == NULL)	{
-				ERROR_RETURN(EDVSNOTBIND);
-			}
-			WLOCK_TASK(task_ptr);
+	if( caller_bound ) {
+		RLOCK_PROC(caller_ptr);
+		caller_nr = caller_ptr->p_usr.p_nr;
+		if( caller_ptr->p_usr.p_dcid != dcid){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
 		}
-	}else{ /* Remote process do not have a local Linux task */
-		WUNLOCK_TASK(current);
-		RUNLOCK_PROC(proc_ptr);
-	}
+		RUNLOCK_PROC(caller_ptr);
+		if( proc_lcl == TRUE ) {
+			WLOCK_TASK(caller_task);
+			if( caller_nr == proc_nr  ) {	/* Self unbind				*/    
+				if( caller_pid != proc_pid) {	/* the thread is not binded 		*/
+					if(caller_task->tgid != proc_pid) {	/* the main thread is not binded too 	*/
+						WUNLOCK_TASK(caller_task);	
+						ERROR_RETURN(EDVSNOTBIND);
+					}
+				}
+			}
+		}else{ /* Remote process do not have a local Linux task */
 
+		}
+	}
+	// OUTPUT: If caller Bound and proc_ptr is LOCAL: WLOCK_TASK(caller_task)
+	// OUTPUT: If caller Bound and proc_ptr is REMOTE or Caller is NOT bound :  Nothing LOCKED 
+		
 	/* LOCAL process enter here with task struct locked */
 	WLOCK_DC(dc_ptr);
-	if( caller_nr != p_nr ){
-		WLOCK_PROC(proc_ptr);
+	if( (caller_bound) == TRUE && ( caller_nr != proc_nr ) ) {
+		WLOCK_ORDERED2(caller_nr, proc_nr, caller_ptr, proc_ptr);
 	}else{ 
-		WLOCK_ORDERED2(caller_nr, p_nr, caller_ptr, proc_ptr);
+		WLOCK_PROC(proc_ptr);
 	}
 //	set_bit(BIT_NO_MAP, &caller_ptr->p_usr.p_rts_flags);
 	ret = do_unbind(dc_ptr, proc_ptr);
 	/* WARNING!! from here, all proc_ptr fields were CLEARED !!! */
 	if( ret ) {
-		if( IT_IS_LOCAL(proc_ptr)){
-			WUNLOCK_TASK(task_ptr);
+		if( proc_lcl == TRUE ){
+			WUNLOCK_TASK(caller_task);
 			if( ret == EDVSAGAIN && caller_ptr != NULL && caller_ptr != proc_ptr ){ 
 				INIT_LIST_HEAD(&caller_ptr->p_ulink);
 				LIST_ADD_TAIL(&caller_ptr->p_ulink, &proc_ptr->p_ulist);
@@ -1913,50 +1927,51 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 				uproc_ptr = &caller_ptr->p_usr;
 				DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
 				sleep_proc(caller_ptr, timeout_ms);
-				if( caller_nr != p_nr )
-					WUNLOCK_PROC(caller_ptr);
+				WUNLOCK_PROC(caller_ptr);
 				ERROR_RETURN(caller_ptr->p_rcode);
 			}
 		} 
 		WUNLOCK_PROC(proc_ptr);
-		if( caller_nr != p_nr )
+		if( (caller_bound) == TRUE && ( caller_nr != proc_nr ) ) {
 			WUNLOCK_PROC(caller_ptr);
+		}
 		WUNLOCK_DC(dc_ptr);
 		if(ret)	ERROR_RETURN(ret);
 		return(OK);
 	}
 	
-	if( atomic_read(&local_nodeid) == nodeid ) { // LOCAL 
-		if ( caller_ptr != proc_ptr) {
+	if(  proc_lcl == TRUE  ) { // LOCAL 
+		if( caller_bound == TRUE)
+			WUNLOCK_TASK(caller_task);
+		if( (caller_bound) == TRUE && ( caller_nr != proc_nr ) ) {
 			WUNLOCK_PROC(proc_ptr);	
 			WUNLOCK_DC(dc_ptr);
-			other_pid = task_pid_nr(task_ptr);
-			WUNLOCK_TASK(task_ptr);
 			/* CALLER could not be bound */
-			if( caller_ptr == NULL) return(OK);
+			if( caller_bound == FALSE) return(OK);
 //			sys_wait4_ptr(other_pid, (int __user *)&ret, 0, NULL);
 //			schedule();				
 // ANALIZAR si el proceso que se esta matando es HIJO del MATADOR de tal modo de hacer el  sys_wait4_ptr necesario para no quedar ZOMBIE.
 			/* Waits until the target process unbinds by itself after sending it a SIGPIPE */
+			ret = send_sig_info(SIGPIPE , SEND_SIG_NOINFO, proc_task);
 			WUNLOCK_PROC(caller_ptr);
 			do {
-				ret = wait_event_interruptible(caller_ptr->p_wqhead,(other_pid != proc_ptr->p_usr.p_lpid));
-				DVKDEBUG(INTERNAL,"other_pid=%d pid=%d\n",other_pid, proc_ptr->p_usr.p_lpid);
+				ret = wait_event_interruptible(caller_ptr->p_wqhead,(proc_pid != proc_ptr->p_usr.p_lpid));
+				DVKDEBUG(INTERNAL,"proc_pid=%d pid=%d\n",proc_pid, proc_ptr->p_usr.p_lpid);
 				if( ret == -ERESTARTSYS) {
 					ret = -EINTR;
 					break;
 				}
 			}while(ret < 0);
-			DVKDEBUG(INTERNAL,"other_pid=%d pid=%d ret=%d\n",other_pid, proc_ptr->p_usr.p_lpid, ret);
+			DVKDEBUG(INTERNAL,"proc_pid=%d pid=%d ret=%d\n",proc_pid, proc_ptr->p_usr.p_lpid, ret);
 			if( ret < 0) ERROR_RETURN(ret);
 			return(ret);
 		}else{
-			WUNLOCK_TASK(task_ptr);
+			
 		}
 	}
 	
 	WUNLOCK_PROC(proc_ptr);
-	if( caller_nr != p_nr )
+	if( (caller_bound) == TRUE && ( caller_nr != proc_nr ) ) 
 		WUNLOCK_PROC(caller_ptr);
 	WUNLOCK_DC(dc_ptr);
 
@@ -2074,44 +2089,147 @@ asmlinkage long new_getnodeinfo(int nodeid, node_usr_t *node_usr_ptr)
 /*			new_getprocinfo				*/
 /* Copies a proc descriptor to userspace			*/
 /*--------------------------------------------------------------*/
+#ifdef RMT_PROCINFO
+asmlinkage long new_getprocinfo_X(int dcid, int p_nr, struct proc_usr *proc_usr_ptr, int nodeid)
+#else  // RMT_PROCINFO
 asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_ptr)
+#endif // RMT_PROCINFO
 {
 	int rcode;
 	dc_desc_t *dc_ptr;
-	struct proc *proc_ptr;
+	struct proc *sproxy_ptr;
 	struct proc *caller_ptr;
 	int caller_pid;
 	struct task_struct *task_ptr;	
+	struct proc *proc_ptr;
 
+#ifdef RMT_PROCINFO
+	DVKDEBUG(DBGPARAMS,"dcid=%d p_nr=%d nodeid=%d\n",dcid, p_nr, nodeid);
+#else //  RMT_PROCINFO
 	DVKDEBUG(DBGPARAMS,"dcid=%d p_nr=%d\n",dcid, p_nr);
-#ifdef DVS_CAPABILITIES
-	 if ( !capable(CAP_VOS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
-#else
-	if(get_current_cred()->euid.val != USER_ROOT) ERROR_RETURN(EDVSPRIVILEGES);
-#endif 
-	if( DVS_NOT_INIT() )   			ERROR_RETURN(EDVSDVSINIT );
+#endif //  RMT_PROCINFO
 
+#ifdef DVS_CAPABILITIES
+	 if ( !capable(CAP_VOS_ADMIN)) 
+		 ERROR_RETURN(EDVSPRIVILEGES);
+#else
+	if(get_current_cred()->euid.val != USER_ROOT) 
+		ERROR_RETURN(EDVSPRIVILEGES);
+#endif 
+	if( DVS_NOT_INIT() )   			
+		ERROR_RETURN(EDVSDVSINIT );
+
+	CHECK_DCID(dcid);		/* check DC ID limits 	*/
+	
 	rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
+
+#ifdef RMT_PROCINFO
 	if( dcid == PROC_NO_PID) {
 		if( rcode) ERROR_RETURN(rcode);
 		dcid = caller_ptr->p_usr.p_dcid;
 	}
+	if( dcid != caller_ptr->p_usr.p_dcid){
+		ERROR_RETURN(EDVSBADDCID);	
+	}
+#endif // RMT_PROCINFO
 	
-	CHECK_DCID(dcid);		/* check DC ID limits 	*/
 	dc_ptr 		= &dc[dcid];
-
 	RLOCK_DC(dc_ptr);	
-	if( dc_ptr->dc_usr.dc_flags) 			ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
+	if( dc_ptr->dc_usr.dc_flags) 			
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSDCNOTRUN);
 	if( p_nr < (-dc_ptr->dc_usr.dc_nr_tasks) 		
-	 || p_nr >= dc_ptr->dc_usr.dc_nr_procs) 	ERROR_RUNLOCK_DC(dc_ptr,EDVSBADPROC);
+	 || p_nr >= dc_ptr->dc_usr.dc_nr_procs) 	
+		ERROR_RUNLOCK_DC(dc_ptr,EDVSBADPROC);
 	proc_ptr = NBR2PTR(dc_ptr,p_nr);
 	RUNLOCK_DC(dc_ptr);
 
-	RLOCK_PROC(proc_ptr);
-	DVKDEBUG(INTERNAL,"lpid=%d name=%s\n", proc_ptr->p_usr.p_lpid, (char*)proc_ptr->p_usr.p_name);
-	COPY_TO_USER_PROC(rcode, &proc_ptr->p_usr, proc_usr_ptr, sizeof(struct proc_usr));
-	RUNLOCK_PROC(proc_ptr);
-	if( rcode < 0) ERROR_RETURN(rcode);
+#ifdef RMT_PROCINFO
+	if( (nodeid != local_node) 
+		&& (nodeid != LOCALNODE)){ // REMOTE NODE  
+		/*---------------------------------------------------------------------------------------------------*/
+		/*						REMOTE 								 */
+		/*---------------------------------------------------------------------------------------------------*/
+
+		sproxy_ptr = NODE2SPROXY(nodeid); 
+		RLOCK_PROC(sproxy_ptr);
+		do {
+			ret = OK;
+			if( ! test_bit(nodeid, &dc_bitmap_nodes)) 	
+				{ret = EDVSNODCNODE ;break;}
+			if( sproxy_ptr->p_usr.p_lpid == PROC_NO_PID)		
+				{ret = EDVSNOPROXY ;break;}
+			if( test_bit( BIT_SLOT_FREE, &sproxy_ptr->p_usr.p_rts_flags))	
+				{ret = EDVSNOPROXY;break;} 
+			if( !test_bit(MIS_BIT_PROXY, &sproxy_ptr->p_usr.p_misc_flags))	
+				{ret = EDVSNOPROXY;break;} 
+			if( !test_bit(MIS_BIT_CONNECTED, &sproxy_ptr->p_usr.p_misc_flags))	
+				{ret = EDVSNOTCONN;break;}  
+		} while(0);
+		RUNLOCK_PROC(sproxy_ptr);
+		if(ret < 0) {							
+			ERROR_RETURN(ret);
+		}
+		
+		WLOCK_PROC(caller_ptr);
+		/* fill the caller's rmtcmd fields */
+		caller_ptr->p_rmtcmd.c_cmd 		= CMD_PROCINFO;
+		caller_ptr->p_rmtcmd.c_src 		= caller_ep;
+		caller_ptr->p_rmtcmd.c_dst 		= p_nr;
+		caller_ptr->p_rmtcmd.c_dcid		= dcid;
+		caller_ptr->p_rmtcmd.c_snode  	= atomic_read(&local_nodeid);
+		caller_ptr->p_rmtcmd.c_dnode  	= nodeid;
+		caller_ptr->p_rmtcmd.c_rcode  	= OK; 
+		caller_ptr->p_rmtcmd.c_len  	= 0;
+		#define c_proc_addr		c_batch_nr	
+		caller_ptr->p_rmtcmd.c_proc_addr= (int) proc_usr_ptr;
+		
+		INIT_LIST_HEAD(&caller_ptr->p_link);
+		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+		set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
+		caller_ptr->p_usr.p_sendto  = p_nr;
+		caller_ptr->p_usr.p_getfrom = p_nr;
+	
+		ret = sproxy_enqueue(caller_ptr);
+
+		/* wait for the REPLY */
+		sleep_proc(caller_ptr, timeout_ms);
+
+		rcode = caller_ptr->p_rcode;
+		if( rcode == OK){
+			caller_ptr->p_usr.p_rmtsent++;
+		}else{
+			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
+				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n",
+					 caller_ptr->p_usr.p_endpoint);
+				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+			}
+			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
+			clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
+			caller_ptr->p_usr.p_sendto  = NONE;
+			caller_ptr->p_usr.p_getfrom = NONE;
+			caller_ptr->p_usr.p_proxy 	= NONE;
+		}
+		WUNLOCK_PROC(caller_ptr);
+	} else { // LOCAL NODE 
+#else // RMT_PROCINFO
+
+		/*---------------------------------------------------------------------------------------------------*/
+		/*						LOCAL    								 */
+		/*---------------------------------------------------------------------------------------------------*/	
+		RLOCK_PROC(proc_ptr);
+		DVKDEBUG(INTERNAL,"lpid=%d name=%s\n", proc_ptr->p_usr.p_lpid, (char*)proc_ptr->p_usr.p_name);
+		COPY_TO_USER_PROC(rcode, &proc_ptr->p_usr, proc_usr_ptr, sizeof(struct proc_usr));
+		RUNLOCK_PROC(proc_ptr);
+#endif // RMT_PROCINFO
+		
+#ifdef RMT_PROCINFO
+	}
+#endif // RMT_PROCINFO
+
+	if( rcode < 0) 
+		ERROR_RETURN(rcode);
 	return(rcode);
 }
 
@@ -2127,19 +2245,24 @@ asmlinkage long new_getproxyinfo(int px_nr,  struct proc_usr *sproc_usr_ptr, str
 	DVKDEBUG(DBGPARAMS,"px_nr=%d\n", px_nr);
 
 #ifdef DVS_CAPABILITIES
-	 if ( !capable(CAP_DVS_ADMIN)) ERROR_RETURN(EDVSPRIVILEGES);
+	 if ( !capable(CAP_DVS_ADMIN)) 
+		 ERROR_RETURN(EDVSPRIVILEGES);
 #else
-	if(get_current_cred()->euid.val != USER_ROOT) ERROR_RETURN(EDVSPRIVILEGES);
+	if(get_current_cred()->euid.val != USER_ROOT) 
+		ERROR_RETURN(EDVSPRIVILEGES);
 #endif 
 
 	rcode = lock_sr_proxies(px_nr,  &sproxy_ptr, &rproxy_ptr);
 	if(rcode != OK) ERROR_RETURN(rcode);
 
-	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_sproxy, sproc_usr_ptr, sizeof(struct proc_usr));
-	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_rproxy, rproc_usr_ptr, sizeof(struct proc_usr));
+	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_sproxy, 
+					sproc_usr_ptr, sizeof(struct proc_usr));
+	COPY_TO_USER_PROC(rcode, &proxies[px_nr].px_rproxy, 
+					rproc_usr_ptr, sizeof(struct proc_usr));
 	rcode = unlock_sr_proxies(px_nr);
-	if(rcode < OK) ERROR_RETURN(rcode);
-
+	if(rcode < OK) 
+		ERROR_RETURN(rcode);
+	
 	return(rcode);
 }
 
@@ -2274,7 +2397,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 			}	
 			if(ret != EDVSNOTBIND) 
 				ERROR_RETURN(ret);
-		}else{ /* caller is bound */
+		}else{ /*  Is the caller bound?*/
 			if(ret != OK) 	ERROR_RETURN(ret);
 			/*------------------------------------------
 			* Checks the caller process PID

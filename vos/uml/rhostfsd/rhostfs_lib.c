@@ -562,6 +562,7 @@ long lcl_statfs(message *mptr)
 	int rcode;
 	char pathname[PATH_MAX+1]; 
 	struct statfs statbuf;
+	struct statfs64 statbuf64;
 	
 	int len 	= mptr->m1_i1;
 	RHSDEBUG("len=%d\n", len);
@@ -569,11 +570,23 @@ long lcl_statfs(message *mptr)
 	rcode = dvk_vcopy(mptr->m_source, mptr->m1_p1, rhs_ep, pathname, len);
 	if( rcode < 0) ERROR_RETURN(rcode);
 	RHSDEBUG("pathname=%s\n", pathname);
-	
+	  
 	rcode = statfs(pathname, &statbuf);
 	if( rcode < 0) ERROR_RETURN(-errno);
 	
-	rcode = dvk_vcopy(rhs_ep, &statbuf, mptr->m_source, mptr->m1_p2, sizeof(struct statfs));
+	statbuf64.f_type 	= (long int)statbuf.f_type; /* type of file system (see below) */
+	statbuf64.f_bsize	= (long int)statbuf.f_bsize; /* optimal transfer block size */
+	statbuf64.f_blocks	= statbuf.f_blocks; /* total data blocks in file system */
+	statbuf64.f_bfree	= statbuf.f_bfree; /* free blocks in fs */
+	statbuf64.f_bavail	= statbuf.f_bavail; /* free blocks available to	unprivileged user */
+	statbuf64.f_files	= statbuf.f_files; /* total file nodes in file system */
+	statbuf64.f_ffree	= statbuf.f_ffree; /* free file nodes in fs */
+	statbuf64.f_fsid	= statbuf.f_fsid; /* file system id */
+	statbuf64.f_namelen	= (long int)statbuf.f_namelen; /* maximum length of filenames */
+	statbuf64.f_frsize	= (long int)statbuf.f_frsize; /* fragment size (since Linux 2.6) */
+	*statbuf64.f_spare	= (long int)*statbuf.f_spare;
+	
+	rcode = dvk_vcopy(rhs_ep, &statbuf64, mptr->m_source, mptr->m1_p2, sizeof(struct statfs));
 	if( rcode < 0) ERROR_RETURN(rcode);
 
 	return(OK);

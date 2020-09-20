@@ -8,6 +8,12 @@
 
 #include "dvk_mod.h"
 
+#ifdef DVKDBG
+#pragma message ("DVKDBG=YES")
+#else //  DVKDBG
+#pragma message ("DVKDBG=NO")
+#endif  //  DVKDBG
+
 //----------------------------------------------------------
 //			file_operations
 //----------------------------------------------------------
@@ -26,11 +32,12 @@ int dvk_nr_devs = DVK_NR_DEVS;
 module_param(dvk_major, int, S_IRUGO);
 module_param(dvk_minor, int, S_IRUGO);
 module_param(dvk_nr_devs, int, S_IRUGO);
+module_param(dbglvl, ulong , S_IRUGO);
 
 MODULE_AUTHOR("Pablo Pessolani");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_DESCRIPTION("The DVK Linux module.");
-MODULE_VERSION("4.9.88");
+MODULE_VERSION("4.9.88-DVK");
 
 
 /* Init handler which is used to lookup addresses of symbols that the
@@ -383,6 +390,7 @@ void dvk_cleanup_module(void)
 int dvk_init_module(void)
 {
 	int rcode=0;
+	
 static	char *tasklist_name = "tasklist_lock";
 static	char *setaffinity_name = "sched_setaffinity";
 static	char *free_nsproxy_name = "free_nsproxy";
@@ -391,16 +399,20 @@ static	char *exit_unbind_name = "exit_unbind_ptr";
 static	char *dvk_dvs_init = "ipc_dvs_init";
 	
 	unsigned long sym_addr = kallsyms_lookup_name(tasklist_name);
-	
-	
+		
+	dbglvl = 0xFFFFFFFF;
+	dvs.d_dbglvl  = 0xFFFFFFFF; 
+    printk("Hello, DVS! dbglvl=%lX dvs.d_dbglvl=%lX\n", dbglvl, dvs.d_dbglvl);
+
 	tasklist_ptr = (rwlock_t *) sym_addr;
 	DVKDEBUG(DBGLVL0,"Hello, DVS! tasklist_ptr=%X\n", tasklist_ptr);
 
 	sym_addr = kallsyms_lookup_name(dvk_dvs_init);
 	DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_dvs_init=%X\n", sym_addr);
+	
 	if( sym_addr == NULL) {
 
-		dvk_iface_type = DVK_IOCTL;		
+		DVKDEBUG(DBGLVL0,"Hello, DVS! NO DVK IPC INTERFACE installed\n");
 		dvs_ptr = &dvs;
 		dvs_ptr->d_dbglvl = 0xFFFFFFFF;
 
@@ -420,9 +432,9 @@ static	char *dvk_dvs_init = "ipc_dvs_init";
 		dvk_unbind_ptr = (void *) sym_addr;
 		DVKDEBUG(DBGLVL0,"Hello, DVS! dvk_unbind_ptr=%X\n", dvk_unbind_ptr);
 		
-		DVKDEBUG(DBGLVL0,"usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 \n");
-		DVKDEBUG(DBGLVL0,"parms:  dvk_major=%d dvk_minor=%d dvk_nr_devs=%d\n",
-					 dvk_major, dvk_minor, dvk_nr_devs);
+		DVKDEBUG(DBGLVL0,"usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=[0-0xFFFFFFFF]\n");
+		DVKDEBUG(DBGLVL0,"parms:  dvk_major=%d dvk_minor=%d dvk_nr_devs=%d dbglvl=%lX\n",
+					 dvk_major, dvk_minor, dvk_nr_devs, dbglvl);
 
 		/* 
 		 * Register the character device (atleast try) 
@@ -447,14 +459,16 @@ static	char *dvk_dvs_init = "ipc_dvs_init";
 	//	atomic_set ( &local_nodeid, 3);
 	//	DVKDEBUG(DBGLVL0, "NEW local_nodeid=%d\n", atomic_read(&local_nodeid));
     	rcode = dvk_replace_init();
+		DVKDEBUG(DBGLVL0,"DVS new flags=%X\n", dvs_ptr->d_flags);
+	
 	}else {
-		SET_BIT( dvk_iface_type, BIT_IOCTL);		
-		dvs_ptr = (void *) sym_addr;
-		DVKDEBUG(DBGLVL0,"Hello, DVS! dvs_ptr=%X\n", dvs_ptr);
-		DVKDEBUG(DBGLVL0, "Current kernel has CONFIG_DVKIPC dvk_iface_type=%x\n", dvk_iface_type);
-		set_bit(DVK_IOCTL, &dvs_ptr->d_flags);
-		DVKDEBUG(DBGLVL0,"DVS flags=%X\n", dvs_ptr->d_flags);
-		rcode = EDVSEXIST;
+		DVKDEBUG(DBGLVL0,"Hello, DVS! DVK IPC INTERFACE installed\n");
+		dvs_ptr = &dvs;
+		DVKDEBUG(DBGLVL0, "Current kernel has CONFIG_DVKIPC\n");
+		set_bit(DVS_BIT_IOCTL, &dvs_ptr->d_flags);
+		set_bit(DVS_BIT_IPC, &dvs_ptr->d_flags);
+		DVKDEBUG(DBGLVL0,"DVS new flags=%X\n", dvs_ptr->d_flags);
+		rcode = EDVSEXIST;	
 	}
 	
 	return(rcode);

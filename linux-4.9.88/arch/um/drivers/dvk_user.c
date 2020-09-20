@@ -30,6 +30,7 @@
 sem_t thread_sem;
 sem_t kernel_sem;
 
+#ifdef ANULADO
 int os_sem_init(sem_t *sem, unsigned int value)
 {
 #define BETWEEN_THREADS		0
@@ -71,7 +72,6 @@ int os_sem_wait(sem_t *sem)
 	return (sem_wait(sem));
 }
 
-#ifdef ANULADO
 int start_dvk_thread(unsigned long sp, int *fd_out)
 {
 	int pid, err;

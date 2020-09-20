@@ -39,6 +39,7 @@ void  main ( int argc, char *argv[] )
 		printf("CHILD[%d] exit\n",index);
 		exit(0);
 	}
+	sleep(1);
     printf("PARENT dvk_lclbind %d to DC%d with p_nr+index=%d\n",pid,dcid,p_nr+index);
 	ep = dvk_lclbind(dcid,pid,p_nr+index);
 	if( ep < EDVSERRCODE) ERROR_PRINT(ep);

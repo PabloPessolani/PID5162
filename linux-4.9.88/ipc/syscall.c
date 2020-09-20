@@ -29,7 +29,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
     "ipc_mini_rcvrqst",
     "ipc_mini_reply",
     "ipc_dc_end",
-    "ipc_bind",
+    "ipc_bind_X",
     "ipc_unbind",
     "ipc_getpriv",
     "ipc_setpriv",
@@ -49,7 +49,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
     "ipc_getep",
     "ipc_getdvsinfo",
     "ipc_proxy_conn",
-    "ipc_wait4bind",
+    "ipc_wait4bind_X",
     "ipc_migrate",   
     "ipc_node_up",
     "ipc_node_down",
@@ -66,7 +66,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
   long ipc_mini_rcvrqst( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_mini_reply( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_dc_end( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
-  long ipc_bind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_bind_X( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_unbind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_getpriv( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_setpriv( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
@@ -86,7 +86,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
   long ipc_getep( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_getdvsinfo( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_proxy_conn( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
-  long ipc_wait4bind( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
+  long ipc_wait4bind_X( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_migrate( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_node_up( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
   long ipc_node_down( int first, unsigned long second,unsigned long third, void __user * ptr, long fifth);
@@ -105,7 +105,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
     ipc_mini_rcvrqst,
     ipc_mini_reply,
     ipc_dc_end,
-    ipc_bind,
+    ipc_bind_X,
     ipc_unbind,
     ipc_getpriv,
     ipc_setpriv,
@@ -125,7 +125,7 @@ char *dvk_routine_names[DVK_NR_CALLS] = {
     ipc_getep,
     ipc_getdvsinfo,
     ipc_proxy_conn,
-    ipc_wait4bind,
+    ipc_wait4bind_X,
     ipc_migrate,
     ipc_node_up,
     ipc_node_down,
@@ -155,6 +155,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 	call &= 0xffff;
 
 #ifdef  CONFIG_DVKIPC 
+#pragma message ("SYSCALL_DEFINE6=ipc")
 	int rcode, dvk_call;
 	if( call > 0xFF) { // DVK_CALL are formed as call = NR00;
 //		if( dvk_mod_loaded == 0) ERROR_RETURN(EDVSNOSYS);
@@ -164,7 +165,9 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		DVKDEBUG(DBGPARAMS, "%s: call=%d first=%d second=%d third=%d fifth=%d \n", 
 			dvk_routine_names[dvk_call],call, first, second, third, fifth); 
 		rcode = (*dvk_routine[dvk_call])(first, second, third, ptr, fifth);
-		return(rcode);
+		DVKDEBUG(DBGPARAMS, "%s: call=%d rcode=%d\n", 
+			dvk_routine_names[dvk_call],call, rcode);
+		ERROR_RETURN(rcode);
 	}	
 #endif //CONFIG_DVKIPC 
 	

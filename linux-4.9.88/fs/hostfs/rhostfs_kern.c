@@ -5,6 +5,11 @@
  * Ported the filesystem routines to 2.5.
  * 2003-02-10 Petr Baudis <pasky@ucw.cz>
  */
+
+#define STRINGIFY(s) XSTRINGIFY(s)
+#define XSTRINGIFY(s) #s
+#pragma message ("CONFIG_RHOSTFS=" STRINGIFY(CONFIG_RHOSTFS))
+ 
 #ifdef CONFIG_RHOSTFS
 
 #define RHOSTFS_GLOBAL_HERE

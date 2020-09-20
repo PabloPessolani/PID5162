@@ -15,7 +15,7 @@ EXTERN node_usr_t node, *node_ptr;
 EXTERN char *rhs_dir;
 EXTERN char *rhs_name;
 EXTERN unsigned int RHS_mandatory;
-EXTERN int dcid;
+EXTERN int rhs_dcid;
 EXTERN int	dvk_fd;
 EXTERN int local_nodeid;
 EXTERN message rhs_m;

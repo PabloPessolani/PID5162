@@ -41,7 +41,10 @@ extern int ipc(unsigned int call, int first, int second, int third,
 int os_ipc(unsigned int call, int first, int second, int third,
                void *ptr, long fifth)
 {
-	return(syscall( SYS_ipc,call, first, second, third, ptr, fifth));
+	int rcode;
+	rcode = syscall( SYS_ipc,call, first, second, third, ptr, fifth);
+	if( rcode < 0) rcode = (-errno);
+	return(rcode);
 }
 
 
