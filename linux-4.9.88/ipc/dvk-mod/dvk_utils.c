@@ -658,11 +658,11 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	}
 	
 	/* If the process is not a REMOTE BACKUP, it must be in RUNNING state */
-	if ( !test_bit(MIS_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags) ) {
-		if (caller_ptr->p_usr.p_rts_flags) 	{
+	if ( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags) ) {
+		if (caller_ptr->p_usr.p_rts_flags) {
 			up_ptr = &caller_ptr->p_usr;
 			DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(up_ptr));
-			ERROR_WUNLOCK_PROC(caller_ptr,EDVSNOTREADY);
+			ERROR_WUNLOCK_PROC(caller_ptr,EDVSPROCRUN);
 		}
 	}
 

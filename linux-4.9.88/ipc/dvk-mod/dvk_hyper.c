@@ -1788,7 +1788,7 @@ setaffinity_ptr(param_pid, &pap_mask);
 	endpoint = proc_ptr->p_usr.p_endpoint;
 	
 	/* Wake up the waiting process on dvk_wait4bind() */
-	if( oper == LCL_BIND || oper == REPLICA_BIND || oper == BKUP_BIND){
+	if( oper == LCL_BIND || oper == REPLICA_BIND){
 		if( current != task_ptr ){
 			/* Wakes up it as if has in wait4bind state  */
 			if( waitqueue_active(&task_ptr->task_wqh))
@@ -2389,14 +2389,16 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		/* WARNING : task_ptr can be the "current" task or may be the thread leader */
 		if( other_ep == SELF && oper == WAIT_BIND ){ /* caller itself if it is bound  */
 			if(ret == OK) {		/*The process is just bound  */
-				RLOCK_PROC(caller_ptr);
-				ret = caller_ptr->p_usr.p_endpoint;
-				RUNLOCK_PROC(caller_ptr);
-				DVKDEBUG(INTERNAL,"ret=%d\n", ret);
-				return(ret);
-			}	
-			if(ret != EDVSNOTBIND) 
-				ERROR_RETURN(ret);
+				if( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)) {
+					ret = caller_ptr->p_usr.p_endpoint;
+					RUNLOCK_PROC(caller_ptr);
+					DVKDEBUG(INTERNAL,"ret=%d\n", ret);
+					return(ret);
+				}
+			} else {
+				if(ret != EDVSNOTBIND) 
+					ERROR_RETURN(ret);
+			}
 		}else{ /*  Is the caller bound?*/
 			if(ret != OK) 	ERROR_RETURN(ret);
 			/*------------------------------------------
@@ -2462,13 +2464,15 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		WLOCK_TASK(current);
 		if(other_ep == SELF){
 			if (current->task_proc != NULL){
-				caller_ptr = (struct proc *)current->task_proc;
-				WUNLOCK_TASK(current);
-				RLOCK_PROC(caller_ptr);
-				ret = caller_ptr->p_usr.p_endpoint;
-				RUNLOCK_PROC(caller_ptr);
-				DVKDEBUG(INTERNAL,"ret=%d\n", ret);
-				return(ret);		
+				if( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)){
+					caller_ptr = (struct proc *)current->task_proc;
+					WUNLOCK_TASK(current);
+					RLOCK_PROC(caller_ptr);
+					ret = caller_ptr->p_usr.p_endpoint;
+					RUNLOCK_PROC(caller_ptr);
+					DVKDEBUG(INTERNAL,"ret=%d\n", ret);
+					return(ret);
+				}
 			}
 		}
 		init_waitqueue_head(&current->task_wqh);		/* Initialize the wait queue 	*/
@@ -2485,14 +2489,33 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		}
 		do {
 			if(other_ep == SELF){
-				DVKDEBUG(INTERNAL,"Self process bind waiting\n");
-				if( timeout_ms < 0) {
-					ret = wait_event_interruptible(current->task_wqh, 
-							(current->task_proc != NULL));
-				} else {
-					ret = wait_event_interruptible_timeout(current->task_wqh, 
-							(current->task_proc != NULL), 
-							msecs_to_jiffies(timeout_ms));
+				// wait until the process is bound 
+				if (current->task_proc == NULL) {
+					DVKDEBUG(INTERNAL,"Self process bind waiting\n");
+					if( timeout_ms < 0) {
+						ret = wait_event_interruptible(current->task_wqh, 
+								(current->task_proc != NULL));
+					} else {
+						ret = wait_event_interruptible_timeout(current->task_wqh, 
+								(current->task_proc != NULL), 
+								msecs_to_jiffies(timeout_ms));
+					}
+				}
+				// if the process is a REMOTE BACKUP, wait until its the primary
+				RLOCK_PROC(caller_ptr);
+				if( test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)){
+					RUNLOCK_PROC(caller_ptr);									
+					DVKDEBUG(INTERNAL,"Backup process bind waiting\n");
+					if( timeout_ms < 0) {
+						ret = wait_event_interruptible(current->task_wqh, 
+								!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags));
+					} else {
+						ret = wait_event_interruptible_timeout(current->task_wqh, 
+								!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags), 
+								msecs_to_jiffies(timeout_ms));
+					}
+				}else {
+					RUNLOCK_PROC(caller_ptr);					
 				}
 			}else{
 				DVKDEBUG(INTERNAL,"Other process bind waiting\n");
@@ -2511,8 +2534,14 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 			DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
 				current->signal->shared_pending.signal.sig[0], 
 				current->signal->shared_pending.signal.sig[1]);	
-			if( ret == -ERESTARTSYS) ret = -EINTR;
-			if (ret == 0) ret = EDVSTIMEDOUT;		/* timeout */
+			if( ret == -ERESTARTSYS) {
+				ret = -EINTR;
+				break;
+			}
+			if (ret == 0) {
+				ret = EDVSTIMEDOUT;
+				break;
+			}
 		}while(ret < 0);
 		if(test_bit(DVS_BIT_USERMODE, &dvs.d_flags)){
 			sigprocmask(SIG_UNBLOCK, &new_set, &old_set);

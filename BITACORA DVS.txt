@@ -2676,6 +2676,146 @@ Sep 15 16:42:21 node0 kernel: [  520.327484] ERROR: 654:new_getprocinfo:2128: rc
 		tcp        0      0 192.168.1.100:3001      192.168.1.101:36114     ESTABLISHED
 
 
+==============================================================================================================
+20200919/20:
+		Se creo dvs-apps/dvs_run para disparar procesos locales, replicas y backups en el nodo local	
+			para un determinado dcid y endpoint.
+		Para probar la migracion de procesos se creo migr_server.c y migr.client.c 
+		
+		Esta fallando el wait4bind
+		Sep 20 13:08:14 node0 kernel: [  664.489880] DEBUG 711:new_wait4bind:2486: Self process bind waiting
+		Sep 20 13:08:14 node0 kernel: [  664.489881] DEBUG 711:new_wait4bind:2506: ret=-512
+		Sep 20 13:08:14 node0 kernel: [  664.489882] DEBUG 711:new_wait4bind:2508: pending: sig[0]:0x00000100, sig[1]:0x00000000
+		Sep 20 13:08:14 node0 kernel: [  664.489883] DEBUG 711:new_wait4bind:2511: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+		
+		
+
+			Sep 20 13:16:11 node0 kernel: [  136.406840] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:11 node0 kernel: [  136.406844] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:11 node0 kernel: [  136.406846] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+		UN SEGUNDO DE DIFERENCIA
+			Sep 20 13:16:12 node0 kernel: [  137.431057] DEBUG 619:new_wait4bind:2506: ret=0
+			Sep 20 13:16:12 node0 kernel: [  137.431063] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:12 node0 kernel: [  137.431066] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:12 node0 kernel: [  137.431069] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+		UN SEGUNDO DE DIFERENCIA
+			Sep 20 13:16:13 node0 kernel: [  138.455263] DEBUG 619:new_wait4bind:2506: ret=0
+			Sep 20 13:16:13 node0 kernel: [  138.455269] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:13 node0 kernel: [  138.455272] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+			Sep 20 13:16:13 node0 kernel: [  138.455275] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+		UN SEGUNDO DE DIFERENCIA
+			Sep 20 13:16:14 node0 kernel: [  139.407699] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000100, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407700] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407701] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+			Sep 20 13:16:14 node0 kernel: [  139.407702] DEBUG 619:new_wait4bind:2506: ret=-512
+		ACA SE PUDRE TODO 
+			Sep 20 13:16:14 node0 kernel: [  139.407703] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000100, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407704] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407705] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+			Sep 20 13:16:14 node0 kernel: [  139.407706] DEBUG 619:new_wait4bind:2506: ret=-512
+			Sep 20 13:16:14 node0 kernel: [  139.407708] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000100, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407709] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407710] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+			Sep 20 13:16:14 node0 kernel: [  139.407711] DEBUG 619:new_wait4bind:2506: ret=-512
+			Sep 20 13:16:14 node0 kernel: [  139.407712] DEBUG 619:new_wait4bind:2508: pending: sig[0]:0x00000100, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407713] DEBUG 619:new_wait4bind:2511: shared_pending sig[0]:0x00000002, sig[1]:0x00000000
+			Sep 20 13:16:14 node0 kernel: [  139.407714] DEBUG 619:new_wait4bind:2486: Self process bind waiting
+			Sep 20 13:16:14 node0 kernel: [  139.407715] DEBUG 619:new_wait4bind:2506: ret=-512
+
+	SOLUCIONADO: Se arreglo el wait4bind 
+
+	SE HIZO EL COMANDO dvs_migrate que permite start/rollback/commit de procesos 
+	Se probo en un unico nodo el start y rollback y funcionaron bien.
+	
+	TODO:  EL wait4bind ni el getep deben devolver errores >  EDVSERRCODE 
+		DEBUG 31:dvk_wait4bindep_X:615: cmd=0 endpoint=35534 timeout=30000
+		DEBUG 31:dvk_wait4bindep_X:628: ioctl ret=-1 errno=106
+		DEBUG 31:dvk_getep:233: pid=31
+		DEBUG 31:dvk_getep:243: ioctl ret=-1 errno=106
+		DEBUG 31:dvk_getep:248: ioctl ret=-1
+		DEBUG 31:dvk_getep:251: ret=-1
+	
+	ATENCION: UN PROCESO DE TIPO LOCAL/BACKUP/REPLICA DEBE RETORNAR CORRECTAMENTE DEL WAIT4BIND
+		Sep 20 17:14:28 node0 kernel: [  265.529210] DEBUG 2050:dvk_ioctl:349: cmd=4004E31D arg=BFA0A830
+		Sep 20 17:14:28 node0 kernel: [  265.529212] DEBUG 2050:dvk_ioctl:369: DVK_CALL=29 (io_wait4bind) 
+		Sep 20 17:14:28 node0 kernel: [  265.529213] DEBUG 2050:io_wait4bind:309: 
+		Sep 20 17:14:28 node0 kernel: [  265.529216] DEBUG 2050:new_wait4bind:2374: oper=0 other_ep=35534 timeout_ms=30000
+		Sep 20 17:14:28 node0 kernel: [  265.529219] DEBUG 2050:check_caller:604: caller_pid=2050 caller_tgid=2050
+		Sep 20 17:14:28 node0 kernel: [  265.529221] DEBUG 2050:check_caller:640: WLOCK_PROC ep=11 count=0
+		Sep 20 17:14:28 node0 kernel: [  265.529224] DEBUG 2050:check_caller:664: nr=11 endp=11 dcid=0 flags=1000 (BIT_REMOTE) 
+																					misc=30 (0011 0000) MIS_BIT_RMTBACKUP | MIS_BIT_GRPLEADER
+																					lpid=2050 vpid=7 nodeid=1 name=dvs_run 
+		Sep 20 17:14:28 node0 kernel: [  265.529225] DEBUG 2050:check_caller:665: WUNLOCK_PROC ep=11 count=0
+		Sep 20 17:14:28 node0 kernel: [  265.529226] ERROR: 2050:check_caller:665: rcode=-320
+		Sep 20 17:14:28 node0 kernel: [  265.529228] DEBUG 2050:new_wait4bind:2388: caller_pid=0 ret=-320
+		Sep 20 17:14:28 node0 kernel: [  265.529229] ERROR: 2050:new_wait4bind:2399: rcode=-320
+		Sep 20 17:14:28 node0 kernel: [  265.529231] ERROR: 2050:dvk_ioctl:373: rcode=-320
+	
+	
+	TODO: 	AHORA TODO FUNCIONA BIEN PERO TENGO EL SIGUIENTE PROBLEMA
+			Cuando un proceso BACKUP hace wait4bind y un proceso extern (dvs_run) lo bindea, automaticamente sale
+			del wait4bind y se cree que puede procesar.
+			Si es BACKUP no deberia seguir procesando.
+			
+			En el bind se controla si el proceso esta esperando
+				/* Wake up the waiting process on dvk_wait4bind() */
+			if( oper == LCL_BIND || oper == REPLICA_BIND || oper == BKUP_BIND){
+				if( current != task_ptr ){
+					/* Wakes up it as if has in wait4bind state  */
+					if( waitqueue_active(&task_ptr->task_wqh))
+						wake_up_interruptible(&task_ptr->task_wqh); 
+				}
+			}
+			no deberia levantarlo si BKUP_BIND
+			
+			PERO, QUIEN CAMBIA EL ESTADO DE BKUP_BIND a LOCAL_BIND ??
+			SUPONGO QUE LA MIGRACION. 
+			
+			root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0  10    10   703/4      0    8   20 31438 27342 27342 27342 dvs_run        
+			 0  11    11   756/7      1 1800   30 27342 27342 27342 27342 dvs_run        <<<<< BLOQUEADO EN WAIT4BIND
+			 
+			root@node0:/usr/src/dvs/dvs-apps/dvs_run#  nsenter -p -t$DC0 ./dvs_migrate -c 0 11 0 7  <<< ORDENA LA MIGRACION 
+			DEBUG 13:dvk_open:108: Open dvk device file /dev/dvk
+			 dvs_migrate.c:get_dvs_params:27:
+			DEBUG 13:dvk_getdvsinfo:258: 
+			DEBUG 13:dvk_getdvsinfo:267: ioctl ret=0 errno=0
+			DEBUG 13:dvk_getdvsinfo:272: ioctl ret=0
+			 dvs_migrate.c:get_dvs_params:29:local_nodeid=0
+			 dvs_migrate.c:get_dvs_params:32:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			 dvs_migrate.c:main:108:new_nodeid=0
+			 dvs_migrate.c:main:114:proc_pid=7
+			 dvs_migrate.c:main:123:getopt migr_type=1
+			 dvs_migrate.c:main:129:dcid=0
+			 dvs_migrate.c:get_dc_params:42:dcid=0
+			DEBUG 13:dvk_getdcinfo:359: dcid=0
+			DEBUG 13:dvk_getdcinfo:371: ioctl ret=0 errno=0
+			DEBUG 13:dvk_getdcinfo:376: ioctl ret=0
+			 dvs_migrate.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			 dvs_migrate.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=670 dc_name=DC0
+			 dvs_migrate.c:main:133:proc_ep=11
+			 dvs_migrate.c:main:148:argc=6 
+			DEBUG 13:dvk_migrate_X:1283: cmd=1 pid=7 dcid=0 endpoint=11 nodeid=0
+			DEBUG 13:dvk_migrate_X:1298: ioctl ret=0 errno=0
+			DEBUG 13:dvk_migrate_X:1307: ioctl ret=0
+			root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+			DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+			 0  10    10   703/4      0    8   20 31438 27342 27342 27342 dvs_run        
+			 0  11    11   756/7      0    0   20 27342 27342 27342 27342 dvs_run  <<<<<< LISTO pero no lo levanta 
+
+
+ERROR: 
+	Message from syslogd@node0 at Sep 20 19:27:04 ...
+		 kernel:[   89.574628]  [<f8a25b53>] ? new_wait4bind+0x1015/0x1d40 [dvk]
+
+
+		 
+	TODO: Pensar como seria el proceso de migracion. Que cosas tiene que bindearse.
+		
+	TODO: Probar el commit remoto: Migración de REMOTO a LOCAL 
+	
+
 ULTIMO_LOG
 ==============================================================================================================
 

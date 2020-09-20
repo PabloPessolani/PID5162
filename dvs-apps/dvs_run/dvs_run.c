@@ -146,15 +146,15 @@ int main ( int argc, char *argv[] )
 		// dvs_run -<l|r|b>  <dcid> <endpoint> [<rmt_nodeid>] <command> <args...> 
 		switch(bind_type){
 			case LCL_BIND:
-				rcode = dvk_lclbind(dc_ptr->dc_dcid,SELFTASK,proc_ep);
+				rcode = dvk_lclbind(dc_ptr->dc_dcid,proc_pid,proc_ep);
 				first_arg = 4;
 				break;
 			case REPLICA_BIND:
-				rcode = dvk_replbind(dc_ptr->dc_dcid,SELFTASK,proc_ep); 
+				rcode = dvk_replbind(dc_ptr->dc_dcid,proc_pid,proc_ep); 
 				first_arg = 4;
 				break;
 			case BKUP_BIND:
-				rcode = dvk_bkupbind(dc_ptr->dc_dcid,SELFTASK,proc_ep,rmt_nodeid);
+				rcode = dvk_bkupbind(dc_ptr->dc_dcid,proc_pid,proc_ep,rmt_nodeid);
 				first_arg = 5;
 				break;
 			default:

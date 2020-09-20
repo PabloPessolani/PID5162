@@ -374,6 +374,11 @@ long int new_node_migrate(struct proc *proc_ptr, int pid)
 		if ( pid != pid_vnr(get_task_pid(proc_ptr->p_task, PIDTYPE_PID)))
 			ERROR_RETURN(EDVSBADPID);
 		clear_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags);
+		task_ptr = proc_ptr->p_task;
+		RLOCK_TASK(task_ptr);
+		if( waitqueue_active(&task_ptr->task_wqh))
+			wake_up_interruptible(&task_ptr->task_wqh);
+		RUNLOCK_TASK(task_ptr);		
 	}
 	
 	proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);	
@@ -440,12 +445,10 @@ long int migr_commit(unsigned long int dc_bitmap_nodes, struct proc *proc_ptr, i
 /*--------------------------------------------------------------*/
 /*			new_migrate				*/
 /* A process can only migrate when it request a service		*/
-/* to its SYSTASK (sendrec operation), therefore its p_rts_flags*/
-/* must have only de BIT_RECEIVING and the p_getfrom = SYSTASK  */
 /* The caller of new_migrate would be:				*/
-/*	- MIGR_START: old node's SYSTASK 			*/
-/*	- MIGR_COMMIT:   new node's SYSTASK 			*/
-/*	- MIGR_ROLLBACK: old node's SYSTASK 			*/
+/*	- MIGR_START: old node's  			*/
+/*	- MIGR_COMMIT:   new node's  			*/
+/*	- MIGR_ROLLBACK: old node's  			*/
 /* dcid: get from caller => must be binded in the DC		*/
 /* ONLY THE MAIN THREAD aka GROUP LEADER		*/
 /* can be invoked in new_migrate					*/
