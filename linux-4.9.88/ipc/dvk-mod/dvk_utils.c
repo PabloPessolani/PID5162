@@ -381,6 +381,7 @@ int sleep_proc(struct proc *proc, long timeout)
 		WUNLOCK_PROC(proc); 	
 		if( timeout < 0) {
 			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			ret = (ret == 0)? 1: ret;  
 		} else {
 			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
 				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
@@ -391,9 +392,9 @@ int sleep_proc(struct proc *proc, long timeout)
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST				
-		if( sigismember(&current->pending.signal,  SIGUSR1) ||
-			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
-			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");
+		if( sigismember(&current->pending.signal,  SIGPIPE) ||
+			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
+			DVKDEBUG(INTERNAL,"SIGPIPE received\n");
 #endif // ONLY_FOR_TEST				
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
@@ -409,14 +410,15 @@ int sleep_proc(struct proc *proc, long timeout)
 		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
 	}
 	
-	if( ret == -ERESTARTSYS){
+	if( ret == -ERESTARTSYS){ // a SIGNAL has been received 
 		ret = -EINTR;
 	}else if( proc->p_rcode < 0) {
 		ret = proc->p_rcode;
 	} else if( ret < 0) {
 		proc->p_rcode = ret;
 	} else if (ret == 0){
-		if (timeout >= 0 ) ret = EDVSTIMEDOUT;
+		if (timeout >= 0 ) 
+			ret = EDVSTIMEDOUT;
 		proc->p_rcode = ret;
 	} else{ /* ret > 0 */
 		ret = OK;
@@ -592,7 +594,6 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	struct task_struct *task_ptr;
 	struct proc *caller_ptr;
 	int  caller_pid, caller_tgid;
-	proc_usr_t *s_ptr;
 	dc_desc_t *dc_ptr;
 	proc_usr_t  *up_ptr;
 	
@@ -637,36 +638,73 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	/* The DC administrator has set the need to migrate for this process */
 	if( ret)  ERROR_RETURN(ret);
 
+    if( caller_ptr == NULL) ERROR_PRINT(EDVSINVAL);
+	
 	WLOCK_PROC(caller_ptr);
 	dcid	= caller_ptr->p_usr.p_dcid;
 	
 	/* Check to see if the process has been marked to migrate  */
-	if( test_bit(MIS_BIT_NEEDMIGR, &caller_ptr->p_usr.p_misc_flags)){
-		s_ptr = &caller_ptr->p_usr;
-		DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(s_ptr));
-		clear_bit(MIS_BIT_NEEDMIGR, &caller_ptr->p_usr.p_misc_flags);
-		set_bit(BIT_MIGRATE, &caller_ptr->p_usr.p_rts_flags);
-		/* stop local processing */
-	}
-	
-	/* The process  sleep to migrate   */
-	if( test_bit(BIT_MIGRATE, &caller_ptr->p_usr.p_rts_flags)){
-		sleep_proc(caller_ptr, TIMEOUT_FOREVER);
-		ret = caller_ptr->p_rcode;
-		if(ret) 
-			ERROR_WUNLOCK_PROC(caller_ptr, ret);
-	}
-	
-	/* If the process is not a REMOTE BACKUP, it must be in RUNNING state */
-	if ( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags) ) {
-		if (caller_ptr->p_usr.p_rts_flags) {
-			up_ptr = &caller_ptr->p_usr;
-			DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(up_ptr));
-			ERROR_WUNLOCK_PROC(caller_ptr,EDVSPROCRUN);
+	up_ptr = &caller_ptr->p_usr;
+	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(up_ptr));
+	px = test_bit(MIS_BIT_PROXY, &caller_ptr->p_usr.p_misc_flags);
+
+	if( !px){ // NOT A PROXY 
+		if(! test_bit(MIS_BIT_NOMIGRATE, &caller_ptr->p_usr.p_misc_flags)){
+			if( test_bit(MIS_BIT_NEEDMIGR, &caller_ptr->p_usr.p_misc_flags)){
+				up_ptr = &caller_ptr->p_usr;
+				DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(up_ptr));
+				clear_bit(MIS_BIT_NEEDMIGR, &caller_ptr->p_usr.p_misc_flags);
+				set_bit(BIT_MIGRATE, &caller_ptr->p_usr.p_rts_flags);
+				/* stop local processing */
+			}
+			
+			/* The process  sleep to migrate  , if it is not a REMOTE **/
+			/* during a process migration to the local_nodeid the process may be REMOTE */
+			if( test_bit(BIT_MIGRATE, &caller_ptr->p_usr.p_rts_flags) 
+				&& !test_bit(BIT_REMOTE, &caller_ptr->p_usr.p_rts_flags) ){
+				sleep_proc(caller_ptr, TIMEOUT_FOREVER);
+				ret = caller_ptr->p_rcode;
+				if(ret) 
+					ERROR_WUNLOCK_PROC(caller_ptr, ret);
+			}
+		}
+		
+		/* If the process is not a REMOTE BACKUP, it must be in RUNNING state */
+		if ( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags) ) {
+			if (caller_ptr->p_usr.p_rts_flags) {
+				up_ptr = &caller_ptr->p_usr;
+				DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(up_ptr));
+				ERROR_WUNLOCK_PROC(caller_ptr,EDVSPROCRUN);
+			}
+		} else { // A Remote Backup process must be in not RUNNING state 
+			if (!test_bit(BIT_REMOTE, &caller_ptr->p_usr.p_rts_flags)) {
+				up_ptr = &caller_ptr->p_usr;
+				DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(up_ptr));
+				ERROR_WUNLOCK_PROC(caller_ptr,EDVSPROCRUN);
+			}
 		}
 	}
-
-	px = test_bit(MIS_BIT_PROXY, &caller_ptr->p_usr.p_misc_flags);
+	
+	// if process is REMOTE BACKUP, wait until it will be the PRIMARY (active LOCAL endpoint)
+	while( test_bit(BIT_REMOTE, &caller_ptr->p_usr.p_rts_flags) &&
+		test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)) {
+		set_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
+		caller_ptr->p_usr.p_waitmigr = caller_ptr->p_usr.p_endpoint;
+		INIT_LIST_HEAD(&caller_ptr->p_mlink);
+		LIST_ADD_TAIL(&caller_ptr->p_mlink, &caller_ptr->p_mlist);
+		sleep_proc(caller_ptr, TIMEOUT_MOLCALL);
+		ret = caller_ptr->p_rcode;
+		if( ret == OK) continue;
+		LIST_DEL(&caller_ptr->p_mlink);
+		clear_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
+		caller_ptr->p_usr.p_waitmigr = NONE;
+		if( ret != EDVSTIMEDOUT ){
+			WUNLOCK_PROC(caller_ptr);
+			ERROR_RETURN(ret);
+		}
+		ERROR_PRINT(ret);
+	}
+	
 	WUNLOCK_PROC(caller_ptr);
 	
 	if( !px ) {  /* It is not a proxy */
@@ -686,7 +724,15 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	*c_pid = caller_pid;
 	DVKDEBUG(DBGPARAMS,"caller_pid=%d \n", caller_pid);
 
-	return(OK);
+	ret = OK;
+	RLOCK_PROC(caller_ptr);
+	if ( test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags) ) {
+		ret = EDVSRMTPROC;
+	}
+	RUNLOCK_PROC(caller_ptr);
+
+	if(ret < 0) ERROR_RETURN(ret);
+	return(ret);
 }
 
 /*--------------------------------------------------------------*/
@@ -811,6 +857,7 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 
 		if( timeout < 0) {
 			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			ret = (ret == 0)? 1: ret;  
 		} else {
 			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
 				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
@@ -821,9 +868,9 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST							
-		if( sigismember(&current->pending.signal,  SIGUSR1) ||
-			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
-			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");		
+		if( sigismember(&current->pending.signal,  SIGPIPE) ||
+			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
+			DVKDEBUG(INTERNAL,"SIGPIPE received\n");		
 #endif //ONLY_FOR_TEST				
 
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
@@ -926,6 +973,7 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 
 		if( timeout < 0) {
 			ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			ret = (ret == 0)? 1: ret;  
 		} else {
 			ret = wait_event_interruptible_timeout(proc->p_wqhead, 
 				(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));
@@ -936,9 +984,9 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST							
-		if( sigismember(&current->pending.signal,  SIGUSR1) ||
-			sigismember(&current->signal->shared_pending.signal, SIGUSR1))
-			DVKDEBUG(INTERNAL,"SIGUSR1 received\n");		
+		if( sigismember(&current->pending.signal,  SIGPIPE) ||
+			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
+			DVKDEBUG(INTERNAL,"SIGPIPE received\n");		
 #endif //ONLY_FOR_TEST				
 
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
@@ -1083,6 +1131,7 @@ long copy_usr2usr(int rqtr_ep, struct proc *src_ptr, char __user *src_addr,
 		WUNLOCK_PROC3(rqtr_ptr,src_ptr,dst_ptr);
 		if( timeout < 0) {
 			ret = wait_event_interruptible(rqtr_ptr->p_wqhead, (rqtr_ptr->p_pseudosem >= 0));
+			ret = (ret == 0)? 1: ret;  
 		} else {
 			ret = wait_event_interruptible_timeout(rqtr_ptr->p_wqhead, 
 				(rqtr_ptr->p_pseudosem >= 0),msecs_to_jiffies(timeout));	

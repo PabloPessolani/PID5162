@@ -62,7 +62,9 @@ do {
 		
 		if( h_ptr->c_cmd == CMD_SNDREC_MSG) {
 			src_ptr->p_usr.p_getfrom = dst_ptr->p_usr.p_endpoint;
-			set_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
+			set_bit(BIT_RECEIVING, 	&src_ptr->p_usr.p_rts_flags);
+			set_bit(MIS_BIT_ATOMIC, 	&src_ptr->p_usr.p_misc_flags);
+			set_bit(MIS_BIT_NOMIGRATE, 	&dst_ptr->p_usr.p_misc_flags);
 		}else{
 		   	src_ptr->p_rcode = OK;
 			send_ack_lcl2rmt(src_ptr, dst_ptr, OK);
@@ -81,6 +83,7 @@ do {
 
 		set_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags);
 		if( h_ptr->c_cmd == CMD_SNDREC_MSG) {
+			set_bit(MIS_BIT_ATOMIC, 	&src_ptr->p_usr.p_misc_flags);
 			src_ptr->p_usr.p_getfrom = dst_ptr->p_usr.p_endpoint;
 			set_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
 		}

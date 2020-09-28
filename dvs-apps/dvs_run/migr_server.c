@@ -21,23 +21,44 @@ int  main ( int argc, char *argv[] )
 {
 	int  svr_pid, ret, i, svr_ep, retry, rcode ;
 	double t_start, t_stop, t_total, loopbysec, tput; 
-
+	proc_usr_t *proc_ptr;
+	
 	/*---------------- SERVER binding ---------------*/
 		
 	ret = dvk_open();
 	if (ret < 0)  ERROR_EXIT(ret);
 	
+
 	retry = 0;
 	do {
 		retry++;
 		USRDEBUG("[%s] retry=%d\n", argv[0], retry);
-		rcode = dvk_wait4bind_T(1000);
-		if( retry == MAXRETRIES) ERROR_EXIT(EDVSNOTBIND);
-	}while(rcode < EDVSERRCODE);
+		rcode = dvk_wait4bind_T(TIMEOUT_MOLCALL);
+		USRDEBUG("[%s] rcode=%d\n", argv[0], rcode);
+		if( rcode == EDVSTIMEDOUT) {
+			if( retry == MAXRETRIES) 
+				ERROR_EXIT(EDVSNOTBIND);
+		} else {
+			if(rcode < EDVSERRCODE) 
+				ERROR_EXIT(rcode);
+		}
+	}while(rcode == EDVSTIMEDOUT);
+	
 	svr_pid = getpid();
 	svr_ep = rcode;
    	USRDEBUG("SERVER svr_pid=%d svr_ep=%d\n", svr_pid, svr_ep);
 
+	/*---------------- Allocate memory for process descriptor  ---------------*/
+	posix_memalign( (void **) &proc_ptr, getpagesize(), sizeof(proc_usr_t) );
+	if (proc_ptr== NULL) {
+   		fprintf(stderr, "SERVER: proc_usr_t posix_memalign errno=%d\n", errno);
+   		exit(1);
+	}
+	
+	ret = dvk_getprocinfo(PROC_NO_PID, _ENDPOINT_P(svr_ep), proc_ptr);
+	if( ret) ERROR_EXIT(ret);
+	USRDEBUG("SERVER: " PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr)); 
+	
 	/*---------------- Allocate memory for message  ---------------*/
 	posix_memalign( (void **) &m_ptr, getpagesize(), sizeof(message) );
 	if (m_ptr== NULL) {
@@ -72,7 +93,7 @@ int  main ( int argc, char *argv[] )
 	while(TRUE) {
 		USRDEBUG("SERVER: Receiving loops=%d\n", loops);
 		ret = dvk_receive_T(ANY, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT) continue;
+		if( ret == EDVSTIMEDOUT || ret == EDVSAGAIN) continue;
 
 		if( ret < 0) ERROR_EXIT(ret);
 		USRDEBUG("SERVER RECEIVE:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));

@@ -90,6 +90,8 @@ asmlinkage long new_mini_send(int dst_ep, message* m_ptr, long timeout_ms)
 send_replay: /* Return point for a migrated destination process */
 	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
+	
+
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/
@@ -122,16 +124,18 @@ send_replay: /* Return point for a migrated destination process */
 		}
 		RUNLOCK_DC(dc_ptr);
 	} while(retry);
-	if(ret < 0) {							
-		WUNLOCK_PROC2(caller_ptr, dst_ptr);
-		ERROR_RETURN(ret);
+	if(ret < 0) {
+		WUNLOCK_PROC(dst_ptr); 
+		ERROR_PRINT(ret);
+		goto send_exit;		
 	}
 	
 	// Set the message source endpoint 
 	ret = put_user(caller_ep, &m_ptr->m_source);
 	if( ret != OK) {							
-		WUNLOCK_PROC2(caller_ptr, dst_ptr);
-		ERROR_RETURN(ret);
+		WUNLOCK_PROC(dst_ptr); 
+		ERROR_PRINT(ret);
+		goto send_exit;	;
 	}
 	
 	DVKDEBUG(DBGPARAMS,"dcid=%d caller_pid=%d caller_nr=%d dst_ep=%d \n",
@@ -175,6 +179,10 @@ send_replay: /* Return point for a migrated destination process */
 		caller_ptr->p_rmtcmd.c_dnode  	= dst_ptr->p_usr.p_nodeid;
 		caller_ptr->p_rmtcmd.c_rcode  	= OK;
 		caller_ptr->p_rmtcmd.c_len  	= 0;
+		if( test_bit(MIS_BIT_ATOMIC, &dst_ptr->p_usr.p_misc_flags)){
+			clear_bit(MIS_BIT_ATOMIC, &dst_ptr->p_usr.p_misc_flags);
+			clear_bit(MIS_BIT_NOMIGRATE, &caller_ptr->p_usr.p_misc_flags);
+		}
 		WUNLOCK_PROC(dst_ptr); 
 
 		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_u.cu_msg, 
@@ -222,8 +230,13 @@ send_replay: /* Return point for a migrated destination process */
 			COPY_USR2USR_PROC(ret, caller_ep, caller_ptr, (char *) m_ptr, 
 					dst_ptr, (char *)dst_ptr->p_umsg, sizeof(message) );
 			if(ret < 0) {
-				WUNLOCK_PROC2(caller_ptr, dst_ptr);
-				ERROR_RETURN(ret); 
+				WUNLOCK_PROC(dst_ptr); 
+				ERROR_PRINT(ret);
+				goto send_exit;
+			}	
+			if( test_bit(MIS_BIT_ATOMIC, &dst_ptr->p_usr.p_misc_flags)){	
+				clear_bit(MIS_BIT_ATOMIC, &dst_ptr->p_usr.p_misc_flags);
+				clear_bit(MIS_BIT_NOMIGRATE, &caller_ptr->p_usr.p_misc_flags);			
 			}
 			clear_bit(BIT_RECEIVING,&dst_ptr->p_usr.p_rts_flags);
 			dst_ptr->p_usr.p_getfrom 	= NONE;
@@ -267,6 +280,7 @@ send_replay: /* Return point for a migrated destination process */
 		}
 	}
 
+send_exit:
 	WUNLOCK_PROC(caller_ptr);
 	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);
@@ -467,7 +481,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 				ret = OK;
 			} while(0);
 		
-			if(ret == OK) {			
+			if(ret == OK) {	
 				if( IT_IS_REMOTE(xpp) ){ 
 					COPY_TO_USER_PROC(ret, (void *)&xpp->p_message, 
 						(void *) m_ptr, sizeof(message));
@@ -478,6 +492,9 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 					COPY_USR2USR_PROC(ret, xpp->p_usr.p_endpoint, xpp, (char *)xpp->p_umsg,
 						caller_ptr, (char *)m_ptr, sizeof(message) );
 				} 
+				if ( test_bit(MIS_BIT_ATOMIC, &xpp->p_usr.p_misc_flags)){
+					set_bit(MIS_BIT_NOMIGRATE, &caller_ptr->p_usr.p_misc_flags);
+				}
 				clear_bit(BIT_SENDING, &xpp->p_usr.p_rts_flags);
 				xpp->p_usr.p_sendto 	= NONE;
 				if(xpp->p_usr.p_rts_flags == 0) 
@@ -500,13 +517,12 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 	caller_ptr->p_usr.p_getfrom = src_ep;
 	caller_ptr->p_rcode			= OK;
 	DVKDEBUG(GENERIC,"Any suitable message from %d was not found.\n", src_ep);	
-
 	sleep_proc(caller_ptr, timeout_ms);
 		
 	ret = caller_ptr->p_rcode;
 	if( ret != OK){
 		clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
-		caller_ptr->p_usr.p_getfrom 	= NONE;
+		caller_ptr->p_usr.p_getfrom = NONE;
 	}else {
 		if(test_bit(MIS_BIT_NOTIFY,&caller_ptr->p_usr.p_misc_flags)){
 			COPY_TO_USER_PROC(ret, &caller_ptr->p_message, caller_ptr->p_umsg, sizeof(message) );
@@ -534,6 +550,8 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 	struct task_struct *task_ptr;	
 	int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_procs;
 	unsigned long int dc_bitmap_nodes;
+	proc_usr_t *uproc_ptr;
+
 
 	DVKDEBUG(DBGPARAMS,"srcdst_ep=%d\n", srcdst_ep);
 	if( DVS_NOT_INIT() ) 				ERROR_RETURN(EDVSDVSINIT);
@@ -597,15 +615,18 @@ asmlinkage long new_mini_sendrec(int srcdst_ep, message* m_ptr, long timeout_ms)
 		} 
 	} 
  	RUNLOCK_PROC(caller_ptr);
-	
+		
 sendrec_replay:
-	/*------------------------------------------
-	 * check the destination process status
-	*------------------------------------------*/
+
 	WLOCK_ORDERED2(caller_nr, srcdst_nr, caller_ptr,srcdst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
 	DVKDEBUG(DBGPARAMS,"srcdst_nr=%d srcdst_ep=%d\n",srcdst_nr, srcdst_ptr->p_usr.p_endpoint);
-
+	uproc_ptr  = &srcdst_ptr->p_usr;
+	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
+	
+	/*------------------------------------------
+	 * check the destination process status
+	*------------------------------------------*/
 	do	{
 		ret = OK;
 		retry = 0;
@@ -620,6 +641,12 @@ sendrec_replay:
 			LIST_ADD_TAIL(&caller_ptr->p_mlink, &srcdst_ptr->p_mlist);
 			sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms);
 			ret = caller_ptr->p_rcode;
+			if( ret != OK){
+				ERROR_PRINT(ret);
+				LIST_DEL(&caller_ptr->p_mlink);
+				clear_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
+				caller_ptr->p_usr.p_waitmigr = NONE;
+			}	
 			retry = 1;
 			continue;
 		} 	
@@ -635,15 +662,17 @@ sendrec_replay:
 //		RUNLOCK_DC(dc_ptr);
 	} while(retry);
 	if(ret < 0) {							
-		WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
-		ERROR_RETURN(ret);
+		WUNLOCK_PROC(srcdst_ptr);	
+		ERROR_PRINT(ret);
+		goto sendrec_exit;
 	}
 
 	// Set the message source endpoint 
 	ret = put_user(caller_ep, &m_ptr->m_source);
 	if( ret < OK) {							
-		WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
-		ERROR_RETURN(ret);
+		WUNLOCK_PROC(srcdst_ptr);	
+		ERROR_PRINT(ret);
+		goto sendrec_exit;
 	}
 	
 	DVKDEBUG(DBGPARAMS,"dcid=%d caller_pid=%d caller_nr=%d srcdst_ep=%d \n",
@@ -653,6 +682,10 @@ sendrec_replay:
 	/* SENDING/RECEIVING		*/
 	/*--------------------------------------*/
 	DVKDEBUG(GENERIC,"SENDING HALF\n");
+
+	// Consider a SENDREC operation like a ATOMIC transction with the RECEIVE-SEND on the srcdst.
+	// Do not migrate the srcdst until it reply to caller 
+	set_bit(MIS_BIT_ATOMIC,    &caller_ptr->p_usr.p_misc_flags);
 
 	caller_ptr->p_rcode	= OK;
 	caller_ptr->p_usr.p_getfrom  = srcdst_ep;
@@ -678,9 +711,10 @@ sendrec_replay:
 				{ret = EDVSNOTCONN;break;}  
 		} while(0);
 		RUNLOCK_PROC(sproxy_ptr);
-		if(ret < 0) {							
-			WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
-			ERROR_RETURN(ret);
+		if(ret < 0) {	
+			WUNLOCK_PROC(srcdst_ptr);	
+			ERROR_PRINT(ret);
+			goto sendrec_exit;
 		}
 
 		/* fill the caller's rmtcmd fields */
@@ -692,6 +726,7 @@ sendrec_replay:
 		caller_ptr->p_rmtcmd.c_dnode  	= srcdst_ptr->p_usr.p_nodeid;
 		caller_ptr->p_rmtcmd.c_rcode  	= OK;
 		caller_ptr->p_rmtcmd.c_len  	= 0;
+		set_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 		WUNLOCK_PROC(srcdst_ptr);
 		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_u.cu_msg, 
 			m_ptr, sizeof(message) );
@@ -717,12 +752,13 @@ sendrec_replay:
 					 caller_ptr->p_usr.p_endpoint);
 				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
 			}
-			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
-			clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
-			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
+			clear_bit(BIT_SENDING, 			&caller_ptr->p_usr.p_rts_flags);
+			clear_bit(BIT_RECEIVING, 		&caller_ptr->p_usr.p_rts_flags);
+			clear_bit(BIT_RMTOPER, 			&caller_ptr->p_usr.p_rts_flags);
+			clear_bit(MIS_BIT_NOMIGRATE,	&srcdst_ptr->p_usr.p_misc_flags);
 			caller_ptr->p_usr.p_sendto  = NONE;
 			caller_ptr->p_usr.p_getfrom = NONE;
-			caller_ptr->p_usr.p_proxy = NONE;
+			caller_ptr->p_usr.p_proxy 	= NONE;
 			if( ret == EDVSMIGRATE) {
 				WUNLOCK_PROC(caller_ptr);
 				goto sendrec_replay;
@@ -738,8 +774,8 @@ sendrec_replay:
 			(srcdst_ptr->p_usr.p_getfrom == ANY || srcdst_ptr->p_usr.p_getfrom == caller_ep)) {
 			DVKDEBUG(GENERIC,"destination is waiting. Copy the message and wakeup destination\n");
 			clear_bit(BIT_RECEIVING, &srcdst_ptr->p_usr.p_rts_flags);
+			set_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 			srcdst_ptr->p_usr.p_getfrom 	= NONE;
-
 			COPY_USR2USR_PROC(ret, caller_ep, caller_ptr, (char *) m_ptr, srcdst_ptr, (char *) srcdst_ptr->p_umsg, sizeof(message) );
 			if(srcdst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(srcdst_ptr, ret); 
@@ -747,13 +783,30 @@ sendrec_replay:
 			if(ret < 0) {
 				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
-				WUNLOCK_PROC2(caller_ptr, srcdst_ptr);
-				ERROR_RETURN(ret);
+				clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
+				WUNLOCK_PROC(srcdst_ptr);	
+				ERROR_PRINT(ret);
+				goto sendrec_exit;
 			}
-			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags); /* Sending part: completed, now receiving.. */
+			ret = 0;
+			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags); 
+#ifdef ANULADO
+			/* Sending part: completed, now receiving.., but before, check destination migration  */
+			if( test_bit(BIT_MIGRATE, &srcdst_ptr->p_usr.p_rts_flags))	{
+				set_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
+				caller_ptr->p_usr.p_waitmigr = srcdst_ep;
+				INIT_LIST_HEAD(&caller_ptr->p_mlink);
+				LIST_ADD_TAIL(&caller_ptr->p_mlink, &srcdst_ptr->p_mlist);
+				sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms);
+				ret = caller_ptr->p_rcode;
+			}
+#endif // ANULADO
+			clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 			WUNLOCK_PROC(srcdst_ptr);
-			sleep_proc(caller_ptr, timeout_ms); 
-			ret = caller_ptr->p_rcode;
+			if( ret == 0) { 
+				sleep_proc(caller_ptr, timeout_ms); 		
+				ret = caller_ptr->p_rcode;
+			}
 			if( ret) {
 				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
@@ -769,6 +822,7 @@ sendrec_replay:
 			DVKDEBUG(GENERIC,"destination %d is waiting to send to %d\n", srcdst_ep,caller_ep);
 			COPY_USR2USR_PROC(ret, caller_ep, srcdst_ptr, (char *) srcdst_ptr->p_umsg, caller_ptr, (char *) m_ptr,  sizeof(message) );
 			clear_bit(BIT_SENDING, &srcdst_ptr->p_usr.p_rts_flags);
+			clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 			srcdst_ptr->p_usr.p_sendto 	= NONE;
 			if(srcdst_ptr->p_usr.p_rts_flags == 0) {
 				LOCAL_PROC_UP(srcdst_ptr, ret1); 
@@ -790,11 +844,11 @@ sendrec_replay:
 			/* The destination is not waiting for this message 			*/
 			/* Append the caller at the TAIL of the destination senders' queue	*/
 			/* blocked sending the message */
-
-
 			caller_ptr->p_message.m_source = caller_ptr->p_usr.p_endpoint;
 			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 			set_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
+			// TELL receiver that consider the sendrec as a transaction
+			clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 			caller_ptr->p_usr.p_sendto 	= srcdst_ep;	
 			INIT_LIST_HEAD(&caller_ptr->p_link);
 			LIST_ADD_TAIL(&caller_ptr->p_link, &srcdst_ptr->p_list);
@@ -824,6 +878,8 @@ sendrec_replay:
 		}
 	}
 
+sendrec_exit:
+	clear_bit(MIS_BIT_ATOMIC,  &caller_ptr->p_usr.p_misc_flags);
 	WUNLOCK_PROC(caller_ptr);
 	if(ret < 0) ERROR_RETURN(ret);
 	return(ret);
@@ -962,6 +1018,7 @@ notify_replay:
 		WUNLOCK_PROC2(caller_ptr, dst_ptr);
 		ERROR_RETURN(EDVSNODCNODE);
 	}
+	
 	if( test_bit(BIT_MIGRATE, &dst_ptr->p_usr.p_rts_flags)) {	/*destination is migrating	*/
 		DVKDEBUG(GENERIC,"destination is migrating dst_ptr->p_usr.p_rts_flags=%lX\n"
 			,dst_ptr->p_usr.p_rts_flags);
@@ -1269,7 +1326,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 			WLOCK_ORDERED2(caller_nr, src_nr, caller_ptr,src_ptr);			/* requester is the destination */
 		}
 	}
-		
+	
 	DVKDEBUG(GENERIC,"CHECK FOR SOURCE/DESTINATION STATUS\n");
 	do	{
 		retry = 0;
@@ -1892,6 +1949,7 @@ asmlinkage long new_mini_reply(int dst_ep, message* m_ptr, long timeout_ms)
 reply_replay: /* Return point for a migrated destination process */
 	WLOCK_ORDERED2(caller_nr, dst_nr, caller_ptr,dst_ptr);
 	caller_ptr->p_umsg	= m_ptr;
+	
 	/*------------------------------------------
 	 * check the destination process status
 	*------------------------------------------*/

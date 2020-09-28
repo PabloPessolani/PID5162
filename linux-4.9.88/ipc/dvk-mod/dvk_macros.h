@@ -1126,17 +1126,27 @@ do {\
 
 #else
 
-#define LIST_ADD(x,y) 						list_add(x, y)
-#define LIST_ADD_TAIL(x,y) 					list_add_tail(x, y)
+#define LIST_ADD(x,y) 						do {\
+		DVKDEBUG(DBGPROCSEM,"LIST_ADD\n"); \
+		list_add(x, y);\
+}while(0);		
+		
+#define LIST_ADD_TAIL(x,y) 					do {\
+		DVKDEBUG(DBGPROCSEM,"LIST_ADD_TAIL\n"); \
+		list_add_tail(x, y);\
+}while(0);		
+
 #define LIST_DEL(x) 						do {\
 		DVKDEBUG(DBGPROCSEM,"LIST_DEL\n"); \
 		list_del(x);\
 }while(0);
+
 #define LIST_DEL_INIT(x) 			\
 do {\
 		DVKDEBUG(DBGPROCSEM,"LIST_DEL_INIT\n"); \
 		list_del_init(x);\
 }while(0);
+
 #define LIST_FOR_EACH_ENTRY_SAFE(x,y,z,t) 	list_for_each_entry_safe(x,y,z,t)
 #endif
 

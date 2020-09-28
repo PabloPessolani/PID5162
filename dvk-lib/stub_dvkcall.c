@@ -630,6 +630,10 @@ long dvk_wait4bindep_X(int cmd, int endpoint, unsigned long timeout)
 #ifndef  CONFIG_UML_DVK
 	if( cmd == WAIT_BIND){
 		if( ret < 0){
+			if( -errno == EDVSTIMEDOUT) {
+				ret = EDVSTIMEDOUT;
+				goto return_me;
+			}
 			if( errno == (-endpoint) ){
 				errno = 0;
 				ret = endpoint;

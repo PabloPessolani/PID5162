@@ -2805,16 +2805,209 @@ Sep 15 16:42:21 node0 kernel: [  520.327484] ERROR: 654:new_getprocinfo:2128: rc
 			 0  11    11   756/7      0    0   20 27342 27342 27342 27342 dvs_run  <<<<<< LISTO pero no lo levanta 
 
 
-ERROR: 
-	Message from syslogd@node0 at Sep 20 19:27:04 ...
-		 kernel:[   89.574628]  [<f8a25b53>] ? new_wait4bind+0x1015/0x1d40 [dvk]
-
-
+==============================================================================================================
+20200921:
+		AL EJECUTAR EQUIVOCADAMENTE (DEBIO EJECUTARSE A TRAVES DE dvs_run)
+				nsenter -p -t$DC0 ./migr_server
+ 
+			Sep 21 15:57:00 node0 kernel: [ 1051.492341] DEBUG 1383:dvk_ioctl:349: cmd=4004E31D arg=BFAF5D80
+			Sep 21 15:57:00 node0 kernel: [ 1051.492343] DEBUG 1383:dvk_ioctl:369: DVK_CALL=29 (io_wait4bind) 
+			Sep 21 15:57:00 node0 kernel: [ 1051.492344] DEBUG 1383:io_wait4bind:309: 
+			Sep 21 15:57:00 node0 kernel: [ 1051.492467] DEBUG 1383:new_wait4bind:2372: oper=0 other_ep=35534 timeout_ms=1000
+			Sep 21 15:57:00 node0 kernel: [ 1051.492470] DEBUG 1383:check_caller:604: caller_pid=1383 caller_tgid=1383
+			Sep 21 15:57:00 node0 kernel: [ 1051.492472] ERROR: 1383:check_caller:638: rcode=-310
+			Sep 21 15:57:00 node0 kernel: [ 1051.492474] DEBUG 1383:new_wait4bind:2386: caller_pid=0 ret=-310
+			Sep 21 15:57:00 node0 kernel: [ 1051.492476] DEBUG 1383:new_wait4bind:2462: WLOCK_TASK pid=1383 count=0
+			Sep 21 15:57:00 node0 kernel: [ 1051.492477] DEBUG 1383:new_wait4bind:2477: WUNLOCK_TASK pid=1383 count=0
+			Sep 21 15:57:00 node0 kernel: [ 1051.492479] DEBUG 1383:new_wait4bind:2492: Self process bind waiting
+			Sep 21 15:57:01 node0 kernel: [ 1052.523146] BUG: unable to handle kernel paging request at d41cf565
+			Sep 21 15:57:01 node0 kernel: [ 1052.523296] IP: [<d45bc512>] mutex_lock+0x12/0x30
+			Sep 21 15:57:01 node0 kernel: [ 1052.523399] *pdpt = 0000000014981001 *pde = 00000000140001e1 
+			Sep 21 15:57:01 node0 kernel: [ 1052.523513] 
+			Sep 21 15:57:01 node0 kernel: [ 1052.524709] Oops: 0003 [#1] SMP
+			Sep 21 15:57:01 node0 kernel: [ 1052.525800] Modules linked in: dvk(O) fuse iptable_filter vmwgfx ttm drm_kms_helper joydev drm sg pcspkr vmw_balloon serio_raw evdev shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse pcnet32 xhci_pci xhci_hcd ehci_pci mii ata_piix uhci_hcd mptspi ehci_hcd scsi_transport_spi mptscsih mptbase usbcore libata i2c_piix4 scsi_mod
+			Sep 21 15:57:01 node0 kernel: [ 1052.533244] CPU: 3 PID: 1383 Comm: migr_server Tainted: G           O    4.9.88-DVK #157
+			Sep 21 15:57:01 node0 kernel: [ 1052.535014] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+			Sep 21 15:57:01 node0 kernel: [ 1052.538952] task: dbf875c0 task.stack: eac08000
+			Sep 21 15:57:01 node0 kernel: [ 1052.541183] EIP: 0060:[<d45bc512>] EFLAGS: 00010286 CPU: 3
+			Sep 21 15:57:01 node0 kernel: [ 1052.543375] EIP is at mutex_lock+0x12/0x30
+			Sep 21 15:57:01 node0 kernel: [ 1052.545566] EAX: d41cf565 EBX: d41cf565 ECX: 00000202 EDX: 80000000
+			Sep 21 15:57:01 node0 kernel: [ 1052.547959] ESI: dbf87bcc EDI: ea8121c0 EBP: eac09e04 ESP: eac09e00
+			Sep 21 15:57:01 node0 kernel: [ 1052.550353]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+			Sep 21 15:57:01 node0 kernel: [ 1052.552880] CR0: 80050033 CR2: d41cf565 CR3: 2d8e87c0 CR4: 000006f0
+			Sep 21 15:57:01 node0 kernel: [ 1052.555730] Stack:
+			Sep 21 15:57:01 node0 kernel: [ 1052.558382]  00000000 eac09e8c f8dd6bf0 f8e05e60 00000567 f8e0245c 000009bc 00000567
+			Sep 21 15:57:01 node0 kernel: [ 1052.560322]  00000000 000003e8 00000002 eac09e64 d40ba4fe 00000000 00000000 00000000
+			Sep 21 15:57:01 node0 kernel: [ 1052.562049]  00000000 dbf87bcc ea8121c0 d41cf38d 00000000 dbf875c0 00000000 dbf875c0
+			Sep 21 15:57:01 node0 kernel: [ 1052.563821] Call Trace:
+			Sep 21 15:57:01 node0 kernel: [ 1052.565598]  [<f8dd6bf0>] ? new_wait4bind+0x1015/0x1d40 [dvk]
+			Sep 21 15:57:01 node0 kernel: [ 1052.567494]  [<d40ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+			Sep 21 15:57:01 node0 kernel: [ 1052.569418]  [<d41cf38d>] ? __check_object_size+0x9d/0x11c
+			Sep 21 15:57:01 node0 kernel: [ 1052.571518]  [<d40a9a00>] ? prepare_to_wait_event+0xd0/0xd0
+			Sep 21 15:57:01 node0 kernel: [ 1052.573522]  [<f8dc8e80>] ? io_wait4bind+0x4e/0xce [dvk]
+			Sep 21 15:57:01 node0 kernel: [ 1052.575612]  [<f8dc71fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+			Sep 21 15:57:01 node0 kernel: [ 1052.577655]  [<f8dc716d>] ? dvk_write+0x49/0x49 [dvk]
+			Sep 21 15:57:01 node0 kernel: [ 1052.579708]  [<d41e6624>] ? do_vfs_ioctl+0x94/0x730
+			Sep 21 15:57:01 node0 kernel: [ 1052.581811]  [<d4193dbc>] ? handle_mm_fault+0x9fc/0xf40
+			Sep 21 15:57:01 node0 kernel: [ 1052.583932]  [<d41d3159>] ? vfs_write+0x149/0x1c0
+			Sep 21 15:57:01 node0 kernel: [ 1052.586081]  [<d41e6d20>] ? SyS_ioctl+0x60/0x70
+			Sep 21 15:57:01 node0 kernel: [ 1052.588434]  [<d4003708>] ? do_fast_syscall_32+0x98/0x160
+			Sep 21 15:57:01 node0 kernel: [ 1052.590703]  [<d45bf682>] ? sysenter_past_esp+0x47/0x75
+			Sep 21 15:57:01 node0 kernel: [ 1052.592952] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 12 97 d4 89 43 10 5b 5d
+			Sep 21 15:57:01 node0 kernel: [ 1052.599901] EIP: [<d45bc512>] 
+			Sep 21 15:57:01 node0 kernel: [ 1052.599946] mutex_lock+0x12/0x30
+			Sep 21 15:57:01 node0 kernel: [ 1052.602158]  SS:ESP 0068:eac09e00
+			Sep 21 15:57:01 node0 kernel: [ 1052.604412] CR2: 00000000d41cf565
+			Sep 21 15:57:01 node0 kernel: [ 1052.610153] ---[ end trace ea8647ffd123b9cf ]---
+		
+SOLUCIONADO: Se modifico wait4bind
 		 
 	TODO: Pensar como seria el proceso de migracion. Que cosas tiene que bindearse.
-		
-	TODO: Probar el commit remoto: Migración de REMOTO a LOCAL 
 	
+		NODE0														NODE1 
+	1) ./tests.sh 0 0												./tests.sh 1 0
+	2) . /dev/shm/DC0.sh											. /dev/shm/DC0.sh
+	3) nsenter -p -t$DC0 ./dvs_run -l 0 10 ./migr_server 
+	4) nsenter -p -t$DC0 ./dvs_run -b 0 11 1 ./migr_client 10 4096 100 1
+		HASTA AHORA 
+		root@node0:~# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10  2137/4      0    8   20 31438 27342 27342 27342 dvs_run        
+		 0  11    11  2227/25     1 1000   30 27342 27342 27342 27342 dvs_run     
+	
+	5)																nsenter -p -t$DC0 ./test_rmtbind 0 10 0 migr_server	
+																		root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+																		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+																		 0  10    10    -1/-1     0 1000    0 27342 27342 27342 27342 migr_server  
+	6)																nsenter -p -t$DC0 ./dvs_run -l 0 11 ./migr_client 10 4096 100 1	
+	7a)						 										./dvs_migrate -s 0 11 	
+																	root@node1:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+																	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+																	 0  10    10    -1/-1     0 1000    0 27342 27342 27342 27342 migr_server    
+																	 0  11    11   669/6      1  800   20 27342 27342 27342 27342 dvs_run 
+	7b)	./dvs_migrate -s 0 11 	
+		root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10   680/4      0    8   20 31438 27342 27342 27342 dvs_run        
+		 0  11    11   685/7      1 1800   30 27342 27342 27342 27342 dvs_run 	
+	8a)								 								./dvs_migrate -c 0 11 0 
+																	root@node1:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+																	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+																	 0  10    10    -1/-1     0 1000    0 27342 27342 27342 27342 migr_server    
+																	 0  11    11    -1/6      0 1000    0 27342 27342 27342 27342 dvs_run  	
+	8b)	./dvs_migrate -c 0 11 0 0	 								 	
+	root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  10    10   680/4      0    8   20 31438 27342 27342 27342 dvs_run        
+	 0  11    11   685/7      0    0   20 27342 27342 27342 27342 dvs_run
+		
+root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10   762/4      0    8   20 31438 27342 27342 27342 dvs_run        
+ 0  11    11   766/7      0    0   20 27342 27342 27342 27342 dvs_run  
+
+==============================================================================================================
+20200923:
+	Se probo Migración de REMOTO a LOCAL 
+	FUNCIONO OK!!
+
+==============================================================================================================
+20200925:
+	
+	TODO: Probar el commit remoto: Migración de LOCAL A REMOTO 
+
+		NODE0														NODE1 
+	1) ./tests.sh 0 0												./tests.sh 1 0
+	2) . /dev/shm/DC0.sh											. /dev/shm/DC0.sh
+	3) nsenter -p -t$DC0 ./dvs_run -l 0 10 ./migr_server 
+	4) 																nsenter -p -t$DC0 ./test_rmtbind 0 11 0 migr_client	
+	5)																nsenter -p -t$DC0 ./dvs_run -b 0 10 0 ./migr_server 
+																		root@node1:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+																		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+																		 0  10    10   619/5      0 9000   30 27342 27342    10 27342 dvs_run  
+																									9000  <<<  BIT_WAITMIGR+BIT_REMOTE  
+																										   30 <<< MIS_BIT_RMTBACKUP+MIS_BIT_GRPLEADER					
+																		 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client
+																									1000 <<< BIT_REMOTE
+	6) nsenter -p -t$DC0 ./dvs_run -l 0 11 ./migr_client 10 4096 100 1	
+	7a)	./dvs_migrate -s 0 10 	
+		root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		0  10    10   672/4      0  800   20 27342 27342 27342 27342 dvs_run        
+		0  11    11   677/7      0 8000   20 27342 27342    10 27342 dvs_run        
+
+	7b)																./dvs_migrate -s 0 10 
+	8b)								 								./dvs_migrate -c 0 10 1 0
+																	root@node1:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+																	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+																	 0  10    10   619/5      1    0   20 27342 27342    10 27342 dvs_run        
+																	 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client  
+
+	8a)	./dvs_migrate -c 0 10 1	 				
+
+==============================================================================================================
+20200928:
+			FUNCIONO!! pero con el dvs_migrate con varios sleep()
+	
+			SE agrego codigo en el check_caller() para que los procesos que son BACKUP REMOTOS se detengan
+			esperando la migracion del proceso y la conversion a PRIMARY.
+			
+	TODO:	Si un endpoint esta dado de alta como REMOTO podria convertirse a BACKUP asociandole el PID. 
+			OJO porque el wait4bind chechea esto y no permite que el proceso siga adelanta con el binding.
+			LISTO 
+	
+	TODO: 	Habria que analizar cuales son las situaciones en las cuales NO PUEDE HABER MIGRACION 
+			se podría poner un flag BIT_MISC_NOMIGRATE, el problema se presenta en los procesos  
+			REMOTOS que nada impide que se MIGREN.	
+			LISTO 
+			
+			
+==============================================================================================================
+
+					
+			Supongamos que un server en NODO0 quiere migrar.
+			El programa de gestion de migración deberia enviar un mensaje a todos los nodos de esa intención.
+			En todo nodo, debería setearse el descriptor del proceso con BIT_MIGRATE.
+			Si el NODOx donde recide el proceso no puede setearlo porque tiene el descriptor tiene bit BIT_MISC_NOMIGRATE
+			se lo informa al NODO0 para que haga lo que le parezca 
+				1) Decirle al NODOx que reintente 
+				2) Hacer un rollback de la migración
+				
+TODO:		Cuando un server recibe un mensaje de un proceso via dvk_sendrec(), evita su MIGRACION hasta dar la respuesta			
+			sea un sendrec() local o remoto.
+			De igual forma habria que hacer con las COPIAS.
+
+Como estamos en migracion en modo usuario, lo mejor seria volver a MODO USUARIO con un error tipo EDVSTIMEOUT en caso de que sea con
+tiempo sino EDVSMIGRATE si no es con tiempo.
+
+ATENCION: Segun como trabaja DMTCP puede que el groupleader no se al main!!!!  
+	En dvk_migrate NO SE HACE la migración si no es LEADER.
+	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	
+		ERROR_RETURN(EDVSGRPLEADER);
+
+==============================================================================================================
+
+
+==============================================================================================================
+
+	
+ATENCION, EN WAIT4BIND SE USA TAMBIEN ERRORES QUE PUEDEN SER ENDPOINTS!!	
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
+REVISAR LOS wait_event_interruptible  y wait_event_interruptible_timeout porque retornan valores diferentes!!!
+
+		// The function will return -ERESTARTSYS if it was interrupted by a signal and 0 if condition evaluated to true.
+		ret = wait_event_interruptible(current->task_wqh, (current->task_proc != NULL));
+	} else {
+		// 0 if the condition evaluated to false after the timeout elapsed, 
+		// 1 if the condition evaluated to true after the timeout elapsed, 
+		// the remaining jiffies (at least 1) if the condition evaluated to true 
+		// before the timeout elapsed, or -ERESTARTSYS if it was interrupted by a signal.
+			ret = wait_event_interruptible_timeout(current->task_wqh, 
+					(current->task_proc != NULL), 
+					msecs_to_jiffies(timeout_ms));
+		}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 ULTIMO_LOG
 ==============================================================================================================
@@ -3125,4 +3318,15 @@ https://spankbang.com/stream/NzAxNzkxOA.Pc7EPKCxvy2LHqxRVRQ_XiSCMkg.mp4
 https://spankbang.com/stream/Njg4NDY5MQ.LgOgx1yyuWdwR3Dtnozr3HGIKIM.mp4
 https://vdownload-2.sb-cd.com/6/8/6883526-720p.mp4?secure=VpEhRh6ROi2sWtvY6O-JyQ,1600186247&m=82&d=3&_tid=6883526
 
+OPERACION COSTA DEL PARANA
+Compañía: Telecom
+Oficina: GARAJE SANTA FE||NECOCHEA||2953
+Directorio
+Dirección profesional
+S0008E01||GARAJE SANTA FE||NECOCHEA||2953
+SANTA FE
+Argentina
+Contactos vinculados
+Directorio
+Administrar...
 

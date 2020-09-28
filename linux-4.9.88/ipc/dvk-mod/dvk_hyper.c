@@ -1710,8 +1710,10 @@ setaffinity_ptr(param_pid, &pap_mask);
 			}
 			proc_ptr->p_usr.p_rts_flags	= PROC_RUNNING;	/* set to RUNNING STATE	*/
 			proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);
-			if( oper == REPLICA_BIND)
-				proc_ptr->p_usr.p_misc_flags |= MIS_REPLICATED;/* It is a replicated process 	*/
+			if( oper == REPLICA_BIND) {
+				set_bit(MIS_BIT_REPLICATED, &proc_ptr->p_usr.p_misc_flags);
+				clear_bit(BIT_REMOTE, &proc_ptr->p_usr.p_rts_flags); 
+			}
 		}
 
 		proc_ptr->p_usr.p_lpid 	= lpid; 	/* Update LPID		*/
@@ -2028,8 +2030,8 @@ asmlinkage long new_getdcinfo(int dcid, dc_usr_t *dc_usr_ptr)
 
 	if( DVS_NOT_INIT() ) 			ERROR_RETURN(EDVSDVSINIT);
 
-	rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 	if( dcid == PROC_NO_PID) {
+		rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 		if(rcode) ERROR_RETURN(EDVSBADDCID);
 		dcid = caller_ptr->p_usr.p_dcid;
 	}
@@ -2064,8 +2066,8 @@ asmlinkage long new_getnodeinfo(int nodeid, node_usr_t *node_usr_ptr)
 #endif 
 	if( DVS_NOT_INIT() )   		ERROR_RETURN(EDVSDVSINIT );
 	
-	rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 	if( nodeid == PROC_NO_PID) {
+		rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 		if( rcode) ERROR_RETURN(EDVSBADNODEID);
 		nodeid = caller_ptr->p_usr.p_nodeid;
 	}
@@ -2119,19 +2121,17 @@ asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_pt
 	if( DVS_NOT_INIT() )   			
 		ERROR_RETURN(EDVSDVSINIT );
 
-	CHECK_DCID(dcid);		/* check DC ID limits 	*/
-	
-	rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 
-#ifdef RMT_PROCINFO
 	if( dcid == PROC_NO_PID) {
+		rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 		if( rcode) ERROR_RETURN(rcode);
 		dcid = caller_ptr->p_usr.p_dcid;
 	}
 	if( dcid != caller_ptr->p_usr.p_dcid){
 		ERROR_RETURN(EDVSBADDCID);	
 	}
-#endif // RMT_PROCINFO
+
+	CHECK_DCID(dcid);		/* check DC ID limits 	*/
 	
 	dc_ptr 		= &dc[dcid];
 	RLOCK_DC(dc_ptr);	
@@ -2365,7 +2365,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 	proc_usr_t *uproc_ptr;
 	int ret;
 	dc_desc_t *dc_ptr;
-	int dcid;
+	int dcid, rmt_ep, rmt_bk;
 	int caller_pid, caller_nr, caller_ep, other_nr;
 	struct task_struct *task_ptr;
 	sigset_t new_set, old_set;
@@ -2396,7 +2396,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 					return(ret);
 				}
 			} else {
-				if(ret != EDVSNOTBIND) 
+				if(ret != EDVSNOTBIND && ret != EDVSRMTPROC) 
 					ERROR_RETURN(ret);
 			}
 		}else{ /*  Is the caller bound?*/
@@ -2460,7 +2460,9 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 				}		
 			}
 		}
-		
+	
+		/* here cames only WAIT_BIND */
+	
 		WLOCK_TASK(current);
 		if(other_ep == SELF){
 			if (current->task_proc != NULL){
@@ -2478,7 +2480,6 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		init_waitqueue_head(&current->task_wqh);		/* Initialize the wait queue 	*/
 		WUNLOCK_TASK(current);
 
-		/* here cames only WAIT_BIND */
 		if(test_bit(DVS_BIT_USERMODE, &dvs.d_flags)){
 			sigaddset(&new_set, SIGALRM);
 			sigaddset(&new_set, SIGIO);
@@ -2493,39 +2494,61 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 				if (current->task_proc == NULL) {
 					DVKDEBUG(INTERNAL,"Self process bind waiting\n");
 					if( timeout_ms < 0) {
+						// The function will return -ERESTARTSYS if it was interrupted by a signal and 0 if condition evaluated to true.
 						ret = wait_event_interruptible(current->task_wqh, 
 								(current->task_proc != NULL));
+						ret = (ret == 0)? 1: ret;  // Process Bound 
 					} else {
+						// 0 if the condition evaluated to false after the timeout elapsed, 
+						// 1 if the condition evaluated to true after the timeout elapsed, 
+						// the remaining jiffies (at least 1) if the condition evaluated to true 
+						// before the timeout elapsed, or -ERESTARTSYS if it was interrupted by a signal.
 						ret = wait_event_interruptible_timeout(current->task_wqh, 
 								(current->task_proc != NULL), 
 								msecs_to_jiffies(timeout_ms));
 					}
+				} else {
+					ret = 1; // Process Bound 
 				}
-				// if the process is a REMOTE BACKUP, wait until its the primary
-				RLOCK_PROC(caller_ptr);
-				if( test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)){
-					RUNLOCK_PROC(caller_ptr);									
-					DVKDEBUG(INTERNAL,"Backup process bind waiting\n");
-					if( timeout_ms < 0) {
-						ret = wait_event_interruptible(current->task_wqh, 
-								!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags));
-					} else {
-						ret = wait_event_interruptible_timeout(current->task_wqh, 
-								!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags), 
-								msecs_to_jiffies(timeout_ms));
+#ifdef ANULADO 			
+				if( ret > 0 ) { // The contition is TRUE (// Process Bound )				
+					// if the process is a REMOTE BACKUP, wait until its the primary
+					caller_ptr = current->task_proc;
+					RLOCK_PROC(caller_ptr);
+					rmt_ep = caller_ptr->p_usr.p_endpoint;
+					rmt_bk = test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags);
+					RUNLOCK_PROC(caller_ptr);
+					if( rmt_bk ){
+						DVKDEBUG(INTERNAL,"Backup process bind waiting\n");
+						if( timeout_ms < 0) {
+							ret = wait_event_interruptible(current->task_wqh, 
+									!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags));
+							ret = (ret == 0)? 1: ret;			
+						} else {
+							ret = wait_event_interruptible_timeout(current->task_wqh, 
+									!test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags), 
+									msecs_to_jiffies(timeout_ms));
+						}
 					}
-				}else {
-					RUNLOCK_PROC(caller_ptr);					
+					if( ret > 0) ret = rmt_ep;
 				}
+#endif //  ANULADO 			
+				
 			}else{
 				DVKDEBUG(INTERNAL,"Other process bind waiting\n");
 				if( timeout_ms < 0) {
 					ret = wait_event_interruptible(current->task_wqh, 
 							(other_ptr->p_usr.p_rts_flags != SLOT_FREE));
+					ret = (ret == 0)? 1: ret;			
 				} else {
 					ret = wait_event_interruptible_timeout(current->task_wqh, 
 							(other_ptr->p_usr.p_rts_flags != SLOT_FREE), 
 							msecs_to_jiffies(timeout_ms));
+				}
+				if (ret > 0){
+					RLOCK_PROC(caller_ptr);
+					ret = caller_ptr->p_usr.p_endpoint;
+					RUNLOCK_PROC(caller_ptr);					
 				}
 			}
 			DVKDEBUG(INTERNAL,"ret=%d\n",ret);

@@ -32,6 +32,8 @@ int  main ( int argc, char *argv[] )
 {
 	int  clt_pid, ret, i, clt_ep, svr_ep, delay, rcode, retry;
 	double t_start, t_stop, t_total, loopbysec, tput; 
+	long int loops, total_bytes = 0 ;
+	proc_usr_t *proc_ptr;
 
 	USRDEBUG("[%s] argc=%d\n", argv[0], argc);
 	for( i = 1; i < argc ; i++) {
@@ -75,16 +77,33 @@ int  main ( int argc, char *argv[] )
 	retry = 0;
 	do {
 		retry++;
-		if( retry == MAXRETRIES) ERROR_EXIT(EDVSNOTBIND);
 		USRDEBUG("[%s] retry=%d\n", argv[0], retry);
 		rcode = dvk_wait4bind_T(TIMEOUT_MOLCALL);
-		ERROR_PRINT(rcode);
-	}while(rcode < 0);
-
+		USRDEBUG("[%s] rcode=%d\n", argv[0], rcode);
+		if( rcode == EDVSTIMEDOUT) {
+			if( retry == MAXRETRIES) 
+				ERROR_EXIT(EDVSNOTBIND);
+		} else {
+			if(rcode < EDVSERRCODE) 
+				ERROR_EXIT(rcode);
+		}
+	}while(rcode == EDVSTIMEDOUT);
+	
 	clt_pid = getpid();
 	clt_ep = rcode;
    	USRDEBUG("CLIENT clt_pid=%d clt_ep=%d\n", clt_pid, clt_ep);
 
+	/*---------------- Allocate memory for process descriptor  ---------------*/
+	posix_memalign( (void **) &proc_ptr, getpagesize(), sizeof(proc_usr_t) );
+	if (proc_ptr== NULL) {
+   		fprintf(stderr, "CLIENT: proc_usr_t posix_memalign errno=%d\n", errno);
+   		exit(1);
+	}
+	
+	ret = dvk_getprocinfo(PROC_NO_PID, _ENDPOINT_P(svr_ep), proc_ptr);
+	if( ret) ERROR_EXIT(ret);
+	USRDEBUG("CLIENT: " PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr)); 
+	
 	/*---------------- Allocate memory for message  ---------------*/
 	posix_memalign( (void **) &m_ptr, getpagesize(), sizeof(message) );
 	if (m_ptr== NULL) {
@@ -101,6 +120,7 @@ int  main ( int argc, char *argv[] )
 
 	/*---------------------- M3-IPC CLIENT LOOP ----------------------------  */
  	USRDEBUG("CLIENT: Starting loops\n");
+	t_start = dwalltime();
 	for( i = 0; i < loops; i++) {
 		
 		memset(buffer,'A',maxbuf-2);
@@ -115,7 +135,7 @@ int  main ( int argc, char *argv[] )
 		m_ptr->m1_p1  = buffer;
 		USRDEBUG("CLIENT SEND:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 		ret = dvk_sendrec_T(svr_ep, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT) ERROR_EXIT(EDVSNOTBIND);
+		if( ret == EDVSTIMEDOUT || ret == EDVSAGAIN) continue;
 		if( ret < 0) ERROR_EXIT(ret);
 
 		USRDEBUG("CLIENT RECEIVE:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
@@ -130,7 +150,18 @@ int  main ( int argc, char *argv[] )
 		
 		if (delay > 0) sleep(delay);
 	}
+   	t_stop  = dwalltime();
 
+	t_total = (t_stop-t_start);
+	total_bytes = loops*maxbuf;
+	loopbysec = (double)(loops)/t_total;
+	tput = loopbysec * (double)maxbuf;	
+	printf("t_start=%.2f t_stop=%.2f t_total=%.2f\n",t_start, t_stop, t_total);
+	printf("Requests message size=%d #transfers=%d loopbysec=%f\n", sizeof(message), loops, loopbysec);
+	printf("Message Transfer Throuput=%f [msg/s]\n", loopbysec*2);
+	printf("Data Transfer size=%d #transfers=%d loopbysec=%f\n", maxbuf, loops, loopbysec);
+	printf("Throuhput = %f [bytes/s]\n", tput);
+		
 	USRDEBUG("CLIENT END\n");
 }
 

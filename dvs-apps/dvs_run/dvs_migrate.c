@@ -58,8 +58,9 @@ void print_usage(char *argv0){
 	fprintf(stderr,"\t\t c: Commit \n");
 	fprintf(stderr,"<dcid>: DC ID for the process\n");
 	fprintf(stderr,"<endpoint>: Endpoint of the migrating process\n");
-	fprintf(stderr,"<new_nodeid>: New node ID of the migrated process\n");
-	fprintf(stderr,"<pid>: PID of the migrated process if the new_nodeid is local_nodeid\n");
+	fprintf(stderr,"<new_nodeid>: on Commit, the new node ID of the migrated process\n");
+	fprintf(stderr,"<pid>: on Commit, the PID of the migrated process if the new_nodeid is local_nodeid\n");
+	fprintf(stderr,"      It can be (0) if the local process is bound as a REMOTE BACKUP\n");	
 	ERROR_EXIT(EDVSINVAL);	
 }
 
@@ -85,23 +86,19 @@ int main ( int argc, char *argv[] )
 	if (rcode < 0)  ERROR_EXIT(rcode);
 	
 	get_dvs_params();
-
+	
 	migr_type = NOT_MIGRATE;
     while ((opt = getopt(argc, argv, "src")) != -1) {
+		if( migr_type != NOT_MIGRATE)
+			print_usage(argv[0]);
         switch (opt) {
 			case 's':
-				if( migr_type != NOT_MIGRATE)
-					print_usage(argv[0]);
 				migr_type = MIGR_START;
 				break;
 			case 'r':
-				if( migr_type != NOT_MIGRATE)
-					print_usage(argv[0]);
 				migr_type = MIGR_ROLLBACK;
 				break;
 			case 'c':
-				if( migr_type != NOT_MIGRATE)
-					print_usage(argv[0]);
 				if( argc < 5)
 					print_usage(argv[0]);
 				new_nodeid = atoi(argv[4]);
@@ -128,9 +125,14 @@ int main ( int argc, char *argv[] )
 	dcid = atoi(argv[2]);
 	USRDEBUG("dcid=%d\n", dcid);
 	get_dc_params(dcid);
-			
+
+if(	migr_type == MIGR_COMMIT) {
+	printf("please wait1...\n");
+	sleep(2); /// NO SACAR, vaya a saber porque no funciona si se lo saca.
+}			
 	proc_ep = atoi(argv[3]);
 	USRDEBUG("proc_ep=%d\n", proc_ep);
+
 	proc_nr = _ENDPOINT_P(proc_ep);
 	if ( (proc_nr < (-dc_ptr->dc_nr_tasks)) 
 	|| (proc_nr >= (dc_ptr->dc_nr_procs-dc_ptr->dc_nr_tasks))) {
@@ -145,8 +147,12 @@ int main ( int argc, char *argv[] )
 		ERROR_EXIT(EDVSDCNODE);
 	}
 	
-	USRDEBUG("argc=%d \n",argc);
+	USRDEBUG("migr_type=%d argc=%d \n", migr_type, argc);
 	
+if(	migr_type == MIGR_COMMIT) {
+	printf("please wait2...\n");
+	sleep(2); /// NO SACAR, vaya a saber porque no funciona si se lo saca.
+}
 	switch(migr_type){
 		case MIGR_START:
 			rcode = dvk_migr_start(dcid, proc_ep);
@@ -155,6 +161,7 @@ int main ( int argc, char *argv[] )
 			rcode = dvk_migr_rollback(dcid, proc_ep);
 			break;
 		case MIGR_COMMIT:
+			if(proc_pid == 0) proc_pid = PROC_NO_PID;
 			rcode = dvk_migr_commit(proc_pid, dcid, proc_ep, new_nodeid);
 			break;
 		default:

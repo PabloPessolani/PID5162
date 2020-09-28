@@ -17,6 +17,9 @@
 #define MIS_BIT_USERMODE	10
 #define MIS_BIT_RMTINFO		11
 
+#define MIS_BIT_NOMIGRATE 	12
+#define MIS_BIT_ATOMIC 		13
+
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/
 		MIS_CONNECTED	= (1<<MIS_BIT_CONNECTED),	/* The proxy is connected 			*/
@@ -29,7 +32,8 @@ enum mis_status {
 		MIS_KILLED		= (1<<MIS_BIT_KILLED), 		/* The process has been killed 		*/
 		MIS_WOKENUP 	= (1<<MIS_BIT_WOKENUP), 	/* The process has been signaled 	*/
 		MIS_USERMODE 	= (1<<MIS_BIT_USERMODE), 	/* The process is running inside a local USERMODE VOS */
-		MIS_USERMODE 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
+		MIS_RMTINFO 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
+		MIS_NOMIGRATE	= (1<<MIS_BIT_NOMIGRATE), 	/* Do not migrate this process */
 };
 
 #define PX_BIT_INUSE		0

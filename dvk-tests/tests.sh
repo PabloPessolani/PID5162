@@ -16,7 +16,7 @@ dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
-cd /usr/src/dvs/dvk-mod/
+cd /usr/src/linux/ipc/dvk-mod/
 mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=16777215

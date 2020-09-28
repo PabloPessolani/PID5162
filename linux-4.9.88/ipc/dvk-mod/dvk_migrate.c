@@ -31,6 +31,7 @@ void flush_migr_list( struct proc *proc_ptr)
 {
 	struct proc *xpp, *tmp_ptr;
 	int proc_nr, x_nr; 
+	proc_usr_t *uproc_ptr;
 	
 	DVKDEBUG(GENERIC,"Searchs all processes at the MIGRATING list of ep=%d\n", proc_ptr->p_usr.p_endpoint);		
 	LIST_FOR_EACH_ENTRY_SAFE(xpp, tmp_ptr, &proc_ptr->p_mlist, p_mlink) {
@@ -44,11 +45,12 @@ void flush_migr_list( struct proc *proc_ptr)
 		WLOCK_ORDERED2(proc_nr, x_nr, proc_ptr, xpp);
 		LIST_DEL(&xpp->p_mlink); /* remove from queue */	
 		if( xpp->p_usr.p_waitmigr == proc_ptr->p_usr.p_endpoint) {
-			DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
+			uproc_ptr  = &xpp->p_usr;
+			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 			clear_bit(BIT_WAITMIGR, &xpp->p_usr.p_rts_flags);
 			xpp->p_usr.p_waitmigr = NONE;
 			if(xpp->p_usr.p_rts_flags == 0) 
-				LOCAL_PROC_UP(xpp, EDVSMIGRATE);
+				LOCAL_PROC_UP(xpp, OK);
 		}else{	
 			ERROR_PRINT(EDVSENDPOINT);
 		}
@@ -88,7 +90,7 @@ void flush_sending_list(struct proc *proc_ptr)
 			xpp->p_usr.p_getfrom = NONE;
 			xpp->p_usr.p_sendto  = NONE;
 			if(xpp->p_usr.p_rts_flags == PROC_RUNNING) {
-				LOCAL_PROC_UP(xpp, EDVSMIGRATE);
+				LOCAL_PROC_UP(xpp, OK);
 			}	
 		}else{
 			/*
@@ -216,6 +218,7 @@ long int migr_start(struct proc *proc_ptr)
 			if( test_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags))	{ret = EDVSBUSY; break;}
 			if(test_bit(BIT_NO_ENDPOINT, &proc_ptr->p_usr.p_rts_flags))	{ret = EDVSENDPOINT; break;}
 			if(test_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags)) 	{ret = EDVSMIGRATE; break;}
+			if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSBUSY; break;}			
 		}while(0);
 		if(ret) ERROR_RETURN(ret);
 		/* Signal the REMOTE process with the  BIT_MIGRATE */
@@ -223,7 +226,8 @@ long int migr_start(struct proc *proc_ptr)
 		return(OK);
 	}
 	
-	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	ERROR_RETURN(EDVSGRPLEADER);
+	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	
+		ERROR_RETURN(EDVSGRPLEADER);
 
 	/* FIRST LOOP: Check the correct status of all process' threads */
 	task_ptr = thread_ptr = proc_ptr->p_task;
@@ -235,10 +239,11 @@ long int migr_start(struct proc *proc_ptr)
 			RLOCK_PROC(p_ptr);
 			do {
 				if( test_bit(BIT_SLOT_FREE, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSNOTBIND; break;}
-				if( test_bit(BIT_ONCOPY, &p_ptr->p_usr.p_rts_flags))		{ret = EDVSONCOPY; break;}
+				if( test_bit(BIT_ONCOPY, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSONCOPY; break;}
 				if( test_bit(BIT_RMTOPER, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSBUSY; break;}
-				if(test_bit(BIT_NO_ENDPOINT, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSENDPOINT; break;}
+				if(test_bit(BIT_NO_ENDPOINT, &p_ptr->p_usr.p_rts_flags)){ret = EDVSENDPOINT; break;}
 				if(test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 	{ret = EDVSMIGRATE; break;}
+				if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSBUSY; break;}			
 			}while(0);
 			RUNLOCK_PROC(p_ptr);
 			if(ret) {
@@ -256,8 +261,19 @@ long int migr_start(struct proc *proc_ptr)
 		/* Cant set BIT_MIGRATE because the process is running */
 		/* Set the MIS_BIT_NEEDMIGR to set this BIT_MIGRATE in the next IPC call  */
 		p_ptr = thread_ptr->task_proc;
-		if( p_ptr != NULL) 		/* Ignore not binded threads */
+		if( p_ptr != NULL){ 		/* Ignore not binded threads */
 			set_bit(MIS_BIT_NEEDMIGR, &p_ptr->p_usr.p_misc_flags);
+			if( test_bit(BIT_RECEIVING, &p_ptr->p_usr.p_rts_flags) ){
+				LOCAL_PROC_UP(p_ptr, EDVSAGAIN); 
+			}
+#ifdef ANULADO			
+			DVKDEBUG(INTERNAL,"Sending SIGPIPE to pid=%d\n", p_ptr->p_usr.p_lpid);
+			ret = send_sig_info(SIGPIPE, SEND_SIG_NOINFO, thread_ptr);
+			if(ret) ERROR_PRINT(ret);
+#endif // ANULADO			
+			pu_ptr= &p_ptr->p_usr;
+			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(pu_ptr));
+		}	
 	}while_each_thread(task_ptr, thread_ptr);
 	UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 	return(OK);
@@ -291,7 +307,8 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 		p_ptr = thread_ptr->task_proc;
 		if( p_ptr != NULL) {		/* Ignore not binded threads */
 			RLOCK_PROC(p_ptr);		
-			if( !test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) ret = EDVSMIGRATE;
+			if( !test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 
+				ret = EDVSMIGRATE;
 			RUNLOCK_PROC(p_ptr);
 			if(ret) {
 				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
@@ -303,7 +320,8 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 	UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 
 	WLOCK_PROC(proc_ptr);
-	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags)) ERROR_RETURN(EDVSGRPLEADER);
+	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags)) 
+		ERROR_RETURN(EDVSGRPLEADER);
 	thread_ptr = proc_ptr->p_task;	
 	task_ptr   = proc_ptr->p_task;
 	WUNLOCK_PROC(proc_ptr);
@@ -316,7 +334,8 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 			if(test_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags))
 				clear_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags);
 			/* Convert the LOCAL descriptor into a REMOTE descriptor */
-			p_ptr->p_usr.p_lpid 	= PROC_NO_PID;	/* Update PID		*/
+			p_ptr->p_usr.p_lpid 	= PROC_NO_PID;	/* Update Linu PID	*/
+			p_ptr->p_usr.p_vpid 	= PROC_NO_PID;	/* Update virtual PID	*/
 			p_ptr->p_usr.p_nodeid 	= new_nodeid;
 			thread_ptr->task_proc	= NULL;
 			p_ptr->p_task 			= NULL;
@@ -325,7 +344,7 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 			/* if a LOCAL process remainder is into IPC kernel 	*/
 			/* wakeup it with error					*/
 			clear_bit(BIT_MIGRATE,&p_ptr->p_usr.p_rts_flags);
-			if (p_ptr->p_usr.p_rts_flags != PROC_RUNNING) {	
+			if (p_ptr->p_usr.p_rts_flags == PROC_RUNNING) {	
 				set_bit(BIT_REMOTE,&p_ptr->p_usr.p_rts_flags);
 				LOCAL_PROC_UP(p_ptr, EDVSRMTPROC);
 			}else{
@@ -348,7 +367,6 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 long int new_node_migrate(struct proc *proc_ptr, int pid)
 {
 	struct task_struct *task_ptr;
-
 	DVKDEBUG(GENERIC,"pid=%d\n", pid);
 	
 	if(! test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) {  /* it is NOT a remote process' backup */
@@ -369,12 +387,19 @@ long int new_node_migrate(struct proc *proc_ptr, int pid)
 		proc_ptr->p_usr.p_name[MAXPROCNAME-1]= '\0';
 		proc_ptr->p_name_ptr = (char*)task_ptr->comm;
 		WUNLOCK_TASK(task_ptr);
-		proc_ptr->p_usr.p_lpid 		= pid;				/* Update PID		*/
-	}else{
+		proc_ptr->p_usr.p_lpid 	= pid;				/* Update PID		*/
+	}else{  // REMOTE BACKUP PROCESS 
+		if( pid == PROC_NO_PID) {
+			pid = proc_ptr->p_usr.p_lpid;
+		} else {
+			if( pid != proc_ptr->p_usr.p_lpid)
+			ERROR_RETURN(EDVSBADPID);			
+		}
 		if ( pid != pid_vnr(get_task_pid(proc_ptr->p_task, PIDTYPE_PID)))
 			ERROR_RETURN(EDVSBADPID);
 		clear_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags);
 		task_ptr = proc_ptr->p_task;
+//		LOCAL_PROC_UP(proc_ptr, OK);
 		RLOCK_TASK(task_ptr);
 		if( waitqueue_active(&task_ptr->task_wqh))
 			wake_up_interruptible(&task_ptr->task_wqh);
@@ -410,6 +435,7 @@ long int migr_commit(unsigned long int dc_bitmap_nodes, struct proc *proc_ptr, i
 	RLOCK_NODE(newnode_ptr);
 	ret = OK;
 	do {
+		if ( !test_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags)) {ret = EDVSPROCSTS; break;}
 		if(newnode_ptr->n_usr.n_flags == NODE_FREE) {ret = EDVSNOPROXY; break;}
 		if(!test_bit(new_nodeid, &dc_bitmap_nodes))	{ret = EDVSDCNODE; break;}
 		if(!test_bit(proc_ptr->p_usr.p_dcid, &newnode_ptr->n_usr.n_dcs))
@@ -435,7 +461,7 @@ long int migr_commit(unsigned long int dc_bitmap_nodes, struct proc *proc_ptr, i
 
 	/* clear  BIT_MIGRATE  */
 	clear_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags);
-	clear_bit(MIS_BIT_NEEDMIGR, &proc_ptr->p_usr.p_misc_flags);
+//	clear_bit(MIS_BIT_NEEDMIGR, &proc_ptr->p_usr.p_misc_flags);
 
 	pu_ptr = &proc_ptr->p_usr;
 	DVKDEBUG(INTERNAL,PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
