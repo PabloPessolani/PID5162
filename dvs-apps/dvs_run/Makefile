@@ -1,5 +1,5 @@
 CC=gcc
-BINS= 	dvs_run test_dvs_run migr_server migr_client dvs_migrate
+BINS= 	dvs_run test_dvs_run migr_server migr_client dvs_migrate test_dmtcp
 			
 INCLUDE = ..
 		
@@ -15,6 +15,7 @@ OBJ2 =  test_dvs_run.o
 OBJ3 =  migr_server.o
 OBJ4 =  migr_client.o
 OBJ5 =  dvs_migrate.o
+OBJ6 =  test_dmtcp.o
 
 dvs_run: $(OBJ1) dvs_run.h
 	$(CC)  $(CFLAGS) -o dvs_run $(OBJ1) $(LIBS) -I$(INCLUDE)
@@ -31,7 +32,10 @@ migr_client: $(OBJ4) dvs_run.h
 dvs_migrate: $(OBJ5) dvs_run.h
 	$(CC)  $(CFLAGS) -o dvs_migrate $(OBJ5) $(LIBS) -I$(INCLUDE)
 	
+test_dmtcp: $(OBJ6) dvs_run.h
+	$(CC)  $(CFLAGS) -o test_dmtcp $(OBJ6) $(LIBS) -I$(INCLUDE)
+	
 clean:
-	rm -f $(BINS)  $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5)
+	rm -f $(BINS)  $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5) $(OBJ6)
 
 

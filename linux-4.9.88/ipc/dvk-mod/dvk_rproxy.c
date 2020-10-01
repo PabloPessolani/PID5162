@@ -65,9 +65,13 @@ do {
 			set_bit(BIT_RECEIVING, 	&src_ptr->p_usr.p_rts_flags);
 			set_bit(MIS_BIT_ATOMIC, 	&src_ptr->p_usr.p_misc_flags);
 			set_bit(MIS_BIT_NOMIGRATE, 	&dst_ptr->p_usr.p_misc_flags);
-		}else{
+		}else{ // CMD_SEND_MSG
 		   	src_ptr->p_rcode = OK;
 			send_ack_lcl2rmt(src_ptr, dst_ptr, OK);
+			if( (dst_ptr->p_usr.p_getfrom == src_ptr->p_usr.p_endpoint) 
+			&&  test_bit(MIS_BIT_ATOMIC, &dst_ptr->p_usr.p_misc_flags)) {
+				clear_bit(MIS_BIT_NOMIGRATE, &src_ptr->p_usr.p_misc_flags);
+			} 
 		}
 //		dst_ptr->p_message.m_source = src_ptr->p_usr.p_endpoint;
 		clear_bit(BIT_RECEIVING, &dst_ptr->p_usr.p_rts_flags);

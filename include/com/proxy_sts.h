@@ -18,7 +18,7 @@
 #define MIS_BIT_RMTINFO		11
 
 #define MIS_BIT_NOMIGRATE 	12
-#define MIS_BIT_ATOMIC 		13
+#define MIS_BIT_ATOMIC 		13		// equivalent to REPLY_PENDING in MINIX3
 
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/

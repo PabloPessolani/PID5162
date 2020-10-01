@@ -2954,17 +2954,237 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
 			
 	TODO:	Si un endpoint esta dado de alta como REMOTO podria convertirse a BACKUP asociandole el PID. 
 			OJO porque el wait4bind chechea esto y no permite que el proceso siga adelanta con el binding.
-			LISTO 
+		LISTO 
 	
 	TODO: 	Habria que analizar cuales son las situaciones en las cuales NO PUEDE HABER MIGRACION 
 			se podría poner un flag BIT_MISC_NOMIGRATE, el problema se presenta en los procesos  
 			REMOTOS que nada impide que se MIGREN.	
-			LISTO 
+		LISTO 
+
+==============================================================================================================
+20200929:	SE MODIFICARON LOS migr_client y migr_server para utilizar o no WAIT4BIND- (Flag USE_WAIT4BIND)
+	
+	TODO:	PROBAR DMTCP 
+	En sesion 1:
+	/usr/src/lkl/dmtcp/bin/dmtcp_coordinator -p 1234
 			
+	En sesion 2: despues de arrancar el DVS 
+		root@node0:/usr/src/dvs/dvs-apps/dvs_run# /usr/src/lkl/dmtcp/bin/dmtcp_launch -h node0 -p 1234 ./migr_server 0 10
+		DEBUG 43000:dvk_open:108: Open dvk device file /dev/dvk
+		 migr_server.c:main:63:[./migr_server] dcid=0 svr_ep=10
+		DEBUG 43000:dvk_bind_X:1214: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+		DEBUG 43000:dvk_bind_X:1229: ioctl ret=10 errno=0
+		DEBUG 43000:dvk_bind_X:1241: ioctl ret=10
+		DEBUG 43000:dvk_bind_X:1244: ret=10
+		 migr_server.c:main:65:[./migr_server] rcode=10
+		 migr_server.c:main:69:SERVER svr_pid=43000 svr_ep=10
+		DEBUG 43000:dvk_getprocinfo:1170: dcid=-1 p_nr=10 
+		DEBUG 43000:dvk_getprocinfo:1183: ioctl ret=0 errno=0
+		DEBUG 43000:dvk_getprocinfo:1188: ioctl ret=0
+		 migr_server.c:main:80:SERVER: nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		 migr_server.c:main:108:SERVER buffer abcdefghijklmnopqrstuvwxyabcde
+		 migr_server.c:main:111:SERVER: Starting loops
+		 migr_server.c:main:114:SERVER: Receiving loops=0
+		 migr_server.c:main:115:SERVER: BEFORE dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		DEBUG 43000:dvk_receive_T:890: endpoint=31438 timeout=30000
+		
+	RECIBE EDVSINTR cuando en el coordinador se ordena "bc" Block/Checkpoint, pero como se modifico el fuente, hace un retry del dvk_receive.	
+		DEBUG 43000:dvk_receive_T:903: ioctl ret=-1 errno=4
+		ERROR: 43000:dvk_receive_T:905: rcode=-4
+		DEBUG 43000:dvk_receive_T:913: ioctl ret=-4
+		ERROR: 43000:dvk_receive_T:915: rcode=-4
+		 migr_server.c:main:117:SERVER: AFTER  dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		 migr_server.c:main:114:SERVER: Receiving loops=0
+		 migr_server.c:main:115:SERVER: BEFORE dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		DEBUG 43000:dvk_receive_T:890: endpoint=31438 timeout=30000
+	
+	DESDE EL COORDINADOR SE ENVÍA UN KILL "k"
+		root@node0:/usr/src/dvs/dvs-apps/dvs_run# ls -lt *.dmtcp
+		-rw------- 1 root root 2511134 sep 29 16:04 ckpt_migr_server_5e678476-43000-71207cdb.dmtcp
+	
+	LUEGO SE HACE EL RESTART
+		root@node0:/usr/src/dvs/dvs-apps/dvs_run# dmtcp_restart ckpt_migr_server_5e678476-43000-71207cdb.dmtcp 
+		WARNING:  Running dmtcp_restart as root can be dangerous.
+		  An unknown checkpoint image or bugs in DMTCP may lead to unforeseen
+		  consequences.  Continuing as root ....
+		DEBUG 43000:dvk_receive_T:903: ioctl ret=-1 errno=4 <<<<<<<<<<<<< ULTIMO ESTADO GRABADO 
+		ERROR: 43000:dvk_receive_T:905: rcode=-4
+		DEBUG 43000:dvk_receive_T:913: ioctl ret=-4
+		ERROR: 43000:dvk_receive_T:915: rcode=-4
+	CUANDO VUELVE A HACER EL dvk_receive() obviamente no esta bindeado.	
+		 migr_server.c:main:117:SERVER: AFTER  dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		 migr_server.c:main:114:SERVER: Receiving loops=0
+		 migr_server.c:main:115:SERVER: BEFORE dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		DEBUG 43000:dvk_receive_T:890: endpoint=31438 timeout=30000
+		DEBUG 43000:dvk_receive_T:903: ioctl ret=-1 errno=310
+		ERROR: 43000:dvk_receive_T:905: rcode=-310
+		DEBUG 43000:dvk_receive_T:913: ioctl ret=-310
+		ERROR: 43000:dvk_receive_T:915: rcode=-310
+		 migr_server.c:main:117:SERVER: AFTER  dvk_receive_T nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1429 vpid=1429 nodeid=0 name=migr_server 
+		ERROR: migr_server.c:main:122: rcode=-310
+
+
+	LISTO: 
+			Cuando se recibe un (-310) EDVSNOTBIND se tiene que hacer la inicializacion del DVK nuevamente.
+	
+			1) si get_dvsinfo == EDVSNOTTY es porque no esta el open del dvk
+				dvk_open()
+				nodeid = get_dvsinfo();
+			2) si nodeid != local_nodeid 
+				local_nodeid = nodeid 
+				ESTOY EN OTRO NODO   
+				Si estoy en otro NODO, 
+					si se quiere hacer el bind y ya existe el endpoint bindeado retorna rcode=-337 EDVSSLOTUSED  
+					hay que hacer dvk_getprocinfo() para ver cual es el tipo de proceso bindedo
+					si el actual es REMOTO, hay que hacer migr_start y luego migr_commit con el PID propio (PROC_NO_PID)
+					si el actual es LOCAL o REPLICA, ==> EXIT 
+					
+	FUNCIONA PERFECTO LOCAL!! 
+		DESPUES DE CHECKPOINT->KILL se hace RESTART 
+			root@node0:/usr/src/dvs/dvs-apps/dvs_run# dmtcp_restart ckpt_migr_server_5e678476-45000-ffffffffc1ed4e19.dmtcp 
+			WARNING:  Running dmtcp_restart as root can be dangerous.
+			  An unknown checkpoint image or bugs in DMTCP may lead to unforeseen
+			  consequences.  Continuing as root ....
+			  
+			DEBUG 45000:dvk_receive_T:903: ioctl ret=-1 errno=4 <<<<<<<<< RECIBE EDVSINTR
+			ERROR: 45000:dvk_receive_T:905: rcode=-4
+			DEBUG 45000:dvk_receive_T:913: ioctl ret=-4
+			ERROR: 45000:dvk_receive_T:915: rcode=-4
 			
+			 migr_server.c:main:187:SERVER: Receiving loops=0
+			DEBUG 45000:dvk_receive_T:890: endpoint=31438 timeout=30000 <<<< EDVSNOTBIND
+			DEBUG 45000:dvk_receive_T:903: ioctl ret=-1 errno=310
+			ERROR: 45000:dvk_receive_T:905: rcode=-310
+			DEBUG 45000:dvk_receive_T:913: ioctl ret=-310
+			ERROR: 45000:dvk_receive_T:915: rcode=-310
+			migr_server.c:get_dvs_params:90:
+			DEBUG 45000:dvk_getdvsinfo:258: 
+			DEBUG 45000:dvk_getdvsinfo:267: ioctl ret=0 errno=0
+			DEBUG 45000:dvk_getdvsinfo:272: ioctl ret=0
+			 migr_server.c:get_dvs_params:92:nodeid=0
+			 migr_server.c:get_dvs_params:96:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			 migr_server.c:get_dvs_params:90:
+			DEBUG 45000:dvk_getdvsinfo:258: 
+			DEBUG 45000:dvk_getdvsinfo:267: ioctl ret=0 errno=0
+			DEBUG 45000:dvk_getdvsinfo:272: ioctl ret=0
+			 migr_server.c:get_dvs_params:92:nodeid=0
+			 migr_server.c:get_dvs_params:96:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			 migr_server.c:migr_restart:47:nodeid=0 local_nodeid=0
+			 migr_server.c:migr_restart:75:dcid=0 svr_ep=10
+			DEBUG 45000:dvk_bind_X:1214: cmd=0 dcid=0 pid=-1 endpoint=10 nodeid=-1
+			DEBUG 45000:dvk_bind_X:1229: ioctl ret=10 errno=0
+			DEBUG 45000:dvk_bind_X:1241: ioctl ret=10
+			DEBUG 45000:dvk_bind_X:1244: ret=10
+			 migr_server.c:migr_restart:77:rcode=10
+			 
+			DEBUG 45000:dvk_receive_T:890: endpoint=31438 timeout=30000
+			DEBUG 45000:dvk_receive_T:903: ioctl ret=-1 errno=61
+			ERROR: 45000:dvk_receive_T:905: rcode=-61
+			DEBUG 45000:dvk_receive_T:913: ioctl ret=-61
+			ERROR: 45000:dvk_receive_T:915: rcode=-61
+			 migr_server.c:main:187:SERVER: Receiving loops=0
+			DEBUG 45000:dvk_receive_T:890: endpoint=31438 timeout=30000
+
+==============================================================================================================
+20200930:
+		
+	TODO: PROBAR REMOTO 
+		Escenario PREVIO
+			migr_server: NODE0
+			migr_client: NODE1
+		Escenario FINAL:
+			migr_server: NODE1
+			migr_client: NODE1
+			
+		NODE0																	NODE1 
+	1) cd /usr/src/dvs/dvk-tests/ 												cd /usr/src/dvs/dvk-tests/ 
+	   ./tests.sh 0 0															./tests.sh 1 0
+	2) . /dev/shm/DC0.sh														. /dev/shm/DC0.sh
+	3) nsenter -p -t$DC0 ./test_rmtbind 0 11 1 migr_client						nsenter -p -t$DC0 ./test_rmtbind 0 10 0 migr_server
+		cd /usr/src/dvs/dvs-apps/dvs_run										cd /usr/src/dvs/dvs-apps/dvs_run
+		rm *.dmtcp 																rm *.dmtcp 
+	4) EN OTRA TERMINAL /usr/src/lkl/dmtcp/bin/dmtcp_coordinator -p 1234  
+	EN LA ANTERIOR /usr/src/lkl/dmtcp/bin/dmtcp_launch -h node0 -p 1234 ./migr_server 0 10 
+	5) 																			nsenter -p -t$DC0 ./migr_client 0 11 10 4096 100 1 &
+						---------------------------- EJECUTANDO ------------------------------
+	6a)																			./dvs_migrate -s 0 10
+	6b) ./dvs_migrate -s 0 10	
+	7) /usr/src/lkl/dmtcp/bin/dmtcp_command   -h node0 -p 1234 -bc				nc -l -p 7555 > checkpoint_migr_server_node1.dmtcp
+       /usr/src/lkl/dmtcp/bin/dmtcp_command   -h node0 -p 1234 -k 
+		mv ckpt_*.dmtcp checkpoint_migr_server_node0.dmtcp
+	8)  nc node1 7555 < checkpoint_migr_server_node0.dmtcp
+	9)																			dmtcp_restart checkpoint_migr_server_node1.dmtcp
+						---------------------------- EJECUTANDO ------------------------------
+	10)																			./dvs_migrate -s 0 10	
+	11) cd /usr/src/dvs/dvk-tests/
+		nsenter -p -t$DC0 ./test_rmtbind 0 10 1 migr_server 
+
+
+
+		Escenario PREVIO
+			migr_server: NODE1
+			migr_client: NODE1
+		Escenario FINAL:
+			migr_server: NODE0
+			migr_client: NODE1
+ 	
+		Escenario PREVIO
+			migr_server: NODE0
+			migr_client: NODE1
+		Escenario FINAL:
+			migr_server: NODE2
+			migr_client: NODE1
+ 	
+root@node1:/usr/src/dvs/dvs-apps/dvs_run# ./dvs_migrate -s 0 10
+DEBUG 1313:dvk_open:108: Open dvk device file /dev/dvk
+ dvs_migrate.c:get_dvs_params:27:
+DEBUG 1313:dvk_getdvsinfo:265: 
+DEBUG 1313:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 1313:dvk_getdvsinfo:279: ioctl ret=1
+ dvs_migrate.c:get_dvs_params:29:local_nodeid=1
+ dvs_migrate.c:get_dvs_params:32:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ dvs_migrate.c:main:120:getopt migr_type=0
+ dvs_migrate.c:main:126:dcid=0
+ dvs_migrate.c:get_dc_params:42:dcid=0
+DEBUG 1313:dvk_getdcinfo:366: dcid=0
+DEBUG 1313:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 1313:dvk_getdcinfo:383: ioctl ret=0
+ dvs_migrate.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ dvs_migrate.c:get_dc_params:51:flags=0 dc_nodes=3 dc_pid=626 dc_name=DC0
+ dvs_migrate.c:main:134:proc_ep=10
+ dvs_migrate.c:main:150:migr_type=0 argc=4 
+DEBUG 1313:dvk_migrate_X:1297: cmd=0 pid=-1 dcid=0 endpoint=10 nodeid=-1
+DEBUG 1313:dvk_migrate_X:1312: ioctl ret=-1 errno=334
+ERROR: 1313:dvk_migrate_X:1314: rcode=-334                  <<<<<<<<<<<< EDVSGRPLEADER
+DEBUG 1313:dvk_migrate_X:1321: ioctl ret=-334
+ERROR: 1313:dvk_migrate_X:1323: rcode=-334
+ERROR: dvs_migrate.c:main:172: rcode=-334
+
+
+Oct  1 07:50:46 node1 kernel: [31236.616392] DEBUG 1313:dvk_ioctl:349: cmd=4004E31E arg=BF804AF8
+Oct  1 07:50:46 node1 kernel: [31236.616393] DEBUG 1313:dvk_ioctl:369: DVK_CALL=30 (io_migrate) 
+Oct  1 07:50:46 node1 kernel: [31236.616394] DEBUG 1313:io_migrate:320: 
+Oct  1 07:50:46 node1 kernel: [31236.616397] DEBUG 1313:new_migrate:508: oper=0 pid=-1 dcid=0 endpoint=10 new_nodeid=-1
+Oct  1 07:50:46 node1 kernel: [31236.616398] DEBUG 1313:new_migrate:516: RLOCK_DC dc=0 count=0
+Oct  1 07:50:46 node1 kernel: [31236.616400] DEBUG 1313:new_migrate:519: check endpoint=10 p_nr=10 
+Oct  1 07:50:46 node1 kernel: [31236.616401] DEBUG 1313:new_migrate:531: RUNLOCK_DC dc=0 count=0
+Oct  1 07:50:46 node1 kernel: [31236.616403] DEBUG 1313:new_migrate:533: WLOCK_PROC ep=10 count=0
+Oct  1 07:50:46 node1 kernel: [31236.616404] DEBUG 1313:new_migrate:542: Operation=0
+Oct  1 07:50:46 node1 kernel: [31236.616407] DEBUG 1313:migr_start:211: nr=10 endp=10 dcid=0 flags=8 misc=0 lpid=1246 vpid=-1 nodeid=1 name=DMTCP:migr_serv 
+Oct  1 07:50:46 node1 kernel: [31236.616408] ERROR: 1313:migr_start:231: rcode=-334
+Oct  1 07:50:46 node1 kernel: [31236.616409] DEBUG 1313:new_migrate:558: WUNLOCK_PROC ep=10 count=0
+Oct  1 07:50:46 node1 kernel: [31236.616410] ERROR: 1313:new_migrate:560: rcode=-334
+Oct  1 07:50:46 node1 kernel: [31236.616411] ERROR: 1313:dvk_ioctl:373: rcode=-334
+
+	
 ==============================================================================================================
 
-					
+	
+TODO:
+			Aplicar los cambios que se hicieron en new_mini_send y new_mini_sendrec a
+			new_rcvrqst y new_reply
+			
+			
 			Supongamos que un server en NODO0 quiere migrar.
 			El programa de gestion de migración deberia enviar un mensaje a todos los nodos de esa intención.
 			En todo nodo, debería setearse el descriptor del proceso con BIT_MIGRATE.

@@ -725,7 +725,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 	struct proc *src_ptr, *rp, *tmp_ptr, *caller_ptr, *sproxy_ptr;
 	long unsigned int *bm_ptr;
 	proc_usr_t *uproc_ptr;
-	int i, dcid, rcode;
+	int i, dcid, rcode, src_nr, proc_nr;
 
 #ifdef WARN_PROC
 	int warn_ep;
@@ -801,6 +801,27 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		}
 	}
 
+	// test if the process has an ATOMIC operation in course such as an unreplied sendrec()
+	if( test_bit(BIT_RECEIVING, &proc_ptr->p_usr.p_rts_flags) ) {
+		if (test_bit(MIS_BIT_ATOMIC, &proc_ptr->p_usr.p_misc_flags)) {
+			src_nr = _ENDPOINT_P(proc_ptr->p_usr.p_getfrom);
+			src_ptr=  NBR2PTR(dc_ptr, src_nr);
+			proc_nr=  proc_ptr->p_usr.p_nr;
+			// locks and unlocks in lowercase to avoid kernel log saturation
+			if( proc_nr < src_nr) {
+				WLOCK_PROC(src_ptr); /* Caller LOCK is just locked */
+			}else{	
+				/* free the callers lock and then lock both ordered */
+				WUNLOCK_PROC(proc_ptr);
+				WLOCK_PROC(src_ptr);
+				WLOCK_PROC(proc_ptr);
+			}
+			// clear the other party the restriction to MIGRATE 
+			clear_bit(MIS_BIT_NOMIGRATE, &src_ptr->p_usr.p_misc_flags);
+			clear_bit(BIT_RECEIVING, &proc_ptr->p_usr.p_rts_flags); 
+			clear_bit(MIS_BIT_ATOMIC, &proc_ptr->p_usr.p_misc_flags);
+		}
+	}
 	/*--------------------------------------*/
 	/* wakeup with error those processes	*/
 	/* trying to send a message to the proc	*/
@@ -2121,16 +2142,19 @@ asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_pt
 	if( DVS_NOT_INIT() )   			
 		ERROR_RETURN(EDVSDVSINIT );
 
-
 	if( dcid == PROC_NO_PID) {
 		rcode = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 		if( rcode) ERROR_RETURN(rcode);
 		dcid = caller_ptr->p_usr.p_dcid;
 	}
-	if( dcid != caller_ptr->p_usr.p_dcid){
-		ERROR_RETURN(EDVSBADDCID);	
-	}
 
+#ifdef ANULADO 
+	if ( caller_ptr != NULL) {
+		if( dcid != caller_ptr->p_usr.p_dcid){
+			ERROR_RETURN(EDVSBADDCID);	
+		}
+	}
+#endif // ANULADO 
 	CHECK_DCID(dcid);		/* check DC ID limits 	*/
 	
 	dc_ptr 		= &dc[dcid];
@@ -2288,8 +2312,11 @@ asmlinkage long new_getep(int pid)
 
 	if( DVS_NOT_INIT() )   	ERROR_RETURN(EDVSDVSINIT );
 
-	if( pid < 1 || pid > PID_MAX) 	ERROR_RETURN(EDVSBADRANGE);
-
+	if( pid != PROC_NO_PID) {
+		if( pid < 1 || pid > PID_MAX) 	
+			ERROR_RETURN(EDVSBADRANGE);
+	}
+	
 	ret = check_caller(&task_ptr, &caller_ptr, &caller_pid);
 	if(ret) return(ret);
 	caller_vpid = pid_vnr(get_task_pid(current, PIDTYPE_PID)); 

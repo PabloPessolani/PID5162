@@ -776,6 +776,7 @@ sendrec_replay:
 			clear_bit(BIT_RECEIVING, &srcdst_ptr->p_usr.p_rts_flags);
 			set_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 			srcdst_ptr->p_usr.p_getfrom 	= NONE;
+			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags); 
 			COPY_USR2USR_PROC(ret, caller_ep, caller_ptr, (char *) m_ptr, srcdst_ptr, (char *) srcdst_ptr->p_umsg, sizeof(message) );
 			if(srcdst_ptr->p_usr.p_rts_flags == 0) 
 				LOCAL_PROC_UP(srcdst_ptr, ret); 
@@ -784,12 +785,12 @@ sendrec_replay:
 				caller_ptr->p_usr.p_getfrom = NONE;
 				caller_ptr->p_usr.p_sendto 	= NONE;
 				clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
+				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
 				WUNLOCK_PROC(srcdst_ptr);	
 				ERROR_PRINT(ret);
 				goto sendrec_exit;
 			}
 			ret = 0;
-			set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags); 
 #ifdef ANULADO
 			/* Sending part: completed, now receiving.., but before, check destination migration  */
 			if( test_bit(BIT_MIGRATE, &srcdst_ptr->p_usr.p_rts_flags))	{
@@ -800,8 +801,8 @@ sendrec_replay:
 				sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms);
 				ret = caller_ptr->p_rcode;
 			}
-#endif // ANULADO
 			clear_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
+#endif // ANULADO
 			WUNLOCK_PROC(srcdst_ptr);
 			if( ret == 0) { 
 				sleep_proc(caller_ptr, timeout_ms); 		

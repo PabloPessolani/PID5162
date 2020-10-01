@@ -1,5 +1,7 @@
 #include "dvs_run.h"
 
+#define	 USE_WAIT4BIND	0
+
 #define   MIGR_TEST 	16077022
 #define   MAXLOOPS 		10000
 #define   MAXDELAY 		(5*60)
@@ -20,7 +22,13 @@ double dwalltime()
 }
 
 void print_usage(char *argv0){
+#if USE_WAIT4BIND 
 fprintf(stderr,"Usage: %s <svr_ep> <maxbuf> <loops> <delay>\n", argv0 );
+#else //USE_WAIT4BIND 
+fprintf(stderr,"Usage: %s <dcid> <clt_ep> <svr_ep> <maxbuf> <loops> <delay>\n", argv0 );
+	fprintf(stderr,"<dcid>: DC ID (%d-%d)\n", 0, NR_DCS);
+	fprintf(stderr,"<clt_ep>: client endpoint (%d-%d)\n", (-NR_TASKS), (NR_PROCS-NR_TASKS));
+#endif //USE_WAIT4BIND 
 	fprintf(stderr,"<svr_ep>: server endpoint (%d-%d)\n", (-NR_TASKS), (NR_PROCS-NR_TASKS));
 	fprintf(stderr,"<maxbuf>: Maximum buffer size (1-%d)\n", MAXCOPYLEN);
 	fprintf(stderr,"<loop>:  number of client/server loops (1-%d)\n", MAXLOOPS);
@@ -30,24 +38,34 @@ fprintf(stderr,"Usage: %s <svr_ep> <maxbuf> <loops> <delay>\n", argv0 );
    
 int  main ( int argc, char *argv[] )
 {
-	int  clt_pid, ret, i, clt_ep, svr_ep, delay, rcode, retry;
+	int  clt_pid, ret, i, clt_ep, svr_ep, delay, rcode, retry, dcid;
 	double t_start, t_stop, t_total, loopbysec, tput; 
 	long int loops, total_bytes = 0 ;
 	proc_usr_t *proc_ptr;
+
+#if USE_WAIT4BIND 
+#define	OFFSET	0
+#else //USE_WAIT4BIND 
+#define	OFFSET	2
+#endif //USE_WAIT4BIND 
 
 	USRDEBUG("[%s] argc=%d\n", argv[0], argc);
 	for( i = 1; i < argc ; i++) {
 		USRDEBUG("[%s] argv[%d]=%s\n", argv[0], i, argv[i]);
 	}
 	
-	if( argc != 5) {
+	if( argc != (5+OFFSET)) {
 		print_usage(argv[0]);
 	}
 
-	svr_ep = atoi(argv[1]);
-	maxbuf = atoi(argv[2]);
-	loops  = atoi(argv[3]);
-	delay  = atoi(argv[4]);
+#if !USE_WAIT4BIND
+	dcid = atoi(argv[1]);
+	clt_ep = atoi(argv[2]);
+#endif //USE_WAIT4BIND 
+	svr_ep = atoi(argv[1+OFFSET]);
+	maxbuf = atoi(argv[2+OFFSET]);
+	loops  = atoi(argv[3+OFFSET]);
+	delay  = atoi(argv[4+OFFSET]);
 	
 	if( (svr_ep < (-NR_TASKS)) || (svr_ep > (NR_PROCS-NR_TASKS))){
 		fprintf(stderr,"Bad server endpoint (%d)\n", svr_ep);
@@ -73,7 +91,9 @@ int  main ( int argc, char *argv[] )
 		
 	ret = dvk_open();
 	if (ret < 0)  ERROR_EXIT(ret);
-	
+	clt_pid = getpid();
+
+#if USE_WAIT4BIND
 	retry = 0;
 	do {
 		retry++;
@@ -88,8 +108,12 @@ int  main ( int argc, char *argv[] )
 				ERROR_EXIT(rcode);
 		}
 	}while(rcode == EDVSTIMEDOUT);
-	
-	clt_pid = getpid();
+#else //  USE_WAIT4BIND
+	USRDEBUG("[%s] dcid=%d clt_ep=%d svr_ep=%d\n", argv[0], dcid, clt_ep, svr_ep);
+	rcode = dvk_bind(dcid,clt_ep);
+	USRDEBUG("[%s] rcode=%d\n", argv[0], rcode);
+	if( rcode != clt_ep) ERROR_EXIT(rcode);
+#endif  //  USE_WAIT4BIND	
 	clt_ep = rcode;
    	USRDEBUG("CLIENT clt_pid=%d clt_ep=%d\n", clt_pid, clt_ep);
 
@@ -135,7 +159,9 @@ int  main ( int argc, char *argv[] )
 		m_ptr->m1_p1  = buffer;
 		USRDEBUG("CLIENT SEND:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 		ret = dvk_sendrec_T(svr_ep, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT || ret == EDVSAGAIN) continue;
+		if( ret == EDVSTIMEDOUT 
+			|| ret == EDVSAGAIN
+			|| ret == EDVSINTR) continue;
 		if( ret < 0) ERROR_EXIT(ret);
 
 		USRDEBUG("CLIENT RECEIVE:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));	

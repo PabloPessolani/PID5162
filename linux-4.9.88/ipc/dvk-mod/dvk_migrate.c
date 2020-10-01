@@ -142,8 +142,11 @@ long int migr_rollback(struct proc *proc_ptr)
 		clear_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags);
 		return(OK);
 	}
-	
-	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	ERROR_RETURN(EDVSGRPLEADER);
+
+#ifdef ANULADO 
+	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	
+		ERROR_RETURN(EDVSGRPLEADER);
+#endif // ANULADO 
 
 	/* FIRST LOOP: Check the correct status of all process' threads */
 	task_ptr = thread_ptr = proc_ptr->p_task;
@@ -217,8 +220,9 @@ long int migr_start(struct proc *proc_ptr)
 			if( test_bit(BIT_ONCOPY, &proc_ptr->p_usr.p_rts_flags))		{ret = EDVSONCOPY; break;}
 			if( test_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags))	{ret = EDVSBUSY; break;}
 			if(test_bit(BIT_NO_ENDPOINT, &proc_ptr->p_usr.p_rts_flags))	{ret = EDVSENDPOINT; break;}
-			if(test_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags)) 	{ret = EDVSMIGRATE; break;}
-			if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSBUSY; break;}			
+			if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSPROCSTS; break;}			
+			if(test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSLCLPROC; break;}			
+			if(test_bit(BIT_MIGRATE, &proc_ptr->p_usr.p_rts_flags)) 	{ret = OK; break;}
 		}while(0);
 		if(ret) ERROR_RETURN(ret);
 		/* Signal the REMOTE process with the  BIT_MIGRATE */
@@ -226,8 +230,10 @@ long int migr_start(struct proc *proc_ptr)
 		return(OK);
 	}
 	
+#ifdef ANULADO 
 	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags))	
 		ERROR_RETURN(EDVSGRPLEADER);
+#endif // ANULADO 
 
 	/* FIRST LOOP: Check the correct status of all process' threads */
 	task_ptr = thread_ptr = proc_ptr->p_task;
@@ -242,8 +248,9 @@ long int migr_start(struct proc *proc_ptr)
 				if( test_bit(BIT_ONCOPY, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSONCOPY; break;}
 				if( test_bit(BIT_RMTOPER, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSBUSY; break;}
 				if(test_bit(BIT_NO_ENDPOINT, &p_ptr->p_usr.p_rts_flags)){ret = EDVSENDPOINT; break;}
-				if(test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 	{ret = EDVSMIGRATE; break;}
-				if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSBUSY; break;}			
+				if(test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 	{ret = OK; break;}
+				if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSPROCSTS; break;}	
+				if(test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSLCLPROC; break;}			
 			}while(0);
 			RUNLOCK_PROC(p_ptr);
 			if(ret) {
@@ -320,8 +327,12 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 	UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 
 	WLOCK_PROC(proc_ptr);
-	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags)) 
+#ifdef ANULADO 
+	if(!test_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags)) {
+		WUNLOCK_PROC(proc_ptr);
 		ERROR_RETURN(EDVSGRPLEADER);
+	}
+#endif // ANULADO 
 	thread_ptr = proc_ptr->p_task;	
 	task_ptr   = proc_ptr->p_task;
 	WUNLOCK_PROC(proc_ptr);
@@ -368,8 +379,12 @@ long int new_node_migrate(struct proc *proc_ptr, int pid)
 {
 	struct task_struct *task_ptr;
 	DVKDEBUG(GENERIC,"pid=%d\n", pid);
-	
+		
 	if(! test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) {  /* it is NOT a remote process' backup */
+		if( pid == PROC_NO_PID){
+			pid = task_pid_nr(current);
+			DVKDEBUG(GENERIC,"pid=%d\n", pid);
+		}
 		/* Search for the local proc */
 		LOCK_TASK_LIST; //read_lock(&tasklist_ptr);
 		task_ptr = pid_task(find_vpid(pid), PIDTYPE_PID);  
@@ -390,7 +405,8 @@ long int new_node_migrate(struct proc *proc_ptr, int pid)
 		proc_ptr->p_usr.p_lpid 	= pid;				/* Update PID		*/
 	}else{  // REMOTE BACKUP PROCESS 
 		if( pid == PROC_NO_PID) {
-			pid = proc_ptr->p_usr.p_lpid;
+			pid = task_pid_nr(current);
+			DVKDEBUG(GENERIC,"pid=%d\n", pid);
 		} else {
 			if( pid != proc_ptr->p_usr.p_lpid)
 			ERROR_RETURN(EDVSBADPID);			

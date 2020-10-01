@@ -1,11 +1,16 @@
 #include "dvs_run.h"
 
+#define	 USE_WAIT4BIND	0
+
 #define  MIGR_TEST 	16077022
 #define  MAXRETRIES	10
 
 int loops, maxbuf;
 message *m_ptr;
 char *buffer;
+int svr_ep, dcid;
+dvs_usr_t dvs, *dvs_ptr;
+proc_usr_t proc_usr, *proc_ptr;
 
 double dwalltime()
 {
@@ -16,19 +21,99 @@ double dwalltime()
 	sec = tv.tv_sec + tv.tv_usec/1000000.0;
 	return sec;
 }
+  
+void print_usage(char *argv0){
+fprintf(stderr,"Usage: %s <dcid> <svr_ep> \n", argv0 );
+	fprintf(stderr,"<dcid>: DC ID (%d-%d)\n", 0, NR_DCS);
+	fprintf(stderr,"<svr_ep>: server endpoint (%d-%d)\n", (-NR_TASKS), (NR_PROCS-NR_TASKS));
+	ERROR_EXIT(EDVSINVAL);	
+}
    
+int migr_restart(void) 
+{
+	int rcode;
+	int nodeid;
+	
+	nodeid = get_dvs_params();
+	if ( nodeid == EDVSNOTTY) { 
+		// open the DVK pseudo-device 
+		rcode = dvk_open();
+		USRDEBUG("dvk_open rcode=%d\n", rcode);
+		if (rcode < 0)  ERROR_EXIT(rcode);
+	}
+	// Get the new node ID 
+	nodeid = get_dvs_params();
+	if( nodeid < 0) ERROR_EXIT(nodeid);
+	USRDEBUG("nodeid=%d local_nodeid=%d\n", nodeid, local_nodeid);		
+	if( nodeid != local_nodeid) { // Migrated to other node 
+		local_nodeid = nodeid;
+		// try to BIND the process 
+		USRDEBUG("dcid=%d svr_ep=%d\n", dcid, svr_ep);
+		rcode = dvk_bind(dcid, svr_ep);
+		USRDEBUG("rcode=%d\n", rcode);
+		if( rcode == EDVSSLOTUSED) {
+			proc_ptr = &proc_usr;
+			rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
+			printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+			if( TEST_BIT(proc_ptr->p_rts_flags, BIT_REMOTE) 
+			 &&!TEST_BIT(proc_ptr->p_rts_flags, MIS_BIT_RMTBACKUP)){
+				
+				if( !TEST_BIT(proc_ptr->p_rts_flags, BIT_MIGRATE)) {
+					rcode = dvk_migr_start(dcid, svr_ep);
+					if( rcode < 0) ERROR_EXIT(rcode);
+					rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
+					printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+				}
+				rcode = dvk_migr_commit(PROC_NO_PID, dcid, svr_ep, local_nodeid);					
+				if( rcode < 0) ERROR_EXIT(rcode);
+				rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
+				printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+			 }
+		} else {
+			if( rcode != svr_ep) ERROR_EXIT(rcode);
+		}
+	}else {
+		USRDEBUG("dcid=%d svr_ep=%d\n", dcid, svr_ep);
+		rcode = dvk_bind(dcid, svr_ep);
+		USRDEBUG("rcode=%d\n", rcode);
+		if( rcode != svr_ep) ERROR_EXIT(rcode);
+	}
+	return(svr_ep);
+}
+ 
+/*===========================================================================*
+ *				get_dvs_params				     *
+ *===========================================================================*/
+int get_dvs_params(void)
+{
+	int nodeid; 
+	
+	USRDEBUG("\n");
+	nodeid = dvk_getdvsinfo(&dvs);
+	USRDEBUG("nodeid=%d\n",nodeid);
+	if( nodeid < DVS_NO_INIT) 
+		ERROR_RETURN(nodeid);
+	dvs_ptr = &dvs;
+	USRDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
+	return(nodeid);
+}
+ 
 int  main ( int argc, char *argv[] )
 {
-	int  svr_pid, ret, i, svr_ep, retry, rcode ;
+	int  svr_pid, ret, i, retry, rcode, endpoint;
 	double t_start, t_stop, t_total, loopbysec, tput; 
 	proc_usr_t *proc_ptr;
 	
 	/*---------------- SERVER binding ---------------*/
 		
 	ret = dvk_open();
+	USRDEBUG("dvk_open rcode=%d\n", rcode);
 	if (ret < 0)  ERROR_EXIT(ret);
-	
 
+	local_nodeid = get_dvs_params();
+	if (local_nodeid < 0) ERROR_EXIT(local_nodeid);
+	
+#if USE_WAIT4BIND	
 	retry = 0;
 	do {
 		retry++;
@@ -43,8 +128,16 @@ int  main ( int argc, char *argv[] )
 				ERROR_EXIT(rcode);
 		}
 	}while(rcode == EDVSTIMEDOUT);
-	
-	svr_pid = getpid();
+#else //  USE_WAIT4BIND
+    if( argc != 3) {
+		print_usage(argv[0]);
+	}
+	dcid 	= atoi(argv[1]);
+	svr_ep= atoi(argv[2]);
+
+	rcode = migr_restart(); 
+
+#endif //  USE_WAIT4BIND	
 	svr_ep = rcode;
    	USRDEBUG("SERVER svr_pid=%d svr_ep=%d\n", svr_pid, svr_ep);
 
@@ -91,10 +184,19 @@ int  main ( int argc, char *argv[] )
  	USRDEBUG("SERVER: Starting loops\n");
 	loops = 0;
 	while(TRUE) {
+		////////////////////////// RECEIVING ////////////////////////////////////////
 		USRDEBUG("SERVER: Receiving loops=%d\n", loops);
-		ret = dvk_receive_T(ANY, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT || ret == EDVSAGAIN) continue;
-
+		do {
+			ret = dvk_receive_T(ANY, (long) m_ptr, TIMEOUT_MOLCALL);
+			if( ret == EDVSNOTBIND) {
+				rcode =  migr_restart();
+				continue;
+			}
+			if( ret < 0) break;
+		}while( ret == EDVSNOTBIND);
+		if( ret == EDVSTIMEDOUT 
+			|| ret == EDVSAGAIN
+			|| ret == EDVSINTR) continue;
 		if( ret < 0) ERROR_EXIT(ret);
 		USRDEBUG("SERVER RECEIVE:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 		
@@ -102,19 +204,37 @@ int  main ( int argc, char *argv[] )
 		   	fprintf(stderr, "SERVER: Message type not MIGR_TEST (%d)\n", m_ptr->m_type);	
 		}
 		
-		ret = dvk_vcopy(svr_ep, buffer, m_ptr->m_source, m_ptr->m1_p1, m_ptr->m1_i1);	
-		if(ret < 0) {
-			USRDEBUG("SERVER: VCOPY error=%d\n", ret);
-			exit(1);
-		}
+		////////////////////////// COPYING //////////////////////////////////
+		do {
+			ret = dvk_vcopy(svr_ep, buffer, m_ptr->m_source, m_ptr->m1_p1, m_ptr->m1_i1);
+			if( ret == EDVSNOTBIND) {
+				rcode =  migr_restart();
+				continue;
+			}
+			if( ret < 0) break;
+		}while( ret == EDVSNOTBIND);
+		if( ret == EDVSTIMEDOUT 
+			|| ret == EDVSAGAIN
+			|| ret == EDVSINTR) continue;
+		if( ret < 0) ERROR_EXIT(ret);
 
+		////////////////////////// SENDING  /////////////////////////////////
 		m_ptr->m_type = ret;	
 		m_ptr->m1_i3  = loops;
 		USRDEBUG("SERVER SEND:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-		ret = dvk_send_T(m_ptr->m_source, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT) {
-	   		fprintf(stderr, "SERVER send timeout loops=%d\n", loops);
-		}
+		do	{
+			ret = dvk_send_T(m_ptr->m_source, (long) m_ptr, TIMEOUT_MOLCALL);
+			if( ret == EDVSNOTBIND) {
+				rcode =  migr_restart();
+				continue;
+			}
+			if( ret < 0) break;
+		}while( ret == EDVSNOTBIND);
+		if( ret == EDVSTIMEDOUT 
+			|| ret == EDVSAGAIN
+			|| ret == EDVSINTR) continue;
+		if( ret < 0) ERROR_EXIT(ret);
+			
 		loops++;		
 	}
 	
