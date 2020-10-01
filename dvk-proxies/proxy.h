@@ -66,6 +66,7 @@
 #include "../include/com/com.h"
 #include "../include/com/const.h"
 #include "../include/com/cmd.h"
+#include "../include/com/kipc.h"
 #include "../include/com/types.h"
 #include "../include/com/timers.h"
 #include "../include/com/ipc.h"
@@ -106,6 +107,21 @@ extern "C" {
 #define _MINIX             1	/* tell headers to include MINIX stuff */
 #define _SYSTEM            1	/* tell headers that this is the kernel */
 
+#define PXYDBG		1
+
+#define c_src_pid c_snd_seq		// rename the field 
+#define c_dst_pid c_ack_seq		// rename the field 
+#define CMD_PIDFORMAT 		"c_flags=0x%lX c_src_pid=%ld c_dst_pid=%ld\n" 
+#define CMD_PIDFIELDS(p) 	p->c_flags, p->c_src_pid, p->c_dst_pid
+
+#define PXS_FORMAT "snode=%d dnode=%d dcid=%d nr_msg=%ld nr_data=%ld nr_cmd=%ld\n" 
+#define PXS_FIELDS(p) 	 p->pst_snode, p->pst_dnode, p->pst_dcid \
+						, p->pst_nr_msg, p->pst_nr_data, p->pst_nr_cmd
+		
+
+#define CMD_TSFORMAT 		"c_timestamp=%lld.%.9ld\n" 
+#define CMD_TSFIELDS(p) 	(long long) p->c_timestamp.tv_sec, p->c_timestamp.tv_nsec
+		
 extern int	dvk_fd;
 extern int h_errno;
 

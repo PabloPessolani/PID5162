@@ -41,9 +41,7 @@ int main_pm ( int argc, char *argv[] )
 	pm_init();
 	
 	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(pm_cond, muk_mutex);
+	MTX_LOCK(pm_mutex);
 	MTX_UNLOCK(muk_mutex);
 	
 MUKDEBUG("This is PM's main loop-  get work and do it, forever and forever.\n");

@@ -1,0 +1,20 @@
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rd_ep: rd_ep=3
+
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+	soft - 0
+	hard - NONE
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 31715328 bytes to physical memory to account for exec-shield gap
+
+DEBUG start_kernel_proc:90: UML-kernel PID=903 TID=903 uml_ep=-2
+DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
+
+Debian GNU/Linux 10 node1 tty1
+
+node1 login: 

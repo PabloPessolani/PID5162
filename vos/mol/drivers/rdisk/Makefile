@@ -21,9 +21,10 @@ LIBS = 	/usr/src/dvs/vos/mol/lib/syslib/libsyslib.so \
 		/usr/src/dvs/vos/mol/lib/timers/libtimers.so \
 		/usr/src/dvs/vos/mol/lib/mollib/libmollib.so \
 		/usr/src/dvs/lib/config/libconfig.so \
-		/usr/src/dvs/dvk-lib/stub_dvkcall.o \
 		/usr/local/lib/libspread.a \
-		/usr/local/lib/libspread-util.a 		
+		/usr/local/lib/libspread-util.a \
+		/usr/src/dvs/dvk-lib/stub_dvkipc.o 
+#		/usr/src/dvs/dvk-lib/stub_dvkcall.o	
 
 LZ4LIBS = 	/usr/src/dvs/lz4-1.8.2/lib/lz4frame.o \
 			/usr/src/dvs/lz4-1.8.2/lib/lz4.o \

@@ -1,4 +1,8 @@
-all: libis.so
+all: libis.a
+
+LIB=libis.a 
+
+
 # Which compiler
 CC = gcc
 
@@ -20,8 +24,8 @@ OBJS = is.o
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 	
-libis.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libis.so $(OBJS)  $(LIBS)
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS) 
 	
 clean:
-	rm libis.so  *.o
+	rm $(LIB)  *.o

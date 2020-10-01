@@ -1,0 +1,1245 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2020.07.29 20:39:55 =~=~=~=~=~=~=~=~=~=~=~=
+login as: root
+root@192.168.1.100's password: 
+Linux node0 4.9.88 #53 SMP Tue Jul 28 12:09:44 -03 2020 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Jul 29 20:12:55 2020 from 192.168.1.11
+root@node0:~# exit[1Pitnsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dciid=0 uml_ep=-2 rd_ep=3[Acd /usr/src/linux[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C. /dev/shm/DC0.sh
+root@node0:~# . /dev/shm/DC0.sh[C[C[C[C[C[C[C[C[C[C[C[C[C[Cexit[K[1Pitnsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dciid=0 uml_ep=-2 rd_ep=3[Acd /usr/src/linux[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C. /dev/shm/DC0.sh[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccd /usr/src/linux
+root@node0:/usr/src/linux# cd /usr/src/linux. /dev/shm/DC0.shexit[K[1Pitnsenter -p -t$DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6  mem=1024M dcid=0 uml_ep=-2 rd_ep=3
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+uml_rd_ep: rd_ep=3
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+	soft - 0
+	hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 12709888 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:90: UML-kernel PID=1992 TID=1992 uml_ep=-2
+DEBUG start_kernel_proc:99: DVK device file successfully opened!! dvk_fd=3
+DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=1992 endpoint=-2 nodeid=-1
+DEBUG uml_bind_X:69: os_ioctl_generic ret=-2
+Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #71 Wed Jul 29 20:40:00 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 263174
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033964K/1060988K available (2812K kernel code, 820K rwdata, 808K rodata, 84K init, 135K bss, 27024K reserved, 0K cma-reserved)
+NR_IRQS:16
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1862.86 BogoMIPS (lpj=9314304)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/NH7rr5/mconsole
+Checking host MADV_REMOVE support...OK
+UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:118: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+DEBUG uml_dvk_init_module:123: UML-kernel PID=1992  UML-kernel TID=1992
+DEBUG rd_driver_init:762: RDISK_IRQ=15
+rdisk: Synchronous mode
+start_rd_thread - sp=1217204220
+start_rd_thread pid=2000
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=-310 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=-310
+ERROR: 2000:dvk_getep:239: rcode=-310
+DEBUG init_rdisk:1194: my_tid=2000 my_ep=-310
+DEBUG 2000:dvk_open:105: Open dvk device file /dev/dvk
+DEBUG 2000:dvk_getdvsinfo:246: 
+DEBUG 2000:dvk_getdvsinfo:255: ioctl ret=0 errno=0
+DEBUG 2000:dvk_getdvsinfo:260: ioctl ret=0
+DEBUG init_rdisk:1203: local_nodeid=0
+DEBUG init_rdisk:1204: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG 2000:dvk_getdcinfo:347: dcid=0
+DEBUG 2000:dvk_getdcinfo:359: ioctl ret=0 errno=0
+DEBUG 2000:dvk_getdcinfo:364: ioctl ret=0
+DEBUG init_rdisk:1209: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG init_rdisk:1210: flags=0 dc_nodes=3 dc_pid=731 dc_name=DC0
+DEBUG 2000:dvk_bind_X:1197: cmd=0 dcid=0 pid=2000 endpoint=1 nodeid=-1
+DEBUG 2000:dvk_bind_X:1231: ioctl ret=1
+DEBUG init_rdisk:1224: rdisk bind rdc_ep=1
+DEBUG 2000:dvk_getprocinfo:1154: dcid=0 p_nr=1 
+DEBUG 2000:dvk_getprocinfo:1167: ioctl ret=0 errno=0
+DEBUG 2000:dvk_getprocinfo:1172: ioctl ret=0
+DEBUG init_rdisk:1228: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=10146 vpid=2000 nodeid=0 name=linux 
+DEBUG rd_thread:1250: 
+start_rd_thread rd_pid=2000
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+loop: module loaded
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+console [mc-1] enabled
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+DEBUG rd_init:723: 
+DEBUG rd_add:503: n=0
+DEBUG rd_dev_size:167: 
+DEBUG 1992:dvk_getep:223: pid=1992
+DEBUG 1992:dvk_getep:232: ioctl ret=-2 errno=0
+DEBUG 1992:dvk_getep:237: ioctl ret=-2
+DEBUG rd_get_geometry:1026: minor=0 my_tid=1992 my_ep=-2
+DEBUG rd_get_geometry:1036: source=23 type=1029 m2i1=0 m2i2=-2 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48889e1c
+DEBUG 1992:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 1992:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 1992:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_get_geometry:1039: source=3 type=68 m2i1=-2 m2i2=0 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=48889e1c
+DEBUG rd_get_geometry:1041: base=0 size=1474560 cyl=45 heads=2 sec=32
+DEBUG rd_dev_size:176: cyl=45 heads=2 sec=32
+DEBUG rd_dev_size:178: RDISK size=1474560 
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+DEBUG rd_disk_register:461: major=42 unit=0
+DEBUG rd_disk_register:476: disk_name=rdiska
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to [1mDebian GNU/Linux 10 (buster)[0m!
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[[0;32m  OK  [0m] Started [0;1;39mForward Password R…uests to Wall Directory Watch[0m.
+systemd[1]: Reached target Swap.
+[[0;32m  OK  [0m] Reached target [0;1;39mSwap[0m.
+systemd[1]: Condition check resulted in Journal Audit Socket being skipped.
+systemd[1]: Reached target Remote File Systems.
+[[0;32m  OK  [0m] Reached target [0;1;39mRemote File Systems[0m.
+systemd[1]: Listening on Syslog Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39mSyslog Socket[0m.
+systemd[1]: Created slice system-getty.slice.
+[[0;32m  OK  [0m] Created slice [0;1;39msystem-getty.slice[0m.
+systemd[1]: Listening on Journal Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket[0m.
+systemd[1]: Condition check resulted in Kernel Debug File System being skipped.
+systemd[1]: Condition check resulted in Create list of required static device nodes for the current kernel being skipped.
+systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+         Starting [0;1;39mLoad Kernel Modules[0m...
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Kernel Socket[0m.
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket (/dev/log)[0m.
+         Starting [0;1;39mJournal Service[0m...
+[[0;32m  OK  [0m] Created slice [0;1;39mUser and Session Slice[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSlices[0m.
+         Starting [0;1;39mRemount Root and Kernel File Systems[0m...
+         Mounting [0;1;39mPOSIX Message Queue File System[0m...
+[[0;1;33mUNSUPP[0m] Starting of [0;1;39mArbitrary Exec…Automount Point[0m not supported.
+[[0;32m  OK  [0m] Listening on [0;1;39minitctl Compatibility Named Pipe[0m.
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Control Socket[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDispatch Password …ts to Console Directory Watch[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mPaths[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal Encrypted Volumes[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mLoad Kernel Modules[0m.
+do_exit: local_nodeid:0
+         Starting [0;1;39mApply Kernel Variables[0m...
+         Mounting [0;1;39mFUSE Control File System[0m...
+[[0;32m  OK  [0m] Mounted [0;1;39mPOSIX Message Queue File System[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mRemount Root and Kernel File Systems[0m.
+         Starting [0;1;39mLoad/Save Random Seed[0m...
+do_exit: local_nodeid:0
+         Starting [0;1;39mCreate Static Device Nodes in /dev[0m...
+         Starting [0;1;39mudev Coldplug all Devices[0m...
+[[0;32m  OK  [0m] Mounted [0;1;39mFUSE Control File System[0m.
+random: crng init done
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mApply Kernel Variables[0m.
+[[0;32m  OK  [0m] Started [0;1;39mJournal Service[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mLoad/Save Random Seed[0m.
+[[0;32m  OK  [0m] Started [0;1;39mCreate Static Device Nodes in /dev[0m.
+         Starting [0;1;39mudev Kernel Device Manager[0m...
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal File Systems (Pre)[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal File Systems[0m.
+         Starting [0;1;39mRaise network interfaces[0m...
+         Starting [0;1;39mFlush Journal to Persistent Storage[0m...
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+systemd-journald[398]: Received request to flush runtime journal from PID 1
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mFlush Journal to Persistent Storage[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+         Starting [0;1;39mCreate Volatile Files and Directories[0m...
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mudev Coldplug all Devices[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mCreate Volatile Files and Directories[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Time Synchronized[0m.
+         Starting [0;1;39mUpdate UTMP about System Boot/Shutdown[0m...
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Stopped [0;1;39mNetwork Time Synchronization[0m.
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mNetwork Time Synchronization[0m.
+See 'systemctl status systemd-timesyncd.service' for details.
+[[0;32m  OK  [0m] Started [0;1;39mudev Kernel Device Manager[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+DEBUG 1992:dvk_getep:223: pid=1992
+DEBUG 1992:dvk_getep:232: ioctl ret=-2 errno=0
+DEBUG 1992:dvk_getep:237: ioctl ret=-2
+DEBUG rd_open:816: mode=93 my_tid=1992 my_ep=-2
+DEBUG rd_open:821: REQ_OP_OPEN
+DEBUG rd_prepare_open_request:800: 
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=3 offset=5190549651522619752 length=0 sectorsize=1208520240 error=524355
+DEBUG do_rdisk_rqst:1119: op=3 offset=5190549651522619752 length=0 sectorsize=1208520240 error=524355
+DEBUG rd_open_dev:426: major=42 minor=0
+DEBUG rd_open_dev:438: source=0 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_open_dev:441: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG rd_thread:1269: op=3 offset=5190549651522619752 length=0 sectorsize=1208520240 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=3
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+do_exit: local_nodeid:0
+DEBUG 1992:dvk_getep:223: pid=1992
+DEBUG 1992:dvk_getep:232: ioctl ret=-2 errno=0
+DEBUG 1992:dvk_getep:237: ioctl ret=-2
+DEBUG rd_release:856: mode=131165 my_tid=1992 my_ep=-2
+DEBUG rd_release:860: REQ_OP_CLOSE
+DEBUG rd_prepare_open_request:800: 
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=3 offset=581551448325587010 length=0 sectorsize=0 error=262669
+DEBUG do_rdisk_rqst:1119: op=3 offset=581551448325587010 length=0 sectorsize=0 error=262669
+DEBUG rd_open_dev:426: major=42 minor=0
+DEBUG rd_open_dev:438: source=3 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_open_dev:441: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG rd_thread:1269: op=3 offset=581551448325587010 length=0 sectorsize=0 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=3
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;1;31mFAILED[0m] Failed to start [0;1;39mUpdate UTMP about System Boot/Shutdown[0m.
+See 'systemctl status systemd-update-utmp.service' for details.
+[[0;1;33mDEPEND[0m] Dependency failed for [0;1;39mUpda…about System Runlevel Changes[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Initialization[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily apt download activities[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily apt upgrade and clean activities[0m.
+[[0;32m  OK  [0m] Started [0;1;39mDaily Cleanup of Temporary Directories[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mTimers[0m.
+[[0;32m  OK  [0m] Listening on [0;1;39mD-Bus System Message Bus Socket[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mSockets[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mBasic System[0m.
+[[0;32m  OK  [0m] Started [0;1;39mRegular background program processing daemon[0m.
+         Starting [0;1;39mSystem Logging Service[0m...
+do_exit: local_nodeid:0
+         Starting [0;1;39mLogin Service[0m...
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mD-Bus System Message Bus[0m.
+[[0;32m  OK  [0m] Started [0;1;39mSystem Logging Service[0m.
+[[0;32m  OK  [0m] Started [0;1;39mLogin Service[0m.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mRaise network interfaces[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mNetwork[0m.
+         Starting [0;1;39mOpenBSD Secure Shell server[0m...
+         Starting [0;1;39mPermit User Sessions[0m...
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mPermit User Sessions[0m.
+[[0;32m  OK  [0m] Started [0;1;39mGetty on tty1[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mLogin Prompts[0m.
+do_exit: local_nodeid:0
+[[0;32m  OK  [0m] Started [0;1;39mOpenBSD Secure Shell server[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mMulti-User System[0m.
+[[0;32m  OK  [0m] Reached target [0;1;39mGraphical Interface[0m.
+winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+Debian GNU/Linux 10 node1 tty1
+
+node1 login: root
+Password: 
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+Linux node1 4.9.88 #71 Wed Jul 29 20:40:00 -03 2020 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+root@node1:~# fsck /defv  v/rdik ska
+fsck from util-linux 2.29.2
+DEBUG 1992:dvk_getep:223: pid=1992
+DEBUG 1992:dvk_getep:232: ioctl ret=-2 errno=0
+DEBUG 1992:dvk_getep:237: ioctl ret=-2
+DEBUG rd_open:816: mode=29 my_tid=1992 my_ep=-2
+DEBUG rd_open:821: REQ_OP_OPEN
+DEBUG rd_prepare_open_request:800: 
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=524334
+DEBUG do_rdisk_rqst:1119: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=524334
+DEBUG rd_open_dev:426: major=42 minor=0
+DEBUG rd_open_dev:438: source=3 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_open_dev:441: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG rd_thread:1269: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=3
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=4096
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=4096 m2l2=0 m2p1=48268000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=48268000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=4096
+DEBUG rd_thread:1269: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=0
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=0 m2l2=0 m2p1=48a48000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=48a48000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=0
+DEBUG rd_thread:1269: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=12288
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=12288 m2l2=0 m2p1=481c7000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=12288 m2l2=0 m2p1=481c7000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=12288
+DEBUG rd_thread:1269: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=28672
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=28672 m2l2=0 m2p1=4826d000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=28672 m2l2=0 m2p1=4826d000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=28672
+DEBUG rd_thread:1269: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=61440
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=61440 m2l2=0 m2p1=48a11000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=61440 m2l2=0 m2p1=48a11000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=61440
+DEBUG rd_thread:1269: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3 at kernel/softirq.c:161 __local_bh_enable_ip+0x35/0x92
+BUG: recent printk recursion!
+CPU: 0 PID: 3 Comm: ksoftirqd/0 Not tainted 4.9.88 #71
+BUG: recent printk recursion!
+BUG: recent printk recursion!
+irq_exit+0x2c/0xac
+BUG: recent printk recursion!
+ 0807405a 00000001 48141f70 48141f70 00000001 4888df18
+ 080740e5 0839a790 000000a1 08076ad9 00000009 00000000 00000000 4888df2c
+Call Trace:
+ [<0805bec7>] 
+show_stack+0xaf/0xf7
+ [<08076ad9>] ? 
+BUG: recent printk recursion!
+DEBUG rd_open_dev:426: major=42 minor=0
+DEBUG rd_open_dev:438: source=3 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_open_dev:441: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG rd_thread:1269: op=3 offset=581551448325587010 length=0 sectorsize=0 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=3
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+do_exit: local_nodeid:0
+DEBUG 1992:dvk_getep:223: pid=1992
+DEBUG 1992:dvk_getep:232: ioctl ret=-2 errno=0
+DEBUG 1992:dvk_getep:237: ioctl ret=-2
+DEBUG rd_open:816: mode=29 my_tid=1992 my_ep=-2
+DEBUG rd_open:821: REQ_OP_OPEN
+DEBUG rd_prepare_open_request:800: 
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=524334
+DEBUG do_rdisk_rqst:1119: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=524334
+DEBUG rd_open_dev:426: major=42 minor=0
+DEBUG rd_open_dev:438: source=3 type=1030 m2i1=0 m2i2=1 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rd_open_dev:441: source=3 type=68 m2i1=1 m2i2=0 m2i3=0 m2l1=0 m2l2=0 m2p1=  (null)
+DEBUG rd_thread:1269: op=3 offset=2199023255808 length=0 sectorsize=1211045232 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=3
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+e2fsck 1.43.4 (31-Jan-2017)
+ext2fs_check_if_mount: Can't check if filesystem is mounted due to missing mtab file while determining whether /dev/rdiska is mounted.
+DEBUG rd_thread:1266: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=4096
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=4096 m2l2=0 m2p1=48268000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=4096 m2l2=0 m2p1=48268000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=4096
+DEBUG rd_thread:1269: op=0 offset=4096 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=0
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=0 m2l2=0 m2p1=48a48000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=0 m2l2=0 m2p1=48a48000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=0
+DEBUG rd_thread:1269: op=0 offset=0 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=12288
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=12288 m2l2=0 m2p1=481c7000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=12288 m2l2=0 m2p1=481c7000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=12288
+DEBUG rd_thread:1269: op=0 offset=12288 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=28672
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=0 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=28672 m2l2=0 m2p1=4826d000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=28672 m2l2=0 m2p1=4826d000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=28672
+DEBUG rd_thread:1269: op=0 offset=28672 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+DEBUG rd_enqueue_request:937: 
+DEBUG rd_enqueue_request:967: req_op(req)=0
+DEBUG rd_prepare_request:885: len=4096
+DEBUG rd_prepare_request:895: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG rd_submit_request:914: 
+DEBUG rd_thread:1266: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1119: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG do_rdisk_rqst:1146: op=0 minor=0 len=4096 off=61440
+DEBUG 2000:dvk_getep:223: pid=2000
+DEBUG 2000:dvk_getep:232: ioctl ret=1 errno=0
+DEBUG 2000:dvk_getep:237: ioctl ret=1
+DEBUG rdisk_rw:1085: oper=1027 minor=0 rd_tid=2000 my_ep=1
+DEBUG rdisk_rw:1098: source=1 type=1027 m2i1=0 m2i2=1 m2i3=4096 m2l1=61440 m2l2=0 m2p1=48a11000
+DEBUG 2000:dvk_sendrec_T:908: endpoint=3 timeout=30000
+DEBUG 2000:dvk_sendrec_T:921: ioctl ret=0 errno=0
+DEBUG 2000:dvk_sendrec_T:930: ioctl ret=0
+DEBUG rdisk_rw:1101: source=3 type=68 m2i1=1 m2i2=4096 m2i3=4096 m2l1=61440 m2l2=0 m2p1=48a11000
+DEBUG rdisk_rw:1103: READ/WRITE bytes=4096
+DEBUG do_rdisk_rqst:1175: op=0 minor=0 len=0 off=61440
+DEBUG rd_thread:1269: op=0 offset=61440 length=4096 sectorsize=512 error=0
+DEBUG rd_thread:1250: 
+DEBUG rd_intr:372: 
+DEBUG rd_handler:335: 
+DEBUG rd_handler:349: req->op=0
+DEBUG rd_handler:342: n=-11 sizeof(req)=4
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3 at kernel/softirq.c:161 __local_bh_enable_ip+0x35/0x92
+BUG: recent printk recursion!
+
+ps    root@node0:/usr/src/linux# root@node0:/usr/src/linux# -bash: BUG:: no se encontró la orden
+root@node0:/usr/src/linux# BUG: recent printk recursionexit
+-bash: BUG:: no se encontró la orden
+root@node0:/usr/src/linux# logout

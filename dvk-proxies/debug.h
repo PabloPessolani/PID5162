@@ -1,6 +1,5 @@
 
 
-#define PXYDBG		1
 
 #if PXYDBG
  #define PXYDEBUG(text, args ...) \

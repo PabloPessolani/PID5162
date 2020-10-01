@@ -149,6 +149,9 @@
 #define EDVSPRIMARY		(_SIGN 401)	 /* There is no PRIMARY member */			
 #define EDVSNOREPLICA	(_SIGN 402)	 /* There is no Replica members */			
 
+
+#define EDVSRESTARTSYS	(_SIGN 512)	 /* There is no Replica members */			
+
 #endif // _COM_DVS_ERRNO_H
 
 

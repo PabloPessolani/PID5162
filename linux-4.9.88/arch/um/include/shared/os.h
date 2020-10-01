@@ -139,7 +139,10 @@ extern int os_get_ifname(int fd, char *namebuf);
 extern int os_set_slip(int fd);
 extern int os_mode_fd(int fd, int mode);
 extern int os_fsync_file(int fd);
-
+#ifdef CONFIG_UML_DVK
+extern int os_ipc(unsigned int call, int first, int second, int third,
+               void *ptr, long fifth);
+#endif // CONFIG_UML_DVK
 extern int os_seek_file(int fd, unsigned long long offset);
 extern int os_open_file(const char *file, struct openflags flags, int mode);
 extern int os_read_file(int fd, void *buf, int len);
@@ -285,6 +288,7 @@ extern void initial_thread_cb_skas(void (*proc)(void *),
 				 void *arg);
 extern void halt_skas(void);
 extern void reboot_skas(void);
+
 
 /* irq.c */
 extern int os_waiting_for_events(struct irq_fd *active_fds);

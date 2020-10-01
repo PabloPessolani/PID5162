@@ -1774,10 +1774,10 @@ ssize_t rw_copy_check_uvector(int type, const struct iovec __user * uvector,
 			      struct iovec *fast_pointer,
 			      struct iovec **ret_pointer);
 
-//#ifdef CONFIG_DVK			  
+//#ifdef CONFIG_DVKIOCTL			  
 ssize_t dvk_rw_check_kvector(int type, struct iovec  *kvector,
 			      unsigned long nr_segs);			  
-//#endif // CONFIG_DVK
+//#endif // CONFIG_DVKIOCTL
 
 extern ssize_t __vfs_read(struct file *, char __user *, size_t, loff_t *);
 extern ssize_t __vfs_write(struct file *, const char __user *, size_t, loff_t *);

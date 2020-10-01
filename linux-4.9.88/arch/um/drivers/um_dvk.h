@@ -1,5 +1,9 @@
 
-#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_UML_DVK 
+
+#pragma message ("Including header files")
+
+#include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
 
 #include "/usr/src/dvs/include/com/dvs_config.h"
 #include "/usr/src/dvs/include/com/config.h"
@@ -22,8 +26,8 @@
 #include "/usr/src/dvs/include/generic/tracker.h"
 #include "/usr/src/dvs/include/com/stub_dvkcall.h"
 
-#include "/usr/src/dvs/dvk-mod/dvk_debug.h"
-#include "/usr/src/dvs/dvk-mod/dvk_macros.h"
+#include "../../../../ipc/dvk-mod/dvk_debug.h"
+#include "../../../../ipc/dvk-mod/dvk_macros.h"
 
 #include "../include/uml_debug.h"
 #include "../include/uml_macros.h"
@@ -33,6 +37,20 @@
 #endif
 #define UML_DVK_DEV "/dev/dvk"
 #define DEVICE_NAME "dvk"
+
+#define c_timeout		c_flags
+
+int dvk_thread(void *arg);
+int start_dvk_thread(unsigned long sp, int *fd_out);
+#ifdef ANULADO
+int os_sem_init(sem_t *sem, unsigned int value);
+int os_sem_post(sem_t *sem);
+int os_sem_wait(sem_t *sem);
+int down_kernel(void);
+int down_thread(void);
+int up_kernel(void);
+int up_thread(void);
+#endif // ANULADO
 
 
 #endif // CONFIG_UML_DVK

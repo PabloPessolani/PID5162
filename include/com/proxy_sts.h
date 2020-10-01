@@ -2,7 +2,6 @@
 #ifndef _COM_PROXY_STS_H
 #define _COM_PROXY_STS_H
 
-
 #define MIS_BIT_PROXY		0
 #define MIS_BIT_CONNECTED	1
 #define MIS_BIT_NOTIFY		2
@@ -15,8 +14,11 @@
 
 #define MIS_BIT_KILLED	 	8
 #define MIS_BIT_WOKENUP		9
+#define MIS_BIT_USERMODE	10
+#define MIS_BIT_RMTINFO		11
 
-#define MIS_BIT_UNIKERNEL	10
+#define MIS_BIT_NOMIGRATE 	12
+#define MIS_BIT_ATOMIC 		13		// equivalent to REPLY_PENDING in MINIX3
 
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/
@@ -29,7 +31,9 @@ enum mis_status {
 		MIS_REPLICATED	= (1<<MIS_BIT_REPLICATED), 	/* The ep is LOCAL but it is replicated on other nodes */	
 		MIS_KILLED		= (1<<MIS_BIT_KILLED), 		/* The process has been killed 		*/
 		MIS_WOKENUP 	= (1<<MIS_BIT_WOKENUP), 	/* The process has been signaled 	*/
-		MIS_UNIKERNEL 	= (1<<MIS_BIT_UNIKERNEL), 	/* The process is running inside a local UNIKERNEL */
+		MIS_USERMODE 	= (1<<MIS_BIT_USERMODE), 	/* The process is running inside a local USERMODE VOS */
+		MIS_RMTINFO 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
+		MIS_NOMIGRATE	= (1<<MIS_BIT_NOMIGRATE), 	/* Do not migrate this process */
 };
 
 #define PX_BIT_INUSE		0

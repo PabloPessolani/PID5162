@@ -1,0 +1,61 @@
+#### UML_SWITCH ####
+
+# Confiuración de la red
+
+En la VM donde tengo el host puse dos adaptadores de red, uno para conectarme por ssh al host, otro para la conexión host-UML.
+El host está conectado a mi máquina en la eth0.
+La conexión host-UML se hace por eth1 en el host, eth0 en UML. Red 192.168.1.255.
+
+
+ifconfig eth0 192.168.0.100 up  # Para conectarme por ssh
+
+
+# Creación de bridge e interfaces - HOST
+
+tunctl -u root -t HTAP
+brctl addbr bridge1
+
+ifconfig HTAP 0.0.0.0 up
+ifconfig eth1 192.168.1.100 up
+
+brctl addif bridge1 HTAP
+brctl addif bridge1 eth1
+brctrl show
+
+# Arrancar el daemon uml_switch (siempre antes de correr UML) - HOST
+uml_switch -tap HTAP
+
+# En otra sesión, arrancar UML con eth0=daemon
+cd /usr/src/linux
+./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M eth0=daemon
+
+# Conexión HOST-UML
+
+## EN UML (node1)
+ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
+
+## EN EL HOST (node 0):
+ifconfig eth1 192.168.1.100 netmask 255.255.255.0  up
+ifconfig bridge1 192.168.1.10 netmask 255.255.255.0 up
+route add -host 192.168.1.101 dev bridge1
+
+LUEGO PROBAR EL PING QUE FUNCIONA
+
+
+# Socket test
+
+Copie los archivos server y client por ssh al host.
+
+Compilé los dos en el HOST, porque UML no tenía instalado gcc.
+Después pasé el ejecutable del client a UML
+
+## EN EL HOST:
+
+gcc -o server server.c
+gcc -o client client.c
+scp client root@192.168.1.101:/root/
+./server
+
+## EN UML
+
+./client 192.168.1.100

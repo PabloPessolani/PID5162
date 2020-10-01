@@ -1,0 +1,130 @@
+In file included from test_inet.c:1:0:
+inet.h:164:0: warning: "offsetof" redefined
+ #define offsetof(type, ident) ((mnx_size_t) (unsigned long) &((type *)0)->ident)
+ 
+In file included from /usr/include/malloc.h:23:0,
+                 from inet.h:32,
+                 from test_inet.c:1:
+/usr/lib/gcc/i686-linux-gnu/6/include/stddef.h:417:0: note: this is the location of the previous definition
+ #define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+ 
+In file included from inet.h:84:0,
+                 from test_inet.c:1:
+test_inet.c: In function ‘main’:
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:80:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:107:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:136:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:159:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:186:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:210:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:294:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:311:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:328:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:357:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:375:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:403:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+test_inet.c:416:10: note: in expansion of macro ‘dvk_sendrec’
+  rcode = dvk_sendrec(INET_PROC_NR, m_ptr);
+          ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~

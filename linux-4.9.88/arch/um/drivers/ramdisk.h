@@ -1,0 +1,15 @@
+#define 	RAM_MAJOR		42
+#define 	RAM_MINOR		0
+
+#define 	RAM_SECTOR_SIZE	512
+#define 	RAM_SECTOR_SHIFT	9
+
+#define 	RAM_MEM_CYLINDERS 	45
+#define 	RAM_MEM_HEADS 		2
+#define 	RAM_MEM_SECTORS 	32
+
+#define RAM_MAX_DEV (1)
+#define INVALIDATE_DELAY	30*HZ
+
+#define KERNEL_SECTOR_SHIFT	9
+#define KERNEL_SECTOR_SIZE	(1<<KERNEL_SECTOR_SHIFT)

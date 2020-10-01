@@ -11,6 +11,8 @@ OBJS =  stub_dvkcall.o
 # Options for development
 CFLAGS =  -g -c -fPIC -Wall -pthread  -U CONFIG_UML_USER -U CONFIG_UML_DVK
 
+################### FOR HOST USER PROCESSES USING IOCTL KERNEL MODULE #############################
+
 stub_dvkcall.o: stub_dvkcall.c ../include/com/stub_dvkcall.h 
 	$(CC) -g -shared -pthread -o stub_dvkcall.o  stub_dvkcall.c
 

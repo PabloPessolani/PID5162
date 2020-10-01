@@ -63,6 +63,7 @@ long dvk_getproxyinfo(int pxid, proc_usr_t *sproc_usr, proc_usr_t *rproc_usr);
 #define dvk_rmtbind(dcid,name,endpoint,nodeid) 	dvk_bind_X(RMT_BIND, dcid, (int) name, endpoint, nodeid)
 #define dvk_bkupbind(dcid,pid,endpoint,nodeid) 	dvk_bind_X(BKUP_BIND, dcid, pid, endpoint, nodeid)
 #define dvk_replbind(dcid,pid,endpoint) 	dvk_bind_X(REPLICA_BIND, dcid, pid, endpoint, LOCALNODE)
+#define dvk_umbind(dcid,pid,endpoint) 	    dvk_bind_X(USERMODE_BIND, dcid, pid, endpoint, LOCALNODE)
 long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid);
 long dvk_proxies_bind(char *name, int pxid, int spid, int rpid, int maxcopybuf);
 #define dvk_migr_start(dcid, ep)	dvk_migrate_X(MIGR_START, PROC_NO_PID, dcid, ep, PROC_NO_PID)

@@ -38,5 +38,6 @@
 #define DVK_WAKEUPEP		34	
 #define DVK_NR_CALLS	 	35   /* Numero de IPCs/DRDCM Calls habilitadas */ 
 
+#define NR_DVK_CALLS 		DVK_NR_CALLS
 
 #endif /* _COM_DVK_CALLS_H */

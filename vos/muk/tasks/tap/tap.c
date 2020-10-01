@@ -77,42 +77,61 @@
 
 #define TAP_PORT_NR_MAX 2
 
-int		tap_ep;
-int 	tap_lpid; 
+int		tap_dev_nr;
 int		mayor_dev = (-1);
-int		local_nodeid;
-dvs_usr_t	dvs, *dvs_ptr;
-dc_usr_t	dcu, *dc_ptr;
-proc_usr_t	tap_proc, *tap_ptr;
-int		endp_flag;
-
 tap_card_t tap_table[TAP_PORT_NR_MAX];
-int tap_tasknr = ANY;
 
-#define DCID	0 // temporal 
 
 /*===========================================================================*
- *                            tap_task                                     *
+ *                            main_tap                                     *
  *===========================================================================*/
-void main( int argc, char **argv )
+int main_tap (int argc, char *argv[] )
 {
 	message m;
-	int rcode;
+	int rcode, c, cfile_flag;  
+	char *c_file;
 
-	if((tap_tasknr=dvk_getep(getpid())) < EDVSERRCODE){
-		TASKDEBUG("dvk_getep:%d\n", tap_tasknr);
-		ERROR_EXIT(tap_tasknr);
-	}
+	struct option long_options[] = {
+		/* These options are their values. */
+//		{ "replicate", 	no_argument,		NULL, 'r' },
+//		{ "full_update",no_argument, 		NULL, 'f' },
+//		{ "diff_update",no_argument, 		NULL, 'd' },
+//		{ "dyn_update", no_argument, 		NULL, 'D' }, /*dynamic update*/
+//		{ "zcompress", 	no_argument, 		NULL, 'z' },
+//		{ "endpoint", 	no_argument, 		NULL, 'e' },
+		{ "config", 	required_argument, 	NULL, 'c' },
+		{ 0, 0, 0, 0 }, 		
+	};
 	
-	rcode = dvk_open();
-	if (rcode < 0)  ERROR_EXIT(rcode);
+	while((c = getopt_long_only(argc, argv, "c:", long_options, NULL)) >= 0) {
+		switch(c) {
+			case 'c': /*config file*/
+				c_file = optarg;
+				MUKDEBUG("Option c: %s\n", c_file);
+				cfile_flag=1; 
+				break;	
+			default:
+				usage("Unknown option %s encountered", optarg);
+				ERROR_PT_EXIT(c);
+			}
+		}	
+	
+	tap_dev_nr = 0;
+	parse_config(c_file);
+		
+	if (tap_dev_nr == 0){
+		fprintf( stderr,"\nERROR. No availables devices in %s\n", c_file );
+		fflush(stderr);
+		ERROR_PT_EXIT(c);
+	}
+	MUKDEBUG("tap_dev_nr=%d\n",tap_dev_nr);
 	
 	rcode = tap_init();
 	if(rcode) ERROR_EXIT(rcode);  
   
 	/* Try to notify inet that we are present (again) */
 	rcode = dvk_wait4bindep_T(INET_PROC_NR, 1);
-	TASKDEBUG("dvk_wait4bindep_T:%d\n", rcode);
+	MUKDEBUG("dvk_wait4bindep_T:%d\n", rcode);
 	if( rcode == INET_PROC_NR){
 		dvk_notify(INET_PROC_NR);
 	}
@@ -141,7 +160,7 @@ void main( int argc, char **argv )
 //			case HARD_STOP:  lance_stop();               	break;
 //		  	case PROC_EVENT:					break;
 		  default:
-			TASKDEBUG("illegal message:%d\n", m.m_type);
+			MUKDEBUG("illegal message:%d\n", m.m_type);
 			ERROR_EXIT(m.m_type);
 			break;
 		}
@@ -156,7 +175,7 @@ void main( int argc, char **argv )
 		int port, count;
 		tap_card_t *tc;
 
-		TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
+		MUKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
 		
 		port = mp->DL_PORT;
 		count = mp->DL_COUNT;
@@ -201,7 +220,7 @@ int calc_iovec_size(iovec_dat_t *iovp)
 {
 	int size,i;
 
-  	TASKDEBUG("\n");	
+  	MUKDEBUG("\n");	
 
 	size = i = 0;
         
@@ -223,7 +242,7 @@ int calc_iovec_size(iovec_dat_t *iovp)
  *===========================================================================*/
 void tc_next_iovec(iovec_dat_t *iovp)
 {
-  	TASKDEBUG("\n");	
+  	MUKDEBUG("\n");	
 
 	iovp->iod_iovec_s -= IOVEC_NR;
 	iovp->iod_iovec_addr += IOVEC_NR * sizeof(iovec_t);
@@ -243,7 +262,7 @@ void tc_user2tap (tap_card_t *tc, iovec_dat_t *iovp,
 	/*phys_bytes phys_hw, phys_user;*/
 	int bytes, i, r;
 
-	TASKDEBUG("%s count=%d \n", tc->port_name, count);	
+	MUKDEBUG("%s count=%d \n", tc->port_name, count);	
 	
 	i= 0;
 	while (count > 0)   {
@@ -281,7 +300,7 @@ void reply(tap_card_t *tc, int err, int may_block)
 	int status,r;
 	struct sysinfo si;
 
-	TASKDEBUG("%s err=%d may_block=%d\n", tc->port_name,err, may_block);	
+	MUKDEBUG("%s err=%d may_block=%d\n", tc->port_name,err, may_block);	
 
 	status = 0;
 	if (tc->flags & TAPF_PACK_SEND)
@@ -295,7 +314,7 @@ void reply(tap_card_t *tc, int err, int may_block)
 	reply.DL_STAT  = status | ((u32_t) err << 16);
 	reply.DL_COUNT = tc->read_s;
 	if ((r= sysinfo(&si)) != OK){
-		TASKDEBUG("sysinfo() failed:%d", r);
+		MUKDEBUG("sysinfo() failed:%d", r);
 		ERROR_EXIT(r);
 	}
 	reply.DL_CLCK = si.uptime; 
@@ -318,11 +337,11 @@ void reply(tap_card_t *tc, int err, int may_block)
 void get_userdata(int user_proc, vir_bytes user_addr, vir_bytes count, void *loc_addr)
 {
 	int cps;
-	TASKDEBUG("user_proc=%d count=%d \n", user_proc, count);	
+	MUKDEBUG("user_proc=%d count=%d \n", user_proc, count);	
 
 	cps = dvk_vcopy(user_proc, user_addr, SELF, (vir_bytes) loc_addr, count);
 	if (cps != OK) {
-		TASKDEBUG("Warning, scopy failed: %d\n", cps);
+		MUKDEBUG("Warning, scopy failed: %d\n", cps);
 		ERROR_PRINT(cps);
 	}
 }
@@ -335,7 +354,7 @@ void get_userdata(int user_proc, vir_bytes user_addr, vir_bytes count, void *loc
 	int port, count, size;
 	tap_card_t *tc;
 
-	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
+	MUKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
 
 	port = mp->DL_PORT;
 	count = mp->DL_COUNT;
@@ -375,7 +394,7 @@ void tc_reset(tap_card_t *tc)
 {
 	int i;
 
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 	tc_send(tc);
 	tc->flags &= ~TAPF_STOPPED;
 }
@@ -385,7 +404,7 @@ void tc_reset(tap_card_t *tc)
  *===========================================================================*/
 void tc_send(tap_card_t *tc)
 {
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 
 	if (!(tc->flags & TAPF_SEND_AVAIL))
 		return;
@@ -409,7 +428,7 @@ void tc_recv(tap_card_t *tc)
 	int packet_processed;
 	int status;
 
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 
 	if ((tc->flags & TAPF_READING)==0)
 		return;
@@ -439,7 +458,7 @@ void tc_tap2user(tap_card_t *tc, int tap_addr, iovec_dat_t *iovp,
 	/*phys_bytes phys_hw, phys_user;*/
 	int bytes, i, r;
 
-	TASKDEBUG("%s count=%d\n", tc->port_name, count);
+	MUKDEBUG("%s count=%d\n", tc->port_name, count);
 
 	i= 0;
 	while (count > 0) {
@@ -478,7 +497,7 @@ void do_init(message *mp)
 
 	rp = &reply_mess;
 	
-	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
+	MUKDEBUG(MSG2_FORMAT, MSG2_FIELDS(mp));	
 
 	port = mp->DL_PORT;
 	if (port < 0 || port >= TAP_PORT_NR_MAX){
@@ -540,7 +559,7 @@ void do_init(message *mp)
 
 	mess_reply(mp, &reply_mess);
 
-	TASKDEBUG(MSG2_FORMAT, MSG2_FIELDS(rp));	
+	MUKDEBUG(MSG2_FORMAT, MSG2_FIELDS(rp));	
 }
 
 /*===========================================================================*
@@ -563,7 +582,7 @@ void tc_confaddr(tap_card_t *tc)
 	static char eafmt[]= "x:x:x:x:x:x";
 	long v;
 
-  	TASKDEBUG("%s\n", tc->port_name);
+  	MUKDEBUG("%s\n", tc->port_name);
 
 }
 
@@ -572,29 +591,29 @@ void tc_confaddr(tap_card_t *tc)
  *===========================================================================*/
 void tc_reinit(tap_card_t *tc)
 {
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 	return;
 }
 
 
 void do_getstat(message *m){
-	TASKDEBUG("\n");	
+	MUKDEBUG("\n");	
 }
 
 void do_stop(message *m){
-	TASKDEBUG("\n");	
+	MUKDEBUG("\n");	
 }
 
 void do_getname(message *m){
-	TASKDEBUG("\n");	
+	MUKDEBUG("\n");	
 }
 
 int low_level_probe(tap_card_t *tc){
-	TASKDEBUG("\n");	
+	MUKDEBUG("\n");	
 }
 
 void *tapif_main( void *arg){
-	TASKDEBUG("\n");		
+	MUKDEBUG("\n");		
 }
 
 /*===========================================================================*
@@ -605,50 +624,35 @@ int tap_init(void )
 	int rcode, i;
 	tap_card_t *tc;
 
- 	tap_lpid = getpid();
-	
-	if( mayor_dev != (-1) && endp_flag == 1)
-		tap_ep = mayor_dev;
-	else
-		tap_ep = ETH_PROC_NR;
-	
-	TASKDEBUG("tap_ep=%d\n", tap_ep);
+ 	tap_pid = getpid();
 
-	/* NODE info */
-	local_nodeid = dvk_getdvsinfo(&dvs);
-	if(local_nodeid < 0 )
-		ERROR_EXIT(EDVSDVSINIT);
-	dvs_ptr = &dvs;
-	TASKDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
-	TASKDEBUG("local_nodeid=%d\n", local_nodeid);
-	
-	TASKDEBUG("Get the DC info\n");
-	rcode = dvk_getdcinfo(DCID, &dcu);
-	if(rcode) ERROR_EXIT(rcode);
-	dc_ptr = &dcu;
-	TASKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
-	TASKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
+	MUKDEBUG("dcid=%d tap_ep=%d\n",dcid, tap_ep);
 
-	TASKDEBUG("Get TAP info\n");
-	rcode = dvk_getprocinfo(DCID, tap_ep, &tap_proc);
+	tap_pid = syscall (SYS_gettid);
+	MUKDEBUG("tap_pid=%d\n", tap_pid);
 	
-	if(rcode ) ERROR_EXIT(rcode);
-	tap_ptr = &tap_proc;
-	TASKDEBUG("BEFORE " PROC_USR_FORMAT,PROC_USR_FIELDS(tap_ptr));
+	rcode = dvk_tbind(dcid,tap_ep);
+	MUKDEBUG("tap_ep=%d\n", tap_ep);
+	if( rcode != tap_ep) ERROR_PT_EXIT(rcode);
+		
+	MUKDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
+	MUKDEBUG("local_nodeid=%d\n", local_nodeid);
 	
-	if( TEST_BIT(tap_ptr->p_rts_flags, BIT_SLOT_FREE)) {
-		TASKDEBUG("Starting single TAP\n");
-		rcode = dvk_bind(DCID, tap_ep);
-		if(rcode != tap_ep ) ERROR_EXIT(rcode);
-		if (endp_flag == 0) { // Started by MoL 
-			rcode = sys_bindproc(tap_ep, tap_lpid, LCL_BIND);
-			if(rcode < 0) ERROR_EXIT(rcode);						
-		} 
-	}
+	MUKDEBUG(DC_USR1_FORMAT,DC_USR1_FIELDS(dc_ptr));
+	MUKDEBUG(DC_USR2_FORMAT,DC_USR2_FIELDS(dc_ptr));
 
-	rcode = dvk_getprocinfo(DCID, tap_ep, &tap_proc);
-	if(rcode) ERROR_EXIT(rcode);
-	TASKDEBUG("AFTER  " PROC_USR_FORMAT,PROC_USR_FIELDS(tap_ptr));	
+	MUKDEBUG("Get TAP info\n");
+	tap_ptr = (proc_usr_t *) PROC_MAPPED(tap_ep);
+	MUKDEBUG(PROC_USR_FORMAT,PROC_USR_FIELDS(tap_ptr));
+
+	/* Register into SYSTASK (as an autofork) */
+	MUKDEBUG("Register TAP into SYSTASK tap_pid=%d\n",tap_pid);
+	tap_ep = sys_bindproc(tap_ep, tap_pid, LCL_BIND);
+	if(tap_ep < 0) ERROR_PT_EXIT(tap_ep);
+			
+	// set the name of TAP 
+	rcode = sys_rsetpname(tap_ep, "tap", local_nodeid);
+	if(rcode < 0) ERROR_PT_EXIT(rcode);
 	
 	for (i=0;i< TAP_PORT_NR_MAX;++i)	{
 		tc = &tap_table[i];
@@ -656,7 +660,7 @@ int tap_init(void )
 		tc_init(tc);
 	}
 	
-	TASKDEBUG("END tap_init\n");
+	MUKDEBUG("END tap_init\n");
 	return(OK);
 }
 
@@ -668,7 +672,7 @@ void tc_init(tap_card_t *tc)
 {
 	int i;
 
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 
 	/* General initialization */
 	tc->flags = TAPF_EMPTY;
@@ -676,7 +680,7 @@ void tc_init(tap_card_t *tc)
 
 //	tc_confaddr(tc);
 
-	TASKDEBUG("%s: Ethernet address ", tc->port_name);
+	MUKDEBUG("%s: Ethernet address ", tc->port_name);
 	for (i= 0; i < 6; i++)
 		printf("%x%c", tc->ethaddr.ea_addr[i],
 			i < 5 ? ':' : '\n');
@@ -702,7 +706,7 @@ int tapif_init(tap_card_t *tc)
 	char *name = NULL;
 	int	rcode;
 
-	TASKDEBUG("%s\n", tc->port_name);
+	MUKDEBUG("%s\n", tc->port_name);
 
     name = tc->name;
     if (name != NULL) {
@@ -748,9 +752,9 @@ void low_level_init(tap_card_t *tc, const char *name)
 	/* Do whatever else is needed to initialize interface. */
 
 	tc->fd = open(DEVTAP, O_RDWR);
-	TASKDEBUG("fd: %d\n", tc->fd);
+	MUKDEBUG("fd: %d\n", tc->fd);
 	if(tc->fd == -1) {
-		TASKDEBUG("try running \"modprobe tun\" or rebuilding your kernel with CONFIG_TUN; cannot open " DEVTAP);
+		MUKDEBUG("try running \"modprobe tun\" or rebuilding your kernel with CONFIG_TUN; cannot open " DEVTAP);
 		ERROR_EXIT(errno);
 	}
 
@@ -759,7 +763,7 @@ void low_level_init(tap_card_t *tc, const char *name)
 		strncpy(ifr.ifr_name,name,strlen(name));
 	ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 	if (ioctl(tc->fd, TUNSETIFF, (void *) &ifr) < 0) {
-		TASKDEBUG(DEVTAP" ioctl TUNSETIFF");
+		MUKDEBUG(DEVTAP" ioctl TUNSETIFF");
 		ERROR_EXIT(errno);
 	}
 	
@@ -778,15 +782,17 @@ void low_level_init(tap_card_t *tc, const char *name)
 				ip4_addr3(&(tc->netmask)),
 				ip4_addr4(&(tc->netmask)));
 
-		TASKDEBUG("system(\"%s\");\n", buf);
+		MUKDEBUG("system(\"%s\");\n", buf);
 		system(buf);
 	}
-	TASKDEBUG("Starting tapif_main thread: %s\n", name);
+	MUKDEBUG("Starting tapif_main thread: %s\n", name);
 	rcode = pthread_create( &tc->thread, NULL, tapif_main, tc );
 	if( rcode)ERROR_EXIT(rcode);
 }
 
+
 #ifdef ANULADO
+
 
 /*===========================================================================*
  *                              tc_confaddr                                  *
@@ -815,8 +821,8 @@ static void tc_confaddr(ether_card_t *tc)
     }
 }
 
+
 /*-----------------------------------------------------------------------------------*/
-#ifdef linux
 static err_t
 low_level_probe(struct netif *netif,const char *name)
 {
@@ -859,14 +865,6 @@ low_level_probe(struct netif *netif,const char *name)
   close(s);
   return ERR_IF;
 }
-#else
-static err_t
-low_level_probe(struct netif *netif,const char *name)
-{
-  return ERR_IF;
-}
-#endif
-
 
 /*-----------------------------------------------------------------------------------*/
 /*
@@ -888,12 +886,7 @@ low_level_output(struct netif *netif, struct pbuf *p)
   struct tapif *tapif;
 
   tapif = (struct tapif *)netif->state;
-#if 0
-    if(((double)rand()/(double)RAND_MAX) < 0.2) {
-    printf("drop output\n");
-    return ERR_OK;
-    }
-#endif
+
   /* initiate transfer(); */
 
   bufptr = &buf[0];
@@ -933,12 +926,6 @@ low_level_input(struct tapif *tapif)
   /* Obtain the size of the packet and put it into the "len"
      variable. */
   len = read(tapif->fd, buf, sizeof(buf));
-#if 0
-    if(((double)rand()/(double)RAND_MAX) < 0.2) {
-    printf("drop\n");
-    return NULL;
-    }
-#endif
 
   /* We allocate a pbuf chain of pbufs from the pool. */
   p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
@@ -963,8 +950,7 @@ low_level_input(struct tapif *tapif)
   return p;
 }
 /*-----------------------------------------------------------------------------------*/
-static void
-tapif_main(void *arg)
+static void tapif_main(void *arg)
 {
   struct netif *netif;
   struct tapif *tapif;
@@ -1013,7 +999,7 @@ tapif_input(struct netif *netif)
   p = low_level_input(tapif);
 
   if(p == NULL) {
-    LWIP_DEBUGF(TAPIF_DEBUG, ("tapif_input: low_level_input returned NULL\n"));
+    MUKDEBUG("tapif_input: low_level_input returned NULL\n");
     return;
   }
   ethhdr = (struct eth_hdr *)p->payload;
@@ -1022,14 +1008,9 @@ tapif_input(struct netif *netif)
   /* IP or ARP packet? */
   case ETHTYPE_IP:
   case ETHTYPE_ARP:
-#if PPPOE_SUPPORT
-  /* PPPoE packet? */
-  case ETHTYPE_PPPOEDISC:
-  case ETHTYPE_PPPOE:
-#endif /* PPPOE_SUPPORT */
     /* full packet send to tcpip_thread to process */
     if (netif->input(p, netif) != ERR_OK) {
-      LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+      MUKDEBUG("ethernetif_input: IP input error\n");
        pbuf_free(p);
        p = NULL;
     }

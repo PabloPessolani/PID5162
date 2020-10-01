@@ -9,15 +9,20 @@ let rmt=(1 - $lcl)
 dcid=$2
 echo "lcl_nodeid=$lcl dcid=$dcid" 
 read  -p "Enter para continuar... "
+echo > /var/log/kern.log
+echo > /var/log/syslog
+echo > /var/log/messages
 dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
-#cd /usr/src/dvs/dvk-mod
-#mknod /dev/dvk c 33 0
+cd /usr/src/linux/ipc/dvk-mod/
+mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
-#insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 
-#dmesg -c >> /dev/shm/dmesg.txt
+insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=16777215
+dmesg -c >> /dev/shm/dmesg.txt
+lsmod | grep dvk 
+ read  -p "mount Enter para continuar... "
 #cd /usr/src/dvs/dvs-apps/dvsd
 #./dvsd $lcl 
 part=(5 + $dcid)
@@ -26,7 +31,7 @@ read  -p "mount Enter para continuar... "
 #mount  /dev/sdb$part /usr/src/dvs/vos/rootfs/DC$dcid
 cd /usr/src/dvs/dvk-tests
 read  -p "local_nodeid=$lcl Enter para continuar... "
-./test_dvs_init -n $lcl -D 16777215
+./test_dvs_init -n $lcl -D 16777215 -C TEST_CLUSTER
 read  -p "DC$dcid Enter para continuar... "
 # ./test_dc_init -d $dcid
 cd /dev/shm
@@ -47,25 +52,33 @@ echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> /dev/shm/DC$dcid.
 echo "};"          					>> DC$dcid.cfg
 /usr/src/dvs/dvs-apps/dc_init/dc_init /dev/shm/DC$dcid.cfg > /dev/shm/dc_init$dcid.out 2> /dev/shm/dc_init$dcid.err
 dmesg -c >> /dev/shm/dmesg.txt
-#read  -p "TCP PROXY Enter para continuar... "
+read  -p " TCP LZ4 BAT PROXY Enter para continuar... "
+# read  -p "TCP PROXY Enter para continuar... "
 #     PARA DESHABILITAR EL ALGORITMO DE NAGLE!! 
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency
 echo 0 > /proc/sys/kernel/hung_task_timeout_secs
+# tcp_keepalive_time: the interval between the last data packet sent (simple ACKs are not considered data) 
+#           and the first keepalive probe; after the connection is marked to need keepalive, this counter is not used any further
+# tcp_keepalive_intvl:  the interval between subsequential keepalive probes, regardless of what the connection has exchanged in the meantime
+# tcp_keepalive_probes: the number of unacknowledged probes to send before considering the connection dead and notifying the application layer
+#echo 60 > /proc/sys/net/ipv4/tcp_keepalive_time
+#echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
+# echo 3  > /proc/sys/net/ipv4/tcp_keepalive_probes
 cd /usr/src/dvs/dvk-proxies
-# read  -p "TCP PROXY Enter para continuar... "
-#./sp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
-# ./tcp_proxy_bat node$rmt $rmt >node$rmt.txt 2>error$rmt.txt &
-read  -p "TIPC BAT PROXY Enter para continuar... "
-tipc node set netid 4711
-tipc_addr="1.1.10$lcl"
-tipc node set addr $tipc_addr
-tipc bearer enable media eth dev eth0 
-read  -p "Enter para continuar... "
-/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+#./tcp_proxy node$rmt $rmt >/dev/shm/node$rmt.txt 2>/dev/shm/error$rmt.txt &
+/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+#read  -p "TIPC LZ4 BAT PROXY Enter para continuar... "
+#tipc node set netid 4711
+#tipc_addr="1.1.10$lcl"
+#tipc node set addr $tipc_addr
+#tipc bearer enable media eth dev eth0 
+#read  -p "Enter para continuar... "
+#/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
 sleep 5
-tipc bearer list
-tipc nametable show
-tipc link list
+netstat  -nat
+#tipc bearer list
+#tipc nametable show
+#tipc link list
 read  -p "Enter para continuar... "
 cat /proc/dvs/nodes
 cat /proc/dvs/proxies/info

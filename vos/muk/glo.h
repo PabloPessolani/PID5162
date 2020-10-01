@@ -43,6 +43,12 @@ EXTERN proc_usr_t *rd_ptr;
 EXTERN int rd_nr, rd_ep, rd_pid;
 EXTERN char *rd_cfg;
 
+//-------------------- TAP   GLOBAL DATA 
+EXTERN pthread_t tap_pth;
+EXTERN proc_usr_t *tap_ptr;	
+EXTERN int tap_nr, tap_ep, tap_pid;
+EXTERN char *tap_cfg;
+
 //-------------------- FS  GLOBAL DATA 
 EXTERN pthread_t fs_pth;
 EXTERN proc_usr_t *fs_ptr;	
@@ -73,25 +79,23 @@ extern int local_nodeid;
 
 #ifdef DVK_GLOBAL_HERE
 pthread_mutex_t muk_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t muk_cond = PTHREAD_COND_INITIALIZER;
-
-pthread_cond_t sys_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t pm_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t rd_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t fs_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t is_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t nw_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t ftp_cond = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t pm_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t rd_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t tap_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t fs_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t is_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t nw_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ftp_mutex = PTHREAD_MUTEX_INITIALIZER;
 #else
 extern pthread_mutex_t muk_mutex;
-extern pthread_cond_t muk_cond;
-
-extern pthread_cond_t sys_cond;
-extern pthread_cond_t pm_cond;
-extern pthread_cond_t rd_cond;
-extern pthread_cond_t fs_cond;
-extern pthread_cond_t is_cond;
-extern pthread_cond_t nw_cond;
-extern pthread_cond_t ftp_cond;
+extern pthread_mutex_t sys_mutex;
+extern pthread_mutex_t pm_mutex;
+extern pthread_mutex_t rd_mutex;
+extern pthread_mutex_t tap_mutex;
+extern pthread_mutex_t fs_mutex;
+extern pthread_mutex_t is_mutex;
+extern pthread_mutex_t nw_mutex;
+extern pthread_mutex_t ftp_mutex;
 
 #endif

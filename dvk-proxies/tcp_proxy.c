@@ -305,7 +305,9 @@ void pr_init(void)
 			continue ;
 		}else if(rcode == NONE) { /* proxies have not endpoint */
 			break;	
-		} if( rcode < 0) 
+		}else if(rcode == -EINTR) {
+			continue;
+		}if( rcode < 0) 
 			exit(EXIT_FAILURE);
 	} while	(rcode < OK);
 	
@@ -531,8 +533,9 @@ int ps_connect_to_remote(void)
  */
 void  ps_init(void) 
 {
+
+	socklen_t opt_length;
     int rcode = 0;
-	char *p_buffer;
 
 	PXYDEBUG("SPROXY: Initializing on PID:%d\n", getpid());
     
@@ -544,7 +547,9 @@ void  ps_init(void)
 			continue ;
 		}else if(rcode == NONE) { /* proxies have not endpoint */
 			break;	
-		} if( rcode < 0) 
+		} else if(rcode == -EINTR) {
+			continue;
+		}if( rcode < 0) 
 			exit(EXIT_FAILURE);
 	} while	(rcode < OK);
 		
@@ -564,6 +569,27 @@ void  ps_init(void)
     if ( (sproxy_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
        	ERROR_EXIT(errno)
     }
+	
+#ifdef ANULADO	
+#define MY_DEVICE	"eth0"	
+#define BUFFERSIZE (1000)
+static	char buffer[BUFFERSIZE];
+	/* bind the socket to one network device */
+	const char device[] = MY_DEVICE;
+	rcode=setsockopt(sproxy_sd, SOL_SOCKET, SO_BINDTODEVICE, device, strlen(device)+1);
+	if (rcode != 0)  {
+		 printf("SPROXY: could not set SO_BINDTODEVICE (%s)\n", strerror(errno));
+		 ERROR_EXIT(EXIT_FAILURE);
+	}
+	printf ("SO_BINDTODEVICE set\n");
+	/* verify SO_BINDTODEVICE setting */
+	rcode = getsockopt(sproxy_sd, SOL_SOCKET, SO_BINDTODEVICE, (void *)buffer, &opt_length);
+	if (rcode != 0) {
+		 printf ("SPROXY: could not get SO_BINDTODEVICE (%s)\n", strerror(errno));
+		 exit (EXIT_FAILURE);
+	}
+	printf("SO_BINDTODEVICE is: %s\n", buffer);
+#endif // ANULADO	
 	
 	/* try to connect many times */
 	while(1) {

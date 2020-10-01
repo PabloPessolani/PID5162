@@ -37,7 +37,7 @@ struct proc {
   proc_usr_t	 	p_usr;  /* SIEMPRE DEBE ESTAR PRIMERO !!!! */
 
   char *p_name_ptr;		/* for local processes is pointer to task_ptr->comm */		
-  int p_rcode;			/* return code of an IPC operation */
+  int 	p_rcode;			/* return code of an IPC operation */
 
   priv_t  p_priv;		/* privileges structure */
 
@@ -125,13 +125,15 @@ struct dc_struct {
  	spinlock_t dc_spinlock;
 #endif
 
-	struct proc_dir_entry *dc_DC_dir;		/* VMx directory under /proc/dvs */
-	struct proc_dir_entry *dc_info_entry;	/* /proc/dvs/VMx/info */
-	struct proc_dir_entry *dc_procs_entry;	/* /proc/dvs/VMx/procs */
-	struct proc_dir_entry *dc_stats_entry;	/* /proc/dvs/VMx/stats */
+	struct proc_dir_entry *dc_DC_dir;			/* DCx directory under /proc/dvs */
+	struct proc_dir_entry *dc_info_entry;		/* /proc/dvs/DCx/info */
+	struct proc_dir_entry *dc_procs_entry;		/* /proc/dvs/DCx/procs */
+	struct proc_dir_entry *dc_stats_entry;		/* /proc/dvs/DCx/stats */
+	struct proc_dir_entry *dc_ipcto_entry;		/* /proc/dvs/DCx/ipcto */
+	struct proc_dir_entry *dc_dvkcalls_entry;	/* /proc/dvs/DCx/stats */
 
-	struct dentry 	*dc_DC_dbg;			/* /sys/kernel/debug/VMx */
-	struct dentry  	*dc_procs_dbg;		/* /sys/kernel/debug/VMx/procs */
+	struct dentry 	*dc_DC_dbg;			/* /sys/kernel/debug/DCx */
+	struct dentry  	*dc_procs_dbg;		/* /sys/kernel/debug/DCx/procs */
 	int				dc_ref_dgb;			/* open reference count */
 
 	struct proc *dc_proc;				/* Dynamic memory pointer to VM process table */ 

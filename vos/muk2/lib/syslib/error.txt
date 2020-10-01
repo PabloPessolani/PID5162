@@ -1,0 +1,82 @@
+make: Atención: El archivo 'sys_rexec.c' tiene una hora de modificación 8,2 s en el futuro
+In file included from syslib.h:69:0,
+                 from taskcall.c:6:
+taskcall.c: In function ‘_taskcall’:
+../../../../include/com/stub_dvkcall.h:39:60: warning: passing argument 2 of ‘dvk_sendrec_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define dvk_sendrec(srcdst_ep,m)  dvk_sendrec_T(srcdst_ep, (int) m, TIMEOUT_FOREVER)
+                                                            ^
+taskcall.c:13:11: note: in expansion of macro ‘dvk_sendrec’
+  status = dvk_sendrec(who, msgptr);
+           ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:40:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_sendrec_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+sys_times.c: In function ‘sys_rtimes’:
+sys_times.c:12:7: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+   r = _taskcall(SYSTASK(st_nodeid), SYS_TIMES, &m);
+       ^~~~~~~~~
+sys_setalarm.c: In function ‘sys_setalarm’:
+sys_setalarm.c:17:12: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+     return _taskcall(SYSTASK(local_nodeid), SYS_SETALARM, &m);
+            ^~~~~~~~~
+sys_fork.c: In function ‘sys_rfork’:
+sys_fork.c:24:11: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+   rcode = _taskcall(SYSTASK(st_nodeid), SYS_FORK, &m);
+           ^~~~~~~~~
+sys_exit.c: In function ‘_sys_exit’:
+sys_exit.c:20:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(nodeid), SYS_EXIT, &m);
+          ^~~~~~~~~
+sys_privctl.c: In function ‘sys_privctl’:
+sys_privctl.c:17:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(local_nodeid), SYS_PRIVCTL, &m);
+          ^~~~~~~~~
+sys_getinfo.c: In function ‘sys_getinfo’:
+sys_getinfo.c:22:12: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+     return(_taskcall(SYSTASK(local_nodeid), SYS_GETINFO, &m));
+            ^~~~~~~~~
+sys_bindproc.c: In function ‘sys_rbindproc’:
+sys_bindproc.c:33:25: warning: implicit declaration of function ‘basename’ [-Wimplicit-function-declaration]
+   strncpy(m_ptr->m3_ca1,basename(get_process_name_by_pid(lpid, name)), (M3_STRING-1));
+                         ^~~~~~~~
+sys_bindproc.c:33:25: warning: passing argument 2 of ‘strncpy’ makes pointer from integer without a cast [-Wint-conversion]
+In file included from syslib.h:11:0,
+                 from sys_bindproc.c:1:
+/usr/include/string.h:128:14: note: expected ‘const char * restrict’ but argument is of type ‘int’
+ extern char *strncpy (char *__restrict __dest,
+              ^~~~~~~
+sys_bindproc.c:37:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(st_nodeid), SYS_BINDPROC, &m);
+          ^~~~~~~~~
+sys_vircopy.c: In function ‘sys_vircopy’:
+sys_vircopy.c:27:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+   return(_taskcall(SYSTASK(local_nodeid), SYS_VIRCOPY, &copy_mess));
+          ^~~~~~~~~
+sys_getuptime.c: In function ‘sys_getuptime’:
+sys_getuptime.c:13:9: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+     s = _taskcall(SYSTASK(local_nodeid), SYS_TIMES, &m);
+         ^~~~~~~~~
+sys_memset.c: In function ‘sys_memset’:
+sys_memset.c:17:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+   return(_taskcall(SYSTASK(local_nodeid), SYS_MEMSET, m_ptr));
+          ^~~~~~~~~
+sys_migrproc.c: In function ‘sys_migrproc’:
+sys_migrproc.c:20:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(local_nodeid), SYS_MIGRPROC, &m);
+          ^~~~~~~~~
+sys_rexec.c: In function ‘sys_rexec’:
+sys_rexec.c:31:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(rmt_nodeid), SYS_REXEC, &m);
+          ^~~~~~~~~
+sys_setpname.c: In function ‘sys_rsetpname’:
+sys_setpname.c:20:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(st_nodeid), SYS_SETPNAME, &m);
+          ^~~~~~~~~
+sys_virvcopy.c: In function ‘sys_virvcopy’:
+sys_virvcopy.c:26:25: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+  copy_mess.VCP_VEC_ADDR = (long) vect_addr;
+                         ^
+sys_virvcopy.c:27:10: warning: implicit declaration of function ‘_taskcall’ [-Wimplicit-function-declaration]
+  rcode = _taskcall(SYSTASK(local_nodeid), SYS_VIRVCOPY, &copy_mess);
+          ^~~~~~~~~
+make: atención: Se ha detectado una desviación en el reloj. La construcción podría estar incompleta.

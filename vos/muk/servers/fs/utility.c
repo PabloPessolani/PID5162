@@ -4,7 +4,7 @@
  *   clock_time:  ask the clock task for the real time
  *   copy:	  copy a block of data
  *   fetch_name:  go get a path name from user space
- *   no_sys:      reject a system call that FS does not handle
+ *   fs_no_sys:      reject a system call that FS does not handle
  *   panic:       something awful has occurred;  MINIX cannot continue
  *   conv2:	  do byte swapping on a 16-bit int
  *   conv4:	  do byte swapping on a 32-bit long
@@ -68,9 +68,9 @@ int get_root_major(void )
 
 
 /*===========================================================================*
- *				no_sys					     *
+ *				fs_no_sys					     *
  *===========================================================================*/
-int no_sys(void)
+int fs_no_sys(void)
 {
 
 MUKDEBUG("A system call number not implemented by FS has been requested from %d\n", fs_who_e);

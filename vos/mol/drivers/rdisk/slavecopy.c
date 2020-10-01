@@ -780,9 +780,9 @@ void *slavecopy_main(void *arg)
 	
 	TASKDEBUG("SENDREC msg RD_DISK_EOF: m_type=%d, nodeid(m2_l2) =%u\n", sl_msg.m_type, sl_msg.m2_l2);
 
-	ret = dvk_send(RDISK_MASTER, &sl_msg); /*envío respuesta al master diciendo que el bk está ok*/
+	ret = dvk_reply(RDISK_MASTER, &sl_msg); /*envío respuesta al master diciendo que el bk está ok*/
 	if( ret != 0 ) {
-		fprintf( stderr,"SEND ret=%d\n",ret);
+		fprintf( stderr,"REPLY ret=%d\n",ret);
 		fflush(stderr);
 		exit(1);
 	}

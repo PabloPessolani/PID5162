@@ -1,4 +1,7 @@
-all: libnw.so
+all: libnw.a
+
+LIB=libnw.a 
+
 # Which compiler
 CC = gcc
 
@@ -8,7 +11,8 @@ INCLUDE = ..
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
 
-CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
+CFLAGS =  -g -c -fPIC -Wall -pthread 
+
 #LZ4FLAGS = $(CFLAGS)  
 #LZ4FLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wstrict-prototypes
 
@@ -17,8 +21,8 @@ OBJS = m3nweb.o m3nwebcfg.o
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 	
-libnw.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libnw.so $(OBJS)  $(LIBS)
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS)  
 	
 clean:
-	rm libnw.so  *.o
+	rm $(LIB)  *.o

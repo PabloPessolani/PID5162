@@ -1,0 +1,18 @@
+INSTALACION DE CRIU
+	apt-get update
+	apt-get upgrade
+
+Para instalar paquetes experimentales:
+	https://wiki.debian.org/DebianExperimental
+
+incluir la linea en /etc/apt/sources.list
+	deb http://deb.debian.org/debian experimental main
+
+Luego ejecutar:
+	apt-get update
+	apt list --upgradable
+	apt-get upgrade
+	apt -t experimental install golang-github-checkpoint-restore-go-criu-dev
+
+
+

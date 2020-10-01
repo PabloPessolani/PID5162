@@ -40,6 +40,7 @@
 #include "../include/com/dvs_errno.h"
 #include "../include/dvk/dvk_ioparm.h"
 #include "../include/com/stub_dvkcall.h"
+#include "../include/com/macros.h"
 
 #include "macros.h"
 

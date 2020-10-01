@@ -21,7 +21,7 @@
 #ifdef 	CONFIG_UML_DVK
 
 #include "/usr/src/dvs/include/com/dvk_calls.h"
-#include "/usr/src/dvs/include/com/dvk_ioctl.h"
+//#include "/usr/src/dvs/include/com/dvk_ioctl.h"
 #define  UML_DVK_DEV		"/dev/dvk"
 #define  UML_DVK_NAMELEN	8
 
@@ -166,18 +166,24 @@ void handle_syscall(struct uml_pt_regs *r)
 	if (syscall >= 0 && syscall <= __NR_syscall_max)
 		PT_REGS_SET_SYSCALL_RETURN(regs,
 				EXECUTE_SYSCALL(syscall, regs));
+#ifdef 	CONFIG_UML_DVK
+	else {
+		printk("syscall=%d __NR_syscall_max=%d\n", syscall, __NR_syscall_max);
+	}	
+#endif // 	CONFIG_UML_DVK
 
+	
 out:
 	syscall_trace_leave(regs);
 }
 
-#ifdef CONFIG_UML_DVK
+#ifdef CONFIG_DVS
 void return_from_dvkcall(int dvk_retcode,  struct uml_pt_regs *r)
 {
 	struct pt_regs *regs = container_of(r, struct pt_regs, regs);
 	PT_REGS_SET_SYSCALL_RETURN(regs, dvk_retcode);
 }
 
-#endif // CONFIG_UML_DVK
+#endif // CONFIG_DVS
 
 

@@ -260,7 +260,7 @@ int device;
 /* Prepare for I/O on a device: check if the minor device number is ok. */
 
 	TASKDEBUG("device = %d\n", device);
- 	if (device < 0 || device >= NR_DEVS || devvec[device].active_flag != 1) {
+ 	if (device < 0 || device >= NR_DEVS || devvec[device].active_flag < 1) {
 		TASKDEBUG("Error en m_prepare\n");
 		return(NIL_DEV);
 		}
@@ -301,7 +301,7 @@ unsigned nr_req;		/* length of request vector */
 //	if ( m_ptr->m_source != devvec[m_ptr->DEVICE].dev_owner)
 //		ERROR_RETURN(EDVSBADOWNER);
 	
-	if (devvec[m_device].active_flag != 1) { /*minor device active_flag must be -1-*/
+	if (devvec[m_device].active_flag < 1) { /*minor device active_flag must be -1-*/
 		TASKDEBUG("Minor device = %d\n is not active_flag", m_device);
 		ERROR_RETURN(EDVSNODEV);	
 	}
@@ -394,7 +394,7 @@ unsigned nr_req;		/* length of request vector */
 				if (rcode < 0 ) {
 					fprintf( stderr,"dvk_vcopy rcode=%d\n",rcode);
 					fflush(stderr);
-					break;
+					ERROR_RETURN(rcode);
 				}
 
 				stbytes += bytes; /*total bytes transfers*/								
@@ -402,7 +402,7 @@ unsigned nr_req;		/* length of request vector */
 				iov->iov_addr += bytes;
 
 				user_vir = iov->iov_addr;
-				TASKDEBUG("user_vir (do-buffer) %X\n", user_vir);	
+				TASKDEBUG("user_vir (updated) %X\n", user_vir);	
 
 				count -= bytes;
 				TASKDEBUG("count=%d stbytes=%d position=%ld\n", count, stbytes, position);	
@@ -455,6 +455,7 @@ unsigned nr_req;		/* length of request vector */
 						if (rcode < 0 ){
 							fprintf(stderr, "VCOPY rcode=%d\n", rcode);
 							fflush(stderr);
+							ERROR_RETURN(rcode);
 							break;
 						}else{
 							stbytes = stbytes + bytes; /*si dvk_vcopy fue exitosa, devuelve cantidad de bytes transferidos*/
@@ -717,7 +718,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 //		ERROR_RETURN(EDVSBUSY);
 	
 	rcode = OK;
-	TASKDEBUG("rcode %d\n", rcode);
+	TASKDEBUG("m_ptr->DEVICE=%d %s\n", m_ptr->DEVICE, devvec[m_ptr->DEVICE].img_ptr);
 	do {
 		if ( devvec[m_ptr->DEVICE].available == AVAILABLE_NO ){
 			TASKDEBUG("devvec[m_ptr->DEVICE].available=%d\n", devvec[m_ptr->DEVICE].available);
@@ -747,7 +748,7 @@ int m_do_open(struct driver *dp, message *m_ptr)
 		TASKDEBUG("Local Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
 		TASKDEBUG("Buffer size %d\n", devvec[m_ptr->DEVICE].buff_size);
 			
-		devvec[m_ptr->DEVICE].active_flag = 1;
+		devvec[m_ptr->DEVICE].active_flag += 1;
 		TASKDEBUG("Device %d is active_flag %d\n", m_ptr->DEVICE, devvec[m_ptr->DEVICE].active_flag);
 		
 		/* Check device number on open. */
@@ -965,15 +966,15 @@ int get_geometry(int device)
 	m_device = device;
 	dv_ptr =&devvec[m_device];
 
+	TASKDEBUG("device=%d\n", m_device);
+	
 	TASKDEBUG(DEV_USR1_FORMAT, DEV_USR1_FIELDS(dv_ptr));	
-	dv_ptr->part.cylinders	= (dv_ptr->st_size << SECTOR_SHIFT)
-	dv_ptr->part.cylinders	/= DFT_HEADS;
-	dv_ptr->part.cylinders	/= DFT_SECTORS;
+	dv_ptr->part.cylinders	= (dv_ptr->st_size/(SECTOR_SIZE * DFT_HEADS * DFT_SECTORS));
 	dv_ptr->part.heads		= DFT_HEADS;
 	dv_ptr->part.sectors	= DFT_SECTORS;
 	dv_ptr->part.base		= 0;
 	dv_ptr->part.size		= dv_ptr->st_size;
-	
+
 	part_ptr = &dv_ptr->part;
 	TASKDEBUG(PART_FORMAT, PART_FIELDS(part_ptr));
     return(OK);
@@ -1017,22 +1018,23 @@ int rcode;
 //		ERROR_RETURN(EDVSBADOWNER);
 	
 	// rcode = close(img_fd);
-	if (devvec[m_ptr->DEVICE].active_flag != 1) { 
+	if (devvec[m_ptr->DEVICE].active_flag < 1) { 
 		TASKDEBUG("Device %d, is not open\n", m_ptr->DEVICE);
 		rcode = -1; //MARIE: VER SI ESTO ES CORRECTO?
 		}
 	else{	
+		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
 		TASKDEBUG("devvec[m_ptr->DEVICE].img_fd=%d\n",devvec[m_ptr->DEVICE].img_fd);
 		rcode = close(devvec[m_ptr->DEVICE].img_fd);
 		if(rcode) ERROR_RETURN(errno); 
-		
-		TASKDEBUG("Close device number: %d\n", m_ptr->DEVICE);
+		devvec[m_ptr->DEVICE].img_fd = (-1);
 		devvec[m_ptr->DEVICE].dev_owner = HARDWARE;
-		devvec[m_ptr->DEVICE].st_size = 0;
-	
+//		devvec[m_ptr->DEVICE].st_size = 0;
 		TASKDEBUG("Buffer %X\n", devvec[m_ptr->DEVICE].localbuff);
 		free(devvec[m_ptr->DEVICE].localbuff);
 		TASKDEBUG("Free buffer\n");
+		devvec[m_ptr->DEVICE].localbuff = NULL;
+		devvec[m_ptr->DEVICE].active_flag -= 1;
 		}
 	// if(rcode < 0) ERROR_EXIT(errno); 
 	

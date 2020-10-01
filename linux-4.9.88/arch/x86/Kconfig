@@ -320,11 +320,16 @@ source "kernel/Kconfig.freezer"
 menu "Processor type and features"
 
 if X86_32
-config DVS_DVK
-	bool "DVS Distributed Virtualization Kernel (32 bits) for x86 platforms"
-	default n
+config DVKIOCTL
+	bool "DVS Distributed Virtualization Kernel (DVK) for x86 platforms (32 bits)"
+	default y
 	---help---
 	  This options enable DVK module.
+config DVKIPC
+	bool "DVS's DVK embedded in kernel using IPC"
+	default y
+	---help---
+	  This options enable embedded DVK as new IPC primitives.  
 endif
 
 config ZONE_DMA

@@ -1,0 +1,110 @@
+In file included from pm.h:79:0,
+                 from pm.c:13:
+pm.c: In function ‘main_pm’:
+../../../../include/com/stub_dvkcall.h:35:49: warning: passing argument 2 of ‘dvk_send_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_send(dst_ep,m)   dvk_send_T(dst_ep, (int) m, TIMEOUT_FOREVER)
+                                                 ^
+pm.c:90:18: note: in expansion of macro ‘dvk_send’
+     if ((rcode = muk_send(rkp->p_endpoint, &rmp->mp_reply)) != OK) {
+                  ^~~~~~~~
+../../../../include/com/stub_dvkcall.h:36:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_send_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~
+pm.c:98:8: warning: implicit declaration of function ‘pm_exit’ [-Wimplicit-function-declaration]
+        pm_exit(mp, rcode);
+        ^~~~~~~
+pm.c:30:14: warning: variable ‘sigset’ set but not used [-Wunused-but-set-variable]
+  mnxsigset_t sigset;
+              ^~~~~~
+In file included from pm.h:79:0,
+                 from pm.c:13:
+pm.c: In function ‘pm_get_work’:
+../../../../include/com/stub_dvkcall.h:37:56: warning: passing argument 2 of ‘dvk_receive_T’ makes pointer from integer without a cast [-Wint-conversion]
+ #define muk_receive(src_ep,m)    dvk_receive_T(src_ep, (int) m, TIMEOUT_FOREVER)
+                                                        ^
+pm.c:124:13: note: in expansion of macro ‘dvk_receive’
+   if ( (ret=muk_receive(ANY, &pm_m_in)) != OK) {
+             ^~~~~~~~~~~
+../../../../include/com/stub_dvkcall.h:38:6: note: expected ‘message * {aka struct <anonymous> *}’ but argument is of type ‘int’
+ long dvk_receive_T(int endpoint , message *mptr, long timeout);
+      ^~~~~~~~~~~~~
+pm.c: In function ‘pm_init’:
+pm.c:254:28: warning: pointer targets in passing argument 1 of ‘sys_getuptime’ differ in signedness [-Wpointer-sign]
+  if ( (rcode=sys_getuptime(&boottime)) < 0)
+                            ^
+In file included from pm.h:77:0,
+                 from pm.c:13:
+../../include/syslib.h:22:5: note: expected ‘dvkclock_t * {aka long unsigned int *}’ but argument is of type ‘time_t * {aka long int *}’
+ int sys_getuptime(molclock_t *ticks);
+     ^~~~~~~~~~~~~
+pm.c: At top level:
+pm.c:265:1: warning: "/*" within comment [-Wcomment]
+ /* proc_nr: process to reply to           *
+  
+pm.c:266:1: warning: "/*" within comment [-Wcomment]
+ /* result: result of call (usually OK or error #)         *
+  
+pm.c: In function ‘main_pm’:
+pm.c:36:2: warning: ‘dcid’ is used uninitialized in this function [-Wuninitialized]
+  pm_init(dcid);
+  ^~~~~~~~~~~~~
+utility.c: In function ‘tell_fs’:
+utility.c:176:11: warning: variable ‘m’ set but not used [-Wunused-but-set-variable]
+   message m;
+           ^
+getset.c: In function ‘pm_getset’:
+getset.c:89:12: warning: implicit declaration of function ‘sys_procinfo’ [-Wimplicit-function-declaration]
+   if((ret =sys_procinfo(pm_who_p)) != OK)
+            ^~~~~~~~~~~~
+forkexit.c: In function ‘pm_fork’:
+forkexit.c:114:15: warning: implicit declaration of function ‘sys_procinfo’ [-Wimplicit-function-declaration]
+    if((rcode =sys_procinfo(pm_who_p)) != OK)
+               ^~~~~~~~~~~~
+forkexit.c:171:14: warning: implicit declaration of function ‘get_free_pid’ [-Wimplicit-function-declaration]
+    new_pid = get_free_pid();
+              ^~~~~~~~~~~~
+forkexit.c: In function ‘pm_wait4fork’:
+forkexit.c:201:7: warning: variable ‘child_lpid’ set but not used [-Wunused-but-set-variable]
+  int  child_lpid, child_nr, child_ep;
+       ^~~~~~~~~~
+forkexit.c: In function ‘pm_pm_exit’:
+forkexit.c:252:11: warning: implicit declaration of function ‘pm_exit’ [-Wimplicit-function-declaration]
+     ret = pm_exit(&pm_proc_table[i-dc_ptr->dc_nr_tasks], pm_m_in.status, MOLEXIT);
+           ^~~~~~~
+forkexit.c: In function ‘pm_exit’:
+forkexit.c:331:3: warning: implicit declaration of function ‘set_alarm’ [-Wimplicit-function-declaration]
+   set_alarm(proc_ep, (unsigned) 0);
+   ^~~~~~~~~
+forkexit.c:357:10: warning: implicit declaration of function ‘_sys_exit’ [-Wimplicit-function-declaration]
+  rcode = _sys_exit(rkp->p_endpoint, rkp->p_nodeid);
+          ^~~~~~~~~
+forkexit.c:391:5: warning: implicit declaration of function ‘sig_proc’ [-Wimplicit-function-declaration]
+     sig_proc(p_mp, SIGCHLD);  /* send parent a "child died" signal */
+     ^~~~~~~~
+forkexit.c:412:22: warning: implicit declaration of function ‘check_sig’ [-Wimplicit-function-declaration]
+    if (procgrp != 0) check_sig(-procgrp, SIGHUP);
+                      ^~~~~~~~~
+In file included from pm.h:81:0,
+                 from timers.c:16:
+timers.c: In function ‘pm_set_timer’:
+../../debug.h:8:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 6 has type ‘int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+timers.c:31:1: note: in expansion of macro ‘MUKDEBUG’
+ MUKDEBUG("now=%ld ticks=%ld\n",now, ticks);
+ ^~~~~~~~
+In file included from pm.h:81:0,
+                 from signal.c:23:
+signal.c: In function ‘set_alarm’:
+../../debug.h:8:13: warning: format ‘%d’ expects argument of type ‘int’, but argument 5 has type ‘long int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+signal.c:68:3: note: in expansion of macro ‘MUKDEBUG’
+   MUKDEBUG("clockTicks=%d uptime/clockTicks=%ld exptime=%ld remaining=%ld\n",
+   ^~~~~~~~
+../../debug.h:8:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printf(" %s:%s:%u:" \
+             ^
+signal.c:68:3: note: in expansion of macro ‘MUKDEBUG’
+   MUKDEBUG("clockTicks=%d uptime/clockTicks=%ld exptime=%ld remaining=%ld\n",
+   ^~~~~~~~

@@ -220,7 +220,7 @@ struct device *rd_prepare(int device)
 {
 /* Prepare for I/O on a device: check if the minor device number is ok. */
   
-	if (device < 0 || device >= NR_DEVS || devvec[device].active != 1) {
+	if (device < 0 || device >= NR_DEVS || devvec[device].active < 1) {
 		MUKDEBUG("Error en rd_prepare\n");
 		return(NIL_DEV);
 		}
@@ -259,7 +259,7 @@ unsigned nr_req;		/* length of request vector */
 	MUKDEBUG("rd_device: %d\n", rd_device); 
 	MUKDEBUG("proc_nr=%d opcode=%d nr_req=%d\n",proc_nr, opcode, nr_req);
 	
-	if (devvec[rd_device].active != 1) { /*minor device active must be -1-*/
+	if (devvec[rd_device].active < 1) { /*minor device active must be -1-*/
 		MUKDEBUG("Minor device = %d\n is not active", rd_device);
 		ERROR_RETURN(EDVSNODEV);	
 	}
@@ -470,7 +470,7 @@ int rd_do_open(struct driver *dp, message *rd_mptr)
 		MUKDEBUG("Local Buffer %X\n", devvec[rd_mptr->DEVICE].localbuff);
 		MUKDEBUG("Buffer size %d\n", devvec[rd_mptr->DEVICE].buff_size);
 			
-		devvec[rd_mptr->DEVICE].active = 1;
+		devvec[rd_mptr->DEVICE].active += 1;
 		MUKDEBUG("Device %d is active %d\n", rd_mptr->DEVICE, devvec[rd_mptr->DEVICE].active);
 		
 		/* Check device number on open. */
@@ -562,7 +562,7 @@ int rd_do_close(struct driver *dp, message *rd_mptr)
 int rcode;
 
 	// rcode = close(img_p);
-	if (devvec[rd_mptr->DEVICE].active != 1) { 
+	if (devvec[rd_mptr->DEVICE].active < 1) { 
 		MUKDEBUG("Device %d, is not open\n", rd_mptr->DEVICE);
 		rcode = -1; //MARIE: VER SI ESTO ES CORRECTO?
 		}
@@ -572,17 +572,17 @@ int rcode;
 		if(rcode < 0) ERROR_PT_EXIT(errno); 
 		
 		MUKDEBUG("Close device number: %d\n", rd_mptr->DEVICE);
-		devvec[rd_mptr->DEVICE].img_ptr = NULL;
-		devvec[rd_mptr->DEVICE].img_p = NULL;
-		devvec[rd_mptr->DEVICE].st_size = 0;
-		devvec[rd_mptr->DEVICE].st_blksize = 0;
-		devvec[rd_mptr->DEVICE].localbuff = NULL;
-		devvec[rd_mptr->DEVICE].active = 0;
-		devvec[rd_mptr->DEVICE].available = 0;
+//		devvec[rd_mptr->DEVICE].img_ptr = NULL;
+		devvec[rd_mptr->DEVICE].img_p = (-1);
+//		devvec[rd_mptr->DEVICE].st_size = 0;
+//		devvec[rd_mptr->DEVICE].st_blksize = 0;
+		devvec[rd_mptr->DEVICE].active -= 1;
+//		devvec[rd_mptr->DEVICE].available = 0;
 	
 		MUKDEBUG("Buffer %X\n", devvec[rd_mptr->DEVICE].localbuff);
 		free(devvec[rd_mptr->DEVICE].localbuff);
 		MUKDEBUG("Free buffer\n");
+		devvec[rd_mptr->DEVICE].localbuff = NULL;
 		}
 	// if(rcode < 0) ERROR_PT_EXIT(errno); 
 	

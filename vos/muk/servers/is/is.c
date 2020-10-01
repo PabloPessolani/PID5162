@@ -39,11 +39,8 @@ int main_is(int argc, char **argv)
 	init_is();
 
   	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(is_cond, muk_mutex);
+	MTX_LOCK(is_mutex);
 	MTX_UNLOCK(muk_mutex);
-
 	
 	MUKDEBUG("IS(%d) main loop that gets work\n", dcu.dc_dcid);
   

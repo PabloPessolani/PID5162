@@ -207,7 +207,7 @@ int main ( int argc, char *argv[] )
 			MUKDEBUG("M3FTP FTP_PUT %s->%s\n", argv[4], argv[3]);
 			fp = fopen(argv[4], "r");
 			if(fp == NULL) ERROR_EXIT(-errno);
-			m_ptr->FTPOPER = FTP_GET;
+			m_ptr->FTPOPER = FTP_PUT;
 			do {
 				rcode = fread(data_ptr, 1, m_ptr->FTPDLEN, fp);
 				if(rcode < 0 ) {ERROR_PRINT(rcode); break;};

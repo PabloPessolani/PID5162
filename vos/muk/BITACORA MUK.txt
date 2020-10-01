@@ -1150,10 +1150,62 @@ b77b8000      4K r---- ld-2.24.so
 b77b9000      4K rw--- ld-2.24.so
 bfec7000    132K rw---   [ stack ]
  total    76188K <<<<<<<<<<<<<<<<<<<<<<<<<<< 76 MBYTES !!!! 
-		        		
+		 
+=======================================================================================
+20190928:	
+		SE CAMBIARON TODOS LOS MAKEFILES para compilar librerias ESTATICAS 
+		
+		NO SE PROBARON AUN 
+
+=======================================================================================
+20191014:
+
+SE cambio la sincronizacion asi
+			PROCESO MUK  
+				MTX_UNLOCK(sys_mutex);
+				MTX_LOCK(muk_mutex);    
+			PROCESO SYSTASK (idem para tasks y servers) 
+				MTX_LOCK(sys_mutex);
+				MTX_UNLOCK(muk_mutex);
+
+ATENCION: No usar WAIT y SIGNAL porque no garantizan sincronizacion .		
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se cambio el Makefile de muk (habria que cambiar el de todo el arbol)
+para compilar con ptheads estaticamente linkeados usando
+	a) -lpthread (en lugar de -pthreads)
+	b) incorporando el flat -static 
+
+CFLAGS=-Wall -c -I. -ggdb -g -c -fPIC -Wall -lpthread -static <<<<<<<<
+
+muk: muk.o mukcfg.o 
+	$(CC)  -static -o muk muk.o mukcfg.o $(LIB) -lpthread <<<<<<<<
+	
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+=======================================================================================
+20191026:
+		Error en el tratamiento de los codigos de retorno de la libreria 
+		stub_dvkipc cuando se usa con IPC 
+		
+ muk.c:pth_systask:148:my_pth=3078490944
+ system.c:init_systask:150:sys_pid=13
+DEBUG 12:dvk_bind_X:1137: cmd=0 dcid=0 pid=13 endpoint=-2 nodeid=-1
+DEBUG 12:dvk_bind_X:1141: ipc ret=-1
+ system.c:init_systask:153:sys_ep=-1 errno=2
+ERROR: system.c:init_systask:155: rcode=-306
+
+
+ULTIMO_LOG 
 =======================================================================================
 =======================================================================================
-=======================================================================================
+
+TODO: 	PROBAR CREAR UN THREAD PARA wis_server A VER SI TRABAJA MERJOR VER "IS" DE MUK2
+
+TODO:	PROBAR MUK con la libreria convertidas y sincronizacion nueva 
+
+
 OJO!!! 
 Cambie el archivo de configuracion/script rdisk.sh de mol/drivers/rdisk  para que no soporte replicacion
 

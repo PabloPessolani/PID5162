@@ -1,12 +1,12 @@
-all: libmollib.so 
+all: libmollib.a 
+
+LIB=libmollib.a 
 
 # Which compiler
 CC = gcc
 
 # Where are include files kept
 INCLUDE = .
-LIBS = /usr/src/dvs/dvk-lib/stub_dvkcall.o
- 
 
 # Options for development
 CFLAGS =  -g -c -fPIC -Wall -pthread 
@@ -22,15 +22,15 @@ OBJS =  getsysinfo.o molsyscall.o mol_child_exit.o mol_exit.o mol_alarm.o \
 		mol_ftruncate.o mol_mount.o mol_umount.o mol_dup.o mol_dup2.o mol_mknod.o mol_utime.o mol_chroot.o \
 		mol_chown.o mol_chmod.o mol_ioctl.o mol_unbind.o
  
-libmollib.so: $(OBJS) 
-	$(CC) -g -shared -pthread -o libmollib.so $(OBJS)  $(LIBS)
+$(LIB): $(OBJS) 
+	ar rvc $(LIB) $(OBJS) 
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE)
 
 
 clean:
-	rm libmollib.so *.o
+	rm $(LIB) *.o
 
 .PHONY: all clean 
 .SECONDARY:

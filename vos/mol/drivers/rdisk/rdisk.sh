@@ -21,7 +21,7 @@ echo "};"								>>  /dev/shm/rdisk$dcid.cfg
 cat /dev/shm/rdisk$dcid.cfg 
 read  -p "Enter para continuar... "
 dmesg -c  >> /dev/shm/dmesg$lcl.txt
-cp /usr/src/dvs/vos/images/ext4.img /dev/shm/rdisk.img
+cp /usr/src/lkl/images/floppyext2.img /dev/shm/rdisk.img
 ls -l /dev/shm/rdisk.img
 fsck -vf  /dev/shm/rdisk.img
 read  -p "RDISK Enter para continuar... "

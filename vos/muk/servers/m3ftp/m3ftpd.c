@@ -124,9 +124,7 @@ int  main_ftpd ( int argc, char *argv[] )
 	ftpd_init();
 
 	// SYNCHRONIZE WITH MUK
-	MTX_LOCK(muk_mutex);
-	COND_SIGNAL(muk_cond);
-	COND_WAIT(ftp_cond, muk_mutex);
+	MTX_LOCK(ftp_mutex);
 	MTX_UNLOCK(muk_mutex);
 		
 	while(TRUE){

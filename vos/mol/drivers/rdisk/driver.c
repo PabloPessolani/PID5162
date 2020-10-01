@@ -223,16 +223,16 @@ struct driver *dp;	/* Device dependent entry points. */
 			/* Status is # of bytes transferred or error code. */
 			mess.REP_STATUS = r;	
 			
-			TASKDEBUG("SEND msg a DEVICE_CALLER: %d -> m_type=%d, (REP_ENDPT)=%d, (REP_STATUS)=%d\n",
+			TASKDEBUG("REPLY msg a DEVICE_CALLER: %d -> m_type=%d, (REP_ENDPT)=%d, (REP_STATUS)=%d\n",
 				device_caller,
 				mess.m_type,
 				mess.REP_ENDPT,
 				mess.REP_STATUS);
 		
 		//send(device_caller, &mess);
-			ret = dvk_send(device_caller, &mess); /*envío respuesta al cliente q solicitó*/
+			ret = dvk_reply(device_caller, &mess); /*envío respuesta al cliente q solicitó*/
 			if( ret < 0 ) {
-				fprintf( stderr,"SEND ret=%d\n",ret);
+				fprintf( stderr,"REPLY ret=%d\n",ret);
 			}
 		}
 	}

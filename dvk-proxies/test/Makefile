@@ -8,6 +8,7 @@ BINS= 	loop_r-s_server loop_sr_client loop_copy_server loop_copy_client \
 #		loop_svr_vcopy3a loop_svr_vcopy3b loop_svr_vcopy4		
 	
 INCLUDE = ..
+#LIBS = ../../dvk-lib/stub_dvkcall.o
 LIBS = ../../dvk-lib/libdvkipc.so
 LIBUML = ../../dvk-lib/libuserdvk.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic

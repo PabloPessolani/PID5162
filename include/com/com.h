@@ -21,7 +21,8 @@
 #define RMT_BIND		2
 #define BKUP_BIND		3
 #define REPLICA_BIND	4
-#define MAX_BIND_TYPE	REPLICA_BIND
+#define USERMODE_BIND	5
+#define MAX_BIND_TYPE	USERMODE_BIND
 
 #ifdef DVS_CAPABILITIES
 #define CAP_DVS_ADMIN	CAP_SYS_ADMIN
@@ -31,13 +32,17 @@
 #define WAIT_BIND		0
 #define WAIT_UNBIND		1
 
+#define MAXPROCNAME	16
+#define PROC_NO_PID	(-1)
+
+
 /*===========================================================================*
  *          	    		Magic process numbers			     *
  *===========================================================================*/
 
 
 /* These may not be any valid endpoint (see <minix/endpoint.h>). */
-#define ANY		0x7ace	/* used to indicate 'any process' */
+#define ANY			0x7ace	/* used to indicate 'any process' */
 #define NONE 		0x6ace  /* used to indicate 'no process at all' */
 #define SELF		0x8ace 	/* used to indicate 'own process' */
 #define _MAX_MAGIC_PROC (SELF)	/* used by <minix/endpoint.h> 
@@ -97,6 +102,6 @@
 #define NOTIFY_TYPE		m_type
 #define NOTIFY_FLAGS	m9_i1
 #define NOTIFY_ARG		m9_l1
-#define NOTIFY_TIMESTAMP	m9_t1  
+#define NOTIFY_TIMESTAMP m9_t1  
 
 #endif /* _COM_COM_H */ 

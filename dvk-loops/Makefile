@@ -5,7 +5,9 @@ BINS= loop_dvk_ipc1 loop_dvk_ipc2 loop_dvk_ipc3 loop_dvk_ipc4 \
 all: $(BINS)
 		
 INCLUDE = ..
-LIBS = ../dvk-lib/stub_dvkcall.o
+#LIBS = ../dvk-lib/stub_dvkcall.o
+LIBS = ../dvk-lib/libdvkipc.so
+
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
 	
 loop_dvk_ipc1: loop_dvk_ipc1.c 

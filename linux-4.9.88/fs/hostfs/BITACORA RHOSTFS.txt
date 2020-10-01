@@ -1,0 +1,3999 @@
+REMOTE HOST FILESYSTEM FOR UML
+===============================
+
+Se remotizan las funciones del Filesystem HOST.
+
+Habria que implementar rmt_syscall() 
+
+El numero de SYSCALL deberia ser el mismo de LINUX.
+
+/usr/include/i386-linux-gnu/bits/syscall.h
+	definiciones
+	#define SYS__llseek __NR__llseek
+	#define SYS__newselect __NR__newselect
+	#define SYS__sysctl __NR__sysctl
+	#define SYS_accept4 __NR_accept4 
+
+/usr/include/i386-linux-gnu/asm/unistd_32.h
+#define __NR_exit 1
+#define __NR_fork 2
+#define __NR_read 3
+#define __NR_write 4
+#define __NR_open 5
+#define __NR_close 6
+#define __NR_waitpid 7
+
+
+
+-------------------------------------------------------------------------------
+20190810:
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ARRANCO , AHORA HAY QUE PROBARLO 
+root@node1:~# dmesg | grep DEBUG
+[    0.110000] DEBUG uml_dvk_init_module:115: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+[    0.110000] DEBUG uml_dvk_init_module:120: UML-kernel PID=1109  UML-kernel TID=1109
+[    0.110000] DEBUG init_rh_client:1022: 
+[    0.110000] DEBUG 1109:dvk_open:102: 
+[    0.110000] DEBUG 1109:dvk_getdvsinfo:238: 
+[    0.110000] DEBUG 1109:dvk_getdvsinfo:242: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1033: rhclient_nodeid=0
+[    0.110000] DEBUG init_rh_client:1034: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[    0.110000] DEBUG 1109:dvk_getdcinfo:331: dcid=0
+[    0.110000] DEBUG 1109:dvk_getdcinfo:335: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1045: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+[    0.110000] DEBUG init_rh_client:1046: flags=0 dc_nodes=3 dc_pid=23446 dc_name=DC0
+[    0.110000] DEBUG 1109:dvk_bind_X:1137: cmd=0 dcid=0 pid=1109 endpoint=30 nodeid=-1
+[    0.110000] DEBUG 1109:dvk_bind_X:1141: ipc ret=30
+[    0.110000] DEBUG init_rh_client:1054: rhostfs bind rhc_ep=30
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1100: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1059: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=4189 vpid=1109 nodeid=0 name=linux 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+[    0.110000] DEBUG 1109:dvk_getprocinfo:1100: ipc ret=0
+[    0.110000] DEBUG init_rh_client:1065: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=1 (<<<< SLOT_FREE) misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+
+root@node1:~# dmesg | grep ERROR
+[    0.000000] ERROR: 0:start_kernel_proc:97: rcode=-2
+[    0.000000] ERROR: 0:start_kernel_proc:109: rcode=-9
+[    0.110000] ERROR: 1:init_rh_client:1067: rcode=-310 
+[    0.110000] ERROR: 1:init_rhostfs:1078: rcode=-310    <<<<<<<<<<<<<<< EL SERVER ESTA CAIDO  , PERFECTO 
+
+
+root@node0:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  30    30  4189/1109   0    0   20 27342 27342 27342 27342 linux  <<<<<<<<<< CLIENTE RHOSTFS 
+
+-------------------------------------------------------------------------------
+20190811:
+	OPTIMIZAR EL RHOSTFS para que tome el endpoint del server desde linea de comandos 
+	listo. se modifico el arch/um/kernel/um_arch.c 
+	
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=22 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+	uml_dcid: dcid=0
+	uml_uml_ep: uml_ep=-2
+	uml_rd_ep: rd_ep=3
+	uml_rhs_ep: rhs_ep=22
+
+	Initilizing Remote DVS HOSTFS
+	DEBUG init_rh_client:1026: 
+	DEBUG 2:dvk_open:102: 
+	DEBUG 2:dvk_getdvsinfo:238: 
+	DEBUG 2:dvk_getdvsinfo:242: ipc ret=0
+	DEBUG init_rh_client:1037: rhclient_nodeid=0
+	DEBUG init_rh_client:1038: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	DEBUG 2:dvk_getdcinfo:331: dcid=0
+	DEBUG 2:dvk_getdcinfo:335: ipc ret=0
+	DEBUG init_rh_client:1049: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	DEBUG init_rh_client:1050: flags=0 dc_nodes=3 dc_pid=3326 dc_name=DC0
+	DEBUG 2:dvk_bind_X:1137: cmd=0 dcid=0 pid=2 endpoint=30 nodeid=-1
+	DEBUG 2:dvk_bind_X:1141: ipc ret=30
+	DEBUG init_rh_client:1058: rhostfs bind rhc_ep=30
+	DEBUG 2:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+	DEBUG 2:dvk_getprocinfo:1100: ipc ret=0
+	DEBUG init_rh_client:1063: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=3357 vpid=2 nodeid=0 name=linux 
+	DEBUG 2:dvk_getprocinfo:1096: dcid=0 p_nr=22 
+	DEBUG 2:dvk_getprocinfo:1100: ipc ret=0
+	DEBUG init_rh_client:1069: rhostfs SERVER: nr=22 endp=22 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+	ERROR: 1:init_rh_client:1071: rcode=-310
+	ERROR: 1:init_rhostfs:1082: rcode=-310
+	
+-------------------------------------------------------------------------------
+20190817:
+		Se hizo levantar el server pero aun sin ninguna funcion habilitada 
+		
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# ./rhostfsd rhostfs.cfg 
+				DEBUG 1115:dvk_open:102: 
+				 rhostfs_svr.c:get_dvs_params:16:
+				DEBUG 1115:dvk_getdvsinfo:238: 
+				DEBUG 1115:dvk_getdvsinfo:242: ipc ret=0
+				 rhostfs_svr.c:get_dvs_params:18:local_nodeid=0
+				 rhostfs_svr.c:get_dvs_params:21:d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+				 rhostfs_svr.c:main:100:cfg_file=rhostfs.cfg
+				 configfile.c:config_read:459:file=rhostfs.cfg flags=400
+				 configfile.c:read_file:412:file=rhostfs.cfg
+				 rhostfs_svr.c:main:103:before rhs_search_config
+				 rhostfs_cfg.c:rhs_search_config:160:
+				 rhostfs_cfg.c:rhs_search_token:121:
+				 rhostfs_cfg.c:rhs_search_token:129:rhs: SERVER1
+				 rhostfs_cfg.c:rhs_read_lines:106:
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=7 cfg=0x6ae628
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=3
+				 rhostfs_cfg.c:rhs_search_ident:40:line=3 word=dcid
+				 rhostfs_cfg.c:rhs_search_ident:57:      TKN_DCID=0
+				 rhostfs_cfg.c:rhs_search_ident:62:dcid=0
+				 rhostfs_svr.c:get_dc_params:32:dcid=0
+				DEBUG 1115:dvk_getdcinfo:331: dcid=0
+				DEBUG 1115:dvk_getdcinfo:335: ipc ret=0
+				 rhostfs_svr.c:get_dc_params:40:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+				 rhostfs_svr.c:get_dc_params:41:flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=6 cfg=0x6ae6c0
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=4
+				 rhostfs_cfg.c:rhs_search_ident:40:line=4 word=rhs_ep
+				 rhostfs_cfg.c:rhs_search_ident:70:      TKN_RHS_EP=1
+				 rhostfs_cfg.c:rhs_search_ident:35:rhs_mandatory=4 cfg=0x6ae758
+				 rhostfs_cfg.c:rhs_search_ident:38:cfg->line=5
+				 rhostfs_cfg.c:rhs_search_ident:40:line=5 word=rhs_dir
+				 rhostfs_cfg.c:rhs_search_ident:82:rhs_dir=/usr/src/dvs/vos/rootfs/
+				 rhostfs_svr.c:get_dc_params:32:dcid=0
+				DEBUG 1115:dvk_getdcinfo:331: dcid=0
+				DEBUG 1115:dvk_getdcinfo:335: ipc ret=0
+				 rhostfs_svr.c:get_dc_params:40:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+				 rhostfs_svr.c:get_dc_params:41:flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+				 rhostfs_svr.c:init_rhostfsd:51:rhs_ep=1
+				DEBUG 1115:dvk_bind_X:1137: cmd=0 dcid=0 pid=-1 endpoint=1 nodeid=-1
+				DEBUG 1115:dvk_bind_X:1141: ipc ret=1
+				DEBUG 1115:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+				DEBUG 1115:dvk_getprocinfo:1100: ipc ret=0
+				 rhostfs_svr.c:init_rhostfsd:58:nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=1115 vpid=1115 nodeid=0 name=rhostfsd 
+				 rhostfs_svr.c:main:113:Initialize the call vector to a safe default handler.
+				...............................................................................................................................................................................................................................................................................................................................................................................................
+				 rhostfs_svr.c:main:132:RHOSTFSD is waiting for requests
+				DEBUG 1115:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+		
+		Se hicieron algunos cambios en fs/hostfs/rhostfs_kern.c		
+		
+		Para poder escribir el root filesystem de UML 
+		mount -o remount,rw /dev/ubda /
+
+
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+	
+	
+	root@node0:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu 
+			uml_dcid: dcid=0
+			uml_uml_ep: uml_ep=-2
+			uml_rd_ep: rd_ep=3
+			uml_rhs_ep: rhs_ep=1
+			Locating the bottom of the address space ... 0x0
+			Locating the top of the address space ... 0xc0000000
+			Core dump limits :
+				soft - 0
+				hard - NONE
+			Checking that ptrace can change system call numbers...OK
+			Checking syscall emulation patch for ptrace...OK
+			Checking advanced syscall emulation patch for ptrace...OK
+			Checking environment variables for a tempdir...none found
+			Checking if /dev/shm is on tmpfs...OK
+			Checking PROT_EXEC mmap in /dev/shm...OK
+			Adding 22433792 bytes to physical memory to account for exec-shield gap
+			DEBUG start_kernel_proc:90: UML-kernel PID=232 TID=232 uml_ep=-2
+			DEBUG uml_bind_X:61: cmd=0 dcid=0 pid=232 endpoint=-2 nodeid=-1
+			DEBUG uml_bind_X:69: os_ioctl_generic ret=-9
+			ERROR: 0:start_kernel_proc:97: rcode=-2
+			ERROR: 0:start_kernel_proc:109: rcode=-9
+			Linux version 4.9.88 (root@node0) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #15 Sat Aug 17 20:28:26 -03 2019
+			Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 265530
+			Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu root=98:0
+			PID hash table entries: 4096 (order: 2, 16384 bytes)
+			Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+			Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+			Memory: 1033664K/1070484K available (2972K kernel code, 829K rwdata, 832K rodata, 87K init, 175K bss, 36820K reserved, 0K cma-reserved)
+			NR_IRQS:16
+			clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+			Calibrating delay loop... 1777.66 BogoMIPS (lpj=8888320)
+			pid_max: default: 32768 minimum: 301
+			Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+			Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+			Checking for host processor cmov support...Yes
+			Checking that host ptys support output SIGIO...Yes
+			Checking that host ptys support SIGIO on close...No, enabling workaround
+			devtmpfs: initialized
+			Using 2.6 host AIO
+			clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+			futex hash table entries: 256 (order: -1, 3072 bytes)
+			NET: Registered protocol family 16
+			clocksource: Switched to clocksource timer
+			NET: Registered protocol family 2
+			TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+			TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+			TCP: Hash tables configured (established 16384 bind 16384)
+			UDP hash table entries: 1024 (order: 2, 16384 bytes)
+			UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+			NET: Registered protocol family 1
+			RPC: Registered named UNIX socket transport module.
+			RPC: Registered udp transport module.
+			RPC: Registered tcp transport module.
+			RPC: Registered tcp NFSv4.1 backchannel transport module.
+			console [stderr0] disabled
+			mconsole (version 2) initialized on /root/.uml/node1/mconsole
+			Checking host MADV_REMOVE support...OK
+			UML Audio Relay (host dsp = /dev/sound/dsp, host mixer = /dev/sound/mixer)
+			UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+			DEBUG uml_dvk_init_module:115: UML Distributed Virtualization Kernel (host dvk_dev = /dev/dvk)
+			DEBUG uml_dvk_init_module:120: UML-kernel PID=232  UML-kernel TID=232
+			Host TLS support detected
+			Detected host type: i386 (GDT indexes 6 to 9)
+			workingset: timestamp_bits=30 max_order=18 bucket_order=0
+			NFS: Registering the id_resolver key type
+			Key type id_resolver registered
+			Key type id_legacy registered
+			nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+			nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+			Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+			fuse init (API version 7.26)
+			Initilizing Remote DVS HOSTFS
+			DEBUG init_rh_client:1026: 
+			DEBUG 232:dvk_open:102: 
+			DEBUG 232:dvk_getdvsinfo:238: 
+			DEBUG 232:dvk_getdvsinfo:242: ipc ret=0
+			DEBUG init_rh_client:1037: rhclient_nodeid=0
+			DEBUG init_rh_client:1038: d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			DEBUG 232:dvk_getdcinfo:331: dcid=0
+			DEBUG 232:dvk_getdcinfo:335: ipc ret=0
+			DEBUG init_rh_client:1049: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+			DEBUG init_rh_client:1050: flags=0 dc_nodes=3 dc_pid=920 dc_name=DC0
+			DEBUG 232:dvk_bind_X:1137: cmd=0 dcid=0 pid=232 endpoint=30 nodeid=-1
+			DEBUG 232:dvk_bind_X:1141: ipc ret=30
+			DEBUG init_rh_client:1058: rhostfs bind rhc_ep=30
+			DEBUG 232:dvk_getprocinfo:1096: dcid=0 p_nr=30 
+			DEBUG 232:dvk_getprocinfo:1100: ipc ret=0
+			DEBUG init_rh_client:1063: rhostfs CLIENT: nr=30 endp=30 dcid=0 flags=0 misc=20 lpid=4046 vpid=232 nodeid=0 name=linux 
+			DEBUG 232:dvk_getprocinfo:1096: dcid=0 p_nr=1 
+			DEBUG 232:dvk_getprocinfo:1100: ipc ret=0
+			DEBUG init_rh_client:1069: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=1115 vpid=1115 nodeid=0 name=rhostfsd 
+			DEBUG init_rhostfs:1083: Remote DVS HOSTFS server is bound on endpoint:1
+			DEBUG init_rhostfs:1085: register_filesystem rhostfs_type rcode:0
+			io scheduler noop registered
+			io scheduler deadline registered (default)
+			io scheduler cfq registered
+			loop: module loaded
+			nbd: registered device at major 43
+			tun: Universal TUN/TAP device driver, 1.6
+			tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+			PPP generic driver version 2.4.2
+			SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+			NET: Registered protocol family 17
+			tipc: Activated (version 2.0.0)
+			NET: Registered protocol family 30
+			tipc: Started in single node mode
+			Key type dns_resolver registered
+			Initialized stdio console driver
+			Console initialized on /dev/tty0
+			console [tty0] enabled
+			Initializing software serial port version 1
+			console [mc-1] enabled
+			Netdevice 0 (fe:fd:c0:a8:00:fd) : TUN/TAP backend - 
+			winch_thread : TIOCSCTTY failed on fd 2 err = 1
+			EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+			EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+			VFS: Mounted root (ext4 filesystem) readonly on device 98:0.
+			devtmpfs: mounted
+			This architecture does not have kernel memory protection.
+			random: fast init done
+			systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+			cgroup: cgroup2: unknown option "nsdelegate"
+			systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+			systemd[1]: Detected virtualization vmware.
+			systemd[1]: Detected architecture x86.
+
+			Welcome to Debian GNU/Linux 10 (buster)!
+
+			systemd[1]: Set hostname to <node1>.
+			systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+			systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+			systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+			systemd[1]: Listening on Journal Socket (/dev/log).
+			[  OK  ] Listening on Journal Socket (/dev/log).
+			systemd[1]: Created slice system-getty.slice.
+			[  OK  ] Created slice system-getty.slice.
+			systemd[1]: Reached target Swap.
+			[  OK  ] Reached target Swap.
+			systemd[1]: Reached target Remote File Systems.
+			[  OK  ] Reached target Remote File Systems.
+			systemd[1]: Listening on udev Control Socket.
+			[  OK  ] Listening on udev Control Socket.
+			systemd[1]: Listening on Journal Socket.
+			[  OK  ] Listening on Journal Socket.
+			systemd[1]: Condition check resulted in Huge Pages File System being skipped.
+			systemd[1]: Condition check resulted in Kernel Debug File System being skipped.
+				 Mounting POSIX Message Queue File System...
+			[  OK  ] Listening on udev Kernel Socket.
+				 Starting Load Kernel Modules...
+			[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+			[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+			[  OK  ] Reached target Local Encrypted Volumes.
+			[  OK  ] Reached target Paths.
+			random: crng init done
+				 Starting Remount Root and Kernel File Systems...
+			[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+			[  OK  ] Listening on Syslog Socket.
+				 Starting Journal Service...
+			[  OK  ] Listening on initctl Compatibility Named Pipe.
+			[  OK  ] Created slice User and Session Slice.
+			[  OK  ] Reached target Slices.
+			[  OK  ] Mounted POSIX Message Queue File System.
+			[  OK  ] Started Load Kernel Modules.
+				 Mounting FUSE Control File System...
+				 Starting Apply Kernel Variables...
+			systemd[1]: Started Remount Root and Kernel File Systems.
+			[  OK  ] Started Remount Root and Kernel File Systems.
+			systemd[1]: Condition check resulted in Create System Users being skipped.
+			systemd[1]: Starting Create Static Device Nodes in /dev...
+				 Starting Create Static Device Nodes in /dev...
+			systemd[1]: Condition check resulted in Rebuild Hardware Database being skipped.
+			systemd[1]: Starting udev Coldplug all Devices...
+				 Starting udev Coldplug all Devices...
+			systemd[1]: Starting Load/Save Random Seed...
+				 Starting Load/Save Random Seed...
+			systemd[1]: Started Journal Service.
+			[  OK  ] Started Journal Service.
+			[  OK  ] Started Apply Kernel Variables.
+				 Starting Flush Journal to Persistent Storage...
+			[  OK  ] Started Create Static Device Nodes in /dev.
+				 Starting udev Kernel Device Manager...
+			[  OK  ] Reached target Local File Systems (Pre).
+			[  OK  ] Reached target Local File Systems.
+				 Starting Raise network interfaces...
+			systemd-journald[406]: Received request to flush runtime journal from PID 1
+			[  OK  ] Started Flush Journal to Persistent Storage.
+				 Starting Create Volatile Files and Directories...
+			[  OK  ] Started udev Kernel Device Manager.
+			[  OK  ] Mounted FUSE Control File System.
+			[  OK  ] Started Load/Save Random Seed.
+			[  OK  ] Started Create Volatile Files and Directories.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Reached target System Time Synchronized.
+				 Starting Update UTMP about System Boot/Shutdown...
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[  OK  ] Stopped Network Time Synchronization.
+			[FAILED] Failed to start Network Time Synchronization.
+			See 'systemctl status systemd-timesyncd.service' for details.
+			[FAILED] Failed to start Update UTMP about System Boot/Shutdown.
+			See 'systemctl status systemd-update-utmp.service' for details.
+			[DEPEND] Dependency failed for Updaâ¦about System Runlevel Changes.
+			[  OK  ] Started udev Coldplug all Devices.
+			[  OK  ] Reached target System Initialization.
+			[  OK  ] Listening on D-Bus System Message Bus Socket.
+			[  OK  ] Reached target Sockets.
+			[  OK  ] Reached target Basic System.
+				 Starting System Logging Service...
+			[  OK  ] Started D-Bus System Message Bus.
+			[  OK  ] Started Regular background program processing daemon.
+				 Starting Login Service...
+			[  OK  ] Started Daily apt download activities.
+			[  OK  ] Started Daily apt upgrade and clean activities.
+			[  OK  ] Started Daily Cleanup of Temporary Directories.
+			[  OK  ] Reached target Timers.
+			[  OK  ] Started System Logging Service.
+			[  OK  ] Started Raise network interfaces.
+			[  OK  ] Started Login Service.
+			[  OK  ] Reached target Network.
+				 Starting Permit User Sessions...
+				 Starting OpenBSD Secure Shell server...
+			[  OK  ] Started Permit User Sessions.
+			[  OK  ] Started Getty on tty1.
+			[  OK  ] Reached target Login Prompts.
+			[  OK  ] Started OpenBSD Secure Shell server.
+			[  OK  ] Reached target Multi-User System.
+			[  OK  ] Reached target Graphical Interface.
+			winch_thread : TIOCSCTTY failed on fd 1 err = 1
+
+			Debian GNU/Linux 10 node1 tty1
+
+			node1 login: 
+
+			Cuando 
+
+root@node1:/# mount none /rhost -t rhostfs
+mount: special device none does not exist
+
+pero sin embargo esta registrado el tipo de filesystem 
+[    0.070000] DEBUG init_rhostfs:1083: Remote DVS HOSTFS server is bound on endpoint:1
+[    0.070000] DEBUG init_rhostfs:1085: register_filesystem rhostfs_type rcode:0
+
+root@node1:~# mount none /rhost -t rhostfs
+DEBUG rhostfs_read_sb:1060: 
+DEBUG rhostfs_fill_sb_common:1002: 
+DEBUG rhostfs_alloc_inode:246: 
+DEBUG read_name:567: name=(null)/ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+DEBUG rhostfs_evict_inode:260: 
+DEBUG RHOSTFS_I:40: 
+DEBUG rhostfs_destroy_inode:278: 
+DEBUG rhostfs_kill_sb:1066: 
+mount: special device none does not exist
+DEBUG RHOSTFS_I:40: 
+
+
+Esta fallando en rhostfs_fill_sb_common que llena el superblocke
+	err = read_name(root_inode, host_root_path);
+
+Aca esta leyendo el contenidode host_root_path pero en nuestro caso
+es nulo y hay que traerlo desde el remoto.
+
+-------------------------------------------------------------------------------
+20190818: SE CAMBIO TANTO EL SERVER COMO EL RHOSTFS EN LINUX 
+
+ARRANCO SERVER 
+root@node0:/usr/src/dvs/vos/uml/rhostfsd# ./rhostfsd rhostfs.cfg 
+
+ARRANCO CLIENT
+root@node0:/usr/src/linux# 
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1 eth0=tuntap,HTAP,fe:fd:c0:a8:00:fd nosysemu
+
+ 
+root@node0:/tmp# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1 13986/13986  0    8   20 31438 27342 27342 27342 rhostfsd       
+ 0  30    30 24222/1342   0    0   20 27342 27342 27342 27342 linux
+	
+MONTAJE 
+=======	
+		EN UML
+		root@node1:~# mount none /rhost -t rhostfs
+		DEBUG rhostfs_read_sb:1114: 
+		DEBUG rh_get_rootpath:441: 
+		DEBUG rmt_syscall:23: who=1 syscallnr=4100
+		DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rh_get_rootpath:445: dirp=/usr/src/dvs/vos/rootfs/
+		DEBUG rhostfs_fill_sb_common:1055: req_root=(null)
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_show_options:284: 
+
+		DEBUG rhostfs_show_options:284: 
+		root@node1:~# mount | grep rhost
+		DEBUG rhostfs_show_options:284: 
+		none on /rhost type rhostfs (rw,relatime) <<<<<<<<<<<< MONTADO 
+
+		EN SERVER 
+		DEBUG 13986:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:154:dvk_receive rcode=0
+		 rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=4100 m4l1=1 m4l2=1212792236 m4l3=440741 m4l4=139473824 m4l5=1212792276
+		 rhostfs_svr.c:main:166:call_nr=4100 rhs_who_e=30
+		 rhostfs_svr.c:main:177:RHOSTFS Calling vector 4
+		 rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs/
+		DEBUG 13986:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=25
+		DEBUG 13986:dvk_vcopy:126: ipc ret=25
+		 rhostfs_svr.c:main:189:REPLY msg:source=30 type=0 m1i1=1 m1i2=1212792236 m1i3=440741 m1p1=0x85033a0 m1p2=0x4849bdd4 m1p3=0x8438d60 
+		DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 13986:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+		DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+CAMBIO DE CURRENT DIRECTORY 
+===========================
+
+		EN UML
+		root@node1:~# cd /rhost/
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33 <<<<<<<<<<<<<< __NR_access
+		DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+		ERROR: 712:rmt_syscall:29: rcode=107  
+
+		EN HOST
+		DEBUG 13986:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:154:dvk_receive rcode=0
+		 rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1204883456 m4l5=1206885940
+		 rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+		 rhostfs_svr.c:main:180:LINUX Calling vector 33  <<<<<<<<<<<<<< __NR_access
+		RHOSTFSD: got unused request 33 from 30
+		 rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47d11000 m1p2=0x47ef9e34 m1p3=0x80eeb56 
+		DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 13986:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+		DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+LISTADO DIRECTORY 
+==================
+
+EN UML 
+root@node1:/rhost# ls -l
+DEBUG rhostfs_permission:903: 
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=1
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+ERROR: 712:rmt_syscall:29: rcode=107
+DEBUG rhostfs_permission:903: 
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=1
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1342:dvk_sendrec_T:870: ipc ret=0
+ERROR: 723:rmt_syscall:29: rcode=107
+DEBUG rhostfs_permission:903: 
+DEBUG rmt_access:51: filename=// mode=4
+DEBUG rmt_syscall:23: who=1 syscallnr=33
+DEBUG 1342:dvk_sendrec_T:866: endpoint=1 timeout=-1
+
+EN HOST
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1205972992 m4l5=1206885552
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47e1b000 m1p2=0x47ef9cb0 m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13986:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=1 m4l4=1205972992 m4l5=1212751052
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=1 m1p1=0x47e1b000 m1p2=0x48491ccc m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13986:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:152:RHOSTFSD is waiting for requests
+DEBUG 13986:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13986:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:154:dvk_receive rcode=0
+ rhostfs_svr.c:main:158:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=0 m4l3=4 m4l4=1205972992 m4l5=1212751080
+ rhostfs_svr.c:main:166:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:180:LINUX Calling vector 33
+RHOSTFSD: got unused request 33 from 30
+ rhostfs_svr.c:main:189:REPLY msg:source=30 type=-107 m1i1=3 m1i2=0 m1i3=4 m1p1=0x47e1b000 m1p2=0x48491ce8 m1p3=0x80eeb56 
+DEBUG 13986:dvk_send_T:803: endpoint=30 timeout=30000
+
+-------------------------------------------------------------------------------
+20190819: SE EMPIEZAN A HABILITAR FUNCIONES EN SERVER 
+
+
+CAMBIO DE DIRECTORIO
+===================?
+		EN UML
+			root@node1:~# cd /rhost/
+			DEBUG rhostfs_permission:903: 
+			DEBUG rmt_access:51: filename=// mode=1
+			DEBUG rmt_syscall:23: who=1 syscallnr=33
+			DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+
+		EN HOST 
+			 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+			DEBUG 823:dvk_receive_T:834: endpoint=31438 timeout=-1
+			DEBUG 823:dvk_receive_T:838: ipc ret=0
+			 rhostfs_svr.c:main:155:dvk_receive rcode=0
+			 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1214268416 m4l4=1210707968 m4l5=1210662452
+			 rhostfs_svr.c:main:167:call_nr=33 rhs_who_e=30
+			 rhostfs_svr.c:main:181:LINUX Calling vector 33
+			 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+			DEBUG 823:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+			DEBUG 823:dvk_vcopy:126: ipc ret=3
+			 rhostfs_lib.c:lcl_access:75:name=-1078658064
+			 rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1214268416 m1p1=0x4829f000 m1p2=0x48293e34 m1p3=0x80eeb56 
+			DEBUG 823:dvk_send_T:803: endpoint=30 timeout=30000
+			DEBUG 823:dvk_send_T:807: ipc ret=76
+			 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+			DEBUG 823:dvk_receive_T:834: endpoint=31438 timeout=-1
+		
+LISTADO DE DIRECTORIO 
+			EN UML
+				root@node1:/rhost# ls
+				DEBUG rhostfs_permission:903: 
+				DEBUG rhostfs_permission:903: 
+				DEBUG rmt_access:51: filename=// mode=1
+				DEBUG rmt_syscall:23: who=1 syscallnr=33
+				DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+				DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+				DEBUG rhostfs_permission:903: 
+				DEBUG rmt_access:51: filename=// mode=4
+				DEBUG rmt_syscall:23: who=1 syscallnr=33
+				DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+				DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+				DEBUG rhostfs_open:341: 
+				DEBUG RHOSTFS_I:40: 
+				DEBUG rhostfs_readdir:314: 
+				DEBUG rmt_opendir:389: name=//
+				DEBUG rmt_syscall:23: who=1 syscallnr=4096
+				DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+				DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		EN HOST 
+			ACCESS 
+				 rhostfs_svr.c:main:143:RHOSTFSD is waiting for requests
+				DEBUG 3860:dvk_receive_T:834: endpoint=31438 timeout=-1
+				DEBUG 3860:dvk_receive_T:838: ipc ret=0
+				 rhostfs_svr.c:main:145:dvk_receive rcode=0
+				 rhostfs_svr.c:main:149:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1214268416 m4l4=1210761216 m4l5=1217633484
+				 rhostfs_svr.c:main:157:call_nr=33 rhs_who_e=30
+				 rhostfs_svr.c:main:171:LINUX Calling vector 33
+				 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+				DEBUG 3860:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+				DEBUG 3860:dvk_vcopy:126: ipc ret=3
+				 rhostfs_lib.c:lcl_access:75:name=//
+				 rhostfs_svr.c:main:180:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1214268416 m1p1=0x482ac000 m1p2=0x48939ccc m1p3=0x80eeb56 
+				DEBUG 3860:dvk_send_T:803: endpoint=30 timeout=30000
+				DEBUG 3860:dvk_send_T:807: ipc ret=76
+			ACCESS
+				 rhostfs_svr.c:main:143:RHOSTFSD is waiting for requests
+				DEBUG 3860:dvk_receive_T:834: endpoint=31438 timeout=-1
+				DEBUG 3860:dvk_receive_T:838: ipc ret=0
+				 rhostfs_svr.c:main:145:dvk_receive rcode=0
+				 rhostfs_svr.c:main:149:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=4 m4l3=1214268416 m4l4=1210761216 m4l5=1217633512
+				 rhostfs_svr.c:main:157:call_nr=33 rhs_who_e=30
+				 rhostfs_svr.c:main:171:LINUX Calling vector 33
+				 rhostfs_lib.c:lcl_access:71:len=3 mode=4
+				DEBUG 3860:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+				DEBUG 3860:dvk_vcopy:126: ipc ret=3
+				 rhostfs_lib.c:lcl_access:75:name=//
+				 rhostfs_svr.c:main:180:REPLY msg:source=30 type=0 m1i1=3 m1i2=4 m1i3=1214268416 m1p1=0x482ac000 m1p2=0x48939ce8 m1p3=0x80eeb56 
+				DEBUG 3860:dvk_send_T:803: endpoint=30 timeout=30000
+				DEBUG 3860:dvk_send_T:807: ipc ret=-1
+				ERROR: 3860:dvk_send_T:825: rcode=-1
+				ERROR: rhostfs_svr.c:main:182: rcode=-1
+			ACCESS	
+				 rhostfs_svr.c:main:143:RHOSTFSD is waiting for requests
+				DEBUG 3860:dvk_receive_T:834: endpoint=31438 timeout=-1
+				DEBUG 3860:dvk_receive_T:838: ipc ret=0
+				 rhostfs_svr.c:main:145:dvk_receive rcode=0
+				 rhostfs_svr.c:main:149:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=4 m4l3=1214268416 m4l4=1210761216 m4l5=1217633512
+				 rhostfs_svr.c:main:157:call_nr=33 rhs_who_e=30
+				 rhostfs_svr.c:main:171:LINUX Calling vector 33
+				 rhostfs_lib.c:lcl_access:71:len=3 mode=4
+				DEBUG 3860:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+				DEBUG 3860:dvk_vcopy:126: ipc ret=3
+				 rhostfs_lib.c:lcl_access:75:name=//
+				 rhostfs_svr.c:main:180:REPLY msg:source=30 type=0 m1i1=3 m1i2=4 m1i3=1214268416 m1p1=0x482ac000 m1p2=0x48939ce8 m1p3=0x80eeb56 
+				DEBUG 3860:dvk_send_T:803: endpoint=30 timeout=30000
+				DEBUG 3860:dvk_send_T:807: ipc ret=76
+				
+				 rhostfs_svr.c:main:143:RHOSTFSD is waiting for requests
+				DEBUG 3860:dvk_receive_T:834: endpoint=31438 timeout=-1
+				DEBUG 3860:dvk_receive_T:838: ipc ret=0
+				 rhostfs_svr.c:main:145:dvk_receive rcode=0
+				 rhostfs_svr.c:main:149:RECEIVE msg:source=30 type=4096 m4l1=3 m4l2=1210707968 m4l3=1214268416 m4l4=1210707968 m4l5=1214268416
+				 rhostfs_svr.c:main:157:call_nr=4096 rhs_who_e=30
+				 rhostfs_svr.c:main:168:RHOSTFS Calling vector 0 <<<<<<
+				 rhostfs_lib.c:lcl_opendir:619:len=3
+				DEBUG 3860:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+				DEBUG 3860:dvk_vcopy:126: ipc ret=3
+				 rhostfs_lib.c:lcl_opendir:623:pathname=//
+				 rhostfs_svr.c:main:180:REPLY msg:source=30 type=3 m1i1=3 m1i2=1210707968 m1i3=1214268416 m1p1=0x4829f000 m1p2=0x1dce818 m1p3=0x4829ffff 
+				DEBUG 3860:dvk_send_T:803: endpoint=30 timeout=30000
+				DEBUG 3860:dvk_send_T:807: ipc ret=76
+				
+				 rhostfs_svr.c:main:143:RHOSTFSD is waiting for requests
+				DEBUG 3860:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+		
+ATENCION: HICE UN write y funciono!!!
+	EN EL UML
+		root@node1:/rhost# echo hola > hola.txt
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=3
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_lookup:714: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG rhostfs_create:673: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rmt_open64:39: filename=//hola.txt flags=42 mode=1A4
+		DEBUG rmt_syscall:23: who=1 syscallnr=5
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		-bash: hola.txt: No such file or directory
+
+	EN EL HOST 
+		root@node0:/usr/src/dvs/vos/uml/rhostfsd# ls -l /usr/src/dvs/vos/rootfs/
+		total 12
+		drwxr-xr-x 7 root root 4096 mar  4 21:35 DC0
+		drwxr-xr-x 2 root root 4096 sep 22  2018 DC1
+		drwxr-xr-x 2 root root 4096 sep 22  2018 dvs
+		-rw-r--r-- 1 root root    0 ago 19 10:28 hola.txt <<<<<<<<<
+
+-------------------------------------------------------------------------------
+20190820: porque el file es // ???
+		APARENTEMENTE LA // NO ES PROBLEMA 
+
+	EN UML 
+		root@node1:~# mount none /rhost -t rhostfs
+		DEBUG rhostfs_read_sb:1114: 
+		DEBUG rh_get_rootpath:441: 
+		DEBUG rmt_syscall:23: who=1 syscallnr=4100
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rh_get_rootpath:445: dirp=/usr/src/dvs/vos/rootfs/
+		DEBUG rhostfs_fill_sb_common:1055: req_root=(null)
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_show_options:284: 
+		root@node1:~# 
+
+		root@node1:~# mount | grep rhost
+		DEBUG rhostfs_show_options:284: 
+		none on /rhost type rhostfs (rw,relatime)
+
+		root@node1:~# ls /rhost
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=4
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_open:341: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rmt_open64:39: filename=// flags=0 mode=0
+		DEBUG rmt_syscall:23: who=1 syscallnr=5
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_readdir:314: 
+		DEBUG rmt_opendir:389: name=//
+		DEBUG rmt_syscall:23: who=1 syscallnr=4096
+		DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+
+
+	EN HOST (en el LS)
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 777:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 777:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=4 m4l3=1205724032 m4l4=1210310656 m4l5=1200274664
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=30
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=4
+		DEBUG 777:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+		DEBUG 777:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=30 type=0 m1i1=3 m1i2=4 m1i3=1205724032 m1p1=0x4823e000 m1p2=0x478abce8 m1p3=0x80eeb56 
+		DEBUG 777:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 777:dvk_send_T:807: ipc ret=76
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 777:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 777:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=30 type=5 m4l1=3 m4l2=0 m4l3=0 m4l4=1210310656 m4l5=0
+		 rhostfs_svr.c:main:161:call_nr=5 rhs_who_e=30
+		 rhostfs_svr.c:main:175:LINUX Calling vector 5
+		 rhostfs_lib.c:lcl_open64:53:len=3 flags=0 mode=0
+		DEBUG 777:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+		DEBUG 777:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_open64:57:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=30 type=3 m1i1=3 m1i2=0 m1i3=0 m1p1=0x4823e000 m1p2=(nil) m1p3=0x47dde380 
+		DEBUG 777:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 777:dvk_send_T:807: ipc ret=76
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 777:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 777:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=30 type=4096 m4l1=3 m4l2=1209942016 m4l3=1205724032 m4l4=1209942016 m4l5=1205724032
+		 rhostfs_svr.c:main:161:call_nr=4096 rhs_who_e=30
+		 rhostfs_svr.c:main:172:RHOSTFS Calling vector 0
+		 rhostfs_lib.c:lcl_opendir:619:len=3
+		DEBUG 777:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+		DEBUG 777:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_opendir:623:pathname=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=30 type=3 m1i1=3 m1i2=1209942016 m1i3=1205724032 m1p1=0x481e4000 m1p2=0xd2c818 m1p3=0x481e4fff 
+		DEBUG 777:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 777:dvk_send_T:807: ipc ret=-1
+		ERROR: 777:dvk_send_T:825: rcode=-1
+		ERROR: rhostfs_svr.c:main:186: rcode=-1
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 777:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 777:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=30 type=4096 m4l1=3 m4l2=1209942016 m4l3=1205724032 m4l4=1209942016 m4l5=1205724032
+		 rhostfs_svr.c:main:161:call_nr=4096 rhs_who_e=30
+		 rhostfs_svr.c:main:172:RHOSTFS Calling vector 0
+		 rhostfs_lib.c:lcl_opendir:619:len=3
+		DEBUG 777:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+		DEBUG 777:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_opendir:623:pathname=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=30 type=3 m1i1=3 m1i2=1209942016 m1i3=1205724032 m1p1=0x481e4000 m1p2=0xd34838 m1p3=0x481e4fff 
+		DEBUG 777:dvk_send_T:803: endpoint=30 timeout=30000
+		DEBUG 777:dvk_send_T:807: ipc ret=76
+		
+EN UML ESCRITURA
+		root@node1:/rhost# echo HOLA QUE TAL 20082019 > borrar.txt
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 603:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 603:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=3
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 603:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 603:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_lookup:714: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG rhostfs_create:673: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rmt_open64:39: filename=//borrar.txt flags=42 mode=1A4 <<<< PORQUE // ????? 
+		DEBUG rmt_syscall:23: who=1 syscallnr=5
+		DEBUG 603:dvk_sendrec_T:866: endpoint=1 timeout=-1
+
+EN HOST ESCRITURA
+		DEBUG 1316:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1221709824 m4l4=1219018752 m4l5=1220492492
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1316:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1316:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1221709824 m1p1=0x48a8c000 m1p2=0x48bf3ccc m1p3=0x80eeb56 
+		DEBUG 1316:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1316:dvk_send_T:807: ipc ret=76
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1316:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1316:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=3 m4l3=1221709824 m4l4=1219018752 m4l5=1220492540
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=3
+		DEBUG 1316:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1316:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=3 m1i3=1221709824 m1p1=0x48a8c000 m1p2=0x48bf3cfc m1p3=0x80eeb56 
+		DEBUG 1316:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1316:dvk_send_T:807: ipc ret=76
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1316:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1316:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=5 m4l1=13 m4l2=66 m4l3=420 m4l4=1219018752 m4l5=1219022846
+		 rhostfs_svr.c:main:161:call_nr=5 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 5
+		 rhostfs_lib.c:lcl_open64:53:len=13 flags=42 mode=1A4
+		DEBUG 1316:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=13
+		DEBUG 1316:dvk_vcopy:126: ipc ret=13
+		 rhostfs_lib.c:lcl_open64:57:name=//borrar.txt
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=6 m1i1=13 m1i2=66 m1i3=420 m1p1=0x48a8c000 m1p2=0x48a8cffe m1p3=0x48bf3d20 
+		DEBUG 1316:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1316:dvk_send_T:807: ipc ret=-1
+		ERROR: 1316:dvk_send_T:825: rcode=-1
+		ERROR: rhostfs_svr.c:main:186: rcode=-1
+		
+		
+EN UML 
+	root@node1:/rhost# ls caca
+	DEBUG rhostfs_permission:903: 
+	DEBUG rhostfs_permission:903: 
+	DEBUG rmt_access:51: filename=// mode=1
+	DEBUG rmt_syscall:23: who=1 syscallnr=33
+	DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rhostfs_lookup:714: 
+	DEBUG rhostfs_iget:202: 
+	DEBUG rhostfs_alloc_inode:245: 
+	DEBUG rhostfs_evict_inode:259: 
+	DEBUG RHOSTFS_I:40: 
+	DEBUG rhostfs_destroy_inode:277: 
+	DEBUG rhostfs_permission:903: 
+	DEBUG rhostfs_permission:903: 
+	DEBUG rmt_access:51: filename=// mode=1
+	DEBUG rmt_syscall:23: who=1 syscallnr=33
+	DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rhostfs_lookup:714: 
+	DEBUG rhostfs_iget:202: 
+	DEBUG rhostfs_alloc_inode:245: 
+	DEBUG rhostfs_evict_inode:259: 
+	DEBUG RHOSTFS_I:40: 
+	DEBUG rhostfs_destroy_inode:277: 
+	ls: cannot access 'caca': No such file or directory
+	DEBUG RHOSTFS_I:40: 
+	DEBUG RHOSTFS_I:40:		
+	
+EN HOST 
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1225768960 m4l5=1225727152
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x490fc000 m1p2=0x490f1cb0 m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1225768960 m4l5=1225727152
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x490fc000 m1p2=0x490f1cb0 m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+EN UML 
+		root@node1:/rhost# ls hola.txt
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_lookup:714: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_lookup:714: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG RHOSTFS_I:40: 
+		ls: cannot access 'hola.txt': No such file or directory
+
+EN HOST 
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1226211328 m4l5=1225727152
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x49168000 m1p2=0x490f1cb0 m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1226211328 m4l5=1225727152
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x49168000 m1p2=0x490f1cb0 m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		
+EN UML 
+		root@node1:/rhost# cat hola.txt
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_permission:903: 
+		DEBUG rhostfs_permission:903: 
+		DEBUG rmt_access:51: filename=// mode=1
+		DEBUG rmt_syscall:23: who=1 syscallnr=33
+		DEBUG 787:dvk_sendrec_T:866: endpoint=1 timeout=-1
+		DEBUG 787:dvk_sendrec_T:870: ipc ret=0
+		DEBUG rhostfs_lookup:714: 
+		DEBUG rhostfs_iget:202: 
+		DEBUG rhostfs_alloc_inode:245: 
+		DEBUG rhostfs_evict_inode:259: 
+		DEBUG RHOSTFS_I:40: 
+		DEBUG rhostfs_destroy_inode:277: 
+		DEBUG RHOSTFS_I:40: 
+		cat: hola.txt: No such file or directory
+EN HOST 
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1226211328 m4l5=1233722544
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x49168000 m1p2=0x49891cb0 m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+		DEBUG 1956:dvk_receive_T:838: ipc ret=0
+		 rhostfs_svr.c:main:149:dvk_receive rcode=0
+		 
+		 rhostfs_svr.c:main:153:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1230857600 m4l4=1226211328 m4l5=1234558156
+		 rhostfs_svr.c:main:161:call_nr=33 rhs_who_e=31
+		 rhostfs_svr.c:main:175:LINUX Calling vector 33
+		 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+		DEBUG 1956:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+		DEBUG 1956:dvk_vcopy:126: ipc ret=3
+		 rhostfs_lib.c:lcl_access:75:name=//
+		 rhostfs_svr.c:main:184:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1230857600 m1p1=0x49168000 m1p2=0x4995dccc m1p3=0x80eeb56 
+		DEBUG 1956:dvk_send_T:803: endpoint=31 timeout=30000
+		DEBUG 1956:dvk_send_T:807: ipc ret=76
+		 rhostfs_svr.c:main:147:RHOSTFSD is waiting for requests
+		DEBUG 1956:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+	
+-------------------------------------------------------------------------------
+20190824:	TRATANDO DE ENCONTRAR COMO SEGUIR 
+
+EN UML
+root@node1:~# mount none /rhost -t rhostfs
+DEBUG rhostfs_read_sb:1113: 
+DEBUG rh_get_rootpath:442: 
+DEBUG rmt_syscall:23: who=1 syscallnr=4100
+DEBUG 1313:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1313:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:32: m_type=0
+DEBUG rh_get_rootpath:446: dirp=/usr/src/dvs/vos/rootfs
+DEBUG rhostfs_fill_sb_common:1054: req_root=(null)
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rhostfs_show_options:284: 
+DEBUG rhostfs_show_options:289: root_path=/
+root@node1:~# mount | grep rhost          
+DEBUG rhostfs_show_options:284: 
+DEBUG rhostfs_show_options:289: root_path=/
+none on /rhost type rhostfs (rw,relatime)
+
+
+EN HOST 
+DEBUG 22660:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:150:dvk_receive rcode=0
+ rhostfs_svr.c:main:154:RECEIVE msg:source=30 type=4100 m4l1=1 m4l2=134658469 m4l3=4513856 m4l4=139473856 m4l5=135115880
+ rhostfs_svr.c:main:162:call_nr=4100 rhs_who_e=30
+ rhostfs_svr.c:main:173:RHOSTFS Calling vector 4
+ rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+DEBUG 22660:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=24
+DEBUG 22660:dvk_vcopy:126: ipc ret=24
+ rhostfs_svr.c:main:185:REPLY msg:source=30 type=0 m1i1=1 m1i2=134658469 m1i3=4513856 m1p1=0x85033c0 m1p2=0x80db468 m1p3=0x8438d60 
+DEBUG 22660:dvk_send_T:803: endpoint=30 timeout=90000
+DEBUG 22660:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:148:RHOSTFSD is waiting for requests
+DEBUG 22660:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+
+APARENTEMENTE EL PROBLEMA ESTA EN EL IPC, PORQUE "ALGUIEN" DESPIERTA AL UML 
+[21582.049633] DEBUG 25309:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[21582.049635] DEBUG 25309:ipc_mini_sendrec:523: srcdst_ep=1
+[21582.049637] DEBUG 25309:check_caller:545: caller_pid=25309 caller_tgid=25309
+[21582.049638] DEBUG 25309:check_caller:581: WLOCK_PROC ep=30 count=0
+[21582.049640] DEBUG 25309:check_caller:610: WUNLOCK_PROC ep=30 count=0
+[21582.049641] DEBUG 25309:check_caller:613: dcid=0
+[21582.049643] DEBUG 25309:check_caller:617: RLOCK_DC dc=0 count=0
+[21582.049644] DEBUG 25309:check_caller:621: RUNLOCK_DC dc=0 count=0
+[21582.049646] DEBUG 25309:check_caller:627: caller_pid=25309 
+[21582.049647] DEBUG 25309:ipc_mini_sendrec:534: RLOCK_PROC ep=30 count=0
+[21582.049649] DEBUG 25309:ipc_mini_sendrec:539: caller_nr=30 caller_ep=30 srcdst_ep=1 
+[21582.049650] DEBUG 25309:ipc_mini_sendrec:542: RUNLOCK_PROC ep=30 count=0
+[21582.049652] DEBUG 25309:ipc_mini_sendrec:544: dcid=0
+[21582.049653] DEBUG 25309:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[21582.049655] DEBUG 25309:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[21582.049656] DEBUG 25309:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
+[21582.049658] DEBUG 25309:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
+[21582.049659] DEBUG 25309:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
+[21582.049661] DEBUG 25309:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
+[21582.049662] DEBUG 25309:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
+[21582.049663] DEBUG 25309:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[21582.049665] DEBUG 25309:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[21582.049666] DEBUG 25309:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[21582.049668] DEBUG 25309:ipc_mini_sendrec:617: dcid=0 caller_pid=25309 caller_nr=30 srcdst_ep=1 
+[21582.049669] DEBUG 25309:ipc_mini_sendrec:622: SENDING HALF
+[21582.049671] DEBUG 25309:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[21582.049673] DEBUG 25309:sleep_proc2:729: BEFORE DOWN lpid=25309 p_sem=0 timeout=-1
+[21582.049674] DEBUG 25309:sleep_proc2:731: endpoint=30 flags=C
+[21582.049676] DEBUG 25309:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
+[21582.049677] DEBUG 25309:sleep_proc2:735: WUNLOCK_PROC ep=1 count=0
+[21582.049678] DEBUG 25309:sleep_proc2:736: endpoint=30 flags=C
+[21582.058661] DEBUG 25309:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
+[21582.058665] DEBUG 25309:sleep_proc2:745: endpoint=30 flags=C cpuid=2
+[21582.058668] DEBUG 25309:sleep_proc2:747: WLOCK_PROC ep=1 count=0
+[21582.058670] DEBUG 25309:sleep_proc2:747: WLOCK_PROC ep=30 count=0
+[21582.058671] DEBUG 25309:sleep_proc2:769: pid=25309 ret=-512
+[21582.058675] DEBUG 25309:sleep_proc2:794: nr=30 endp=30 dcid=0 lpid=25309 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[21582.058676] DEBUG 25309:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[21582.058679] DEBUG 25309:ipc_mini_sendrec:743: WUNLOCK_PROC ep=1 count=0
+[21582.058681] DEBUG 25309:ipc_mini_sendrec:747: removing 30 link from 1 list.
+[21582.058682] DEBUG 25309:ipc_mini_sendrec:748: LIST_DEL
+[21582.058684] DEBUG 25309:ipc_mini_sendrec:764: WUNLOCK_PROC ep=30 count=0
+[21582.058685] ERROR: 25309:ipc_mini_sendrec:765: rcode=-512
+
+
+
+root@node0:/tmp# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1 22660/22660  0    4   20 27342    30 27342 27342 rhostfsd      <<<<<< FLAGS = 4 =>  BIT_SENDING 
+ 0  30    30 25309/1313   0    C   20     1     1 27342 27342 linux 		<<<<<< FLAGS = 8+4 =>  BIT_SENDING + BIT_RECEIVING
+ 
+ Pero, como puede estar en RECEIVING, si se supone que el RECEIVE que hizo el RHOSTFS_SVR ya lo borro?
+
+Revisar el send_rec cuando termina porque alguien externo lo despierta. como quedan sus flags¿?
+
+
+EN UML 
+root@node1:~# echo VOMITO > /rhost/vomito.txt
+DEBUG rhostfs_permission:902: 
+DEBUG rhostfs_permission:902: 
+DEBUG rh_access_file:86: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 1949:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1949:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_permission:902: 
+DEBUG rh_access_file:86: path=// r=0 w=1 x=1
+DEBUG rmt_access:59: filename=// mode=3
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 1949:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1949:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:713: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:277: 
+DEBUG rhostfs_create:673: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rh_file_create:220: name=//vomito.txt mode=1A4
+DEBUG rmt_open64:47: filename=//vomito.txt flags=42 mode=1A4
+DEBUG rmt_syscall:27: who=1 syscallnr=5
+DEBUG 1949:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1949:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=3
+DEBUG rh_file_create:224: returned fd=3
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:277: 
+ERROR: rhostfs_create:703: rcode=-2
+-bash: /rhost/vomito.txt: No such file or directory
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG RHOSTFS_I:40: i_ino=0
+
+
+EN HOST 
+DEBUG 2537:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:150:dvk_receive rcode=0
+ rhostfs_svr.c:main:154:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1227611304 m4l4=1227571200 m4l5=0
+ rhostfs_svr.c:main:162:call_nr=33 rhs_who_e=31
+ rhostfs_svr.c:main:176:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 2537:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+DEBUG 2537:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:185:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1227611304 m1p1=0x492b4000 m1p2=(nil) m1p3=0x4 
+DEBUG 2537:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 2537:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:148:RHOSTFSD is waiting for requests
+DEBUG 2537:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 2537:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:150:dvk_receive rcode=0
+ rhostfs_svr.c:main:154:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=3 m4l3=1227611352 m4l4=1227571200 m4l5=0
+ rhostfs_svr.c:main:162:call_nr=33 rhs_who_e=31
+ rhostfs_svr.c:main:176:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=3
+DEBUG 2537:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+DEBUG 2537:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:185:REPLY msg:source=31 type=0 m1i1=3 m1i2=3 m1i3=1227611352 m1p1=0x492b4000 m1p2=(nil) m1p3=0x4 
+DEBUG 2537:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 2537:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:148:RHOSTFSD is waiting for requests
+DEBUG 2537:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 2537:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:150:dvk_receive rcode=0
+ rhostfs_svr.c:main:154:RECEIVE msg:source=31 type=5 m4l1=13 m4l2=66 m4l3=420 m4l4=1227571200 m4l5=135205660
+ rhostfs_svr.c:main:162:call_nr=5 rhs_who_e=31
+ rhostfs_svr.c:main:176:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open64:53:len=13 flags=42 mode=1A4
+DEBUG 2537:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=13
+DEBUG 2537:dvk_vcopy:126: ipc ret=13
+ rhostfs_lib.c:lcl_open64:57:name=//vomito.txt
+ rhostfs_svr.c:main:185:REPLY msg:source=31 type=3 m1i1=13 m1i2=66 m1i3=420 m1p1=0x492b4000 m1p2=0x80f131c m1p3=0x1 
+DEBUG 2537:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 2537:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:148:RHOSTFSD is waiting for requests
+DEBUG 2537:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+
+
+EN UML 
+root@node1:~# clear
+root@node1:~# echo caquita > /rhost/caquita.txt
+DEBUG rhostfs_permission:901: 
+DEBUG rhostfs_permission:901: 
+DEBUG rh_access_file:88: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 2596:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2596:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_permission:901: 
+DEBUG rh_access_file:88: path=// r=0 w=1 x=1
+DEBUG rmt_access:59: filename=// mode=3
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 2596:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2596:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:712: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:277: 
+DEBUG rhostfs_create:672: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rh_file_create:222: name=//caquita.txt mode=1A4
+DEBUG rmt_open64:47: filename=//caquita.txt flags=42 mode=1A4
+DEBUG rmt_syscall:27: who=1 syscallnr=5
+DEBUG 2596:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2596:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=3
+DEBUG rh_file_create:226: returned fd=3
+DEBUG rh_read_name:566: name=//caquita.txt
+DEBUG rmt_lstat64:360: filename=//caquita.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 2596:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2596:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rh_statfs_to_hostfs:49: ino=5154225703280709671
+DEBUG rh_statfs_to_hostfs:66: ino=5154225703280709671 maj=1777 min=267632905
+DEBUG rh_read_name:574: rdev=1878245641 st.maj=1777 st.min=267632905 st.mode=1A3419
+ERROR: rh_read_name:601: rcode=-5
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:277: 
+ERROR: rhostfs_create:702: rcode=-5
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG RHOSTFS_I:40: i_ino=0
+-bash: /rhost/caquita.txt: Input/output error
+
+EN HOST 
+ rhostfs_svr.c:main:151:RHOSTFSD is waiting for requests
+DEBUG 14401:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 14401:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:153:dvk_receive rcode=0
+ rhostfs_svr.c:main:157:RECEIVE msg:source=31 type=4100 m4l1=1 m4l2=134658565 m4l3=1880320 m4l4=139473920 m4l5=135115976
+ rhostfs_svr.c:main:165:call_nr=4100 rhs_who_e=31
+ rhostfs_svr.c:main:176:RHOSTFS Calling vector 4
+ rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+DEBUG 14401:dvk_vcopy:122: src_ep=35534 dst_ep=31 bytes=24
+DEBUG 14401:dvk_vcopy:126: ipc ret=24
+ rhostfs_svr.c:main:188:REPLY msg:source=31 type=0 m1i1=1 m1i2=134658565 m1i3=1880320 m1p1=0x8503400 m1p2=0x80db4c8 m1p3=0x8438d60 
+DEBUG 14401:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 14401:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:151:RHOSTFSD is waiting for requests
+DEBUG 14401:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 14401:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:153:dvk_receive rcode=0
+ rhostfs_svr.c:main:157:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=1 m4l3=1200061608 m4l4=1208848384 m4l5=0
+ rhostfs_svr.c:main:165:call_nr=33 rhs_who_e=31
+ rhostfs_svr.c:main:179:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 14401:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+DEBUG 14401:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:188:REPLY msg:source=31 type=0 m1i1=3 m1i2=1 m1i3=1200061608 m1p1=0x480d9000 m1p2=(nil) m1p3=0x4 
+DEBUG 14401:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 14401:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:151:RHOSTFSD is waiting for requests
+DEBUG 14401:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 14401:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:153:dvk_receive rcode=0
+ rhostfs_svr.c:main:157:RECEIVE msg:source=31 type=33 m4l1=3 m4l2=3 m4l3=1200061656 m4l4=1208848384 m4l5=0
+ rhostfs_svr.c:main:165:call_nr=33 rhs_who_e=31
+ rhostfs_svr.c:main:179:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=3
+DEBUG 14401:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=3
+DEBUG 14401:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:188:REPLY msg:source=31 type=0 m1i1=3 m1i2=3 m1i3=1200061656 m1p1=0x480d9000 m1p2=(nil) m1p3=0x4 
+DEBUG 14401:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 14401:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:151:RHOSTFSD is waiting for requests
+DEBUG 14401:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 14401:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:153:dvk_receive rcode=0
+ rhostfs_svr.c:main:157:RECEIVE msg:source=31 type=5 m4l1=14 m4l2=66 m4l3=420 m4l4=1208848384 m4l5=135205660
+ rhostfs_svr.c:main:165:call_nr=5 rhs_who_e=31
+ rhostfs_svr.c:main:179:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open:53:len=14 flags=42 mode=1A4
+DEBUG 14401:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=14
+DEBUG 14401:dvk_vcopy:126: ipc ret=14
+ rhostfs_lib.c:lcl_open:57:name=//caquita.txt
+ rhostfs_svr.c:main:188:REPLY msg:source=31 type=3 m1i1=14 m1i2=66 m1i3=420 m1p1=0x480d9000 m1p2=0x80f131c m1p3=0x1 
+DEBUG 14401:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 14401:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:151:RHOSTFSD is waiting for requests
+DEBUG 14401:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 14401:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:153:dvk_receive rcode=0
+ rhostfs_svr.c:main:157:RECEIVE msg:source=31 type=196 m4l1=14 m4l2=43 m4l3=138557984 m4l4=1208848384 m4l5=1200061564
+ rhostfs_svr.c:main:165:call_nr=196 rhs_who_e=31
+ rhostfs_svr.c:main:179:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=14
+DEBUG 14401:dvk_vcopy:122: src_ep=31 dst_ep=35534 bytes=14
+DEBUG 14401:dvk_vcopy:126: ipc ret=14
+ rhostfs_lib.c:lcl_lstat:591:pathname=//caquita.txt
+DEBUG 14401:dvk_vcopy:122: src_ep=35534 dst_ep=31 bytes=64
+DEBUG 14401:dvk_vcopy:126: ipc ret=64
+ rhostfs_svr.c:main:188:REPLY msg:source=31 type=0 m1i1=14 m1i2=43 m1i3=138557984 m1p1=0x480d9000 m1p2=0x47877c7c m1p3=(nil) 
+DEBUG 14401:dvk_send_T:803: endpoint=31 timeout=30000
+DEBUG 14401:dvk_send_T:807: ipc ret=76
+
+
+EN UML --- FUNCIONO 
+root@node1:~# echo fideos >  /rhost/fideos.txt
+DEBUG rhostfs_permission:901: 
+DEBUG rhostfs_permission:901: 
+DEBUG rh_access_file:88: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_permission:901: 
+DEBUG rh_access_file:88: path=// r=0 w=1 x=1
+DEBUG rmt_access:59: filename=// mode=3
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:712: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:277: 
+DEBUG rhostfs_create:672: 
+DEBUG rhostfs_iget:202: 
+DEBUG rhostfs_alloc_inode:245: 
+DEBUG rh_file_create:222: name=//fideos.txt mode=1A4
+DEBUG rmt_open64:47: filename=//fideos.txt flags=42 mode=1A4
+DEBUG rmt_syscall:27: who=1 syscallnr=5
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=3
+DEBUG rh_file_create:226: returned fd=3
+DEBUG rh_read_name:566: name=//fideos.txt
+DEBUG rmt_lstat64:360: filename=//fideos.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rh_statfs_to_hostfs:49: ino=5144937029049258023
+DEBUG rh_statfs_to_hostfs:66: ino=5144937029049258023 maj=0 min=0
+DEBUG rh_read_name:574: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:595: S_IFREG
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG rhostfs_permission:901: 
+DEBUG rh_access_file:88: path=//fideos.txt r=0 w=0 x=0
+DEBUG rmt_access:59: filename=//fideos.txt mode=0
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_open:341: i_ino=138154023
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_write_begin:513: 
+DEBUG rhostfs_write_end:527: 
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG rmt_pwrite64:87: fd=3 count=7 pos=0
+DEBUG rmt_syscall:27: who=1 syscallnr=181
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=7
+DEBUG rhostfs_file_release:397: 
+DEBUG rhostfs_evict_inode:259: 
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG rmt_close:219: fd=3
+DEBUG rmt_syscall:27: who=1 syscallnr=6
+DEBUG 2974:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2974:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG RHOSTFS_I:40: i_ino=138154023
+DEBUG rhostfs_destroy_inode:277: 
+
+EN HOST 
+root@node0:/usr/src/dvs/vos/rootfs# more fideos.txt 
+fideos
+
+
+PROBLEMA:
+NO FUNCIONA EL CAT 
+
+-------------------------------------------------------------------------------
+20190905:	TRATANDO DE HACER QUE LEA EL CONTENIDO DE UN ARCHIVO 
+
+EN UML 
+	root@node1:/rhost# cat fideos.txt
+	DEBUG rhostfs_permission:917: 
+	DEBUG rhostfs_permission:917: 
+	DEBUG rh_access_file:88: path=// r=0 w=0 x=1
+	DEBUG rmt_access:59: filename=// mode=1
+	DEBUG rmt_syscall:27: who=1 syscallnr=33
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=0
+	DEBUG rhostfs_lookup:722: 
+	DEBUG rhostfs_iget:202: 
+	DEBUG rhostfs_alloc_inode:247: 
+	DEBUG rh_read_name:570: name=//fideos.txt
+	DEBUG rmt_lstat64:360: filename=//fideos.txt
+	DEBUG rmt_syscall:27: who=1 syscallnr=196
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=0
+	DEBUG rh_statfs_to_hostfs:49: ino=5174702973476671539
+	DEBUG rh_statfs_to_hostfs:66: ino=5174702973476671539 maj=0 min=0
+	DEBUG rh_read_name:578: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+	DEBUG rh_read_name:599: S_IFREG
+	DEBUG rhostfs_permission:917: 
+	DEBUG rh_access_file:88: path=//fideos.txt r=1 w=0 x=0
+	DEBUG rmt_access:59: filename=//fideos.txt mode=4
+	DEBUG rmt_syscall:27: who=1 syscallnr=33
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=0
+	DEBUG rhostfs_open:345: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG rmt_open64:47: filename=//fideos.txt flags=0 mode=0
+	DEBUG rmt_syscall:27: who=1 syscallnr=5
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=5
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG rhostfs_readpage:485: 
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG rmt_pread64:71: fd=5 count=4096 pos=0
+	DEBUG rmt_syscall:27: who=1 syscallnr=180
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=4096
+	fideos <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CONTENIDO OK!! 
+	DEBUG rhostfs_file_release:401: 
+	DEBUG rhostfs_evict_inode:263: 
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG rmt_close:219: fd=5
+	DEBUG rmt_syscall:27: who=1 syscallnr=6
+	DEBUG 855:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 855:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:39: m_type=0
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	DEBUG rhostfs_destroy_inode:281: 
+	DEBUG RHOSTFS_I:40: i_ino=138154035
+	root@node1:/rhost# 
+
+
+EN HOST 
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1204829352 m4l4=1208037376 m4l5=0
+	 rhostfs_svr.c:main:167:call_nr=33 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 33
+	 rhostfs_lib.c:lcl_access:71:len=3 mode=1
+	DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+	DEBUG 12616:dvk_vcopy:126: ipc ret=3
+	 rhostfs_lib.c:lcl_access:75:name=//
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1204829352 m1p1=0x48013000 m1p2=(nil) m1p3=0x4 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=196 m4l1=13 m4l2=42 m4l3=138557984 m4l4=1208037376 m4l5=1204829300
+	 rhostfs_svr.c:main:167:call_nr=196 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 196
+	 rhostfs_lib.c:lcl_lstat:587:len=13
+	DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+	DEBUG 12616:dvk_vcopy:126: ipc ret=13
+	 rhostfs_lib.c:lcl_lstat:591:pathname=//fideos.txt
+	DEBUG 12616:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=88
+	DEBUG 12616:dvk_vcopy:126: ipc ret=88
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=13 m1i2=42 m1i3=138557984 m1p1=0x48013000 m1p2=0x47d03c74 m1p3=(nil) 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=33 m4l1=13 m4l2=4 m4l3=1204829380 m4l4=1208037376 m4l5=0
+	 rhostfs_svr.c:main:167:call_nr=33 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 33
+	 rhostfs_lib.c:lcl_access:71:len=13 mode=4
+	DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+	DEBUG 12616:dvk_vcopy:126: ipc ret=13
+	 rhostfs_lib.c:lcl_access:75:name=//fideos.txt
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=13 m1i2=4 m1i3=1204829380 m1p1=0x48013000 m1p2=(nil) m1p3=0x4 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=5 m4l1=13 m4l2=0 m4l3=0 m4l4=1208037376 m4l5=0
+	 rhostfs_svr.c:main:167:call_nr=5 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 5
+	 rhostfs_lib.c:lcl_open:53:len=13 flags=0 mode=0
+	DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+	DEBUG 12616:dvk_vcopy:126: ipc ret=-1
+	ERROR: 12616:dvk_vcopy:147: rcode=-1
+	ERROR: rhostfs_lib.c:lcl_open:56: rcode=-1
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=-1 m1i1=13 m1i2=0 m1i3=0 m1p1=0x48013000 m1p2=(nil) m1p3=0x47a07500 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=-1
+	ERROR: 12616:dvk_send_T:825: rcode=-1
+	ERROR: rhostfs_svr.c:main:192: rcode=-1
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=5 m4l1=13 m4l2=0 m4l3=0 m4l4=1208037376 m4l5=0
+	 rhostfs_svr.c:main:167:call_nr=5 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 5
+	 rhostfs_lib.c:lcl_open:53:len=13 flags=0 mode=0
+	DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+	DEBUG 12616:dvk_vcopy:126: ipc ret=13
+	 rhostfs_lib.c:lcl_open:57:name=//fideos.txt
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=5 m1i1=13 m1i2=0 m1i3=0 m1p1=0x48013000 m1p2=(nil) m1p3=0x47a07500 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=180 m4l1=5 m4l2=4096 m4l3=7 m4l4=0 m4l5=0
+	 rhostfs_svr.c:main:167:call_nr=180 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 180
+	 rhostfs_lib.c:lcl_pread:96:fd=5 count=4096 pos=0
+	DEBUG 12616:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=4096
+	DEBUG 12616:dvk_vcopy:126: ipc ret=4096
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=4096 m1i1=5 m1i2=4096 m1i3=7 m1p1=(nil) m1p2=(nil) m1p3=0x457da000 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+	
+	 rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+	DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+	DEBUG 12616:dvk_receive_T:838: ipc ret=0
+	 rhostfs_svr.c:main:155:dvk_receive rcode=0
+	 rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=6 m4l1=5 m4l2=134826907 m4l3=1 m4l4=1204193800 m4l5=3534304
+	 rhostfs_svr.c:main:167:call_nr=6 rhs_who_e=30
+	 rhostfs_svr.c:main:181:LINUX Calling vector 6
+	 rhostfs_lib.c:lcl_close:308:fd=5
+	 rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=5 m1i2=134826907 m1i3=1 m1p1=0x47c68a08 m1p2=0x35ede0 m1p3=(nil) 
+	DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+	DEBUG 12616:dvk_send_T:807: ipc ret=76
+
+
+EL CD TAMBIEN FUNCIONO !!!!!!!!!!!!!!!
+
+
+PROBLEMA: NO FUNCION EL LS 
+
+root@node1:~# ls /rhost
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=ÐKH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:88: path=// r=1 w=0 x=0
+DEBUG rmt_access:59: filename=// mode=4
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 1100:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1100:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_open:352: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rmt_open64:47: filename=// flags=0 mode=0
+DEBUG rmt_syscall:27: who=1 syscallnr=5
+DEBUG 1100:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1100:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=6
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG rhostfs_readdir:327: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=PYH0Ë
+DEBUG __dentry_name:103: 
+DEBUG rhostfs_readdir:329: name=//
+DEBUG rh_open_dir:126: path=//
+DEBUG rmt_opendir:397: name=//
+DEBUG rmt_syscall:27: who=1 syscallnr=4096
+DEBUG 1100:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1100:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=3
+ERROR: rhostfs_readdir:333: rcode=0
+
+
+
+ rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 12616:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=4 m4l3=1205542084 m4l4=1212928000 m4l5=0
+ rhostfs_svr.c:main:167:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:181:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=4
+DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 12616:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:190:REPLY msg:source=30 type=0 m1i1=3 m1i2=4 m1i3=1205542084 m1p1=0x484bd000 m1p2=(nil) m1p3=0x4 
+DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 12616:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 12616:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=5 m4l1=3 m4l2=0 m4l3=0 m4l4=1212928000 m4l5=0
+ rhostfs_svr.c:main:167:call_nr=5 rhs_who_e=30
+ rhostfs_svr.c:main:181:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open:53:len=3 flags=0 mode=0
+DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 12616:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_open:57:name=//
+ rhostfs_svr.c:main:190:REPLY msg:source=30 type=3 m1i1=3 m1i2=0 m1i3=0 m1p1=0x484bd000 m1p2=(nil) m1p3=0x4 
+DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 12616:dvk_send_T:807: ipc ret=-1
+ERROR: 12616:dvk_send_T:825: rcode=-1
+ERROR: rhostfs_svr.c:main:192: rcode=-1
+
+ rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 12616:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=5 m4l1=3 m4l2=0 m4l3=0 m4l4=1212928000 m4l5=0
+ rhostfs_svr.c:main:167:call_nr=5 rhs_who_e=30
+ rhostfs_svr.c:main:181:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open:53:len=3 flags=0 mode=0
+DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 12616:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_open:57:name=//
+ rhostfs_svr.c:main:190:REPLY msg:source=30 type=6 m1i1=3 m1i2=0 m1i3=0 m1p1=0x484bd000 m1p2=(nil) m1p3=0x4 
+DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 12616:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 12616:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 12616:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=4096 m4l1=3 m4l2=1 m4l3=0 m4l4=1213812736 m4l5=1213812736
+ rhostfs_svr.c:main:167:call_nr=4096 rhs_who_e=30
+ rhostfs_svr.c:main:178:RHOSTFS Calling vector 0
+ rhostfs_lib.c:lcl_opendir:637:len=3
+DEBUG 12616:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 12616:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_opendir:641:pathname=//
+ rhostfs_svr.c:main:190:REPLY msg:source=30 type=3 m1i1=3 m1i2=1 m1i3=0 m1p1=0x48595000 m1p2=0xfb1858 m1p3=0x47d31160 
+DEBUG 12616:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 12616:dvk_send_T:807: ipc ret=76
+
+ATENCION!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
+rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 652:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 652:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=196 m4l1=12 m4l2=41 m4l3=138557984 m4l4=1221591040 m4l5=1221876852
+ rhostfs_svr.c:main:167:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:181:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=12
+DEBUG 652:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=12
+DEBUG 652:dvk_vcopy:126: ipc ret=12
+ rhostfs_lib.c:lcl_lstat:591:pathname=//error.txt
+ERROR: rhostfs_lib.c:lcl_lstat:594: rcode=-2
+ rhostfs_svr.c:main:190:REPLY msg:source=30 type=-2 m1i1=12 m1i2=41 m1i3=138557984 m1p1=0x48d00000 m1p2=0x48d45c74 m1p3=(nil) 
+DEBUG 652:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 652:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:153:RHOSTFSD is waiting for requests
+DEBUG 652:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 652:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:155:dvk_receive rcode=0
+ rhostfs_svr.c:main:159:RECEIVE msg:source=30 type=-2 m4l1=12 m4l2=41 m4l3=138557984 m4l4=1221591040 m4l5=1221876852
+ rhostfs_svr.c:main:167:call_nr=-2 rhs_who_e=30
+ERROR: rhostfs_svr.c:main:169: rcode=-107
+ rhostfs_svr.c:main:181:LINUX Calling vector -2
+ViolaciÃ³n de segmento
+
+
+FUNCIONO BIEN REDIRECCION Y COPY
+
+FUNCIONA MAL LN
+
+root@node1:/rhost# ln fideos.txt ravioles.txt
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=ðÖH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:89: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//ravioles.txt
+DEBUG rmt_lstat64:360: filename=//ravioles.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:36: rcode=2
+ERROR: rh_stat_file:79: rcode=-2
+ERROR: rh_read_name:580: rcode=-2
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:288: 
+ERROR: rhostfs_lookup:751: rcode=-2
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=ðÖHð®
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:89: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//fideos.txt
+DEBUG rmt_lstat64:360: filename=//fideos.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rh_statfs_to_hostfs:50: ino=5283668475619578291
+DEBUG rh_statfs_to_hostfs:67: ino=5283668475619578291 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=138154419
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=138154419
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=/system.slice/rsyslog.service
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:89: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//fideos.txt
+DEBUG rmt_lstat64:360: filename=//fideos.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rh_statfs_to_hostfs:50: ino=5283668905116307891
+DEBUG rh_statfs_to_hostfs:67: ino=5283668905116307891 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//fideos.txt
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:89: path=// r=0 w=0 x=1
+DEBUG rmt_access:59: filename=// mode=1
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//ravioles.txt
+DEBUG rmt_lstat64:360: filename=//ravioles.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=196
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:36: rcode=2
+ERROR: rh_stat_file:79: rcode=-2
+ERROR: rh_read_name:580: rcode=-2
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_destroy_inode:288: 
+ERROR: rhostfs_lookup:751: rcode=-2
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=°ÔHÙ~Ê¿
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:89: path=// r=0 w=1 x=1
+DEBUG rmt_access:59: filename=// mode=3
+DEBUG rmt_syscall:27: who=1 syscallnr=33
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:39: m_type=0
+DEBUG rhostfs_link:773: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//ravioles.txt
+DEBUG __dentry_name:103: 
+DEBUG rh_link_file:395: from=//ravioles.txt to=//fideos.txt
+DEBUG rmt_link:250: old=//fideos.txt new=//ravioles.txt
+DEBUG rmt_syscall:27: who=1 syscallnr=9
+DEBUG 436:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 436:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:36: rcode=107
+ERROR: rh_link_file:399: rcode=-107
+DEBUG RHOSTFS_I:40: i_ino=0
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=138154419
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=138154419
+ln: failed to create hard link 'ravioles.txt' => 'fideos.txt': Transport endpoint is not connected
+
+
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230199948 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=-1
+ERROR: 13585:dvk_vcopy:147: rcode=-1
+ERROR: rhostfs_lib.c:lcl_access:74: rcode=-1
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-1 m1i1=3 m1i2=1 m1i3=1230199948 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=-1
+ERROR: 13585:dvk_send_T:825: rcode=-1
+ERROR: rhostfs_svr.c:main:197: rcode=-1
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230199948 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1230199948 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=15 m4l2=44 m4l3=138557984 m4l4=1222045696 m4l5=1230199808
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=15
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=15
+DEBUG 13585:dvk_vcopy:126: ipc ret=15
+ rhostfs_lib.c:lcl_lstat:591:pathname=//ravioles.txt
+ERROR: rhostfs_lib.c:lcl_lstat:594: rcode=-2
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-2 m1i1=15 m1i2=44 m1i3=138557984 m1p1=0x48d6f000 m1p2=0x49535c00 m1p3=(nil) 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230199948 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1230199948 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=-1
+ERROR: 13585:dvk_send_T:825: rcode=-1
+ERROR: rhostfs_svr.c:main:197: rcode=-1
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230199948 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1230199948 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=13 m4l2=42 m4l3=138557984 m4l4=1222045696 m4l5=1230199808
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=13
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+DEBUG 13585:dvk_vcopy:126: ipc ret=13
+ rhostfs_lib.c:lcl_lstat:591:pathname=//fideos.txt
+DEBUG 13585:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=88
+DEBUG 13585:dvk_vcopy:126: ipc ret=88
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=13 m1i2=42 m1i3=138557984 m1p1=0x48d6f000 m1p2=0x49535c00 m1p3=(nil) 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230200048 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1230200048 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=13 m4l2=42 m4l3=138557984 m4l4=1222045696 m4l5=1230199908
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=13
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+DEBUG 13585:dvk_vcopy:126: ipc ret=13
+ rhostfs_lib.c:lcl_lstat:591:pathname=//fideos.txt
+DEBUG 13585:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=88
+DEBUG 13585:dvk_vcopy:126: ipc ret=88
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=13 m1i2=42 m1i3=138557984 m1p1=0x48d6f000 m1p2=0x49535c64 m1p3=(nil) 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1230200036 m4l4=1222045696 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1230200036 m1p1=0x48d6f000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=15 m4l2=44 m4l3=138557984 m4l4=1222045696 m4l5=1230200136
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=15
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=15
+DEBUG 13585:dvk_vcopy:126: ipc ret=15
+ rhostfs_lib.c:lcl_lstat:591:pathname=//ravioles.txt
+ERROR: rhostfs_lib.c:lcl_lstat:594: rcode=-2 <<<<<<<<<<<<<<<<<<<<<<< EDVSNOENT 
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-2 m1i1=15 m1i2=44 m1i3=138557984 m1p1=0x48d6f000 m1p2=0x49535d48 m1p3=(nil) 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=3 m4l3=1230200272 m4l4=1221898240 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=3
+DEBUG 13585:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13585:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=3 m1i3=1230200272 m1p1=0x48d4b000 m1p2=(nil) m1p3=0x4 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=9 m4l1=13 m4l2=15 m4l3=1222049780 m4l4=1222045696 m4l5=1221898240
+ rhostfs_svr.c:main:169:call_nr=9 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 9
+RHOSTFSD: got unused request 9 from 30
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-107 m1i1=13 m1i2=15 m1i3=1222049780 m1p1=0x48d6f000 m1p2=0x48d4b000 m1p3=0x8094cfc 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=-1
+ERROR: 13585:dvk_send_T:825: rcode=-1
+ERROR: rhostfs_svr.c:main:197: rcode=-1
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13585:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=9 m4l1=13 m4l2=15 m4l3=1222049780 m4l4=1222045696 m4l5=1221898240
+ rhostfs_svr.c:main:169:call_nr=9 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 9
+RHOSTFSD: got unused request 9 from 30
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-107 m1i1=13 m1i2=15 m1i3=1222049780 m1p1=0x48d6f000 m1p2=0x48d4b000 m1p3=0x8094cfc 
+DEBUG 13585:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13585:dvk_send_T:807: ipc ret=76
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13585:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+
+
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1222556812 m4l4=1221898240 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13574:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1222556812 m1p1=0x48d4b000 m1p2=(nil) m1p3=0x4 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=15 m4l2=44 m4l3=138557984 m4l4=1221898240 m4l5=1222556672
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=15
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=15
+DEBUG 13574:dvk_vcopy:126: ipc ret=15
+ rhostfs_lib.c:lcl_lstat:591:pathname=//ravioles.txt
+ERROR: rhostfs_lib.c:lcl_lstat:594: rcode=-2
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-2 m1i1=15 m1i2=44 m1i3=138557984 m1p1=0x48d4b000 m1p2=0x48debc00 m1p3=(nil) 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1222556812 m4l4=1221898240 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13574:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1222556812 m1p1=0x48d4b000 m1p2=(nil) m1p3=0x4 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=13 m4l2=42 m4l3=138557984 m4l4=1221898240 m4l5=1222556672
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=13
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+DEBUG 13574:dvk_vcopy:126: ipc ret=13
+ rhostfs_lib.c:lcl_lstat:591:pathname=//fideos.txt
+DEBUG 13574:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=88
+DEBUG 13574:dvk_vcopy:126: ipc ret=88
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=13 m1i2=42 m1i3=138557984 m1p1=0x48d4b000 m1p2=0x48debc00 m1p3=(nil) 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1222556912 m4l4=1221898240 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13574:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1222556912 m1p1=0x48d4b000 m1p2=(nil) m1p3=0x4 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=13 m4l2=42 m4l3=138557984 m4l4=1221898240 m4l5=1222556772
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=13
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=13
+DEBUG 13574:dvk_vcopy:126: ipc ret=13
+ rhostfs_lib.c:lcl_lstat:591:pathname=//fideos.txt
+DEBUG 13574:dvk_vcopy:122: src_ep=35534 dst_ep=30 bytes=88
+DEBUG 13574:dvk_vcopy:126: ipc ret=88
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=13 m1i2=42 m1i3=138557984 m1p1=0x48d4b000 m1p2=0x48debc64 m1p3=(nil) 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=1 m4l3=1222556900 m4l4=1221898240 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=1
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13574:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=1 m1i3=1222556900 m1p1=0x48d4b000 m1p2=(nil) m1p3=0x4 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=196 m4l1=15 m4l2=44 m4l3=138557984 m4l4=1221898240 m4l5=1222557000
+ rhostfs_svr.c:main:169:call_nr=196 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 196
+ rhostfs_lib.c:lcl_lstat:587:len=15
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=15
+DEBUG 13574:dvk_vcopy:126: ipc ret=15
+ rhostfs_lib.c:lcl_lstat:591:pathname=//ravioles.txt
+ERROR: rhostfs_lib.c:lcl_lstat:594: rcode=-2
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=-2 m1i1=15 m1i2=44 m1i3=138557984 m1p1=0x48d4b000 m1p2=0x48debd48 m1p3=(nil) 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=0
+ rhostfs_svr.c:main:157:dvk_receive rcode=0
+ rhostfs_svr.c:main:161:RECEIVE msg:source=30 type=33 m4l1=3 m4l2=3 m4l3=1222557136 m4l4=1222017024 m4l5=0
+ rhostfs_svr.c:main:169:call_nr=33 rhs_who_e=30
+ rhostfs_svr.c:main:185:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=3
+DEBUG 13574:dvk_vcopy:122: src_ep=30 dst_ep=35534 bytes=3
+DEBUG 13574:dvk_vcopy:126: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:195:REPLY msg:source=30 type=0 m1i1=3 m1i2=3 m1i3=1222557136 m1p1=0x48d68000 m1p2=(nil) m1p3=0x4 
+DEBUG 13574:dvk_send_T:803: endpoint=30 timeout=30000
+DEBUG 13574:dvk_send_T:807: ipc ret=76
+
+ rhostfs_svr.c:main:155:RHOSTFSD is waiting for requests
+DEBUG 13574:dvk_receive_T:834: endpoint=31438 timeout=-1
+DEBUG 13574:dvk_receive_T:838: ipc ret=-1
+ERROR: 13574:dvk_receive_T:857: rcode=-1
+ rhostfs_svr.c:main:157:dvk_receive rcode=-1
+ERROR: rhostfs_svr.c:main:158: rcode=-1
+
+SE IMPLEMENTARON TODAS LA FUNCIONES 
+ rhostfs_svr.c:main:123:Initialize the LINUX call vector to a safe default handler.
+...............................................................................................................................................................................................................................................................................................................................................................................................
+ rhostfs_svr.c:main:130:SYS_lstat->lcl_lstat
+ rhostfs_svr.c:main:131:SYS_lstat64->lcl_lstat
+ rhostfs_svr.c:main:132:SYS_fstat->lcl_fstat
+ rhostfs_svr.c:main:133:SYS_access->lcl_access
+ rhostfs_svr.c:main:134:SYS_open->lcl_open
+ rhostfs_svr.c:main:135:SYS_unlink->lcl_unlink
+ rhostfs_svr.c:main:136:SYS_close->lcl_close
+ rhostfs_svr.c:main:137:SYS_pwrite64->lcl_pwrite
+ rhostfs_svr.c:main:138:SYS_pread64->lcl_pread
+ rhostfs_svr.c:main:139:SYS_link->lcl_link
+ rhostfs_svr.c:main:140:SYS_symlink->lcl_symlink
+ rhostfs_svr.c:main:141:SYS_mkdir->lcl_mkdir
+ rhostfs_svr.c:main:142:SYS_rmdir->lcl_rmdir
+ rhostfs_svr.c:main:143:SYS_fchown->lcl_fchown
+ rhostfs_svr.c:main:144:SYS_chown->lcl_chown
+ rhostfs_svr.c:main:145:SYS_fchmod->lcl_fchmod
+ rhostfs_svr.c:main:146:SYS_chmod->lcl_chmod
+ rhostfs_svr.c:main:147:SYS_ftruncate->lcl_ftruncate
+ rhostfs_svr.c:main:148:SYS_truncate->lcl_truncate
+ rhostfs_svr.c:main:149:SYS_renameat2->lcl_renameat2
+ rhostfs_svr.c:main:150:SYS__llseek->lcl_llseek
+ rhostfs_svr.c:main:151:SYS_fsync->lcl_fsync
+ rhostfs_svr.c:main:152:SYS_dup2->lcl_dup2
+ rhostfs_svr.c:main:153:SYS_fdatasync->lcl_fdatasync
+ rhostfs_svr.c:main:154:SYS_readlink->lcl_readlink
+ rhostfs_svr.c:main:155:SYS_rename->lcl_rename
+ rhostfs_svr.c:main:156:SYS_mknod->lcl_mknod
+ rhostfs_svr.c:main:157:SYS_futimesat->lcl_futimes
+ rhostfs_svr.c:main:158:SYS_utimes->lcl_utimes
+ rhostfs_svr.c:main:159:SYS_statfs->lcl_statfs
+ rhostfs_svr.c:main:161:Initialize the RHOSTFS own call vector to a safe default handler.
+#####
+ rhostfs_svr.c:main:168:RMT_get_rootpath->lcl_get_rootpath
+ rhostfs_svr.c:main:169:RMT_readdir->lcl_readdir
+ rhostfs_svr.c:main:170:RMT_opendir->lcl_opendir
+ rhostfs_svr.c:main:171:RMT_seekdir->lcl_seekdir
+ rhostfs_svr.c:main:172:RMT_closedir->lcl_closedir
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 14292:dvk_receive_T:834: endpoint=31438 timeout=-1
+
+
+
+-------------------------------------------------------------------------------
+20190905:
+
+PROBLEMA : NO FUNCIONA EL LS 
+
+
+DEBUG rh_read_dir:151: 
+DEBUG rmt_readdir:429: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 2867:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2867:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:438: d_ino=1056387 d_off=422242064 d_reclen=24 d_type=8 d_name=fideos.txt <<<<<<<<<< BIEN LEIDO 
+DEBUG rh_read_dir:163: d_name=xt <<<<<<<<<<<<<< MAL LEIDO 
+DEBUG rh_close_dir:236: 
+DEBUG rmt_closedir:447: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 2867:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2867:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+
+DEBUG rmt_readdir:439: sizeof(struct USR_dirent)=268 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DIFERENTES !!!! 
+DEBUG rmt_readdir:440: d_ino=1173481 d_off=1411523919 d_reclen=16 d_type=4 d_name=.
+DEBUG rmt_readdir:441: dire_ptr=08504680
+DEBUG rh_read_dir:156: dire_ptr=08504680
+DEBUG rh_read_dir:162: sizeof(struct USR_dirent)=276<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DIFERENTES !!!! 
+
+
+struct USR_dirent {
+   ino_t          d_ino;       /* Inode number */
+   off_t          d_off;       /* Not an offset; see below */
+   unsigned short d_reclen;    /* Length of this record */
+   unsigned char  d_type;      /* Type of file; not supported
+								  by all filesystem types */
+   char           d_name[256]; /* Null-terminated filename */
+};
+
+EN EL KERNEL ES DIFERENTE !!!! 
+struct dirent {
+	unsigned long	d_fileno;	/* file number of entry */
+	unsigned short	d_reclen;	/* length of this record */
+	unsigned char	d_type; 	/* file type, see below */
+	unsigned char	d_namlen;	/* length of string in d_name */
+#ifdef _POSIX_SOURCE
+	char	d_name[255 + 1];	/* name must be no longer than this */
+#else
+#define	MAXNAMLEN	255
+	char	d_name[MAXNAMLEN + 1];	/* name must be no longer than this */
+#endif
+};
+
+-------------------------------------------------------------------------------
+20190906:  FUNCIONO EL LS !!!!!!!
+
+
+DEBUG rmt_readdir:461: ino_dire=1056391 pos_dire=1779754718 len_dire=24 type_dire=8 name_dire=pizza.txt  <<<<<< ACA EL INODE ESTA BIEN 
+DEBUG rh_read_dir:164: ino_dire=1056391 pos_dire=1779754718 len_dire=24 type_dire=8 name_dire=pizza.txt
+
+root@node0:/usr/src/dvs/vos/rootfs# stat pizza.txt 
+  Fichero: pizza.txt
+  TamaÃ±o: 9617         Bloques: 24         Bloque E/S: 4096   fichero regular
+Dispositivo: 801h/2049d Nodo-i: 1056391     Enlaces: 1 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< AQUI SE COMPRUEBA 
+Acceso: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+      Acceso: 2019-09-05 12:17:55.896096881 -0300
+ModificaciÃ³n: 2019-09-05 12:17:52.284135489 -0300
+      Cambio: 2019-09-05 12:17:52.284135489 -0300
+    CreaciÃ³n: -
+
+
+DEBUG rh_read_name:577: name=//pirulo.txt
+DEBUG rmt_lstat64:368: filename=//pirulo.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 2783:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 2783:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:375: st_ino=0 st_mode=0 st_nlink=46961 st_uid=7803 st_gid=16 <<<<<<<<<<< HUEVADAS 
+DEBUG rmt_lstat64:376: st_size=1 st_blksize=0 st_blocks=0						<<<<<<<<<<< HUEVADAS 
+DEBUG rh_statfs_to_hostfs:50: st_ino=138158515
+DEBUG rh_statfs_to_hostfs:56: st_size=0
+DEBUG rh_statfs_to_hostfs:68: ino=138158515 maj=1209793660 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=138158515
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=138158515
+DEBUG RHOSTFS_I:40: i_ino=138158515
+
+
+total 6472471551520036264
+systemd-journald[406]: /dev/kmsg buffer overrun, some messages lost.
+drwxr-xr-x 7 root root 17592186048512 Mar  5  2019 DC0
+-rw-r--r-- 1 root root 17592186044416 Aug 21 01:42 borrar.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 20:06 chau.txt
+drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 dvs
+-rw-r--r-- 1 root root 17592186054033 Sep  5 21:41 error.txt
+-rw-r--r-- 1 root root 17592186044423 Sep  5 23:05 fideos.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 19 13:28 hola.txt
+-rw-r--r-- 1 root root 17592186044423 Sep  5 21:36 pesado.txt
+-rw-r--r-- 1 root root 17592186044424 Sep  5 21:37 pesado1.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:11 pirulo.txt
+-rw-r--r-- 1 root root 17592186054033 Sep  5 15:17 pizza.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:19 teta.txt
+-rw-r--r-- 1 root root 17592186044416 Aug 24 22:01 vomito.txt
+
+LA PRIMERA COLUMNA ES EL INODE QUE OBIVAMENTE ESTA MAL !!!
+total 679630225012993237
+138158515 drwxr-xr-x 7 root root 17592186048512 Mar  5  2019 DC0
+138158515 drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 DC1
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 21 01:42 borrar.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 20:06 chau.txt
+138158515 drwxr-xr-x 2 root root 17592186048512 Sep 22  2018 dvs
+138158515 -rw-r--r-- 1 root root 17592186054033 Sep  5 21:41 error.txt
+138158515 -rw-r--r-- 1 root root 17592186044423 Sep  5 23:05 fideos.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 19 13:28 hola.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 23:05 papito.txt
+138158515 -rw-r--r-- 1 root root 17592186044423 Sep  5 21:36 pesado.txt
+138158515 -rw-r--r-- 1 root root 17592186044424 Sep  5 21:37 pesado1.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:11 pirulo.txt
+138158515 -rw-r--r-- 1 root root 17592186044424 Sep  5 18:08 puchero.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:19 teta.txt
+138158515 -rw-r--r-- 1 root root 17592186044416 Aug 24 22:01 vomito.txt
+
+
+-------------------------------------------------------------------------------
+20190907:  ERRORES EN LSTAT 
+
+EN UML 
+	DEBUG rh_read_name:577: name=//hola.txt
+	DEBUG rmt_lstat64:368: filename=//hola.txt
+	DEBUG rmt_syscall:28: who=1 syscallnr=196
+	DEBUG 2:dvk_sendrec_T:866: endpoint=1 timeout=-1
+	DEBUG 2:dvk_sendrec_T:870: ipc ret=0
+	DEBUG rmt_syscall:40: m_type=0
+	DEBUG rmt_lstat64:375: st_ino=0 st_mode=0 st_nlink=0 st_uid=7781 st_gid=16 <<<<<<<<<<<<<< MAL 
+	DEBUG rmt_lstat64:376: st_size=1 st_blksize=1000 st_blocks=0				<<<<<<<<<<<<<< MAL 
+	DEBUG rh_statfs_to_hostfs:50: st_ino=138158515
+	DEBUG rh_statfs_to_hostfs:56: st_size=5
+	DEBUG rh_statfs_to_hostfs:68: ino=138158515 maj=1213168764 min=0
+	DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+	DEBUG rh_read_name:606: S_IFREG
+
+
+EN HOST 
+	 rhostfs_svr.c:main:191:RECEIVE msg:source=30 type=196 m2i1=11 m2i2=139432512 m2i3=40 m2l1=1221300224 m2l2=1213168640 m2p1=0x28
+	 rhostfs_svr.c:main:199:call_nr=196 rhs_who_e=30
+	 rhostfs_svr.c:main:215:LINUX Calling vector 196
+	 rhostfs_lib.c:lcl_lstat:587:len=11
+	DEBUG 762:dvk_vcopy:122: src_ep=30 dst_ep=1 bytes=11
+	DEBUG 762:dvk_vcopy:126: ipc ret=11
+	 rhostfs_lib.c:lcl_lstat:591:pathname=//hola.txt
+	 rhostfs_lib.c:lcl_lstat:596:st_ino=1056357 st_mode=81A4 st_nlink=1 st_uid=1000 st_gid=0 <<<<<<<<<<< TODO OK 
+	 rhostfs_lib.c:lcl_lstat:597:st_size=5 st_blksize=4096 st_blocks=8					   	  <<<<<<<<<<< TODO OK 
+	DEBUG 762:dvk_vcopy:122: src_ep=1 dst_ep=30 bytes=88
+	DEBUG 762:dvk_vcopy:126: ipc ret=88
+	 rhostfs_svr.c:main:225:REPLY msg:source=30 type=0 m2i1=11 m2i2=139432512 m2i3=40 m2l1=1221300224 m2l2=1213168640 m2p1=0x28
+
+LINEA DE COMANDO 
+
+root@node0:/usr/src/dvs/vos/rootfs# ls -li
+total 16
+1173488 drwxr-xr-x 7 root root 4096 mar  4  2019 DC0
+1173487 drwxr-xr-x 2 root root 4096 sep 22  2018 DC1
+1173489 drwxr-xr-x 2 root root 4096 sep 22  2018 dvs
+1056357 -rw-r--r-- 1 pap  root    5 sep  7 11:07 hola.txt
+
+root@node0:/usr/src/dvs/vos/rootfs# stat hola.txt 
+  Fichero: hola.txt
+  TamaÃ±o: 5            Bloques: 8          Bloque E/S: 4096   fichero regular
+Dispositivo: 801h/2049d Nodo-i: 1056357     Enlaces: 1
+Acceso: (0644/-rw-r--r--)  Uid: ( 1000/     pap)   Gid: (    0/    root)
+      Acceso: 2019-09-07 11:07:41.319770682 -0300
+ModificaciÃ³n: 2019-09-07 11:07:41.319770682 -0300
+      Cambio: 2019-09-07 11:08:10.430628907 -0300
+    CreaciÃ³n: -
+
+
+USAR LAS ESTRUCTURAS PROPIAS TANTO EN UML COMO EN RHOSTFSD 
+Luego hacer la conversion en UML
+
+FUNCIONO EL STAT 
+root@node1:/rhost# stat hola.txt                                              
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//hola.txt
+DEBUG rmt_lstat64:357: filename=//hola.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1056357 ust_mode=81A4 ust_nlink=1 ust_uid=1000 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=5 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1056357
+DEBUG rh_ustat_to_hostfs:56: st_size=5
+DEBUG rh_ustat_to_hostfs:68: ino=1056357 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+  File: hola.txt
+  Size: 5               Blocks: 8          IO Block: 1024   regular file
+Device: 1ah/26d Inode: 1056357     Links: 1
+Access: (0644/-rw-r--r--)  Uid: ( 1000/ UNKNOWN)   Gid: (    0/    root)
+Access: 2019-09-07 14:07:41.000000000 +0000
+Modify: 2019-09-07 14:07:41.000000000 +0000
+Change: 2019-09-07 14:08:10.000000000 +0000
+ Birth: -
+root@node1:/rhost# 
+
+FUNCIONO EL LS !!!!
+root@node1:/rhost# ls -li
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=éH0Ë
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=1 w=0 x=0
+DEBUG rmt_access:60: filename=// mode=4
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_open:352: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rmt_open64:48: filename=// flags=0 mode=0
+DEBUG rmt_syscall:28: who=1 syscallnr=5
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG rhostfs_readdir:327: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=
+DEBUG __dentry_name:103: 
+DEBUG rhostfs_readdir:329: name=//
+DEBUG rh_open_dir:132: path=//
+DEBUG rmt_opendir:414: name=//
+DEBUG rmt_syscall:28: who=1 syscallnr=4096
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG rh_seek_dir:143: 
+DEBUG rmt_seekdir:430: loc=0
+DEBUG rmt_syscall:28: who=1 syscallnr=4097
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173487 d_off=685728586 d_reclen=16 d_type=4 d_name=DC1
+DEBUG rmt_readdir:465: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+DEBUG rh_read_dir:166: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1056357 d_off=992853236 d_reclen=20 d_type=8 d_name=hola.txt
+DEBUG rmt_readdir:465: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+DEBUG rh_read_dir:166: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173490 d_off=1195081311 d_reclen=16 d_type=4 d_name=..
+DEBUG rmt_readdir:465: ino_dire=1173490 pos_dire=1195081311 len_dire=16 type_dire=4 name_dire=..
+DEBUG rh_read_dir:166: ino_dire=1173490 pos_dire=1195081311 len_dire=16 type_dire=4 name_dire=..
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173489 d_off=1310449570 d_reclen=16 d_type=4 d_name=dvs
+DEBUG rmt_readdir:465: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+DEBUG rh_read_dir:166: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173481 d_off=1779754718 d_reclen=16 d_type=4 d_name=.
+DEBUG rmt_readdir:465: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+DEBUG rh_read_dir:166: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=268
+DEBUG rmt_readdir:457: d_ino=1173488 d_off=2147483647 d_reclen=16 d_type=4 d_name=DC0
+DEBUG rmt_readdir:465: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+DEBUG rh_read_dir:166: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:37: rcode=61
+ERROR: rmt_readdir:454: rcode=-1
+ERROR: rh_read_dir:160: rcode=-2
+DEBUG rh_close_dir:245: 
+DEBUG rmt_closedir:475: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC1
+DEBUG rmt_lstat64:357: filename=//DC1
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173487 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173487
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173487 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173487
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//DC1
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//hola.txt
+DEBUG rmt_lstat64:357: filename=//hola.txt
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1056357 ust_mode=81A4 ust_nlink=1 ust_uid=1000 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=5 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1056357
+DEBUG rh_ustat_to_hostfs:56: st_size=5
+DEBUG rh_ustat_to_hostfs:68: ino=1056357 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=81A4
+DEBUG rh_read_name:606: S_IFREG
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1056357
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//hola.txt
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//dvs
+DEBUG rmt_lstat64:357: filename=//dvs
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173489 ust_mode=41ED ust_nlink=2 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173489
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173489 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173489
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173489
+DEBUG rhostfs_permission:924: 
+DEBUG rhostfs_permission:924: 
+DEBUG inode_name:147: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//dvs
+DEBUG __dentry_name:103: 
+DEBUG rh_access_file:92: path=// r=0 w=0 x=1
+DEBUG rmt_access:60: filename=// mode=1
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rhostfs_lookup:729: 
+DEBUG rhostfs_iget:209: 
+DEBUG rhostfs_alloc_inode:254: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103: 
+DEBUG rh_read_name:577: name=//DC0
+DEBUG rmt_lstat64:357: filename=//DC0
+DEBUG rmt_syscall:28: who=1 syscallnr=196
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rmt_lstat64:365: ust_ino=1173488 ust_mode=41ED ust_nlink=7 ust_uid=0 ust_gid=0
+DEBUG rmt_lstat64:366: ust_size=4096 ust_blksize=4096 ust_blocks=8
+DEBUG rh_ustat_to_hostfs:50: st_ino=1173488
+DEBUG rh_ustat_to_hostfs:56: st_size=4096
+DEBUG rh_ustat_to_hostfs:68: ino=1173488 maj=0 min=0
+DEBUG rh_read_name:585: rdev=0 st.maj=0 st.min=0 st.mode=41ED
+DEBUG rh_read_name:593: S_IFDIR
+DEBUG rhostfs_evict_inode:270: 
+DEBUG RHOSTFS_I:40: i_ino=1173488
+DEBUG rhostfs_destroy_inode:288: 
+DEBUG RHOSTFS_I:40: i_ino=1173488
+DEBUG rhostfs_readdir:327: 
+DEBUG dentry_name:132: 
+DEBUG dentry_name:138: name=
+DEBUG __dentry_name:103: 
+DEBUG rhostfs_readdir:329: name=//
+DEBUG rh_open_dir:132: path=//
+DEBUG rmt_opendir:414: name=//
+DEBUG rmt_syscall:28: who=1 syscallnr=4096
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=3
+DEBUG rh_seek_dir:143: 
+DEBUG rmt_seekdir:430: loc=2147483647
+DEBUG rmt_syscall:28: who=1 syscallnr=4097
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+DEBUG rh_read_dir:156: 
+DEBUG rmt_readdir:448: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4098
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+ERROR: rmt_syscall:37: rcode=61
+ERROR: rmt_readdir:454: rcode=-1
+ERROR: rh_read_dir:160: rcode=-2
+DEBUG rh_close_dir:245: 
+DEBUG rmt_closedir:475: 
+DEBUG rmt_syscall:28: who=1 syscallnr=4099
+DEBUG 1105:dvk_sendrec_T:866: endpoint=1 timeout=-1
+DEBUG 1105:dvk_sendrec_T:870: ipc ret=0
+DEBUG rmt_syscall:40: m_type=0
+total 16
+1173488 drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+1173487 drwxr-xr-x 2 root root 4096 Sep 22  2018 DC1
+1173489 drwxr-xr-x 2 root root 4096 Sep 22  2018 dvs
+1056357 -rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+
+DESPUES DE COPIAR UN ARCHIVO DESDE ROOTFS->RHOSTFSD 
+
+POR FUERA 
+	root@node0:/usr/src/dvs/vos/rootfs# ls -l
+	total 28
+	drwxr-xr-x 7 root root 4096 mar  4  2019 DC0
+	drwxr-xr-x 2 root root 4096 sep 22  2018 DC1
+	drwxr-xr-x 2 root root 4096 sep 22  2018 dvs <<<<<<<<<<<<<< ESTE NO APERECE ABAJO
+	-rw-r--r-- 1 root root 9617 sep  7 17:16 error.txt
+	-rw-r--r-- 1 pap  root    5 sep  7 11:07 hola.txt
+
+
+DEBUG RHOSTFS_I:40: i_ino=1173488
+	total 24
+	drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+	drwxr-xr-x 2 root root 4096 Sep 22  2018 DC1
+	-rw-r--r-- 1 root root 9617 Sep  7 20:16 error.txt
+	-rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+AQUI VALTA DC1 
+	DEBUG rmt_syscall:40: m_type=0
+	total 24
+	drwxr-xr-x 7 root root 4096 Mar  5  2019 DC0
+	drwxr-xr-x 2 root root 4096 Sep 22  2018 dvs
+	-rw-r--r-- 1 root root 9617 Sep  7 20:16 error.txt
+	-rw-r--r-- 1 1000 root    5 Sep  7 14:07 hola.txt
+
+SEGURAMENTE ES PRODUCTO DE LA DEMORA EN IPC 
+
+
+-------------------------------------------------------------------------------
+20190908:  PROBLEMA DE LENTITUD: Sin duda esta recibiendo un SIGNAL cada 1 segundo.
+			
+root@node0:~# grep someone dmesg.txt 
+[  309.959563] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.969580] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.980165] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  309.990178] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.000496] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.010469] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.019606] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.030151] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.039981] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.050504] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.060494] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.069829] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.079843] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.089848] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.099845] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.109855] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.120538] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.130533] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.139555] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.149894] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+			
+
+[  310.130614] DEBUG 760:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  310.130616] DEBUG 760:ipc_mini_sendrec:523: srcdst_ep=1
+[  310.130619] DEBUG 760:check_caller:545: caller_pid=760 caller_tgid=760
+[  310.130621] DEBUG 760:check_caller:581: WLOCK_PROC ep=30 count=0
+[  310.130624] DEBUG 760:check_caller:610: WUNLOCK_PROC ep=30 count=0
+[  310.130626] DEBUG 760:check_caller:613: dcid=0
+[  310.130629] DEBUG 760:check_caller:617: RLOCK_DC dc=0 count=0
+[  310.130631] DEBUG 760:check_caller:621: RUNLOCK_DC dc=0 count=0
+[  310.130633] DEBUG 760:check_caller:627: caller_pid=760 
+[  310.130636] DEBUG 760:ipc_mini_sendrec:534: RLOCK_PROC ep=30 count=0
+[  310.130639] DEBUG 760:ipc_mini_sendrec:539: caller_nr=30 caller_ep=30 srcdst_ep=1 
+[  310.130641] DEBUG 760:ipc_mini_sendrec:542: RUNLOCK_PROC ep=30 count=0
+[  310.130643] DEBUG 760:ipc_mini_sendrec:544: dcid=0
+[  310.130645] DEBUG 760:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[  310.130648] DEBUG 760:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[  310.130651] DEBUG 760:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
+[  310.130653] DEBUG 760:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
+[  310.130655] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
+[  310.130658] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
+[  310.130660] DEBUG 760:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
+[  310.130662] DEBUG 760:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[  310.130664] DEBUG 760:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[  310.130667] DEBUG 760:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[  310.130670] DEBUG 760:ipc_mini_sendrec:617: dcid=0 caller_pid=760 caller_nr=30 srcdst_ep=1 
+[  310.130672] DEBUG 760:ipc_mini_sendrec:622: SENDING HALF
+[  310.130674] DEBUG 760:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[  310.130677] DEBUG 760:sleep_proc2:729: BEFORE DOWN lpid=760 p_sem=0 timeout=-1
+[  310.130679] DEBUG 760:sleep_proc2:731: endpoint=30 flags=C
+[  310.130682] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
+[  310.130684] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=1 count=0
+[  310.130686] DEBUG 760:sleep_proc2:736: endpoint=30 flags=C
+[  310.139527] DEBUG 760:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
+[  310.139534] DEBUG 760:sleep_proc2:745: endpoint=30 flags=C cpuid=2
+[  310.139538] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=1 count=0
+[  310.139541] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=30 count=0
+[  310.139545] DEBUG 760:sleep_proc2:769: pid=760 ret=-512
+[  310.139551] DEBUG 760:sleep_proc2:794: nr=30 endp=30 dcid=0 lpid=760 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  310.139555] DEBUG 760:sleep_proc2:796: someone wakeups me: sem=0 p_rcode=-512
+[  310.139559] DEBUG 760:ipc_mini_sendrec:743: WUNLOCK_PROC ep=1 count=0
+[  310.139562] DEBUG 760:ipc_mini_sendrec:747: removing 30 link from 1 list.
+[  310.139565] DEBUG 760:ipc_mini_sendrec:748: LIST_DEL
+[  310.139569] DEBUG 760:ipc_mini_sendrec:764: WUNLOCK_PROC ep=30 count=0
+[  310.139572] ERROR: 760:ipc_mini_sendrec:765: rcode=-512
+[  310.139625] DEBUG 760:SYSC_ipc:163: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  310.139626] DEBUG 760:ipc_mini_sendrec:523: srcdst_ep=1
+[  310.139628] DEBUG 760:check_caller:545: caller_pid=760 caller_tgid=760
+[  310.139629] DEBUG 760:check_caller:581: WLOCK_PROC ep=30 count=0
+[  310.139631] DEBUG 760:check_caller:610: WUNLOCK_PROC ep=30 count=0
+[  310.139632] DEBUG 760:check_caller:613: dcid=0
+[  310.139634] DEBUG 760:check_caller:617: RLOCK_DC dc=0 count=0
+[  310.139635] DEBUG 760:check_caller:621: RUNLOCK_DC dc=0 count=0
+[  310.139637] DEBUG 760:check_caller:627: caller_pid=760 
+[  310.139638] DEBUG 760:ipc_mini_sendrec:534: RLOCK_PROC ep=30 count=0
+[  310.139640] DEBUG 760:ipc_mini_sendrec:539: caller_nr=30 caller_ep=30 srcdst_ep=1 
+[  310.139641] DEBUG 760:ipc_mini_sendrec:542: RUNLOCK_PROC ep=30 count=0
+[  310.139643] DEBUG 760:ipc_mini_sendrec:544: dcid=0
+[  310.139644] DEBUG 760:ipc_mini_sendrec:548: RLOCK_DC dc=0 count=0
+[  310.139645] DEBUG 760:ipc_mini_sendrec:551: RUNLOCK_DC dc=0 count=0
+[  310.139647] DEBUG 760:ipc_mini_sendrec:566: WLOCK_PROC ep=30 count=0
+[  310.139649] DEBUG 760:ipc_mini_sendrec:573: WUNLOCK_PROC ep=30 count=0
+[  310.139650] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=1 count=0
+[  310.139652] DEBUG 760:ipc_mini_sendrec:573: WLOCK_PROC ep=30 count=0
+[  310.139653] DEBUG 760:ipc_mini_sendrec:574: srcdst_nr=1 srcdst_ep=1
+[  310.139654] DEBUG 760:ipc_mini_sendrec:594: srcdst_ptr->p_usr.p_nodeid=0
+[  310.139656] DEBUG 760:ipc_mini_sendrec:598: RLOCK_DC dc=0 count=0
+[  310.139657] DEBUG 760:ipc_mini_sendrec:602: RUNLOCK_DC dc=0 count=0
+[  310.139659] DEBUG 760:ipc_mini_sendrec:617: dcid=0 caller_pid=760 caller_nr=30 srcdst_ep=1 
+[  310.139660] DEBUG 760:ipc_mini_sendrec:622: SENDING HALF
+[  310.139662] DEBUG 760:ipc_mini_sendrec:730: destination is not waiting srcdst_ptr-flags=4. Enqueue at TAIL.
+[  310.139664] DEBUG 760:sleep_proc2:729: BEFORE DOWN lpid=760 p_sem=0 timeout=-1
+[  310.139665] DEBUG 760:sleep_proc2:731: endpoint=30 flags=C
+[  310.139666] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=30 count=0
+[  310.139668] DEBUG 760:sleep_proc2:735: WUNLOCK_PROC ep=1 count=0
+[  310.139669] DEBUG 760:sleep_proc2:736: endpoint=30 flags=C
+[  310.149868] DEBUG 760:sleep_proc2:744: endpoint=30 ret=-512 p_rcode=0
+[  310.149874] DEBUG 760:sleep_proc2:745: endpoint=30 flags=C cpuid=2
+[  310.149877] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=1 count=0
+[  310.149881] DEBUG 760:sleep_proc2:747: WLOCK_PROC ep=30 count=0
+[  310.149884] DEBUG 760:sleep_proc2:769: pid=760 ret=-512
+
+ESTRATEGIA: 
+	1) modificar sleep_proc, sleep_proc2, sleep_proc3 
+	2) si es un proceso UML marcarlo en p_misc_flags ???? me olvide para que 
+	3) en el driver UML setear evitar que se produzcan SIGNALs !! 
+		
+int sleep_proc(struct proc *proc, long timeout) 
+
+	do {
+		proc->p_rcode = OK; 
+		WUNLOCK_PROC(proc); 
+		do {
+			if( timeout < 0) {
+				ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+			} else {
+				ret = wait_event_interruptible_timeout(proc->p_wqhead, 
+					(proc->p_pseudosem >= 0),msecs_to_jiffies(timeout));	
+			}
+			DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
+			DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());
+			if( ret == ERESTARTSYS) {
+#define MSECBYSEC	1000
+				if( timeout > 0){
+					timeout-= MSECBYSEC;
+				}
+			}
+		}while ( ret == ERESTARTSYS);
+		WLOCK_PROC(proc); 
+		if( proc->p_rcode != EDVSUSR2USR &&
+			proc->p_rcode != EDVSKRN2USR && 
+			proc->p_rcode != EDVSUSR2KRN ) break;
+		ret = copy_trampoline(proc);
+		LOCAL_PROC_UP(proc->p_tramp.t_rqtr, ret);
+		if ( ret < 0) break;
+	}while(1);
+	
+DE ESTA FORMA SE PUEDE VER CUAL FUE LA SIGNAL QUE SE PRODUJO 	
+	https://linux-arm-kernel.infradead.narkive.com/dyyDPFcI/signal-in-the-kernel-for-wait-event-interruptible
+	
+	if (wait_event_interruptible(my_queue, myCondition) ==
+	-ERESTARTSYS)
+	{
+	printk(KERN_ERR "sig[0] is 0x%08x, sig[1] is
+	0x%08x\n",
+	current->pending.signal.sig[0],
+	current->pending.signal.sig[1]);
+	return -ERESTARTSYS;
+	}		
+		
+PROBLEMA DE LIST_DEL
+=====================
+
+Se modifico dvk_ipc tanto del modulo como de IPC.
+Se modificaron new_mini_sendrec, new_mini_send y  ipc_mini_sendrec y ipc_mini_send, pretegiendo al dueño de la lista.
+El dueño de la lista es 1) el proceso destinatario del mensaje (LOCAL) o 2) el SPROXY  para procesos remotos.
+ 
+			sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms); 
+			ret = caller_ptr->p_rcode;
+//			WUNLOCK_PROC(srcdst_ptr);   /* moved below 2019-09-08  <<<<<<<<<<<<<<<<<<<<<<<<< DESDE AQUI 
+			if( ret) {
+				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
+					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
+					LIST_DEL(&caller_ptr->p_link); /* remove from queue */
+				} else {
+					caller_ptr->p_usr.p_lclsent++;
+				}
+				WUNLOCK_PROC(srcdst_ptr); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< HASTA AQUI 
+				clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
+				clear_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
+				caller_ptr->p_usr.p_getfrom    	= NONE;
+				caller_ptr->p_usr.p_sendto 	= NONE;
+				if( ret == EDVSMIGRATE) 
+					goto sendrec_replay;
+			} else {
+				WUNLOCK_PROC(srcdst_ptr); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Y AQUI
+				caller_ptr->p_usr.p_lclsent++;
+			}
+		}
+	}
+	
+
+-------------------------------------------------------------------------------
+20200817:
+			Retomando RHOSTFS con varias cosas nuevas. 
+			Despues de haber arrancado el rhostfsd y el UML da varios errores.
+			
+			Initilizing Remote DVS HOSTFS
+			DEBUG init_rh_client:1169: local_nodeid=-1
+			DEBUG 285:dvk_open:103: 
+			DEBUG 285:dvk_getdvsinfo:254: 
+			DEBUG 1:SYSC_ipc:165: ipc_getdvsinfo: call=6912 first=0 second=0 third=0 fifth=0 
+			DEBUG 1:new_getdvsinfo:1899: local_nodeid=-1 
+			DEBUG 285:dvk_getdvsinfo:258: ipc ret=-1
+			ERROR: 285:dvk_getdvsinfo:259: rcode=0
+			
+			DEBUG init_rh_client:1180: rhclient_nodeid=0
+			DEBUG init_rh_client:1181: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+			DEBUG 285:dvk_getdcinfo:355: dcid=0
+			DEBUG 1:SYSC_ipc:165: ipc_getdcinfo: call=3584 first=0 second=0 third=0 fifth=0 
+			DEBUG 1:new_getdcinfo:1928: dcid=0 
+			ERROR: 1:new_getdcinfo:1936: rcode=-318
+			DEBUG 285:dvk_getdcinfo:359: ipc ret=-318
+			ERROR: 285:dvk_getdcinfo:360: rcode=0
+			DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+			DEBUG init_rh_client:1193: flags=0 dc_nodes=0 dc_pid=0 dc_name=
+			ERROR: init_rh_client:1200: rcode=-337
+			ERROR: init_rhostfs:1225: rcode=-337
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PROBLEMA:	ESTA USANDO LAS DVK_CALLS DEL KERNEL UML.
+		dvk_xxxx se transforma en new_xxxx en UML 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+Aug 18 01:29:17 node1 kernel: Initilizing Remote DVS HOSTFS
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1169: local_nodeid=-1
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_open:103:
+ 
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdvsinfo:254: 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:SYSC_ipc:165: ipc_getdvsinfo: call=6912 first=0 second=0  third=0 fifth=0 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:new_getdvsinfo:1899: local_nodeid=-1 
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdvsinfo:258: ipc ret=-1
+Aug 18 01:29:17 node1 kernel: ERROR: 1228:dvk_getdvsinfo:259: rcode=0
+
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1180: rhclient_nodeid=0
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1181: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes =32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdcinfo:355: dcid=0
+Aug 18 01:29:17 node1 kernel: DEBUG 1:SYSC_ipc:165: ipc_getdcinfo: call=3584 first=0 second=0 third=0 fifth=0 
+Aug 18 01:29:17 node1 kernel: DEBUG 1:new_getdcinfo:1928: dcid=0 
+Aug 18 01:29:17 node1 kernel: ERROR: 1:new_getdcinfo:1936: rcode=-318
+Aug 18 01:29:17 node1 kernel: DEBUG 1228:dvk_getdcinfo:359: ipc ret=-318
+Aug 18 01:29:17 node1 kernel: ERROR: 1228:dvk_getdcinfo:360: rcode=0
+
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+Aug 18 01:29:17 node1 kernel: DEBUG init_rh_client:1193: flags=0 dc_nodes=0 dc_pid=0 dc_name=
+Aug 18 01:29:17 node1 kernel: ERROR: init_rh_client:1200: rcode=-337
+Aug 18 01:29:17 node1 kernel: ERROR: init_rhostfs:1225: rcode=-337
+
+-------------------------------------------------------------------------------
+20200818:
+			Arregle el problema de la invocacion al DVK de UML por el DVK del HOST.
+			
+			mount none /rhost -t rhostfs <<<< FUNCIONA 
+			
+			cuando hago ls /rhost 
+			HOST
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 10696:dvk_receive_T:882: endpoint=31438 timeout=-1
+			DEBUG 10696:dvk_receive_T:886: ipc ret=0
+			 rhostfs_svr.c:main:187:dvk_receive rcode=0
+			 rhostfs_svr.c:main:191:RECEIVE msg:source=10 type=4096 m2i1=3 m2i2=1 m2i3=0 m2l1=1187344384 m2l2=1187344384 m2p1=0x48254ea0
+			 rhostfs_svr.c:main:199:call_nr=4096 rhs_who_e=10
+			 rhostfs_svr.c:main:210:RHOSTFS Calling vector 0
+			 rhostfs_lib.c:lcl_opendir:661:len=3
+			DEBUG 10696:dvk_vcopy:124: src_ep=10 dst_ep=1 bytes=3
+			DEBUG 10696:dvk_vcopy:128: ipc ret=-1
+			ERROR: 10696:dvk_vcopy:129: rcode=-324  <<<<<<< EDVSPROCSTS (_SIGN 324)  	/* Bad process status  */
+			ERROR: 10696:dvk_vcopy:155: rcode=-324
+			ERROR: rhostfs_lib.c:lcl_opendir:664: rcode=-324
+			 rhostfs_svr.c:main:225:REPLY msg:source=10 type=-324 m2i1=3 m2i2=1 m2i3=0 m2l1=1187344384 m2l2=1187344384 m2p1=0x48254ea0
+			DEBUG 10696:dvk_send_T:849: endpoint=10 timeout=30000
+			DEBUG 10696:dvk_send_T:853: ipc ret=-1
+			ERROR: 10696:dvk_send_T:854: rcode=-61
+			ERROR: 10696:dvk_send_T:873: rcode=-61
+			ERROR: rhostfs_svr.c:main:227: rcode=-61
+
+			UML ESTA ENVIANDO ERESTARTSYS (-512) Y DVK LO CONVIERTE EN -EINTR (-4) para indicar que no debe reejecutar la SYSCALL 
+			!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[ 2207.562807] DEBUG CLIENT:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[ 2207.562809] DEBUG CLIENT:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[ 2207.562811] DEBUG CLIENT:new_mini_sendrec:523: srcdst_ep=1
+[ 2207.562812] DEBUG CLIENT:check_caller:585: caller_pid=CLIENT caller_tgid=CLIENT
+[ 2207.562814] DEBUG CLIENT:check_caller:621: WLOCK_PROC ep=10 count=1377
+[ 2207.562815] DEBUG CLIENT:check_caller:651: WUNLOCK_PROC ep=10 count=1377
+[ 2207.562816] DEBUG CLIENT:check_caller:654: dcid=0
+[ 2207.562819] DEBUG CLIENT:check_caller:658: RLOCK_DC dc=0 count=0
+[ 2207.562820] DEBUG CLIENT:check_caller:662: RUNLOCK_DC dc=0 count=0
+[ 2207.562821] DEBUG CLIENT:check_caller:668: caller_pid=CLIENT 
+[ 2207.562823] DEBUG CLIENT:new_mini_sendrec:534: RLOCK_PROC ep=10 count=1377
+[ 2207.562824] DEBUG CLIENT:new_mini_sendrec:539: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[ 2207.562826] DEBUG CLIENT:new_mini_sendrec:546: RUNLOCK_PROC ep=10 count=1377
+[ 2207.562827] DEBUG CLIENT:new_mini_sendrec:548: dcid=0
+[ 2207.562828] DEBUG CLIENT:new_mini_sendrec:552: RLOCK_DC dc=0 count=0
+[ 2207.562829] DEBUG CLIENT:new_mini_sendrec:556: RUNLOCK_DC dc=0 count=0
+[ 2207.562831] DEBUG CLIENT:new_mini_sendrec:571: RLOCK_PROC ep=10 count=1377
+[ 2207.562832] DEBUG CLIENT:new_mini_sendrec:578: RUNLOCK_PROC ep=10 count=1377
+[ 2207.562833] DEBUG CLIENT:new_mini_sendrec:584: WUNLOCK_PROC ep=10 count=1378
+[ 2207.562835] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=1 count=8
+[ 2207.562836] DEBUG CLIENT:new_mini_sendrec:584: WLOCK_PROC ep=10 count=1378
+[ 2207.562837] DEBUG CLIENT:new_mini_sendrec:586: srcdst_nr=1 srcdst_ep=1
+[ 2207.562839] DEBUG CLIENT:new_mini_sendrec:606: srcdst_ptr->p_usr.p_nodeid=0
+[ 2207.562840] DEBUG CLIENT:new_mini_sendrec:610: RLOCK_DC dc=0 count=0
+[ 2207.562841] DEBUG CLIENT:new_mini_sendrec:614: RUNLOCK_DC dc=0 count=0
+[ 2207.562843] DEBUG CLIENT:new_mini_sendrec:629: dcid=0 caller_pid=CLIENT caller_nr=10 srcdst_ep=1 
+[ 2207.562844] DEBUG CLIENT:new_mini_sendrec:634: SENDING HALF
+[ 2207.562845] DEBUG CLIENT:new_mini_sendrec:767: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[ 2207.562847] DEBUG CLIENT:sleep_proc2:770: BEFORE DOWN lpid=CLIENT p_sem=0 timeout=-1
+[ 2207.562848] DEBUG CLIENT:sleep_proc2:772: endpoint=10 flags=C
+[ 2207.562849] DEBUG CLIENT:sleep_proc2:776: WUNLOCK_PROC ep=10 count=1378
+[ 2207.562850] DEBUG CLIENT:sleep_proc2:776: WUNLOCK_PROC ep=1 count=8
+[ 2207.562852] DEBUG CLIENT:sleep_proc2:777: endpoint=10 flags=C
+[ 2207.572470] DEBUG CLIENT:sleep_proc2:785: endpoint=10 ret=-512 p_rcode=0
+[ 2207.572475] DEBUG CLIENT:sleep_proc2:786: endpoint=10 flags=C cpuid=2
+[ 2207.572477] DEBUG CLIENT:sleep_proc2:788: WLOCK_PROC ep=1 count=8
+[ 2207.572479] DEBUG CLIENT:sleep_proc2:788: WLOCK_PROC ep=10 count=1378
+[ 2207.572481] DEBUG CLIENT:sleep_proc2:812: pid=CLIENT ret=-4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+[ 2207.572483] DEBUG CLIENT:sleep_proc2:837: nr=10 endp=10 dcid=0 lpid=CLIENT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[ 2207.572485] DEBUG CLIENT:sleep_proc2:839: someone wakeups me: sem=0 p_rcode=-4<<<<<<<<<<<<<<<<<<<<<<<<<<
+[ 2207.572487] DEBUG CLIENT:new_mini_sendrec:784: removing 10 link from 1 list.
+[ 2207.572488] DEBUG CLIENT:new_mini_sendrec:785: LIST_DEL
+[ 2207.572489] DEBUG CLIENT:new_mini_sendrec:789: WUNLOCK_PROC ep=1 count=8
+[ 2207.572491] DEBUG CLIENT:new_mini_sendrec:805: WUNLOCK_PROC ep=10 count=1378
+[ 2207.572492] ERROR: CLIENT:new_mini_sendrec:806: rcode=-4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		
+		
+POSIBLE SOLUCION:!!!!!!
+Crear un THREAD que se encargue de hacer el SENDREC al servidor. 
+1) Se puede utilizar el driver um-dvk para crear el thread el cual se registra con el endpoint SYSTASK 
+2) Para ello, los "clientes" utilizaran 
+		int DVK_sendrec_T(int srcdst_ep, message *m_ptr, long timeout)
+		{
+			Task *t;
+			proc_usr_t *p_ptr;
+			
+			t = current_task();
+			assert(t->p_proc != NULL);
+			p_ptr = t->p_proc;
+			LIBDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
+			
+			t->p_rqst.rq_oper 		= SENDREC;
+			t->p_rqst.rq_other_ep 	= srcdst_ep;
+			t->p_rqst.rq_mptr		= m_ptr;
+			t->p_rqst.rq_timeout	= timeout;
+			t->p_rqst.rq_rcode 		= OK;
+			
+			PH_MTX_UNLOCK(t->p_th_mutex); // wakeup  the thread 
+			PH_MTX_LOCK(t->p_tsk_mutex);   // wait the thread  
+			
+			tasksleep(&t->p_rendez);
+			if( t->p_rqst.rq_rcode < 0 )
+				ERROR_RETURN(t->p_rqst.rq_rcode);
+			return(t->p_rqst.rq_rcode);
+		}
+		
+static void pth_dvk(void *t_arg)
+{
+	Task *t;
+	dvk_request_t *r_ptr;
+	vcopy_t		 *v_ptr;
+	int rcode;
+	
+	t = (Task *) t_arg;
+	LIBDEBUG("DVK thread for %d\n", t->id);	
+	PH_MTX_LOCK(t->p_th_mutex);
+	PH_MTX_UNLOCK(t->p_tsk_mutex);
+	
+	t->p_proc->p_lpid = t->pid;
+	t->p_proc->p_vpid = syscall(SYS_gettid);
+	rcode = dvk_tbind(t->p_proc->p_dcid, t->p_proc->p_endpoint);
+	if( rcode < EDVSERRCODE) {
+		ERROR_PRINT(errno);
+		if( (-errno) !=  t->p_proc->p_endpoint)
+			ERROR_EXIT(rcode);
+		rcode = t->p_proc->p_endpoint;
+	}
+	
+	LIBDEBUG("DVK thread for %d READY to process requests on endpoint=%d\n", 
+			t->id, rcode);	
+			
+	while(TRUE){
+		PH_MTX_LOCK(t->p_th_mutex);
+		PH_MTX_UNLOCK(t->p_tsk_mutex);
+		r_ptr = &t->p_rqst;
+		LIBDEBUG("%d: " DVK_RQST_FORMAT, t->id, DVK_RQST_FIELDS(r_ptr));
+		switch(r_ptr->rq_oper) {
+			case SEND:
+				rcode = dvk_send_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case SENDREC:
+				rcode = dvk_sendrec_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case RECEIVE:
+				rcode = dvk_receive_T(r_ptr->rq_other_ep,r_ptr->rq_mptr,r_ptr->rq_timeout);
+				break;
+			case NOTIFY:
+				rcode = dvk_notify(r_ptr->rq_other_ep);
+				break;
+			case VCOPY:
+				v_ptr = &r_ptr->rq_vcopy;
+				LIBDEBUG("%s: " MUK_VCOPY_FORMAT, t->p_proc->p_name, MUK_VCOPY_FIELDS(v_ptr));
+				rcode = dvk_vcopy(v_ptr->v_src,v_ptr->v_saddr,
+										v_ptr->v_dst,v_ptr->v_daddr,
+										v_ptr->v_bytes);
+				break;
+			default:
+				rcode = EDVSNOSYS;
+				break;
+		}
+		r_ptr->rq_rcode = rcode;			
+		LIBDEBUG("pid=%d id=%d name=%s rcode=%d\n", t->pid, t->id, t->name, rcode);
+		PH_MTX_LOCK(muk2_mutex);
+//		TAILQ_INSERT_TAIL(&tout_head, t, p_entries);
+//		pthread_kill(t->pid, SIGIO);
+		SET_BIT(dvk_bitmap, t->id);
+		PH_MTX_UNLOCK(muk2_mutex);
+	}
+}
+
+  3) utilizar p_rmtcmd (en lugar de p_rqst de arriba) para almacenar el comando a enviar al thread 
+ 
+-------------------------------------------------------------------------------
+20200820:
+		EN HOST SESION 1:
+		 cd /usr/src/dvs/dvk-tests/
+		  ./tests.sh 0 0
+		  . /dev/shm/DC0.sh
+		  cd /usr/src/dvs/vos/uml/rhostfsd
+		  ./rhostfsd rhostfs.cfg 
+		  
+		EN HOST SESION 2:
+		  . /dev/shm/DC0.sh
+		  cd /usr/src/linux
+		  nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 rd_ep=3 rhs_ep=1
+		  
+		EN UML (SESION 2):
+			mount none /rhost -t rhostfs
+
+	
+EN HOST 
+		rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 647:dvk_receive_T:882: endpoint=31438 timeout=-1
+		DEBUG 647:dvk_receive_T:886: ipc ret=0
+		 rhostfs_svr.c:main:187:dvk_receive rcode=0
+		 rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=4100 m2i1=1 m2i2=134652689 m2i3=4171936 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+		 rhostfs_svr.c:main:199:call_nr=4100 rhs_who_e=-2
+		 rhostfs_svr.c:main:210:RHOSTFS Calling vector 4
+		 rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+		DEBUG 647:dvk_vcopy:124: src_ep=1 dst_ep=-2 bytes=24
+		DEBUG 647:dvk_vcopy:128: ipc ret=24
+		 rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=1 m2i2=134652689 m2i3=4171936 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+		DEBUG 647:dvk_send_T:849: endpoint=-2 timeout=30000
+		DEBUG 647:dvk_send_T:853: ipc ret=76
+		 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 647:dvk_receive_T:882: endpoint=31438 timeout=-1
+
+EN UML (USAR PUTTY QUE DEJA LOG)
+		Initilizing Remote DVS HOSTFS
+		DEBUG init_rh_client:1169: local_nodeid=0
+		DEBUG 582:dvk_open:104:
+		DEBUG 582:dvk_getdvsinfo:255:
+		DEBUG 582:dvk_getdvsinfo:259: ipc ret=0
+		DEBUG init_rh_client:1180: rhclient_nodeid=0
+		DEBUG init_rh_client:1181: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		DEBUG 582:dvk_getdcinfo:356: dcid=0
+		DEBUG 582:dvk_getdcinfo:360: ipc ret=0
+		DEBUG init_rh_client:1192: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+		DEBUG init_rh_client:1193: flags=0 dc_nodes=1 dc_pid=622 dc_name=DC0
+		DEBUG 582:dvk_bind_X:1206: cmd=0 dcid=0 pid=582 endpoint=10 nodeid=-1
+		DEBUG 582:dvk_bind_X:1210: ipc ret=10 errno=0
+		DEBUG init_rh_client:1206: rhostfs bind rhc_ep=10
+		DEBUG 582:dvk_getprocinfo:1163: dcid=0 p_nr=10
+		DEBUG 582:dvk_getprocinfo:1167: ipc ret=0
+		DEBUG init_rh_client:1211: rhostfs CLIENT: nr=10 endp=10 dcid=0 flags=0 misc=20 lpid=1295 vpid=582 nodeid=0 name=linux
+		DEBUG 582:dvk_getprocinfo:1163: dcid=0 p_nr=1
+		DEBUG 582:dvk_getprocinfo:1167: ipc ret=0
+		DEBUG init_rh_client:1217: rhostfs SERVER: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=1293 vpid=1293 nodeid=0 name=rhostfsd
+		DEBUG init_rhostfs:1231: Remote DVS HOSTFS server is bound on endpoint:1
+		DEBUG init_rhostfs:1233: register_filesystem rhostfs_type rcode:0
+
+
+		root@node1:~# mount none /rhost -t rhostfs
+		DEBUG rhostfs_read_sb:1135: 
+		DEBUG rh_get_rootpath:488: 
+		DEBUG rmt_syscall:28: who=1 syscallnr=4100
+		DEBUG UML_sendrec_T:129: srcdst_ep=1
+		DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+		DEBUG UML_sendrec_T:151: Request: source=1200356800 type=4100 m1i1=1 m1i2=134652689 m1i3=4171936 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660 
+		up_thread
+		DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+		DEBUG dvk_thread:227: Request: source=1200356800 type=4100 m1i1=1 m1i2=134652689 m1i3=4171936 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660 
+		DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+		down_kernel
+		DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+		
+ ======================================================================================================
+20200822:
+
+
+EN UML:
+root@node1:~# mount none /rhost -t rhostfs
+DEBUG rhostfs_read_sb:1135:
+DEBUG rh_get_rootpath:488:
+DEBUG rmt_syscall:28: who=1 syscallnr=4100
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1214569920 type=4100 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1214569920 type=4100 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+DEBUG dvk_thread:231: Reply rcode=0: source=1 type=0 m1i1=1 m1i2=134652689 m1i3=5145712 m1p1=084fde60 m1p2=080d9ed0 m1p3=08432660
+up_kernel
+DEBUG dvk_thread:219: READY to process requests
+down_thread
+DEBUG rmt_syscall:40: m_type=4100
+DEBUG rh_get_rootpath:492: dirp=/usr/src/dvs/vos/rootfs
+DEBUG rhostfs_fill_sb_common:1076: req_root=(null)
+DEBUG rhostfs_alloc_inode:254:
+DEBUG rhostfs_show_options:295:
+DEBUG rhostfs_show_options:300: root_path=/
+do_exit: local_nodeid:0
+root@node1:~# ls /rhost
+DEBUG rhostfs_permission:924:
+DEBUG inode_name:147:
+DEBUG dentry_name:132:
+DEBUG dentry_name:138: name= ÊH
+DEBUG __dentry_name:103:
+DEBUG rh_access_file:92: path=// r=1 w=0 x=0
+DEBUG rmt_access:60: filename=// mode=4
+DEBUG rmt_syscall:28: who=1 syscallnr=33
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1224998076 type=33 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1224998076 type=33 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+DEBUG dvk_thread:231: Reply rcode=0: source=1 type=0 m1i1=3 m1i2=4 m1i3=1224998084 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_kernel
+DEBUG dvk_thread:219: READY to process requests
+down_thread
+DEBUG rmt_syscall:40: m_type=33
+ERROR: rh_access_file:102: rcode=0
+DEBUG rhostfs_open:352: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG RHOSTFS_I:40: i_ino=2
+DEBUG dentry_name:132:
+DEBUG dentry_name:138: name=//
+DEBUG __dentry_name:103:
+DEBUG rmt_open64:48: filename=// flags=0 mode=0
+DEBUG rmt_syscall:28: who=1 syscallnr=5
+DEBUG UML_sendrec_T:129: srcdst_ep=1
+DEBUG UML_sendrec_T:149: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG UML_sendrec_T:151: Request: source=1224998076 type=5 m1i1=3 m1i2=0 m1i3=0 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+up_thread
+DEBUG dvk_thread:225: cmd=0x3 dcid=0 src=-2 dst=1 snode=0 dnode=0 rcode=0 len=0
+DEBUG dvk_thread:227: Request: source=1224998076 type=5 m1i1=3 m1i2=0 m1i3=0 m1p1=48caa000 m1p2=  (null) m1p3=00000004
+DEBUG 10:dvk_sendrec_T:917: endpoint=1 timeout=30000
+down_kernel
+DEBUG 10:dvk_sendrec_T:921: ipc ret=0
+
+EN HOST 
+
+ rhostfs_svr.c:main:159:SYS_statfs->lcl_statfs
+ rhostfs_svr.c:main:161:Initialize the RHOSTFS own call vector to a safe default handler.
+#####
+ rhostfs_svr.c:main:168:RMT_get_rootpath->lcl_get_rootpath
+ rhostfs_svr.c:main:169:RMT_readdir->lcl_readdir
+ rhostfs_svr.c:main:170:RMT_opendir->lcl_opendir
+ rhostfs_svr.c:main:171:RMT_seekdir->lcl_seekdir
+ rhostfs_svr.c:main:172:RMT_closedir->lcl_closedir
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=4100 m2i1=1 m2i2=134652689 m2i3=5145712 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+ rhostfs_svr.c:main:199:call_nr=4100 rhs_who_e=-2
+ rhostfs_svr.c:main:210:RHOSTFS Calling vector 4
+ rhostfs_lib.c:lcl_get_rootpath:14:rhs_dir=/usr/src/dvs/vos/rootfs
+DEBUG 716:dvk_vcopy:124: src_ep=1 dst_ep=-2 bytes=24
+DEBUG 716:dvk_vcopy:128: ipc ret=24
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=1 m2i2=134652689 m2i3=5145712 m2l1=139452000 m2l2=135110352 m2p1=0x8432660
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=33 m2i1=3 m2i2=4 m2i3=1224998084 m2l1=1221238784 m2l2=0 m2p1=0x4
+ rhostfs_svr.c:main:199:call_nr=33 rhs_who_e=-2
+ rhostfs_svr.c:main:215:LINUX Calling vector 33
+ rhostfs_lib.c:lcl_access:71:len=3 mode=4
+DEBUG 716:dvk_vcopy:124: src_ep=-2 dst_ep=1 bytes=3
+DEBUG 716:dvk_vcopy:128: ipc ret=3
+ rhostfs_lib.c:lcl_access:75:name=//
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=0 m2i1=3 m2i2=4 m2i3=1224998084 m2l1=1221238784 m2l2=0 m2p1=0x4
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+DEBUG 716:dvk_receive_T:886: ipc ret=0
+ rhostfs_svr.c:main:187:dvk_receive rcode=0
+ rhostfs_svr.c:main:191:RECEIVE msg:source=-2 type=5 m2i1=3 m2i2=0 m2i3=0 m2l1=1221238784 m2l2=0 m2p1=0x4
+ rhostfs_svr.c:main:199:call_nr=5 rhs_who_e=-2
+ rhostfs_svr.c:main:215:LINUX Calling vector 5
+ rhostfs_lib.c:lcl_open:53:len=3 flags=0 mode=0
+DEBUG 716:dvk_vcopy:124: src_ep=-2 dst_ep=1 bytes=3
+DEBUG 716:dvk_vcopy:128: ipc ret=3
+ rhostfs_lib.c:lcl_open:57:name=//
+ rhostfs_svr.c:main:225:REPLY msg:source=-2 type=3 m2i1=3 m2i2=0 m2i3=0 m2l1=1221238784 m2l2=0 m2p1=0x4
+DEBUG 716:dvk_send_T:849: endpoint=-2 timeout=30000
+DEBUG 716:dvk_send_T:853: ipc ret=76
+ rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+DEBUG 716:dvk_receive_T:882: endpoint=31438 timeout=-1
+
+	
+	
+-------------------------------------------------------------------------------
+20200824:
+		Se volvio nuevamente a utilizar dvk_xxxxx, es decir las IPC del HOST, sin usar el dvk_thread
+		
+		SERVER ES DESPERTADO DE SU RECEIVE POR EL SENDREC DEL CLIENTE
+		Aug 24 09:22:19 node0 kernel: [  891.296807] DEBUG SVR:sleep_proc:431: someone wakeups me: sem=0 p_rcode=0
+		
+		CLIENT ES DESPERTADO POR ERESTARTSYS(EINTR)
+		Aug 24 09:22:19 node0 kernel: [  891.296808] DEBUG CLT:sleep_proc:404: pid=CLT ret=-4
+		Aug 24 09:22:19 node0 kernel: [  891.296811] DEBUG CLT:sleep_proc:429: nr=10 endp=10 dcid=0 lpid=CLT p_cpumask=FFFFFFFF nodemap=1 name=linux 
+		Aug 24 09:22:19 node0 kernel: [  891.296812] DEBUG CLT:sleep_proc:431: someone wakeups me: sem=0 p_rcode=-4
+		Aug 24 09:22:19 node0 kernel: [  891.296815] DEBUG CLT:new_mini_sendrec:805: WUNLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.296818] DEBUG SVR:new_mini_receive:503: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.296820] ERROR: CLT:new_mini_sendrec:806: rcode=-4
+		
+		SERVER TRATA DE HACER UN VCOPY, PERO LO ENCUENTRA EN ESTADO RUNNING!! 
+		Aug 24 09:22:19 node0 kernel: [  891.320649] DEBUG SVR:SYSC_ipc:165: ipc_vcopy: call=3328 first=10 second=1225408512 third=1 fifth=3 
+		Aug 24 09:22:19 node0 kernel: [  891.320653] DEBUG SVR:ipc_vcopy:259: src_ep=10 dst_ep=1 bytes=3
+		Aug 24 09:22:19 node0 kernel: [  891.320656] DEBUG SVR:new_vcopy:1124: src_ep=10 dst_ep=1 bytes=3
+		Aug 24 09:22:19 node0 kernel: [  891.320659] DEBUG SVR:check_caller:585: caller_pid=SVR caller_tgid=SVR
+		Aug 24 09:22:19 node0 kernel: [  891.320661] DEBUG SVR:check_caller:621: WLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320663] DEBUG SVR:check_caller:651: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320664] DEBUG SVR:check_caller:654: dcid=0
+		Aug 24 09:22:19 node0 kernel: [  891.320665] DEBUG SVR:check_caller:658: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320667] DEBUG SVR:check_caller:662: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320668] DEBUG SVR:check_caller:668: caller_pid=SVR 
+		Aug 24 09:22:19 node0 kernel: [  891.320670] DEBUG SVR:new_vcopy:1138: RLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320671] DEBUG SVR:new_vcopy:1159: dcid=0
+		Aug 24 09:22:19 node0 kernel: [  891.320672] DEBUG SVR:new_vcopy:1169: RUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320674] DEBUG SVR:new_vcopy:1171: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320675] DEBUG SVR:new_vcopy:1194: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320676] DEBUG SVR:new_vcopy:1197: RLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320678] DEBUG SVR:new_vcopy:1216: (src_nr+dc_max_nr_tasks)=44
+		Aug 24 09:22:19 node0 kernel: [  891.320679] DEBUG SVR:new_vcopy:1222: RUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320680] DEBUG SVR:new_vcopy:1227: RLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320681] DEBUG SVR:new_vcopy:1228: LOCK PROCESSES IN ASCENDENT ORDER
+		Aug 24 09:22:19 node0 kernel: [  891.320683] DEBUG SVR:new_vcopy:1235: WLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320684] DEBUG SVR:new_vcopy:1235: WLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.320686] DEBUG SVR:new_vcopy:1239: CHECK FOR SOURCE/DESTINATION STATUS
+		Aug 24 09:22:19 node0 kernel: [  891.320687] DEBUG SVR:new_vcopy:1322: RUNLOCK_DC dc=0 count=0
+		Aug 24 09:22:19 node0 kernel: [  891.320689] DEBUG SVR:new_vcopy:1331: WUNLOCK_PROC ep=1 count=1
+		Aug 24 09:22:19 node0 kernel: [  891.320690] DEBUG SVR:new_vcopy:1331: WUNLOCK_PROC ep=10 count=2
+		Aug 24 09:22:19 node0 kernel: [  891.320692] ERROR: SVR:new_vcopy:1334: rcode=-324 << EDVSPROCSTS (_SIGN 324)  	/* Bad process status  */
+
+		Se modifico el kernel del HOST (y de UML tambien) para soportar el UNIKERNEL_BIND.
+		Se modifico el rhostfs_kernel.c   
+			rhc_ep = dvk_bind_X(UNIKERNEL_BIND, dcid, (pid_t) os_gettid(), RH_CLIENT_EP, LOCALNODE);
+
+		
+------------------------------------------------------------------------------
+20200825: 
+
+DESPUES DE MONTADO Y CUANDO SE HACE UN "ls /rhost" entre los logs sale lo siguiente
+	DEBUG rmt_readdir:466: ino_dire=0 pos_dire=0 len_dire=0 type_dire=0 name_dire=
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1173487 pos_dire=685728586 len_dire=16 type_dire=4 name_dire=DC1
+	DEBUG rmt_readdir:466: ino_dire=1056357 pos_dire=992853236 len_dire=20 type_dire=8 name_dire=hola.txt
+	DEBUG rmt_readdir:466: ino_dire=1173490 pos_dire=1124126938 len_dire=16 type_dire=4 name_dire=..
+	DEBUG rmt_readdir:466: ino_dire=1056365 pos_dire=1195081311 len_dire=24 type_dire=8 name_dire=error.txt
+	DEBUG rmt_readdir:466: ino_dire=1173489 pos_dire=1310449570 len_dire=16 type_dire=4 name_dire=dvs
+	DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+	DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+	DEBUG rmt_readdir:466: ino_dire=1173488 pos_dire=2147483647 len_dire=16 type_dire=4 name_dire=DC0
+
+	PARECIERA SER QUE NO HAY ERROR DE M3IPC (rcode=-4 EINTR) sino otro error de interpretacion.
+	ESTO ES LO ULTIMO QUE HACE PARA LUEGO ENTRAR EN LOOP 
+		DEBUG rmt_syscall:28: who=1 syscallnr=4098
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=-1
+		ERROR: 2:dvk_sendrec_T:923: rcode=0
+		DEBUG rmt_syscall:41: m_type=4098
+		DEBUG rmt_readdir:458: d_ino=1173481 d_off=1779754718 d_reclen=16 d_type=4 d_name=.
+		DEBUG rmt_readdir:466: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+		DEBUG rh_read_dir:166: ino_dire=1173481 pos_dire=1779754718 len_dire=16 type_dire=4 name_dire=.
+		DEBUG rh_read_dir:156: 
+		DEBUG rmt_readdir:449: 
+		
+		DEBUG rmt_syscall:28: who=1 syscallnr=4098
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=76
+		ERROR: rmt_syscall:38: rcode=324  			<< EDVSPROCSTS (_SIGN 324)  /* Bad process status  */
+		ERROR: rmt_readdir:455: rcode=-1
+		ERROR: rh_read_dir:160: rcode=-2
+		DEBUG rh_close_dir:245: 
+		DEBUG rmt_closedir:476: 
+
+---------------------------------------------------------------------------------------------------
+20200825:
+
+FUNCIONA EL BLOQUEO DE LA SIGALRM JUNTO CON SIGIO
+
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		sigaddset(&new_set, SIGALRM);
+		sigaddset(&new_set, SIGIO);
+		old_set = current->blocked;
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
+	}
+	
+	/////////// AQUI VA EL LOOP DE ESPERA ////////////////////////////
+	
+	if(test_bit(MIS_BIT_UNIKERNEL, &proc->p_usr.p_misc_flags)){
+		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+	}
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PROBLEMA. 
+	Todo el contenido del directorio /usr/src/dvs/vos/rootfs lo recibe el CLIENT pero:
+		1) no se detiene porque no sabe cual es el final
+		2) no se detiene porque reejecuta la misma dvk_sendrec() hacia el server y repite
+		
+
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x605880
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x605890
+ rhostfs_svr.c:main:225:REPLY msg:source=10 type=268 m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x6058a0
+ rhostfs_svr.c:main:225:REPLY msg:source=10 >>type=0<< m2i1=134822691 m2i2=1 m2i3=1209450148 m2l1=6314008 m2l2=139581280 m2p1=0x4816bde0
+
+EN EL SERVER RHOSTFSD 
+	Analizar cada una de las syscalls para ver cual es el valor de retorno
+	Hay que devolver el rcode y errno en diferentes campos
+	
+lcl_get_rootpath: OK
+lcl_access:
+lcl_open
+lcl_opendir
+lcl_seekdir
+lcl_readdir
+
+---------------------------------------------------------------------------------------------------
+20200825:
+			Se arreglo el protocolo entre cliente y servidor particularmente la funcion readdir()
+			cuyo valor de retorno es bastante complicadito
+			//       If the end of the directory stream is reached, NULL is returned and
+			//       errno is not changed.  If an error occurs, NULL is returned and errno
+			//       is set appropriately.  To distinguish end of stream from an error,
+			//       set errno to zero before calling readdir() and then check the value
+			//       of errno if NULL is returned.
+
+		FUNCIONO PERFECTAMENTE: mount, ls, cat, cp 
+		FALLO EN UN cp largo entre cp /var/log/messages.1 /rhost 
+		
+		POR FUNCIONAMIENTO MAL de dvk_rcvrqst() 
+		En rhostfsd se reemplazo dvk_rcvrqst_T() por dvk_receive_T() y
+			dvk_reply_T() x dvk_send_T()
+	
+		Cuando se intenta hacer un df tira 
+				root@node1:/rhost# df
+				DEBUG rhostfs_show_options:295:
+				DEBUG rhostfs_show_options:300: root_path=/
+				DEBUG rhostfs_show_options:295:
+				DEBUG rhostfs_show_options:300: root_path=/
+				DEBUG rhostfs_statfs:233:
+				DEBUG rmt_statfs64:376: filename=/
+				DEBUG rmt_syscall:28: who=1 syscallnr=268
+				DEBUG 440:dvk_sendrec_T:918: endpoint=1 timeout=-1
+				DEBUG 440:dvk_sendrec_T:922: ipc ret=0
+				ERROR: rmt_syscall:38: rcode=107
+				ERROR: rh_do_statfs:476: rcode=-107 <<<<<<<< EDVSBADREQUEST
+				df: /rhost: Transport endpoint is not connected
+				Filesystem     1K-blocks   Used Available Use% Mounted on
+				/dev/root        1032088 615880    363780  63% /
+				devtmpfs          516884      0    516884   0% /dev
+				tmpfs             516884      0    516884   0% /dev/shm
+				tmpfs             516884   7020    509864   2% /run
+				tmpfs               5120      0      5120   0% /run/lock
+				tmpfs             516884      0    516884   0% /sys/fs/cgroup
+		EN EL SERVER 
+			rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 13314:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 13314:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=0 m2i3=1214714560 m2l1=1216487872 m2l2=1206623576 m2p1=0x841d9c0
+			 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 268
+			RHOSTFSD: got unused request 268 from 10
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-107 m2i1=2 m2i2=0 m2i3=1214714560 m2l1=1216487872 m2l2=1206623576 m2p1=0x841d9c0
+			DEBUG 13314:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 13314:dvk_send_T:855: ipc ret=76
+
+ERROR, ADEMAS SIGUE EL ERROR -324 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 13314:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 13314:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=181 m2i1=5 m2i2=4096 m2i3=2 m2l1=2568192 m2l2=0 m2p1=0x4582e000
+			 rhostfs_svr.c:main:201:call_nr=181 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 181
+			 rhostfs_lib.c:lcl_pwrite:130:fd=5 count=4096 pos=2568192
+			DEBUG 13314:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=4096
+			DEBUG 13314:dvk_vcopy:130: ipc ret=-1
+			ERROR: 13314:dvk_vcopy:131: rcode=-324
+			ERROR: 13314:dvk_vcopy:157: rcode=-324
+			ERROR: rhostfs_lib.c:lcl_pwrite:148: rcode=-324
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-324 m2i1=5 m2i2=4096 m2i3=2 m2l1=2568192 m2l2=0 m2p1=0x4582e000
+			DEBUG 13314:dvk_send_T:851: endpoint=10 timeout=30000
+
+	
+===========================================================================================================
+20200828:
+		Esta fallando el DF, pero aparentemente es porque hay una SYSCALL no implementada 
+	
+	EN UML 
+		root@node1:/rhost# df
+		DEBUG rhostfs_show_options:295:
+		DEBUG rhostfs_show_options:300: root_path=/
+		DEBUG rhostfs_statfs:233:
+		DEBUG rmt_statfs64:376: filename=/
+		DEBUG rmt_syscall:28: who=1 syscallnr=268 <<<<<<<<<<<<<< #define __NR_statfs64		268
+		DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+		DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+		ERROR: rmt_syscall:38: rcode=107
+		ERROR: rh_do_statfs:476: rcode=-107 <<<<<  EDVSBADREQUEST  (_SIGN 107)  /* destination cannot handle request */
+		df: /rhost: Transport endpoint is not connected
+		Filesystem     1K-blocks   Used Available Use% Mounted on
+		/dev/root        1032088 643628    336032  66% /
+		devtmpfs          516884      0    516884   0% /dev
+		tmpfs             516884      0    516884   0% /dev/shm
+		tmpfs             516884   7020    509864   2% /run
+		tmpfs               5120      0      5120   0% /run/lock
+		tmpfs             516884      0    516884   0% /sys/fs/cgroup
+
+	EN HOST 
+		rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 628:dvk_receive_T:884: endpoint=31438 timeout=-1
+		DEBUG 628:dvk_receive_T:888: ipc ret=0
+		 rhostfs_svr.c:main:189:dvk_receive rcode=0
+		 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=0 m2i3=1214235200 m2l1=1205199328 m2l2=1213226328 m2p1=0x841d9c0
+		 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+		 rhostfs_svr.c:main:217:LINUX Calling vector 268 <<<<<<<<<<<<<<<<<
+		RHOSTFSD: got unused request 268 from 10 <<<<<<<<<<<<<<<<<<<<<<<<<<
+		 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-107 m2i1=2 m2i2=0 m2i3=1214235200 m2l1=1205199328 m2l2=1213226328 m2p1=0x841d9c0
+		DEBUG 628:dvk_send_T:851: endpoint=10 timeout=30000
+		DEBUG 628:dvk_send_T:855: ipc ret=76
+		 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+		DEBUG 628:dvk_receive_T:884: endpoint=31438 timeout=-1
+
+#define SYS_statfs64 	__NR_statfs64
+#define __NR_statfs64	268
+
+	LA TRANSFERENCIA DE DATOS HACIA Y DESDE RHOSTFS FUCIONO PERFECTAMENTE !!!! 
+	
+MODIFICADO AHORA TIRA CUALQUIER HUEVADA 
+		UML
+			root@node1:/rhost# df
+			DEBUG rhostfs_show_options:295:
+			DEBUG rhostfs_show_options:300: root_path=/
+			DEBUG rhostfs_statfs:233:
+			DEBUG rmt_statfs64:376: filename=/
+			DEBUG rmt_syscall:28: who=1 syscallnr=268
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			DEBUG rmt_syscall:41: m_type=0
+			Filesystem            1K-blocks               Used             Available Use% Mounted on
+			/dev/root               1032088             587140                392520  60% /
+			devtmpfs                 516884                  0                516884   0% /dev
+			tmpfs                    516884                  0                516884   0% /dev/shm
+			tmpfs                    516884              13484                503400   3% /run
+			tmpfs                      5120                  0                  5120   0% /run/lock
+			tmpfs                    516884                  0                516884   0% /sys/fs/cgroup
+			none           9847604115478128 -12107444069207172 -33437207499081838056   1% /rhost
+
+		HOST 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1370:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 1370:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=268 m2i1=2 m2i2=1205551104 m2i3=1205935400 m2l1=1205199328 m2l2=1205935448 m2p1=0x47e11d2c
+			 rhostfs_svr.c:main:201:call_nr=268 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 268
+			 rhostfs_lib.c:lcl_statfs:567:len=2
+			DEBUG 1370:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=2
+			DEBUG 1370:dvk_vcopy:130: ipc ret=2
+			 rhostfs_lib.c:lcl_statfs:571:pathname=/
+			DEBUG 1370:dvk_vcopy:126: src_ep=1 dst_ep=10 bytes=64
+			DEBUG 1370:dvk_vcopy:130: ipc ret=64
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=0 m2i1=2 m2i2=1205551104 m2i3=1205935400 m2l1=1205199328 m2l2=1205935448 m2p1=0x47e11d2c
+			DEBUG 1370:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 1370:dvk_send_T:855: ipc ret=76
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1370:dvk_receive_T:884: endpoint=31438 timeout=-1
+
+LISTO!!! AHORA FUNCIONA 
+			root@node1:/rhost# df
+			DEBUG rhostfs_show_options:295:
+			DEBUG rhostfs_show_options:300: root_path=/
+			DEBUG rhostfs_statfs:233:
+			DEBUG rmt_statfs64:376: filename=/
+			DEBUG rmt_syscall:28: who=1 syscallnr=268
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			DEBUG rmt_syscall:41: m_type=0
+			Filesystem     1K-blocks     Used Available Use% Mounted on
+			/dev/root        1032088   587312    392348  60% /
+			devtmpfs          516884        0    516884   0% /dev
+			tmpfs             516884        0    516884   0% /dev/shm
+			tmpfs             516884    13484    503400   3% /run
+			tmpfs               5120        0      5120   0% /run/lock
+			tmpfs             516884        0    516884   0% /sys/fs/cgroup
+			none            19994224 17705184   1250348  94% /rhost
+			
+	
+OTRO ERROR- SEGURAMENTE POR DIFERENCIA CON LA VERSION DE 64 BITS
+
+		UML 
+			DEBUG rmt_lstat64:358: filename=//none
+			DEBUG rmt_syscall:28: who=1 syscallnr=196
+			DEBUG 2:dvk_sendrec_T:918: endpoint=1 timeout=-1
+			DEBUG 2:dvk_sendrec_T:922: ipc ret=0
+			ERROR: rmt_syscall:38: rcode=2
+			ERROR: rmt_lstat64:364: rcode=-1
+			ERROR: rh_stat_file:82: rcode=-2
+			ERROR: rh_read_name:580: rcode=-2 <<<< EDVSNOENT A component of path does not exist, or path is an empty string.
+			DEBUG rhostfs_evict_inode:270:
+			DEBUG RHOSTFS_I:40: i_ino=0
+			DEBUG rhostfs_destroy_inode:288:
+			ERROR: rhostfs_lookup:751: rcode=-2
+			DEBUG RHOSTFS_I:40: i_ino=0
+			none on /rhost type rhostfs (rw,relatime)
+
+		SERVER 
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1407:dvk_receive_T:884: endpoint=31438 timeout=-1
+			DEBUG 1407:dvk_receive_T:888: ipc ret=0
+			 rhostfs_svr.c:main:189:dvk_receive rcode=0
+			 rhostfs_svr.c:main:193:RECEIVE msg:source=10 type=196 m2i1=7 m2i2=1 m2i3=1213250528 m2l1=1206226944 m2l2=1213250588 m2p1=0x1
+			 rhostfs_svr.c:main:201:call_nr=196 rhs_who_e=10
+			 rhostfs_svr.c:main:217:LINUX Calling vector 196
+			 rhostfs_lib.c:lcl_lstat:603:len=7
+			DEBUG 1407:dvk_vcopy:126: src_ep=10 dst_ep=1 bytes=7
+			DEBUG 1407:dvk_vcopy:130: ipc ret=7
+			 rhostfs_lib.c:lcl_lstat:607:pathname=//none
+			ERROR: rhostfs_lib.c:lcl_lstat:610: rcode=-2
+			 rhostfs_svr.c:main:227:REPLY msg:source=10 type=-2 m2i1=7 m2i2=1 m2i3=1213250528 m2l1=1206226944 m2l2=1213250588 m2p1=0x1
+			DEBUG 1407:dvk_send_T:851: endpoint=10 timeout=30000
+			DEBUG 1407:dvk_send_T:855: ipc ret=76
+			 rhostfs_svr.c:main:185:RHOSTFSD is waiting for requests
+			DEBUG 1407:dvk_receive_T:884: endpoint=31438 timeout=-1
+				
+	
+TODO !!!!!!!!!!!!!!!!!!!!!!!!!1111
+		Habria que poner en la linea de comandos el endpoint del server RHOSTFSD 
+		Si no esta ese valor, no inicializa.
+		
+	
+	
+==============================================================================================================
+ULTIMO_LOG 
+
+POSIBLE SOLUCION:
+1) PROBAR CON wait_event_killable en sleep_proc
+
+2)		Utilizar el dvk_thread() para que no se bloquee el UML. 
+		Cuando la salida del sleep_procX() es por ERESTARTSYS y el proceso es de tipo #define MIS_BIT_UNIKERNEL	10
+		ignorarla o directamente reemplazar 
+					ret = wait_event_interruptible(proc->p_wqhead, (proc->p_pseudosem >= 0));
+	PROBLEMA: Como setear MIS_BIT_UNIKERNEL en p_misc_flags??
+	SOLUCION: Se deberia poner el el bind.
+	
+
+TODO: HABILITAR CONFIG_STATIC_LINK
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1627 @@
+[  358.930253] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.930255] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.930257] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.930258] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=708
+[  358.930259] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=708
+[  358.930261] DEBUG 999:check_caller:615: dcid=0
+[  358.930263] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.930264] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.930265] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.930267] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=708
+[  358.930268] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.930270] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=708
+[  358.930271] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.930272] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.930273] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.930275] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=708
+[  358.930276] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=708
+[  358.930277] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=709
+[  358.930279] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.930280] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=709
+[  358.930281] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.930283] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.930284] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.930286] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.930288] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.930289] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.930290] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.930292] ------------[ cut here ]------------
+[  358.930301] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.930303] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.930304] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.930360] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.930361] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.930363]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.930369]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.930373]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.930378] Call Trace:
+[  358.930384]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.930389]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.930391]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.930393]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.930396]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.930398]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.930402]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.930405]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.930407]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.930409]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.930412]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.930416]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.930418] ---[ end trace 7b22ffa2b854fab0 ]---
+[  358.930418] ------------[ cut here ]------------
+[  358.930421] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.930422] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.930423] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.930454] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.930455] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.930456]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.930461]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.930465]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.930469] Call Trace:
+[  358.930472]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.930474]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.930476]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.930478]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.930480]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.930482]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.930485]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.930487]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.930489]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.930491]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.930494]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.930496]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.930497] ---[ end trace 7b22ffa2b854fab1 ]---
+[  358.930499] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.930501] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.930502] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=709
+[  358.930504] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.930505] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.940373] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.940377] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.940379] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.940380] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=709
+[  358.940382] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.940385] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.940386] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.940388] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.940389] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.940391] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.940393] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=709
+[  358.940394] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.940622] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.940624] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.940626] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.940628] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.940630] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=709
+[  358.940631] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=709
+[  358.940632] DEBUG 999:check_caller:615: dcid=0
+[  358.940634] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.940636] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.940637] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.940638] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=709
+[  358.940640] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.940642] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=709
+[  358.940643] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.940644] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.940645] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.940647] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=709
+[  358.940648] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=709
+[  358.940649] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=710
+[  358.940651] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.940652] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=710
+[  358.940653] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.940655] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.940656] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.940657] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.940659] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.940660] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.940661] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.940664] ------------[ cut here ]------------
+[  358.940672] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.940674] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.940675] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.940903] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.940904] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.940907]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.940912]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.940917]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.940921] Call Trace:
+[  358.940933]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.940939]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.940942]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.940944]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.940947]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.940949]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.940953]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.940956]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.940958]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.940960]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.940963]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.940968]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.940971] ---[ end trace 7b22ffa2b854fab2 ]---
+[  358.940973] ------------[ cut here ]------------
+[  358.940976] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.940977] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.940978] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.941021] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.941144] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.941146]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.941150]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.941155]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.941278] Call Trace:
+[  358.941293]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.941299]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.941302]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.941304]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.941307]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.941309]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.941314]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.941317]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.941319]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.941321]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.941391]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.941400]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.941579] ---[ end trace 7b22ffa2b854fab3 ]---
+[  358.941582] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.941584] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.941586] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=710
+[  358.941587] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.941588] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.950194] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.950198] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.950200] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.950204] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=710
+[  358.950205] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.950208] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.950210] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.950212] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.950213] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.950215] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.950217] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=710
+[  358.950218] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.950284] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.950285] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.950287] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.950289] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.950290] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=710
+[  358.950292] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=710
+[  358.950293] DEBUG 999:check_caller:615: dcid=0
+[  358.950295] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.950296] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.950298] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.950299] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=710
+[  358.950301] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.950303] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=710
+[  358.950304] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.950306] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.950307] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.950308] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=710
+[  358.950310] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=710
+[  358.950311] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=711
+[  358.950313] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.950315] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=711
+[  358.950316] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.950317] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.950319] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.950322] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.950324] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.950325] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.950326] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.950328] ------------[ cut here ]------------
+[  358.950337] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.950338] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.950340] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.950397] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.950399] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.950401]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.950406]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.950410]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.950414] Call Trace:
+[  358.950421]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.950425]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.950427]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.950429]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.950432]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.950434]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.950438]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.950443]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.950445]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.950447]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.950450]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.950454]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.950456] ---[ end trace 7b22ffa2b854fab4 ]---
+[  358.950457] ------------[ cut here ]------------
+[  358.950460] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.950461] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.950461] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.950492] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.950494] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.950494]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.950499]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.950503]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.950507] Call Trace:
+[  358.950510]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.950513]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.950515]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.950517]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.950521]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.950523]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.950526]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.950528]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.950530]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.950532]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.950535]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.950537]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.950538] ---[ end trace 7b22ffa2b854fab5 ]---
+[  358.950540] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.950542] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.950543] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=711
+[  358.950545] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.950546] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.960153] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.960157] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.960159] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.960160] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=711
+[  358.960162] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.960165] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.960166] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.960227] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.960229] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.960230] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.960232] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=711
+[  358.960234] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.960314] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.960316] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.960317] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.960319] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.960321] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=711
+[  358.960322] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=711
+[  358.960323] DEBUG 999:check_caller:615: dcid=0
+[  358.960325] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.960326] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.960328] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.960329] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=711
+[  358.960331] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.960332] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=711
+[  358.960333] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.960335] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.960336] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.960338] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=711
+[  358.960339] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=711
+[  358.960340] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=712
+[  358.960342] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.960344] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=712
+[  358.960345] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.960346] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.960348] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.960349] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.960352] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.960353] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.960354] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.960356] ------------[ cut here ]------------
+[  358.960366] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.960367] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.960369] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.960429] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.960431] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.960433]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.960438]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.960442]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.960447] Call Trace:
+[  358.960454]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.960458]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.960461]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.960463]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.960465]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.960467]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.960471]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.960474]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.960476]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.960478]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.960481]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.960486]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.960488] ---[ end trace 7b22ffa2b854fab6 ]---
+[  358.960489] ------------[ cut here ]------------
+[  358.960491] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.960492] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.960493] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.960525] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.960526] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.960526]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.960531]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.960535]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.960539] Call Trace:
+[  358.960542]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.960544]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.960546]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.960548]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.960550]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.960552]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.960555]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.960558]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.960560]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.960561]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.960564]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.960566]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.960567] ---[ end trace 7b22ffa2b854fab7 ]---
+[  358.960569] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.960571] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.960572] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=712
+[  358.960574] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.960575] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.970133] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.970137] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.970139] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.970140] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=712
+[  358.970142] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.970145] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.970146] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.970148] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.970150] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.970152] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.970153] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=712
+[  358.970155] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.970225] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.970226] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.970228] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.970230] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.970231] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=712
+[  358.970233] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=712
+[  358.970234] DEBUG 999:check_caller:615: dcid=0
+[  358.970236] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.970237] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.970238] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.970240] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=712
+[  358.970241] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.970243] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=712
+[  358.970244] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.970245] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.970247] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.970248] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=712
+[  358.970250] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=712
+[  358.970251] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=713
+[  358.970252] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.970254] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=713
+[  358.970255] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.970256] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.970258] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.970259] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.970261] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.970262] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.970263] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.970265] ------------[ cut here ]------------
+[  358.970274] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.970276] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.970277] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.970335] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.970337] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.970339]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.970344]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.970348]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.970353] Call Trace:
+[  358.970360]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.970364]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.970366]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.970368]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.970370]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.970372]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.970377]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.970380]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.970382]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.970384]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.970387]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.970391]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.970393] ---[ end trace 7b22ffa2b854fab8 ]---
+[  358.970394] ------------[ cut here ]------------
+[  358.970396] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.970398] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.970398] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.970430] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.970431] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.970432]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.970436]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.970440]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.970444] Call Trace:
+[  358.970447]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.970449]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.970451]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.970453]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.970455]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.970457]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.970460]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.970462]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.970464]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.970466]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.970469]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.970471]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.970472] ---[ end trace 7b22ffa2b854fab9 ]---
+[  358.970474] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.970476] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.970477] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=713
+[  358.970478] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.970480] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.980361] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.980366] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.980369] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.980370] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=713
+[  358.980371] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.980374] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.980375] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.980378] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.980379] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.980381] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.980382] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=713
+[  358.980384] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.980460] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.980462] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.980463] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.980465] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.980467] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=713
+[  358.980468] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=713
+[  358.980469] DEBUG 999:check_caller:615: dcid=0
+[  358.980472] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.980473] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.980474] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.980476] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=713
+[  358.980477] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.980479] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=713
+[  358.980480] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.980482] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.980483] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.980484] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=713
+[  358.980486] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=713
+[  358.980487] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=714
+[  358.980488] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.980490] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=714
+[  358.980491] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.980492] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.980494] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.980495] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.980497] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.980498] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.980499] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.980502] ------------[ cut here ]------------
+[  358.980511] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.980512] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.980513] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.980573] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.980575] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.980577]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.980582]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.980586]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.980591] Call Trace:
+[  358.980598]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.980603]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.980605]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.980607]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.980610]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.980612]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.980616]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.980619]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.980620]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.980623]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.980626]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.980629]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.980633] ---[ end trace 7b22ffa2b854faba ]---
+[  358.980633] ------------[ cut here ]------------
+[  358.980636] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.980637] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.980638] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.980674] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.980674] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.980675]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.980680]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.980684]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.980688] Call Trace:
+[  358.980691]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.980693]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.980695]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.980697]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.980699]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.980701]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.980704]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.980706]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.980708]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.980710]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.980712]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.980715]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.980716] ---[ end trace 7b22ffa2b854fabb ]---
+[  358.980718] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.980719] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.980721] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=714
+[  358.980722] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.980723] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  358.983809] do_exit: local_nodeid:0
+[  358.984253] DEBUG 1201:new_exit_unbind:243: code=-880825118
+[  358.984256] DEBUG 1201:new_exit_unbind:247: WLOCK_TASK pid=226 count=0
+[  358.984257] DEBUG 1201:new_exit_unbind:378: Process not bound pid=1201 systemd-journal
+[  358.984259] DEBUG 1201:new_exit_unbind:380: WUNLOCK_TASK pid=226 count=0
+[  358.990889] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  358.990894] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  358.990896] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  358.990898] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=714
+[  358.990899] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  358.990902] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  358.990904] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  358.990906] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  358.990908] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  358.990909] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  358.990911] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=714
+[  358.990913] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  358.991118] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  358.991122] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  358.991125] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  358.991127] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  358.991130] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=714
+[  358.991131] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=714
+[  358.991133] DEBUG 999:check_caller:615: dcid=0
+[  358.991135] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  358.991136] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  358.991137] DEBUG 999:check_caller:629: caller_pid=999 
+[  358.991139] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=714
+[  358.991141] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  358.991142] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=714
+[  358.991143] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  358.991145] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  358.991146] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  358.991148] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=714
+[  358.991149] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=714
+[  358.991151] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=715
+[  358.991152] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  358.991154] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=715
+[  358.991155] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  358.991157] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  358.991158] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  358.991160] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  358.991162] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  358.991163] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  358.991164] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  358.991167] ------------[ cut here ]------------
+[  358.991177] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  358.991179] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  358.991180] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.991370] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.991372] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.991375]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  358.991380]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  358.991385]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  358.991390] Call Trace:
+[  358.991402]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.991408]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.991411]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.991413]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.991416]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.991418]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  358.991423]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.991426]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.991428]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.991430]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.991432]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.991436]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.991438] ---[ end trace 7b22ffa2b854fabc ]---
+[  358.991440] ------------[ cut here ]------------
+[  358.991444] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  358.991445] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  358.991446] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  358.991490] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  358.991491] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  358.991491]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  358.991496]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  358.991500]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  358.991504] Call Trace:
+[  358.991507]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  358.991510]  [<cb067a3a>] ? __warn+0xea/0x110
+[  358.991512]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.991514]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.991516]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  358.991518]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  358.991521]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  358.991523]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  358.991525]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  358.991527]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  358.991530]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  358.991532]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  358.991533] ---[ end trace 7b22ffa2b854fabd ]---
+[  358.991538] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  358.991540] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  358.991541] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=715
+[  358.991543] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  358.991544] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.000157] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.000162] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.000164] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.000165] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=715
+[  359.000167] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.000169] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.000171] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.000173] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.000174] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.000176] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.000178] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=715
+[  359.000179] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.000251] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.000252] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.000254] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.000256] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.000259] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=715
+[  359.000260] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=715
+[  359.000261] DEBUG 999:check_caller:615: dcid=0
+[  359.000264] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.000265] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.000266] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.000267] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=715
+[  359.000269] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.000271] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=715
+[  359.000272] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.000274] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.000275] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.000276] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=715
+[  359.000277] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=715
+[  359.000287] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=716
+[  359.000288] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.000289] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=716
+[  359.000291] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.000292] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.000293] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.000295] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.000297] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.000298] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.000299] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.000301] ------------[ cut here ]------------
+[  359.000310] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.000313] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.000314] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.000372] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.000374] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.000375]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.000380]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.000385]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.000389] Call Trace:
+[  359.000396]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.000400]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.000402]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.000404]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.000406]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.000408]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.000413]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.000418]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.000420]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.000422]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.000426]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.000429]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.000431] ---[ end trace 7b22ffa2b854fabe ]---
+[  359.000432] ------------[ cut here ]------------
+[  359.000435] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.000436] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.000436] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.000468] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.000469] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.000469]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.000474]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.000478]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.000557] Call Trace:
+[  359.000562]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.000564]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.000566]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.000568]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.000570]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.000572]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.000575]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.000578]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.000580]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.000582]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.000584]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.000587]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.000589] ---[ end trace 7b22ffa2b854fabf ]---
+[  359.000591] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.000593] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.000594] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=716
+[  359.000595] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.000596] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.010436] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.010440] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.010442] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.010444] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=716
+[  359.010445] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.010448] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.010449] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.010452] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.010453] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.010455] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.010456] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=716
+[  359.010458] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.010530] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.010532] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.010534] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.010536] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.010538] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=716
+[  359.010539] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=716
+[  359.010540] DEBUG 999:check_caller:615: dcid=0
+[  359.010542] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.010544] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.010545] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.010546] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=716
+[  359.010548] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.010550] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=716
+[  359.010551] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.010552] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.010553] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.010555] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=716
+[  359.010557] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=716
+[  359.010558] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=717
+[  359.010560] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.010561] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=717
+[  359.010562] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.010564] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.010565] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.010566] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.010568] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.010569] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.010570] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.010572] ------------[ cut here ]------------
+[  359.010581] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.010583] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.010584] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.010643] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.010644] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.010646]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.010651]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.010656]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.010661] Call Trace:
+[  359.010668]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.010672]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.010674]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.010676]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.010679]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.010681]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.010684]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.010687]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.010689]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.010691]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.010695]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.010699]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.010701] ---[ end trace 7b22ffa2b854fac0 ]---
+[  359.010702] ------------[ cut here ]------------
+[  359.010705] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.010706] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.010706] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.010738] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.010739] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.010740]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.010744]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.010748]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.010753] Call Trace:
+[  359.010755]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.010757]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.010759]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.010761]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.010764]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.010766]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.010768]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.010771]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.010773]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.010775]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.010777]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.010779]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.010781] ---[ end trace 7b22ffa2b854fac1 ]---
+[  359.010783] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.010784] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.010786] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=717
+[  359.010787] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.010788] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.020213] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.020217] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.020219] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.020220] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=717
+[  359.020222] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.020224] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.020226] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.020228] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.020229] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.020231] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.020233] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=717
+[  359.020234] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.020300] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.020302] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.020304] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.020306] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.020307] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=717
+[  359.020309] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=717
+[  359.020310] DEBUG 999:check_caller:615: dcid=0
+[  359.020312] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.020314] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.020315] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.020317] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=717
+[  359.020318] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.020320] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=717
+[  359.020321] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.020323] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.020324] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.020325] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=717
+[  359.020327] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=717
+[  359.020328] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=718
+[  359.020329] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.020331] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=718
+[  359.020332] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.020333] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.020335] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.020336] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.020338] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.020339] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.020340] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.020343] ------------[ cut here ]------------
+[  359.020351] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.020353] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.020354] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.020411] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.020413] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.020415]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.020420]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.020424]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.020429] Call Trace:
+[  359.020435]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.020440]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.020442]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.020444]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.020446]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.020448]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.020452]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.020455]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.020457]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.020459]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.020462]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.020467]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.020469] ---[ end trace 7b22ffa2b854fac2 ]---
+[  359.020470] ------------[ cut here ]------------
+[  359.020472] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.020473] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.020474] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.020505] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.020506] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.020507]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.020513]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.020517]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.020521] Call Trace:
+[  359.020524]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.020532]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.020534]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.020536]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.020538]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.020540]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.020543]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.020545]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.020547]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.020549]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.020552]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.020554]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.020556] ---[ end trace 7b22ffa2b854fac3 ]---
+[  359.020558] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.020559] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.020561] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=718
+[  359.020562] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.020563] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.030145] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.030149] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.030151] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.030152] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=718
+[  359.030154] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.030157] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.030159] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.030161] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.030162] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.030163] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.030165] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=718
+[  359.030167] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.030229] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.030230] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.030232] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.030233] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.030235] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=718
+[  359.030236] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=718
+[  359.030237] DEBUG 999:check_caller:615: dcid=0
+[  359.030240] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.030241] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.030242] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.030244] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=718
+[  359.030246] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.030247] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=718
+[  359.030249] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.030250] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.030251] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.030253] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=718
+[  359.030254] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=718
+[  359.030255] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=719
+[  359.030256] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.030258] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=719
+[  359.030259] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.030260] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.030262] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.030263] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.030265] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.030266] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.030267] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.030269] ------------[ cut here ]------------
+[  359.030277] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.030279] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.030280] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.030338] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.030339] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.030341]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.030346]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.030350]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.030355] Call Trace:
+[  359.030361]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.030365]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.030367]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.030370]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.030372]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.030376]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.030380]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.030383]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.030385]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.030387]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.030390]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.030393]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.030396] ---[ end trace 7b22ffa2b854fac4 ]---
+[  359.030396] ------------[ cut here ]------------
+[  359.030399] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.030400] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.030401] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.030432] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.030433] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.030434]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.030438]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.030442]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.030446] Call Trace:
+[  359.030449]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.030451]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.030453]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.030455]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.030458]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.030460]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.030463]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.030465]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.030467]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.030469]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.030471]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.030474]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.030475] ---[ end trace 7b22ffa2b854fac5 ]---
+[  359.030477] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.030479] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.030480] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=719
+[  359.030482] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.030483] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.040860] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.040865] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.040867] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.040868] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=719
+[  359.040870] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.040873] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.040874] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.040876] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.040878] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.040880] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.040882] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=719
+[  359.040884] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.041125] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.041128] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.041131] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.041133] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.041136] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=719
+[  359.041138] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=719
+[  359.041139] DEBUG 999:check_caller:615: dcid=0
+[  359.041141] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.041142] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.041144] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.041145] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=719
+[  359.041147] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.041149] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=719
+[  359.041150] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.041152] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.041153] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.041155] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=719
+[  359.041156] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=719
+[  359.041157] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=720
+[  359.041159] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.041160] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=720
+[  359.041162] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.041163] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.041164] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.041166] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.041168] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.041169] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.041171] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.041173] ------------[ cut here ]------------
+[  359.041182] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.041185] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.041186] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.041249] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.041251] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.041253]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.041258]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.041263]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.041267] Call Trace:
+[  359.041275]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.041279]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.041282]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.041284]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.041287]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.041289]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.041293]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.041295]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.041297]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.041299]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.041302]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.041307]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.041309] ---[ end trace 7b22ffa2b854fac6 ]---
+[  359.041309] ------------[ cut here ]------------
+[  359.041312] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.041313] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.041314] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.041346] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.041346] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.041347]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.041352]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.041356]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.041360] Call Trace:
+[  359.041363]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.041365]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.041367]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.041369]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.041372]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.041512]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.041518]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.041613]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.041626]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.041629]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.041634]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.041637]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.041642] ---[ end trace 7b22ffa2b854fac7 ]---
+[  359.041647] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.041649] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.041651] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=720
+[  359.041653] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.041654] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.050156] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.050161] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.050164] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.050165] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=720
+[  359.050166] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.050169] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.050171] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.050173] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.050174] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.050175] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.050177] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=720
+[  359.050179] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.050240] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.050241] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.050243] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.050244] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.050246] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=720
+[  359.050247] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=720
+[  359.050248] DEBUG 999:check_caller:615: dcid=0
+[  359.050250] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.050251] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.050253] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.050254] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=720
+[  359.050256] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.050257] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=720
+[  359.050258] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.050260] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.050261] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.050262] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=720
+[  359.050264] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=720
+[  359.050266] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=721
+[  359.050267] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.050268] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=721
+[  359.050271] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.050272] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.050274] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.050275] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.050277] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.050278] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.050279] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.050281] ------------[ cut here ]------------
+[  359.050289] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.050291] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.050291] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.050347] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.050349] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.050350]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.050355]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.050360]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.050364] Call Trace:
+[  359.050370]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.050374]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.050377]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.050378]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.050381]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.050383]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.050387]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.050390]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.050392]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.050394]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.050397]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.050401]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.050403] ---[ end trace 7b22ffa2b854fac8 ]---
+[  359.050404] ------------[ cut here ]------------
+[  359.050407] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.050408] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.050409] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.050442] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.050443] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.050443]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.050448]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.050452]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.050456] Call Trace:
+[  359.050458]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.050461]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.050463]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.050464]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.050467]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.050469]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.050471]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.050474]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.050476]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.050478]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.050480]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.050482]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.050484] ---[ end trace 7b22ffa2b854fac9 ]---
+[  359.050486] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.050487] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.050489] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=721
+[  359.050490] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.050491] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.060303] DEBUG 999:sleep_proc2:746: endpoint=10 ret=-512 p_rcode=0
+[  359.060310] DEBUG 999:sleep_proc2:747: endpoint=10 flags=C cpuid=3
+[  359.060313] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.060314] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=721
+[  359.060316] DEBUG 999:sleep_proc2:771: pid=999 ret=-512
+[  359.060319] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.060321] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=-512
+[  359.060323] DEBUG 999:new_mini_sendrec:792: removing 10 link from 1 list.
+[  359.060324] DEBUG 999:new_mini_sendrec:793: LIST_DEL
+[  359.060327] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.060329] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=721
+[  359.060332] ERROR: 999:new_mini_sendrec:814: rcode=-512
+[  359.060448] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.060450] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.060451] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.060454] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.060455] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=721
+[  359.060458] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=721
+[  359.060459] DEBUG 999:check_caller:615: dcid=0
+[  359.060462] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.060463] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.060464] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.060466] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=721
+[  359.060468] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.060470] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=721
+[  359.060472] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.060473] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.060475] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.060477] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=721
+[  359.060478] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=721
+[  359.060479] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=722
+[  359.060480] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=239
+[  359.060482] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=722
+[  359.060483] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.060484] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.060486] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.060487] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.060489] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.060490] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.060491] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.060494] ------------[ cut here ]------------
+[  359.060506] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.060508] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.060510] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.060583] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.060584] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.060586]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b7b0 e78e5e8c 000003e7
+[  359.060592]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.060596]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b7b0 e78e5e8c
+[  359.060601] Call Trace:
+[  359.060609]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.060615]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.060617]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.060619]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.060621]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.060623]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.060629]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.060632]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.060634]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.060636]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.060639]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.060644]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.060647] ---[ end trace 7b22ffa2b854faca ]---
+[  359.060648] ------------[ cut here ]------------
+[  359.060650] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.060652] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.060652] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.060684] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.060685] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.060685]  e78e5e58 cb32c362 e78e5e6c 00000000 cb067a3a cb82b800 e78e5e8c 000003e7
+[  359.060737]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.060785]  00000001 e78e5e78 cb067aa6 00000009 00000000 e78e5e6c cb82b800 e78e5e8c
+[  359.060790] Call Trace:
+[  359.060794]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.060796]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.060799]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.060800]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.060803]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.060805]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.060808]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.060810]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.060941]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.060945]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.060947]  [<cb00362a>] ? do_int80_syscall_32+0x6a/0xd0
+[  359.060950]  [<cb63c421>] ? entry_INT80_32+0x31/0x31
+[  359.060952] ---[ end trace 7b22ffa2b854facb ]---
+[  359.060954] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.060956] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.060957] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=722
+[  359.060959] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=239
+[  359.060960] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.062216] DEBUG 644:SYSC_ipc:165: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
+[  359.062219] DEBUG 644:ipc_mini_receive:83: src_ep=31438 timeout_ms=-1
+[  359.062221] DEBUG 644:new_mini_receive:303: src_ep=31438
+[  359.062223] DEBUG 644:check_caller:546: caller_pid=644 caller_tgid=644
+[  359.062224] DEBUG 644:check_caller:582: WLOCK_PROC ep=1 count=239
+[  359.062226] DEBUG 644:check_caller:612: WUNLOCK_PROC ep=1 count=239
+[  359.062227] DEBUG 644:check_caller:615: dcid=0
+[  359.062229] DEBUG 644:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.062230] DEBUG 644:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.062231] DEBUG 644:check_caller:629: caller_pid=644 
+[  359.062233] DEBUG 644:new_mini_receive:314: RLOCK_PROC ep=1 count=239
+[  359.062234] DEBUG 644:new_mini_receive:318: caller_nr=1 caller_ep=1 src_ep=31438 
+[  359.062235] DEBUG 644:new_mini_receive:322: dcid=0
+[  359.062237] DEBUG 644:new_mini_receive:330: RUNLOCK_PROC ep=1 count=239
+[  359.062239] DEBUG 644:new_mini_receive:332: RLOCK_DC dc=0 count=0
+[  359.062240] DEBUG 644:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+[  359.062242] DEBUG 644:new_mini_receive:385: WLOCK_PROC ep=1 count=239
+[  359.062243] DEBUG 644:new_mini_receive:432: WLOCK_PROC ep=10 count=722
+[  359.062245] DEBUG 644:new_mini_receive:440: Found acceptable message from 10. Copy it and update status.
+[  359.062246] DEBUG 644:new_mini_receive:443: LIST_DEL
+[  359.062249] DEBUG 644:copy_usr2usr:897: rqtr_ep=10 src_ep=10 src_lpid=999 src_vpid=282 src_addr=492afda8
+[  359.062251] DEBUG 644:copy_usr2usr:900: dst_ep=1 dst_lpid=644 dst_vpid=644 dst_addr=004bb200 bytes=76
+[  359.062252] DEBUG 644:copy_usr2usr:904: task_pid_nr(current)=644
+[  359.062253] DEBUG 644:copy_usr2usr:915: READ
+[  359.062255] DEBUG 644:copy_usr2usr:920: task_pid_nr(src_ptr->p_task)=999
+[  359.062257] DEBUG 644:dvk_vm_rw:451: pid=999 liovcnt=1 riovcnt=1 flags=0 vm_write=0
+[  359.062259] DEBUG 644:dvk_check_iovect:1283: type=0 nr_segs=1
+[  359.062261] DEBUG 644:dvk_rw_check_kvector:865: type=0 nr_segs=1
+[  359.062263] DEBUG 644:dvk_rw_check_kvector:865: type=-1 nr_segs=1
+[  359.062264] DEBUG 644:dvk_vm_rw_core:286: pid=999 riovcnt=1 flags=0 vm_write=0
+[  359.062270] DEBUG 644:dvk_vm_rw_core:340: i=0 rc=0
+[  359.062285] DEBUG 644:dvk_vm_rw_core:358: rc=76
+[  359.062287] DEBUG 644:dvk_vm_rw_core:365: rc=76
+[  359.062288] DEBUG 644:copy_usr2usr:965: len=76
+[  359.062289] DEBUG 644:new_mini_receive:475: WUNLOCK_PROC ep=10 count=722
+[  359.062291] DEBUG 644:new_mini_receive:476: WUNLOCK_PROC ep=1 count=239
+[  359.062413] DEBUG 644:SYSC_ipc:165: ipc_mini_send: call=512 first=10 second=0 third=0 fifth=30000 
+[  359.062417] DEBUG 644:ipc_mini_send:61: dst_ep=10 timeout_ms=30000
+[  359.062419] DEBUG 644:new_mini_send:32: dst_ep=10
+[  359.062421] DEBUG 644:check_caller:546: caller_pid=644 caller_tgid=644
+[  359.062423] DEBUG 644:check_caller:582: WLOCK_PROC ep=1 count=239
+[  359.062424] DEBUG 644:check_caller:612: WUNLOCK_PROC ep=1 count=239
+[  359.062425] DEBUG 644:check_caller:615: dcid=0
+[  359.062427] DEBUG 644:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.062429] DEBUG 644:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.062430] DEBUG 644:check_caller:629: caller_pid=644 
+[  359.062431] DEBUG 644:new_mini_send:44: RLOCK_PROC ep=1 count=239
+[  359.062433] DEBUG 644:new_mini_send:48: caller_nr=1 caller_ep=1 dst_ep=10 
+[  359.062434] DEBUG 644:new_mini_send:53: RUNLOCK_PROC ep=1 count=239
+[  359.062435] DEBUG 644:new_mini_send:55: dcid=0
+[  359.062437] DEBUG 644:new_mini_send:59: RLOCK_DC dc=0 count=0
+[  359.062438] DEBUG 644:new_mini_send:64: RUNLOCK_DC dc=0 count=0
+[  359.062439] DEBUG 644:new_mini_send:79: RLOCK_PROC ep=1 count=239
+[  359.062441] DEBUG 644:new_mini_send:90: RUNLOCK_PROC ep=1 count=239
+[  359.062442] DEBUG 644:new_mini_send:93: WLOCK_PROC ep=10 count=722
+[  359.062443] DEBUG 644:new_mini_send:98: dst_nr=10 dst_ep=10
+[  359.062445] DEBUG 644:new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+[  359.062446] DEBUG 644:new_mini_send:121: RLOCK_DC dc=0 count=0
+[  359.062447] DEBUG 644:new_mini_send:125: RUNLOCK_DC dc=0 count=0
+[  359.062449] DEBUG 644:new_mini_send:140: dcid=0 caller_pid=644 caller_nr=1 dst_ep=10 
+[  359.062451] DEBUG 644:new_mini_send:222: destination is waiting. Copy the message and wakeup destination
+[  359.062453] DEBUG 644:copy_usr2usr:897: rqtr_ep=1 src_ep=1 src_lpid=644 src_vpid=644 src_addr=004bb200
+[  359.062547] DEBUG 644:copy_usr2usr:900: dst_ep=10 dst_lpid=999 dst_vpid=282 dst_addr=492afda8 bytes=76
+[  359.062549] DEBUG 644:copy_usr2usr:904: task_pid_nr(current)=644
+[  359.062550] DEBUG 644:copy_usr2usr:907: WRITE
+[  359.062552] DEBUG 644:copy_usr2usr:912: task_pid_nr(dst_ptr->p_task)=999
+[  359.062554] DEBUG 644:dvk_vm_rw:451: pid=999 liovcnt=1 riovcnt=1 flags=0 vm_write=1
+[  359.062556] DEBUG 644:dvk_check_iovect:1283: type=1 nr_segs=1
+[  359.062558] DEBUG 644:dvk_rw_check_kvector:865: type=1 nr_segs=1
+[  359.062559] DEBUG 644:dvk_rw_check_kvector:865: type=-1 nr_segs=1
+[  359.062561] DEBUG 644:dvk_vm_rw_core:286: pid=999 riovcnt=1 flags=0 vm_write=1
+[  359.062568] DEBUG 644:dvk_vm_rw_core:340: i=0 rc=0
+[  359.062584] DEBUG 644:dvk_vm_rw_core:358: rc=76
+[  359.062585] DEBUG 644:dvk_vm_rw_core:365: rc=76
+[  359.062586] DEBUG 644:copy_usr2usr:965: len=76
+[  359.062588] DEBUG 644:inherit_cpu:298: cpuid=0 vpid=282
+[  359.062590] ERROR: 644:inherit_cpu:302: rcode=-3
+[  359.062593] DEBUG 644:inherit_cpu:306: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.062595] DEBUG 644:new_mini_send:233: BEFORE UP lpid=999 p_sem=-1 rcode=76
+[  359.062617] DEBUG 644:new_mini_send:234: WUNLOCK_PROC ep=10 count=722
+[  359.062618] DEBUG 644:new_mini_send:272: WUNLOCK_PROC ep=1 count=240
+[  359.062637] DEBUG 644:SYSC_ipc:165: ipc_mini_receive: call=768 first=31438 second=0 third=0 fifth=-1 
+[  359.062638] DEBUG 644:ipc_mini_receive:83: src_ep=31438 timeout_ms=-1
+[  359.062640] DEBUG 644:new_mini_receive:303: src_ep=31438
+[  359.062641] DEBUG 644:check_caller:546: caller_pid=644 caller_tgid=644
+[  359.062643] DEBUG 644:check_caller:582: WLOCK_PROC ep=1 count=240
+[  359.062644] DEBUG 644:check_caller:612: WUNLOCK_PROC ep=1 count=240
+[  359.062645] DEBUG 644:check_caller:615: dcid=0
+[  359.062646] DEBUG 644:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.062648] DEBUG 644:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.062649] DEBUG 644:check_caller:629: caller_pid=644 
+[  359.062650] DEBUG 644:new_mini_receive:314: RLOCK_PROC ep=1 count=240
+[  359.062652] DEBUG 644:new_mini_receive:318: caller_nr=1 caller_ep=1 src_ep=31438 
+[  359.062653] DEBUG 644:new_mini_receive:322: dcid=0
+[  359.062655] DEBUG 644:new_mini_receive:330: RUNLOCK_PROC ep=1 count=240
+[  359.062656] DEBUG 644:new_mini_receive:332: RLOCK_DC dc=0 count=0
+[  359.062657] DEBUG 644:new_mini_receive:335: RUNLOCK_DC dc=0 count=0
+[  359.062659] DEBUG 644:new_mini_receive:385: WLOCK_PROC ep=1 count=240
+[  359.062660] DEBUG 644:new_mini_receive:432: WLOCK_PROC ep=10 count=722
+[  359.062662] DEBUG 644:new_mini_receive:440: Found acceptable message from 10. Copy it and update status.
+[  359.062663] DEBUG 644:new_mini_receive:443: LIST_DEL
+[  359.062665] ------------[ cut here ]------------
+[  359.062673] WARNING: CPU: 0 PID: 644 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+[  359.062674] list_del corruption, e6c458b4->next is LIST_POISON1 (00000100)
+[  359.062675] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.062731] CPU: 0 PID: 644 Comm: rhostfsd Tainted: G        W       4.9.88 #15
+[  359.062733] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.062735]  e95a1e68 cb32c362 e95a1e7c 00000000 cb067a3a cb82b830 e95a1e9c 00000284
+[  359.062740]  cb82b114 00000035 cb34b080 00000035 00000009 cb34b080 e6c458b4 ffffff94
+[  359.062744]  e6c459d8 e95a1e88 cb067aa6 00000009 00000000 e95a1e7c cb82b830 e95a1e9c
+[  359.062749] Call Trace:
+[  359.062755]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.062759]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.062761]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.062763]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.062766]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.062768]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.062770]  [<cb34b128>] ? list_del+0x8/0x20
+[  359.062774]  [<cb27b28c>] ? new_mini_receive+0x72c/0x19f0
+[  359.062777]  [<cb29a8ce>] ? ipc_mini_receive+0x2e/0x70
+[  359.062779]  [<cb29a8a0>] ? ipc_mini_send+0x70/0x70
+[  359.062781]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.062784]  [<cb003728>] ? do_fast_syscall_32+0x98/0x160
+[  359.062788]  [<cb63c3c2>] ? sysenter_past_esp+0x47/0x75
+[  359.062790] ---[ end trace 7b22ffa2b854facc ]---
+[  359.062792] DEBUG 644:new_mini_receive:475: WUNLOCK_PROC ep=10 count=722
+[  359.062793] DEBUG 644:new_mini_receive:476: WUNLOCK_PROC ep=1 count=240
+[  359.062795] ERROR: 644:new_mini_receive:477: rcode=-324
+[  359.062833] do_exit: local_nodeid:0
+[  359.063197] DEBUG 999:sleep_proc2:746: endpoint=10 ret=0 p_rcode=76
+[  359.063199] DEBUG 999:sleep_proc2:747: endpoint=10 flags=0 cpuid=3
+[  359.063201] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=240
+[  359.063206] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=722
+[  359.063210] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.063213] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=0 p_rcode=0
+[  359.063215] DEBUG 999:new_mini_sendrec:808: WUNLOCK_PROC ep=1 count=240
+[  359.063219] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=722
+[  359.063487] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.063488] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.063489] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.063491] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.063492] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=722
+[  359.063493] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=722
+[  359.063494] DEBUG 999:check_caller:615: dcid=0
+[  359.063496] DEBUG 999:check_caller:619: RLOCK_DC dc=0 count=0
+[  359.063497] DEBUG 999:check_caller:623: RUNLOCK_DC dc=0 count=0
+[  359.063498] DEBUG 999:check_caller:629: caller_pid=999 
+[  359.063499] DEBUG 999:new_mini_sendrec:538: RLOCK_PROC ep=10 count=722
+[  359.063501] DEBUG 999:new_mini_sendrec:543: caller_nr=10 caller_ep=10 srcdst_ep=1 
+[  359.063502] DEBUG 999:new_mini_sendrec:550: RUNLOCK_PROC ep=10 count=722
+[  359.063503] DEBUG 999:new_mini_sendrec:552: dcid=0
+[  359.063504] DEBUG 999:new_mini_sendrec:556: RLOCK_DC dc=0 count=0
+[  359.063506] DEBUG 999:new_mini_sendrec:560: RUNLOCK_DC dc=0 count=0
+[  359.063507] DEBUG 999:new_mini_sendrec:575: RLOCK_PROC ep=10 count=722
+[  359.063508] DEBUG 999:new_mini_sendrec:586: RUNLOCK_PROC ep=10 count=722
+[  359.063510] DEBUG 999:new_mini_sendrec:592: WUNLOCK_PROC ep=10 count=723
+[  359.063511] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=1 count=240
+[  359.063512] DEBUG 999:new_mini_sendrec:592: WLOCK_PROC ep=10 count=723
+[  359.063513] DEBUG 999:new_mini_sendrec:594: srcdst_nr=1 srcdst_ep=1
+[  359.063514] DEBUG 999:new_mini_sendrec:614: srcdst_ptr->p_usr.p_nodeid=0
+[  359.063515] DEBUG 999:new_mini_sendrec:618: RLOCK_DC dc=0 count=0
+[  359.063517] DEBUG 999:new_mini_sendrec:622: RUNLOCK_DC dc=0 count=0
+[  359.063518] DEBUG 999:new_mini_sendrec:637: dcid=0 caller_pid=999 caller_nr=10 srcdst_ep=1 
+[  359.063519] DEBUG 999:new_mini_sendrec:642: SENDING HALF
+[  359.063520] DEBUG 999:new_mini_sendrec:775: destination is not waiting to receive srcdst_ptr-flags=0. Enqueue at TAIL.
+[  359.063522] ------------[ cut here ]------------
+[  359.063530] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:33 __list_add+0xb4/0x120
+[  359.063531] list_add corruption. prev->next should be next (e6c446ac), but was e6c458b4. (prev=e6c458b4).
+[  359.063573] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.063578] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.063579] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.063584]  e78e5e54 cb32c362 e78e5e68 00000000 cb067a3a cb82b7b0 e78e5e88 000003e7
+[  359.063587]  cb82b114 00000021 cb34afb4 00000021 00000009 cb34afb4 e6c458b4 e6c44600
+[  359.063590]  00000001 e78e5e74 cb067aa6 00000009 00000000 e78e5e68 cb82b7b0 e78e5e88
+[  359.063591] Call Trace:
+[  359.063597]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.063600]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.063602]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.063604]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.063606]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.063608]  [<cb34afb4>] ? __list_add+0xb4/0x120
+[  359.063611]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.063614]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.063616]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.063618]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.063620]  [<cb003728>] ? do_fast_syscall_32+0x98/0x160
+[  359.063623]  [<cb63c3c2>] ? sysenter_past_esp+0x47/0x75
+[  359.063625] ---[ end trace 7b22ffa2b854facd ]---
+[  359.063626] ------------[ cut here ]------------
+[  359.063628] WARNING: CPU: 3 PID: 999 at lib/list_debug.c:36 __list_add+0xfc/0x120
+[  359.063629] list_add double add: new=e6c458b4, prev=e6c458b4, next=e6c446ac.
+[  359.063650] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.063652] CPU: 3 PID: 999 Comm: linux Tainted: G        W       4.9.88 #15
+[  359.063652] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.063656]  e78e5e54 cb32c362 e78e5e68 00000000 cb067a3a cb82b800 e78e5e88 000003e7
+[  359.063659]  cb82b114 00000024 cb34affc 00000024 00000009 cb34affc e6c458b4 e6c44600
+[  359.063662]  00000001 e78e5e74 cb067aa6 00000009 00000000 e78e5e68 cb82b800 e78e5e88
+[  359.063662] Call Trace:
+[  359.063665]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.063667]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.063669]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.063670]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.063672]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.063674]  [<cb34affc>] ? __list_add+0xfc/0x120
+[  359.063677]  [<cb27ca70>] ? new_mini_sendrec+0x520/0x1b60
+[  359.063679]  [<cb29a9be>] ? ipc_mini_sendrec+0x2e/0x70
+[  359.063681]  [<cb29a990>] ? ipc_mini_notify+0x80/0x80
+[  359.063683]  [<cb263cc1>] ? SyS_ipc+0x61/0x3a0
+[  359.063685]  [<cb003728>] ? do_fast_syscall_32+0x98/0x160
+[  359.063687]  [<cb63c3c2>] ? sysenter_past_esp+0x47/0x75
+[  359.063688] ---[ end trace 7b22ffa2b854face ]---
+[  359.063690] DEBUG 999:sleep_proc2:731: BEFORE DOWN lpid=999 p_sem=0 timeout=-1
+[  359.063691] DEBUG 999:sleep_proc2:733: endpoint=10 flags=C
+[  359.063692] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=10 count=723
+[  359.063693] DEBUG 999:sleep_proc2:737: WUNLOCK_PROC ep=1 count=240
+[  359.063694] DEBUG 999:sleep_proc2:738: endpoint=10 flags=C
+[  359.064196] DEBUG 644:new_exit_unbind:243: code=-880825118
+[  359.064304] DEBUG 644:new_exit_unbind:247: WLOCK_TASK pid=644 count=0
+[  359.064307] DEBUG 644:new_exit_unbind:253: RLOCK_PROC ep=1 count=240
+[  359.064311] DEBUG 644:new_exit_unbind:254: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=644 vpid=644 nodeid=0 name=rhostfsd 
+[  359.064313] DEBUG 644:new_exit_unbind:287:  Exiting endpoint=1 lpid=644
+[  359.064314] DEBUG 644:new_exit_unbind:289: RUNLOCK_PROC ep=1 count=240
+[  359.064316] DEBUG 644:new_exit_unbind:290: WLOCK_DC dc=0 count=0
+[  359.064317] DEBUG 644:new_exit_unbind:291: WLOCK_PROC ep=1 count=240
+[  359.064319] DEBUG 644:new_exit_unbind:298:  endpoint=1 lpid=644
+[  359.064322] DEBUG 644:do_unbind:679: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=644 vpid=644 nodeid=0 name=rhostfsd 
+[  359.064325] DEBUG 644:do_unbind:708: Caller nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=644 vpid=644 nodeid=0 name=rhostfsd 
+[  359.064326] DEBUG 644:do_unbind:747: wakeup with error those processes trying to send a message to the proc
+[  359.064328] DEBUG 644:do_unbind:750: WLOCK_PROC ep=10 count=723
+[  359.064329] DEBUG 644:do_unbind:758: LIST_DEL
+[  359.064331] DEBUG 644:do_unbind:761: Find process 10 trying to send a message to 1
+[  359.064332] DEBUG 644:do_unbind:765: Wakeup SENDER with error ep=10  pid=999
+[  359.064334] DEBUG 644:inherit_cpu:298: cpuid=0 vpid=282
+[  359.064337] ERROR: 644:inherit_cpu:302: rcode=-3
+[  359.064437] DEBUG 644:inherit_cpu:306: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.064944] DEBUG 644:do_unbind:766: BEFORE UP lpid=999 p_sem=-1 rcode=-109
+[  359.066126] DEBUG 644:do_unbind:771: WUNLOCK_PROC ep=10 count=723
+[  359.066129] DEBUG 644:do_unbind:750: WLOCK_PROC ep=10 count=723
+[  359.066130] DEBUG 644:do_unbind:758: LIST_DEL
+[  359.066132] ------------[ cut here ]------------
+[  359.066140] WARNING: CPU: 0 PID: 644 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+[  359.066142] list_del corruption, e6c458b4->next is LIST_POISON1 (00000100)
+[  359.066143] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.066196] CPU: 0 PID: 644 Comm: rhostfsd Tainted: G        W       4.9.88 #15
+[  359.066198] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.066199]  e95a1e10 cb32c362 e95a1e24 00000000 cb067a3a cb82b830 e95a1e44 00000284
+[  359.066205]  cb82b114 00000035 cb34b080 00000035 00000009 cb34b080 e6c458b4 e6c459d8
+[  359.066209]  0000004c e95a1e30 cb067aa6 00000009 00000000 e95a1e24 cb82b830 e95a1e44
+[  359.066214] Call Trace:
+[  359.066220]  [<cb32c362>] ? dump_stack+0x55/0x73
+[  359.066224]  [<cb067a3a>] ? __warn+0xea/0x110
+[  359.066227]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.066228]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.066231]  [<cb067aa6>] ? warn_slowpath_fmt+0x46/0x60
+[  359.066233]  [<cb34b080>] ? __list_del_entry+0x60/0x100
+[  359.066235]  [<cb34b128>] ? list_del+0x8/0x20
+[  359.066239]  [<cb2690ed>] ? do_unbind+0x1dd/0x20c0
+[  359.066242]  [<cb0c32f7>] ? vprintk_default+0x37/0x40
+[  359.066245]  [<cb26d195>] ? new_exit_unbind+0x395/0x1210
+[  359.066247]  [<cb06c5f2>] ? do_exit+0xa42/0xa50
+[  359.066250]  [<cb1dc6c9>] ? vfs_write+0x149/0x1c0
+[  359.066252]  [<cb06c677>] ? do_group_exit+0x37/0x90
+[  359.066254]  [<cb06c6e6>] ? SyS_exit_group+0x16/0x20
+[  359.066256]  [<cb003728>] ? do_fast_syscall_32+0x98/0x160
+[  359.066259]  [<cb63c3c2>] ? sysenter_past_esp+0x47/0x75
+[  359.066261] ---[ end trace 7b22ffa2b854facf ]---
+[  359.066263] DEBUG 644:do_unbind:761: Find process 10 trying to send a message to 1
+[  359.066265] DEBUG 644:do_unbind:765: Wakeup SENDER with error ep=10  pid=999
+[  359.066266] DEBUG 644:inherit_cpu:298: cpuid=0 vpid=282
+[  359.066269] ERROR: 644:inherit_cpu:302: rcode=-3
+[  359.066272] DEBUG 644:inherit_cpu:306: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.066273] DEBUG 644:do_unbind:766: BEFORE UP lpid=999 p_sem=0 rcode=-109
+[  359.066274] DEBUG 644:do_unbind:771: WUNLOCK_PROC ep=10 count=723
+[  359.066285] BUG: unable to handle kernel NULL pointer dereference at 00000100
+[  359.068739] DEBUG 999:sleep_proc2:746: endpoint=10 ret=0 p_rcode=-109
+[  359.068741] DEBUG 999:sleep_proc2:747: endpoint=10 flags=8 cpuid=3
+[  359.068742] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=1 count=239
+[  359.068744] DEBUG 999:sleep_proc2:749: WLOCK_PROC ep=10 count=723
+[  359.068745] DEBUG 999:sleep_proc2:771: pid=999 ret=-109
+[  359.068747] DEBUG 999:sleep_proc2:796: nr=10 endp=10 dcid=0 lpid=999 p_cpumask=FFFFFFFF nodemap=1 name=linux 
+[  359.068748] DEBUG 999:sleep_proc2:798: someone wakeups me: sem=1 p_rcode=-109
+[  359.068750] DEBUG 999:new_mini_sendrec:797: WUNLOCK_PROC ep=1 count=239
+[  359.068752] DEBUG 999:new_mini_sendrec:813: WUNLOCK_PROC ep=10 count=723
+[  359.068753] ERROR: 999:new_mini_sendrec:814: rcode=-109
+[  359.069097] DEBUG 999:SYSC_ipc:165: ipc_mini_sendrec: call=1280 first=1 second=0 third=0 fifth=-1 
+[  359.069099] DEBUG 999:ipc_mini_sendrec:115: srcdst_ep=1 timeout_ms=-1
+[  359.069100] DEBUG 999:new_mini_sendrec:527: srcdst_ep=1
+[  359.069103] DEBUG 999:check_caller:546: caller_pid=999 caller_tgid=999
+[  359.069104] DEBUG 999:check_caller:582: WLOCK_PROC ep=10 count=723
+[  359.069105] DEBUG 999:check_caller:612: WUNLOCK_PROC ep=10 count=723
+[  359.069106] DEBUG 999:check_caller:615: dcid=0
+[  359.130934] IP: [<cb269175>] do_unbind+0x265/0x20c0
+[  359.132726] *pdpt = 0000000029b33001 *pde = 0000000000000000 
+
+[  359.134499] Oops: 0000 [#1] SMP
+[  359.136739] Modules linked in: tun fuse iptable_filter vmwgfx snd_ens1371 snd_ac97_codec ac97_bus gameport snd_rawmidi snd_seq_device ttm snd_pcm drm_kms_helper drm evdev snd_timer joydev vmw_balloon snd serio_raw pcspkr shpchp sg vmw_vmci soundcore ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache btrfs xor raid6_pq sr_mod sd_mod cdrom ata_generic hid_generic usbhid hid xhci_pci xhci_hcd uhci_hcd ehci_pci ehci_hcd usbcore psmouse pcnet32 ata_piix mptspi libata scsi_transport_spi mptscsih mptbase scsi_mod mii i2c_piix4
+[  359.155539] CPU: 0 PID: 644 Comm: rhostfsd Tainted: G        W       4.9.88 #15
+[  359.162496] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+[  359.166844] task: e8e2c040 task.stack: e95a0000
+[  359.169593] EIP: 0060:[<cb269175>] EFLAGS: 00010213 CPU: 0
+[  359.174803] EIP is at do_unbind+0x265/0x20c0
+[  359.179271] EAX: e6c459d8 EBX: 0000004c ECX: 00000100 EDX: 00000007
+[  359.181630] ESI: e6c459d8 EDI: 0000004c EBP: e95a1eb4 ESP: e95a1e5c
+[  359.184651]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+[  359.187920] CR0: 80050033 CR2: 00000100 CR3: 276b5280 CR4: 000006f0
+[  359.194747] Stack:
+[  359.197411]  cb813224 00000284 cb65c12c 00000303 0000000a 000002d3 ffffff93 00000000
+[  359.201849]  00000020 00000284 00000284 00000000 e6c44648 cb0c32f7 e8e2c040 e8e2c040
+[  359.204609]  e6c446ac 00000000 e6c458b4 e6c44600 00000000 e6c447d8 e95a1f18 cb26d195
+[  359.212746] Call Trace:
+[  359.215771]  [<cb0c32f7>] ? vprintk_default+0x37/0x40
+[  359.218606]  [<cb26d195>] ? new_exit_unbind+0x395/0x1210
+[  359.221008]  [<cb06c5f2>] ? do_exit+0xa42/0xa50
+[  359.226058]  [<cb1dc6c9>] ? vfs_write+0x149/0x1c0
+[  359.230856]  [<cb06c677>] ? do_group_exit+0x37/0x90
+[  359.235054]  [<cb06c6e6>] ? SyS_exit_group+0x16/0x20
+[  359.237276]  [<cb003728>] ? do_fast_syscall_32+0x98/0x160
+[  359.243511]  [<cb63c3c2>] ? sysenter_past_esp+0x47/0x75
+[  359.246053] Code: 00 00 ba 01 00 00 00 e8 aa 08 e4 ff f6 05 6d e0 8f cb 01 0f 85 0e 0d 00 00 89 f0 89 fb e8 44 00 3d 00 8d 8f b4 00 00 00 3b 4d e8 <8b> 87 b4 00 00 00 89 4d f0 8d b8 4c ff ff ff 0f 84 96 00 00 00
+[  359.254683] EIP: [<cb269175>] 
+[  359.254728] do_unbind+0x265/0x20c0
+[  359.260926]  SS:ESP 0068:e95a1e5c
+[  359.263775] CR2: 0000000000000100
+[  359.266347] ---[ end trace 7b22ffa2b854fad0 ]---
+[  359.299344] do_exit: local_nodeid:0
+[  359.320539] DEBUG 644:new_exit_unbind:243: code=-880825118
+[  578.658858] do_exit: local_nodeid:0
+[  578.661667] DEBUG 111:new_exit_unbind:243: code=-880825118
+[  578.664799] DEBUG 111:new_exit_unbind:247: WLOCK_TASK pid=111 count=0
+[  578.667688] DEBUG 111:new_exit_unbind:378: Process not bound pid=111 kworker/dying
+[  578.669806] DEBUG 111:new_exit_unbind:380: WUNLOCK_TASK pid=111 count=0
+[  627.678876] do_exit: local_nodeid:0
+[  627.681102] DEBUG 37:new_exit_unbind:243: code=-880825118
+[  627.683286] DEBUG 37:new_exit_unbind:247: WLOCK_TASK pid=37 count=0
+[  627.686044] DEBUG 37:new_exit_unbind:378: Process not bound pid=37 kworker/dying
+[  627.688394] DEBUG 37:new_exit_unbind:380: WUNLOCK_TASK pid=37 count=0
+[  660.617282] do_exit: local_nodeid:0
+[  660.617594] do_exit: local_nodeid:0
+[  660.617599] DEBUG 1184:new_exit_unbind:243: code=-880825118
+[  660.617601] DEBUG 1184:new_exit_unbind:247: WLOCK_TASK pid=1184 count=0
+[  660.617603] DEBUG 1184:new_exit_unbind:378: Process not bound pid=1184 kworker/dying
+[  660.617604] DEBUG 1184:new_exit_unbind:380: WUNLOCK_TASK pid=1184 count=0
+[  660.632196] DEBUG 6:new_exit_unbind:243: code=-880825118
+[  660.634774] DEBUG 6:new_exit_unbind:247: WLOCK_TASK pid=6 count=0
+[  660.636956] DEBUG 6:new_exit_unbind:378: Process not bound pid=6 kworker/dying
+[  660.639527] DEBUG 6:new_exit_unbind:380: WUNLOCK_TASK pid=6 count=0
+[  916.888475] do_exit: local_nodeid:0
+[  916.890603] DEBUG 1203:new_exit_unbind:243: code=-880825118
+[  916.892598] DEBUG 1203:new_exit_unbind:247: WLOCK_TASK pid=1203 count=0
+[  916.894885] DEBUG 1203:new_exit_unbind:378: Process not bound pid=1203 systemd-tmpfile
+[  916.896994] DEBUG 1203:new_exit_unbind:380: WUNLOCK_TASK pid=1203 count=0
+[  916.942196] do_exit: local_nodeid:0
+[  916.944179] DEBUG 1204:new_exit_unbind:243: code=-880825118
+[  916.946076] DEBUG 1204:new_exit_unbind:247: WLOCK_TASK pid=1204 count=0
+[  916.947884] DEBUG 1204:new_exit_unbind:378: Process not bound pid=1204 systemd-cgroups
+[  916.950664] DEBUG 1204:new_exit_unbind:380: WUNLOCK_TASK pid=1204 count=0
+[  938.969722] do_exit: local_nodeid:0
+[  938.973299] DEBUG 146:new_exit_unbind:243: code=-880825118
+[  938.986501] DEBUG 146:new_exit_unbind:247: WLOCK_TASK pid=146 count=0
+[  939.006202] DEBUG 146:new_exit_unbind:378: Process not bound pid=146 kworker/dying
+[  939.008990] DEBUG 146:new_exit_unbind:380: WUNLOCK_TASK pid=146 count=0

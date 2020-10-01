@@ -60,7 +60,7 @@
 #include <asm/pgtable.h>
 #include <asm/mmu_context.h>
 
-// #ifdef CONFIG_DVK
+// #ifdef CONFIG_DVKIOCTL
 atomic_t local_nodeid = ATOMIC_INIT(-1); /* (-1) means that the DVS is unitialized! */
 EXPORT_SYMBOL(local_nodeid);
 
@@ -74,7 +74,7 @@ EXPORT_SYMBOL(exit_unbind_ptr);
 /*--------------------------------------------------------------*/
 asmlinkage long old_exit_unbind(long code)
 {
-	printk(KERN_ALERT "DVK: old_exit_unbind code:%d\n",code);
+//	printk(KERN_ALERT "DVK: old_exit_unbind code:%d\n",code);
 	return (-ENOSYS);
 }
 EXPORT_SYMBOL(old_exit_unbind);
@@ -85,11 +85,11 @@ EXPORT_SYMBOL(old_exit_unbind);
 /*--------------------------------------------------------------*/
 static void exit_unbind(long code)
 {
-	printk(KERN_ALERT "DVK: exit_unbind local_nodeid:%d\n",atomic_read(&local_nodeid));
+//	printk(KERN_ALERT "DVK: exit_unbind local_nodeid:%d\n",atomic_read(&local_nodeid));
 	exit_unbind_ptr(code);
 }
 EXPORT_SYMBOL(exit_unbind);
-//# endif // CONFIG_DVK
+//# endif // CONFIG_DVKIOCTL
 
 
 static void __unhash_process(struct task_struct *p, bool group_dead)
@@ -806,14 +806,14 @@ void __noreturn do_exit(long code)
 		schedule();
 	}
 
-//# ifdef CONFIG_DVK
+//# ifdef CONFIG_DVKIOCTL
 	if( atomic_read(&local_nodeid) != (-1) ) {
-//		printk(KERN_ALERT "do_exit: local_nodeid:%d\n",atomic_read(&local_nodeid));
+		printk(KERN_ALERT "do_exit: local_nodeid:%d\n",atomic_read(&local_nodeid));
 		exit_unbind(code);
 	}else{
 		exit_unbind_ptr = (void*) old_exit_unbind;
 	}
-//# endif // CONFIG_DVK
+//# endif // CONFIG_DVKIOCTL
 	
 	exit_signals(tsk);  /* sets PF_EXITING */
 	/*
