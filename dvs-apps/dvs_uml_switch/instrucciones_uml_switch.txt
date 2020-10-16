@@ -1,0 +1,138 @@
+#### UML_SWITCH ####
+Previous Page  Next Page  
+
+uml_switch
+uml_switch is the UML virtual switch and has the following usage:
+uml_switch [ -unix control-socket ] [ -hub ] [ -tap tap-device ]
+The -unix switch specifies an alternate UNIX domain socket to be used for control messages. 
+The default is /tmp/uml/ctl, but Debian changes this to /var/run/uml-utilities/uml_switch.ctl.
+-hub specifies hub rather than switch behavior. With this enabled, all frames will be forwarded to all ports, 
+  rather than the default behavior of forwarding frames to only one port when it is known that the destination MAC 
+  is associated with that port.
+-tap is used to connect the switch to a previously configured TUN/TAP device on the host. 
+  This gives a uml_switch-based network access to the host network.
+
+# Confiuración de la red
+En la VM donde tengo el host puse dos adaptadores de red, uno para conectarme por ssh al host, otro para la conexión host-UML.
+El host está conectado a mi máquina en la eth0.
+La conexión host-UML se hace por eth1 en el host, eth0 en UML. Red 192.168.1.255.
+
+ifconfig eth0 192.168.0.100 up  # Para conectarme por ssh
+
+
+# Creación de bridge e interfaces - HOST
+
+tunctl -u root -t HTAP
+brctl addbr bridge1
+
+ifconfig HTAP 0.0.0.0 up
+ifconfig eth1 192.168.1.100 up
+
+brctl addif bridge1 HTAP
+brctl addif bridge1 eth1
+brctrl show
+
+# Arrancar el daemon uml_switch (siempre antes de correr UML) - HOST
+uml_switch -tap HTAP
+
+# En otra sesión, arrancar UML con eth0=daemon
+cd /usr/src/linux
+./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M eth0=daemon
+
+# Conexión HOST-UML
+
+## EN UML (node1)
+ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
+
+## EN EL HOST (node 0):
+ifconfig eth1 192.168.1.100 netmask 255.255.255.0  up
+ifconfig bridge1 192.168.1.10 netmask 255.255.255.0 up
+route add -host 192.168.1.101 dev bridge1
+
+LUEGO PROBAR EL PING QUE FUNCIONA
+
+
+# Socket test
+
+Copie los archivos server y client por ssh al host.
+
+Compilé los dos en el HOST, porque UML no tenía instalado gcc.
+Después pasé el ejecutable del client a UML
+
+## EN EL HOST:
+
+gcc -o server server.c
+gcc -o client client.c
+scp client root@192.168.1.101:/root/
+./server
+
+## EN UML
+
+./client 192.168.1.100
+=====================================================================
+Funcionamiento del uml_dvs_switch
+
+	Maneja los paquetes con una lista HASH (hash.c) que tiene una cabecera
+		en funcion de la dirección MAC destino.
+		Si no existe esa MAC address crea una nueva cabecera en la lista hash.
+		
+	Los "puertos" logicos de datos del switch pueden ser:
+		- ports: refiere a unix sockets (ports.c) 
+		- TAP:   refiere a una interface en el host existente (tuntap.c)
+	También tiene un puerto de "control" por UNIX SOCKET.
+
+	Para gestionar las comunicaciones con M3IPC y que las mismas sean tratadas 
+	de manera similar al resto, es decir via socket, se podrian crear 2 threads 
+	con un socket UNIX. Un RECEIVER y un SENDER.
+	Cuando recibe info via M3IPC lo inserta en el socket RECEIVER 
+	Cuando se requiere enviar, se lee del socket SENDER y se envia via M3IPC al remoto
+
+	Se deberían crear 2 tipos de puertos M3IPC: Clientes y Servidores
+	Se deberia establecer en la linea de comandos.
+	uml_dvs_switch [ -unix control-socket ] [ -hub ] [ -tap tap-device ] [-m3client svr_ep | -m3server svr_ep]
+	
+	En UML: eth0=daemon 
+	
+	  NODE0									NODE0							NODE1
+   -----------------                    -----------                      -----------
+   |  UML ETH      |     UNIX SOCKET    | UML DVS |      M3IPC           | UML DVS |
+   |   DAEMON      |--------------------| SWITCH  |----------------------| SWITCH  |=====TAP 
+   |               |                    | CLIENT  |                      | SERVER  |
+   -----------------                    -----------                      -----------
+	
+
+OTRA FORMA mas complicada
+==========================	
+Como por ahora M3IPC no se maneja con Sockets, deberá implementarse un thread que maneje la información
+que proviene de NODO remoto.
+Cuando se recibe un mensaje M3IPC con paquete de datos, se le envia un SIGNAL via kill al main thread y se
+modifica el loop principal
+
+ while(1){
+    char buf[128];
+
+    n = poll(fds, nfds, -1);
+    if(n < 0){
+#   if(errno == EINTR) continue;  <<<<<< ANTES 
+		if(errno == EINTR){
+			if ( check_m3ipc() == TRUE){
+				handle_m3ipc_data(hub); 
+			}
+			continue;
+		}
+		perror("poll");
+		break;
+    }
+Como son 2 threads, deberá gestionarse con semáforos.
+	
+ 
+
+
+ 
+
+	
+	
+
+
+    	
+

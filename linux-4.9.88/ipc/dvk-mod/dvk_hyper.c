@@ -780,8 +780,8 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 				set_bit(BIT_SIGNALED, &proc_ptr->p_usr.p_rts_flags);
 				return(EDVSMIGRATE);
 			}
-			DVKDEBUG(INTERNAL,"Sending SIGPIPE to pid=%d\n", proc_ptr->p_usr.p_lpid);
-			rcode = send_sig_info(SIGPIPE, SEND_SIG_NOINFO, proc_ptr->p_task);
+			DVKDEBUG(INTERNAL,"Sending SIGTERM to pid=%d\n", proc_ptr->p_usr.p_lpid);
+			rcode = send_sig_info(SIGTERM, SEND_SIG_NOINFO, proc_ptr->p_task);
 			if(rcode) ERROR_RETURN(rcode);
 			if(proc_ptr->p_usr.p_rts_flags && 
 				(BIT_SENDING | BIT_RECEIVING | BIT_WAITMIGR | BIT_WAITUNBIND))  {
@@ -1117,8 +1117,8 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 		put_task_struct(task_ptr);	/* decrement the reference count of the task struct */
 		init_proc_desc(sproxy_ptr, PROXY_NO_DC, px_nr);	
 		if( rproxy_ptr->p_task != NULL && rproxy_ptr != sproxy_ptr ){
-			DVKDEBUG(INTERNAL,"sending SIGPIPE to RPROXY pid=%d\n", rproxy_ptr->p_usr.p_lpid);
-			ret = send_sig_info(SIGPIPE, SEND_SIG_NOINFO, rproxy_ptr->p_task);
+			DVKDEBUG(INTERNAL,"sending SIGTERM to RPROXY pid=%d\n", rproxy_ptr->p_usr.p_lpid);
+			ret = send_sig_info(SIGTERM, SEND_SIG_NOINFO, rproxy_ptr->p_task);
 			other_pid = rproxy_ptr->p_usr.p_lpid;
 			if(rproxy_ptr->p_usr.p_rts_flags != 0) {
 				rproxy_ptr->p_usr.p_rts_flags = 0;		
@@ -1181,8 +1181,8 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 		init_proc_desc(rproxy_ptr, PROXY_NO_DC, px_nr);	
 		
 		if( sproxy_ptr->p_task != NULL && rproxy_ptr != sproxy_ptr){
-			DVKDEBUG(INTERNAL,"sending SIGPIPE to SPROXY pid=%d\n", sproxy_ptr->p_usr.p_lpid);
-			ret = send_sig_info(SIGPIPE, SEND_SIG_NOINFO, sproxy_ptr->p_task);
+			DVKDEBUG(INTERNAL,"sending SIGTERM to SPROXY pid=%d\n", sproxy_ptr->p_usr.p_lpid);
+			ret = send_sig_info(SIGTERM, SEND_SIG_NOINFO, sproxy_ptr->p_task);
 			other_pid = sproxy_ptr->p_usr.p_lpid;
 			if(sproxy_ptr->p_usr.p_rts_flags != 0) {
 				sproxy_ptr->p_usr.p_rts_flags = 0;		
@@ -1714,20 +1714,22 @@ setaffinity_ptr(param_pid, &pap_mask);
 		strncpy((char* )proc_ptr->p_usr.p_name, (char*)task_ptr->comm, MAXPROCNAME-1);
 		proc_ptr->p_usr.p_name[MAXPROCNAME-1]= '\0';
 		proc_ptr->p_name_ptr = (char*)task_ptr->comm;
-		if( thread_group_leader(task_ptr)) 
-			proc_ptr->p_usr.p_misc_flags = MIS_GRPLEADER;	/* The proccess is the thread group leader 	*/	
+		if( thread_group_leader(task_ptr)) {
+			DVKDEBUG(INTERNAL,"GRPLEADER lpid=%ld vpid=%ld tid=%d\n", lpid, vpid, tid);
+			set_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags);	/* The proccess is the thread group leader 	*/	
+		}
 		
 		DVKDEBUG(INTERNAL,"process p_name=%s *p_name_ptr=%s\n", 
 			(char*)proc_ptr->p_usr.p_name, proc_ptr->p_name_ptr);
 		
 		if( oper == BKUP_BIND) {
 			proc_ptr->p_usr.p_rts_flags	= REMOTE;	/* appears as if it is REMOTE		*/
-			proc_ptr->p_usr.p_misc_flags|= MIS_RMTBACKUP;/* It is a remote process' backup 	*/
+			set_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags); /* It is a remote process' backup 	*/
 			proc_ptr->p_usr.p_nodeid	= nodeid;	/* The primary process node's ID 	*/	
 		}else{
 			if( (oper == USERMODE_BIND)
 			||  (test_bit(DVS_BIT_USERMODE, &dvs.d_flags)))  {
-				proc_ptr->p_usr.p_misc_flags |= MIS_USERMODE;/* It is a USERMODE VOS or PROCESS	*/
+				set_bit(MIS_BIT_USERMODE, &proc_ptr->p_usr.p_misc_flags); /* It is a USERMODE VOS or PROCESS	*/
 			}
 			proc_ptr->p_usr.p_rts_flags	= PROC_RUNNING;	/* set to RUNNING STATE	*/
 			proc_ptr->p_usr.p_nodeid	= atomic_read(&local_nodeid);
@@ -1974,8 +1976,8 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 //			sys_wait4_ptr(other_pid, (int __user *)&ret, 0, NULL);
 //			schedule();				
 // ANALIZAR si el proceso que se esta matando es HIJO del MATADOR de tal modo de hacer el  sys_wait4_ptr necesario para no quedar ZOMBIE.
-			/* Waits until the target process unbinds by itself after sending it a SIGPIPE */
-			ret = send_sig_info(SIGPIPE , SEND_SIG_NOINFO, proc_task);
+			/* Waits until the target process unbinds by itself after sending it a SIGTERM */
+			ret = send_sig_info(SIGTERM , SEND_SIG_NOINFO, proc_task);
 			WUNLOCK_PROC(caller_ptr);
 			do {
 				ret = wait_event_interruptible(caller_ptr->p_wqhead,(proc_pid != proc_ptr->p_usr.p_lpid));
@@ -3373,7 +3375,7 @@ asmlinkage long new_node_down(int nodeid)
 /*			do_dc_end				*/
 /*DC MUTEX Must be WRITE LOCKED					*/
 /* When a DC ends:						*/
-/*	- Sends SIGPIPE to every LOCAL process of the DC	*/
+/*	- Sends SIGTERM to every LOCAL process of the DC	*/
 /*	- Waits that all LOCAL processes unbind by their self 	*/
 /*	*/
 /*----------------------------------------------------------------*/
@@ -3390,7 +3392,7 @@ long do_dc_end(dc_desc_t *dc_ptr)
 	
 	init_waitqueue_head(&wqhead);
 	
-	DVKDEBUG(INTERNAL,"Send a SIGPIPE SIGNAL to all LOCAL processes belonging to the DC:%d\n",dc_ptr->dc_usr.dc_dcid);
+	DVKDEBUG(INTERNAL,"Send a SIGTERM SIGNAL to all LOCAL processes belonging to the DC:%d\n",dc_ptr->dc_usr.dc_dcid);
 	
 //	LOCK_ALL_PROCS(dc_ptr, tmp_ptr, i);
 	FOR_EACH_PROC(dc_ptr, i) {
@@ -3399,7 +3401,7 @@ long do_dc_end(dc_desc_t *dc_ptr)
 		if(!test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)) {
 			if( IT_IS_LOCAL(proc_ptr) || test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags) ) {
 				task_ptr = proc_ptr->p_task;
-				ret = send_sig_info(SIGPIPE , SEND_SIG_NOINFO, task_ptr);
+				ret = send_sig_info(SIGTERM , SEND_SIG_NOINFO, task_ptr);
 				if(ret) ERROR_PRINT(ret);
 			}else{
 				do_unbind(dc_ptr, proc_ptr);

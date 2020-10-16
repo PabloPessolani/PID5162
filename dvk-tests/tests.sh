@@ -5,10 +5,26 @@ then
  exit 1 
 fi
 lcl=$1
-let rmt=(1 - $lcl)
+if [ $1 -eq 0 ]
+then
+let rmtA=1
+let rmtB=2
+fi
+if [ $1 -eq 1 ]
+then
+let rmtA=0
+let rmtB=2
+fi
+if [ $1 -eq 2 ]
+then
+let rmtA=0
+let rmtB=1
+fi
+echo "lcl=$lcl rmtA=$rmtA rmtB=$rmtB"
 dcid=$2
 echo "lcl_nodeid=$lcl dcid=$dcid" 
-read  -p "Enter para continuar... "
+read  -p "Read to initilize TAP devices. Enter para continuar... "
+#./inittap.sh $lcl
 echo > /var/log/kern.log
 echo > /var/log/syslog
 echo > /var/log/messages
@@ -16,7 +32,7 @@ dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
-cd /usr/src/linux/ipc/dvk-mod/
+cd /usr/src/dvs/dvk-mod
 mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
 insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=16777215
@@ -65,15 +81,16 @@ echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 #echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
 # echo 3  > /proc/sys/net/ipv4/tcp_keepalive_probes
 cd /usr/src/dvs/dvk-proxies
-#./tcp_proxy node$rmt $rmt >/dev/shm/node$rmt.txt 2>/dev/shm/error$rmt.txt &
-/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+#./tcp_proxy node$rmtA $rmtA >/dev/shm/node$rmtA.txt 2>/dev/shm/error$rmtA.txt &
+/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmtA -i $rmtA > /dev/shm/node$rmtA.txt 2> /dev/shm/error$rmtA.txt &	
+/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmtB -i $rmtB > /dev/shm/node$rmtB.txt 2> /dev/shm/error$rmtB.txt &	
 #read  -p "TIPC LZ4 BAT PROXY Enter para continuar... "
 #tipc node set netid 4711
 #tipc_addr="1.1.10$lcl"
 #tipc node set addr $tipc_addr
 #tipc bearer enable media eth dev eth0 
 #read  -p "Enter para continuar... "
-#/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmt -i $rmt > /dev/shm/node$rmt.txt 2> /dev/shm/error$rmt.txt &	
+#/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmtA -i $rmtA > /dev/shm/node$rmtA.txt 2> /dev/shm/error$rmtA.txt &	
 sleep 5
 netstat  -nat
 #tipc bearer list
@@ -86,7 +103,8 @@ cat /proc/dvs/proxies/procs
 read  -p "ADDNODE Enter para continuar... "
 cd /usr/src/dvs/dvk-tests
 cat /proc/dvs/DC$dcid/info
-./test_add_node $dcid $rmt
+./test_add_node $dcid $rmtA
+./test_add_node $dcid $rmtB
 sleep 1
 cat /proc/dvs/nodes
 cat /proc/dvs/DC$dcid/info

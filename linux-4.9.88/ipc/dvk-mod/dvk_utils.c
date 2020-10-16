@@ -392,9 +392,9 @@ int sleep_proc(struct proc *proc, long timeout)
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST				
-		if( sigismember(&current->pending.signal,  SIGPIPE) ||
-			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
-			DVKDEBUG(INTERNAL,"SIGPIPE received\n");
+		if( sigismember(&current->pending.signal,  SIGTERM) ||
+			sigismember(&current->signal->shared_pending.signal, SIGTERM))
+			DVKDEBUG(INTERNAL,"SIGTERM received\n");
 #endif // ONLY_FOR_TEST				
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
 		DVKDEBUG(INTERNAL,"endpoint=%d flags=%lX cpuid=%d\n",proc->p_usr.p_endpoint, proc->p_usr.p_rts_flags, smp_processor_id());  
@@ -868,9 +868,9 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST							
-		if( sigismember(&current->pending.signal,  SIGPIPE) ||
-			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
-			DVKDEBUG(INTERNAL,"SIGPIPE received\n");		
+		if( sigismember(&current->pending.signal,  SIGTERM) ||
+			sigismember(&current->signal->shared_pending.signal, SIGTERM))
+			DVKDEBUG(INTERNAL,"SIGTERM received\n");		
 #endif //ONLY_FOR_TEST				
 
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);
@@ -984,9 +984,9 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
 #ifdef ONLY_FOR_TEST							
-		if( sigismember(&current->pending.signal,  SIGPIPE) ||
-			sigismember(&current->signal->shared_pending.signal, SIGPIPE))
-			DVKDEBUG(INTERNAL,"SIGPIPE received\n");		
+		if( sigismember(&current->pending.signal,  SIGTERM) ||
+			sigismember(&current->signal->shared_pending.signal, SIGTERM))
+			DVKDEBUG(INTERNAL,"SIGTERM received\n");		
 #endif //ONLY_FOR_TEST				
 
 		DVKDEBUG(INTERNAL,"endpoint=%d ret=%d p_rcode=%d\n",proc->p_usr.p_endpoint, ret,  proc->p_rcode);

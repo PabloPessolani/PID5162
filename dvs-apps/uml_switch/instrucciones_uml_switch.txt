@@ -20,14 +20,17 @@ ifconfig eth1 192.168.1.100 up
 
 brctl addif bridge1 HTAP
 brctl addif bridge1 eth1
-brctrl show
+brctl show
 
 # Arrancar el daemon uml_switch (siempre antes de correr UML) - HOST
 uml_switch -tap HTAP
 
 # En otra sesión, arrancar UML con eth0=daemon
 cd /usr/src/linux
-./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6   mem=1024M eth0=daemon
+./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M eth0=daemon
+
+./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 mem=1024M eth0=rmteth
+
 
 # Conexión HOST-UML
 

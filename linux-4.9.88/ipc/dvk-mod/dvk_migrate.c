@@ -274,8 +274,8 @@ long int migr_start(struct proc *proc_ptr)
 				LOCAL_PROC_UP(p_ptr, EDVSAGAIN); 
 			}
 #ifdef ANULADO			
-			DVKDEBUG(INTERNAL,"Sending SIGPIPE to pid=%d\n", p_ptr->p_usr.p_lpid);
-			ret = send_sig_info(SIGPIPE, SEND_SIG_NOINFO, thread_ptr);
+			DVKDEBUG(INTERNAL,"Sending SIGTERM to pid=%d\n", p_ptr->p_usr.p_lpid);
+			ret = send_sig_info(SIGTERM, SEND_SIG_NOINFO, thread_ptr);
 			if(ret) ERROR_PRINT(ret);
 #endif // ANULADO			
 			pu_ptr= &p_ptr->p_usr;
