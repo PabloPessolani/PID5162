@@ -28,6 +28,8 @@ static void cleanup(void)
 		printf("Couldn't remove data socket '%s' : ", data_socket);
 		perror("");
 	}
+	if( sw_ptr->sw_tap_fd != (-1))
+		close(sw_ptr->sw_tap_fd);
 	rmttap_cleanup();
 }
 
@@ -35,7 +37,7 @@ static struct pollfd *fds = NULL;
 static int maxfds = 0;
 static int nfds = 0;
 
-static void add_fd(int fd)
+void add_fd(int fd)
 {
 	struct pollfd *p;
 	USRDEBUG("fd=%d\n",fd);
@@ -103,12 +105,13 @@ static void new_port_v1_v3(int fd, enum request_type type,
 {
 	int n, err;
 
-	USRDEBUG("fd=%d type=%d data_fd=%d\n",fd, type, data_fd);
+	USRDEBUG("ctrl_fd=%d type=%d data_fd=%d\n",fd, type, data_fd);
 
 	switch(type){
 		case REQ_NEW_CONTROL:
 			err = setup_sock_port(fd, sock, data_fd);
 			if(err) return;
+			USRDEBUG("fd=%d sun.sun_path=%s\n",fd, data_sun.sun_path);
 			n = write(fd, &data_sun, sizeof(data_sun));
 			if(n != sizeof(data_sun)){
 				perror("Sending data socket name");
@@ -132,7 +135,7 @@ static void new_port(int fd, int data_fd)
 	union request req;
 	int len;
 
-	USRDEBUG("fd=%d data_fd=%d\n",fd, data_fd);
+	USRDEBUG("ctrl_fd=%d data_fd=%d\n",fd, data_fd);
 
 	len = read(fd, &req, sizeof(req));
 	if(len < 0){
@@ -361,6 +364,7 @@ static void Usage(void)
 	
     //Global glo.h
     nr_rmttap = 0; 
+    nr_lcltap = 0; 
     nr_switch = 0;
     
 	sw_ptr = &switch_cfg;
@@ -371,6 +375,8 @@ static void Usage(void)
 	sw_ptr->sw_send_tid = PROC_NO_PID;
 	sw_ptr->sw_dcid  	= NO_DCID;
 	sw_ptr->sw_daemon	= NO;
+	sw_ptr->sw_tap_fd	= (-1);
+	sw_ptr->sw_tap		= NULL;
 	sw_ptr->sw_ctrl_path= ctl_path;
 	sw_ptr->sw_name 	= "DVS_UML_SWITCH"; 
 	
@@ -378,10 +384,12 @@ static void Usage(void)
 		rt_ptr = &rmttap_cfg[i];
 		rt_ptr->rt_index 	= i;
 		rt_ptr->rt_nodeid 	= PROC_NO_PID;
+		rt_ptr->rt_ctrl_fd 	= (-1);
+		rt_ptr->rt_data_fd 	= (-1);
+		rt_ptr->rt_poll_idx = (-1);
+		rt_ptr->rt_rmttap_fd= (-1);
 		rt_ptr->rt_tap		= NULL;
 		rt_ptr->rt_name  	= NULL;
-		rt_ptr->rt_ctrl_fd 	= -1;
-		rt_ptr->rt_data_fd 	= -1;
 	}
 }
 
@@ -391,10 +399,9 @@ static void Usage(void)
  *===========================================================================*/
  int main(int argc, char **argv)
 {
-	int connect_fd, data_fd, n, i, new, one = 1, daemonize = 0;
+	int n, i, j, new, one = 1, daemonize = 0;
 	int timeout; 
-	char *tap_dev = NULL;
-	rmttap_t *r_ptr;
+	rmttap_t *rt_ptr;
 	int rcode;
 	#ifdef TUNTAP
 	int tap_fd  = -1;
@@ -412,44 +419,51 @@ static void Usage(void)
 	daemonize	= sw_ptr->sw_daemon;
 	USRDEBUG(SW_FORMAT, SW_FIELDS(sw_ptr));
 
-    rcode = dvk_open();     //load dvk
-    if (rcode < 0)  ERROR_EXIT(rcode);
-	get_dvs_params();
-	get_dc_params(sw_ptr->sw_dcid);
-	
-	max_nr_rmttap = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
-	if( nr_rmttap > max_nr_rmttap){
-		fprintf(stderr, "CONFIGURATION ERROR: nr_rmttap(%d) >  max_nr_rmttap(%d)\n",
-			nr_rmttap, max_nr_rmttap);
-		return(EDVSNOSPC);								
+	if( nr_rmttap > 0) { 
+		rcode = dvk_open();     //load dvk
+		if (rcode < 0)  ERROR_EXIT(rcode);
+		get_dvs_params();
+		get_dc_params(sw_ptr->sw_dcid);
+		
+		max_nr_rmttap = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
+		if( nr_rmttap > max_nr_rmttap){
+			fprintf(stderr, "CONFIGURATION ERROR: nr_rmttap(%d) >  max_nr_rmttap(%d)\n",
+				nr_rmttap, max_nr_rmttap);
+			return(EDVSNOSPC);								
+		}
 	}
-
-	if((connect_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
+	
+	if((sw_ptr->sw_conn_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
 		perror("socket");
 		exit(1);
 	}
-	if(setsockopt(connect_fd, SOL_SOCKET, SO_REUSEADDR, (char *) &one, 
+	USRDEBUG("sw_ptr->sw_conn_fd=%d\n", sw_ptr->sw_conn_fd);
+
+	if(setsockopt(sw_ptr->sw_conn_fd, SOL_SOCKET, SO_REUSEADDR, (char *) &one, 
 		sizeof(one)) < 0){
 		perror("setsockopt");
 		exit(1);
 	}
-	if(fcntl(connect_fd, F_SETFL, O_NONBLOCK) < 0){
+	if(fcntl(sw_ptr->sw_conn_fd, F_SETFL, O_NONBLOCK) < 0){
 		perror("Setting O_NONBLOCK on connection fd");
 		exit(1);
 	}
-	if((data_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
+
+	if((sw_ptr->sw_data_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
 		perror("socket");
 		exit(1);
 	}
-	if(fcntl(data_fd, F_SETFL, O_NONBLOCK) < 0){
+	USRDEBUG("sw_ptr->sw_data_fd=%d\n", sw_ptr->sw_data_fd);
+
+	if(fcntl(sw_ptr->sw_data_fd, F_SETFL, O_NONBLOCK) < 0){
 		perror("Setting O_NONBLOCK on data fd");
 		exit(1);
 	}
+   
+	if(compat_v0) bind_sockets_v0(sw_ptr->sw_conn_fd, ctl_path, sw_ptr->sw_data_fd, data_socket);
+	else bind_sockets(sw_ptr->sw_conn_fd, ctl_path, sw_ptr->sw_data_fd);
 
-	if(compat_v0) bind_sockets_v0(connect_fd, ctl_path, data_fd, data_socket);
-	else bind_sockets(connect_fd, ctl_path, data_fd);
-
-	if(listen(connect_fd, LISTEN_BACKLOG) < 0){
+	if(listen(sw_ptr->sw_conn_fd, LISTEN_BACKLOG) < 0){
 		perror("listen");
 		exit(1);
 	}
@@ -463,51 +477,20 @@ static void Usage(void)
 			data_socket);
 	else printf("%s attached to unix socket '%s'", prog, ctl_path);
 
-#ifdef TUNTAP
-	// TEMPORARIO - SOLO SOPORTA UN TAP LOCAL 
-	for( i = 0; i < nr_rmttap; i++) {
-		r_ptr = &rmttap_cfg[i];
-		// If the entry is a local TAP continue 
-		if( r_ptr->rt_nodeid == local_nodeid) {
-			tap_dev = rt_ptr->rt_tap;
-			break;
-		}
-	}
-	if(tap_dev != NULL)
-		printf(" tap device '%s'", tap_dev);
-#endif
-	printf("\n");
-
 	if(isatty(0))
 		add_fd(0);
-	add_fd(connect_fd);
-	add_fd(data_fd);
+	add_fd(sw_ptr->sw_conn_fd);
+	add_fd(sw_ptr->sw_data_fd);
 
 #ifdef TUNTAP
-	if(tap_dev != NULL) {
-		USRDEBUG("tap_dev=%s\n", tap_dev);
-		tap_fd = open_tap(tap_dev);
+	if(sw_ptr->sw_tap != NULL) {
+		USRDEBUG("sw_ptr->sw_tap=%s\n", sw_ptr->sw_tap);
+		sw_ptr->sw_tap_fd = open_tap(sw_ptr->sw_tap);
 	}
-	USRDEBUG("tap_fd=%d\n", tap_fd);
-	if(tap_fd > -1) add_fd(tap_fd);
-USRDEBUG("\n");
+	USRDEBUG("SWITCH TAP %s sw_tap_fd=%d\n", sw_ptr->sw_tap, sw_ptr->sw_tap_fd);
+	if(sw_ptr->sw_tap_fd > -1) add_fd(sw_ptr->sw_tap_fd);
+	USRDEBUG("\n");
 #endif
-
-#ifdef ANULADO // NO ES NECESARIO CREAR LOS PUERTOS PORQUE SE CREAN AL VUELO 
-	// Create a DATA port for each Remote TAP 
-	success_open = 0
-	for( i = 0; i < nr_rmttap; i++) {
-		r_ptr = &rmttap_cfg[i];
-		if( r_ptr->rt_nodeid != local_nodeid) {
-			sw_ptr->sw_data_fd[i] = open_rmttap(r_ptr);			
-			USRDEBUG("sw_ptr->sw_data_fd[%d]=%d\n", i, sw_ptr->sw_data_fd[i]);
-			if(sw_ptr->sw_data_fd[i] > -1) {
-				add_fd(sw_ptr->sw_data_fd[i]);
-				success_open++;
-			}
-		}
-	}		
-#endif // ANULADO 
 
 	if (daemonize && daemon(0, 1)) {
 		perror("daemon");
@@ -516,7 +499,9 @@ USRDEBUG("\n");
 	USRDEBUG("\n");
 	
 	MTX_LOCK(sw_mutex);
-	init_rt_threads();
+	if( nr_rmttap > 0) {
+		init_rt_threads();
+	}
 
 //while(TRUE)
 //	sleep(5);
@@ -559,22 +544,23 @@ USRDEBUG("\n");
 					printf("EOF on stdin, cleaning up and exiting\n");
 					goto out;
 				}
-			} else if(fds[i].fd == connect_fd){ // ALQUIEN QUIERE CONECTARSE 
+			} else if(fds[i].fd == sw_ptr->sw_conn_fd){ // ALQUIEN QUIERE CONECTARSE 
 				if(fds[i].revents & POLLHUP){
 					printf("Error on connection fd\n");
 					continue;
 				}
-				accept_connection(connect_fd);
+				accept_connection(sw_ptr->sw_conn_fd);
 			}
-			else if(fds[i].fd == data_fd) 
-				handle_sock_data(data_fd, hub);
+			else if(fds[i].fd == sw_ptr->sw_data_fd) 
+				handle_sock_data(sw_ptr->sw_data_fd, hub);
 #ifdef TUNTAP
-			else if(fds[i].fd == tap_fd) 
-				handle_tap_data(tap_fd, hub);
+			else if(fds[i].fd == sw_ptr->sw_tap_fd) 
+				handle_tap_data(sw_ptr->sw_tap_fd, hub);
 #endif
-			else {
+			else {		
+				// NEW PORT 
 				new = handle_port(fds[i].fd);
-				if(new) new_port(fds[i].fd, data_fd);
+				if(new) new_port(fds[i].fd, sw_ptr->sw_data_fd);
 				else close_descriptor(fds[i].fd);
 			}
 		}

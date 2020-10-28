@@ -13,20 +13,21 @@ else
 fi	
 let rmt=(1 - $lcl)
 echo  lcl=$lcl rmt=$rmt
-ipbr0="192.168.1.20"
+ipbr0="192.168.1.2$lcl"
 iptap0="192.168.1.20$lcl"
 iptap1="192.168.1.21$lcl"
 echo ipbr0=$ipbr0 iptap0=$iptap0 iptap1=$iptap1 
 netmask="255.255.255.0"
-mactap0="02:AA:BB:CC:DD:0$lcl"
-mactap1="02:AA:BB:CC:DD:0$rmt"
-echo netmask=$netmask mactap0=$mactap0 mactap1=$mactap1 
+macbr0="02:AA:BB:CC:DD:B$lcl"
+mactap0="02:AA:BB:CC:DD:$lcl$lcl"
+mactap1="02:AA:BB:CC:DD:$lcl$rmt"
+echo netmask=$netmask mactap0=$mactap0 mactap1=$mactap1 macbr0=$macbr0
 # enable routing between interfaces
 echo 1 >  /proc/sys/net/ipv4/ip_forward
 # Bridge configuration --------------------------------------------------------
 read  -p "Configuring br0. Enter para continuar... "
 brctl addbr br0
-ifconfig br0 $ipbr0 netmask $netmask 
+ifconfig br0 $ipbr0 netmask $netmask hw ether $macbr0
 ip link set dev br0 up 
 # TAP0 configuration --------------------------------------------------------
 read  -p "Configuring tap0. Enter para continuar... "
@@ -45,7 +46,7 @@ chmod 666 /dev/tap1
 ip tuntap add dev tap1 mode tap
 ip link set dev tap1 address $mactap1
 ip link set dev tap1 up 
-brctl addif br0 tap1
+# brctl addif br0 tap1
 ifconfig tap1  $iptap1 netmask  $netmask
 ifconfig tap1 | grep addr
 # Link ETH0 to BRIDGE

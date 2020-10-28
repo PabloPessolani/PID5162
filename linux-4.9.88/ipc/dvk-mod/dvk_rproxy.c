@@ -22,7 +22,8 @@ asmlinkage long send_rmt2lcl(proxy_hdr_t *usr_h_ptr, proxy_hdr_t *h_ptr, struct 
 	int rcode;
 	struct proc *sproxy_ptr, *rproxy_ptr;
 	dc_desc_t *dc_ptr;
-
+	proc_usr_t *pu_ptr;
+	
 	/* checks if the source has another status than REMOTE  */
 //	if( src_ptr->p_usr.p_rts_flags != REMOTE )  ERROR_RETURN(EDVSLCLPROC);
 //	if( IT_IS_LOCAL(src_ptr) )  ERROR_RETURN(EDVSLCLPROC);
@@ -85,9 +86,16 @@ do {
 		/* copies the message into the sender's userspace buffer and wakes up it */
 		memcpy(&src_ptr->p_message, (void *)&h_ptr->c_u.cu_msg, sizeof(message));
 
+		/* enqueue the process descriptor at the TAIL of the sender proxy's caller_q */
+		if( test_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags) 
+		||  test_bit(BIT_RMTOPER, &src_ptr->p_usr.p_rts_flags)) {
+			pu_ptr = &src_ptr->p_usr;
+			DVKDEBUG(INTERNAL, "QUEUING ERROR " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
+		} 
+
 		set_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags);
 		if( h_ptr->c_cmd == CMD_SNDREC_MSG) {
-			set_bit(MIS_BIT_ATOMIC, 	&src_ptr->p_usr.p_misc_flags);
+			set_bit(MIS_BIT_ATOMIC, &src_ptr->p_usr.p_misc_flags);
 			src_ptr->p_usr.p_getfrom = dst_ptr->p_usr.p_endpoint;
 			set_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
 		}
@@ -478,6 +486,8 @@ asmlinkage long copyout_rqst_rmt2lcl( struct proc *rproxy_ptr, struct proc *rmt_
 /* lcl_ptr: is the requester of the copyout 			*/
 /* rmt_ptr: is the sender of the data block			*/
 /* dst_ptr: is de destination of the data block			*/
+/* rmt_ptr, lcl_ptr LOCKED ON INPUT				*/
+/* rmt_ptr, lcl_ptr LOCKED ON OUTPUT			*/
 /*--------------------------------------------------------------*/
 asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_ptr, 
 		struct proc *lcl_ptr, proxy_hdr_t *h_ptr, proxy_payload_t *usr_pay_ptr)
@@ -486,6 +496,7 @@ asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 	struct proc *sproxy_ptr, *dst_ptr;
 	dc_desc_t *dc_ptr;
 	int rmt_nr, lcl_nr, dst_nr;
+	proc_usr_t *uproc_ptr;
 	
 	DVKDEBUG(DBGCMD,CMD_FORMAT,CMD_FIELDS(h_ptr));
 	DVKDEBUG(DBGVCOPY,VCOPY_FORMAT,VCOPY_FIELDS(h_ptr));
@@ -497,27 +508,34 @@ asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 	
 	sproxy_ptr = NODE2SPROXY(rmt_ptr->p_usr.p_nodeid);
 	dc_ptr 	= &dc[lcl_ptr->p_usr.p_dcid];
-
-	dst_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_dst);
-	if( dst_ptr->p_usr.p_endpoint != lcl_ptr->p_usr.p_endpoint) {
+	
+	uproc_ptr = &lcl_ptr->p_usr;
+	DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));	
+	uproc_ptr = &rmt_ptr->p_usr;
+	DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
+	
+	dst_ptr = ENDPOINT2PTR(dc_ptr, h_ptr->c_u.cu_vcopy.v_dst);	
+	if( h_ptr->c_u.cu_vcopy.v_dst != lcl_ptr->p_usr.p_endpoint) {
 		rmt_nr = rmt_ptr->p_usr.p_nr;
 		lcl_nr = lcl_ptr->p_usr.p_nr;
-		dst_nr = dst_ptr->p_usr.p_nr;
+		dst_nr = _ENDPOINT_P(h_ptr->c_u.cu_vcopy.v_dst);
 		WUNLOCK_PROC2(rmt_ptr, lcl_ptr);
 		WLOCK_ORDERED3(rmt_nr, lcl_nr, dst_nr, rmt_ptr, lcl_ptr, dst_ptr);
+		uproc_ptr = &dst_ptr->p_usr;
+		DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
 	}
 	
 	do {
 		ret = OK;
-
 		if( lcl_ptr->p_usr.p_rts_flags == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
-		if( dst_ptr->p_usr.p_rts_flags  == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
+		if( rmt_ptr->p_usr.p_rts_flags == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
 
-		/*check that all envolved processes are on ONCOPY state */
+		/*check that envolved processes are on ONCOPY state */
 		if(!test_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;}
-	    if(!test_bit(BIT_ONCOPY, &dst_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;}
 	    if(!test_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;}
+	    if(!test_bit(BIT_ONCOPY, &dst_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;}
 	}while(0);
+
 	if(ret == OK) {
 		if( h_ptr->c_rcode == OK){
 			if( test_bit(MIS_BIT_KTHREAD, &rproxy_ptr->p_usr.p_misc_flags))	{
@@ -529,10 +547,12 @@ asmlinkage long copyout_data_rmt2lcl(struct proc *rproxy_ptr, struct proc *rmt_p
 			}
 		}
 		/* wake up the requester */
-		if( lcl_ptr->p_usr.p_rts_flags == ONCOPY)
+		if( lcl_ptr->p_usr.p_rts_flags == ONCOPY ){
 			READY_UP_RCODE(lcl_ptr, CMD_COPYOUT_DATA, h_ptr->c_rcode);
+		}
 	}
-	if( dst_ptr->p_usr.p_endpoint != lcl_ptr->p_usr.p_endpoint) {
+	
+	if( h_ptr->c_u.cu_vcopy.v_dst != lcl_ptr->p_usr.p_endpoint) {
 		WUNLOCK_PROC(dst_ptr);
 	}
 	if( ret < 0) ERROR_RETURN(ret);

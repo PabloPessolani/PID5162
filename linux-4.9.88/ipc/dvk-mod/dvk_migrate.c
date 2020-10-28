@@ -43,7 +43,7 @@ void flush_migr_list( struct proc *proc_ptr)
 		RUNLOCK_PROC(xpp);
 
 		WLOCK_ORDERED2(proc_nr, x_nr, proc_ptr, xpp);
-		LIST_DEL(&xpp->p_mlink); /* remove from queue */	
+		LIST_DEL_INIT(&xpp->p_mlink); /* remove from queue */	
 		if( xpp->p_usr.p_waitmigr == proc_ptr->p_usr.p_endpoint) {
 			uproc_ptr  = &xpp->p_usr;
 			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
@@ -82,7 +82,7 @@ void flush_sending_list(struct proc *proc_ptr)
 
 		WLOCK_ORDERED2(proc_nr, xpp_nr, proc_ptr, xpp);
 		DVKDEBUG(GENERIC,"endpoint=%d name=%s\n", xpp->p_usr.p_endpoint,xpp->p_usr.p_name);
-		LIST_DEL(&xpp->p_link); /* remove from queue */	
+		LIST_DEL_INIT(&xpp->p_link); /* remove from queue */	
 		if( IT_IS_LOCAL(xpp)) {
 			DVKDEBUG(GENERIC,"Replay IPC from endpoint=%d\n", xpp->p_usr.p_endpoint);
 			clear_bit(BIT_SENDING,&xpp->p_usr.p_rts_flags);

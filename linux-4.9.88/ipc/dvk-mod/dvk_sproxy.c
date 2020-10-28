@@ -36,7 +36,15 @@ long sproxy_enqueue(struct proc *proc_ptr)
 	/* save the proxy pair number to simplify garbage collection */
 	proc_ptr->p_usr.p_proxy = sproxy_ptr->p_usr.p_nr;
 
-	/* enqueue the process descriptor at the TAIL of the sender proxy's caller_q */
+	/* Check if the descriptor is already enqueued */
+	if( test_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags)) {
+		DVKDEBUG(INTERNAL, "QUEUING ERROR " PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
+	}    
+	/* set the RMTOPER bit to signal that this REMOTE descriptor 	*/
+	/* is envolved into a remote operation 			*/	
+	set_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags);
+
+	INIT_LIST_HEAD(&proc_ptr->p_link);
 	LIST_ADD_TAIL(&proc_ptr->p_link , &sproxy_ptr->p_list);
 	p_ptr = &sproxy_ptr->p_usr;
 	DVKDEBUG(INTERNAL, PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
@@ -145,7 +153,7 @@ asmlinkage long new_get2rmt(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			DVKDEBUG(GENERIC,"Found a message. p_endpoint=%d c_cmd=%d\n",
 				xpp->p_usr.p_endpoint,xpp->p_rmtcmd.c_cmd);
 			
-			LIST_DEL(&xpp->p_link); /* remove from queue */
+			LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
 			
 			/* A LOCAL process descriptor must have	(SENDING | ONCOPY) set	*/
 			/* A REMOTE process descriptor must have (RMTOPER | ONCOPY) set	*/

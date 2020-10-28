@@ -630,6 +630,9 @@ do {\
 #define FOR_EACH_PROC(dc_ptr, i) \
 	for (i = 0; i < (dc_ptr->dc_usr.dc_nr_tasks + dc_ptr->dc_usr.dc_nr_procs); i++) \
 
+#define FOR_EACH_SYSPROC(dc_ptr, i) \
+	for (i = 0; i < (dc_ptr->dc_usr.dc_nr_sysprocs); i++) \
+
 #define PLOCK_PROC(p)		\
 do {\
 	DVKDEBUG(DBGPROCLOCK,"PLOCK_PROC ep=%d count=%ld\n",p->p_usr.p_endpoint,p->p_rwsem.count);\

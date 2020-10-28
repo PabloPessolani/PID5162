@@ -7,5 +7,5 @@
 
 extern int open_tap(char *dev);
 extern void handle_tap(int fd, int hub);
-
+extern void send_tap(int fd, void *packet, int len, void *unused);
 #endif

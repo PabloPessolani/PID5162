@@ -1,4 +1,4 @@
-//****************************************************************/
+/****************************************************************/
 /*			MINIX OVER LINUX HYPERVISOR 	 	*/
 /****************************************************************/
 
@@ -465,9 +465,6 @@ asmlinkage long new_dc_init(dc_usr_t *dcu_addr)
 		dc_ptr = &dc[i];
 		ret = OK;
 		
-DVKDEBUG(DBGDCLOCK,"RLOCK_DC dc=%d count=%d\n",
-	dc_ptr->dc_usr.dc_dcid, atomic_read(&dc_ptr->dc_mutex.count));
-		
 		RLOCK_DC(dc_ptr);
 		if(dc_ptr->dc_usr.dc_flags == DC_RUNNING) {
 			if(strcmp(dcu_ptr->dc_name, dc_ptr->dc_usr.dc_name) == 0)
@@ -839,27 +836,85 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL(&src_ptr->p_link); /* remove from queue */
+		LIST_DEL_INIT(&src_ptr->p_link); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d trying to send a message to %d\n",
 			src_ptr->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
+//		assert(test_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags));
 		clear_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags);
+		
 		if( IT_IS_LOCAL(src_ptr)) {
 			DVKDEBUG(INTERNAL,"Wakeup SENDER with error ep=%d  pid=%d\n",
 				src_ptr->p_usr.p_endpoint, src_ptr->p_usr.p_lpid);	
 			LOCAL_PROC_UP(src_ptr, EDVSDSTDIED);
 		} else {
+			// check if it is a SENDREC 
+			if( test_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags) ) {
+				clear_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
+				clear_bit(MIS_BIT_ATOMIC, &src_ptr->p_usr.p_misc_flags);
+			}
 			/* REMOTE process descriptor are used for ACKNOWLEDGES 							 */
 			send_ack_lcl2rmt(src_ptr,proc_ptr,EDVSDSTDIED);
 		}
-		wunlock_proc(src_ptr);
+		WUNLOCK_PROC(src_ptr);
 	}
 	
-	DVKDEBUG(GENERIC,"delete notify messages bits sent by the proc\n");
-	/* ATENCION : Posible mejora.  Reducir el numero de proceso del loop a nr_sys_procs */
+	// check if the process is a SYSTEM process 
+	if( proc_ptr->p_usr.p_nr < ( dc_ptr->dc_usr.dc_nr_sysprocs - dc_ptr->dc_usr.dc_nr_tasks)) {
+		DVKDEBUG(GENERIC,"delete notify messages bits sent by the proc\n");
+		FOR_EACH_SYSPROC(dc_ptr, i) {
+			rp = DC_PROC(dc_ptr,i);
+			
+			if( caller_ptr != NULL){
+				if( rp == caller_ptr){
+				DVKDEBUG(GENERIC,"Skip, caller process\n");
+				continue;
+				}
+			}
+			
+			if(rp == proc_ptr)	{
+				DVKDEBUG(GENERIC,"Skip, self process\n");
+				continue;
+			}
+			/* locking order compliance  */
+			
+			// locks and unlocks in lowercase to avoid kernel log saturation 
+			if( proc_ptr->p_usr.p_nr < (i - dc_ptr->dc_usr.dc_nr_tasks)) {
+				WLOCK_PROC(rp); /* proc_ptr LOCK is just locked */
+			}else{	
+				/* free the callers lock and then lock both ordered */
+				WUNLOCK_PROC(proc_ptr);
+				WLOCK_PROC(rp);
+				WLOCK_PROC(proc_ptr);
+			}
+			
+			if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
+				WUNLOCK_PROC(rp); 
+				continue;
+			}
+			
+			// Remove any notify message from the process
+			if( proc_ptr->p_priv.priv_usr.priv_id < dc_ptr->dc_usr.dc_nr_sysprocs) {
+				if( get_sys_bit(rp->p_priv.priv_notify_pending, proc_ptr->p_priv.priv_usr.priv_id)) {
+					DVKDEBUG(INTERNAL,"Delete the bit %d in the notify bitmap of processes %d \n", 
+						proc_ptr->p_priv.priv_usr.priv_id, rp->p_usr.p_endpoint);
+					unset_sys_bit(rp->p_priv.priv_notify_pending, proc_ptr->p_priv.priv_usr.priv_id);
+				}
+			}
+			WUNLOCK_PROC(rp); 
+		}
+	}
+	
+	DVKDEBUG(INTERNAL,"Check if another process is waiting to receive a message from the unbound process\n");
 	FOR_EACH_PROC(dc_ptr, i) {
 		rp = DC_PROC(dc_ptr,i);
-		
+
+// TERPORARIO 		
+if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
+		WUNLOCK_PROC(rp); 
+		continue;
+}		
+
 		if( caller_ptr != NULL){
 			if( rp == caller_ptr){
 			DVKDEBUG(GENERIC,"Skip, caller process\n");
@@ -873,49 +928,48 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		}
 		/* locking order compliance  */
 		
-		// locks and unlocks in lowercase to avoid kernel log saturation
+		// locks and unlocks in lowercase to avoid kernel log saturation 
 		if( proc_ptr->p_usr.p_nr < (i - dc_ptr->dc_usr.dc_nr_tasks)) {
-			wlock_proc(rp); /* Caller LOCK is just locked */
+			WLOCK_PROC(rp); /* proc_ptr LOCK is just locked */
 		}else{	
 			/* free the callers lock and then lock both ordered */
-			wunlock_proc(proc_ptr);
-			wlock_proc(rp);
-			wlock_proc(proc_ptr);
+			WUNLOCK_PROC(proc_ptr);
+			WLOCK_PROC(rp);
+			WLOCK_PROC(proc_ptr);
 		}
 		
 		if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
-			wunlock_proc(rp); 
+			WUNLOCK_PROC(rp); 
 			continue;
 		}
-		
-		/* Remove any notify message from the process */ 		
-		if( proc_ptr->p_priv.priv_usr.priv_id < dc_ptr->dc_usr.dc_nr_sysprocs) {
-			if( get_sys_bit(rp->p_priv.priv_notify_pending, proc_ptr->p_priv.priv_usr.priv_id)) {
-				DVKDEBUG(INTERNAL,"Delete the bit %d in the notify bitmap of processes %d \n", 
-					proc_ptr->p_priv.priv_usr.priv_id, rp->p_usr.p_endpoint);
-				unset_sys_bit(rp->p_priv.priv_notify_pending, proc_ptr->p_priv.priv_usr.priv_id);
-			}
-		}
 
-		/* it another LOCAL process is waiting to receive 			*/
-		/* a message from the unbound process, inform that it exits.*/ 
-		if( (!test_bit(BIT_SENDING, &rp->p_usr.p_rts_flags) && test_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags) ) 
-			&& (rp->p_usr.p_getfrom == proc_ptr->p_usr.p_endpoint)) {
-			DVKDEBUG(INTERNAL,"Process %d is no more waiting a message from the unbinded process %d\n",
+		/* IF another LOCAL process is waiting to receive  		*/
+		/* a message from the unbound process,  because it has 	*/
+		/* done a dvk_sendrec(), inform that it exits.			*/ 
+		if( (!test_bit(BIT_SENDING, &rp->p_usr.p_rts_flags) 
+		   && test_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags) ) 
+		   && (rp->p_usr.p_getfrom == proc_ptr->p_usr.p_endpoint)) {
+			DVKDEBUG(INTERNAL,"Process %d is no more waiting a message from the unbound process %d\n",
 				rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
+			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
+			clear_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags);
+			if( test_bit(MIS_BIT_ATOMIC, &rp->p_usr.p_misc_flags))
+				clear_bit(MIS_BIT_ATOMIC, &rp->p_usr.p_misc_flags);
+			uproc_ptr = &rp->p_usr;
 			if( IT_IS_LOCAL(rp)) {
 				DVKDEBUG(INTERNAL,"Wakeup RECEIVER with error ep=%d  pid=%d\n",
 					rp->p_usr.p_endpoint, rp->p_usr.p_lpid);
 				LOCAL_PROC_UP(rp, EDVSSRCDIED);
-			}else{		
-				clear_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags);
-//	reemplazado generic_ack_lcl2rmt(CMD_SNDREC_ACK, rp, proc_ptr, EDVSSRCDIED);
+			}else{	
+				// There must be a received but unreplied sendrec()  by the unbouning process 
+				DVKDEBUG(INTERNAL,"send_ack_lcl2rmt to REMOTE ep=%d EDVSSRCDIED\n",
+					rp->p_usr.p_endpoint);
 				send_ack_lcl2rmt(rp, proc_ptr, EDVSSRCDIED);
 			}
 		}
-		wunlock_proc(rp); 
+		WUNLOCK_PROC(rp); 
 	}
-
+	
 	uproc_ptr = &proc_ptr->p_usr;
 	DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 
@@ -924,7 +978,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		if(proc_ptr->p_usr.p_proxy != NONE) {
 			sproxy_ptr = &proxies[proc_ptr->p_usr.p_proxy].px_sproxy;
 			WLOCK_PROC(sproxy_ptr);
-			LIST_DEL(&proc_ptr->p_link); /* remove from queue */
+			LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
 			WUNLOCK_PROC(sproxy_ptr);
 		}else{
 			ERROR_PRINT(EDVSPROCSTS);
@@ -947,7 +1001,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 		if( IT_IS_LOCAL(rp)) { 
-			LIST_DEL(&proc_ptr->p_link); /* remove from queue */
+			LIST_DEL_INIT(&proc_ptr->p_link); /* remove from queue */
 			WUNLOCK_PROC(rp);
 		}
 		clear_bit(BIT_SENDING, &proc_ptr->p_usr.p_rts_flags);
@@ -967,7 +1021,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(rp);
 			WLOCK_PROC(proc_ptr);
 		}
-		LIST_DEL(&proc_ptr->p_mlink); /* remove from queue */
+		LIST_DEL_INIT(&proc_ptr->p_mlink); /* remove from queue */
 		WUNLOCK_PROC(rp);	
 		clear_bit(BIT_WAITMIGR, &proc_ptr->p_usr.p_rts_flags);
 		proc_ptr->p_usr.p_waitmigr = NONE;
@@ -985,7 +1039,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL(&rp->p_mlink); /* remove from queue */
+		LIST_DEL_INIT(&rp->p_mlink); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d waiting %d MIGRATION\n",
 			rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
@@ -1016,7 +1070,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(rp);
 			WLOCK_PROC(proc_ptr);
 		}
-		LIST_DEL(&proc_ptr->p_ulink); /* remove from queue */
+		LIST_DEL_INIT(&proc_ptr->p_ulink); /* remove from queue */
 		WUNLOCK_PROC(rp);	
 		clear_bit(BIT_WAITUNBIND, &proc_ptr->p_usr.p_rts_flags);
 		proc_ptr->p_usr.p_waitunbind = NONE;
@@ -1034,7 +1088,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			WLOCK_PROC(proc_ptr);
 		}
 
-		LIST_DEL(&rp->p_ulink); /* remove from queue */
+		LIST_DEL_INIT(&rp->p_ulink); /* remove from queue */
 
 		DVKDEBUG(INTERNAL,"Find process %d waiting this process %d UNBINDING\n",
 			rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
@@ -1312,10 +1366,7 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 		caller_ptr->p_usr.p_getfrom = warn_ptr->p_usr.p_endpoint;
 		set_bit(BIT_SENDING,   &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto 	= warn_ptr->p_usr.p_endpoint;	
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
-		
 		INIT_LIST_HEAD(&caller_ptr->p_link);
-		
 		ret = sproxy_enqueue(caller_ptr);
 			
 		/* wait for the SENDACK */
@@ -1328,7 +1379,9 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WLOCK_PROC(sproxy_ptr);								
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);				
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;
@@ -1422,7 +1475,7 @@ DVKDEBUG(INTERNAL,"Releasing DVS resources\n");
 /*			do_node_end			*/
 /* when a node finishs:					*/
 /*	- all remote processes of that node of all DCs 	*/
-/*		are unbinded				*/
+/*		are unbound				*/
 /*	- clears the bit represented the node from the 	*/
 /*		every DC bitmap				*/
 /*	- removes the nodename entry from the /proc/dvs*/
@@ -1533,12 +1586,12 @@ void dc_release(struct kref *kref)
 /*--------------------------------------------------------------*/
 asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int nodeid)
 {
-	struct proc *proc_ptr, *rproxy_ptr, *sproxy_ptr, *leader;
+	struct proc *proc_ptr, *rproxy_ptr, *sproxy_ptr, *leader_proc;
 	proc_usr_t *uproc_ptr;
 	dc_desc_t *dc_ptr;
 	int i, p_nr, rcode, ret;
 	long unsigned int *bm_ptr;
-	struct task_struct *task_ptr, *leader_ptr;
+	struct task_struct *task_ptr, *leader_task;
 	char *uname_ptr;
 	pid_t lpid, vpid, tid;
 	priv_usr_t *upriv_ptr;
@@ -1684,26 +1737,30 @@ setaffinity_ptr(param_pid, &pap_mask);
 		* proc_ptr is LOCKED
 		* dc_ptr is LOCKED
 		*/
-		// DVKDEBUG(DBGPARAMS,"thread_group_leader\n");
-		if(!thread_group_leader(task_ptr)) {  /* Check that the MAIN thread is bound	*/
-			leader_ptr= task_ptr->group_leader;		/* get the leader task pointer 		*/
-			WLOCK_TASK(leader_ptr);
-			leader =  leader_ptr->task_proc;		/* get the leader process pointer 		*/
-			if( leader == NULL)	{					/* Main thread not bound => bind it 	*/
-				task_ptr = leader_ptr;
-				WUNLOCK_TASK(leader_ptr);
-			} else {				/* Main thread not bound  => Check  if it is bound to the same DC !! */
-				RLOCK_PROC(leader);
-				if(leader->p_usr.p_dcid != dcid) {
-					RUNLOCK_PROC(leader);	
-					WUNLOCK_TASK(leader_ptr);
+		if(!thread_group_leader(task_ptr)) {  /* Check IF the MAIN thread is bound	*/
+			DVKDEBUG(DBGPARAMS,"NOT thread_group_leader\n");
+			leader_task= task_ptr->group_leader;		/* get the leader task pointer 		*/
+			WLOCK_TASK(leader_task);
+			leader_proc =  leader_task->task_proc;		/* get the leader process pointer 		*/
+			if( leader_proc == NULL)	{				/* Main thread not bound  	*/
+				// task_ptr = leader_task;
+				WUNLOCK_TASK(leader_task);
+			} else {				/* Main thread is bound  => Check  if it is bound to the same DC !! */
+				RLOCK_PROC(leader_proc);
+				if(leader_proc->p_usr.p_dcid != dcid) {
+					RUNLOCK_PROC(leader_proc);	
+					WUNLOCK_TASK(leader_task);
 					WUNLOCK_PROC(proc_ptr);
 					WUNLOCK_TASK(task_ptr);			
 					ERROR_RUNLOCK_DC(dc_ptr, EDVSBADDCID);				
 				}
-				RUNLOCK_PROC(leader);	
-				WUNLOCK_TASK(leader_ptr);
+				RUNLOCK_PROC(leader_proc);	
+				WUNLOCK_TASK(leader_task);
 			}
+		}else{
+			DVKDEBUG(DBGPARAMS,"thread_group_leader\n");
+			DVKDEBUG(INTERNAL,"GRPLEADER lpid=%ld vpid=%ld tid=%d\n", lpid, vpid, tid);
+			set_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags);	/* The proccess is the thread group leader 	*/	
 		}
 		
 		DVKDEBUG(INTERNAL,"increment the reference count of the task struct=%d count=%d\n"
@@ -1714,10 +1771,6 @@ setaffinity_ptr(param_pid, &pap_mask);
 		strncpy((char* )proc_ptr->p_usr.p_name, (char*)task_ptr->comm, MAXPROCNAME-1);
 		proc_ptr->p_usr.p_name[MAXPROCNAME-1]= '\0';
 		proc_ptr->p_name_ptr = (char*)task_ptr->comm;
-		if( thread_group_leader(task_ptr)) {
-			DVKDEBUG(INTERNAL,"GRPLEADER lpid=%ld vpid=%ld tid=%d\n", lpid, vpid, tid);
-			set_bit(MIS_BIT_GRPLEADER, &proc_ptr->p_usr.p_misc_flags);	/* The proccess is the thread group leader 	*/	
-		}
 		
 		DVKDEBUG(INTERNAL,"process p_name=%s *p_name_ptr=%s\n", 
 			(char*)proc_ptr->p_usr.p_name, proc_ptr->p_name_ptr);
@@ -1990,8 +2043,6 @@ asmlinkage long new_unbind(int dcid, int proc_ep, long timeout_ms)
 			DVKDEBUG(INTERNAL,"proc_pid=%d pid=%d ret=%d\n",proc_pid, proc_ptr->p_usr.p_lpid, ret);
 			if( ret < 0) ERROR_RETURN(ret);
 			return(ret);
-		}else{
-			
 		}
 	}
 	
@@ -2212,10 +2263,8 @@ asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_pt
 		INIT_LIST_HEAD(&caller_ptr->p_link);
 		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 		set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto  = p_nr;
 		caller_ptr->p_usr.p_getfrom = p_nr;
-	
 		ret = sproxy_enqueue(caller_ptr);
 
 		/* wait for the REPLY */
@@ -2228,7 +2277,9 @@ asmlinkage long new_getprocinfo(int dcid, int p_nr, struct proc_usr *proc_usr_pt
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n",
 					 caller_ptr->p_usr.p_endpoint);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WLOCK_PROC(sproxy_ptr);				
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);				
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			clear_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
@@ -2628,7 +2679,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 	
 	DVKDEBUG(INTERNAL,"TIMEOUT Waiting for the unbinding of endpoint=%d\n", 
 		other_ptr->p_usr.p_endpoint);
-	LIST_DEL(&caller_ptr->p_ulink);
+	LIST_DEL_INIT(&caller_ptr->p_ulink);
 	clear_bit(BIT_WAITUNBIND, &caller_ptr->p_usr.p_rts_flags);
 	caller_ptr->p_usr.p_waitunbind = NONE;
 	WUNLOCK_PROC2(caller_ptr, other_ptr);

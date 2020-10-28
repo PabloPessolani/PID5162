@@ -3262,11 +3262,753 @@ ATENCION: Segun como trabaja DMTCP puede que el groupleader no se al main!!!!
 		que en las pruebas del dvs_uml_switch aparecía un thread hijo como leader. 
 		Quizás el problema se da porque el main no hace bind, solo los threads hijos.
 		
+		
+		
+ERRORES DE LISTAS !!! 
+
+Oct 21 12:30:54 node1 kernel: [ 4643.542943] DEBUG 872:dvk_ioctl:369: DVK_CALL=2 (io_mini_send) 
+Oct 21 12:30:54 node1 kernel: [ 4643.542945] DEBUG 872:io_mini_send:24: 
+Oct 21 12:30:54 node1 kernel: [ 4643.542948] DEBUG 872:new_mini_send:32: dst_ep=30
+Oct 21 12:30:54 node1 kernel: [ 4643.542951] DEBUG 872:check_caller:605: caller_pid=872 caller_tgid=869
+Oct 21 12:30:54 node1 kernel: [ 4643.542954] DEBUG 872:check_caller:643: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543363] DEBUG 872:check_caller:648: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.543369] DEBUG 872:check_caller:708: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543372] DEBUG 872:check_caller:711: dcid=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543375] DEBUG 872:check_caller:715: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543378] DEBUG 872:check_caller:719: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543380] DEBUG 872:check_caller:725: caller_pid=872 
+Oct 21 12:30:54 node1 kernel: [ 4643.543382] DEBUG 872:check_caller:728: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543384] DEBUG 872:check_caller:732: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543388] DEBUG 872:new_mini_send:44: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543390] DEBUG 872:new_mini_send:48: caller_nr=1 caller_ep=1 dst_ep=30 
+Oct 21 12:30:54 node1 kernel: [ 4643.543393] DEBUG 872:new_mini_send:53: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543394] DEBUG 872:new_mini_send:55: dcid=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543397] DEBUG 872:new_mini_send:59: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543399] DEBUG 872:new_mini_send:64: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543401] DEBUG 872:new_mini_send:81: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543403] DEBUG 872:new_mini_send:88: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543406] DEBUG 872:new_mini_send:91: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543408] DEBUG 872:new_mini_send:91: WLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543410] DEBUG 872:new_mini_send:98: dst_nr=30 dst_ep=30
+Oct 21 12:30:54 node1 kernel: [ 4643.543412] DEBUG 872:new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543415] DEBUG 872:new_mini_send:121: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543417] DEBUG 872:new_mini_send:125: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.543658] DEBUG 872:new_mini_send:142: dcid=0 caller_pid=872 caller_nr=1 dst_ep=30 
+Oct 21 12:30:54 node1 kernel: [ 4643.543663] DEBUG 872:new_mini_send:150: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.543665] DEBUG 872:new_mini_send:162: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.545482] DEBUG 872:new_mini_send:186: WUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.545493] DEBUG 872:sproxy_enqueue:28: nr=1 endp=1 dcid=0 flags=2004 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.545497] DEBUG 872:sproxy_enqueue:30: cmd=0x1 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.545513] DEBUG 872:sproxy_enqueue:33: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.545515] DEBUG 872:sproxy_enqueue:40: LIST_ADD_TAIL
+Oct 21 12:30:54 node1 kernel: [ 4643.545521] ------------[ cut here ]------------
+Oct 21 12:30:54 node1 kernel: [ 4643.545876] WARNING: CPU: 2 PID: 872 at lib/list_debug.c:33 __list_add+0xb4/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.545885] list_add corruption. prev->next should be next (f8ad9ccc), but was f61e46b4. (prev=f61e46b4).
+Oct 21 12:30:54 node1 kernel: [ 4643.545891] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4
+Oct 21 12:30:54 node1 kernel: [ 4643.547268] CPU: 2 PID: 872 Comm: dvs_uml_switch Tainted: G           O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.547272] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.547275]  f69b5d80 da2b1fa2 f69b5d94 00000000 da06778a da797bd8 f69b5db4 00000368
+Oct 21 12:30:54 node1 kernel: [ 4643.547285]  da79753c 00000021 da2d0bf4 00000021 00000009 da2d0bf4 f61e46b4 f61e4600
+Oct 21 12:30:54 node1 kernel: [ 4643.547296]  00000000 f69b5da0 da0677f6 00000009 00000000 f69b5d94 da797bd8 f69b5db4
+Oct 21 12:30:54 node1 kernel: [ 4643.547303] Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.547459]  [<da2b1fa2>] ? dump_stack+0x55/0x73
+Oct 21 12:30:54 node1 kernel: [ 4643.547652]  [<da06778a>] ? __warn+0xea/0x110
+Oct 21 12:30:54 node1 kernel: [ 4643.547659]  [<da2d0bf4>] ? __list_add+0xb4/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.547662]  [<da2d0bf4>] ? __list_add+0xb4/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.547667]  [<da0677f6>] ? warn_slowpath_fmt+0x46/0x60
+Oct 21 12:30:54 node1 kernel: [ 4643.547670]  [<da2d0bf4>] ? __list_add+0xb4/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.547825]  [<f8ab4e78>] ? sproxy_enqueue+0xa4/0x4a3 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.547840]  [<f8ac0cd2>] ? new_mini_send+0xfa5/0x194b [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.547850]  [<f8a95b4c>] ? io_mini_send+0x4e/0xce [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.547858]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.547866]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.547871]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4643.547876]  [<da1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4643.547879]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4643.547884]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4643.547938]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4643.547943] ---[ end trace 7b4305b5b9585091 ]---
+Oct 21 12:30:54 node1 kernel: [ 4643.547945] ------------[ cut here ]------------
+Oct 21 12:30:54 node1 kernel: [ 4643.547950] WARNING: CPU: 2 PID: 872 at lib/list_debug.c:36 __list_add+0xfc/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.547952] list_add double add: new=f61e46b4, prev=f61e46b4, next=f8ad9ccc.
+Oct 21 12:30:54 node1 kernel: [ 4643.547953] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4
+Oct 21 12:30:54 node1 kernel: [ 4643.548006] CPU: 2 PID: 872 Comm: dvs_uml_switch Tainted: G        W  O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.548008] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.548009]  f69b5d80 da2b1fa2 f69b5d94 00000000 da06778a da797c28 f69b5db4 00000368
+Oct 21 12:30:54 node1 kernel: [ 4643.548018]  da79753c 00000024 da2d0c3c 00000024 00000009 da2d0c3c f61e46b4 f61e4600
+Oct 21 12:30:54 node1 kernel: [ 4643.548025]  00000000 f69b5da0 da0677f6 00000009 00000000 f69b5d94 da797c28 f69b5db4
+Oct 21 12:30:54 node1 kernel: [ 4643.548032] Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.548037]  [<da2b1fa2>] ? dump_stack+0x55/0x73
+Oct 21 12:30:54 node1 kernel: [ 4643.548042]  [<da06778a>] ? __warn+0xea/0x110
+Oct 21 12:30:54 node1 kernel: [ 4643.548045]  [<da2d0c3c>] ? __list_add+0xfc/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.548048]  [<da2d0c3c>] ? __list_add+0xfc/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.548053]  [<da0677f6>] ? warn_slowpath_fmt+0x46/0x60
+Oct 21 12:30:54 node1 kernel: [ 4643.548056]  [<da2d0c3c>] ? __list_add+0xfc/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.548068]  [<f8ab4e78>] ? sproxy_enqueue+0xa4/0x4a3 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.548078]  [<f8ac0cd2>] ? new_mini_send+0xfa5/0x194b [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.548088]  [<f8a95b4c>] ? io_mini_send+0x4e/0xce [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.548095]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.548104]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.548107]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4643.548111]  [<da1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4643.548115]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4643.548118]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4643.548122]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4643.548124] ---[ end trace 7b4305b5b9585092 ]---
+Oct 21 12:30:54 node1 kernel: [ 4643.548130] DEBUG 872:sproxy_enqueue:42: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=724 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.548132] DEBUG 872:sproxy_enqueue:49: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.548135] DEBUG 872:sleep_proc:355: timeout=30000
+Oct 21 12:30:54 node1 kernel: [ 4643.548138] DEBUG 872:sleep_proc:366: BEFORE DOWN lpid=872 p_sem=0 timeout=30000
+Oct 21 12:30:54 node1 kernel: [ 4643.548140] DEBUG 872:sleep_proc:368: endpoint=1 flags=2004
+Oct 21 12:30:54 node1 kernel: [ 4643.548143] DEBUG 872:sleep_proc:381: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.551490] DEBUG 724:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Oct 21 12:30:54 node1 kernel: [ 4643.551496] DEBUG 724:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Oct 21 12:30:54 node1 kernel: [ 4643.551500] DEBUG 724:sleep_proc:399: endpoint=27342 ret=0 p_rcode=0
+Oct 21 12:30:54 node1 kernel: [ 4643.551503] DEBUG 724:sleep_proc:400: endpoint=27342 flags=0 cpuid=2
+Oct 21 12:30:54 node1 kernel: [ 4643.551505] DEBUG 724:sleep_proc:401: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.551508] DEBUG 724:sleep_proc:429: pid=724 ret=-61
+Oct 21 12:30:54 node1 kernel: [ 4643.551513] DEBUG 724:sleep_proc:454: nr=0 endp=27342 dcid=-1 lpid=724 p_cpumask=FFFFFFFF nodemap=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.551515] DEBUG 724:sleep_proc:456: someone wakeups me: sem=0 p_rcode=-61
+Oct 21 12:30:54 node1 kernel: [ 4643.551518] DEBUG 724:new_get2rmt:577: Someone wakes up the sender proxy
+Oct 21 12:30:54 node1 kernel: [ 4643.551521] DEBUG 724:new_get2rmt:580: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.551523] ERROR: 724:new_get2rmt:581: rcode=-61
+Oct 21 12:30:54 node1 kernel: [ 4643.551526] ERROR: 724:dvk_ioctl:373: rcode=-61
+Oct 21 12:30:54 node1 kernel: [ 4643.552517] DEBUG 724:dvk_ioctl:349: cmd=8004E315 arg=BFF69960
+Oct 21 12:30:54 node1 kernel: [ 4643.552522] DEBUG 724:dvk_ioctl:369: DVK_CALL=21 (io_get2rmt) 
+Oct 21 12:30:54 node1 kernel: [ 4643.552524] DEBUG 724:io_get2rmt:228: 
+Oct 21 12:30:54 node1 kernel: [ 4643.552528] DEBUG 724:new_get2rmt:87: 
+Oct 21 12:30:54 node1 kernel: [ 4643.552533] DEBUG 724:check_caller:605: caller_pid=724 caller_tgid=724
+Oct 21 12:30:54 node1 kernel: [ 4643.552536] DEBUG 724:check_caller:643: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552541] DEBUG 724:check_caller:648: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=724 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.552544] DEBUG 724:check_caller:708: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552546] DEBUG 724:check_caller:725: caller_pid=724 
+Oct 21 12:30:54 node1 kernel: [ 4643.552548] DEBUG 724:check_caller:728: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552550] DEBUG 724:check_caller:732: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552671] DEBUG 724:new_get2rmt:104: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552679] DEBUG 724:new_get2rmt:123: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552791] DEBUG 724:new_get2rmt:124: RLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552796] DEBUG 724:new_get2rmt:129: RUNLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552799] DEBUG 724:new_get2rmt:134: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552801] DEBUG 724:new_get2rmt:136: LIST_FOR_EACH_ENTRY_SAFE
+Oct 21 12:30:54 node1 kernel: [ 4643.552804] DEBUG 724:new_get2rmt:140: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552806] DEBUG 724:new_get2rmt:141: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552808] DEBUG 724:new_get2rmt:142: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552810] DEBUG 724:new_get2rmt:146: Found a message. p_endpoint=1 c_cmd=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552812] DEBUG 724:new_get2rmt:148: LIST_DEL
+Oct 21 12:30:54 node1 kernel: [ 4643.552817] DEBUG 724:new_get2rmt:159: nr=1 endp=1 dcid=0 flags=2004 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.552821] DEBUG 724:new_get2rmt:165: cmd=0x1 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552825] DEBUG 724:new_get2rmt:168: source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=  (null) m1p2=  (null) m1p3=  (null) 
+Oct 21 12:30:54 node1 kernel: [ 4643.552828] DEBUG 724:new_get2rmt:172: n_nodeid=0 n_proxies=0 n_flags=E n_dcs=1 n_name=node0
+Oct 21 12:30:54 node1 kernel: [ 4643.552831] DEBUG 724:new_get2rmt:181: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552833] DEBUG 724:new_get2rmt:183: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552835] DEBUG 724:new_get2rmt:185: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552837] DEBUG 724:new_get2rmt:194: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552839] DEBUG 724:new_get2rmt:197: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552842] DEBUG 724:new_get2rmt:204: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552844] DEBUG 724:new_get2rmt:206: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552846] DEBUG 724:new_get2rmt:243: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552848] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552851] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552853] DEBUG 724:new_get2rmt:258: WUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552857] DEBUG 724:new_get2rmt:264: TIMESTAMP sec=1603294254 nsec=347051195
+Oct 21 12:30:54 node1 kernel: [ 4643.552862] DEBUG 724:new_get2rmt:425: LOCAL nr=1 endp=1 dcid=0 flags=2004 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.552864] DEBUG 724:new_get2rmt:486: CMD_SEND_MSG
+Oct 21 12:30:54 node1 kernel: [ 4643.552868] DEBUG 724:new_get2rmt:489: source=1 type=8194 m1i1=-61 m1i2=98 m1i3=4396128 m1p1=31706174 m1p2=  (null) m1p3=  (null) 
+Oct 21 12:30:54 node1 kernel: [ 4643.552872] DEBUG 724:new_get2rmt:541: cmd=0x1 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552875] DEBUG 724:new_get2rmt:542: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552877] DEBUG 724:new_get2rmt:544: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552882] DEBUG 724:new_get2rmt:552: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552884] DEBUG 724:new_get2rmt:560: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552921] DEBUG 724:dvk_ioctl:349: cmd=8004E30F arg=BFF69960
+Oct 21 12:30:54 node1 kernel: [ 4643.552924] DEBUG 724:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Oct 21 12:30:54 node1 kernel: [ 4643.552926] DEBUG 724:io_getprocinfo:164: 
+Oct 21 12:30:54 node1 kernel: [ 4643.552929] DEBUG 724:new_getprocinfo:2132: dcid=0 p_nr=1
+Oct 21 12:30:54 node1 kernel: [ 4643.552933] DEBUG 724:new_getprocinfo:2161: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552936] DEBUG 724:new_getprocinfo:2168: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552938] DEBUG 724:new_getprocinfo:2245: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552941] DEBUG 724:new_getprocinfo:2246: lpid=872 name=dvs_uml_switch
+Oct 21 12:30:54 node1 kernel: [ 4643.552944] DEBUG 724:new_getprocinfo:2248: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552952] DEBUG 724:dvk_ioctl:349: cmd=8004E30F arg=BFF69960
+Oct 21 12:30:54 node1 kernel: [ 4643.552954] DEBUG 724:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Oct 21 12:30:54 node1 kernel: [ 4643.552956] DEBUG 724:io_getprocinfo:164: 
+Oct 21 12:30:54 node1 kernel: [ 4643.552958] DEBUG 724:new_getprocinfo:2132: dcid=0 p_nr=30
+Oct 21 12:30:54 node1 kernel: [ 4643.552960] DEBUG 724:new_getprocinfo:2161: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552962] DEBUG 724:new_getprocinfo:2168: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552964] DEBUG 724:new_getprocinfo:2245: RLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.552967] DEBUG 724:new_getprocinfo:2246: lpid=-1 name=TAPclient00
+Oct 21 12:30:54 node1 kernel: [ 4643.552976] DEBUG 724:new_getprocinfo:2248: RUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.556183] DEBUG 724:dvk_ioctl:349: cmd=8004E315 arg=BFF69960
+Oct 21 12:30:54 node1 kernel: [ 4643.556278] DEBUG 724:dvk_ioctl:369: DVK_CALL=21 (io_get2rmt) 
+Oct 21 12:30:54 node1 kernel: [ 4643.556280] DEBUG 724:io_get2rmt:228: 
+Oct 21 12:30:54 node1 kernel: [ 4643.556284] DEBUG 724:new_get2rmt:87: 
+Oct 21 12:30:54 node1 kernel: [ 4643.556289] DEBUG 724:check_caller:605: caller_pid=724 caller_tgid=724
+Oct 21 12:30:54 node1 kernel: [ 4643.570061] DEBUG 724:check_caller:643: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570070] DEBUG 724:check_caller:648: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=724 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.570074] DEBUG 724:check_caller:708: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570077] DEBUG 724:check_caller:725: caller_pid=724 
+Oct 21 12:30:54 node1 kernel: [ 4643.570079] DEBUG 724:check_caller:728: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570084] DEBUG 724:check_caller:732: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570087] DEBUG 724:new_get2rmt:104: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570090] DEBUG 724:new_get2rmt:123: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570092] DEBUG 724:new_get2rmt:124: RLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570094] DEBUG 724:new_get2rmt:129: RUNLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570096] DEBUG 724:new_get2rmt:134: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570098] DEBUG 724:new_get2rmt:136: LIST_FOR_EACH_ENTRY_SAFE
+Oct 21 12:30:54 node1 kernel: [ 4643.570100] DEBUG 724:new_get2rmt:140: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570103] DEBUG 724:new_get2rmt:141: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570105] DEBUG 724:new_get2rmt:142: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570107] DEBUG 724:new_get2rmt:146: Found a message. p_endpoint=1 c_cmd=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570109] DEBUG 724:new_get2rmt:148: LIST_DEL
+Oct 21 12:30:54 node1 kernel: [ 4643.570112] ------------[ cut here ]------------
+Oct 21 12:30:54 node1 kernel: [ 4643.570123] WARNING: CPU: 2 PID: 724 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.570125] list_del corruption, f61e46b4->next is LIST_POISON1 (00000100)
+Oct 21 12:30:54 node1 kernel: [ 4643.570127] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4
+Oct 21 12:30:54 node1 kernel: [ 4643.570198] CPU: 2 PID: 724 Comm: lz4tcp_proxy_ba Tainted: G        W  O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.570200] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.570203]  e0b7fda4 da2b1fa2 e0b7fdb8 00000000 da06778a da797c58 e0b7fdd8 000002d4
+Oct 21 12:30:54 node1 kernel: [ 4643.570212]  da79753c 00000035 da2d0cc0 00000035 00000009 da2d0cc0 f61e46b4 e55a0b40
+Oct 21 12:30:54 node1 kernel: [ 4643.570220]  f61e4600 e0b7fdc4 da0677f6 00000009 00000000 e0b7fdb8 da797c58 e0b7fdd8
+Oct 21 12:30:54 node1 kernel: [ 4643.570227] Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.570237]  [<da2b1fa2>] ? dump_stack+0x55/0x73
+Oct 21 12:30:54 node1 kernel: [ 4643.570243]  [<da06778a>] ? __warn+0xea/0x110
+Oct 21 12:30:54 node1 kernel: [ 4643.570247]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.570250]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.570254]  [<da0677f6>] ? warn_slowpath_fmt+0x46/0x60
+Oct 21 12:30:54 node1 kernel: [ 4643.570258]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.570261]  [<da2d0d68>] ? list_del+0x8/0x20
+Oct 21 12:30:54 node1 kernel: [ 4643.570275]  [<f8ab5c24>] ? new_get2rmt+0x9ad/0x4338 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.570378]  [<da0b4901>] ? mutex_optimistic_spin+0x161/0x190
+Oct 21 12:30:54 node1 kernel: [ 4643.570386]  [<da1cf38d>] ? __check_object_size+0x9d/0x11c
+Oct 21 12:30:54 node1 kernel: [ 4643.570398]  [<f8a969a7>] ? io_get2rmt+0x4e/0xce [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.570411]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.570419]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.570422]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4643.570427]  [<da1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4643.570430]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4643.570435]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4643.570440]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4643.570443] ---[ end trace 7b4305b5b9585093 ]---
+Oct 21 12:30:54 node1 kernel: [ 4643.570449] DEBUG 724:new_get2rmt:159: nr=1 endp=1 dcid=0 flags=4 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.570453] DEBUG 724:new_get2rmt:165: cmd=0x0 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570457] DEBUG 724:new_get2rmt:168: source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=  (null) m1p2=  (null) m1p3=  (null) 
+Oct 21 12:30:54 node1 kernel: [ 4643.570461] DEBUG 724:new_get2rmt:172: n_nodeid=0 n_proxies=0 n_flags=E n_dcs=1 n_name=node0
+Oct 21 12:30:54 node1 kernel: [ 4643.570463] DEBUG 724:new_get2rmt:181: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570465] DEBUG 724:new_get2rmt:183: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570468] DEBUG 724:new_get2rmt:185: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570470] DEBUG 724:new_get2rmt:194: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570472] DEBUG 724:new_get2rmt:197: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.570475] DEBUG 724:new_get2rmt:204: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570477] DEBUG 724:new_get2rmt:206: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570479] DEBUG 724:new_get2rmt:243: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570481] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570484] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570486] DEBUG 724:new_get2rmt:258: WUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570490] DEBUG 724:new_get2rmt:264: TIMESTAMP sec=1603294254 nsec=363050474
+Oct 21 12:30:54 node1 kernel: [ 4643.570494] DEBUG 724:new_get2rmt:425: LOCAL nr=1 endp=1 dcid=0 flags=4 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.570498] DEBUG 724:inherit_cpu:298: cpuid=2 vpid=13
+Oct 21 12:30:54 node1 kernel: [ 4643.570502] ERROR: 724:inherit_cpu:302: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.570506] DEBUG 724:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=872 p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.570508] DEBUG 724:new_get2rmt:524: BEFORE UP lpid=872 p_sem=-1
+Oct 21 12:30:54 node1 kernel: [ 4643.570524] DEBUG 724:new_get2rmt:525: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570536] DEBUG 872:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Oct 21 12:30:54 node1 kernel: [ 4643.570539] DEBUG 872:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Oct 21 12:30:54 node1 kernel: [ 4643.570541] DEBUG 872:sleep_proc:399: endpoint=1 ret=7497 p_rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.570544] DEBUG 872:sleep_proc:400: endpoint=1 flags=0 cpuid=2
+Oct 21 12:30:54 node1 kernel: [ 4643.570546] DEBUG 872:sleep_proc:401: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570548] DEBUG 872:sleep_proc:429: pid=872 ret=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.570552] DEBUG 872:sleep_proc:454: nr=1 endp=1 dcid=0 lpid=872 p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.570554] DEBUG 872:sleep_proc:456: someone wakeups me: sem=0 p_rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.570558] DEBUG 872:new_mini_send:284: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.570560] ERROR: 872:new_mini_send:285: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.570562] ERROR: 872:dvk_ioctl:373: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.579565] DEBUG 724:new_get2rmt:528: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.579589] DEBUG 724:new_get2rmt:530: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.579590] ERROR: 724:new_get2rmt:532: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.579593] ERROR: 724:dvk_ioctl:373: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.588588] DEBUG 726:dvk_ioctl:349: cmd=4004E314 arg=BFF69914
+Oct 21 12:30:54 node1 kernel: [ 4643.588592] DEBUG 726:dvk_ioctl:369: DVK_CALL=20 (io_put2lcl) 
+Oct 21 12:30:54 node1 kernel: [ 4643.588594] DEBUG 726:io_put2lcl:217: 
+Oct 21 12:30:54 node1 kernel: [ 4643.588599] DEBUG 726:check_caller:605: caller_pid=726 caller_tgid=726
+Oct 21 12:30:54 node1 kernel: [ 4643.588601] DEBUG 726:check_caller:643: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588604] DEBUG 726:check_caller:648: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=726 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.588606] DEBUG 726:check_caller:708: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588608] DEBUG 726:check_caller:725: caller_pid=726 
+Oct 21 12:30:54 node1 kernel: [ 4643.588609] DEBUG 726:check_caller:728: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588610] DEBUG 726:check_caller:732: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588612] DEBUG 726:new_put2lcl:574: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588614] DEBUG 726:new_put2lcl:600: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588616] DEBUG 726:new_put2lcl:601: cmd=0x2001 dcid=0 src=30 dst=1 snode=0 dnode=1 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588617] DEBUG 726:new_put2lcl:607: dcid=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588618] DEBUG 726:new_put2lcl:623: WLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588621] DEBUG 726:new_put2lcl:655: TIMESTAMP sec=1603294254 nsec=383049572
+Oct 21 12:30:54 node1 kernel: [ 4643.588622] DEBUG 726:new_put2lcl:674: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588624] DEBUG 726:new_put2lcl:674: WLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588626] DEBUG 726:new_put2lcl:738: REMOTE source OK endpoint=30
+Oct 21 12:30:54 node1 kernel: [ 4643.588627] DEBUG 726:new_put2lcl:746: LOCAL destination OK endpoint=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588628] DEBUG 726:new_put2lcl:820: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588629] DEBUG 726:new_put2lcl:822: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588631] DEBUG 726:new_put2lcl:823: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588633] DEBUG 726:new_put2lcl:920: CMD_SEND_ACK dcid=0 rmt_ep=30 rmt_nr=30 lcl_ep=1 lcl_nr=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588635] DEBUG 726:send_ack_rmt2lcl:141: dcid=0 src_ep=30 dst_ep=1 rcode=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588636] ERROR: 726:send_ack_rmt2lcl:147: rcode=-312
+Oct 21 12:30:54 node1 kernel: [ 4643.588637] DEBUG 726:new_put2lcl:957: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588639] DEBUG 726:new_put2lcl:957: WUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588640] DEBUG 726:new_put2lcl:973: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588641] DEBUG 726:new_put2lcl:975: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588643] ERROR: 726:new_put2lcl:978: rcode=-312
+Oct 21 12:30:54 node1 kernel: [ 4643.588644] ERROR: 726:dvk_ioctl:373: rcode=-312
+Oct 21 12:30:54 node1 kernel: [ 4643.588784] DEBUG 872:dvk_ioctl:349: cmd=4004E30A arg=B63FF270
+Oct 21 12:30:54 node1 kernel: [ 4643.588785] DEBUG 872:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 21 12:30:54 node1 kernel: [ 4643.588787] DEBUG 872:io_unbind:109: 
+Oct 21 12:30:54 node1 kernel: [ 4643.588789] DEBUG 872:new_unbind:1857: dcid=0 proc_ep=1
+Oct 21 12:30:54 node1 kernel: [ 4643.588791] DEBUG 872:check_caller:605: caller_pid=872 caller_tgid=869
+Oct 21 12:30:54 node1 kernel: [ 4643.588792] DEBUG 872:check_caller:643: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588795] DEBUG 872:check_caller:648: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.588796] DEBUG 872:check_caller:708: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588797] DEBUG 872:check_caller:711: dcid=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588798] DEBUG 872:check_caller:715: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588799] DEBUG 872:check_caller:719: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588801] DEBUG 872:check_caller:725: caller_pid=872 
+Oct 21 12:30:54 node1 kernel: [ 4643.588802] DEBUG 872:check_caller:728: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588803] DEBUG 872:check_caller:732: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588804] DEBUG 872:new_unbind:1873: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588806] DEBUG 872:new_unbind:1885: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588808] DEBUG 872:new_unbind:1887: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588809] DEBUG 872:new_unbind:1904: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588810] DEBUG 872:new_unbind:1907: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.588812] DEBUG 872:new_unbind:1912: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.589302] BUG: unable to handle kernel NULL pointer dereference at 00000618
+Oct 21 12:30:54 node1 kernel: [ 4643.592995] IP: [<da5bc512>] mutex_lock+0x12/0x30
+Oct 21 12:30:54 node1 kernel: [ 4643.596781] *pdpt = 00000000255aa001 *pde = 0000000000000000 
+Oct 21 12:30:54 node1 kernel: [ 4643.596914] 
+Oct 21 12:30:54 node1 kernel: [ 4643.597550] Oops: 0002 [#1] SMP
+Oct 21 12:30:54 node1 kernel: [ 4643.598354] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4
+Oct 21 12:30:54 node1 kernel: [ 4643.600693] DEBUG 724:dvk_ioctl:349: cmd=8004E315 arg=BFF69960
+Oct 21 12:30:54 node1 kernel: [ 4643.600696] DEBUG 724:dvk_ioctl:369: DVK_CALL=21 (io_get2rmt) 
+Oct 21 12:30:54 node1 kernel: [ 4643.600697] DEBUG 724:io_get2rmt:228: 
+Oct 21 12:30:54 node1 kernel: [ 4643.600701] DEBUG 724:new_get2rmt:87: 
+Oct 21 12:30:54 node1 kernel: [ 4643.601001] DEBUG 724:check_caller:605: caller_pid=724 caller_tgid=724
+Oct 21 12:30:54 node1 kernel: [ 4643.601012] DEBUG 724:check_caller:643: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601016] DEBUG 724:check_caller:648: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=724 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.601023] DEBUG 724:check_caller:708: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601025] DEBUG 724:check_caller:725: caller_pid=724 
+Oct 21 12:30:54 node1 kernel: [ 4643.601026] DEBUG 724:check_caller:728: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601027] DEBUG 724:check_caller:732: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601029] DEBUG 724:new_get2rmt:104: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601030] DEBUG 724:new_get2rmt:123: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601032] DEBUG 724:new_get2rmt:124: RLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.601033] DEBUG 724:new_get2rmt:129: RUNLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.601034] DEBUG 724:new_get2rmt:134: RLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601035] DEBUG 724:new_get2rmt:136: LIST_FOR_EACH_ENTRY_SAFE
+Oct 21 12:30:54 node1 kernel: [ 4643.601036] DEBUG 724:new_get2rmt:140: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601037] DEBUG 724:new_get2rmt:141: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.601038] DEBUG 724:new_get2rmt:142: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.601040] DEBUG 724:new_get2rmt:146: Found a message. p_endpoint=1 c_cmd=0
+Oct 21 12:30:54 node1 kernel: [ 4643.601041] DEBUG 724:new_get2rmt:148: LIST_DEL
+Oct 21 12:30:54 node1 kernel: [ 4643.601043] ------------[ cut here ]------------
+Oct 21 12:30:54 node1 kernel: [ 4643.601051] WARNING: CPU: 3 PID: 724 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.601053] list_del corruption, f61e46b4->next is LIST_POISON1 (00000100)
+Oct 21 12:30:54 node1 kernel: [ 4643.601053] Modules linked in:
+Oct 21 12:30:54 node1 kernel: [ 4643.601055]  dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4<4>[ 4643.602645] CPU: 3 PID: 724 Comm: lz4tcp_proxy_ba Tainted: G        W  O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.602647] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.602649]  e0b7fda4
+Oct 21 12:30:54 node1 kernel: [ 4643.602650]  da2b1fa2 e0b7fdb8 00000000 da06778a da797c58 e0b7fdd8 000002d4 da79753c
+Oct 21 12:30:54 node1 kernel: [ 4643.602655]  00000035 da2d0cc0 00000035 00000009 da2d0cc0 f61e46b4 e55a0b40 f61e4600
+Oct 21 12:30:54 node1 kernel: [ 4643.602659]  e0b7fdc4 da0677f6 00000009 00000000 e0b7fdb8 da797c58 e0b7fdd8Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.602673]  [<da2b1fa2>] ? dump_stack+0x55/0x73
+Oct 21 12:30:54 node1 kernel: [ 4643.602677]  [<da06778a>] ? __warn+0xea/0x110
+Oct 21 12:30:54 node1 kernel: [ 4643.602680]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.602681]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.602684]  [<da0677f6>] ? warn_slowpath_fmt+0x46/0x60
+Oct 21 12:30:54 node1 kernel: [ 4643.602686]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.602687]  [<da2d0d68>] ? list_del+0x8/0x20
+Oct 21 12:30:54 node1 kernel: [ 4643.602699]  [<f8ab5c24>] ? new_get2rmt+0x9ad/0x4338 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.602702]  [<da0b4955>] ? down_trylock+0x25/0x30
+Oct 21 12:30:54 node1 kernel: [ 4643.602706]  [<da1cf38d>] ? __check_object_size+0x9d/0x11c
+Oct 21 12:30:54 node1 kernel: [ 4643.602711]  [<f8a969a7>] ? io_get2rmt+0x4e/0xce [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.602716]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.602720]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.602723]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4643.602725]  [<da1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4643.602727]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4643.602730]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4643.602733]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4643.602735] ---[ end trace 7b4305b5b9585094 ]---
+Oct 21 12:30:54 node1 kernel: [ 4643.602739] DEBUG 724:new_get2rmt:159: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.602742] DEBUG 724:new_get2rmt:165: cmd=0x0 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602744] DEBUG 724:new_get2rmt:168: source=0 type=0 m1i1=0 m1i2=0 m1i3=0 m1p1=  (null) m1p2=  (null) m1p3=  (null) 
+Oct 21 12:30:54 node1 kernel: [ 4643.602746] DEBUG 724:new_get2rmt:172: n_nodeid=0 n_proxies=0 n_flags=E n_dcs=1 n_name=node0
+Oct 21 12:30:54 node1 kernel: [ 4643.602748] DEBUG 724:new_get2rmt:181: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602749] DEBUG 724:new_get2rmt:183: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602751] DEBUG 724:new_get2rmt:185: RLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602752] DEBUG 724:new_get2rmt:194: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602753] DEBUG 724:new_get2rmt:197: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602755] DEBUG 724:new_get2rmt:204: RUNLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602756] DEBUG 724:new_get2rmt:206: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602757] DEBUG 724:new_get2rmt:243: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602758] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602760] DEBUG 724:new_get2rmt:244: WLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602761] DEBUG 724:new_get2rmt:258: WUNLOCK_PROC ep=30 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602763] DEBUG 724:new_get2rmt:264: TIMESTAMP sec=1603294254 nsec=383049572
+Oct 21 12:30:54 node1 kernel: [ 4643.602766] DEBUG 724:new_get2rmt:425: LOCAL nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.602768] DEBUG 724:inherit_cpu:298: cpuid=3 vpid=13
+Oct 21 12:30:54 node1 kernel: [ 4643.602772] ERROR: 724:inherit_cpu:302: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.602774] DEBUG 724:inherit_cpu:306: nr=1 endp=1 dcid=0 lpid=872 p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4643.602775] DEBUG 724:new_get2rmt:524: BEFORE UP lpid=872 p_sem=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602777] DEBUG 724:new_get2rmt:525: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602778] DEBUG 724:new_get2rmt:528: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602779] DEBUG 724:new_get2rmt:530: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602780] ERROR: 724:new_get2rmt:532: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.602782] ERROR: 724:dvk_ioctl:373: rcode=-22
+Oct 21 12:30:54 node1 kernel: [ 4643.602890] DEBUG 724:dvk_ioctl:349: cmd=4004E31C arg=BFF699A4
+Oct 21 12:30:54 node1 kernel: [ 4643.602892] DEBUG 724:dvk_ioctl:369: DVK_CALL=28 (io_proxy_conn) 
+Oct 21 12:30:54 node1 kernel: [ 4643.602893] DEBUG 724:io_proxy_conn:298: 
+Oct 21 12:30:54 node1 kernel: [ 4643.602928] DEBUG 724:new_proxy_conn:3168: px_nr=0, status=3
+Oct 21 12:30:54 node1 kernel: [ 4643.602930] DEBUG 724:lock_sr_proxies:787: px_nr=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602932] DEBUG 724:lock_sr_proxies:795: WLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602933] DEBUG 724:lock_sr_proxies:803: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602934] DEBUG 724:lock_sr_proxies:804: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602935] DEBUG 724:lock_sr_proxies:806: sproxy_pid=724, rproxy_pid=726
+Oct 21 12:30:54 node1 kernel: [ 4643.602937] DEBUG 724:flush_sending_procs:470: SPROXY wakeup with error all process trying to send a CMD to node=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602938] DEBUG 724:flush_sending_procs:474: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602939] DEBUG 724:flush_sending_procs:475: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.602941] DEBUG 724:flush_sending_procs:481: WLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.602941] DEBUG 724:flush_sending_procs:483: LIST_DEL
+Oct 21 12:30:54 node1 kernel: [ 4643.602943] ------------[ cut here ]------------
+Oct 21 12:30:54 node1 kernel: [ 4643.602946] WARNING: CPU: 3 PID: 724 at lib/list_debug.c:53 __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.602948] list_del corruption, f61e46b4->next is LIST_POISON1 (00000100)
+Oct 21 12:30:54 node1 kernel: [ 4643.602948] Modules linked in:
+Oct 21 12:30:54 node1 kernel: [ 4643.602949]  dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx ttm drm_kms_helper joydev evdev drm vmw_balloon serio_raw pcspkr sg vmw_vmci shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4<4>[ 4643.602992] CPU: 3 PID: 724 Comm: lz4tcp_proxy_ba Tainted: G        W  O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.602993] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.602994]  e0b7fda0
+Oct 21 12:30:54 node1 kernel: [ 4643.602995]  da2b1fa2 e0b7fdb4 00000000 da06778a da797c58 e0b7fdd4 000002d4 da79753c
+Oct 21 12:30:54 node1 kernel: [ 4643.603001]  00000035 da2d0cc0 00000035 00000009 da2d0cc0 f61e46b4 f8ad9c20 0000004c
+Oct 21 12:30:54 node1 kernel: [ 4643.603006]  e0b7fdc0 da0677f6 00000009 00000000 e0b7fdb4 da797c58 e0b7fdd4Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.603018]  [<da2b1fa2>] ? dump_stack+0x55/0x73
+Oct 21 12:30:54 node1 kernel: [ 4643.603021]  [<da06778a>] ? __warn+0xea/0x110
+Oct 21 12:30:54 node1 kernel: [ 4643.603023]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.603024]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.603027]  [<da0677f6>] ? warn_slowpath_fmt+0x46/0x60
+Oct 21 12:30:54 node1 kernel: [ 4643.603029]  [<da2d0cc0>] ? __list_del_entry+0x60/0x100
+Oct 21 12:30:54 node1 kernel: [ 4643.603031]  [<da2d0d68>] ? list_del+0x8/0x20
+Oct 21 12:30:54 node1 kernel: [ 4643.603037]  [<f8aac1cc>] ? flush_sending_procs+0x210/0x575 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.603043]  [<f8aa930a>] ? new_proxy_conn+0x289/0x719 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.603045]  [<da1cf38d>] ? __check_object_size+0x9d/0x11c
+Oct 21 12:30:54 node1 kernel: [ 4643.603050]  [<f8a96db2>] ? io_proxy_conn+0x47/0xc7 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.603055]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.603060]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.603061]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4643.603064]  [<da1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4643.603066]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4643.603068]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4643.603070]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4643.603071] ---[ end trace 7b4305b5b9585095 ]---
+Oct 21 12:30:54 node1 kernel: [ 4643.603072] DEBUG 724:flush_sending_procs:487: Find process 1 trying to send a CMD
+Oct 21 12:30:54 node1 kernel: [ 4643.603073] DEBUG 724:flush_sending_procs:493: Wakeup SENDER with error ep=1  pid=872
+Oct 21 12:30:54 node1 kernel: [ 4643.603075] DEBUG 724:flush_sending_procs:515: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.603076] ERROR: 724:flush_sending_procs:516: rcode=-107
+Oct 21 12:30:54 node1 kernel: [ 4643.603077] DEBUG 724:new_proxy_conn:3193: WLOCK_NODE node=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.603078] DEBUG 724:new_proxy_conn:3195: WUNLOCK_NODE node=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.603080] DEBUG 724:unlock_sr_proxies:750: px_nr=0
+Oct 21 12:30:54 node1 kernel: [ 4643.603081] DEBUG 724:unlock_sr_proxies:766: sproxy_pid=724, rproxy_pid=726
+Oct 21 12:30:54 node1 kernel: [ 4643.603082] DEBUG 724:unlock_sr_proxies:768: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.603083] DEBUG 724:unlock_sr_proxies:769: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:30:54 node1 kernel: [ 4643.603084] DEBUG 724:unlock_sr_proxies:770: WUNLOCK_PROXY pxid=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.603087] DEBUG 724:new_proxy_conn:3248: nr=0 endp=27342 dcid=-1 flags=0 misc=1 lpid=724 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.603089] DEBUG 724:new_proxy_conn:3249: nr=0 endp=27342 dcid=-1 flags=0 misc=3 lpid=726 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 21 12:30:54 node1 kernel: [ 4643.649023] do_exit: local_nodeid:1
+Oct 21 12:30:54 node1 kernel: [ 4643.649093] DEBUG 892:new_exit_unbind:267: code=-629729834
+Oct 21 12:30:54 node1 kernel: [ 4643.649096] DEBUG 892:new_exit_unbind:271: WLOCK_TASK pid=216 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.649098] DEBUG 892:new_exit_unbind:400: Process not bound pid=892 systemd-journal
+Oct 21 12:30:54 node1 kernel: [ 4643.649099] DEBUG 892:new_exit_unbind:402: WUNLOCK_TASK pid=216 count=0
+Oct 21 12:30:54 node1 kernel: [ 4643.956084]  overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse ata_piix xhci_pci mptspi ehci_pci uhci_hcd xhci_hcd ehci_hcd scsi_transport_spi usbcore libata pcnet32 mptscsih mii mptbase scsi_mod i2c_piix4
+Oct 21 12:30:54 node1 kernel: [ 4643.962663] CPU: 2 PID: 872 Comm: dvs_uml_switch Tainted: G        W  O    4.9.88-DVK #158
+Oct 21 12:30:54 node1 kernel: [ 4643.964536] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:30:54 node1 kernel: [ 4643.968349] task: eaf38100 task.stack: f69b4000
+Oct 21 12:30:54 node1 kernel: [ 4643.970379] EIP: 0060:[<da5bc512>] EFLAGS: 00010286 CPU: 2
+Oct 21 12:30:54 node1 kernel: [ 4643.972844] EIP is at mutex_lock+0x12/0x30
+Oct 21 12:30:54 node1 kernel: [ 4643.975168] EAX: 00000618 EBX: 00000618 ECX: f70d68c0 EDX: 80000000
+Oct 21 12:30:54 node1 kernel: [ 4643.977220] ESI: 00000000 EDI: 00000000 EBP: f69b5df8 ESP: f69b5df4
+Oct 21 12:30:54 node1 kernel: [ 4643.980351]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+Oct 21 12:30:54 node1 kernel: [ 4643.982407] CR0: 80050033 CR2: 00000618 CR3: 1830f2c0 CR4: 000006f0
+Oct 21 12:30:54 node1 kernel: [ 4643.984528] Stack:
+Oct 21 12:30:54 node1 kernel: [ 4643.987339]  f61e4600 f69b5e8c f8aa1ded f8ad3364 00000368 f8ad04cc 00000778 00000001
+Oct 21 12:30:54 node1 kernel: [ 4643.989518]  00000000 da99ad02 00029b64 da99ad00 00000019 00000002 f69b5e64 da0ba4fe
+Oct 21 12:30:54 node1 kernel: [ 4643.991960]  eaf38100 00000040 00000368 01010000 f8ae2d00 00000001 00000000 f8ae2d40
+Oct 21 12:30:54 node1 kernel: [ 4643.994929] Call Trace:
+Oct 21 12:30:54 node1 kernel: [ 4643.997110]  [<f8aa1ded>] ? new_unbind+0xaca/0x1577 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4643.999278]  [<da0ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+Oct 21 12:30:54 node1 kernel: [ 4644.001431]  [<f8a96148>] ? io_unbind+0x4e/0xce [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4644.004308]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4644.006461]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 21 12:30:54 node1 kernel: [ 4644.008617]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 21 12:30:54 node1 kernel: [ 4644.010817]  [<da1d3159>] ? vfs_write+0x149/0x1c0
+Oct 21 12:30:54 node1 kernel: [ 4644.012936]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 21 12:30:54 node1 kernel: [ 4644.015070]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 21 12:30:54 node1 kernel: [ 4644.017224]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:30:54 node1 kernel: [ 4644.019618] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 12 97 da 89 43 10 5b 5d
+Oct 21 12:30:54 node1 kernel: [ 4644.027504] EIP: [<da5bc512>] 
+Oct 21 12:30:54 node1 kernel: [ 4644.027549] mutex_lock+0x12/0x30
+Oct 21 12:30:54 node1 kernel: [ 4644.029689]  SS:ESP 0068:f69b5df4
+Oct 21 12:30:54 node1 kernel: [ 4644.031836] CR2: 0000000000000618
+Oct 21 12:30:54 node1 kernel: [ 4644.054696] ---[ end trace 7b4305b5b9585096 ]---
+Oct 21 12:30:54 node1 kernel: [ 4644.056914] do_exit: local_nodeid:1
+Oct 21 12:30:54 node1 kernel: [ 4644.059562] DEBUG 872:new_exit_unbind:267: code=-629729834
+Oct 21 12:30:54 node1 kernel: [ 4644.064856] DEBUG 872:new_exit_unbind:271: WLOCK_TASK pid=869 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.067415] DEBUG 872:new_exit_unbind:277: RLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.069486] DEBUG 872:new_exit_unbind:278: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4644.073622] DEBUG 872:new_exit_unbind:311:  Exiting endpoint=1 lpid=872
+Oct 21 12:30:54 node1 kernel: [ 4644.076357] DEBUG 872:new_exit_unbind:313: RUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.080145] DEBUG 872:new_exit_unbind:314: WLOCK_DC dc=0 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.083007] DEBUG 872:new_exit_unbind:315: WLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.084942] DEBUG 872:new_exit_unbind:322:  endpoint=1 lpid=872
+Oct 21 12:30:54 node1 kernel: [ 4644.087740] DEBUG 872:do_unbind:736: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4644.093145] DEBUG 872:do_unbind:765: Caller nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4644.100604] DEBUG 872:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 21 12:30:54 node1 kernel: [ 4644.104901] DEBUG 872:do_unbind:858: delete notify messages bits sent by the proc
+Oct 21 12:30:54 node1 kernel: [ 4644.107482] DEBUG 872:do_unbind:865: Skip, caller process
+Oct 21 12:30:54 node1 kernel: [ 4644.111602] DEBUG 872:do_unbind:920: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4644.118828] DEBUG 872:do_unbind:976: wakeup with error those processes waiting this process MIGRATION
+Oct 21 12:30:54 node1 kernel: [ 4644.123475] DEBUG 872:do_unbind:1026: wakeup those processes waiting this process UNBINDING
+Oct 21 12:30:54 node1 kernel: [ 4644.140358] DEBUG 872:do_unbind:1060: nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=872 vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 21 12:30:54 node1 kernel: [ 4644.148612] DEBUG 872:init_proc_desc:16: p_name=dvs_uml_switch dcid=0
+Oct 21 12:30:54 node1 kernel: [ 4644.151212] DEBUG 872:init_proc_desc:27: Clearing Privileges
+Oct 21 12:30:54 node1 kernel: [ 4644.154257] DEBUG 872:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 21 12:30:54 node1 kernel: [ 4644.160038] DEBUG 872:init_proc_desc:41: Clearing Process fields
+Oct 21 12:30:54 node1 kernel: [ 4644.164858] DEBUG 872:do_unbind:1062: initialized 
+Oct 21 12:30:54 node1 kernel: [ 4644.167362] DEBUG 872:do_unbind:1063: DC_DECREF counter=6
+Oct 21 12:30:54 node1 kernel: [ 4644.169728] DEBUG 872:new_exit_unbind:384: WUNLOCK_PROC ep=1 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.172125] DEBUG 872:new_exit_unbind:385: WUNLOCK_TASK pid=869 count=0
+Oct 21 12:30:54 node1 kernel: [ 4644.174392] DEBUG 872:new_exit_unbind:386: WUNLOCK_DC dc=0 count=0
+Oct 21 12:32:30 node1 kernel: [ 4739.895532] do_exit: local_nodeid:1
+Oct 21 12:32:30 node1 kernel: [ 4739.898498] DEBUG 793:new_exit_unbind:267: code=-629729834
+Oct 21 12:32:30 node1 kernel: [ 4739.901183] DEBUG 793:new_exit_unbind:271: WLOCK_TASK pid=793 count=0
+Oct 21 12:32:30 node1 kernel: [ 4739.903704] DEBUG 793:new_exit_unbind:400: Process not bound pid=793 kworker/dying
+Oct 21 12:32:30 node1 kernel: [ 4739.907911] DEBUG 793:new_exit_unbind:402: WUNLOCK_TASK pid=793 count=0
+Oct 21 12:33:15 node1 kernel: [ 4784.254688] do_exit: local_nodeid:1
+Oct 21 12:33:15 node1 kernel: [ 4784.257683] DEBUG 894:new_exit_unbind:267: code=-629729834
+Oct 21 12:33:15 node1 kernel: [ 4784.260133] DEBUG 894:new_exit_unbind:271: WLOCK_TASK pid=894 count=0
+Oct 21 12:33:15 node1 kernel: [ 4784.262576] DEBUG 894:new_exit_unbind:400: Process not bound pid=894 ls
+Oct 21 12:33:15 node1 kernel: [ 4784.265319] DEBUG 894:new_exit_unbind:402: WUNLOCK_TASK pid=894 count=0
+
+
+ESTE ES OTRO ERROR
+Oct 21 12:57:32 node0 kernel: [  607.084515] DEBUG 804:do_unbind:736: nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 21 12:57:32 node0 kernel: [  607.084517] DEBUG 804:do_unbind:765: Caller nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 21 12:57:32 node0 kernel: [  607.084519] DEBUG 804:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 21 12:57:32 node0 kernel: [  607.084520] DEBUG 804:do_unbind:858: delete notify messages bits sent by the proc
+Oct 21 12:57:32 node0 kernel: [  607.084524] DEBUG 804:do_unbind:865: Skip, caller process
+Oct 21 12:57:32 node0 kernel: [  607.084528] DEBUG 804:do_unbind:905: Process 31 is no more waiting a message from the unbinded process 0
+Oct 21 12:57:32 node0 kernel: [  607.084529] DEBUG 804:generic_ack_lcl2rmt:20: ack=8193 rcode=-108
+Oct 21 12:57:32 node0 kernel: [  607.084532] DEBUG 804:sproxy_enqueue:28: nr=31 endp=31 dcid=0 flags=3000 misc=2000 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01 
+Oct 21 12:57:32 node0 kernel: [  607.084535] DEBUG 804:sproxy_enqueue:30: cmd=0x2001 dcid=0 src=0 dst=31 snode=0 dnode=1 rcode=-108 len=0
+Oct 21 12:57:32 node0 kernel: [  607.084536] DEBUG 804:sproxy_enqueue:33: WLOCK_PROC ep=27342 count=1
+Oct 21 12:57:32 node0 kernel: [  607.084537] DEBUG 804:sproxy_enqueue:40: LIST_ADD_TAIL
+Oct 21 12:57:32 node0 kernel: [  607.084540] DEBUG 804:sproxy_enqueue:42: nr=1 endp=27342 dcid=-1 flags=0 misc=1 lpid=718 vpid=-1 nodeid=0 name=lz4tcp_proxy_ba 
+Oct 21 12:57:32 node0 kernel: [  607.084541] DEBUG 804:sproxy_enqueue:49: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:57:32 node0 kernel: [  607.084645] DEBUG 804:do_unbind:920: nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 21 12:57:32 node0 kernel: [  607.084647] DEBUG 804:do_unbind:976: wakeup with error those processes waiting this process MIGRATION
+Oct 21 12:57:32 node0 kernel: [  607.084650] DEBUG 804:do_unbind:1010: waitunbind nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+Oct 21 12:57:32 node0 kernel: [  607.084651] DEBUG 804:do_unbind:1015: WUNLOCK_PROC ep=0 count=0
+Oct 21 12:57:32 node0 kernel: [  607.092210] BUG: unable to handle kernel NULL pointer dereference at   (null)
+Oct 21 12:57:32 node0 kernel: [  607.092663] IP: [<de2d0b4b>] __list_add+0xb/0x120
+Oct 21 12:57:32 node0 kernel: [  607.093082] *pdpt = 000000002a791001 *pde = 0000000000000000 
+Oct 21 12:57:32 node0 kernel: [  607.093149] 
+Oct 21 12:57:32 node0 kernel: [  607.093568] Oops: 0000 [#1] SMP
+Oct 21 12:57:32 node0 kernel: [  607.094096] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse joydev serio_raw vmw_balloon pcspkr vmwgfx evdev ttm drm_kms_helper vmw_vmci sg shpchp drm ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid psmouse ata_piix uhci_hcd xhci_pci ehci_pci ehci_hcd xhci_hcd libata pcnet32 mii usbcore mptspi scsi_transport_spi mptscsih mptbase i2c_piix4 scsi_mod
+Oct 21 12:57:32 node0 kernel: [  607.100790] CPU: 0 PID: 804 Comm: dvs_uml_switch Tainted: G           O    4.9.88-DVK #157
+Oct 21 12:57:32 node0 kernel: [  607.101914] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 21 12:57:32 node0 kernel: [  607.104188] task: df3f7340 task.stack: d4942000
+Oct 21 12:57:32 node0 kernel: [  607.105372] EIP: 0060:[<de2d0b4b>] EFLAGS: 00210246 CPU: 0
+Oct 21 12:57:32 node0 kernel: [  607.106712] EIP is at __list_add+0xb/0x120
+Oct 21 12:57:32 node0 kernel: [  607.108061] EAX: d4943d08 EBX: 00000000 ECX: ccf3f9e0 EDX: 00000000
+Oct 21 12:57:32 node0 kernel: [  607.109517] ESI: ccf3f9dc EDI: df3f7340 EBP: d4943d24 ESP: d4943cd8
+Oct 21 12:57:32 node0 kernel: [  607.110948]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+Oct 21 12:57:32 node0 kernel: [  607.112377] CR0: 80050033 CR2: 00000000 CR3: 1f328940 CR4: 000006f0
+Oct 21 12:57:32 node0 kernel: [  607.113918] Stack:
+Oct 21 12:57:32 node0 kernel: [  607.115671]  df3f7340 ccf3f9ec df3f7340 00000000 ccf3f9e8 00000000 ccf3f9d8 ccf445d8
+Oct 21 12:57:32 node0 kernel: [  607.117773]  ccf3f9d8 ccf3f9d8 de5bcd08 ccf3f9e0 d4943d28 de0ba8e7 00000000 66dd1316
+Oct 21 12:57:32 node0 kernel: [  607.119512]  ccf3f9d8 ccf445d8 ccf44400 d4943d30 de5bc51c ccf3f800 d4943d8c f8850b65
+Oct 21 12:57:32 node0 kernel: [  607.121350] Call Trace:
+Oct 21 12:57:32 node0 kernel: [  607.123491]  [<de5bcd08>] ? __mutex_lock_slowpath+0x78/0x100
+Oct 21 12:57:32 node0 kernel: [  607.125416]  [<de0ba8e7>] ? vprintk_default+0x37/0x40
+Oct 21 12:57:32 node0 kernel: [  607.127316]  [<de5bc51c>] ? mutex_lock+0x1c/0x30
+Oct 21 12:57:32 node0 kernel: [  607.129283]  [<f8850b65>] ? do_unbind+0x1a13/0x2234 [dvk]
+Oct 21 12:57:32 node0 kernel: [  607.131274]  [<f8853743>] ? new_exit_unbind+0x290/0x11c6 [dvk]
+Oct 21 12:57:32 node0 kernel: [  607.133974]  [<de06c342>] ? do_exit+0xa42/0xa50
+Oct 21 12:57:32 node0 kernel: [  607.136047]  [<de0b9f5d>] ? console_unlock+0x3fd/0x6b0
+Oct 21 12:57:32 node0 kernel: [  607.138104]  [<de074197>] ? recalc_sigpending+0x17/0x50
+Oct 21 12:57:32 node0 kernel: [  607.140248]  [<de074777>] ? dequeue_signal+0x87/0x1a0
+Oct 21 12:57:32 node0 kernel: [  607.142633]  [<de06c3c7>] ? do_group_exit+0x37/0x90
+Oct 21 12:57:32 node0 kernel: [  607.144782]  [<de0770df>] ? get_signal+0x24f/0x600
+Oct 21 12:57:32 node0 kernel: [  607.147018]  [<de0ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+Oct 21 12:57:32 node0 kernel: [  607.149216]  [<de0224d9>] ? do_signal+0x29/0x520
+Oct 21 12:57:32 node0 kernel: [  607.151597]  [<de160097>] ? printk+0x1a/0x1c
+Oct 21 12:57:32 node0 kernel: [  607.153786]  [<f884a2f0>] ? dvk_ioctl+0x183/0x1a8 [dvk]
+Oct 21 12:57:32 node0 kernel: [  607.156504]  [<de1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 21 12:57:32 node0 kernel: [  607.158648]  [<de0032b8>] ? exit_to_usermode_loop+0x78/0xb0
+Oct 21 12:57:32 node0 kernel: [  607.160707]  [<de0037af>] ? do_fast_syscall_32+0x13f/0x160
+Oct 21 12:57:32 node0 kernel: [  607.162696]  [<de5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 21 12:57:32 node0 kernel: [  607.164681] Code: 00 89 ea c7 41 04 00 00 00 00 e9 ce fe ff ff 89 ea 83 cf 01 e9 c4 fe ff ff e8 82 69 d9 ff 66 90 53 83 ec 24 8b 59 04 39 d3 75 25 <8b> 1a 39 d9 75 6f 39 c2 0f 84 af 00 00 00 39 c1 0f 84 a7 00 00
+Oct 21 12:57:32 node0 kernel: [  607.170900] EIP: [<de2d0b4b>] 
+Oct 21 12:57:32 node0 kernel: [  607.170941] __list_add+0xb/0x120
+Oct 21 12:57:32 node0 kernel: [  607.172832]  SS:ESP 0068:d4943cd8
+Oct 21 12:57:32 node0 kernel: [  607.174703] CR2: 0000000000000000
+Oct 21 12:57:32 node0 kernel: [  607.176985] ---[ end trace e21fa2b88254f622 ]---
+Oct 21 12:57:32 node0 kernel: [  607.178933] do_exit: local_nodeid:0
+Oct 21 12:57:32 node0 kernel: [  607.180746] DEBUG 804:new_exit_unbind:267: code=-562620970
+Oct 21 12:57:32 node0 kernel: [  607.194390] do_exit: local_nodeid:0
+Oct 21 12:57:32 node0 kernel: [  607.197147] DEBUG 806:new_exit_unbind:267: code=-562620970
+Oct 21 12:57:32 node0 kernel: [  607.204305] DEBUG 806:new_exit_unbind:271: WLOCK_TASK pid=804 count=0
+Oct 21 12:57:32 node0 kernel: [  607.207671] DEBUG 806:new_exit_unbind:277: RLOCK_PROC ep=30 count=0
+Oct 21 12:57:32 node0 kernel: [  607.210631] DEBUG 806:new_exit_unbind:278: nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=806 vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 21 12:57:32 node0 kernel: [  607.217556] DEBUG 806:new_exit_unbind:311:  Exiting endpoint=30 lpid=806
+Oct 21 12:57:32 node0 kernel: [  607.220994] DEBUG 806:new_exit_unbind:313: RUNLOCK_PROC ep=30 count=0
+Oct 21 12:57:32 node0 kernel: [  607.225132] DEBUG 804:new_exit_unbind:271: WLOCK_TASK pid=804 count=0
+Oct 21 12:57:32 node0 kernel: [  607.227361] DEBUG 804:new_exit_unbind:277: RLOCK_PROC ep=0 count=0
+Oct 21 12:57:32 node0 kernel: [  607.229193] DEBUG 804:new_exit_unbind:278: nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 21 12:57:32 node0 kernel: [  607.234761] DEBUG 804:new_exit_unbind:311:  Exiting endpoint=0 lpid=807
+Oct 21 12:57:32 node0 kernel: [  607.236974] DEBUG 804:new_exit_unbind:313: RUNLOCK_PROC ep=0 count=0
+Oct 21 12:57:40 node0 kernel: [  615.685444] DEBUG 719:dvk_ioctl:349: cmd=4004E314 arg=BFC86C34
+Oct 21 12:57:40 node0 kernel: [  615.688779] DEBUG 719:dvk_ioctl:369: DVK_CALL=20 (io_put2lcl) 
+Oct 21 12:57:40 node0 kernel: [  615.692074] DEBUG 719:io_put2lcl:217: 
+Oct 21 12:57:40 node0 kernel: [  615.695228] DEBUG 719:check_caller:605: caller_pid=719 caller_tgid=719
+Oct 21 12:57:40 node0 kernel: [  615.699688] DEBUG 719:check_caller:643: WLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.703242] DEBUG 719:check_caller:648: nr=1 endp=27342 dcid=-1 flags=0 misc=3 lpid=719 vpid=-1 nodeid=0 name=lz4tcp_proxy_ba 
+Oct 21 12:57:40 node0 kernel: [  615.709730] DEBUG 719:check_caller:708: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.713433] DEBUG 719:check_caller:725: caller_pid=719 
+Oct 21 12:57:40 node0 kernel: [  615.717011] DEBUG 719:check_caller:728: RLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.719207] DEBUG 719:check_caller:732: RUNLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.723639] DEBUG 719:new_put2lcl:574: WLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.725701] DEBUG 719:new_put2lcl:600: WUNLOCK_PROC ep=27342 count=1
+Oct 21 12:57:40 node0 kernel: [  615.727803] DEBUG 719:new_put2lcl:601: cmd=0x3 dcid=0 src=31 dst=0 snode=1 dnode=0 rcode=0 len=0
+Oct 21 12:57:40 node0 kernel: [  615.729900] DEBUG 719:new_put2lcl:607: dcid=0
+Oct 2
+	
+		
 TODO:	Recompilar el modulo 
 		verificar que se registran los threads como NO GRPLEADER
 		Verificar que termina bien con CTRL-C
-			
+
+TODO:   Supongamos un proceso PROC0 en NODE0 y PROC1  en NODE1 	
+		PROC1 hace un dvk_receive(proc0_endpoint, msg);
+		y PROC0 muere en otro nodo.-
+		NO Hay forma de que en NODE1 se entere de que PROC0 murio 
+		y entonces PROC1 quedaria esperando eternamente!!!
 		
+		Porque, cuando se hace el do_unbind()  
+		si el proceso que muere es LOCAL 
+
+		/* it another LOCAL process is waiting to receive 			*/
+		/* a message from the unbound process, inform that it exits.*/ 
+		if( (!test_bit(BIT_SENDING, &rp->p_usr.p_rts_flags) && test_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags) ) 
+			&& (rp->p_usr.p_getfrom == proc_ptr->p_usr.p_endpoint)) {
+			DVKDEBUG(INTERNAL,"Process %d is no more waiting a message from the unbound process %d\n",
+				rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
+			if( IT_IS_LOCAL(rp)) {
+				DVKDEBUG(INTERNAL,"Wakeup RECEIVER with error ep=%d  pid=%d\n",
+					rp->p_usr.p_endpoint, rp->p_usr.p_lpid);
+				LOCAL_PROC_UP(rp, EDVSSRCDIED);
+			}else{		<<<<<<<<<<<<<<<<<<<<<<<< ESTA PARTE SOLO EJECUTARIA SI UN PROCESO REMOTO HIZO UN SENDREC Y QUEDO EN RECEIVING
+				clear_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags);
+//	reemplazado generic_ack_lcl2rmt(CMD_SNDREC_ACK, rp, proc_ptr, EDVSSRCDIED);
+				send_ack_lcl2rmt(rp, proc_ptr, EDVSSRCDIED);
+			}
+		}
+
+		EL UNBIND LO HACE EL PROCESO CON  endp=0  (LOCAL) 
+		
+DEBUG 804:do_unbind:736: nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+DEBUG 804:do_unbind:765: Caller nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+DEBUG 804:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+DEBUG 804:do_unbind:858: delete notify messages bits sent by the proc
+DEBUG 804:do_unbind:865: Skip, caller process
+		EL PROCESO 31 QUE ES REMOTO ESTA EN ESTADO RECEIVING PORQUE HIZO UN SENDREC y el PROCESO 0 MUERE SIN RESPONDER  
+DEBUG 804:do_unbind:905: Process 31 is no more waiting a message from the unbound process 0
+DEBUG 804:generic_ack_lcl2rmt:20: ack=8193 rcode=-108
+DEBUG 804:sproxy_enqueue:28: nr=31 endp=31 dcid=0 flags=3000 misc=2000 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01 
+DEBUG 804:sproxy_enqueue:30: cmd=0x2001 dcid=0 src=0 dst=31 snode=0 dnode=1 rcode=-108 len=0
+DEBUG 804:sproxy_enqueue:33: WLOCK_PROC ep=27342 count=1
+DEBUG 804:sproxy_enqueue:40: LIST_ADD_TAIL
+DEBUG 804:sproxy_enqueue:42: nr=1 endp=27342 dcid=-1 flags=0 misc=1 lpid=718 vpid=-1 nodeid=0 name=lz4tcp_proxy_ba 
+DEBUG 804:sproxy_enqueue:49: WUNLOCK_PROC ep=27342 count=1
+DEBUG 804:do_unbind:920: nr=0 endp=0 dcid=0 flags=20000 misc=1020 lpid=807 vpid=5 nodeid=0 name=dvs_uml_switch 
+DEBUG 804:do_unbind:976: wakeup with error those processes waiting this process MIGRATION
+DEBUG 804:do_unbind:1010: waitunbind nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+DEBUG 804:do_unbind:1015: WUNLOCK_PROC ep=0 count=0		
+
+El proceso con ep=0 en NODE0 hace el unbind() y ve que el proceso ep=31 de NODE1 tiene el bit RECEIVING 
+indicando que hizo un dvk_sendrec() y tiene que encolar su descriptor en el SPROXY para notificar el UNBIND.
+
+
+
+????????????????????????????????????????????????????????????????????????????????????
+ERROR GROSSO ????????????????????????????????????????????????????????????????????????
+?????????????????????????????????????????????????????????????????????????????????????
+
+Cuando un proceso LOCAL en NODE0 quiere enviarle un ACK a un proceso REMOTO en NODE1 
+encola en el SENDER PROXY el descriptor del proceso REMOTO.
+
+Puede darse el caso que se encole otra vez el mismo descriptor por otra razon ???
+Oct 21 12:30:54 node1 kernel: [ 4643.547950] WARNING: CPU: 2 PID: 872 at lib/list_debug.c:36 __list_add+0xfc/0x120
+Oct 21 12:30:54 node1 kernel: [ 4643.547952] list_add double add: new=f61e46b4, prev=f61e46b4, next=f8ad9ccc.
+
+Cual podria ser la razon de un doble encolamiento?
+Para que se usan los remote process descriptors?
+1) los usa el proxy receiver para enconlarlo en la cola de mensajes del receptor.
+2) los usa el proxy receiver para enconlarlo en la cola de mensajes del proxy sender por un ACK de error 
+3) Cuando un proceso local hace un do_unbind() y tiene encolado un proceso remoto, lo desencola y lo encola con el proxy sender para que le avise del error
+4) Cuando el proceso remoto hizo un sendrec sobre el proceso local quien ya hizo el receive y lo desencolo, el proceso remoto quedo todavia con
+	el bit RECEIVING, y si el proceso local hace un do_unbind() encola el descriptor remoto en el PROXY SENDER para enviar un ACK de ERROR.
+	
+EL errore esta en estos 2 ultimos casos 
+
+		/////////////////// CONDICION EN EL QUE EL PROCESO REMOTO HIZO UN SENDREC PERO NO FUE RECIBIDO POR EL DESTINATARIO QUE HACE UNBIND 
+		DVKDEBUG(INTERNAL,"Find process %d trying to send a message to %d\n",
+			src_ptr->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
+//		assert(test_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags));
+		clear_bit(BIT_SENDING, &src_ptr->p_usr.p_rts_flags);
+		
+		if( IT_IS_LOCAL(src_ptr)) {
+			DVKDEBUG(INTERNAL,"Wakeup SENDER with error ep=%d  pid=%d\n",
+				src_ptr->p_usr.p_endpoint, src_ptr->p_usr.p_lpid);	
+			LOCAL_PROC_UP(src_ptr, EDVSDSTDIED);
+		} else {
+			// check if it is a SENDREC 
+			if( test_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags) ) {
+				clear_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
+				clear_bit(MIS_BIT_ATOMIC, &src_ptr->p_usr.p_misc_flags);
+			}
+			/* REMOTE process descriptor are used for ACKNOWLEDGES 							 */
+			send_ack_lcl2rmt(src_ptr,proc_ptr,EDVSDSTDIED);
+		}
+
+
+		/////////////////// CONDICION EN EL QUE EL PROCESO REMOTO HIZO UN SENDREC PERO YA RUE RECIBIDO PERO NO 
+		/////////////////// RESPONDIDO AUN POR EL DESTINATARIO QUE HACE UNBIND 
+		/* IF another LOCAL process is waiting to receive  		*/
+		/* a message from the unbound process,  because it has 	*/
+		/* done a dvk_sendrec(), inform that it exits.			*/ 
+		if( (!test_bit(BIT_SENDING, &rp->p_usr.p_rts_flags) && test_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags) ) 
+			&& (rp->p_usr.p_getfrom == proc_ptr->p_usr.p_endpoint)) {
+			DVKDEBUG(INTERNAL,"Process %d is no more waiting a message from the unbound process %d\n",
+				rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
+			// There must be a received but unreplied sendrec()  by the unbouning process 
+			clear_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags);  <<<<<<<<<<<<<<< SE AGREGO  
+			clear_bit(MIS_BIT_ATOMIC, &rp->p_usr.p_misc_flags); <<<<<<<<<<<<<<< SE AGREGO  
+			if( IT_IS_LOCAL(rp)) {
+				DVKDEBUG(INTERNAL,"Wakeup RECEIVER with error ep=%d  pid=%d\n",
+					rp->p_usr.p_endpoint, rp->p_usr.p_lpid);
+				LOCAL_PROC_UP(rp, EDVSSRCDIED);
+			}else{	
+				send_ack_lcl2rmt(rp, proc_ptr, EDVSSRCDIED);
+			}
+		}
+
+
+??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+?????????????????????????????????????????????????????????????????????????????????????			
+			
 ==============================================================================================================
 
 	
@@ -3288,9 +4030,567 @@ REVISAR LOS wait_event_interruptible  y wait_event_interruptible_timeout porque 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ==============================================================================================================
+20201023:
+
+EL QUE EJECUTA EN NODE1 ES EL MAIN DEL UML SWITCH 836 PERO EL QUE ESTA BINDEADO ES UN THREAD
+RECORDAR QUE EL MAIN NO ESTA BINDEADO PERO SUS THREADS SI, Y POR LO TANTO ESTAN CORRIENDO
+COMO SE PODRIA SOLUCIONAR?
+
+Oct 23 18:01:54 node1 kernel: [19233.232466] DEBUG 836:dvk_ioctl:349: cmd=4004E30A arg=BFEE2FB0
+Oct 23 18:01:54 node1 kernel: [19233.232470] DEBUG 836:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 23 18:01:54 node1 kernel: [19233.232472] DEBUG 836:io_unbind:109: 
+Oct 23 18:01:54 node1 kernel: [19233.232474] DEBUG 836:new_unbind:1873: dcid=0 proc_ep=0
+Oct 23 18:01:54 node1 kernel: [19233.232478] DEBUG 836:check_caller:605: caller_pid=836 caller_tgid=836    
+Oct 23 18:01:54 node1 kernel: [19233.232480] DEBUG 836:check_caller:646: WLOCK_PROC ep=31 count=0
+
+ESTE ES EL DESCRIPTOR DEL HIJO NO DEL MAIN !!!! POR LO TANTO EL ERROR DEBE ESTAR EN EL BIND QUE ASOCIA LA TASK AL PROC 
+misc=2020 = MIS_BIT_ATOMIC | MIS_BIT_GRPLEADER !!!!!! 
+Oct 23 18:01:54 node1 kernel: [19233.232482] DEBUG 836:check_caller:651: nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch BIT_RMTOPER
+Oct 23 18:01:54 node1 kernel: [19233.232485] DEBUG 836:check_caller:679: nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch 
+Oct 23 18:01:54 node1 kernel: [19233.232486] DEBUG 836:check_caller:680: WUNLOCK_PROC ep=31 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232488] ERROR: 836:check_caller:680: rcode=-320 <<<<<<<<<<<<<<<<<<<<<<<< EDVSPROCRUN EL PROCESO ESTA CORRIENDO
+Oct 23 18:01:54 node1 kernel: [19233.232490] DEBUG 836:new_unbind:1889: RLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232491] DEBUG 836:new_unbind:1901: RUNLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232493] DEBUG 836:new_unbind:1903: RLOCK_PROC ep=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232494] DEBUG 836:new_unbind:1920: RUNLOCK_PROC ep=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232496] DEBUG 836:new_unbind:1947: WLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232498] DEBUG 836:new_unbind:1951: WLOCK_PROC ep=0 count=0
+
+ESTO SALE DESPUES DEL TBIND 
+ rmttap.c:send_thread:292:nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch  << MIS_BIT_GRPLEADER ESTA MAL !!!
+
+MATANDO AL SERVER REMOTO 
+Oct 23 18:01:54 node1 kernel: [19233.232501] DEBUG 836:do_unbind:736: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 23 18:01:54 node1 kernel: [19233.232503] DEBUG 836:do_unbind:765: Caller nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch 
+Oct 23 18:01:54 node1 kernel: [19233.232505] DEBUG 836:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 23 18:01:54 node1 kernel: [19233.232506] DEBUG 836:do_unbind:865: delete notify messages bits sent by the proc
+Oct 23 18:01:54 node1 kernel: [19233.232515] DEBUG 836:do_unbind:878: Skip, self process
+Oct 23 18:01:54 node1 kernel: [19233.232519] DEBUG 836:do_unbind:872: Skip, caller process
+Oct 23 18:01:54 node1 kernel: [19233.232581] DEBUG 836:do_unbind:935: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 23 18:01:54 node1 kernel: [19233.232583] DEBUG 836:do_unbind:991: wakeup with error those processes waiting this process MIGRATION
+Oct 23 18:01:54 node1 kernel: [19233.232585] DEBUG 836:do_unbind:1041: wakeup those processes waiting this process UNBINDING
+Oct 23 18:01:54 node1 kernel: [19233.232618] DEBUG 836:do_unbind:1075: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 23 18:01:54 node1 kernel: [19233.232623] DEBUG 836:init_proc_desc:16: p_name=TAPserver00 dcid=0
+Oct 23 18:01:54 node1 kernel: [19233.232624] DEBUG 836:init_proc_desc:27: Clearing Privileges
+Oct 23 18:01:54 node1 kernel: [19233.232625] DEBUG 836:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 23 18:01:54 node1 kernel: [19233.232626] DEBUG 836:init_proc_desc:41: Clearing Process fields
+Oct 23 18:01:54 node1 kernel: [19233.232628] DEBUG 836:do_unbind:1077: initialized 
+Oct 23 18:01:54 node1 kernel: [19233.232630] DEBUG 836:do_unbind:1078: DC_DECREF counter=6
+Oct 23 18:01:54 node1 kernel: [19233.232632] DEBUG 836:new_unbind:2012: WUNLOCK_PROC ep=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232634] DEBUG 836:new_unbind:2015: WUNLOCK_DC dc=0 count=0
+
+MATANDO AL CLIENT REMOTO 
+Oct 23 18:01:54 node1 kernel: [19233.232703] DEBUG 836:dvk_ioctl:349: cmd=4004E30A arg=BFEE2FB0
+Oct 23 18:01:54 node1 kernel: [19233.232704] DEBUG 836:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 23 18:01:54 node1 kernel: [19233.232705] DEBUG 836:io_unbind:109: 
+Oct 23 18:01:54 node1 kernel: [19233.232708] DEBUG 836:new_unbind:1873: dcid=0 proc_ep=30
+Oct 23 18:01:54 node1 kernel: [19233.232711] DEBUG 836:check_caller:605: caller_pid=836 caller_tgid=836
+Oct 23 18:01:54 node1 kernel: [19233.232713] DEBUG 836:check_caller:646: WLOCK_PROC ep=31 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232715] DEBUG 836:check_caller:651: nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch 
+Oct 23 18:01:54 node1 kernel: [19233.232718] DEBUG 836:check_caller:679: nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch 
+Oct 23 18:01:54 node1 kernel: [19233.232719] DEBUG 836:check_caller:680: WUNLOCK_PROC ep=31 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232720] ERROR: 836:check_caller:680: rcode=-320
+Oct 23 18:01:54 node1 kernel: [19233.232722] DEBUG 836:new_unbind:1889: RLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232723] DEBUG 836:new_unbind:1901: RUNLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232725] DEBUG 836:new_unbind:1903: RLOCK_PROC ep=30 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232727] DEBUG 836:new_unbind:1920: RUNLOCK_PROC ep=30 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232728] DEBUG 836:new_unbind:1947: WLOCK_DC dc=0 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232730] DEBUG 836:new_unbind:1951: WLOCK_PROC ep=30 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232732] DEBUG 836:do_unbind:736: nr=30 endp=30 dcid=0 flags=1408 misc=2000 lpid=-1 vpid=-1 nodeid=0 name=TAPclient00 
+Oct 23 18:01:54 node1 kernel: [19233.232735] DEBUG 836:do_unbind:765: Caller nr=31 endp=31 dcid=0 flags=8 misc=2020 lpid=838 vpid=4 nodeid=1 name=dvs_uml_switch 
+Oct 23 18:01:54 node1 kernel: [19233.232736] DEBUG 836:do_unbind:815: WUNLOCK_PROC ep=30 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232738] DEBUG 836:do_unbind:816: WLOCK_PROC ep=1 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232739] DEBUG 836:do_unbind:817: WLOCK_PROC ep=30 count=0
+Oct 23 18:01:54 node1 kernel: [19233.232740] DEBUG 836:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+
+QUEDA BLOQUEADO AQUI !!!!!! 
+Oct 23 18:01:54 node1 kernel: [19233.232741] DEBUG 836:do_unbind:865: delete notify messages bits sent by the proc
+
+
+SOLUCIONES:
+1- Se modifico el do_unbind() que verificaba si el proceso REMOTO estaba en estado SENDING y enviaba un ACK 
+	no se verificaba si tambien estaba en RECEIVING. De esa forma, mas adelante cuando verificaba si estaba 
+	en RECEIVING volvia a encolar el mismo descriptor.
+2- Habia errores en el bind() respecto a que ponie como GRPLEADER al primer thread bindeado, lo que esta mal
+	
+
+==============================================================================================================
+20201024:
+
+Sigue poniendose el thread como GRPLEADER!! misc=20
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0  1425/5      0    8   20 31438 27342 27342 27342 dvs_uml_switch 
+ 
+root@node0:/var/log# grep "misc=20 lpid=" kern.log | more
+Oct 24 11:19:02 node0 kernel: [  553.353851] DEBUG 1425:new_bind:1826: nr=0 endp=0 dcid=0 fl
+ags=0 misc=20 lpid=1425 vpid=5 nodeid=0 name=dvs_uml_switch 
+ 
+ 
+Oct 24 11:19:02 node0 kernel: [  553.353763] DEBUG 1425:dvk_ioctl:349: cmd=4004E309 arg=B63FF258
+Oct 24 11:19:02 node0 kernel: [  553.353766] DEBUG 1425:dvk_ioctl:369: DVK_CALL=9 (io_bind) 
+Oct 24 11:19:02 node0 kernel: [  553.353768] DEBUG 1425:io_bind:97: 
+Oct 24 11:19:02 node0 kernel: [  553.353772] DEBUG 1425:new_bind:1568: oper=0 dcid=0 param_pid=5 endpoint=0 nodeid=-1
+Oct 24 11:19:02 node0 kernel: [  553.353774] DEBUG 1425:new_bind:1591: dc_ptr=f89d6d00
+Oct 24 11:19:02 node0 kernel: [  553.353777] DEBUG 1425:new_bind:1593: RLOCK_DC dc=0 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353779] DEBUG 1425:new_bind:1606: proc_ptr=ea0a4400
+Oct 24 11:19:02 node0 kernel: [  553.353781] DEBUG 1425:new_bind:1607: WLOCK_PROC ep=0 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353785] DEBUG 1425:new_bind:1646: param_pid=5 lpid=1425 vpid=5 tid=1422 <<<<<<<<<<<<<<<<<<<<
+Oct 24 11:19:02 node0 kernel: [  553.353788] DEBUG 1425:new_bind:1652: SELF_BIND param_pid=5 lpid=1425 vpid=5 tid=1422 <<<<<<<<<<
+Oct 24 11:19:02 node0 kernel: [  553.353791] DEBUG 1425:init_proc_desc:16: p_name=$noname dcid=0
+Oct 24 11:19:02 node0 kernel: [  553.353792] DEBUG 1425:init_proc_desc:27: Clearing Privileges
+Oct 24 11:19:02 node0 kernel: [  553.353794] DEBUG 1425:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 24 11:19:02 node0 kernel: [  553.353796] DEBUG 1425:init_proc_desc:41: Clearing Process fields
+Oct 24 11:19:02 node0 kernel: [  553.353798] DEBUG 1425:new_bind:1682: WUNLOCK_PROC ep=0 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353800] DEBUG 1425:new_bind:1686: WLOCK_TASK pid=1422 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353803] DEBUG 1425:new_bind:1687: WLOCK_PROC ep=0 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353804] DEBUG 1425:new_bind:1702: NOT thread_group_leader <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Oct 24 11:19:02 node0 kernel: [  553.353806] DEBUG 1425:new_bind:1704: WLOCK_TASK pid=1422 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353808] DEBUG 1425:new_bind:1708: WUNLOCK_TASK pid=1422 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353811] DEBUG 1425:new_bind:1726: increment the reference count of the task struct=142
+2 count=2
+Oct 24 11:19:02 node0 kernel: [  553.353813] DEBUG 1425:new_bind:1734: GRPLEADER lpid=1425 vpid=5 tid=1422
+Oct 24 11:19:02 node0 kernel: [  553.353815] DEBUG 1425:new_bind:1739: process p_name=dvs_uml_switch *p_name_ptr=dvs_uml_switch
+Oct 24 11:19:02 node0 kernel: [  553.353817] DEBUG 1425:new_bind:1819: sizeof(priv_usr_t)=52
+Oct 24 11:19:02 node0 kernel: [  553.353820] DEBUG 1425:new_bind:1820: priv_id=34 priv_warn=27342 priv_level=0
+Oct 24 11:19:02 node0 kernel: [  553.353822] DEBUG 1425:new_bind:1821: PRINT_SYS_MAP: 1425:new_bind:1821:proc_ptr->p_priv.priv_usr.priv_ipc_to:
+Oct 24 11:19:02 node0 kernel: [  553.353826] DEBUG 1425:new_bind:1821: PRINT_SYS_MAP: 1425:new_bind:1821:4:
+Oct 24 11:19:02 node0 kernel: [  553.353828] DEBUG 1425:new_bind:1821: 
+Oct 24 11:19:02 node0 kernel: [  553.353828] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353830] DEBUG 1425:new_bind:1821: 
+Oct 24 11:19:02 node0 kernel: [  553.353830] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353831] DEBUG 1425:new_bind:1821: 
+Oct 24 11:19:02 node0 kernel: [  553.353831] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353833] DEBUG 1425:new_bind:1821: 
+Oct 24 11:19:02 node0 kernel: [  553.353833] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353835] DEBUG 1425:new_bind:1821: 
+Oct 24 11:19:02 node0 kernel: [  553.353837] DEBUG 1425:new_bind:1822: PRINT_DVKALLOWED_MAP: 1425:new_bind:1822:proc_ptr->p_priv.priv_usr.priv_
+dvk_allowed:
+Oct 24 11:19:02 node0 kernel: [  553.353840] DEBUG 1425:new_bind:1822: PRINT_DVKALLOWED_MAP: 1425:new_bind:1822:3:
+Oct 24 11:19:02 node0 kernel: [  553.353842] DEBUG 1425:new_bind:1822: 
+Oct 24 11:19:02 node0 kernel: [  553.353842] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353843] DEBUG 1425:new_bind:1822: 
+Oct 24 11:19:02 node0 kernel: [  553.353843] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353845] DEBUG 1425:new_bind:1822: 
+Oct 24 11:19:02 node0 kernel: [  553.353845] FFFF:
+Oct 24 11:19:02 node0 kernel: [  553.353846] DEBUG 1425:new_bind:1822: 
+Oct 24 11:19:02 node0 kernel: [  553.353851] DEBUG 1425:new_bind:1826: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=1425 vpid=5 nodeid=0 name=dvs_um
+l_switch 
+Oct 24 11:19:02 node0 kernel: [  553.353854] DEBUG 1425:new_bind:1827: nr=0 endp=0 dcid=0 lpid=1425 p_cpumask=FFFFFFFF nodemap=1 name=dvs_uml_s
+witch 
+Oct 24 11:19:02 node0 kernel: [  553.353856] DEBUG 1425:new_bind:1841: WUNLOCK_TASK pid=1422 count=1
+Oct 24 11:19:02 node0 kernel: [  553.353858] DEBUG 1425:new_bind:1847: WUNLOCK_PROC ep=0 count=0
+Oct 24 11:19:02 node0 kernel: [  553.353860] DEBUG 1425:new_bind:1849: DC_INCREF counter=5
+Oct 24 11:19:02 node0 kernel: [  553.353862] DEBUG 1425:new_bind:1850: RUNLOCK_DC dc=0 count=0
+
+
+SOLUCIONADO EL TEMA GRPLEADER!!!!!!!!!
+
+EN NODE0 DVS_UML_SWITCH DA ESTE ERROR 
+ rmttap.c:recv_thread:424:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=70 m3p1=0x50b460 m3ca1=[tap1]
+ rmttap.c:recv_thread:460:RECEIVED REQ_RT_WRITE REQUEST
+ rmttap.c:recv_thread:472:REQ_RT_WRITE: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+DEBUG 2:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=70
+DEBUG 2:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_write_packet:158:WRITE REPLY: source=1 type=8194 m3i1=-61 m3i2=98 m3p1=0x42e460 m3ca1=[tap1]
+ERROR: rmttap.c:rt_write_packet:160: rcode=-61
+ rmttap.c:try_rmttap_open:245:nr_rmttap=2
+ rmttap.c:try_rmttap_open:251:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=1 rt_rmttap_fd=10 rt_name=RTAP1
+ERROR: rmttap.c:send_thread:368: rcode=-61
+DEBUG 2:dvk_vcopy:142: ioctl ret=-1 errno=324
+DEBUG 2:dvk_vcopy:154: ioctl ret=-324 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<EDVSPROCSTS
+ERROR: rmttap.c:recv_thread:487: rcode=-324
+ rmttap.c:recv_thread:565:SEND REPLY: source=31 type=8194 m3i1=-324 m3i2=70 m3p1=0x50b460 m3ca1=[tap1]
+DEBUG 2:dvk_send_T:864: endpoint=31 timeout=30000
+
+EN EL KERNEL REPORTA
+Oct 24 13:26:44 node1 kernel: [  830.567733] DEBUG 694:new_put2lcl:943: CMD_COPYOUT_DATA dcid=0 rmt_ep=30 rmt_nr=30 lcl_ep=1 lcl_nr=1
+Oct 24 13:26:44 node1 kernel: [  830.567736] DEBUG 694:copyout_data_rmt2lcl:498: cmd=0x2006 dcid=0 src=30 dst=1 snode=0 dnode=1 rcode=0 len=98
+Oct 24 13:26:44 node1 kernel: [  830.567739] DEBUG 694:copyout_data_rmt2lcl:499: src=30 dst=1 rqtr=1 saddr=0042e460 daddr=0050ba60 bytes=98 
+Oct 24 13:26:44 node1 kernel: [  830.567741] ERROR: 694:copyout_data_rmt2lcl:546: rcode=-324 <<<<<<<<<<<<<<<< EDVSPROCSTS
+
+	do {
+		ret = OK;
+
+		uproc_ptr = &lcl_ptr->p_usr;
+		DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));	<<<<<<<<<<<<<<<< SE AGREGARON ESTOS DEBUG PARA VER EL ESTADO 
+		uproc_ptr = &dst_ptr->p_usr;
+		DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
+		uproc_ptr = &rmt_ptr->p_usr;
+		DVKDEBUG(DBGPARAMS,PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
+
+		if( lcl_ptr->p_usr.p_rts_flags == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
+		if( dst_ptr->p_usr.p_rts_flags == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
+
+		/*check that all envolved processes are on ONCOPY state */
+		if(!test_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;} <<<<<<<<<<<<<<<< AQUI DA LOS ERRORES
+	    if(!test_bit(BIT_ONCOPY, &dst_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;} <<<<<<<<<<<<<<<< AQUI DA LOS ERRORES
+	    if(!test_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags))	{ret= EDVSPROCSTS; break;} <<<<<<<<<<<<<<<< AQUI DA LOS ERRORES
+	}while(0);
+
+Esta claro que el destintario no debe estar en RUNNING, pero cuales serian las 
+
+==============================================================================================================
+20201025:
+
+Oct 25 08:03:22 node0 kernel: [ 2690.270257] DEBUG 1315:new_put2lcl:862: RUNLOCK_DC dc=0 count=0
+Oct 25 08:03:22 node0 kernel: [ 2690.270259] DEBUG 1315:new_put2lcl:974: CMD_COPYOUT_DATA dcid=0 rmt_ep=31 rmt_nr=31 lcl_ep=0 lcl_nr=0
+Oct 25 08:03:22 node0 kernel: [ 2690.270262] DEBUG 1315:copyout_data_rmt2lcl:502: cmd=0x2006 dcid=0 src=31 dst=0 snode=1 dnode=0 rcode=0 len=90
+Oct 25 08:03:22 node0 kernel: [ 2690.270264] DEBUG 1315:copyout_data_rmt2lcl:503: src=31 dst=0 rqtr=0 saddr=0050b460 daddr=004c3a60 bytes=90 
+Oct 25 08:03:22 node0 kernel: [ 2690.270267] DEBUG 1315:copyout_data_rmt2lcl:516: nr=0 endp=0 dcid=0 flags=400 misc=1000 lpid=1357 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 25 08:03:22 node0 kernel: [ 2690.270270] DEBUG 1315:copyout_data_rmt2lcl:518: nr=31 endp=31 dcid=0 flags=1408 misc=2000 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01 
+Oct 25 08:03:22 node0 kernel: [ 2690.270271] ERROR: 1315:copyout_data_rmt2lcl:527: rcode=-324  <<<<<<<<<<<<<<<<<<< EDVSPROCSTS
+Oct 25 08:03:22 node0 kernel: [ 2690.270272] DEBUG 1315:new_put2lcl:996: WUNLOCK_PROC ep=0 count=0
+Oct 25 08:03:22 node0 kernel: [ 2690.270273] DEBUG 1315:new_put2lcl:996: WUNLOCK_PROC ep=31 count=0
+Oct 25 08:03:22 node0 kernel: [ 2690.270275] DEBUG 1315:new_put2lcl:1012: WLOCK_PROC ep=27342 count=1
+Oct 25 08:03:22 node0 kernel: [ 2690.270276] DEBUG 1315:new_put2lcl:1014: WUNLOCK_PROC ep=27342 count=1
+Oct 25 08:03:22 node0 kernel: [ 2690.270277] ERROR: 1315:new_put2lcl:1017: rcode=-324
+Oct 25 08:03:22 node0 kernel: [ 2690.270278] ERROR: 1315:dvk_ioctl:373: rcode=-324
+
+SOLUCIONADO 
+Oct 25 08:41:05 node0 kernel: [  420.182863] DEBUG 658:new_put2lcl:955: CMD_COPYOUT_DATA dcid=0 rmt_ep=31 rmt_nr=31 lcl_ep=0 lcl_nr=0
+Oct 25 08:41:05 node0 kernel: [  420.182866] DEBUG 658:copyout_data_rmt2lcl:501: cmd=0x2006 dcid=0 src=31 dst=0 snode=1 dnode=0 rcode=0 len=94
+Oct 25 08:41:05 node0 kernel: [  420.182868] DEBUG 658:copyout_data_rmt2lcl:502: src=31 dst=0 rqtr=0 saddr=00498460 daddr=0050ca60 bytes=94 
+Oct 25 08:41:05 node0 kernel: [  420.182870] DEBUG 658:copyout_data_rmt2lcl:513: nr=0 endp=0 dcid=0 flags=400 misc=1000 lpid=683 vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 25 08:41:05 node0 kernel: [  420.183305] DEBUG 658:copyout_data_rmt2lcl:515: nr=31 endp=31 dcid=0 flags=1408 misc=2000 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01 
+Oct 25 08:41:05 node0 kernel: [  420.183660] DEBUG 658:copy_usr2usr:1073: rqtr_ep=27342 src_ep=27342 src_lpid=658 src_vpid=-1 src_addr=02308000
+Oct 25 08:41:05 node0 kernel: [  420.183661] DEBUG 658:copy_usr2usr:1076: dst_ep=0 dst_lpid=683 dst_vpid=5 dst_addr=0050ca60 bytes=94
+
+
+ERROR:
+PROBLEMA, ALGO ESTA PASANDO CON EL LOCK DEL DCID PORQUE DESPUES DE TERMINAR PROCESOS 
+SE QUEDA BLOQUEADO EN ALGUNA OPERACION DEL DC 
+
+Oct 25 08:41:05 node0 kernel: [  420.650028] DEBUG 680:dvk_ioctl:349: cmd=4004E30A arg=BF86F430
+Oct 25 08:41:05 node0 kernel: [  420.650031] DEBUG 680:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 25 08:41:05 node0 kernel: [  420.650033] DEBUG 680:io_unbind:109: 
+Oct 25 08:41:05 node0 kernel: [  420.650035] DEBUG 680:new_unbind:1873: dcid=0 proc_ep=1
+Oct 25 08:41:05 node0 kernel: [  420.650038] DEBUG 680:check_caller:605: caller_pid=680 caller_tgid=680
+Oct 25 08:41:05 node0 kernel: [  420.650040] ERROR: 680:check_caller:642: rcode=-310
+Oct 25 08:41:05 node0 kernel: [  420.650042] DEBUG 680:new_unbind:1889: RLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650044] DEBUG 680:new_unbind:1901: RUNLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650045] DEBUG 680:new_unbind:1903: RLOCK_PROC ep=1 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650046] DEBUG 680:new_unbind:1920: RUNLOCK_PROC ep=1 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650048] DEBUG 680:new_unbind:1947: WLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650049] DEBUG 680:new_unbind:1951: WLOCK_PROC ep=1 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650053] DEBUG 680:do_unbind:736: nr=1 endp=1 dcid=0 flags=3000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+Oct 25 08:41:05 node0 kernel: [  420.650054] DEBUG 680:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 25 08:41:05 node0 kernel: [  420.650055] DEBUG 680:do_unbind:865: delete notify messages bits sent by the proc
+Oct 25 08:41:05 node0 kernel: [  420.650061] DEBUG 680:do_unbind:878: Skip, self process
+Oct 25 08:41:05 node0 kernel: [  420.650078] DEBUG 680:do_unbind:935: nr=1 endp=1 dcid=0 flags=3000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+Oct 25 08:41:05 node0 kernel: [  420.650080] DEBUG 680:do_unbind:941: WLOCK_PROC ep=27342 count=1
+Oct 25 08:41:05 node0 kernel: [  420.650081] DEBUG 680:do_unbind:942: LIST_DEL_INIT
+Oct 25 08:41:05 node0 kernel: [  420.650082] DEBUG 680:do_unbind:943: WUNLOCK_PROC ep=27342 count=1
+Oct 25 08:41:05 node0 kernel: [  420.650083] DEBUG 680:do_unbind:991: wakeup with error those processes waiting this process MIGRATION
+Oct 25 08:41:05 node0 kernel: [  420.650085] DEBUG 680:do_unbind:1041: wakeup those processes waiting this process UNBINDING
+Oct 25 08:41:05 node0 kernel: [  420.650087] DEBUG 680:do_unbind:1075: nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+Oct 25 08:41:05 node0 kernel: [  420.650089] DEBUG 680:init_proc_desc:16: p_name=TAPserver01 dcid=0
+Oct 25 08:41:05 node0 kernel: [  420.650090] DEBUG 680:init_proc_desc:27: Clearing Privileges
+Oct 25 08:41:05 node0 kernel: [  420.650091] DEBUG 680:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 25 08:41:05 node0 kernel: [  420.650092] DEBUG 680:init_proc_desc:41: Clearing Process fields
+Oct 25 08:41:05 node0 kernel: [  420.650094] DEBUG 680:do_unbind:1077: initialized 
+Oct 25 08:41:05 node0 kernel: [  420.650095] DEBUG 680:do_unbind:1078: DC_DECREF counter=6
+Oct 25 08:41:05 node0 kernel: [  420.650096] DEBUG 680:new_unbind:2012: WUNLOCK_PROC ep=1 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650098] DEBUG 680:new_unbind:2015: WUNLOCK_DC dc=0 count=0
+
+Oct 25 08:41:05 node0 kernel: [  420.650141] DEBUG 680:dvk_ioctl:349: cmd=4004E30A arg=BF86F430
+Oct 25 08:41:05 node0 kernel: [  420.650142] DEBUG 680:dvk_ioctl:369: DVK_CALL=10 (io_unbind)  
+Oct 25 08:41:05 node0 kernel: [  420.650143] DEBUG 680:io_unbind:109: 
+Oct 25 08:41:05 node0 kernel: [  420.650145] DEBUG 680:new_unbind:1873: dcid=0 proc_ep=31                   <<<<<<<<<<<<< REMOTO 31 
+Oct 25 08:41:05 node0 kernel: [  420.650146] DEBUG 680:check_caller:605: caller_pid=680 caller_tgid=680
+Oct 25 08:41:05 node0 kernel: [  420.650147] ERROR: 680:check_caller:642: rcode=-310
+Oct 25 08:41:05 node0 kernel: [  420.650149] DEBUG 680:new_unbind:1889: RLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650150] DEBUG 680:new_unbind:1901: RUNLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650151] DEBUG 680:new_unbind:1903: RLOCK_PROC ep=31 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650152] DEBUG 680:new_unbind:1920: RUNLOCK_PROC ep=31 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650153] DEBUG 680:new_unbind:1947: WLOCK_DC dc=0 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650155] DEBUG 680:new_unbind:1951: WLOCK_PROC ep=31 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650157] DEBUG 680:do_unbind:736: nr=31 endp=31 dcid=0 flags=1408 misc=2000 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01 
+Oct 25 08:41:05 node0 kernel: [  420.650158] DEBUG 680:do_unbind:815: WUNLOCK_PROC ep=31 count=0
+Oct 25 08:41:05 node0 kernel: [  420.650160] DEBUG 680:do_unbind:816: WLOCK_PROC ep=0 count=0            <<<<<<<<<<<< proceso local    src_ptr
+Oct 25 08:41:05 node0 kernel: [  420.650161] DEBUG 680:do_unbind:817: WLOCK_PROC ep=31 count=0           <<<<<<<<<<<<< proceso remoto  proc_ptr
+Oct 25 08:41:05 node0 kernel: [  420.650162] DEBUG 680:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 25 08:41:05 node0 kernel: [  420.650163] DEBUG 680:do_unbind:865: delete notify messages bits sent by the proc <<<<<<< BLOQUEADO 
+
+
+SIGUE EL ERROR PERO EN OTRO LADO AL HABER MODIFICADO 
+Oct 25 11:36:54 node1 kernel: [ 5562.921906] DEBUG 1420:dvk_ioctl:349: cmd=4004E30A arg=BFA94FF0
+Oct 25 11:36:54 node1 kernel: [ 5562.921910] DEBUG 1420:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 25 11:36:54 node1 kernel: [ 5562.921912] DEBUG 1420:io_unbind:109: 
+Oct 25 11:36:54 node1 kernel: [ 5562.921916] DEBUG 1420:new_unbind:1906: dcid=0 proc_ep=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921920] DEBUG 1420:check_caller:605: caller_pid=1420 caller_tgid=1420
+Oct 25 11:36:54 node1 kernel: [ 5562.921922] ERROR: 1420:check_caller:642: rcode=-310
+Oct 25 11:36:54 node1 kernel: [ 5562.921924] DEBUG 1420:new_unbind:1922: RLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921925] DEBUG 1420:new_unbind:1934: RUNLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921927] DEBUG 1420:new_unbind:1936: RLOCK_PROC ep=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921929] DEBUG 1420:new_unbind:1953: RUNLOCK_PROC ep=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921930] DEBUG 1420:new_unbind:1980: WLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921932] DEBUG 1420:new_unbind:1984: WLOCK_PROC ep=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.921958] DEBUG 1420:do_unbind:733: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 25 11:36:54 node1 kernel: [ 5562.921960] DEBUG 1420:do_unbind:826: wakeup with error those processes trying to send a message to the proc
+Oct 25 11:36:54 node1 kernel: [ 5562.921962] DEBUG 1420:do_unbind:864: delete notify messages bits sent by the proc
+Oct 25 11:36:54 node1 kernel: [ 5562.922340] DEBUG 1420:do_unbind:876: Skip, self process
+Oct 25 11:36:54 node1 kernel: [ 5562.922345] DEBUG 1420:do_unbind:908: Check if another process is waiting to receive a message from the unbound process
+Oct 25 11:36:54 node1 kernel: [ 5562.922349] DEBUG 1420:do_unbind:920: Skip, self process
+Oct 25 11:36:54 node1 kernel: [ 5562.922352] DEBUG 1420:do_unbind:947: Process 31 is no more waiting a message from the unbound process 0
+Oct 25 11:36:54 node1 kernel: [ 5562.922354] DEBUG 1420:do_unbind:948: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 25 11:36:54 node1 kernel: [ 5562.922356] DEBUG 1420:do_unbind:955: Wakeup RECEIVER with error ep=31  pid=1422
+Oct 25 11:36:54 node1 kernel: [ 5562.922358] DEBUG 1420:inherit_cpu:298: cpuid=3 vpid=9
+Oct 25 11:36:54 node1 kernel: [ 5562.922365] DEBUG 1420:inherit_cpu:306: nr=31 endp=31 dcid=0 lpid=1422 p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 25 11:36:54 node1 kernel: [ 5562.922366] DEBUG 1420:do_unbind:956: BEFORE UP lpid=1422 p_sem=-1 rcode=-108
+Oct 25 11:36:54 node1 kernel: [ 5562.922484] DEBUG 1420:do_unbind:968: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 25 11:36:54 node1 kernel: [ 5562.922486] DEBUG 1420:do_unbind:1024: wakeup with error those processes waiting this process MIGRATION
+Oct 25 11:36:54 node1 kernel: [ 5562.922487] DEBUG 1420:do_unbind:1074: wakeup those processes waiting this process UNBINDING
+Oct 25 11:36:54 node1 kernel: [ 5562.922490] DEBUG 1420:do_unbind:1108: nr=0 endp=0 dcid=0 flags=1000 misc=1000 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+Oct 25 11:36:54 node1 kernel: [ 5562.922491] DEBUG 1420:init_proc_desc:16: p_name=TAPserver00 dcid=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922492] DEBUG 1420:init_proc_desc:27: Clearing Privileges
+Oct 25 11:36:54 node1 kernel: [ 5562.922493] DEBUG 1420:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 25 11:36:54 node1 kernel: [ 5562.922494] DEBUG 1420:init_proc_desc:41: Clearing Process fields
+Oct 25 11:36:54 node1 kernel: [ 5562.922496] DEBUG 1420:do_unbind:1110: initialized 
+Oct 25 11:36:54 node1 kernel: [ 5562.922497] DEBUG 1420:do_unbind:1111: DC_DECREF counter=6
+Oct 25 11:36:54 node1 kernel: [ 5562.922499] DEBUG 1420:new_unbind:2043: WUNLOCK_PROC ep=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922501] DEBUG 1420:new_unbind:2046: WUNLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922525] DEBUG 1420:dvk_ioctl:349: cmd=4004E30A arg=BFA94FF0
+Oct 25 11:36:54 node1 kernel: [ 5562.922527] DEBUG 1420:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 25 11:36:54 node1 kernel: [ 5562.922528] DEBUG 1420:io_unbind:109: 
+Oct 25 11:36:54 node1 kernel: [ 5562.922529] DEBUG 1420:new_unbind:1906: dcid=0 proc_ep=30
+Oct 25 11:36:54 node1 kernel: [ 5562.922531] DEBUG 1420:check_caller:605: caller_pid=1420 caller_tgid=1420
+Oct 25 11:36:54 node1 kernel: [ 5562.922532] ERROR: 1420:check_caller:642: rcode=-310
+Oct 25 11:36:54 node1 kernel: [ 5562.922533] DEBUG 1420:new_unbind:1922: RLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922535] DEBUG 1420:new_unbind:1934: RUNLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922536] DEBUG 1420:new_unbind:1936: RLOCK_PROC ep=30 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922537] DEBUG 1420:new_unbind:1953: RUNLOCK_PROC ep=30 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922539] DEBUG 1420:new_unbind:1980: WLOCK_DC dc=0 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922540] DEBUG 1420:new_unbind:1984: WLOCK_PROC ep=30 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922542] DEBUG 1420:do_unbind:733: nr=30 endp=30 dcid=0 flags=1408 misc=2000 lpid=-1 vpid=-1 nodeid=0 name=TAPclient00 
+Oct 25 11:36:54 node1 kernel: [ 5562.922543] DEBUG 1420:do_unbind:812: WUNLOCK_PROC ep=30 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922545] DEBUG 1420:do_unbind:813: WLOCK_PROC ep=1 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922546] DEBUG 1420:do_unbind:814: WLOCK_PROC ep=30 count=0
+Oct 25 11:36:54 node1 kernel: [ 5562.922547] DEBUG 1420:do_unbind:826: wakeup with error those processes trying to send a message to the proc
+Oct 25 11:36:54 node1 kernel: [ 5562.922548] DEBUG 1420:do_unbind:908: Check if another process is waiting to receive a message from the unbound process
+
+
+==============================================================================================================
+20201027: 
+
+PROBLEMAS CON UNBIND !!!!
+ESTOS SON LOS LOCK Y UNLOCK NO LOGGEADOS 
+root@node0:/usr/src/linux/ipc/dvk-mod# grep wlock_proc *.c
+dvk_hyper.c:                            wlock_proc(rp); /* proc_ptr LOCK is just locked */
+dvk_hyper.c:                            wlock_proc(rp);
+dvk_hyper.c:                            wlock_proc(proc_ptr);
+root@node0:/usr/src/linux/ipc/dvk-mod# grep wunlock_proc *.c
+dvk_hyper.c:            wunlock_proc(src_ptr);
+dvk_hyper.c:                            wunlock_proc(proc_ptr);
+dvk_hyper.c:                            wunlock_proc(rp); 
+dvk_hyper.c:                    wunlock_proc(rp); 
+dvk_hyper.c:            wunlock_proc(rp); 
+
+EL PROBLEMA ES QUE HAY SALTOS DE LOS CONTADORES 
+
+
+Oct 27 08:43:21 node1 kernel: [ 2728.211158] DEBUG 6118:new_getprocinfo:2298: RLOCK_PROC ep=0 count=0
+Oct 27 09:37:52 node1 kernel: [ 5999.820177] DEBUG 9409:new_getprocinfo:2298: RLOCK_PROC ep=0 count=5
+Oct 27 09:40:23 node1 kernel: [ 6151.031460] DEBUG 9408:new_unbind:1942: RLOCK_PROC ep=0 count=5
+Oct 27 09:49:58 node1 kernel: [ 6725.550398] DEBUG 9764:new_getprocinfo:2298: RLOCK_PROC ep=0 count=10
+
+
+
+Oct 27 17:15:24 node1 kernel: [33451.742656] DEBUG 10463:dvk_ioctl:349: cmd=4004E30A arg=BFE39660
+Oct 27 17:15:24 node1 kernel: [33451.742661] DEBUG 10463:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 27 17:15:24 node1 kernel: [33451.742664] DEBUG 10463:io_unbind:109: 
+Oct 27 17:15:24 node1 kernel: [33451.742667] DEBUG 10463:new_unbind:1912: dcid=0 proc_ep=30
+Oct 27 17:15:24 node1 kernel: [33451.742672] DEBUG 10463:check_caller:605: caller_pid=10463 caller_tgid=10463
+Oct 27 17:15:24 node1 kernel: [33451.742722] ERROR: 10463:check_caller:642: rcode=-310
+Oct 27 17:15:24 node1 kernel: [33451.742726] DEBUG 10463:new_unbind:1928: RLOCK_DC dc=0 count=0
+Oct 27 17:15:24 node1 kernel: [33451.742729] DEBUG 10463:new_unbind:1940: RUNLOCK_DC dc=0 count=0
+Oct 27 17:15:24 node1 kernel: [33451.742732] DEBUG 10463:new_unbind:1942: RLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742734] DEBUG 10463:new_unbind:1959: RUNLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742737] DEBUG 10463:new_unbind:1986: WLOCK_DC dc=0 count=0
+Oct 27 17:15:24 node1 kernel: [33451.742739] DEBUG 10463:new_unbind:1990: WLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742744] DEBUG 10463:do_unbind:733: nr=30 endp=30 dcid=0 flags=100C misc=2000 lpid=-1 vpid=-1 nodeid=0 name=TAPclient00 
+Oct 27 17:15:24 node1 kernel: [33451.742747] DEBUG 10463:do_unbind:812: WUNLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742750] DEBUG 10463:do_unbind:813: WLOCK_PROC ep=1 count=3
+Oct 27 17:15:24 node1 kernel: [33451.742752] DEBUG 10463:do_unbind:814: WLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742754] DEBUG 10463:do_unbind:826: wakeup with error those processes trying to send a message to the proc
+Oct 27 17:15:24 node1 kernel: [33451.742756] DEBUG 10463:do_unbind:908: Check if another process is waiting to receive a message from the unbound process
+Oct 27 17:15:24 node1 kernel: [33451.742763] DEBUG 10463:do_unbind:936: WUNLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742765] DEBUG 10463:do_unbind:937: WLOCK_PROC ep=1 count=2
+Oct 27 17:15:24 node1 kernel: [33451.742767] DEBUG 10463:do_unbind:938: WLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742769] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=1 count=2
+Oct 27 17:15:24 node1 kernel: [33451.742772] DEBUG 10463:do_unbind:936: WUNLOCK_PROC ep=30 count=28 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< COUNT A LA MIERDA!!!
+Oct 27 17:15:24 node1 kernel: [33451.742774] DEBUG 10463:do_unbind:937: WLOCK_PROC ep=2 count=21
+Oct 27 17:15:24 node1 kernel: [33451.742776] DEBUG 10463:do_unbind:938: WLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.742778] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=2 count=21
+Oct 27 17:15:24 node1 kernel: [33451.742782] DEBUG 10463:do_unbind:926: Skip, self process
+Oct 27 17:15:24 node1 kernel: [33451.742784] DEBUG 10463:do_unbind:933: WLOCK_PROC ep=31 count=6
+Oct 27 17:15:24 node1 kernel: [33451.742786] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=31 count=6
+Oct 27 17:15:24 node1 kernel: [33451.742788] DEBUG 10463:do_unbind:933: WLOCK_PROC ep=32 count=14
+Oct 27 17:15:24 node1 kernel: [33451.742790] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=32 count=14
+Oct 27 17:15:24 node1 kernel: [33451.742810] DEBUG 10463:do_unbind:974: nr=30 endp=30 dcid=0 flags=1004 misc=0 lpid=-1 vpid=-1 nodeid=0 name=TAPclient00 
+Oct 27 17:15:24 node1 kernel: [33451.742817] DEBUG 10463:do_unbind:994: sendtonr=-1996488704 endp=1465001012 dcid=-402625968 flags=FFFE9EE0 misc=F900850F lpid=-2078227325 vpid=193204160 nodeid=-2080374791 name= 
+Oct 27 17:15:24 node1 kernel: [33451.742819] DEBUG 10463:do_unbind:999: WUNLOCK_PROC ep=30 count=28
+Oct 27 17:15:24 node1 kernel: [33451.779843] BUG: unable to handle kernel paging request at 0f6c2474
+Oct 27 17:15:24 node1 kernel: [33451.780693] IP: [<d40b47d2>] mutex_optimistic_spin+0x32/0x190
+Oct 27 17:15:24 node1 kernel: [33451.782008] *pdpt = 0000000029c9b001 *pde = 0000000000000000 
+Oct 27 17:15:24 node1 kernel: [33451.782169] 
+Oct 27 17:15:24 node1 kernel: [33451.783035] Oops: 0000 [#1] SMP
+Oct 27 17:15:24 node1 kernel: [33451.784156] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx joydev evdev sg pcspkr vmw_balloon serio_raw ttm drm_kms_helper drm shpchp vmw_vmci ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache hid_generic usbhid hid sr_mod cdrom sd_mod ata_generic psmouse xhci_pci xhci_hcd ehci_pci uhci_hcd ehci_hcd ata_piix usbcore mptspi scsi_transport_spi pcnet32
+Oct 27 17:15:24 node1 kernel: [33451.797511] do_exit: local_nodeid:1
+Oct 27 17:15:24 node1 kernel: [33451.797516] DEBUG 10469:new_exit_unbind:267: code=-730393130
+Oct 27 17:15:24 node1 kernel: [33451.797519] DEBUG 10469:new_exit_unbind:271: WLOCK_TASK pid=210 count=0
+Oct 27 17:15:24 node1 kernel: [33451.797522] DEBUG 10469:new_exit_unbind:400: Process not bound pid=10469 systemd-journal
+Oct 27 17:15:24 node1 kernel: [33451.797524] DEBUG 10469:new_exit_unbind:402: WUNLOCK_TASK pid=210 count=0
+Oct 27 17:15:24 node1 kernel: [33451.805619]  mptscsih mii libata mptbase scsi_mod i2c_piix4
+Oct 27 17:15:24 node1 kernel: [33451.806858] CPU: 3 PID: 10463 Comm: dvs_uml_switch Tainted: G           O    4.9.88-DVK #159
+Oct 27 17:15:24 node1 kernel: [33451.808133] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 27 17:15:24 node1 kernel: [33451.810913] task: da1e2cc0 task.stack: eb3f2000
+Oct 27 17:15:24 node1 kernel: [33451.812456] EIP: 0060:[<d40b47d2>] EFLAGS: 00010202 CPU: 3
+Oct 27 17:15:24 node1 kernel: [33451.813960] EIP is at mutex_optimistic_spin+0x32/0x190
+Oct 27 17:15:24 node1 kernel: [33451.815550] EAX: 0f6c2454 EBX: cc83bfd8 ECX: 00000000 EDX: 00000000
+Oct 27 17:15:24 node1 kernel: [33451.817147] ESI: cc8481d8 EDI: 00000000 EBP: eb3f3d60 ESP: eb3f3d3c
+Oct 27 17:15:24 node1 kernel: [33451.818779]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+Oct 27 17:15:24 node1 kernel: [33451.820425] CR0: 80050033 CR2: 0f6c2474 CR3: 1ae17260 CR4: 000006f0
+Oct 27 17:15:24 node1 kernel: [33451.822181] Stack:
+Oct 27 17:15:24 node1 kernel: [33451.824120]  00000000 00000000 da1e2cc0 00000000 d499ad00 00000000 cc83bfd8 cc8481d8
+Oct 27 17:15:24 node1 kernel: [33451.826019]  da1e2cc0 eb3f3d88 d45bccbd cc848000 eb3f3d8c d40ba8e7 00000000 09f6056d
+Oct 27 17:15:24 node1 kernel: [33451.827962]  cc83bfd8 cc8481d8 cc848000 eb3f3d94 d45bc51c cc83be00 eb3f3df8 f8895471
+Oct 27 17:15:24 node1 kernel: [33451.829964] Call Trace:
+Oct 27 17:15:24 node1 kernel: [33451.832336]  [<d45bccbd>] ? __mutex_lock_slowpath+0x2d/0x100
+Oct 27 17:15:24 node1 kernel: [33451.834444]  [<d40ba8e7>] ? vprintk_default+0x37/0x40
+Oct 27 17:15:24 node1 kernel: [33451.836773]  [<d45bc51c>] ? mutex_lock+0x1c/0x30
+Oct 27 17:15:24 node1 kernel: [33451.839105]  [<f8895471>] ? do_unbind+0x136b/0x2721 [dvk]
+Oct 27 17:15:24 node1 kernel: [33451.841313]  [<f889bc00>] ? new_unbind+0x284/0x1577 [dvk]
+Oct 27 17:15:24 node1 kernel: [33451.843565]  [<d40ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+Oct 27 17:15:24 node1 kernel: [33451.845887]  [<f8890148>] ? io_unbind+0x4e/0xce [dvk]
+Oct 27 17:15:24 node1 kernel: [33451.848404]  [<f888f1fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 27 17:15:24 node1 kernel: [33451.850761]  [<f888f16d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 27 17:15:24 node1 kernel: [33451.853059]  [<d41e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 27 17:15:24 node1 kernel: [33451.856067]  [<d41d316d>] ? vfs_write+0x15d/0x1c0
+Oct 27 17:15:24 node1 kernel: [33451.858244]  [<d41e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 27 17:15:24 node1 kernel: [33451.860613]  [<d4003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 27 17:15:24 node1 kernel: [33451.862800]  [<d45bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 27 17:15:24 node1 kernel: [33451.864937]  [<d4086f50>] ? override_creds+0x30/0x30
+Oct 27 17:15:24 node1 kernel: [33451.866887] Code: ec 18 0f 1f 44 00 00 89 c3 89 d7 89 4d e8 64 a1 48 12 97 d4 89 45 e4 8b 00 88 4d f0 a8 08 0f 85 b5 00 00 00 8b 43 10 85 c0 74 0b <8b> 50 20 85 d2 0f 84 a3 00 00 00 8d 43 14 89 45 e0 e8 c8 06 00
+Oct 27 17:15:24 node1 kernel: [33451.873027] EIP: [<d40b47d2>] 
+Oct 27 17:15:24 node1 kernel: [33451.873067] mutex_optimistic_spin+0x32/0x190
+Oct 27 17:15:24 node1 kernel: [33451.875161]  SS:ESP 0068:eb3f3d3c
+Oct 27 17:15:24 node1 kernel: [33451.877236] CR2: 000000000f6c2474
+Oct 27 17:15:24 node1 kernel: [33451.902960] br0: port 1(tap0) entered disabled state
+Oct 27 17:15:24 node1 kernel: [33451.925766] ---[ end trace ca7f7c747d1e2329 ]---
+Oct 27 17:15:24 node1 kernel: [33451.927838] do_exit: local_nodeid:1
+Oct 27 17:15:24 node1 kernel: [33451.930496] DEBUG 10463:new_exit_unbind:267: code=-730393130
+Oct 27 17:15:24 node1 kernel: [33451.932542] DEBUG 10463:new_exit_unbind:271: WLOCK_TASK pid=10463 count=0
+Oct 27 17:15:24 node1 kernel: [33451.934570] DEBUG 10463:new_exit_unbind:400: Process not bound pid=10463 dvs_uml_switch
+Oct 27 17:15:24 node1 kernel: [33451.938544] DEBUG 10463:new_exit_unbind:402: WUNLOCK_TASK pid=10463 count=0
+Oct 27 17:15:46 node1 kernel: [33474.326826] DEBUG 10466:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Oct 27 17:15:46 node1 kernel: [33474.330544] DEBUG 10466:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Oct 27 17:15:46 node1 kernel: [33474.334075] DEBUG 10466:sleep_proc:399: endpoint=1 ret=0 p_rcode=0
+Oct 27 17:15:46 node1 kernel: [33474.338196] DEBUG 10466:sleep_proc:400: endpoint=1 flags=8 cpuid=1
+Oct 27 17:15:46 node1 kernel: [33474.341841] DEBUG 10466:sleep_proc:401: WLOCK_PROC ep=1 count=2
+Oct 27 17:15:46 node1 kernel: [33474.345061] DEBUG 10466:sleep_proc:429: pid=10466 ret=-61
+Oct 27 17:15:46 node1 kernel: [33474.348810] DEBUG 10466:sleep_proc:454: nr=1 endp=1 dcid=0 lpid=10466 p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 27 17:15:46 node1 kernel: [33474.355214] DEBUG 10466:sleep_proc:456: someone wakeups me: sem=0 p_rcode=-61
+Oct 27 17:15:46 node1 kernel: [33474.358460] DEBUG 10466:new_mini_receive:533: WUNLOCK_PROC ep=1 count=2
+
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# ERROR: 1130:dvk_sendrec_T:946: rcode=-108
+ERROR: 1130:dvk_sendrec_T:955: rcode=-108
+ERROR: rmttap.c:rt_send_write_packet:168: rcode=-108
+ERROR: rmttap.c:send_thread:381: rcode=-108
+ERROR: 1130:dvk_sendrec_T:946: rcode=-105
+ERROR: 1130:dvk_sendrec_T:955: rcode=-105
+ERROR: rmttap.c:rt_send_write_packet:168: rcode=-105
+ERROR: rmttap.c:send_thread:381: rcode=-105
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.806858] CPU: 3 PID: 10463 Comm: dvs_uml_switch Tainted: G           O    4.9.88-DVK #159
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.808133] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.810913] task: da1e2cc0 task.stack: eb3f2000
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.822181] Stack:
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.824120]  00000000 00000000 da1e2cc0 00000000 d499ad00 00000000 cc83bfd8 cc8481d8
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.826019]  da1e2cc0 eb3f3d88 d45bccbd cc848000 eb3f3d8c d40ba8e7 00000000 09f6056d
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.827962]  cc83bfd8 cc8481d8 cc848000 eb3f3d94 d45bc51c cc83be00 eb3f3df8 f8895471
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.829964] Call Trace:
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.832336]  [<d45bccbd>] ? __mutex_lock_slowpath+0x2d/0x100
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.834444]  [<d40ba8e7>] ? vprintk_default+0x37/0x40
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.836773]  [<d45bc51c>] ? mutex_lock+0x1c/0x30
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.839105]  [<f8895471>] ? do_unbind+0x136b/0x2721 [dvk]
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.841313]  [<f889bc00>] ? new_unbind+0x284/0x1577 [dvk]
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.843565]  [<d40ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.845887]  [<f8890148>] ? io_unbind+0x4e/0xce [dvk]
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.848404]  [<f888f1fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.850761]  [<f888f16d>] ? dvk_write+0x49/0x49 [dvk]
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.853059]  [<d41e6624>] ? do_vfs_ioctl+0x94/0x730
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.856067]  [<d41d316d>] ? vfs_write+0x15d/0x1c0
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.858244]  [<d41e6d20>] ? SyS_ioctl+0x60/0x70
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.860613]  [<d4003708>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.862800]  [<d45bf682>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.864937]  [<d4086f50>] ? override_creds+0x30/0x30
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.866887] Code: ec 18 0f 1f 44 00 00 89 c3 89 d7 89 4d e8 64 a1 48 12 97 d4 89 45 e4 8b 00 88 4d f0 a8 08 0f 85 b5 00 00 00 8b 43 10 85 c0 74 0b <8b> 50 20 85 d2 0f 84 a3 00 00 00 8d 43 14 89 45 e0 e8 c8 06 00
+
+Message from syslogd@node1 at Oct 27 17:15:24 ...
+ kernel:[33451.873027] EIP: [<d40b47d2>] 
+
 
 ULTIMO_LOG
 ==============================================================================================================
+
+
+TODO: 	MODIFICAR LOS PROXIES PARA QUE SI EL PAR QUEDA RENGO, SE REARRANCAN AMBOS 
+
+PORQUE LOS PROXIES NO REGISTRAN LOS MENSAJES RECIBIDOS Y ENVIADOS ???
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# cat /proc/dvs/proxies/procs 
+ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+ 0 send    703      0      1        0        0  27342  27342  27342 lz4tcp_proxy_ba
+ 0 recv    704      0      3        0        0  27342  27342  27342 lz4tcp_proxy_ba
+ 2 send    705      0      1        0        0  27342  27342  27342 lz4tcp_proxy_ba
+ 2 recv    707      0      1        0        0  27342  27342  27342 lz4tcp_proxy_ba
 
 
 	ATENCION, NO HAY FORMA DE QUE SE CORTE LA COMUNICACION TCP AUN REARRANCANDO EL NODE1 
@@ -3587,3 +4887,14 @@ TODO:  Cuando se ejecuta desde un modulo se debe prender el bit MIS_BIT_KTHREAD 
 		y lo despierta, y este antes se fija si el emisor estaba KERNEL
 		Si es asi, hace COPY_KRN_USR y luego vuelve.
 		Es decir, hay una doble copia.
+
+
+	/* enqueue the process descriptor at the TAIL of the sender proxy's caller_q */
+	if( test_bit(BIT_SENDING, &proc_ptr->p_usr.p_rts_flags) 
+	||  test_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags)) {
+		DVKDEBUG(INTERNAL, "QUEUING ERROR " PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
+	} 
+	
+
+
+

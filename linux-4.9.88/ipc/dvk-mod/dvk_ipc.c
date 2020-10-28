@@ -191,8 +191,6 @@ send_replay: /* Return point for a migrated destination process */
 		INIT_LIST_HEAD(&caller_ptr->p_link);
 		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto = dst_ep;
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
-		
 		ret = sproxy_enqueue(caller_ptr);
 			
 		/* wait for the SENDACK */
@@ -204,9 +202,9 @@ send_replay: /* Return point for a migrated destination process */
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				RLOCK_PROC(sproxy_ptr);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
-				RUNLOCK_PROC(sproxy_ptr);
+				WLOCK_PROC(sproxy_ptr);
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;
@@ -267,7 +265,7 @@ send_replay: /* Return point for a migrated destination process */
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", 
 						caller_ptr->p_usr.p_endpoint, dst_ep);
 					/* remove from queue ATENCION: HAY Q PROTEGER DESTINATION ?? */
-					LIST_DEL(&caller_ptr->p_link); 
+					LIST_DEL_INIT(&caller_ptr->p_link); 
 				}
 				WUNLOCK_PROC(dst_ptr);
 				clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
@@ -466,7 +464,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 				,xpp->p_usr.p_endpoint );
 			/* Here is a message from xpp process, therefore xpp  must be sleeping in SENDING state */
 
-			LIST_DEL(&xpp->p_link); /* remove from queue */
+			LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
 
 			/* test the sender status */
 			do	{
@@ -643,7 +641,7 @@ sendrec_replay:
 			ret = caller_ptr->p_rcode;
 			if( ret != OK){
 				ERROR_PRINT(ret);
-				LIST_DEL(&caller_ptr->p_mlink);
+				LIST_DEL_INIT(&caller_ptr->p_mlink);
 				clear_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
 				caller_ptr->p_usr.p_waitmigr = NONE;
 			}	
@@ -734,10 +732,8 @@ sendrec_replay:
 		INIT_LIST_HEAD(&caller_ptr->p_link);
 		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 		set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto  = srcdst_ep;
 		caller_ptr->p_usr.p_getfrom = srcdst_ep;
-		
 		ret = sproxy_enqueue(caller_ptr);
 
 		/* wait for the REPLY */
@@ -750,7 +746,9 @@ sendrec_replay:
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n",
 					 caller_ptr->p_usr.p_endpoint);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WLOCK_PROC(sproxy_ptr);
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);
 			}
 			clear_bit(BIT_SENDING, 			&caller_ptr->p_usr.p_rts_flags);
 			clear_bit(BIT_RECEIVING, 		&caller_ptr->p_usr.p_rts_flags);
@@ -859,7 +857,7 @@ sendrec_replay:
 			if( ret) {
 				if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)){
 					DVKDEBUG(GENERIC,"removing %d link from %d list.\n", caller_ptr->p_usr.p_endpoint, srcdst_ep);
-					LIST_DEL(&caller_ptr->p_link); /* remove from queue */
+					LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue */
 				} else {
 					caller_ptr->p_usr.p_lclsent++;
 				}
@@ -1094,9 +1092,7 @@ notify_replay:
 		
 		INIT_LIST_HEAD(&caller_ptr->p_link);
 		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto = dst_ep;
-		
 		ret = sproxy_enqueue(caller_ptr);
 
 		/* wait that the proxy wakes up to free the caller's descriptor  */
@@ -1109,7 +1105,9 @@ notify_replay:
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WLOCK_PROC(sproxy_ptr);
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			clear_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
@@ -1504,12 +1502,10 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;	
 
-				set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 
 				cmd_ptr = &caller_ptr->p_rmtcmd;
 				DVKDEBUG(DBGCMD,"CMD_COPYIN_DATA " CMD_FORMAT, CMD_FIELDS(cmd_ptr));
 				DVKDEBUG(DBGVCOPY,"CMD_COPYIN_DATA " VCOPY_FORMAT, VCOPY_FIELDS(cmd_ptr));
-
 				ret = sproxy_enqueue(caller_ptr);
 				if(ret < 0) break;
 
@@ -1563,12 +1559,9 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;
 
-				set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
-
 				cmd_ptr = &caller_ptr->p_rmtcmd;
 				DVKDEBUG(DBGCMD,"CMD_COPYOUT_RQST " CMD_FORMAT, CMD_FIELDS(cmd_ptr));
 				DVKDEBUG(DBGVCOPY,"CMD_COPYOUT_RQST " VCOPY_FORMAT, VCOPY_FIELDS(cmd_ptr));
-
 				ret =  sproxy_enqueue(caller_ptr);	
 				if(ret < 0) break;
 
@@ -1643,7 +1636,6 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 					caller_ptr->p_rmtcmd.c_rcode = OK;
 					caller_ptr->p_rmtcmd.c_len   = 0;
 				}
-				set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
 				/* subheader for the vcopy operation */
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src =  src_ptr->p_usr.p_endpoint;		
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst =  dst_ptr->p_usr.p_endpoint;		
@@ -1651,7 +1643,6 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = src_addr;		
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
 				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;	
-
 				ret = sproxy_enqueue(caller_ptr);
 				if(ret < 0) break;
 				sleep_proc3(caller_ptr, src_ptr, dst_ptr,TIMEOUT_MOLCALL);
@@ -1811,7 +1802,7 @@ asmlinkage long new_mini_rcvrqst(message* m_ptr, long timeout_ms)
 				,xpp->p_usr.p_endpoint );
 		/* Here is a message from xpp process, therefore xpp  must be sleeping in SENDING state */
 
-		LIST_DEL(&xpp->p_link); /* remove from queue */
+		LIST_DEL_INIT(&xpp->p_link); /* remove from queue */
 
 		/* test the sender status */
 		do	{
@@ -2041,8 +2032,6 @@ reply_replay: /* Return point for a migrated destination process */
 		INIT_LIST_HEAD(&caller_ptr->p_link);
 		set_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_sendto = dst_ep;
-		set_bit(BIT_RMTOPER, &caller_ptr->p_usr.p_rts_flags);
-		
 		ret = sproxy_enqueue(caller_ptr);
 			
 		/* wait for the REPLY_ACK */
@@ -2054,7 +2043,9 @@ reply_replay: /* Return point for a migrated destination process */
 			if( test_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags)) {
 				DVKDEBUG(GENERIC,"removing %d link from sender's proxy list.\n", 
 					caller_ptr->p_usr.p_endpoint);
-				LIST_DEL(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WLOCK_PROC(sproxy_ptr);				
+				LIST_DEL_INIT(&caller_ptr->p_link); /* remove from queue ATENCION: HAY Q PROTEGER PROXY ?? */
+				WUNLOCK_PROC(sproxy_ptr);				
 			}
 			clear_bit(BIT_SENDING, &caller_ptr->p_usr.p_rts_flags);
 			caller_ptr->p_usr.p_sendto = NONE;

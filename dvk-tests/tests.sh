@@ -24,7 +24,7 @@ echo "lcl=$lcl rmtA=$rmtA rmtB=$rmtB"
 dcid=$2
 echo "lcl_nodeid=$lcl dcid=$dcid" 
 read  -p "Read to initilize TAP devices. Enter para continuar... "
-#./inittap.sh $lcl
+./inittap.sh $lcl
 echo > /var/log/kern.log
 echo > /var/log/syslog
 echo > /var/log/messages

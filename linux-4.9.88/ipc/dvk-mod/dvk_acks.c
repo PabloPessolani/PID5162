@@ -15,11 +15,7 @@
 /*--------------------------------------------------------------*/
 long generic_ack_lcl2rmt(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 {
-	/* set the RMTOPER bit to signal that this REMOTE descriptor 	*/
-	/* is envolved into a remote operation 			*/
-DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
-
-	set_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags);
+	DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
 
 	rmt_ptr->p_rmtcmd.c_cmd   = ack;
 	rmt_ptr->p_rmtcmd.c_dcid  = rmt_ptr->p_usr.p_dcid;
@@ -41,11 +37,7 @@ DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
 /*--------------------------------------------------------------*/
 long error_lcl2rmt( int ack, struct proc *rmt_ptr, proxy_hdr_t *h_ptr, int rcode)
 {
-	/* set the RMTOPER bit to signal that this REMOTE descriptor 	*/
-	/* is envolved into a remote operation 		*/
-DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
-
-	set_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags);
+	DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
 
 	rmt_ptr->p_rmtcmd.c_cmd   = ack;
 	rmt_ptr->p_rmtcmd.c_dcid  = h_ptr->c_dcid;
@@ -69,13 +61,8 @@ long copyin_rqst_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr)
 	proc_usr_t *p_ptr;
 	cmd_t *c_ptr;
 
-	/* set the RMTOPER bit to signal that this REMOTE descriptor 	*/
-	/* is envolved into a remote operation 		*/
-
-	set_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags);
-
 	p_ptr = &rmt_ptr->p_usr;
-DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
+	DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
 
 	rmt_ptr->p_rmtcmd.c_cmd   = CMD_COPYIN_RQST;
 	rmt_ptr->p_rmtcmd.c_dcid  = lcl_ptr->p_usr.p_dcid;
@@ -87,7 +74,7 @@ DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
 	rmt_ptr->p_rmtcmd.c_rcode = OK;
 	
 	c_ptr = &rmt_ptr->p_rmtcmd;	
-DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
+	DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
 
 	return(sproxy_enqueue(rmt_ptr));
 }
@@ -97,15 +84,12 @@ DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
 /*--------------------------------------------------------------*/
 long copyout_data_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 {
-	/* set the RMTOPER bit to signal that this REMOTE descriptor 	*/
-	/* is envolved into a remote operation 			*/
+
 	proc_usr_t *p_ptr;
 	cmd_t *c_ptr;
 
 	p_ptr = &rmt_ptr->p_usr;
-DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
-
-	set_bit(BIT_RMTOPER, &rmt_ptr->p_usr.p_rts_flags);
+	DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
 
 	rmt_ptr->p_rmtcmd.c_cmd   = CMD_COPYOUT_DATA;
 	rmt_ptr->p_rmtcmd.c_dcid  = rmt_ptr->p_usr.p_dcid;
@@ -117,8 +101,8 @@ DVKDEBUG(DBGPROC,PROC_USR_FORMAT,PROC_USR_FIELDS(p_ptr));
 	rmt_ptr->p_rmtcmd.c_rcode = rcode;
 
 	c_ptr = &rmt_ptr->p_rmtcmd;	
-DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
-DVKDEBUG(INTERNAL,"rcode=%d\n", rcode);
+	DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
+	DVKDEBUG(INTERNAL,"rcode=%d\n", rcode);
 
 	return(sproxy_enqueue(rmt_ptr));
 }

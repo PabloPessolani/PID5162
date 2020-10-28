@@ -77,7 +77,7 @@ static void send_dst(struct port *port, struct packet *packet, int len,
 {
   struct port *target, *p;
 
-  	USRDEBUG("control=%d \n", port->control);
+  	USRDEBUG("control=%d len=%d hub=%d \n", port->control, len, hub);
 
   target = find_in_hash(packet->header.dest);
   if((target == NULL) || IS_BROADCAST(packet->header.dest) || hub){
@@ -109,7 +109,7 @@ static void handle_data(int fd, int hub, struct packet *packet, int len,
 {
   struct port *p;
 
-	USRDEBUG("fd=%d \n", fd);
+	USRDEBUG("fd=%d hub=%d len=%d\n", fd, hub, len);
 
   for(p = head; p != NULL; p = p->next){
     if((*matcher)(p->control, fd, p->data, p->data_len, data)) break;
@@ -150,7 +150,7 @@ int setup_port(int fd, void (*sender)(int fd, void *packet, int len,
 {
   struct port *port;
 
-  	USRDEBUG("fd=%d \n", fd);
+  	USRDEBUG("ctrl_fd=%d \n", fd);
 
   port = malloc(sizeof(struct port));
   if(port == NULL){
@@ -169,23 +169,19 @@ int setup_port(int fd, void (*sender)(int fd, void *packet, int len,
   return(0);
 }
 
-struct sock_data {
-  int fd;
-  struct sockaddr_un sock;
-};
-
 void send_sock(int fd, void *packet, int len, void *data)
 {
   struct sock_data *mine = data;
   int err;
   
-   USRDEBUG("fd=%d \n", fd);
+   USRDEBUG("fd=%d data_fd=%d len=%d \n", fd, mine->fd, len);
 
   err = sendto(mine->fd, packet, len, 0, (struct sockaddr *) &mine->sock,
 	       sizeof(mine->sock));
   if(err != len){
     fprintf(stderr, "send_sock sending to fd %d ", mine->fd);
     perror("");
+	sleep(5); //// BORRAR TEMPORARIO
   }
 }
 
@@ -225,7 +221,7 @@ int setup_sock_port(int fd, struct sockaddr_un *name, int data_fd)
 {
   struct sock_data *data;
 
-  	USRDEBUG("fd=%d data_fd=%d\n", fd, data_fd);
+  	USRDEBUG("ctrl_fd=%d data_fd=%d\n", fd, data_fd);
 
   data = malloc(sizeof(*data));
   if(data == NULL){

@@ -83,7 +83,8 @@
 enum request_type { REQ_NEW_CONTROL,
 					REQ_RT_OPEN,
 					REQ_RT_WRITE,
-					REQ_RT_CLOSE};
+					REQ_RT_CLOSE,
+					REQ_SW_WRITE};
 				
 struct request_v0 {
 enum request_type type;
@@ -139,21 +140,17 @@ union request {
 
 struct daemon_data {
 	char *sock_type;
-	char *ctrl_sock;
-	void *ctrl_addr;
+	char *ctl_sock;
+	void *ctl_addr;
 	void *data_addr;
 	void *local_addr;
-	int con_fd;
-	int ctrl_fd;
+	int fd;
+	int control;
 	void *dev;
 };
 typedef struct daemon_data daemon_data_t;
-#define DD_FORMAT "sock_type=%s ctrl_sock=%s con_fd=%d ctrl_fd=%d\n"
-#define DD_FIELDS(p) p->sock_type, p->ctrl_sock, p->con_fd, p->ctrl_fd
-
-typedef struct daemon_init daemon_init_t;
-#define DI_FORMAT "sock_type=%s ctrl_sock=%s\n"
-#define DI_FIELDS(p) p->sock_type, p->ctrl_sock
+#define DD_FORMAT "sock_type=%s ctl_sock=%s fd=%d control=%d\n"
+#define DD_FIELDS(p) p->sock_type, p->ctl_sock, p->fd, p->control
 
 struct packet {
   struct {
@@ -170,7 +167,10 @@ struct switch_s{
 	int		sw_recv_ep;					// receiver thread endpoint (server)
 	int		sw_send_ep;					// sender thread endpoint (client)
 	int		sw_dcid;					// DC ID
-	char 	*sw_tap;					//  local TAP name for the switch 
+	int		sw_tap_fd;					// tap FD
+	int		sw_conn_fd;					// connect FD
+	int		sw_data_fd;					// data  FD	
+	char 	*sw_tap;					//  switch TAP name for the switch 
 	char 	*sw_ctrl_path;				// switch control socket path 
 	char 	*sw_data_path;				// switch data socket path 
 	char 	*sw_name; 					// switch name 
@@ -183,11 +183,17 @@ struct switch_s{
 };
 typedef struct switch_s switch_t;
 
-#define SW_FORMAT "sw_hub=%d sw_daemon=%d sw_recv_ep=%d sw_send_ep=%d sw_dcid=%d sw_ctrl_path=%s sw_name=%s\n"
-#define SW_FIELDS(p) p->sw_hub, p->sw_daemon, p->sw_recv_ep, p->sw_send_ep, p->sw_dcid, p->sw_ctrl_path, p->sw_name
+#define SW_FORMAT "sw_hub=%d sw_daemon=%d sw_recv_ep=%d sw_send_ep=%d sw_dcid=%d sw_ctrl_path=%s sw_tap=%s sw_conn_fd=%d sw_data_fd=%d sw_name=%s\n"
+#define SW_FIELDS(p) p->sw_hub, p->sw_daemon, p->sw_recv_ep, p->sw_send_ep, p->sw_dcid, p->sw_ctrl_path, p->sw_tap, p->sw_conn_fd, p->sw_data_fd, p->sw_name
 
 #define SW1_FORMAT "sw_recv_tid=%d sw_send_tid=%d sw_name=%s\n"
 #define SW1_FIELDS(p) p->sw_recv_tid, p->sw_send_tid, p->sw_name
+
+struct sock_data {
+  int fd;
+  struct sockaddr_un sock;
+};
+typedef struct sock_data sock_data_t;
 
 struct rmttap_s{
 	int		rt_index; 						// index in the array of local structures 
@@ -195,21 +201,30 @@ struct rmttap_s{
 	int		rt_ctrl_fd;						// control FD to the local switch 
 	int		rt_data_fd;						// data  FD to the local switch 
 	int		rt_poll_idx;					// index in the fds array when polling 
-	int		rt_rmttap_idx;					// rmttap index  in the remote node 
+	int		rt_rmt_idx;
+	int		rt_rmt_ep;						// remote endpoint who opens this TAP 
+	int		rt_rmttap_fd;					// rmttap fd  in the remote node or local fd for remote switch  
 	char 	*rt_tap;						// name of the remote TAP device
 	char 	*rt_name;						// reference name in the local switch of the TAP device 
+	sock_data_t rt_ctrl_sd;
+	sock_data_t rt_data_sd;
+	sock_data_t rt_local_sd;
+	
 	struct sockaddr_un rt_ctrl_sun;			// control unix socket to the switch 
 	struct sockaddr_un rt_data_sun;			// data unix socket to the switch 
-	proc_usr_t 	rt_proc;					// remote switch server process descriptor 
+	struct sockaddr_un rt_local_sun;		// local unix socket to the switch 
+	proc_usr_t 	rt_svr_proc;				// remote switch server process descriptor 
+	proc_usr_t 	rt_clt_proc;				// remote switch client process descriptor 
 	struct request_v3 rt_req;				// request to the local switch 
+	daemon_data_t rt_dd;					// 
 	char	rt_sock_type[MAXSOCKNAME];		// socket type "unix"
 	char	rt_ctrl_path[MAXSOCKPATH];		// control path name 
 	char	rt_data_path[MAXSOCKPATH];		// data path name 
 };
 typedef struct rmttap_s rmttap_t;
 
-#define RT_FORMAT "rt_index=%d rt_nodeid=%d rt_tap=%s rt_ctrl_fd=%d rt_data_fd=%d rt_poll_idx=%d rt_rmttap_idx=%d rt_name=%s\n"
-#define RT_FIELDS(p) p->rt_index, p->rt_nodeid, p->rt_tap, p->rt_ctrl_fd, p->rt_data_fd, p->rt_poll_idx, p->rt_rmttap_idx, p->rt_name
+#define RT_FORMAT "rt_index=%d rt_nodeid=%d rt_tap=%s rt_ctrl_fd=%d rt_data_fd=%d rt_poll_idx=%d rt_rmt_ep=%d rt_rmt_idx=%d rt_rmttap_fd=%d rt_name=%s\n"
+#define RT_FIELDS(p) p->rt_index, p->rt_nodeid, p->rt_tap, p->rt_ctrl_fd, p->rt_data_fd, p->rt_poll_idx, p->rt_rmt_ep, p->rt_rmt_idx, p->rt_rmttap_fd, p->rt_name
 
 #include "glo.h"
 #include "../debug.h"
@@ -222,5 +237,7 @@ typedef struct rmttap_s rmttap_t;
 #include "rmttap.h"
 #include "daemon.h"
 #endif
+
+void add_fd(int fd);
 
 #endif

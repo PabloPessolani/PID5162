@@ -874,8 +874,8 @@ port no mac addr                is local?       ageing timer
   3     00:0c:29:9a:7a:a4       yes                0.00
   1     02:aa:bb:cc:dd:00       yes                0.00
   1     02:aa:bb:cc:dd:00       yes                0.00
-  2     02:aa:bb:cc:dd:10       yes                0.00
-  2     02:aa:bb:cc:dd:10       yes                0.00
+  2     MAC_TAP1_NODE1       yes                0.00
+  2     MAC_TAP1_NODE1       yes                0.00
   3     f4:ec:38:93:b6:23       no                 0.00
 Spread Enter para continuar... 
 dvk                   344064  0
@@ -913,10 +913,10 @@ tcp        0      0 0.0.0.0:5001            0.0.0.0:*               LISTEN
 tcp        0      0 0.0.0.0:5002            0.0.0.0:*               LISTEN     
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN     
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
-tcp        0      0 192.168.0.100:22        192.168.0.196:62200     ESTABLISHED
-tcp        0      1 192.168.0.100:43528     192.168.0.102:3000      SYN_SENT   
-tcp        0      1 192.168.0.100:50558     192.168.0.101:3000      SYN_SENT   
-tcp        0      0 192.168.0.100:22        192.168.0.196:62201     ESTABLISHED
+tcp        0      0 IP_ETH0_NODE0:22        192.168.0.196:62200     ESTABLISHED
+tcp        0      1 IP_ETH0_NODE0:43528     192.168.0.102:3000      SYN_SENT   
+tcp        0      1 IP_ETH0_NODE0:50558     192.168.0.101:3000      SYN_SENT   
+tcp        0      0 IP_ETH0_NODE0:22        192.168.0.196:62201     ESTABLISHED
 tcp6       0      0 :::22                   :::*                    LISTEN     
 Enter para continuar... 
 ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
@@ -993,7 +993,7 @@ br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.168.0.100  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet IP_ETH0_NODE0  netmask 255.255.255.0  broadcast 192.168.0.255
         inet6 fe80::20c:29ff:fe9a:7aa4  prefixlen 64  scopeid 0x20<link>
         ether 00:0c:29:9a:7a:a4  txqueuelen 1000  (Ethernet)
         RX packets 333  bytes 37082 (36.2 KiB)
@@ -1021,7 +1021,7 @@ tap0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
 
 tap1: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         inet 192.168.0.210  netmask 255.255.255.0  broadcast 192.168.0.255
-        ether 02:aa:bb:cc:dd:10  txqueuelen 1000  (Ethernet)
+        ether MAC_TAP1_NODE1  txqueuelen 1000  (Ethernet)
         RX packets 0  bytes 0 (0.0 B)
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 0  bytes 0 (0.0 B)
@@ -1207,7 +1207,7 @@ DEBUG 2:dvk_sendrec_T:953: ioctl ret=-64
  port.c:match_tap:128:port_fd=8 data_fd=6
  port.c:match_tap:128:port_fd=6 data_fd=6
  port.c:update_src:48:control=6 
- Addr: 02:aa:bb:cc:dd:10 New port 6
+ Addr: MAC_TAP1_NODE1 New port 6
  port.c:send_dst:80:control=6 
  port.c:send_sock:182:fd=11 
  port.c:send_sock:182:fd=8 
@@ -1544,11 +1544,2293 @@ ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
  1     6      -1        0        0 -------------------------------X node1           
  2     2       2        0        0 -------------------------------X node2 <<<< NODE_BIT_ATTACHED
  
+ =====================================================================================
+20201017: se habilito el arranque de los TAPs
+
+NODE0
+root@node0:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0   860/9      0    8   20 31438 27342 27342 27342 dvs_uml_switch 
+ 0   1     1    -1/-1     1 1000 1000 27342 27342 27342 27342 TAPserver01    
+ 0   2     2    -1/-1     2 1000    0 27342 27342 27342 27342 TAPserver02    
+ 0  30    30   859/8      0    8 2000     1 27342 27342 27342 dvs_uml_switch 
+ 0  31    31    -1/-1     1 1000    0 27342 27342 27342 27342 TAPclient01    
+ 0  32    32    -1/-1     2 1000    0 27342 27342 27342 27342 TAPclient02    
+root@node0:~# cat /proc/dvs/DC0/stats 
+DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+ 0   0     0   860/9      0        0        1        0        0 dvs_uml_switch 
+ 0   1     1    -1/-1     1        0        0        0        0 TAPserver01    
+ 0   2     2    -1/-1     2        0        0        0        0 TAPserver02    
+ 0  30    30   859/8      0        0        1        0        0 dvs_uml_switch 
+ 0  31    31    -1/-1     1        0        0        0        0 TAPclient01    
+ 0  32    32    -1/-1     2        0        0        0        0 TAPclient02    
+root@node0:~# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     6      -1        0        0 -------------------------------X node0           
+ 1     E       1        7        4 -------------------------------X node1           
+ 2     2       2        0        0 -------------------------------X node2 
  
- PROBAR HABILITAR LOS TAPS !!!!! 
  
+ NODE1 
+ root@node1:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 TAPserver00    
+ 0   1     1   887/9      1    8    0 31438 27342 27342 27342 dvs_uml_switch 
+ 0   2     2    -1/-1     2 1000    0 27342 27342 27342 27342 TAPserver02    
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 TAPclient00    
+ 0  31    31   886/8      1    0   20     2 27342 27342 27342 dvs_uml_switch 
+ 0  32    32    -1/-1     2 1000    0 27342 27342 27342 27342 TAPclient02    
+root@node1:~# cat /proc/dvs/DC0/stats 
+DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+ 0   0     0    -1/-1     0        0        0        0        0 TAPserver00    
+ 0   1     1   887/9      1        0        1        0        0 dvs_uml_switch 
+ 0   2     2    -1/-1     2        0        0        0        0 TAPserver02    
+ 0  30    30    -1/-1     0        0        0        0        0 TAPclient00    
+ 0  31    31   886/8      1        0        1        0        0 dvs_uml_switch 
+ 0  32    32    -1/-1     2        0        0        0        0 TAPclient02    
+root@node1:~# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     E       0        7        4 -------------------------------X node0           
+ 1     6      -1        0        0 -------------------------------X node1           
+ 2     2       2        0        0 -------------------------------X node2 
+ 
+ 
+NODE0
+switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=0 rt_rmttap_idx=0 rt_name=RTAP1
+ switch_cfg.c:switch_config:392:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=0 rt_rmttap_idx=0 rt_name=RTAP2
+ switch_cfg.c:switch_config:392:rt_index=2 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=0 rt_rmttap_idx=0 rt_name=LTAP1
+ switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=3
+ 
+ dvs_uml_switch.c:main:413:sw_hub=0 sw_daemon=0 sw_recv_ep=27342 sw_send_ep=27342 sw_dcid=0 sw_ctrl_path=/tmp/uml.ctl sw_name=SW_NAME
+ 
+DEBUG 6:dvk_open:108: Open dvk device file /dev/dvk
+ rmttap.c:get_dvs_params:183:
+DEBUG 6:dvk_getdvsinfo:265: 
+DEBUG 6:dvk_getdvsinfo:274: ioctl ret=0 errno=0
+DEBUG 6:dvk_getdvsinfo:279: ioctl ret=0
+ rmttap.c:get_dvs_params:185:local_nodeid=0
+ rmttap.c:get_dvs_params:188:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rmttap.c:get_dc_params:198:dcid=0
+DEBUG 6:dvk_getdcinfo:366: dcid=0
+DEBUG 6:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 6:dvk_getdcinfo:383: ioctl ret=0
+ rmttap.c:get_dc_params:206:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rmttap.c:get_dc_params:207:flags=0 dc_nodes=7 dc_pid=767 dc_name=DC0
+ 
+ dvs_uml_switch.c:bind_sockets:324:ctl_fd=4 ctl_name=/tmp/uml.ctl data_fd=5
+ dvs_uml_switch.c:bind_socket:213:fd=4 name=/tmp/uml.ctl
+ dvs_uml_switch.c:bind_socket:217:sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:bind_data_socket:305:fd=5 
+ dvs_uml_switch.c:bind_data_socket:313:sun_path= 
+./dvs_uml_switch attached to unix socket '/tmp/uml.ctl' tap device 'tap1'
+ dvs_uml_switch.c:add_fd:41:fd=0
+ dvs_uml_switch.c:add_fd:41:fd=4
+ dvs_uml_switch.c:add_fd:41:fd=5
+ dvs_uml_switch.c:main:488:tap_dev=tap1
+ tuntap.c:open_tap:21:dev=tap1
+ dvs_uml_switch.c:main:491:tap_fd=-1
+ dvs_uml_switch.c:main:493:
+ dvs_uml_switch.c:main:516:
+ dvs_uml_switch.c:main:518:MTX_LOCK sw_mutex 
+ dvs_uml_switch.c:main:524:
+ dvs_uml_switch.c:main:531:Timeout
+ dvs_uml_switch.c:main:534:MTX_UNLOCK sw_mutex 
+ 
+ rmttap.c:init_rt_sockets:490:
+ rmttap.c:init_rt_sockets:492:MTX_LOCK sw_mutex 
+ 
+ rmttap.c:init_rt_sockets:506:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_idx=-1 rt_name=RTAP1
+ rmttap.c:rmttap_init:8:
+rmttap_init (dvs_uml_switch version 3) - unix
+		/tmp/uml0000.ctrl
+		/tmp/uml0000.ctrl
+ rmttap.c:connect_to_switch:31:rt_name=RTAP1
+ rmttap.c:connect_to_switch:43:CTRL sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:accept_connection:168:fd=4
+ dvs_uml_switch.c:add_fd:41:fd=7
+ rmttap.c:connect_to_switch:63:DATA sun_path=/tmp/uml0000.data 
+ rmttap.c:connect_to_switch:77:write to switch RTAP1 
+ port.c:handle_port:256:fd=7
+ dvs_uml_switch.c:new_port:135:fd=7 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:106:fd=7 type=0 data_fd=5
+ port.c:setup_sock_port:228:fd=7 data_fd=5
+ port.c:setup_port:153:fd=7 
+New connection
+ rmttap.c:connect_to_switch:86:read from switch RTAP1 
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=2
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 6:dvk_bind_X:1221: cmd=2 dcid=0 pid=4956204 endpoint=1 nodeid=1
+DEBUG 6:dvk_bind_X:1236: ioctl ret=1 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=1
+DEBUG 6:dvk_bind_X:1254: ret=1
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:536:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+DEBUG 6:dvk_bind_X:1221: cmd=2 dcid=0 pid=4956204 endpoint=31 nodeid=1
+DEBUG 6:dvk_bind_X:1236: ioctl ret=31 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=31
+DEBUG 6:dvk_bind_X:1254: ret=31
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:551:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ 
+ rmttap.c:init_rt_sockets:506:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_idx=-1 rt_name=RTAP2
+ rmttap.c:rmttap_init:8:
+rmttap_init (dvs_uml_switch version 3) - unix
+		/tmp/uml0001.ctrl
+		/tmp/uml0001.ctrl
+ rmttap.c:connect_to_switch:31:rt_name=RTAP2
+ rmttap.c:connect_to_switch:43:CTRL sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:accept_connection:168:fd=4
+ dvs_uml_switch.c:add_fd:41:fd=10
+ port.c:handle_port:256:fd=10
+ dvs_uml_switch.c:new_port:135:fd=10 data_fd=5
+ rmttap.c:connect_to_switch:63:DATA sun_path=/tmp/uml0001.data 
+ rmttap.c:connect_to_switch:77:write to switch RTAP2 
+ port.c:handle_port:256:fd=10
+ dvs_uml_switch.c:new_port:135:fd=10 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:106:fd=10 type=0 data_fd=5
+ port.c:setup_sock_port:228:fd=10 data_fd=5
+ port.c:setup_port:153:fd=10 
+New connection
+ rmttap.c:connect_to_switch:86:read from switch RTAP2 
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=2
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 6:dvk_bind_X:1221: cmd=2 dcid=0 pid=4956204 endpoint=2 nodeid=2
+DEBUG 6:dvk_bind_X:1236: ioctl ret=2 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=2
+DEBUG 6:dvk_bind_X:1254: ret=2
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:536:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+DEBUG 6:dvk_bind_X:1221: cmd=2 dcid=0 pid=4956204 endpoint=32 nodeid=2
+DEBUG 6:dvk_bind_X:1236: ioctl ret=32 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=32
+DEBUG 6:dvk_bind_X:1254: ret=32
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:551:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+
+ rmttap.c:init_rt_sockets:561:rt_nfds=2
+ rmttap.c:init_rt_sockets:568:MTX_UNLOCK sw_mutex 
+ 
+ rmttap.c:recv_thread:348:RECEIVER THREAD: sw_recv_ep=0 sw_recv_tid=9
+DEBUG 6:dvk_bind_X:1221: cmd=0 dcid=0 pid=9 endpoint=0 nodeid=-1
+DEBUG 6:dvk_bind_X:1236: ioctl ret=0 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=0
+DEBUG 6:dvk_bind_X:1254: ret=0
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:recv_thread:357:nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=860 vpid=9 nodeid=0 name=dvs_uml_switch 
+DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+ rmttap.c:send_thread:255:SENDER THREAD: sw_send_ep=30 sw_send_tid=8
+DEBUG 6:dvk_bind_X:1221: cmd=0 dcid=0 pid=8 endpoint=30 nodeid=-1
+DEBUG 6:dvk_bind_X:1236: ioctl ret=30 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=30
+DEBUG 6:dvk_bind_X:1254: ret=30
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=30 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:send_thread:265:nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=859 vpid=8 nodeid=0 name=dvs_uml_switch 
+ 
+ rmttap.c:try_rmttap_open:218:nr_rmttap=3
+ rmttap.c:try_rmttap_open:223:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=8 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP1
+ rmttap.c:rt_open_tap:151:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=8 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP1
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=1
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=1 timeout=30000
+DEBUG 6:dvk_receive_T:910: ioctl ret=0 errno=0
+DEBUG 6:dvk_receive_T:920: ioctl ret=0
+ rmttap.c:recv_thread:367:source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_send_T:864: endpoint=31 timeout=30000
+DEBUG 6:dvk_send_T:877: ioctl ret=0 errno=0
+DEBUG 6:dvk_send_T:886: ioctl ret=0
+DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=-1 errno=61  
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=-61 <<<<<<<<<<<<<<<<<<<<<<<<<<  TIMEOUT
+
+ rmttap.c:try_rmttap_open:223:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+ rmttap.c:rt_open_tap:151:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=2
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=2 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=-1 errno=64
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=-64 <<<<<<<<<<<<<<<<<<<<<<<<<<  TIMEOUT
+
+ rmttap.c:try_rmttap_open:223:rt_index=2 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_idx=-1 rt_name=LTAP1
+DEBUG 6:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 6:dvk_receive_T:920: ioctl ret=-61
+DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+ rmttap.c:send_thread:276:Timeout
+ rmttap.c:try_rmttap_open:218:nr_rmttap=3
+ rmttap.c:try_rmttap_open:223:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=8 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP1
+ rmttap.c:rt_open_tap:151:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=8 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP1
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=1
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=1 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_open_tap:170:OPEN REPLY: source=1 type=8193 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ rmttap.c:rt_open_tap:173:Remote TAP tap1 successfully opened with remote index 0 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+ 
+ 
+ rmttap.c:try_rmttap_open:223:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+ rmttap.c:rt_open_tap:151:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=2
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=1 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=2 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=-1 errno=64
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=-64 <<<<<<<<<<<<<<<<<<<<<<<<<<  TIMEOUT
+
+ rmttap.c:try_rmttap_open:223:rt_index=2 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_idx=-1 rt_name=LTAP1
+DEBUG 6:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 6:dvk_receive_T:920: ioctl ret=-61
+DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+ rmttap.c:send_thread:276:Timeout
+ rmttap.c:try_rmttap_open:218:nr_rmttap=3
+ rmttap.c:try_rmttap_open:223:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=8 rt_poll_idx=0 rt_rmttap_idx=0 rt_name=RTAP1
+ rmttap.c:try_rmttap_open:223:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+ rmttap.c:rt_open_tap:151:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=9 rt_data_fd=11 rt_poll_idx=1 rt_rmttap_idx=-1 rt_name=RTAP2
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=2
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=2 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=-1 errno=64
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=-64
+
+
+EN NODO1
+ rmttap.c:try_rmttap_open:218:nr_rmttap=3
+ rmttap.c:try_rmttap_open:223:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=7 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP0
+ rmttap.c:rt_open_tap:151:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=6 rt_data_fd=7 rt_poll_idx=0 rt_rmttap_idx=-1 rt_name=RTAP0
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_tap:156:nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=TAPserver00 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=0
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=0 timeout=30000
+ rmttap.c:recv_thread:348:RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=9
+DEBUG 6:dvk_bind_X:1221: cmd=0 dcid=0 pid=9 endpoint=1 nodeid=-1
+DEBUG 6:dvk_bind_X:1236: ioctl ret=1 errno=0
+DEBUG 6:dvk_bind_X:1251: ioctl ret=1
+DEBUG 6:dvk_bind_X:1254: ret=1
+DEBUG 6:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 6:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 6:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:recv_thread:357:nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=887 vpid=9 nodeid=1 name=dvs_uml_switch 
+DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_open_tap:170:OPEN REPLY: source=0 type=8193 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ rmttap.c:rt_open_tap:173:Remote TAP tap1 successfully opened with remote index 0 <<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+ 
+ 
+ LUEGO ARRANCAR EL UML 
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node00 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=daemon
+
+DESPUES DE CONECTAR EL UML CON IP IP_UML_NODE0
+root@node1:~# ping IP_BR0_NODE0 <<<< node1 aqui es el UML y IP_BR0_NODE0 direccion del bridge 
+PING IP_BR0_NODE0 (IP_BR0_NODE0) 56(84) bytes of data.
+From IP_UML_NODE0 icmp_seq=1 Destination Host Unreachable
+From IP_UML_NODE0 icmp_seq=2 Destination Host Unreachable
+From IP_UML_NODE0 icmp_seq=3 Destination Host Unreachable
+
+EN EL SWITCH DE NODE0
+ dvs_uml_switch.c:accept_connection:168:fd=4
+ dvs_uml_switch.c:add_fd:41:fd=12
+ port.c:handle_port:256:fd=12
+ dvs_uml_switch.c:new_port:135:fd=12 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:106:fd=12 type=0 data_fd=5
+ port.c:setup_sock_port:228:fd=12 data_fd=5
+ port.c:setup_port:153:fd=12 
+New connection
+ port.c:handle_sock_data:211:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:198:port_fd=12 data_fd=5
+ port.c:update_src:48:control=12 
+ Addr: 82:c4:2d:e4:32:1f New port 12
+ port.c:send_dst:80:control=12 
+ port.c:send_sock:182:fd=10 
+ port.c:send_sock:182:fd=7 
+ rmttap.c:send_thread:297:RTAP1 rt_poll_idx=0
+ rmttap.c:rt_send_packet:115:r_ptr->rt_name=RTAP1 r_ptr->rt_rmttap_idx=0
+ rmttap.c:rt_send_packet:127:r_ptr->rt_nodeid=1
+ rmttap.c:rt_send_packet:128:WRITE REQUEST: source=30 type=2 m3i1=0 m3i2=42 m3p1=0x4b9440 m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=1 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_send_packet:136:WRITE REPLY: source=1 type=8194 m3i1=0 m3i2=42 m3p1=0x4b9440 m3ca1=[tap1]
+
+port.c:handle_sock_data:211:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:198:port_fd=12 data_fd=5
+ port.c:update_src:48:control=12 
+ port.c:send_dst:80:control=12 
+ port.c:send_sock:182:fd=10 
+ port.c:send_sock:182:fd=7
+ 
+MUERE EL SENDER THREAD 859 DESPUES RECIBIR EL MENSAJE WRITE REPLY
+PERO, SEGUN EL KERNEL, EL RCODE RETORNADO ES 0
+Oct 17 14:46:29 node0 kernel: [ 2076.275497] DEBUG 859:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Oct 17 14:46:29 node0 kernel: [ 2076.275499] DEBUG 859:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Oct 17 14:46:29 node0 kernel: [ 2076.275500] DEBUG 859:sleep_proc:399: endpoint=30 ret=7495 p_rcode=0
+Oct 17 14:46:29 node0 kernel: [ 2076.275501] DEBUG 859:sleep_proc:400: endpoint=30 flags=0 cpuid=0
+Oct 17 14:46:29 node0 kernel: [ 2076.275503] DEBUG 859:sleep_proc:401: WLOCK_PROC ep=30 count=0
+Oct 17 14:46:29 node0 kernel: [ 2076.275505] DEBUG 859:sleep_proc:454: nr=30 endp=30 dcid=0 lpid=859 p_cpumask=FFFFFFFF nodemap=1 name=dvs_uml_switch 
+Oct 17 14:46:29 node0 kernel: [ 2076.275506] DEBUG 859:sleep_proc:456: someone wakeups me: sem=0 p_rcode=0
+Oct 17 14:46:29 node0 kernel: [ 2076.275508] DEBUG 859:new_mini_sendrec:883: WUNLOCK_PROC ep=30 count=0
+
+EN LA SSH NODE0 SALE EL SIGUIENTE MENSAJE 
+send_sock sending to fd 5 Resource temporarily unavailable
+send_sock sending to fd 5 Resource temporarily unavailable
+send_sock sending to fd 5 Resource temporarily unavailable
+
+EN NODE1 SE RECIBE LA PETICION DEL OPEN 
+ rmttap.c:recv_thread:367:source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 6:dvk_send_T:864: endpoint=30 timeout=30000
+DEBUG 6:dvk_send_T:877: ioctl ret=0 errno=0
+DEBUG 6:dvk_send_T:886: ioctl ret=0
+
+EN NODE1 SE RECIBE LA PETICION DEL WRITE 
+ rmttap.c:recv_thread:367:source=30 type=2 m3i1=0 m3i2=42 m3p1=0x4b9440 m3ca1=[tap1]
+DEBUG 6:dvk_vcopy:126: src_ep=30 dst_ep=1 bytes=0
+DEBUG 6:dvk_vcopy:142: ioctl ret=0 errno=0
+DEBUG 6:dvk_vcopy:154: ioctl ret=0
+ port.c:send_sock:182:fd=7 
+DEBUG 6:dvk_send_T:864: endpoint=30 timeout=30000
+DEBUG 6:dvk_send_T:877: ioctl ret=0 errno=9
+DEBUG 6:dvk_send_T:886: ioctl ret=0
+
+NODE0: AL LEVANTAR UML Y HACER PING 
+rmttap.c:rt_open_tap:156:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ rmttap.c:rt_open_tap:161:r_ptr->rt_nodeid=1
+ rmttap.c:rt_open_tap:162:OPEN REQUEST: source=30 type=1 m3i1=-16 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 1257:dvk_sendrec_T:931: endpoint=1 timeout=30000
+DEBUG 1257:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 1257:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_open_tap:167:OPEN REPLY: source=1 type=8193 m3i1=-16 m3i2=0 m3p1=(nil) m3ca1=[tap1] <<<< -16 EDVSBUSY
+ 
+NODE1: 
+rmttap.c:recv_thread:367:source=30 type=1 m3i1=-16 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ tuntap.c:open_tap:21:dev=tap1
+ tuntap.c:open_tap:31:TUNSETIFF failed tap1
+ DEBUG 22:dvk_send_T:864: endpoint=30 timeout=30000
+DEBUG 22:dvk_send_T:877: ioctl ret=0 errno=16
+DEBUG 22:dvk_send_T:886: ioctl ret=0
+TUNSETIFF failed: Device or resource busy
+ERROR: rmttap.c:recv_thread:384: rcode=-16
+
+
+=====================================================================================
+20201018:
+	Se hizo del OPEN de los TAPs locales exportados a switches remotos.
+	Se hace el OPEN de los LOCAL TAPs antes del switch y tambien a demanda del switch remoto   
+	Se incorporaron los LOCAL TAPs al loop del switch 
+	
+switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ switch_cfg.c:switch_config:392:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP2
+ switch_cfg.c:switch_config:392:rt_index=2 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=LTAP1
+ switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=3
+ 
+ dvs_uml_switch.c:main:418:sw_hub=0 sw_daemon=0 sw_recv_ep=27342 sw_send_ep=27342 sw_dcid=0 sw_ctrl_path=/tmp/uml.ctl sw_tap=tap0 sw_name=SW_NAME
+
+DEBUG 22:dvk_open:108: Open dvk device file /dev/dvk
+ rmttap.c:get_dvs_params:184:
+DEBUG 22:dvk_getdvsinfo:265: 
+DEBUG 22:dvk_getdvsinfo:274: ioctl ret=0 errno=0
+DEBUG 22:dvk_getdvsinfo:279: ioctl ret=0
+ rmttap.c:get_dvs_params:186:local_nodeid=0
+ rmttap.c:get_dvs_params:189:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rmttap.c:get_dc_params:199:dcid=0
+DEBUG 22:dvk_getdcinfo:366: dcid=0
+DEBUG 22:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 22:dvk_getdcinfo:383: ioctl ret=0
+ rmttap.c:get_dc_params:207:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rmttap.c:get_dc_params:208:flags=0 dc_nodes=7 dc_pid=803 dc_name=DC0
+ 
+ dvs_uml_switch.c:bind_sockets:326:ctl_fd=4 ctl_name=/tmp/uml.ctl data_fd=5
+ dvs_uml_switch.c:bind_socket:215:fd=4 name=/tmp/uml.ctl
+ dvs_uml_switch.c:bind_socket:219:sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:bind_data_socket:307:fd=5 
+ dvs_uml_switch.c:bind_data_socket:315:sun_path= 
+./dvs_uml_switch attached to unix socket '/tmp/uml.ctl' dvs_uml_switch.c:add_fd:43:fd=0
+ dvs_uml_switch.c:add_fd:43:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=5
+ dvs_uml_switch.c:main:478:sw_ptr->sw_tap=tap0
+ tuntap.c:open_tap:21:dev=tap0
+ port.c:setup_port:153:fd=6 
+New connection
+ dvs_uml_switch.c:main:481:SWITCH TAP tap0 sw_tap_fd=6
+ dvs_uml_switch.c:add_fd:43:fd=6
+ dvs_uml_switch.c:main:483:
+ dvs_uml_switch.c:main:507:
+ dvs_uml_switch.c:main:509:MTX_LOCK sw_mutex 
+ dvs_uml_switch.c:main:515:
+ dvs_uml_switch.c:main:522:Timeout
+ dvs_uml_switch.c:main:525:MTX_UNLOCK sw_mutex 
+ rmttap.c:init_rt_sockets:521:
+ rmttap.c:init_rt_sockets:523:MTX_LOCK sw_mutex 
+ 
+ rmttap.c:init_rt_sockets:550:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ rmttap.c:rmttap_init:8:
+rmttap_init (dvs_uml_switch version 3) - unix
+		/tmp/uml0000.ctrl
+		/tmp/uml0000.ctrl
+ rmttap.c:connect_to_switch:31:rt_name=RTAP1
+ rmttap.c:connect_to_switch:43:CTRL sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:accept_connection:170:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=8
+ rmttap.c:connect_to_switch:63:DATA sun_path=/tmp/uml0000.data 
+ rmttap.c:connect_to_switch:77:write to switch RTAP1 
+ port.c:handle_port:256:fd=8
+ dvs_uml_switch.c:new_port:137:fd=8 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:108:fd=8 type=0 data_fd=5
+ port.c:setup_sock_port:228:fd=8 data_fd=5
+ port.c:setup_port:153:fd=8 
+New connection
+ rmttap.c:connect_to_switch:86:read from switch RTAP1 
+ rmttap.c:connect_to_switch:96:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=2
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 22:dvk_bind_X:1221: cmd=2 dcid=0 pid=4460588 endpoint=1 nodeid=1
+DEBUG 22:dvk_bind_X:1236: ioctl ret=1 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=1
+DEBUG 22:dvk_bind_X:1254: ret=1
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:579:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+DEBUG 22:dvk_bind_X:1221: cmd=2 dcid=0 pid=4460588 endpoint=31 nodeid=1
+DEBUG 22:dvk_bind_X:1236: ioctl ret=31 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=31
+DEBUG 22:dvk_bind_X:1254: ret=31
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:594:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ 
+ rmttap.c:init_rt_sockets:550:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP2
+ rmttap.c:rmttap_init:8:
+rmttap_init (dvs_uml_switch version 3) - unix
+		/tmp/uml0001.ctrl
+		/tmp/uml0001.ctrl
+ rmttap.c:connect_to_switch:31:rt_name=RTAP2
+ rmttap.c:connect_to_switch:43:CTRL sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:accept_connection:170:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=11
+ rmttap.c:connect_to_switch:63:DATA sun_path=/tmp/uml0001.data 
+ rmttap.c:connect_to_switch:77:write to switch RTAP2 
+ port.c:handle_port:256:fd=11
+ dvs_uml_switch.c:new_port:137:fd=11 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:108:fd=11 type=0 data_fd=5
+ port.c:setup_sock_port:228:fd=11 data_fd=5
+ port.c:setup_port:153:fd=11 
+New connection
+ rmttap.c:connect_to_switch:86:read from switch RTAP2 
+ rmttap.c:connect_to_switch:96:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=10 rt_data_fd=12 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP2
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=2
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 22:dvk_bind_X:1221: cmd=2 dcid=0 pid=4460588 endpoint=2 nodeid=2
+DEBUG 22:dvk_bind_X:1236: ioctl ret=2 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=2
+DEBUG 22:dvk_bind_X:1254: ret=2
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:579:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+DEBUG 22:dvk_bind_X:1221: cmd=2 dcid=0 pid=4460588 endpoint=32 nodeid=2
+DEBUG 22:dvk_bind_X:1236: ioctl ret=32 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=32
+DEBUG 22:dvk_bind_X:1254: ret=32
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:594:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ 
+ tuntap.c:open_tap:21:dev=tap1
+ tuntap.c:open_tap:43:TUNSETIFF failed tap1 <<<<<<<<<<<<<<<<<<<<<<<
+ rmttap.c:init_rt_sockets:537:LOCAL TAP tap1 lcl_fd=-1 <<<<<<<<<<<<<<<<<<<<
+ rmttap.c:init_rt_sockets:545:rt_index=2 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=LTAP1
+
+ rmttap.c:init_rt_sockets:604:rt_nfds=2
+ rmttap.c:init_rt_sockets:611:MTX_UNLOCK sw_mutex 
+
+ rmttap.c:recv_thread:354:RECEIVER THREAD: sw_recv_ep=0 sw_recv_tid=25
+DEBUG 22:dvk_bind_X:1221: cmd=0 dcid=0 pid=25 endpoint=0 nodeid=-1
+DEBUG 22:dvk_bind_X:1236: ioctl ret=0 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=0
+DEBUG 22:dvk_bind_X:1254: ret=0
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:recv_thread:363:nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=1111 vpid=25 nodeid=0 name=dvs_uml_switch 
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+ rmttap.c:send_thread:256:SENDER THREAD: sw_send_ep=30 sw_send_tid=24
+DEBUG 22:dvk_bind_X:1221: cmd=0 dcid=0 pid=24 endpoint=30 nodeid=-1
+DEBUG 22:dvk_bind_X:1236: ioctl ret=30 errno=0
+DEBUG 22:dvk_bind_X:1251: ioctl ret=30
+DEBUG 22:dvk_bind_X:1254: ret=30
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=30 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+
+ rmttap.c:send_thread:266:nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=1110 vpid=24 nodeid=0 name=dvs_uml_switch 
+ rmttap.c:try_rmttap_open:219:nr_rmttap=3
+ rmttap.c:try_rmttap_open:225:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+ rmttap.c:rt_open_rmttap:152:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_rmttap:157:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ rmttap.c:rt_open_rmttap:162:rt_ptr->rt_nodeid=1
+ rmttap.c:rt_open_rmttap:163:SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 22:dvk_sendrec_T:931: endpoint=1 timeout=30000
+
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ Addr: 02:aa:bb:cc:dd:00 New port 6
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+ 
+ DEBUG 22:dvk_sendrec_T:944: ioctl ret=-1 errno=61
+DEBUG 22:dvk_sendrec_T:953: ioctl ret=-61
+
+ rmttap.c:try_rmttap_open:225:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=10 rt_data_fd=12 rt_poll_idx=1 rt_rmttap_fd=-1 rt_name=RTAP2
+ rmttap.c:rt_open_rmttap:152:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=10 rt_data_fd=12 rt_poll_idx=1 rt_rmttap_fd=-1 rt_name=RTAP2
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_rmttap:157:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ rmttap.c:rt_open_rmttap:162:rt_ptr->rt_nodeid=2
+ rmttap.c:rt_open_rmttap:163:SEND REQ_RT_OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 22:dvk_sendrec_T:931: endpoint=2 timeout=30000
+DEBUG 22:dvk_sendrec_T:944: ioctl ret=-1 errno=64
+DEBUG 22:dvk_sendrec_T:953: ioctl ret=-64
+ rmttap.c:send_thread:298:RTAP1 rt_poll_idx=0
+ rmttap.c:rt_send_packet:116:rt_ptr->rt_name=RTAP1 rt_ptr->rt_rmttap_fd=-1
+ rmttap.c:try_rmttap_open:219:nr_rmttap=3
+ rmttap.c:try_rmttap_open:225:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ rmttap.c:try_rmttap_open:225:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=10 rt_data_fd=12 rt_poll_idx=1 rt_rmttap_fd=-1 rt_name=RTAP2
+ rmttap.c:rt_open_rmttap:152:rt_index=1 rt_nodeid=2 rt_tap=tap1 rt_ctrl_fd=10 rt_data_fd=12 rt_poll_idx=1 rt_rmttap_fd=-1 rt_name=RTAP2
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_rmttap:157:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02 
+ rmttap.c:rt_open_rmttap:162:rt_ptr->rt_nodeid=2
+ 
+ rmttap.c:rt_open_rmttap:163:SEND REQ_RT_OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 22:dvk_sendrec_T:931: endpoint=2 timeout=30000
+DEBUG 22:dvk_sendrec_T:944: ioctl ret=-1 errno=64
+DEBUG 22:dvk_sendrec_T:953: ioctl ret=-64
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+DEBUG 22:dvk_receive_T:910: ioctl ret=-1 errno=61
+DEBUG 22:dvk_receive_T:920: ioctl ret=-61
+DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=11 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:fd=11 
+ port.c:send_sock:182:fd=8 
+
+----------------------------------------------------------------------------------
+SE PROBO EL FUNCIONAMIENTO CON EL ARCHIVO DE CONFIGURACION EQUIVALENTE A uml_switch ORIGINAL
+# this is a comment 
+switch SW_NAME {
+	path 	"/tmp/uml.ctl";
+	hub		NO;
+	daemon	NO;
+	tap		"tap0";
+	dcid	0;
+};
+
+
+Se levanto el linux en otra sesion
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node00 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=daemon
+
+ switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=0 <<<<<<<<<<<< NUMERO DE REMOTE TAPS = 0
+ 
+ dvs_uml_switch.c:main:418:sw_hub=0 sw_daemon=0 sw_recv_ep=27342 sw_send_ep=27342 sw_dcid=0 sw_ctrl_path=/tmp/uml.ctl sw_tap=tap0 sw_name=SW_NAME
+DEBUG 310:dvk_open:108: Open dvk device file /dev/dvk
+ rmttap.c:get_dvs_params:184:
+DEBUG 310:dvk_getdvsinfo:265: 
+DEBUG 310:dvk_getdvsinfo:274: ioctl ret=0 errno=0
+DEBUG 310:dvk_getdvsinfo:279: ioctl ret=0
+ rmttap.c:get_dvs_params:186:local_nodeid=0
+ rmttap.c:get_dvs_params:189:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rmttap.c:get_dc_params:199:dcid=0
+DEBUG 310:dvk_getdcinfo:366: dcid=0
+DEBUG 310:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 310:dvk_getdcinfo:383: ioctl ret=0
+ rmttap.c:get_dc_params:207:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rmttap.c:get_dc_params:208:flags=0 dc_nodes=7 dc_pid=725 dc_name=DC0
+ dvs_uml_switch.c:bind_sockets:326:ctl_fd=4 ctl_name=/tmp/uml.ctl data_fd=5
+ dvs_uml_switch.c:bind_socket:215:fd=4 name=/tmp/uml.ctl
+ dvs_uml_switch.c:bind_socket:219:sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:bind_data_socket:307:fd=5 
+ dvs_uml_switch.c:bind_data_socket:315:sun_path= 
+./dvs_uml_switch attached to unix socket '/tmp/uml.ctl' dvs_uml_switch.c:add_fd:43:fd=0
+ dvs_uml_switch.c:add_fd:43:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=5
+ 
+ dvs_uml_switch.c:main:478:sw_ptr->sw_tap=tap0
+ tuntap.c:open_tap:21:dev=tap0
+ port.c:setup_port:153:fd=6 
+New connection
+ dvs_uml_switch.c:main:481:SWITCH TAP tap0 sw_tap_fd=6
+ dvs_uml_switch.c:add_fd:43:fd=6
+ dvs_uml_switch.c:main:483:
+ dvs_uml_switch.c:main:507:
+ dvs_uml_switch.c:main:509:MTX_LOCK sw_mutex 
+ dvs_uml_switch.c:main:517:
+ dvs_uml_switch.c:main:524:Timeout
+ dvs_uml_switch.c:main:527:MTX_UNLOCK sw_mutex 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ Addr: 02:aa:bb:cc:dd:00 New port 6
+ port.c:send_dst:80:control=6 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ dvs_uml_switch.c:accept_connection:170:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=7
+ port.c:handle_port:257:fd=7
+ dvs_uml_switch.c:new_port:137:fd=7 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:108:fd=7 type=0 data_fd=5
+ port.c:setup_sock_port:229:fd=7 data_fd=5
+ port.c:setup_port:153:fd=7 
+New connection
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7 
+ Addr: 5e:e1:01:6b:a6:3d New port 7    <<<<<<<<<<<<<<<< MAC ADDRESS DEL UML 
+		 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+				inet IP_UML_NODE0  netmask 255.255.255.0  broadcast 192.168.2.255
+				ether 5e:e1:01:6b:a6:3d  txqueuelen 1000  (Ethernet)
+				RX packets 12  bytes 896 (896.0 B)
+				RX errors 0  dropped 0  overruns 0  frame 0
+				TX packets 101  bytes 4466 (4.3 KiB)
+				TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+				device interrupt 5 		
+ port.c:send_dst:80:control=7 
+ 
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6
+ 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7 
+  port.c:send_dst:80:control=7 
+  
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7 
+ port.c:send_dst:80:control=7 
+ 
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+  port.c:send_dst:80:control=6 
+  
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7 
+  port.c:send_dst:80:control=7 
+  
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7
+  port.c:send_dst:80:control=7 
+  
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6
+  
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_sock_data:212:fd=5 hub=0
+ port.c:handle_data:112:fd=5 
+ port.c:match_sock:199:port_fd=7 data_fd=5
+ port.c:update_src:48:control=7 
+ port.c:send_dst:80:control=7 
+ 
+ tuntap.c:send_tap:8:fd=6 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=7 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ 
+ -----------------------------------------------------------------------------------
+ AGREGANDO UNA TAP REMOTO  
+ # this is a comment 
+switch SW_NAME {
+	path 	"/tmp/uml.ctl";
+	hub		NO;
+	daemon	NO;
+	tap		"tap0";
+	dcid	0;
+};
+
+rmttap RTAP1 {
+	tap		"tap1";
+	nodeid 	1;
+};
+
+PORQUE EL UML TOMA ESTOS ENDPOINTS !!!!! ?????????????????????????????
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch.cfg  > borrar.txt 
+ERROR: 1177:dvk_bind_X:1244: rcode=-337
+ERROR: 1177:dvk_bind_X:1253: rcode=-337
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0  1962/966    0    0  420 27342 27342 27342 27342 linux          
+ 0   1     1  1970/974    0    0  420 27342 27342 27342 27342 linux    
+ 
+ EL UML TIENE CONFIGURADO RDISK 
+ DEBUG rd_init:704: dcid=0 my_tid=1254 uml_ep=0
+DEBUG 1254:dvk_bind_X:1221: cmd=5 dcid=0 pid=1254 endpoint=0 nodeid=-1
+DEBUG 1254:dvk_bind_X:1251: ioctl ret=-337
+ERROR: 1254:dvk_bind_X:1253: rcode=-337
+ERROR: 1:rd_init:708: rcode=-337
+DEBUG rd_add:482: n=0
+DEBUG rd_dev_size:191: 
+DEBUG 1254:dvk_getep:233: pid=1254
+DEBUG 1254:dvk_getep:245: ioctl ret=-310 errno=0
+DEBUG 1254:dvk_getep:251: ioctl ret=-310
+ERROR: 1254:dvk_getep:257: rcode=-310
+DEBUG rd_get_geometry:1018: minor=0 my_tid=1254 my_ep=-310
+DEBUG rd_get_geometry:1028: source=23 type=1029 m2i1=0 m2i2=-310 m2i3=-2145623036 m2l1=1 m2l2=1 m2p1=49889e1c
+DEBUG 1254:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 1254:dvk_sendrec_T:944: ioctl ret=-310 errno=0
+DEBUG 1254:dvk_sendrec_T:953: ioctl ret=-310
+ERROR: 1254:dvk_sendrec_T:955: rcode=-310
+ERROR: 1:rd_get_geometry:1030: rcode=-310
+ERROR: 1:rd_dev_size:197: rcode=-310
+Failed to initialize rdisk device 0 :Couldn't determine size of device's file
+
+
+ EN NODE0 SIN ARRANCAR NODE1
+ root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch.cfg  > borrar.txt 
+ERROR: 1250:dvk_sendrec_T:946: rcode=-64
+ERROR: 1250:dvk_sendrec_T:955: rcode=-64
+ERROR: rmttap.c:rt_open_rmttap:166: rcode=-64
+ERROR: rmttap.c:try_rmttap_open:230: rcode=-64
+ERROR: rmttap.c:rt_send_packet:119: rcode=-9
+ERROR: rmttap.c:send_thread:332: rcode=-9
+
+FUNCIONA BIEN SIN ARRANCAR EL RMTTAP EN NODE1
+root@node1:~# ping IP_BR0_NODE0 <<<<<<<<<<<<<<<<<<<<<<<<<<< ESTO ES UML AL BRIDGE
+PING IP_BR0_NODE0 (IP_BR0_NODE0) 56(84) bytes of data.
+64 bytes from IP_BR0_NODE0: icmp_seq=1 ttl=64 time=1.78 ms
+64 bytes from IP_BR0_NODE0: icmp_seq=2 ttl=64 time=0.371 ms
+64 bytes from IP_BR0_NODE0: icmp_seq=3 ttl=64 time=0.589 ms
+64 bytes from IP_BR0_NODE0: icmp_seq=4 ttl=64 time=0.461 ms
+64 bytes from IP_BR0_NODE0: icmp_seq=5 ttl=64 time=0.429 ms
+
+ATENCION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111111
+EN NODE1 
+root@node1:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   1     1  1038/41     1    8    0 31438 27342 27342 27342 dvs_uml_switch 
+ 0  31    31  1037/40     1    0   20 27342 27342 27342 27342 dvs_uml_switch 
+
+CUANDO EN NODE0 SE CONFIGURA UN RTAP Y EN NODE1 UN LTAP, EN NODE1 NO ESTAN 
+BINDEADO LOS ENDPOINTS REMOTOS
+SOLUCION1: Agragando un nuevo parametro 
+SOLUCION2: Agregando un nuevo tipo de entrada (switch, rmttap, lcltap) al archivo de configuracion
+			
+
+root@node0:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0  2696/1549   0    8   20 31438 27342 27342 27342 dvs_uml_switch 
+ 0   1     1    -1/-1     1 1000    0 27342 27342 27342 27342 TAPserver01    
+ 0  31    31    -1/-1     1 1000    0 27342 27342 27342 27342 TAPclient01 
+ MURIO EL SENDER THREAD EN NODE0 
+
+HAY UN OPEN REQUEST AL REMOTO  
+  rmttap.c:rt_open_rmttap:163:SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+  
+ 
+LUEGO LE ENVIA UN PAQUETE SIN HABAR OBTENIDO RESPUESTA DEL OPEN 
+ rmttap.c:send_thread:299:RTAP1 rt_poll_idx=0
+ rmttap.c:rt_send_packet:116:rt_ptr->rt_name=RTAP1 rt_ptr->rt_rmttap_fd=-1
+ rmttap.c:try_rmttap_open:219:nr_rmttap=2
+ rmttap.c:try_rmttap_open:225:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ 
+
+	
+CUANDO EN NODE0 SE CONFIGURA UN RTAP Y EN NODE1 UN LTAP, EN NODE1 NO SE 
+BINDEARON LOS ENDPOINTS REMOTOS
+SOLUCION1: Agragando un nuevo parametro 
+SOLUCION2: Agregando un nuevo tipo de entrada (switch, rmttap, lcltap) al archivo de configuracion
+SOLUCION 3: Conociendo la info del DC entonces se sabe cuales son los nodos que formaran parte del switch !!!!!!!!!!!
+
+=====================================================================================
+20201019:
+	Para bindear los endpoints remotos, se toma la info del DC entonces se sabe 
+	cuales son los nodos que formaran parte del switch 
+	Se hace tanto el rmtbind como el unbind de cliente y servidor remoto.
+	
+	
+ SE MODIFICO  
+RTAP:
+	rt_rmt_ep = HARDWARE > NO SE ACEPTO DESDE EL NODO REMOTO EL ENGANCHE CON EL TAP REMOTO 
+	rt_rmt_ep >= 0 => A DONDE ENVIAR LOS MENSAJES 
+LTAP:
+	rt_rmt_ep = HARDWARE => NADIE HIZO EL OPEN DE LTAP  
+	rt_rmt_ep >= 0 => A DONDE ENVIAR LOS MENSAJES 
+
+
+switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=0 rt_rmttap_fd=-1 rt_name=RTAP1
+ switch_cfg.c:switch_config:392:rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=0 rt_rmttap_fd=-1 rt_name=LTAP1
+ switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=2
+ 
+ dvs_uml_switch.c:main:418:sw_hub=0 sw_daemon=0 sw_recv_ep=27342 sw_send_ep=27342 sw_dcid=0 sw_ctrl_path=/tmp/uml.ctl sw_tap=tap0 sw_name=SW_NAME
+
+DEBUG 4:dvk_open:108: Open dvk device file /dev/dvk
+ rmttap.c:get_dvs_params:186:
+DEBUG 4:dvk_getdvsinfo:265: 
+DEBUG 4:dvk_getdvsinfo:274: ioctl ret=0 errno=0
+DEBUG 4:dvk_getdvsinfo:279: ioctl ret=0
+ rmttap.c:get_dvs_params:188:local_nodeid=0
+ rmttap.c:get_dvs_params:191:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ rmttap.c:get_dc_params:201:dcid=0
+DEBUG 4:dvk_getdcinfo:366: dcid=0
+DEBUG 4:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 4:dvk_getdcinfo:383: ioctl ret=0
+ rmttap.c:get_dc_params:209:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ rmttap.c:get_dc_params:210:flags=0 dc_nodes=7 dc_pid=766 dc_name=DC0
+
+ dvs_uml_switch.c:bind_sockets:326:ctl_fd=4 ctl_name=/tmp/uml.ctl data_fd=5
+ dvs_uml_switch.c:bind_socket:215:fd=4 name=/tmp/uml.ctl
+ dvs_uml_switch.c:bind_socket:219:sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:still_used:190:
+ dvs_uml_switch.c:bind_data_socket:307:fd=5 
+ dvs_uml_switch.c:bind_data_socket:315:sun_path= 
+./dvs_uml_switch attached to unix socket '/tmp/uml.ctl' dvs_uml_switch.c:add_fd:43:fd=0
+ dvs_uml_switch.c:add_fd:43:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=5
+ dvs_uml_switch.c:main:480:sw_ptr->sw_tap=tap0
+ tuntap.c:open_tap:21:dev=tap0
+ port.c:setup_port:153:fd=6 
+New connection
+ dvs_uml_switch.c:main:483:SWITCH TAP tap0 sw_tap_fd=6
+ dvs_uml_switch.c:add_fd:43:fd=6
+ dvs_uml_switch.c:main:485:
+ dvs_uml_switch.c:main:492:
+ dvs_uml_switch.c:main:494:MTX_LOCK sw_mutex 
+ dvs_uml_switch.c:main:502:
+ dvs_uml_switch.c:main:509:Timeout
+ dvs_uml_switch.c:main:512:MTX_UNLOCK sw_mutex 
+ 
+ rmttap.c:init_rt_sockets:549:
+ rmttap.c:init_rt_sockets:550:MTX_LOCK sw_mutex 
+ 
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 4:dvk_bind_X:1221: cmd=2 dcid=0 pid=4694092 endpoint=1 nodeid=1
+DEBUG 4:dvk_bind_X:1236: ioctl ret=1 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=1
+DEBUG 4:dvk_bind_X:1254: ret=1
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:577:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01
+ 
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 4:dvk_bind_X:1221: cmd=2 dcid=0 pid=4694092 endpoint=31 nodeid=1
+DEBUG 4:dvk_bind_X:1236: ioctl ret=31 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=31
+DEBUG 4:dvk_bind_X:1254: ret=31
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:595:nr=31 endp=31 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPclient01
+ 
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 4:dvk_bind_X:1221: cmd=2 dcid=0 pid=4694092 endpoint=2 nodeid=2
+DEBUG 4:dvk_bind_X:1236: ioctl ret=2 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=2
+DEBUG 4:dvk_bind_X:1254: ret=2
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=2 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:577:nr=2 endp=2 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPserver02
+ 
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=32 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 4:dvk_bind_X:1221: cmd=2 dcid=0 pid=4694092 endpoint=32 nodeid=2
+DEBUG 4:dvk_bind_X:1236: ioctl ret=32 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=32
+DEBUG 4:dvk_bind_X:1254: ret=32
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=32 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:init_rt_sockets:595:nr=32 endp=32 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPclient02
+ 
+ rmttap.c:init_rt_sockets:616:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ rmttap.c:rmttap_init:8:
+rmttap_init (dvs_uml_switch version 3) - unix
+		/tmp/uml0000.ctrl
+		/tmp/uml0000.ctrl
+ rmttap.c:connect_to_switch:31:rt_name=RTAP1
+ rmttap.c:connect_to_switch:43:CTRL sun_path=/tmp/uml.ctl 
+ dvs_uml_switch.c:accept_connection:170:fd=4
+ dvs_uml_switch.c:add_fd:43:fd=8
+ rmttap.c:connect_to_switch:63:DATA sun_path=/tmp/uml0000.data 
+ rmttap.c:connect_to_switch:77:write to switch RTAP1 
+ port.c:handle_port:257:fd=8
+ dvs_uml_switch.c:new_port:137:fd=8 data_fd=5
+ dvs_uml_switch.c:new_port_v1_v3:108:fd=8 type=0 data_fd=5
+ port.c:setup_sock_port:229:fd=8 data_fd=5
+ port.c:setup_port:153:fd=8 
+New connection
+ rmttap.c:connect_to_switch:86:read from switch RTAP1 
+ rmttap.c:connect_to_switch:96:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=2
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+
+ rmttap.c:init_rt_sockets:611:rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=LTAP1
+ 
+ rmttap.c:init_rt_sockets:642:rt_nfds=1
+ rmttap.c:init_rt_sockets:649:MTX_UNLOCK sw_mutex 
+ 
+ rmttap.c:recv_thread:366:RECEIVER THREAD: sw_recv_ep=0 sw_recv_tid=7
+DEBUG 4:dvk_bind_X:1221: cmd=0 dcid=0 pid=7 endpoint=0 nodeid=-1
+DEBUG 4:dvk_bind_X:1236: ioctl ret=0 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=0
+DEBUG 4:dvk_bind_X:1254: ret=0
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:recv_thread:375:nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=959 vpid=7 nodeid=0 name=dvs_uml_switch 
+DEBUG 4:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+rmttap.c:send_thread:258:SENDER THREAD: sw_send_ep=30 sw_send_tid=6
+DEBUG 4:dvk_bind_X:1221: cmd=0 dcid=0 pid=6 endpoint=30 nodeid=-1
+DEBUG 4:dvk_bind_X:1236: ioctl ret=30 errno=0
+DEBUG 4:dvk_bind_X:1251: ioctl ret=30
+DEBUG 4:dvk_bind_X:1254: ret=30
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=30 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:send_thread:268:nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=958 vpid=6 nodeid=0 name=dvs_uml_switch 
+ rmttap.c:try_rmttap_open:221:nr_rmttap=2
+ rmttap.c:try_rmttap_open:227:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ rmttap.c:rt_open_rmttap:152:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+DEBUG 4:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 4:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 4:dvk_getprocinfo:1195: ioctl ret=0
+ rmttap.c:rt_open_rmttap:158:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ rmttap.c:rt_open_rmttap:163:rt_ptr->rt_nodeid=1
+ rmttap.c:rt_open_rmttap:164:SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 4:dvk_sendrec_T:931: endpoint=1 timeout=30000
+
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ Addr: 02:aa:bb:cc:dd:00 New port 6
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:mine->fd=5 
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:182:mine->fd=5 
+ 
+DEBUG 4:dvk_receive_T:910: ioctl ret=0 errno=0
+DEBUG 4:dvk_receive_T:920: ioctl ret=0
+ rmttap.c:recv_thread:385:RECEIVED REQUEST: source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ rmttap.c:recv_thread:388:RECEIVED REQ_RT_OPEN REQUEST
+ tuntap.c:open_tap:21:dev=tap1
+ port.c:setup_port:153:fd=10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FD 10 
+New connection
+ dvs_uml_switch.c:add_fd:43:fd=-1 <<<<<<<<<<<<<<<<<<<<<<<<<<< ??????????????????????????
+ rmttap.c:recv_thread:412:REQ_RT_OPEN: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=10 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=-1 rt_name=LTAP1
+ rmttap.c:recv_thread:480:SEND REPLY: source=31 type=8193 m3i1=10 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+
+DEBUG 4:dvk_send_T:864: endpoint=31 timeout=30000
+DEBUG 4:dvk_send_T:877: ioctl ret=0 errno=0
+DEBUG 4:dvk_send_T:886: ioctl ret=0
+
+DEBUG 4:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG 4:dvk_receive_T:910: ioctl ret=0 errno=0
+DEBUG 4:dvk_receive_T:920: ioctl ret=0
+ rmttap.c:recv_thread:385:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=90 m3p1=0x475440 m3ca1=[tap1] <<<<< FD 10 
+ rmttap.c:recv_thread:417:RECEIVED REQ_RT_WRITE REQUEST
+ rmttap.c:recv_thread:480:SEND REPLY: source=31 type=8194 m3i1=-9 m3i2=90 m3p1=0x475440 m3ca1=[tap1]  <<<<<<<<<<<< EDVSBADF
+DEBUG 4:dvk_send_T:864: endpoint=31 timeout=30000
+DEBUG 4:dvk_send_T:877: ioctl ret=0 errno=0
+DEBUG 4:dvk_send_T:886: ioctl ret=0
+
+DEBUG 4:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG 4:dvk_sendrec_T:944: ioctl ret=-1 errno=61
+DEBUG 4:dvk_sendrec_T:953: ioctl ret=-61
+ rmttap.c:send_thread:301:RTAP1 rt_poll_idx=0
+ rmttap.c:rt_write_packet:116:rt_ptr->rt_name=RTAP1 rt_ptr->rt_rmttap_fd=-1
+ 
+ rmttap.c:try_rmttap_open:221:nr_rmttap=2
+ rmttap.c:try_rmttap_open:227:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=10 data_fd=6
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ tuntap.c:send_tap:8:fd=10 
+ port.c:send_sock:182:mine->fd=5 
+ 
+ HAY ALGUN PROBLEMA CON EL FD DEL LTAP 
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch0.cfg  > borrar.txt 
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+send_tap: Bad file descriptor
+
+ESTOS ERRORES POSIBLEMENTE SE DEBEN A :
+	RECIBE LA PETICION DE OPEN 
+		rmttap.c:recv_thread:385:RECEIVED REQUEST: source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		 rmttap.c:recv_thread:388:RECEIVED REQ_RT_OPEN REQUEST
+		 tuntap.c:open_tap:21:dev=tap1
+		 port.c:setup_port:153:fd=10  <<<<<<<<<<<<<<<<<<<<< NO DEBERIA ASOCIARSE AL SWITCH 
+		New connection
+		 dvs_uml_switch.c:add_fd:43:fd=10
+		 rmttap.c:recv_thread:412:REQ_RT_OPEN: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+		 rmttap.c:recv_thread:481:SEND REPLY: source=31 type=8193 m3i1=10 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		
+	LUEGO RECIBE PETICION DE WRITE 
+			rmttap.c:recv_thread:385:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=90 m3p1=0x479440 m3ca1=[tap1]
+			 rmttap.c:recv_thread:417:RECEIVED REQ_RT_WRITE REQUEST
+			 rmttap.c:recv_thread:429:REQ_RT_WRITE: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+			DEBUG 2:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=10
+			DEBUG 2:dvk_vcopy:142: ioctl ret=0 errno=0
+			DEBUG 2:dvk_vcopy:154: ioctl ret=0
+			 tuntap.c:send_tap:8:fd=10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< SE ENVIA A LA LTAP ???????????
+			 rmttap.c:recv_thread:481:SEND REPLY: source=31 type=8194 m3i1=0 m3i2=90 m3p1=0x479440 m3ca1=[tap1]
+			DEBUG 2:dvk_send_T:864: endpoint=31 timeout=30000
+			
+			 port.c:handle_tap_data:138:fd=6 hub=0 
+			 port.c:handle_data:112:fd=6 
+			 port.c:match_tap:128:port_fd=10 data_fd=6
+			 port.c:match_tap:128:port_fd=8 data_fd=6
+			 port.c:match_tap:128:port_fd=6 data_fd=6
+			 port.c:update_src:48:control=6 
+			 Addr: 02:aa:bb:cc:00:00 New port 6
+			 port.c:send_dst:80:control=6 
+			 tuntap.c:send_tap:8:fd=10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< SE ENVIA A LA LTAP ???????????
+			 port.c:send_sock:182:mine->fd=5 
+			 port.c:handle_tap_data:138:fd=6 hub=0
+			 port.c:handle_data:112:fd=6 
+			 port.c:match_tap:128:port_fd=10 data_fd=6
+			 port.c:match_tap:128:port_fd=8 data_fd=6
+			 port.c:match_tap:128:port_fd=6 data_fd=6
+			 port.c:update_src:48:control=6 
+			 port.c:send_dst:80:control=6 
+			 tuntap.c:send_tap:8:fd=10  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< SE ENVIA A LA LTAP ???????????
+ 
+			ACA PASA ALGUN KILOMBO EN EL SWITCH 	
+			 port.c:send_sock:182:mine->fd=5 
+			 port.c:handle_port:257:fd=10
+			 port.c:service_port:245:control=10 
+			Bad request <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+			 dvs_uml_switch.c:close_descriptor:83:fd=10   <<<<<<<<<<<<< HACE CLOSE !!! 
+			 dvs_uml_switch.c:remove_fd:61:fd=10
+			 port.c:close_port:31:fd=10 
+			 port.c:free_port:19:control=10               <<<<<<<<<<<<< BORRA TODO 
+			 
+	ENTONCES, LUEGO DA LOS ERRORES DE CONSOLA 
+		send_tap: Bad file descriptor
+		send_tap: Bad file descriptor
+		send_tap: Bad file descriptor
+		send_tap: Bad file descriptor
+	
+
+
+BR0 Y TAP0 TIENE MISMA MAC ADDRESS 
+ tap0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.1.200  netmask 255.255.255.0  broadcast IP_BROADCAST
+        inet6 fe80::aa:bbff:fecc:dd00  prefixlen 64  scopeid 0x20<link>
+        ether 02:aa:bb:cc:dd:00  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 12  bytes 1028 (1.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+		
+br0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet IP_BR0_NODE0  netmask 255.255.255.0  broadcast IP_BROADCAST
+        inet6 fe80::88cd:d8ff:fe4e:8e8d  prefixlen 64  scopeid 0x20<link>
+        ether 02:aa:bb:cc:dd:00  txqueuelen 1000  (Ethernet)
+        RX packets 3  bytes 228 (228.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 13  bytes 1162 (1.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+-------------------------------------------------------------------------
+
+	root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch0.cfg  > borrar.txt 
+	ERROR: 468:dvk_sendrec_T:946: rcode=-61
+	ERROR: 468:dvk_sendrec_T:955: rcode=-61
+	ERROR: rmttap.c:rt_open_rmttap:191: rcode=-61
+	ERROR: rmttap.c:try_rmttap_open:256: rcode=-61
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+	ERROR: 468:dvk_receive_T:912: rcode=-61
+	ERROR: 468:dvk_receive_T:922: rcode=-61
+ACA EL UML HACE PING IP_BR0_NODE0 QUE ES EL BRIDGE 
+	ERROR: rmttap.c:recv_thread:406: rcode=-61
+	ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+
+=====================================================================================
+20201020: 
+	ERROR  en dvk_unbind() por error en check_caller() en donde para los procesos
+	locales que no son thread group_leader no seteaba el argumento retornado 
+	struct task_struct **t_ptr (es mas, se setaba en NULL)
+	Entonces cuando el dvk_unbind hacia 
+		ret = check_caller(&caller_task, &caller_ptr, &caller_pid);
+	Caller_task era NULL 
+
+	Se agrego el contador de interfaces locales para  realizar la comparacion 
+	a la hora de realizar el open de interfaces remotas
+				if( success_open < nr_rmttap)
+					try_rmttap_open
+	Sea asi 
+				if( success_open < (nr_rmttap-nr_lcltap))
+					try_rmttap_open()	
+
+	En el receiver thread  cuando llega un paquete REQ_RT_OPEN 
+		se verifica que el LTAP no tiene dueño 
+			es decir if( rt_ptr->rt_rmt_ep == HARDWARE) o 
+					if( rt_ptr->rt_rmttap_fd < 0){
+		las otras operaciones WRITE y CLOSE verifican :
+			1) que el Local TAP este abierto
+			2) que el que pide la operacion sea el dueño 
+			
+	El receiver solo atendia mensajes provenientes de switches remotos sobre LTAPs 
+	Se implemento la atencion de mensajes provenientes de RTAP remotas destinados al switch local (unix sockets)
+	
+	El sender enviaba mensajes tanto desde el switch como de la LTAP.
+	El problema es que no se distinguia en el destinatario cual era el destino.
+	Ahora el envio del paquete se hace considerando:
+		REQ_RT_WRITE (origen local switch, destino una RTAP) 
+		REQ_SW_WRITE (origen una LTAP, destino un remote switch)	
+		
+=====================================================================================
+20201021:
+
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch#  nsenter -p -t$DC0 ./dvs_uml_switch switch1.cfg  > borrar.txt 
+ERROR: 10:dvk_sendrec_T:946: rcode=-61
+ERROR: 10:dvk_sendrec_T:955: rcode=-61
+ERROR: rmttap.c:rt_write_packet:156: rcode=-61
+ERROR: rmttap.c:send_thread:368: rcode=-61
+ERROR: 10:dvk_vcopy:145: rcode=-61
+ERROR: 10:dvk_vcopy:157: rcode=-61
+ERROR: rmttap.c:recv_thread:487: rcode=-61
+ERROR: 10:dvk_send_T:879: rcode=-22
+ERROR: 10:dvk_send_T:888: rcode=-22
+ERROR: rmttap.c:recv_thread:566: rcode=-22
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.962663] CPU: 2 PID: 872 Comm: dvs_uml_switch Tainted: G        W  O    4.9.88-DVK #158
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.964536] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.968349] task: eaf38100 task.stack: f69b4000
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.984528] Stack:
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.987339]  f61e4600 f69b5e8c f8aa1ded f8ad3364 00000368 f8ad04cc 00000778 00000001
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.989518]  00000000 da99ad02 00029b64 da99ad00 00000019 00000002 f69b5e64 da0ba4fe
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.991960]  eaf38100 00000040 00000368 01010000 f8ae2d00 00000001 00000000 f8ae2d40
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.994929] Call Trace:
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.997110]  [<f8aa1ded>] ? new_unbind+0xaca/0x1577 [dvk]
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4643.999278]  [<da0ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.001431]  [<f8a96148>] ? io_unbind+0x4e/0xce [dvk]
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.004308]  [<f8a951fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.006461]  [<f8a9516d>] ? dvk_write+0x49/0x49 [dvk]
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.008617]  [<da1e6624>] ? do_vfs_ioctl+0x94/0x730
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.010817]  [<da1d3159>] ? vfs_write+0x149/0x1c0
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.012936]  [<da1e6d20>] ? SyS_ioctl+0x60/0x70
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.015070]  [<da003708>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.017224]  [<da5bf682>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.019618] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 12 97 da 89 43 10 5b 5d
+
+Message from syslogd@node1 at Oct 21 12:30:54 ...
+ kernel:[ 4644.027504] EIP: [<da5bc512>] 
+
+
+	
+TODO:
+	No se prueba porque el kernel que en este momento esta en modo compilacion es el UML.
+
+
+=====================================================================================
+20201024:
+
+root@node1:~# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000 1000 27342 27342 27342 27342 TAPserver00    <<<<  MIS_BIT_NOMIGRATE
+ 0   1     1   752/5      1    4    0 27342    30 27342 27342 dvs_uml_switch <<<<   BIT_SENDING
+ 0   2     2    -1/-1     2 1000    0 27342 27342 27342 27342 TAPserver02    
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 TAPclient00    
+ 0  31    31   751/4      1    8 2000     0 27342 27342 27342 dvs_uml_switch  <<<<  MIS_BIT_ATOMIC <<<<< BIT_RECEIVING
+ 0  32    32    -1/-1     2 1000    0 27342 27342 27342 27342 TAPclient02 
+ 
+ 
+ ESTE QUE ES EL THREAD RECEIVER, MUERE EN EL SEGUNDO 347
+ Oct 24 12:23:31 node0 kernel: [  347.364546] DEBUG RCVR:dvk_ioctl:349: cmd=4004E30A arg=B63FF270
+Oct 24 12:23:31 node0 kernel: [  347.364549] DEBUG RCVR:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 24 12:23:31 node0 kernel: [  347.364550] DEBUG RCVR:io_unbind:109: 
+Oct 24 12:23:31 node0 kernel: [  347.364553] DEBUG RCVR:new_unbind:1873: dcid=0 proc_ep=0
+Oct 24 12:23:31 node0 kernel: [  347.364556] DEBUG RCVR:check_caller:605: caller_pid=RCVR caller_tgid=706
+Oct 24 12:23:31 node0 kernel: [  347.364558] DEBUG RCVR:check_caller:646: WLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364560] DEBUG RCVR:check_caller:651: nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=RCVR vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:23:31 node0 kernel: [  347.364562] DEBUG RCVR:check_caller:711: WUNLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364563] DEBUG RCVR:check_caller:714: dcid=0
+Oct 24 12:23:31 node0 kernel: [  347.364565] DEBUG RCVR:check_caller:718: RLOCK_DC dc=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364566] DEBUG RCVR:check_caller:722: RUNLOCK_DC dc=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364567] DEBUG RCVR:check_caller:728: caller_pid=RCVR 
+Oct 24 12:23:31 node0 kernel: [  347.364568] DEBUG RCVR:check_caller:731: RLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364570] DEBUG RCVR:check_caller:735: RUNLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364572] DEBUG RCVR:new_unbind:1889: RLOCK_DC dc=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364573] DEBUG RCVR:new_unbind:1901: RUNLOCK_DC dc=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364574] DEBUG RCVR:new_unbind:1903: RLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364576] DEBUG RCVR:new_unbind:1920: RUNLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364577] DEBUG RCVR:new_unbind:1923: RLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364579] DEBUG RCVR:new_unbind:1928: RUNLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364580] DEBUG RCVR:new_unbind:1930: WLOCK_TASK pid=706 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364581] DEBUG RCVR:new_unbind:1947: WLOCK_DC dc=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364583] DEBUG RCVR:new_unbind:1951: WLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364585] DEBUG RCVR:do_unbind:736: nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=RCVR vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:23:31 node0 kernel: [  347.364588] DEBUG RCVR:do_unbind:765: Caller nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=RCVR vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:23:31 node0 kernel: [  347.364589] DEBUG RCVR:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 24 12:23:31 node0 kernel: [  347.364590] DEBUG RCVR:do_unbind:865: delete notify messages bits sent by the proc
+Oct 24 12:23:31 node0 kernel: [  347.364595] DEBUG RCVR:do_unbind:872: Skip, caller process
+Oct 24 12:23:31 node0 kernel: [  347.364611] DEBUG RCVR:do_unbind:935: nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=RCVR vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:23:31 node0 kernel: [  347.364613] DEBUG RCVR:do_unbind:991: wakeup with error those processes waiting this process MIGRATION
+Oct 24 12:23:31 node0 kernel: [  347.364615] DEBUG RCVR:do_unbind:1041: wakeup those processes waiting this process UNBINDING
+Oct 24 12:23:31 node0 kernel: [  347.364617] DEBUG RCVR:do_unbind:1075: nr=0 endp=0 dcid=0 flags=0 misc=0 lpid=RCVR vpid=5 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:23:31 node0 kernel: [  347.364619] DEBUG RCVR:init_proc_desc:16: p_name=dvs_uml_switch dcid=0
+Oct 24 12:23:31 node0 kernel: [  347.364620] DEBUG RCVR:init_proc_desc:27: Clearing Privileges
+Oct 24 12:23:31 node0 kernel: [  347.364621] DEBUG RCVR:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 24 12:23:31 node0 kernel: [  347.364622] DEBUG RCVR:init_proc_desc:41: Clearing Process fields
+Oct 24 12:23:31 node0 kernel: [  347.364623] DEBUG RCVR:do_unbind:1077: initialized 
+Oct 24 12:23:31 node0 kernel: [  347.364624] DEBUG RCVR:do_unbind:1078: DC_DECREF counter=6
+Oct 24 12:23:31 node0 kernel: [  347.364626] DEBUG RCVR:new_unbind:1984: WUNLOCK_TASK pid=706 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364627] DEBUG RCVR:new_unbind:2012: WUNLOCK_PROC ep=0 count=0
+Oct 24 12:23:31 node0 kernel: [  347.364629] DEBUG RCVR:new_unbind:2015: WUNLOCK_DC dc=0 count=0
+
+ ESTE QUE ES EL THREAD SENDER, MUERE EN EL SEGUNDO 1977 PERO DESPUES DEL CTRL-C Y DA UN SEGFAULT !!!
+Oct 24 12:50:40 node0 kernel: [ 1977.186295] dvs_uml_switch[706]: segfault at 8 ip 004e0c9b sp bfcb6440 error 4 in dvs_uml_switch[4df000+e000]
+Oct 24 12:50:40 node0 kernel: [ 1977.186399] do_exit: local_nodeid:0
+Oct 24 12:50:40 node0 kernel: [ 1977.186866] DEBUG SNDR:new_exit_unbind:267: code=-982051370
+Oct 24 12:50:40 node0 kernel: [ 1977.187412] DEBUG SNDR:new_exit_unbind:271: WLOCK_TASK pid=706 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187414] DEBUG SNDR:new_exit_unbind:277: RLOCK_PROC ep=30 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187417] DEBUG SNDR:new_exit_unbind:278: nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=SNDR vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:50:40 node0 kernel: [ 1977.187418] DEBUG SNDR:new_exit_unbind:311:  Exiting endpoint=30 lpid=SNDR
+Oct 24 12:50:40 node0 kernel: [ 1977.187420] DEBUG SNDR:new_exit_unbind:313: RUNLOCK_PROC ep=30 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187422] DEBUG SNDR:new_exit_unbind:314: WLOCK_DC dc=0 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187423] DEBUG SNDR:new_exit_unbind:315: WLOCK_PROC ep=30 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187424] DEBUG SNDR:new_exit_unbind:322:  endpoint=30 lpid=SNDR
+Oct 24 12:50:40 node0 kernel: [ 1977.187427] DEBUG SNDR:do_unbind:736: nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=SNDR vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:50:40 node0 kernel: [ 1977.187429] DEBUG SNDR:do_unbind:765: Caller nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=SNDR vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:50:40 node0 kernel: [ 1977.187431] DEBUG SNDR:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 24 12:50:40 node0 kernel: [ 1977.187432] DEBUG SNDR:do_unbind:865: delete notify messages bits sent by the proc
+Oct 24 12:50:40 node0 kernel: [ 1977.187580] DEBUG SNDR:do_unbind:872: Skip, caller process
+Oct 24 12:50:40 node0 kernel: [ 1977.187651] DEBUG SNDR:do_unbind:935: nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=SNDR vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:50:40 node0 kernel: [ 1977.187653] DEBUG SNDR:do_unbind:991: wakeup with error those processes waiting this process MIGRATION
+Oct 24 12:50:40 node0 kernel: [ 1977.187655] DEBUG SNDR:do_unbind:1041: wakeup those processes waiting this process UNBINDING
+Oct 24 12:50:40 node0 kernel: [ 1977.187689] DEBUG SNDR:do_unbind:1075: nr=30 endp=30 dcid=0 flags=0 misc=0 lpid=SNDR vpid=4 nodeid=0 name=dvs_uml_switch 
+Oct 24 12:50:40 node0 kernel: [ 1977.187722] DEBUG SNDR:init_proc_desc:16: p_name=dvs_uml_switch dcid=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187723] DEBUG SNDR:init_proc_desc:27: Clearing Privileges
+Oct 24 12:50:40 node0 kernel: [ 1977.187724] DEBUG SNDR:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 24 12:50:40 node0 kernel: [ 1977.187725] DEBUG SNDR:init_proc_desc:41: Clearing Process fields
+Oct 24 12:50:40 node0 kernel: [ 1977.187726] DEBUG SNDR:do_unbind:1077: initialized 
+Oct 24 12:50:40 node0 kernel: [ 1977.187727] DEBUG SNDR:do_unbind:1078: DC_DECREF counter=5
+Oct 24 12:50:40 node0 kernel: [ 1977.187729] DEBUG SNDR:new_exit_unbind:384: WUNLOCK_PROC ep=30 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187730] DEBUG SNDR:new_exit_unbind:385: WUNLOCK_TASK pid=706 count=0
+Oct 24 12:50:40 node0 kernel: [ 1977.187732] DEBUG SNDR:new_exit_unbind:386: WUNLOCK_DC dc=0 count=0
+
+ESTO ES LO ULTIMO QUE LOGGEA EL RECEIVER 
+ rmttap.c:recv_thread:565:SEND REPLY: source=31 type=8194 m3i1=-61 m3i2=90 m3p1=0x4c1460 m3ca1=[tap1]
+DEBUG 2:dvk_send_T:864: endpoint=31 timeout=30000
+ port.c:handle_tap_data:138:fd=6 hub=0
+ port.c:handle_data:112:fd=6 
+ port.c:match_tap:128:port_fd=8 data_fd=6
+ port.c:match_tap:128:port_fd=6 data_fd=6
+ port.c:update_src:48:control=6 
+ port.c:send_dst:80:control=6 
+ port.c:send_sock:179:mine->fd=5 
+DEBUG 2:dvk_send_T:877: ioctl ret=-1 errno=61
+DEBUG 2:dvk_send_T:886: ioctl ret=-61
+ERROR: rmttap.c:recv_thread:568: rcode=-61
+
+-----------------------------------------------------------------------------------------------
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch0.cfg  > borrar.txt 
+ERROR: 2:dvk_sendrec_T:946: rcode=-61
+ERROR: 2:dvk_sendrec_T:955: rcode=-61
+ERROR: rmttap.c:rt_open_rmttap:191: rcode=-61
+ERROR: rmttap.c:try_rmttap_open:256: rcode=-61
+ERROR: rmttap.c:rt_write_packet:143: rcode=-9
+ERROR: rmttap.c:send_thread:368: rcode=-9
+ERROR: rmttap.c:rt_write_packet:160: rcode=-61
+ERROR: rmttap.c:send_thread:368: rcode=-61
+ERROR: 2:dvk_vcopy:145: rcode=-324
+ERROR: 2:dvk_vcopy:157: rcode=-324
+ERROR: rmttap.c:recv_thread:487: rcode=-324 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ERROR: 2:dvk_send_T:879: rcode=-61
+ERROR: 2:dvk_send_T:888: rcode=-61
+ERROR: rmttap.c:recv_thread:568: rcode=-61
+ERROR: 2:dvk_receive_T:912: rcode=-61
+ERROR: 2:dvk_receive_T:922: rcode=-61
+
+
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch#  nsenter -p -t$DC0 ./dvs_uml_switch switch1.cfg  > borrar.txt 
+ERROR: 2:dvk_vcopy:145: rcode=-61
+ERROR: 2:dvk_vcopy:157: rcode=-61
+ERROR: rmttap.c:recv_thread:487: rcode=-61
+ERROR: 2:dvk_sendrec_T:946: rcode=-61
+ERROR: 2:dvk_sendrec_T:955: rcode=-61
+ERROR: rmttap.c:rt_write_packet:156: rcode=-61
+ERROR: rmttap.c:send_thread:368: rcode=-61
+ERROR: 2:dvk_receive_T:912: rcode=-61
+ERROR: 2:dvk_receive_T:922: rcode=-61
+ERROR: rmttap.c:recv_thread:421: rcode=-61
+ERROR: 2:dvk_receive_T:912: rcode=-61
+ERROR: 2:dvk_receive_T:922: rcode=-61
+ERROR: rmttap.c:recv_thread:421: rcode=-61
+
+EN NODE0 
+ rmttap.c:recv_thread:424:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=70 m3p1=0x50b460 m3ca1=[tap1]
+ rmttap.c:recv_thread:460:RECEIVED REQ_RT_WRITE REQUEST
+ rmttap.c:recv_thread:472:REQ_RT_WRITE: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+DEBUG 2:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=70
+DEBUG 2:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:953: ioctl ret=0
+ rmttap.c:rt_write_packet:158:WRITE REPLY: source=1 type=8194 m3i1=-61 m3i2=98 m3p1=0x42e460 m3ca1=[tap1]
+ERROR: rmttap.c:rt_write_packet:160: rcode=-61
+ rmttap.c:try_rmttap_open:245:nr_rmttap=2
+ rmttap.c:try_rmttap_open:251:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=1 rt_rmttap_fd=10 rt_name=RTAP1
+ERROR: rmttap.c:send_thread:368: rcode=-61
+DEBUG 2:dvk_vcopy:142: ioctl ret=-1 errno=324
+DEBUG 2:dvk_vcopy:154: ioctl ret=-324 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<EDVSPROCSTS
+ERROR: rmttap.c:recv_thread:487: rcode=-324
+ rmttap.c:recv_thread:565:SEND REPLY: source=31 type=8194 m3i1=-324 m3i2=70 m3p1=0x50b460 m3ca1=[tap1]
+DEBUG 2:dvk_send_T:864: endpoint=31 timeout=30000
+
+
+
+=====================================================================================
+20201025: Despues de modificaciones en el DVK en unbind y copy_rmt2lcl 
+
+EN NODE0: Se recibe una peticion para hacer un WRITE en la interface local LTAP1=tap1 
+	DEBUG 6:dvk_receive_T:897: endpoint=31438 timeout=30000
+	DEBUG 6:dvk_receive_T:910: ioctl ret=0 errno=0
+	DEBUG 6:dvk_receive_T:920: ioctl ret=0
+	 9:rmttap.c:recv_thread:424:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=94 m3p1=0x44b460 m3ca1=[tap1]
+	 9:rmttap.c:recv_thread:460:RECEIVED REQ_RT_WRITE REQUEST
+	 9:rmttap.c:recv_thread:472:REQ_RT_WRITE: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+	DEBUG 6:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=94
+	DEBUG 6:dvk_vcopy:142: ioctl ret=0 errno=0
+	DEBUG 6:dvk_vcopy:154: ioctl ret=0
+	 9:rmttap.c:recv_thread:491:REQ_RT_WRITE: magic=-1 version=-1442643969 type=-1310864197
+	 9:tuntap.c:send_tap:8:fd=10 
+	 9:rmttap.c:recv_thread:565:SEND REPLY: source=31 type=8194 m3i1=0 m3i2=94 m3p1=0x44b460 m3ca1=[tap1]
+	DEBUG 6:dvk_send_T:864: endpoint=31 timeout=30000
+
+tcpdump -e -n -i tap1 
+Capturo el siguiente paquete:   puerto 4803 es un protocolo de discovery.
+12:33:12.022822 MAC_BR0_NOD0 > ETHERBCAST, ethertype IPv4 (0x0800), length 98: IP_ETH0_NODE0.55747 > IP_BROADCAST.4803: UDP, length 56
+
+
+BIEN!!!!! 
+EN NODE1 LLEGAN PAQUETES DEL BRIDGE DE NODE0 A TAP1 
+lqqqqqq PktsIn qqqqqqqq IP In qqqq BytesIn qqqqqq InRate qqq PktsOut qqqqqqq IP Out qqqq BytesOut qqq OutRate qqqqqk
+x Ethernet HW addr: MAC_BR0_NOD0 on tap1   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< BRIDGE NODE0                        x
+x m        0              0             0           0.0            1             1             84         0.0      x
+x Ethernet HW addr: ETHERBCAST on tap1                                                                      x
+x m        1              1            84           0.0            0             0              0         0.0      x
+x Ethernet HW addr: MAC_TAP1_NODE1 on tap1                                                                      x
+x m        0              0             0           0.0            2             2            112         0.0      x
+x Ethernet HW addr: 02:aa:bb:cc:dd:00 on tap1    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TAP0 NODE0                                                                  x
+x m        0              0             0           0.0            1             1             56         0.0      x
+
+root@node0:/tmp# ifconfig br0
+br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet IP_BR0_NODE0  netmask 255.255.255.0  broadcast IP_BROADCAST
+        inet6 fe80::4428:fbff:fe3f:eb6b  prefixlen 64  scopeid 0x20<link>
+        ether MAC_BR0_NOD0  txqueuelen 1000  (Ethernet) <<<<<<<<<<<<<<<<<<<<< BRIDGE NODE0 
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 13  bytes 1251 (1.2 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@node0:/tmp# ifconfig tap0
+tap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.200  netmask 255.255.255.0  broadcast IP_BROADCAST
+        inet6 fe80::aa:bbff:fecc:dd00  prefixlen 64  scopeid 0x20<link>
+        ether 02:aa:bb:cc:dd:00  txqueuelen 1000  (Ethernet) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TAP0 NODE0
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 33  bytes 2935 (2.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+EN NODE0 LLEGAN PAQUETES DE TAP0 NODE1  
+lqqqqq PktsIn qqqqqq IP In qqqq BytesIn qqqq InRate qq PktsOut qqqqq IP Out qqq BytesOut qq OutRate qqqk
+x Ethernet HW addr: 02:aa:bb:cc:dd:11 on tap1      <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TAP0 NODE1                                                    x
+x m        0            0            0         0.0           1            1           56       0.0     x
+
+tap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.201  netmask 255.255.255.0  broadcast IP_BROADCAST
+        inet6 fe80::aa:bbff:fecc:dd11  prefixlen 64  scopeid 0x20<link>
+        ether 02:aa:bb:cc:dd:11  txqueuelen 1000  (Ethernet) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TAP0 NODE1 
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 18  bytes 1465 (1.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+---------------------------------------------------------------------------------------
+PRUEBA CON UML EN NODO0
+
+La IP de UML  es 
+root@uml0:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet IP_UML_NODE0  netmask 255.255.255.0  broadcast 192.168.2.255
+        ether MAC_UML_NOD0  txqueuelen 1000  (Ethernet)
+
+
+EN NODO0 TAP0 DONDE ESTA CONECTADO EL UML NO SE VE QUE NINGUN PAQUETE VENGA DE LA INTERFACE TAP1 DE NODE1 
+13:31:32.134255 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype IPv4 (0x0800), length 81: 192.168.1.101.52723 > 80.243.191.66.53: 10687+ A? 2.debian.pool.ntp.org. (39)
+13:31:37.140039 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype IPv4 (0x0800), length 81: 192.168.1.101.35432 > 8.8.8.8.53: 10687+ A? 2.debian.pool.ntp.org. (39)
+13:31:42.145650 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype IPv4 (0x0800), length 81: 192.168.1.101.52723 > 80.243.191.66.53: 10687+ A? 2.debian.pool.ntp.org. (39)
+13:31:42.184685 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.20 tell 192.168.1.101, length 28
+13:31:42.184701 02:aa:bb:cc:dd:b0 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.20 is-at 02:aa:bb:cc:dd:b0, length 28
+13:31:42.953796 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:44.025763 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:45.065722 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:46.117002 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:47.146504 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:47.146556 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype IPv4 (0x0800), length 81: 192.168.1.101.35432 > 8.8.8.8.53: 10687+ A? 2.debian.pool.ntp.org. (39)
+13:31:48.185602 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:49.228380 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:50.265425 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:51.305380 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:52.153713 3e:67:e2:e3:73:c0 > 02:aa:bb:cc:dd:b0, ethertype IPv4 (0x0800), length 81: 192.168.1.101.59182 > 80.243.191.66.53: 58861+ A? 3.debian.pool.ntp.org. (39)
+
+
+EN NODO1 TAP1 QUE ES LA INTERFACE DEL SWITCH0 DE NODO0 SE VE PERFECTAMENTE COMO LLEGAN LOS PAQUETES ARP-REQUEST 
+Y SE REPONDEN CON ARP-REPLY 
+13:31:42.990318 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:42.990338 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:44.050258 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:44.050277 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:45.094211 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:45.094229 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:46.142640 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:46.142667 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:47.174377 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:47.174397 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:48.205945 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:48.205977 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:49.258268 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:49.258289 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+13:31:50.286152 3e:67:e2:e3:73:c0 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.211 tell 192.168.1.101, length 28
+13:31:50.286173 02:aa:bb:cc:dd:10 > 3e:67:e2:e3:73:c0, ethertype ARP (0x0806), length 42: Reply 192.168.1.211 is-at 02:aa:bb:cc:dd:10, length 28
+
+
+TANTO EN NODE0 COMO EN NODE1, SOLO ENVIAN PAQUETES AL SWITCH REMOTO CUANDO SON PAQUETES HACIA SUS RTAP 
+wtype=2 = REQ_RT_WRITE
+PARA ENVIAR DESDE EL TAP LOCAL EXPORTADO HACIA EL SWITCH REMOTO DEBERIA SERVER
+wtype=4 = REQ_SW_WRITE
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# grep "rt_send_write_packet:140" borrar.txt | more
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# grep "rt_send_write_packet:140" borrar.txt 
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+ 4:rmttap.c:rt_send_write_packet:140:rt_ptr->rt_name=RTAP1 wtype=2 len=78
+
+Esto quiere decir que El TAP LOCAL EXPORTADO NO ESTA ACTIVANDO al poll() del send_thread()
+
+1- verificar que se hace el open 
+2- verificar que se incluye bien en los FD a controlar 
+
+SE ESTA RECIBIENDO EL REQ_RT_OPEN Y SE RESPONDE CORRECTAMENTE EN NODE1 
+	DEBUG 2:dvk_receive_T:910: ioctl ret=0 errno=0
+	DEBUG 2:dvk_receive_T:920: ioctl ret=0
+	 5:rmttap.c:recv_thread:424:RECEIVED REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+	 5:rmttap.c:recv_thread:427:RECEIVED REQ_RT_OPEN REQUEST
+	 5:rmttap.c:open_lcltap:31:dev=tap1
+	 5:rmttap.c:add_rt_fd:382:LTAP fd=10
+	 5:rmttap.c:recv_thread:455:REQ_RT_OPEN: rt_index=1 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=30 rt_rmttap_fd=10 rt_name=LTAP1
+	 5:rmttap.c:recv_thread:564:SEND REPLY: source=30 type=8193 m3i1=10 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+	DEBUG 2:dvk_send_T:864: endpoint=30 timeout=30000
+	DEBUG 2:dvk_send_T:877: ioctl ret=0 errno=0
+	DEBUG 2:dvk_send_T:886: ioctl ret=0
+
+EN NODE0 
+ 4:rmttap.c:rt_open_rmttap:182:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+ 4:rmttap.c:rt_open_rmttap:187:rt_ptr->rt_nodeid=1
+ 4:rmttap.c:rt_open_rmttap:188:SEND REQ_RT_OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+DEBUG 2:dvk_sendrec_T:931: endpoint=1 timeout=30000
+DEBUG 2:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 2:dvk_sendrec_T:953: ioctl ret=0
+ 4:rmttap.c:rt_open_rmttap:193:RCVD REQ_RT_OPEN REPLY: source=1 type=8193 m3i1=10 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ 4:rmttap.c:rt_open_rmttap:200:Remote TAP tap1 successfully opened on endpoint 1 with remote fd 10
+ERROR: rmttap.c:send_thread:368: rcode=-9
+
+----------------------------------------------------------------------------
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# nsenter -p -t$DC0 ./dvs_uml_switch switch0.cfg  > borrar0.txt 
+ERROR: 380:dvk_sendrec_T:946: rcode=-61
+ERROR: 380:dvk_sendrec_T:955: rcode=-61
+ERROR: rmttap.c:rt_open_rmttap:198: rcode=-61
+ERROR: rmttap.c:try_rmttap_open:263: rcode=-61
+ERROR: rmttap.c:rt_send_write_packet:145: rcode=-9
+ERROR: rmttap.c:send_thread:377: rcode=-9
+ERROR: rmttap.c:rt_send_write_packet:167: rcode=-19
+ERROR: rmttap.c:send_thread:377: rcode=-19
+ERROR: rmttap.c:rt_send_write_packet:167: rcode=-19
+ERROR: rmttap.c:send_thread:377: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: 380:dvk_receive_T:912: rcode=-61
+ERROR: 380:dvk_receive_T:922: rcode=-61
+ERROR: rmttap.c:recv_thread:432: rcode=-61
+ERROR: 380:dvk_receive_T:912: rcode=-61
+ERROR: 380:dvk_receive_T:922: rcode=-61
+ERROR: rmttap.c:recv_thread:432: rcode=-61
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: 380:dvk_receive_T:912: rcode=-61
+ERROR: 380:dvk_receive_T:922: rcode=-61
+ERROR: rmttap.c:recv_thread:432: rcode=-61
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+
+EN NODE1 
+ 8:rmttap.c:send_thread:334:LTAP1 rt_poll_idx=1
+ 8:rmttap.c:rt_send_write_packet:142:rt_ptr->rt_name=LTAP1 wtype=4 len=90
+ 8:rmttap.c:rt_send_write_packet:154:rt_index=1 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=30 rt_rmttap_fd=10 rt_name=LTAP1
+ 8:rmttap.c:rt_send_write_packet:160:SEND WRITE PACKET REQUEST: svr_ep=0 source=0 type=4 m3i1=10 m3i2=90 m3p1=0x4ae460 m3ca1=[tap1]
+DEBUG 6:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 6:dvk_sendrec_T:944: ioctl ret=0 errno=0
+DEBUG 6:dvk_sendrec_T:953: ioctl ret=0
+ 8:rmttap.c:rt_send_write_packet:165:RECEIVED WRITE PACKET REPLY: source=0 type=8196 m3i1=-19 m3i2=90 m3p1=0x4ae460 m3ca1=[tap1]
+ERROR: rmttap.c:rt_send_write_packet:167: rcode=-19
+ERROR: rmttap.c:send_thread:377: rcode=-19
+
+EN NODE0 
+ 383:rmttap.c:recv_thread:435:RECEIVED REQUEST: source=31 type=4 m3i1=10 m3i2=90 m3p1=0x4ae460 m3ca1=[tap1]
+ 383:rmttap.c:recv_thread:531:RECEIVED REQ_SW_WRITE REQUEST
+ERROR: rmttap.c:recv_thread:549: rcode=-19
+ 383:rmttap.c:recv_thread:575:SEND REPLY: source=31 type=8196 m3i1=-19 m3i2=90 m3p1=0x4ae460 m3ca1=[tap1]
+
+PROBLEMA:  EN LTAP1  
+rt_index=1 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=30 rt_rmttap_fd=10 rt_name=LTAP1
+Se tiene el rt_rmttap_fd=10 que es el del TAP del NODE1 (por eso da el error)
+SOLUCION: 
+		Cuando el NODE0 hace el REQ_RT_OPEN se deberia acompañar del FD del switch asociado y pasarlo en el mensaje
+			En NODE1 ese FD deberia guardarse en rt_data_fd
+
+El rt_rmt_ep=30 fue el que hizo el REQ_RT_OPEN pero no es el server al que hay que enviarle 
+Si bien se puede calcular 			
+
+ESTO SE VE EN NODE0
+ 382:rmttap.c:rt_send_write_packet:154:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=1 rt_rmttap_fd=10 rt_name=RTAP1
+
+ENTONCES:
+	EN EL REQ_RT_OPEN se deben pasar los siguientes datos 
+			rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_rmt_ep=1
+	SE LE RETORNA 		
+			rt_rmttap_fd=10
+	
+
+---------------------------------------------------------------------------------------------
+OPEN 
+	EN NODE1 
+	20:rmttap.c:rt_open_rmttap:182:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=8 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+	 20:rmttap.c:rt_open_rmttap:197:SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=8 m3i2=7 m3p1=(nil) m3ca1=[tap1]
+	DEBUG 18:dvk_sendrec_T:931: endpoint=0 timeout=30000
+	 20:rmttap.c:rt_open_rmttap:202:RCVD REQ_RT_OPEN REPLY: source=0 type=10 m3i1=8 m3i2=7 m3p1=(nil) m3ca1=[tap1]
+	 20:rmttap.c:rt_open_rmttap:209:Remote TAP tap1 successfully opened on endpoint 0 with remote fd 10
+	 20:rmttap.c:try_rmttap_open:269:success_open=1
+	 
+	 EN NODE0
+	  934:rmttap.c:recv_thread:437:RECEIVED REQUEST: source=31 type=1 m3i1=8 m3i2=7 m3p1=(nil) m3ca1=[tap1]
+	 934:rmttap.c:recv_thread:440:RECEIVED REQ_RT_OPEN REQUEST
+	 934:rmttap.c:open_lcltap:31:dev=tap1
+	 934:rmttap.c:open_lcltap:47:dev=tap1 fd=10
+	 934:rmttap.c:add_rt_fd:393:LTAP fd=10
+	 934:rmttap.c:add_rt_fd:399:LTAP rt_nfds=2
+	 934:rmttap.c:recv_thread:470:REQ_RT_OPEN: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=8 rt_poll_idx=1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+	 934:rmttap.c:recv_thread:578:SEND REPLY: source=31 type=10 m3i1=8 m3i2=7 m3p1=(nil) m3ca1=[tap1]
+ 
+ WRITE 
+	EN NODE1 
+	 20:rmttap.c:rt_send_write_packet:142:rt_ptr->rt_name=RTAP1 wtype=2 len=90
+	 20:rmttap.c:rt_send_write_packet:153:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=8 rt_poll_idx=0 rt_rmt_ep=0 rt_rmttap_fd=10 rt_name=RTAP1
+	 20:rmttap.c:rt_send_write_packet:161:SEND WRITE PACKET REQUEST: svr_ep=0 source=0 type=2 m3i1=10 m3i2=90 m3p1=0x4a9460 m3ca1=[tap1]
+	DEBUG 18:dvk_sendrec_T:931: endpoint=0 timeout=30000
+	DEBUG 18:dvk_sendrec_T:944: ioctl ret=0 errno=0
+	DEBUG 18:dvk_sendrec_T:953: ioctl ret=0
+	 20:rmttap.c:rt_send_write_packet:166:RECEIVED WRITE PACKET REPLY: source=0 type=0 m3i1=10 m3i2=90 m3p1=0x4a9460 m3ca1=[tap1]
+
+	EN NODE1 
+	 934:rmttap.c:recv_thread:437:RECEIVED REQUEST: source=31 type=2 m3i1=10 m3i2=90 m3p1=0x4a9460 m3ca1=[tap1]
+	 934:rmttap.c:recv_thread:475:RECEIVED REQ_RT_WRITE REQUEST
+	 934:rmttap.c:recv_thread:487:REQ_RT_WRITE: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=8 rt_poll_idx=1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+	DEBUG 931:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=90
+	DEBUG 931:dvk_vcopy:142: ioctl ret=0 errno=0
+	DEBUG 931:dvk_vcopy:154: ioctl ret=0
+	 934:tuntap.c:send_tap:8:fd=10 len=90 
+	 934:rmttap.c:recv_thread:578:SEND REPLY: source=31 type=0 m3i1=10 m3i2=90 m3p1=0x4a9460 m3ca1=[tap1]
+
+USAR EL PARAMETRO rt_index en lugar de los FD.
+
+----------------------------------------------------------------------------------------------------
+OPEN		
+	NODE0
+	 1305:rmttap.c:recv_thread:435:RECEIVED REQUEST: source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+	 1305:rmttap.c:recv_thread:438:RECEIVED REQ_RT_OPEN REQUEST
+	 1305:rmttap.c:open_lcltap:31:dev=tap1
+	 1305:rmttap.c:open_lcltap:47:dev=tap1 fd=10
+	 1305:rmttap.c:add_rt_fd:391:LTAP fd=10
+	 1305:rmttap.c:add_rt_fd:397:LTAP rt_nfds=2
+	 1305:rmttap.c:recv_thread:467:REQ_RT_OPEN: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=0 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+	 1305:rmttap.c:recv_thread:569:SEND REPLY: source=31 type=10 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+
+	NODE1  
+	 24:rmttap.c:rt_open_rmttap:195:SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+	DEBUG 22:dvk_sendrec_T:931: endpoint=0 timeout=30000
+	 23:rmttap.c:init_rt_sockets:739:MTX_UNLOCK sw_mutex 
+	 25:rmttap.c:recv_thread:416:RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=25
+	DEBUG 22:dvk_bind_X:1221: cmd=0 dcid=0 pid=25 endpoint=1 nodeid=-1
+	DEBUG 22:dvk_bind_X:1236: ioctl ret=1 errno=0
+	DEBUG 22:dvk_bind_X:1251: ioctl ret=1
+	DEBUG 22:dvk_bind_X:1254: ret=1
+	DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+	DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+	DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+	 25:rmttap.c:recv_thread:425:nr=1 endp=1 dcid=0 flags=0 misc=0 lpid=1289 vpid=25 nodeid=1 name=dvs_uml_switch 
+	DEBUG 22:dvk_receive_T:897: endpoint=31438 timeout=30000
+	DEBUG 22:dvk_sendrec_T:944: ioctl ret=0 errno=0
+	DEBUG 22:dvk_sendrec_T:953: ioctl ret=0
+	 24:rmttap.c:rt_open_rmttap:200:RCVD REQ_RT_OPEN REPLY: source=0 type=10 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+	 24:rmttap.c:rt_open_rmttap:207:Remote TAP tap1 successfully opened on endpoint 0 with remote fd 10
+	 
+------------------------------------------------------------------------------------------
+EN NODE0
+
+  5:rmttap.c:recv_thread:434:RECEIVED REQUEST: source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ 5:rmttap.c:recv_thread:437:RECEIVED REQ_RT_OPEN REQUEST
+ 5:rmttap.c:open_lcltap:31:dev=tap1
+ 5:rmttap.c:open_lcltap:47:dev=tap1 fd=10
+ 5:rmttap.c:add_rt_fd:390:LTAP fd=10
+ 5:rmttap.c:add_rt_fd:396:LTAP rt_nfds=2
+ 5:rmttap.c:recv_thread:466:REQ_RT_OPEN: rt_index=1 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=0 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=31 rt_rmttap_fd=10 rt_name=LTAP1
+ 5:rmttap.c:recv_thread:565:SEND REPLY: source=31 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ 
+=====================================================================================
+20201026:
+	
+EN NODE1 : Se recibe la peticion de OPEN, se responde, pero no llega al NODE0
+
+root@node0:~# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     6      -1        0        0 -------------------------------X node0  6 = 4 + 2=  PX_BIT_RCONNECTED | PX_BIT_SCONNECTED        
+ 1     6       1       33        0 -------------------------------X node1  6 = 4 + 2=  PX_BIT_RCONNECTED | PX_BIT_SCONNECTED         
+ 2     2       2        0        0 -------------------------------X node2 
+ 
+	root@node1:~# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     A       0        0       32 -------------------------------X node0  A = 8 + 2 ?? =  PX_BIT_SCONNECTED        
+ 1     6      -1        0        0 -------------------------------X node1           
+ 2     2       2        0        0 -------------------------------X node2  
+
+root@node0:~# netstat -nat | grep 300
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:59996     192.168.0.101:3000      ESTABLISHED
+
+root@node1:~# netstat -nat | grep 300
+tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.101:3000      192.168.0.100:59996     ESTABLISHED
+tcp        0      1 192.168.0.101:44918     192.168.0.102:3001      SYN_SENT 
+
+--------------------------------------------------------------------------------
+EN NODE0 
+
+
+ 606:rmttap.c:connect_to_switch:57:rt_name=RTAP1
+ 606:rmttap.c:connect_to_switch:69:CTRL sun_path=/tmp/uml.ctl 
+ 605:dvs_uml_switch.c:accept_connection:170:fd=4
+ 605:dvs_uml_switch.c:add_fd:43:fd=8
+ 606:rmttap.c:connect_to_switch:89:DATA sun_path=/tmp/uml0000.data 
+ 606:rmttap.c:connect_to_switch:104:write to switch RTAP1 rt_ctrl_fd=7 rt_data_fd=9
+ 605:port.c:handle_port:254:fd=8
+ 605:dvs_uml_switch.c:new_port:137:fd=8 data_fd=5			<<<<<<<<<<<<<<<<<<<<<<
+ 605:dvs_uml_switch.c:new_port_v1_v3:108:fd=8 type=0 data_fd=5
+ 605:port.c:setup_sock_port:226:ctrl_fd=8 data_fd=5          <<<<<<<<<<<<<<<<<<<<<< 
+ 605:port.c:setup_port:153:ctrl_fd=8 
+New connection
+ 606:rmttap.c:connect_to_switch:114:read from switch RTAP1 rt_ctrl_fd=7 rt_data_fd=9
+ 606:rmttap.c:connect_to_switch:124:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+
+LADO SWITCH 
+ 613:dvs_uml_switch.c:new_port:137:fd=8 data_fd=5
+ 613:dvs_uml_switch.c:new_port:137:fd=10 data_fd=5
+
+ 614:rmttap.c:connect_to_switch:104:write to switch RTAP1  rt_ctrl_fd=7 rt_data_fd=9
+ 613:port.c:handle_port:254:fd=8
+ 
+ UML SWITCH
+  613:dvs_uml_switch.c:accept_connection:170:fd=4
+ 613:dvs_uml_switch.c:add_fd:43:fd=10
+ 613:port.c:handle_port:254:fd=10
+ 613:dvs_uml_switch.c:new_port:137:fd=10 data_fd=5    PORT EN SWITCH 
+ 613:dvs_uml_switch.c:new_port_v1_v3:108:fd=10 type=0 data_fd=5
+ 613:port.c:setup_sock_port:226:ctrl_fd=10 data_fd=5
+ 613:port.c:setup_port:153:ctrl_fd=10 
+New connection
+ 613:port.c:handle_tap_data:138:fd=6 hub=0   TAP en fd6 
+ 
+ UML SWITCH
+  945:port.c:handle_sock_data:209:fd=5 hub=0
+ 945:port.c:handle_data:112:fd=5 hub=0 len=42
+ 945:port.c:match_sock:196:port_fd=10 data_fd=5
+ 945:port.c:update_src:48:control=10 
+ 945:port.c:send_dst:80:control=10 len=42 hub=0 
+ 945:port.c:send_sock:179:fd=8 data_fd=5 len=42 
+ 945:tuntap.c:send_tap:8:fd=6 len=42 
+ 
+ =====================================================================================
+ 20201027:
+		EN NODE1 SE EJECUTO UML (TOQUETEADO CON DEBUG) CONECTADO AL DVS_UML_SWITCH 
+		
+ EN UML 
+root@node1:~# grep daemon_user_write uml.log 
+Oct 27 12:38:47 node1 kernel: daemon_user.c:daemon_open: fd=16
+Oct 27 12:38:55 node1 kernel: daemon_user.c:daemon_user_write: fd=16 len=42
+Oct 27 12:38:56 node1 kernel: daemon_user.c:daemon_user_write: fd=16 len=42
+Oct 27 12:38:57 node1 kernel: daemon_user.c:daemon_user_write: fd=16 len=42
+Oct 27 12:39:00 node1 kernel: daemon_user.c:daemon_user_write: fd=16 len=42
+Oct 27 12:39:00 node1 kernel: daemon_user.c:daemon_user_write: fd=16 len=4
+ 
+EN SWITCH NODE1 
+ 2:dvs_uml_switch.c:main:440:sw_ptr->sw_conn_fd=4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CONNECTION FD 
+ 2:dvs_uml_switch.c:main:456:sw_ptr->sw_data_fd=5 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DATA FD
+ 2:dvs_uml_switch.c:bind_sockets:327:ctl_fd=4 ctl_name=/tmp/uml.ctl data_fd=5
+ 2:dvs_uml_switch.c:bind_socket:216:fd=4 name=/tmp/uml.ctl
+ 2:dvs_uml_switch.c:bind_socket:220:sun_path=/tmp/uml.ctl 
+ 2:dvs_uml_switch.c:bind_data_socket:308:fd=5 
+ 2:dvs_uml_switch.c:bind_data_socket:316:sun_path= 
+./dvs_uml_switch attached to unix socket '/tmp/uml.ctl' 2:dvs_uml_switch.c:add_fd:43:fd=0
+ 2:dvs_uml_switch.c:add_fd:43:fd=4
+ 2:dvs_uml_switch.c:add_fd:43:fd=5
+ 
+  2:dvs_uml_switch.c:main:487:sw_ptr->sw_tap=tap0
+ 2:tuntap.c:open_tap:21:dev=tap0
+ 2:port.c:setup_port:153:ctrl_fd=6  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< TAP0 FD LADO SWITCH
+New connection
+ 2:tuntap.c:open_tap:39:dev=tap0 fd=6
+ 2:dvs_uml_switch.c:main:490:SWITCH TAP tap0 sw_tap_fd=6
+ 2:dvs_uml_switch.c:add_fd:43:fd=6
+ 
+3:rmttap.c:connect_to_switch:58:rt_name=RTAP1
+ 3:rmttap.c:connect_to_switch:70:CTRL sun_path=/tmp/uml.ctl 
+ 3:rmttap.c:connect_to_switch:90:DATA sun_path=/tmp/uml0000.data 
+ 3:rmttap.c:connect_to_switch:105:write to switch RTAP1  rt_ctrl_fd=7 rt_data_fd=-1
+ 2:dvs_uml_switch.c:accept_connection:171:fd=4
+ 2:dvs_uml_switch.c:add_fd:43:fd=9
+ 3:rmttap.c:connect_to_switch:115:read from switch RTAP1 rt_ctrl_fd=7 rt_data_fd=-1 RTAP FD LADO RTAP  
+ 2:port.c:handle_port:254:fd=9
+ 2:dvs_uml_switch.c:new_port:138:ctrl_fd=9 data_fd=5
+ 2:dvs_uml_switch.c:new_port_v1_v3:108:ctrl_fd=9 type=0 data_fd=5
+ 2:port.c:setup_sock_port:226:ctrl_fd=9 data_fd=5 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< RTAP FD LADO SWITCH  
+ 2:port.c:setup_port:153:ctrl_fd=9  
+New connection
+ 2:port.c:handle_tap_data:138:fd=6 hub=0
+ 2:port.c:handle_data:112:fd=6 hub=0 len=90
+ 3:rmttap.c:connect_to_switch:125:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ 4:rmttap.c:rt_open_rmttap:184:rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=8 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+ 2:port.c:handle_sock_data:209:fd=5 hub=0
+ 2:port.c:handle_data:112:fd=5 hub=0 len=42
+ 2:port.c:match_sock:196:port_fd=10 data_fd=5 <<<<<<<<<<<<<<<<<<<<<<<<<<< UML 
+ 2:port.c:update_src:48:control=10 
+ Addr: 26:f1:a4:1c:b7:4e New port 10
+ 2:port.c:send_dst:80:control=10 len=42 hub=0 
+ 2:port.c:send_sock:179:fd=9 data_fd=5 len=42 
+  
+ 2:port.c:match_tap:128:port_fd=10 data_fd=6
+ 2:port.c:match_tap:128:port_fd=9 data_fd=6
+ 2:port.c:match_tap:128:port_fd=6 data_fd=6
+ 2:port.c:update_src:48:control=6 
+ 
+ 2:port.c:handle_sock_data:209:fd=5 hub=0
+ 2:port.c:handle_data:112:fd=5 hub=0 len=42
+ 2:port.c:match_sock:196:port_fd=10 data_fd=5
+ 2:port.c:update_src:48:control=10 
+ 2:port.c:send_dst:80:control=10 len=42 hub=0 
+ 2:port.c:send_sock:179:fd=9 data_fd=5 len=42 
+ 
+  2:port.c:handle_tap_data:138:fd=6 hub=0
+ 2:port.c:handle_data:112:fd=6 hub=0 len=90
+ 2:port.c:match_tap:128:port_fd=9 data_fd=6
+ 2:port.c:match_tap:128:port_fd=6 data_fd=6
+ 2:port.c:update_src:48:control=6 
+ 2:port.c:send_dst:80:control=6 len=90 hub=0 
+ 2:port.c:send_sock:179:fd=9 data_fd=5 len=90 
+ 
+ 
+----------------------------------------------------------------------------------
+EN NODE1 
+
+ 803:dvs_uml_switch.c:main:440:sw_ptr->sw_conn_fd=4
+ 803:dvs_uml_switch.c:main:456:sw_ptr->sw_data_fd=5
+
+ 806:port.c:send_sock:179:fd=8 data_fd=8 len=90 
+ 806:rmttap.c:recv_thread:568:SEND REPLY: source=30 type=0 m3i1=0 m3i2=90 m3p1=0x47e460 m3ca1=[tap1]
+DEBUG 803:dvk_send_T:864: endpoint=30 timeout=30000
+ 803:port.c:handle_sock_data:209:fd=5 hub=0
+ 803:port.c:handle_data:112:fd=5 hub=0 len=90
+ 803:port.c:match_sock:196:port_fd=9 data_fd=5
+ 803:port.c:match_sock:196:port_fd=6 data_fd=5
+MUERE AQUI SEGFAULT!! 
+
+
+ 3:rmttap.c:connect_to_switch:124:sun.sun_path=  ????? 
+
+=====================================================================================
+20201028:
+		AHORA NO DA ERRORES, pero cuando viene un paquete desde la RTAP para 
+		introducir en el switch via unix sockets no da errores.
+		
+EN NODO0 
+	Inicializacion de la RTAP 
+		55:rmttap.c:init_rt_sockets:718:nr=32 endp=32 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPclient02 
+		 55:rmttap.c:init_rt_sockets:741:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 55:rmttap.c:rmttap_init:17:rt_name=RTAP1
+		 55:rmttap.c:rmttap_init:31:rt_ptr->rt_ctrl_path=/tmp/uml.ctl
+		 55:rmttap.c:rmttap_init:39:rt_ptr->rt_dd.ctl_sock=/tmp/uml.ctl
+	Conecta el unix socket correspondiente 	 
+		 55:rmttap.c:connect_to_switch:102:rt_name=RTAP1
+		 54:dvs_uml_switch.c:accept_connection:171:fd=4
+		 54:dvs_uml_switch.c:add_fd:43:fd=8
+		 55:rmttap.c:connect_to_switch:140:write to switch RTAP1 magic=-17958194 version=3 type=0
+		 54:port.c:handle_port:252:fd=8
+		 54:dvs_uml_switch.c:new_port:138:ctrl_fd=8 data_fd=5
+		 54:dvs_uml_switch.c:new_port_v1_v3:108:ctrl_fd=8 type=0 data_fd=5
+		 54:port.c:setup_sock_port:224:ctrl_fd=8 data_fd=5
+		 54:port.c:setup_port:153:ctrl_fd=8 
+		New connection
+		 54:dvs_uml_switch.c:new_port_v1_v3:114:fd=8 sun.sun_path=
+		  55:rmttap.c:connect_to_switch:149:read from switch RTAP1
+		 55:rmttap.c:connect_to_switch:157:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 55:rmttap.c:rmttap_init:62:sock_type=unix ctl_sock=/tmp/uml.ctl fd=9 control=7
+		 55:rmttap.c:init_rt_sockets:748:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+
+
+	Recibe un pedido REQ_SW_WRITE
+		 57:rmttap.c:recv_thread:469:RECEIVED REQUEST: source=31 type=4 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		 57:rmttap.c:recv_thread:567:RECEIVED REQ_SW_WRITE REQUEST lcl_idx=0 len=90
+		 57:rmttap.c:recv_thread:575:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=1 rt_rmt_idx=1 rt_rmttap_fd=-1 rt_name=RTAP1
+	Copia los datos desde el remoto a un buffer local 	
+		DEBUG 54:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=90
+		DEBUG 54:dvk_vcopy:142: ioctl ret=0 errno=0
+		DEBUG 54:dvk_vcopy:154: ioctl ret=0
+	Envia por el unix socket correspondiente los datos 
+		 57:port.c:send_sock:177:fd=9 data_fd=9 len=90 
+	Envía la respuesta al NODE1 	 
+		 57:rmttap.c:recv_thread:603:SEND REPLY: source=31 type=0 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		 DEBUG 54:dvk_send_T:864: endpoint=31 timeout=30000
+	El switch recibe por el port correspondiente el paquete 	 
+		 54:port.c:handle_sock_data:207:fd=5 hub=0
+		 54:port.c:handle_data:112:fd=5 hub=0 len=90
+		 54:port.c:match_sock:194:port_fd=8 data_fd=5
+		 54:port.c:update_src:48:control=8 
+		 Addr: 02:aa:bb:cc:dd:10 New port 8 <<<<<<<<<<<<<<<<<<<<<<<<<< MAC ADDRESS DE "tap1" de NODE1 !!!!!
+		 54:port.c:send_dst:80:control=8 len=90 hub=0 
+		 54:tuntap.c:send_tap:8:fd=6 len=90 
+		DEBUG 54:dvk_send_T:877: ioctl ret=0 errno=0
+		DEBUG 54:dvk_send_T:886: ioctl ret=0		
+
+	Recibe un pedido REQ_SW_WRITE
+		DEBUG 54:dvk_receive_T:897: endpoint=31438 timeout=30000
+		DEBUG 54:dvk_receive_T:910: ioctl ret=0 errno=0
+		DEBUG 54:dvk_receive_T:920: ioctl ret=0
+		 57:rmttap.c:recv_thread:469:RECEIVED REQUEST: source=31 type=4 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		 57:rmttap.c:recv_thread:567:RECEIVED REQ_SW_WRITE REQUEST lcl_idx=0 len=90
+		 57:rmttap.c:recv_thread:575:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=1 rt_rmt_idx=1 rt_rmttap_fd=-1 rt_name=RTAP1
+ 	Copia los datos desde el remoto a un buffer local 	
+		DEBUG 54:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=90
+		DEBUG 54:dvk_vcopy:142: ioctl ret=0 errno=0
+		DEBUG 54:dvk_vcopy:154: ioctl ret=0
+	Envia por el unix socket correspondiente los datos 
+		 57:port.c:send_sock:177:fd=9 data_fd=9 len=90 
+	Envía la respuesta al NODE1 	 
+		 57:rmttap.c:recv_thread:603:SEND REPLY: source=31 type=0 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		DEBUG 54:dvk_send_T:864: endpoint=31 timeout=30000
+	El switch recibe por el port correspondiente el paquete 	 
+		 54:port.c:handle_sock_data:207:fd=5 hub=0
+		 54:port.c:handle_data:112:fd=5 hub=0 len=90
+		 54:port.c:match_sock:194:port_fd=8 data_fd=5 <<<<<<<<<<<<<<<<<<<<< ENCONTRO EL PORT QUE MACHEA 
+		 54:port.c:update_src:48:control=8 
+		 54:port.c:send_dst:80:control=8 len=90 hub=0 
+		 54:tuntap.c:send_tap:8:fd=6 len=90 <<<<<<<<<<<<<<<<<<<<<<<<<<<< ENVIA TAMBIEN AL TAP 
+	
+EN NODE1 
+	LTAP1 de NODE1 ENVIA UN PAQUETE AL SWITCH DE NODE0  - REQ_SW_WRITE
+		 547:rmttap.c:send_thread:369:LTAP1 rt_poll_idx=1
+		 547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=90 rt_rmt_idx=0 <<<< wtype=4 REQ_SW_WRITE
+		 547:rmttap.c:rt_send_write_packet:189:rt_index=1 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=30 rt_rmt_idx=0 rt_rmttap_fd=11 rt_name=LTAP1
+		 547:rmttap.c:rt_send_write_packet:196:SEND WRITE PACKET REQUEST: svr_ep=0 source=0 type=4 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		DEBUG 545:dvk_sendrec_T:931: endpoint=0 timeout=30000
+		DEBUG 545:dvk_sendrec_T:944: ioctl ret=0 errno=0
+		DEBUG 545:dvk_sendrec_T:953: ioctl ret=0
+	RECIBE LA RESPUESTA 	
+		547:rmttap.c:rt_send_write_packet:201:RECEIVED WRITE PACKET REPLY: source=0 type=0 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+	LTAP1 de NODE1 ENVIA UN PAQUETE AL SWITCH DE NODE0  - REQ_SW_WRITE
+		  547:rmttap.c:send_thread:369:LTAP1 rt_poll_idx=1
+		 547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=90 rt_rmt_idx=0
+		 547:rmttap.c:rt_send_write_packet:189:rt_index=1 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=1 rt_rmt_ep=30 rt_rmt_idx=0 rt_rmttap_fd=11 rt_name=LTAP1
+		 547:rmttap.c:rt_send_write_packet:196:SEND WRITE PACKET REQUEST: svr_ep=0 source=0 type=4 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1]
+		DEBUG 545:dvk_sendrec_T:931: endpoint=0 timeout=30000
+		DEBUG 545:dvk_sendrec_T:944: ioctl ret=0 errno=0
+		DEBUG 545:dvk_sendrec_T:953: ioctl ret=0
+		 547:rmttap.c:rt_send_write_packet:201:RECEIVED WRITE PACKET REPLY: source=0 type=0 m3i1=0 m3i2=90 m3p1=0x4a1460 m3ca1=[tap1
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_uml_switch# ifconfig | grep "ether"
+        ether 02:aa:bb:cc:dd:b0  txqueuelen 1000  (Ethernet)
+        ether 00:0c:29:9a:7a:a4  txqueuelen 1000  (Ethernet)
+        ether 02:aa:bb:cc:dd:00  txqueuelen 1000  (Ethernet)
+        ether 02:aa:bb:cc:dd:01  txqueuelen 1000  (Ethernet)
+		
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# ifconfig | grep "ether"
+        ether 02:aa:bb:cc:dd:b1  txqueuelen 1000  (Ethernet)
+        ether 00:0c:29:04:55:87  txqueuelen 1000  (Ethernet)
+        ether 02:aa:bb:cc:dd:11  txqueuelen 1000  (Ethernet)
+        ether 02:aa:bb:cc:dd:10  txqueuelen 1000  (Ethernet) <<<<< "tap1" de NODE1
+
+
+LO EXTRAÑO DE TODOS ES QUE NO HAY UN NINGUN PAQUETE DESTINADO A LAS INTERFACES REMOTAS NI EN NODO0 NI NODO1 
+root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# grep "rt_send_write_packet:178:rt_name=LTAP1 wtype=" borrar1.txt 
+ 547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=90 rt_rmt_idx=0
+ 547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=90 rt_rmt_idx=0
+ 547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=70 rt_rmt_idx=0
+Deberia haber al menos algun wtype=2 - REQ_RT_WRITE
+
  ULTIMO_LOG 
 =====================================================================================
+
+
+TODO:	Cuando muere el dvs_uml_switch automaticamente hace un unbind de los endpoints remotos
+		Esto está mal porque si al arrancar, esos enpoints estaban dados de alta ????
+		SOLUCION: tiene algun sentido ¿¿¿
+
 
 ERROR: Al hacer CTRL-C en el dvs_uml_switch se esta colgando!! sin dar mensajes
 debe ser un problema del dvk_unbind()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1557,6 +3839,9 @@ void rmttap_cleanup(void)
 	int i, rcode, svr_ep, clt_ep; 
 	rmttap_t *r_ptr;
 	
+	EL PROBLEMA ESTABA AQUI, PERO PORQUE NO SOLO HACIA EL UNBIND DE LOS NODOS REMOTOS
+	SINO DE LOS ENDPOINTS DE LOS NODOS LOCALES TAMBIEN
+	PORQUE SE COLGABA EN LUGAR DE DAR ERROR ?????????'
 	for( i = 0; i < nr_rmttap; i++) {
 		r_ptr = &rmttap_cfg[i];
 		svr_ep = r_ptr->rt_nodeid; 
@@ -1668,14 +3953,242 @@ Message from syslogd@node1 at Oct 16 10:30:57 ...
 Message from syslogd@node1 at Oct 16 10:30:57 ...
  kernel:[ 2812.884154] EIP: [<d62d0b4b>] 
 
+---------------------------------------------------------------------
+
+oot@node1:~# 
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4438.989961] CPU: 0 PID: 786 Comm: dvs_uml_switch Tainted: G        W  O    4.9.88-DVK #158
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4438.991915] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4438.995956] task: ed8b43c0 task.stack: e984e000
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.016957] Stack:
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.018591]  e0b04600 e984fe8c f8800ded f8832364 00000312 f882f4cc 00000778 00000001
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.021149]  00000000 ca99ad02 00003ed7 ca99ad00 00000019 00000002 e984fe64 ca0ba4fe
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.023549]  ed8b43c0 00000040 00000312 01010000 f8841d00 00000001 00000000 f8841d40
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.025503] Call Trace:
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.027471]  [<f8800ded>] ? new_unbind+0xaca/0x1577 [dvk]
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.029473]  [<ca0ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.031527]  [<f87f5148>] ? io_unbind+0x4e/0xce [dvk]
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.033508]  [<f87f41fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.035932]  [<f87f416d>] ? dvk_write+0x49/0x49 [dvk]
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.037951]  [<ca1e6624>] ? do_vfs_ioctl+0x94/0x730
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.040091]  [<ca1d316d>] ? vfs_write+0x15d/0x1c0
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.042148]  [<ca1e6d20>] ? SyS_ioctl+0x60/0x70
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.044207]  [<ca003708>] ? do_fast_syscall_32+0x98/0x160
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.046317]  [<ca5bf682>] ? sysenter_past_esp+0x47/0x75
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.048461] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 12 97 ca 89 43 10 5b 5d
+
+Message from syslogd@node1 at Oct 19 18:08:17 ...
+ kernel:[ 4439.056314] EIP: [<ca5bc512>] 
+
+Oct 19 18:08:17 node1 kernel: [ 4438.976225] DEBUG RECEIVER:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Oct 19 18:08:17 node1 kernel: [ 4438.976232] DEBUG RECEIVER:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Oct 19 18:08:17 node1 kernel: [ 4438.976235] DEBUG RECEIVER:sleep_proc:399: endpoint=1 ret=1915 p_rcode=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976238] DEBUG RECEIVER:sleep_proc:400: endpoint=1 flags=0 cpuid=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976241] DEBUG RECEIVER:sleep_proc:401: WLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976245] DEBUG RECEIVER:sleep_proc:454: nr=1 endp=1 dcid=0 lpid=RECEIVER p_cpumask=FFFFFFFF nodemap=2 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4438.976248] DEBUG RECEIVER:sleep_proc:456: someone wakeups me: sem=0 p_rcode=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976251] DEBUG RECEIVER:new_mini_receive:535: WUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976696] DEBUG RECEIVER:dvk_ioctl:349: cmd=4004E302 arg=B62FF2F0
+Oct 19 18:08:17 node1 kernel: [ 4438.976699] DEBUG RECEIVER:dvk_ioctl:369: DVK_CALL=2 (io_mini_send) 
+Oct 19 18:08:17 node1 kernel: [ 4438.976701] DEBUG RECEIVER:io_mini_send:24: 
+Oct 19 18:08:17 node1 kernel: [ 4438.976762] DEBUG RECEIVER:new_mini_send:32: dst_ep=30
+Oct 19 18:08:17 node1 kernel: [ 4438.976765] DEBUG RECEIVER:check_caller:605: caller_pid=RECEIVER caller_tgid=783
+Oct 19 18:08:17 node1 kernel: [ 4438.976769] DEBUG RECEIVER:check_caller:643: WLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976773] DEBUG RECEIVER:check_caller:648: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4438.976776] DEBUG RECEIVER:check_caller:708: WUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976778] DEBUG RECEIVER:check_caller:711: dcid=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976780] DEBUG RECEIVER:check_caller:715: RLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976783] DEBUG RECEIVER:check_caller:719: RUNLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976785] DEBUG RECEIVER:check_caller:725: caller_pid=RECEIVER 
+Oct 19 18:08:17 node1 kernel: [ 4438.976787] DEBUG RECEIVER:check_caller:728: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976789] DEBUG RECEIVER:check_caller:732: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976841] DEBUG RECEIVER:new_mini_send:44: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976844] DEBUG RECEIVER:new_mini_send:48: caller_nr=1 caller_ep=1 dst_ep=30 
+Oct 19 18:08:17 node1 kernel: [ 4438.976846] DEBUG RECEIVER:new_mini_send:53: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976848] DEBUG RECEIVER:new_mini_send:55: dcid=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976851] DEBUG RECEIVER:new_mini_send:59: RLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976853] DEBUG RECEIVER:new_mini_send:64: RUNLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976855] DEBUG RECEIVER:new_mini_send:81: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976857] DEBUG RECEIVER:new_mini_send:88: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976860] DEBUG RECEIVER:new_mini_send:91: WLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976862] DEBUG RECEIVER:new_mini_send:91: WLOCK_PROC ep=30 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976864] DEBUG RECEIVER:new_mini_send:98: dst_nr=30 dst_ep=30
+Oct 19 18:08:17 node1 kernel: [ 4438.976866] DEBUG RECEIVER:new_mini_send:117: dst_ptr->p_usr.p_nodeid=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976868] DEBUG RECEIVER:new_mini_send:121: RLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976871] DEBUG RECEIVER:new_mini_send:125: RUNLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976874] DEBUG RECEIVER:new_mini_send:142: dcid=0 caller_pid=RECEIVER caller_nr=1 dst_ep=30 
+Oct 19 18:08:17 node1 kernel: [ 4438.976876] DEBUG RECEIVER:new_mini_send:150: RLOCK_PROC ep=27342 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976879] DEBUG RECEIVER:new_mini_send:162: RUNLOCK_PROC ep=27342 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976881] DEBUG RECEIVER:new_mini_send:164: WUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976883] DEBUG RECEIVER:new_mini_send:164: WUNLOCK_PROC ep=30 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.976885] ERROR: RECEIVER:new_mini_send:165: rcode=-64
+Oct 19 18:08:17 node1 kernel: [ 4438.976887] ERROR: RECEIVER:dvk_ioctl:373: rcode=-64
+
+Oct 19 18:08:17 node1 kernel: [ 4438.976988] DEBUG RECEIVER:dvk_ioctl:349: cmd=4004E30A arg=B62FF2F0
+Oct 19 18:08:17 node1 kernel: [ 4438.976991] DEBUG RECEIVER:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 19 18:08:17 node1 kernel: [ 4438.976992] DEBUG RECEIVER:io_unbind:109: 
+Oct 19 18:08:17 node1 kernel: [ 4438.976996] DEBUG RECEIVER:new_unbind:1857: dcid=0 proc_ep=1
+Oct 19 18:08:17 node1 kernel: [ 4438.977000] DEBUG RECEIVER:check_caller:605: caller_pid=RECEIVER caller_tgid=783
+Oct 19 18:08:17 node1 kernel: [ 4438.977002] DEBUG RECEIVER:check_caller:643: WLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977006] DEBUG RECEIVER:check_caller:648: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4438.977008] DEBUG RECEIVER:check_caller:708: WUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977010] DEBUG RECEIVER:check_caller:711: dcid=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977012] DEBUG RECEIVER:check_caller:715: RLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977014] DEBUG RECEIVER:check_caller:719: RUNLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977016] DEBUG RECEIVER:check_caller:725: caller_pid=RECEIVER 
+Oct 19 18:08:17 node1 kernel: [ 4438.977018] DEBUG RECEIVER:check_caller:728: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977020] DEBUG RECEIVER:check_caller:732: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977022] DEBUG RECEIVER:new_unbind:1873: RLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977025] DEBUG RECEIVER:new_unbind:1885: RUNLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977027] DEBUG RECEIVER:new_unbind:1887: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977029] DEBUG RECEIVER:new_unbind:1904: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977031] DEBUG RECEIVER:new_unbind:1909: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977034] DEBUG RECEIVER:new_unbind:1914: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4438.977577] BUG: unable to handle kernel NULL pointer dereference at 00000618 <<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+Oct 19 18:08:17 node1 kernel: [ 4438.978921] IP: [<ca5bc512>] mutex_lock+0x12/0x30
+Oct 19 18:08:17 node1 kernel: [ 4438.979788] *pdpt = 000000002afd6001 *pde = 0000000000000000 
+Oct 19 18:08:17 node1 kernel: [ 4438.979949] 
+Oct 19 18:08:17 node1 kernel: [ 4438.980852] Oops: 0002 [#1] SMP
+Oct 19 18:08:17 node1 kernel: [ 4438.981934] Modules linked in: dvk(O) tun bridge stp llc iptable_filter fuse vmwgfx joydev vmw_balloon evdev pcspkr serio_raw ttm drm_kms_helper vmw_vmci drm sg shpchp ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid ata_piix mptspi scsi_transport_spi libata mptscsih mptbase psmouse uhci_hcd xhci_pci ehci_pci xhci_hcd ehci_hcd pcnet32 mii usbcore scsi_mod i2c_piix4
+Oct 19 18:08:17 node1 kernel: [ 4438.989961] CPU: 0 PID: RECEIVER Comm: dvs_uml_switch Tainted: G        W  O    4.9.88-DVK #158
+Oct 19 18:08:17 node1 kernel: [ 4438.991915] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 19 18:08:17 node1 kernel: [ 4438.995956] task: ed8b43c0 task.stack: e984e000
+Oct 19 18:08:17 node1 kernel: [ 4438.998087] EIP: 0060:[<ca5bc512>] EFLAGS: 00010286 CPU: 0
+Oct 19 18:08:17 node1 kernel: [ 4439.000862] EIP is at mutex_lock+0x12/0x30
+Oct 19 18:08:17 node1 kernel: [ 4439.002521] EAX: 00000618 EBX: 00000618 ECX: f70ae8c0 EDX: 80000000
+Oct 19 18:08:17 node1 kernel: [ 4439.003925] ESI: 00000000 EDI: 00000000 EBP: e984fdf8 ESP: e984fdf4
+Oct 19 18:08:17 node1 kernel: [ 4439.008283]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+Oct 19 18:08:17 node1 kernel: [ 4439.011550] CR0: 80050033 CR2: 00000618 CR3: 20b5c300 CR4: 000006f0
+Oct 19 18:08:17 node1 kernel: [ 4439.016957] Stack:
+Oct 19 18:08:17 node1 kernel: [ 4439.018591]  e0b04600 e984fe8c f8800ded f8832364 00000312 f882f4cc 00000778 00000001
+Oct 19 18:08:17 node1 kernel: [ 4439.021149]  00000000 ca99ad02 00003ed7 ca99ad00 00000019 00000002 e984fe64 ca0ba4fe
+Oct 19 18:08:17 node1 kernel: [ 4439.023549]  ed8b43c0 00000040 00000312 01010000 f8841d00 00000001 00000000 f8841d40
+Oct 19 18:08:17 node1 kernel: [ 4439.025503] Call Trace:
+Oct 19 18:08:17 node1 kernel: [ 4439.027471]  [<f8800ded>] ? new_unbind+0xaca/0x1577 [dvk]
+Oct 19 18:08:17 node1 kernel: [ 4439.029473]  [<ca0ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+Oct 19 18:08:17 node1 kernel: [ 4439.031527]  [<f87f5148>] ? io_unbind+0x4e/0xce [dvk]
+Oct 19 18:08:17 node1 kernel: [ 4439.033508]  [<f87f41fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 19 18:08:17 node1 kernel: [ 4439.035932]  [<f87f416d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 19 18:08:17 node1 kernel: [ 4439.037951]  [<ca1e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 19 18:08:17 node1 kernel: [ 4439.040091]  [<ca1d316d>] ? vfs_write+0x15d/0x1c0
+Oct 19 18:08:17 node1 kernel: [ 4439.042148]  [<ca1e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 19 18:08:17 node1 kernel: [ 4439.044207]  [<ca003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 19 18:08:17 node1 kernel: [ 4439.046317]  [<ca5bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 19 18:08:17 node1 kernel: [ 4439.048461] Code: c3 90 8d b4 26 00 00 00 00 31 c0 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 53 0f 1f 44 00 00 89 c3 e8 a0 ef ff ff 89 d8 <f0> ff 08 79 05 e8 74 07 00 00 64 a1 48 12 97 ca 89 43 10 5b 5d
+Oct 19 18:08:17 node1 kernel: [ 4439.056314] EIP: [<ca5bc512>] 
+Oct 19 18:08:17 node1 kernel: [ 4439.056358] mutex_lock+0x12/0x30
+Oct 19 18:08:17 node1 kernel: [ 4439.058638]  SS:ESP 0068:e984fdf4
+Oct 19 18:08:17 node1 kernel: [ 4439.060935] CR2: 0000000000000618
+Oct 19 18:08:17 node1 kernel: [ 4439.067858] ---[ end trace dc1fc10752cb60e6 ]---
+Oct 19 18:08:17 node1 kernel: [ 4439.073709] do_exit: local_nodeid:1
+Oct 19 18:08:17 node1 kernel: [ 4439.079928] DEBUG RECEIVER:new_exit_unbind:267: code=-898165290
+Oct 19 18:08:17 node1 kernel: [ 4439.087058] IPv6: ADDRCONF(NETDEV_CHANGE): tap1: link becomes ready
+Oct 19 18:08:17 node1 kernel: [ 4439.094833] DEBUG RECEIVER:new_exit_unbind:271: WLOCK_TASK pid=783 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.095013] br0: port 2(tap1) entered blocking state
+Oct 19 18:08:17 node1 kernel: [ 4439.095015] br0: port 2(tap1) entered forwarding state
+Oct 19 18:08:17 node1 kernel: [ 4439.105366] DEBUG RECEIVER:new_exit_unbind:277: RLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.109726] DEBUG RECEIVER:new_exit_unbind:278: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4439.117252] DEBUG RECEIVER:new_exit_unbind:311:  Exiting endpoint=1 lpid=RECEIVER
+Oct 19 18:08:17 node1 kernel: [ 4439.120084] DEBUG RECEIVER:new_exit_unbind:313: RUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.126220] DEBUG RECEIVER:new_exit_unbind:314: WLOCK_DC dc=0 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.134828] DEBUG RECEIVER:new_exit_unbind:315: WLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.141127] DEBUG RECEIVER:new_exit_unbind:322:  endpoint=1 lpid=RECEIVER
+Oct 19 18:08:17 node1 kernel: [ 4439.144344] DEBUG RECEIVER:do_unbind:736: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4439.148996] DEBUG RECEIVER:do_unbind:765: Caller nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4439.154840] DEBUG RECEIVER:do_unbind:829: wakeup with error those processes trying to send a message to the proc
+Oct 19 18:08:17 node1 kernel: [ 4439.162349] DEBUG RECEIVER:do_unbind:858: delete notify messages bits sent by the proc
+Oct 19 18:08:17 node1 kernel: [ 4439.168722] DEBUG RECEIVER:do_unbind:865: Skip, caller process
+Oct 19 18:08:17 node1 kernel: [ 4439.177319] DEBUG RECEIVER:do_unbind:905: Process 30 is no more waiting a message from the unbinded process 1
+Oct 19 18:08:17 node1 kernel: [ 4439.184429] DEBUG RECEIVER:generic_ack_lcl2rmt:20: ack=8193 rcode=-108
+Oct 19 18:08:17 node1 kernel: [ 4439.188643] DEBUG RECEIVER:sproxy_enqueue:28: nr=30 endp=30 dcid=0 flags=3000 misc=2000 lpid=-1 vpid=-1 nodeid=0 name=TAPclient00 
+Oct 19 18:08:17 node1 kernel: [ 4439.198717] DEBUG RECEIVER:sproxy_enqueue:30: cmd=0x2001 dcid=0 src=1 dst=30 snode=1 dnode=0 rcode=-108 len=0
+Oct 19 18:08:17 node1 kernel: [ 4439.209307] DEBUG RECEIVER:sproxy_enqueue:33: WLOCK_PROC ep=27342 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.212660] DEBUG RECEIVER:sproxy_enqueue:40: LIST_ADD_TAIL
+Oct 19 18:08:17 node1 kernel: [ 4439.215517] DEBUG RECEIVER:sproxy_enqueue:42: nr=0 endp=27342 dcid=-1 flags=0 misc=1 lpid=698 vpid=-1 nodeid=1 name=lz4tcp_proxy_ba 
+Oct 19 18:08:17 node1 kernel: [ 4439.221491] DEBUG RECEIVER:sproxy_enqueue:49: WUNLOCK_PROC ep=27342 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.224603] DEBUG RECEIVER:do_unbind:920: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4439.234394] DEBUG RECEIVER:do_unbind:976: wakeup with error those processes waiting this process MIGRATION
+Oct 19 18:08:17 node1 kernel: [ 4439.246427] DEBUG RECEIVER:do_unbind:1026: wakeup those processes waiting this process UNBINDING
+Oct 19 18:08:17 node1 kernel: [ 4439.251040] DEBUG RECEIVER:do_unbind:1060: nr=1 endp=1 dcid=0 flags=0 misc=1000 lpid=RECEIVER vpid=13 nodeid=1 name=dvs_uml_switch 
+Oct 19 18:08:17 node1 kernel: [ 4439.257740] DEBUG RECEIVER:init_proc_desc:16: p_name=dvs_uml_switch dcid=0
+Oct 19 18:08:17 node1 kernel: [ 4439.262300] DEBUG RECEIVER:init_proc_desc:27: Clearing Privileges
+Oct 19 18:08:17 node1 kernel: [ 4439.266132] DEBUG RECEIVER:init_proc_desc:35: Setting Default DVK calls privileges
+Oct 19 18:08:17 node1 kernel: [ 4439.272249] DEBUG RECEIVER:init_proc_desc:41: Clearing Process fields
+Oct 19 18:08:17 node1 kernel: [ 4439.2RECEIVER24] DEBUG RECEIVER:do_unbind:1062: initialized 
+Oct 19 18:08:17 node1 kernel: [ 4439.283180] DEBUG RECEIVER:do_unbind:1063: DC_DECREF counter=6
+Oct 19 18:08:17 node1 kernel: [ 4439.287351] DEBUG RECEIVER:new_exit_unbind:384: WUNLOCK_PROC ep=1 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.291194] DEBUG RECEIVER:new_exit_unbind:385: WUNLOCK_TASK pid=783 count=0
+Oct 19 18:08:17 node1 kernel: [ 4439.294869] DEBUG RECEIVER:new_exit_unbind:386: WUNLOCK_DC dc=0 count=0
 
 
-TODO: Cuando se hace el OPEN de un TAP remoto, puede que el switch remoto este CAIDO.-
-		Como hacer para mantener permanentemente los intentos de conexion?? 
-		Solucion: un thread nuevo que verifica el estado. 
-					tiene que sincronizar con el sender thread 
+	if( caller_bound ) {
+		RLOCK_PROC(caller_ptr);
+		caller_nr = caller_ptr->p_usr.p_nr;
+		if( caller_ptr->p_usr.p_dcid != dcid){
+			ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
+		}
+		RUNLOCK_PROC(caller_ptr);
+		if( proc_lcl == TRUE ) {
+			WLOCK_TASK(caller_task); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+			if( caller_nr == proc_nr  ) {	/* Self unbind				*/    
+				if( caller_pid != proc_pid) {	/* the thread is not binded 		*/
+					if(caller_task->tgid != proc_pid) {	/* the main thread is not binded too 	*/
+						WUNLOCK_TASK(caller_task);	
+						ERROR_RETURN(EDVSNOTBIND);
+					}
+				}
+			}
+		}else{ /* Remote process do not have a local Linux task */
 
+		}
+	}
+	
 TODO: Convertir las asignaciones estaticas en malloc()
 
 
+nsenter -p -t $DC0 ./uml.linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node00 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=daemon
+
+	rt_ptr->rt_ctrl_sun.sun_family = AF_UNIX;
+	strncpy(rt_ptr->rt_ctrl_sun.sun_path, sw_ptr->sw_ctrl_path, strlen(sw_ptr->sw_ctrl_path));
+	USRDEBUG("CTRL sun_path=%s \n", rt_ptr->rt_ctrl_sun.sun_path);
+	
+		rt_ptr->rt_data_sun.sun_family = AF_UNIX;
+	strncpy(rt_ptr->rt_data_sun.sun_path, rt_ptr->rt_data_path, strlen(rt_ptr->rt_data_path));
+	USRDEBUG("DATA sun_path=%s \n", rt_ptr->rt_data_sun.sun_path);
 

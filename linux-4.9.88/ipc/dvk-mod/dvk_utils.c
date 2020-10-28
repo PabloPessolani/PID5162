@@ -480,7 +480,7 @@ DVKDEBUG(INTERNAL,"SPROXY wakeup with error all process trying to send a CMD to 
 		}
 		WLOCK_PROC(sproxy_ptr);
 
-		LIST_DEL(&src_ptr->p_link); /* remove from queue */
+		LIST_DEL_INIT(&src_ptr->p_link); /* remove from queue */
 		src_ptr->p_usr.p_proxy = NONE;
 		clear_bit(BIT_RMTOPER, &src_ptr->p_usr.p_rts_flags);
 
@@ -604,6 +604,7 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 	DVKDEBUG(DBGPARAMS,"caller_pid=%d caller_tgid=%d\n", 
 		caller_pid, caller_tgid);
 	ret = OK;
+	*t_ptr = task_ptr;
 	do {
 //		if(caller_pid == caller_tgid) {	/* task_ptr it is a MAIN thread 	*/
 		if( thread_group_leader(task_ptr)){ /* Caller is the Group Leader */
@@ -631,6 +632,8 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 				}
 				*t_ptr = task_ptr;
 				RUNLOCK_TASK(task_ptr);	
+			}else{
+				*t_ptr = task_ptr;	
 			}
 		}
 	}while(0);
@@ -695,7 +698,7 @@ int check_caller(struct task_struct **t_ptr, struct proc **c_ptr, int *c_pid)
 		sleep_proc(caller_ptr, TIMEOUT_MOLCALL);
 		ret = caller_ptr->p_rcode;
 		if( ret == OK) continue;
-		LIST_DEL(&caller_ptr->p_mlink);
+		LIST_DEL_INIT(&caller_ptr->p_mlink);
 		clear_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
 		caller_ptr->p_usr.p_waitmigr = NONE;
 		if( ret != EDVSTIMEDOUT ){

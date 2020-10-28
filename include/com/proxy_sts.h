@@ -19,6 +19,7 @@
 
 #define MIS_BIT_NOMIGRATE 	12
 #define MIS_BIT_ATOMIC 		13		// equivalent to REPLY_PENDING in MINIX3
+#define MIS_BIT_ENQUEUED 	14		// The process descriptor is enqueued in other' process queue
 
 enum mis_status {
 		MIS_PROXY		= (1<<MIS_BIT_PROXY),		/* the process is a proxy 			*/
@@ -34,6 +35,7 @@ enum mis_status {
 		MIS_USERMODE 	= (1<<MIS_BIT_USERMODE), 	/* The process is running inside a local USERMODE VOS */
 		MIS_RMTINFO 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
 		MIS_NOMIGRATE	= (1<<MIS_BIT_NOMIGRATE), 	/* Do not migrate this process */
+		MIS_ENQUEUED	= (1<<MIS_BIT_ENQUEUED), 	/* The process descriptor is enqueued in other' process queue */
 };
 
 #define PX_BIT_INUSE		0

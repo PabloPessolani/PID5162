@@ -1,81 +1,144 @@
 
 #include "switch.h"
 
-void rmttap_init(rmttap_t *rt_ptr)
+static int connect_to_switch(rmttap_t *rt_ptr);
+
+int rmttap_init(rmttap_t *rt_ptr)
 {
 	int rcode; 
-	
-	USRDEBUG("\n");
+	struct timeval tv;
+	struct {
+		char zero;
+		int pid;
+		int usecs;
+	} name;
+	daemon_data_t *dd_ptr;
 
+	USRDEBUG("rt_name=%s\n", rt_ptr->rt_name);
+	
+	rt_ptr->rt_dd.fd         = -1;
+	rt_ptr->rt_dd.control    = -1;
+	rt_ptr->rt_dd.dev        = rt_ptr->rt_name;
+	rt_ptr->rt_dd.ctl_addr   = NULL;
+	rt_ptr->rt_dd.data_addr  = NULL;
+	rt_ptr->rt_dd.local_addr = NULL;
+	
 	strcpy(rt_ptr->rt_sock_type,"unix");
-	sprintf(rt_ptr->rt_ctrl_path,"/tmp/uml%0.2d%0.2d.ctrl",sw_ptr->sw_dcid, rt_ptr->rt_index);
+	rt_ptr->rt_dd.sock_type = rt_ptr->rt_sock_type;
+
+//	sprintf(rt_ptr->rt_ctrl_path,"/tmp/uml%0.2d%0.2d.ctl", sw_ptr->sw_dcid, rt_ptr->rt_index);
+	strcpy(rt_ptr->rt_ctrl_path, sw_ptr->sw_ctrl_path);
+	USRDEBUG("rt_ptr->rt_ctrl_path=%s\n", rt_ptr->rt_ctrl_path);
+//	rcode = remove(rt_ptr->rt_ctrl_path);
+//	if (rcode == -1 && errno != ENOENT)
+//		ERROR_PRINT(-errno);
+	rt_ptr->rt_ctrl_sun.sun_family = AF_UNIX;
+	memcpy(rt_ptr->rt_ctrl_sun.sun_path, rt_ptr->rt_ctrl_path, strlen(rt_ptr->rt_ctrl_path)+1);
+	rt_ptr->rt_dd.ctl_addr = &rt_ptr->rt_ctrl_sun;
+	rt_ptr->rt_dd.ctl_sock = rt_ptr->rt_ctrl_path;
+	USRDEBUG("rt_ptr->rt_dd.ctl_sock=%s\n", rt_ptr->rt_dd.ctl_sock);
+
+	name.zero = 0;
+	name.pid = getpid();
+	gettimeofday(&tv, NULL);
+	name.usecs = tv.tv_usec;
+	rt_ptr->rt_data_sun.sun_family = AF_UNIX;
+	memcpy(rt_ptr->rt_data_sun.sun_path, &name,  sizeof(name));
+	rt_ptr->rt_dd.local_addr = &rt_ptr->rt_data_sun;
+
+#ifdef ANULADO
 	sprintf(rt_ptr->rt_data_path,"/tmp/uml%0.2d%0.2d.data",sw_ptr->sw_dcid, rt_ptr->rt_index);
-	rcode = remove(rt_ptr->rt_ctrl_path);
-	if (rcode == -1 && errno != ENOENT)
-        ERROR_PRINT(-errno);
+	rt_ptr->rt_data_sun.sun_family = AF_UNIX;
+	memcpy(rt_ptr->rt_data_sun.sun_path,rt_ptr->rt_data_path,strlen(rt_ptr->rt_data_path)+1);
+	rt_ptr->rt_dd.local_addr = &rt_ptr->rt_data_sun;
 	rcode = remove(rt_ptr->rt_data_path);
 	if (rcode == -1 && errno != ENOENT)
         ERROR_PRINT(-errno);
+	USRDEBUG("rt_data_sun.sun_path=%s\n", rt_ptr->rt_data_sun.sun_path);
+#endif // ANULADO
 	
-	printf("rmttap_init (dvs_uml_switch version %d) - %s\n\t\t%s\n\t\t%s\n",
-	       SWITCH_VERSION, rt_ptr->rt_sock_type, 
-		   rt_ptr->rt_ctrl_path, 
-		   rt_ptr->rt_ctrl_path);
+	rt_ptr->rt_dd.fd = connect_to_switch(rt_ptr);
+	dd_ptr = &rt_ptr->rt_dd;
+    USRDEBUG(DD_FORMAT, DD_FIELDS(dd_ptr));
+	if(rt_ptr->rt_dd.fd < 0) 
+		ERROR_RETURN(rt_ptr->rt_dd.fd);
+	return(rt_ptr->rt_dd.fd);
+} 
+
+int open_lcltap(char *dev)
+{
+  struct ifreq ifr;
+  int fd, err;
+
+  USRDEBUG("dev=%s\n", dev);
+
+  if((fd = open("/dev/net/tun", O_RDWR)) < 0){
+    perror("Failed to open /dev/net/tun");
+    return(-1);
+  }
+  
+  memset(&ifr, 0, sizeof(ifr));
+  ifr.ifr_flags = IFF_TAP | IFF_NO_PI; // | IFF_MULTI_QUEUE;
+  strncpy(ifr.ifr_name, dev, sizeof(ifr.ifr_name) - 1);
+  if(ioctl(fd, TUNSETIFF, (void *) &ifr) < 0){
+  	USRDEBUG("TUNSETIFF failed %s\n", dev);
+    perror("TUNSETIFF failed");
+	close(fd);
+    return(-1);
+  }
+  USRDEBUG("dev=%s fd=%d\n", dev, fd);
+
+  return(fd);
 }
  
 static int connect_to_switch(rmttap_t *rt_ptr)
 {
-	int n, rcode;
-	struct sockaddr_un sun;
+	struct sockaddr_un *ctl_addr 	= rt_ptr->rt_dd.ctl_addr;
+	struct sockaddr_un *local_addr 	= rt_ptr->rt_dd.local_addr;
+	struct sockaddr_un *sun 		= &rt_ptr->rt_data_sun;
+	struct request_v3 req, *rq_ptr;
+	int fd, n, rcode;
 	
 	USRDEBUG("rt_name=%s\n", rt_ptr->rt_name);
 
-	rt_ptr->rt_ctrl_fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (rt_ptr->rt_ctrl_fd < 0) {
+	rt_ptr->rt_dd.control = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (rt_ptr->rt_dd.control < 0) {
 		rcode = -errno;
 		fprintf(stderr, "connect_to_switch(%s) : control socket failed, "
 		       "errno = %d\n", rt_ptr->rt_name,  rcode);
 		ERROR_RETURN(rcode);
 	}
 	
-	rt_ptr->rt_ctrl_sun.sun_family = AF_UNIX;
-	strncpy(rt_ptr->rt_ctrl_sun.sun_path, sw_ptr->sw_ctrl_path, strlen(sw_ptr->sw_ctrl_path));
-	USRDEBUG("CTRL sun_path=%s \n", rt_ptr->rt_ctrl_sun.sun_path);
-
-	if (connect(rt_ptr->rt_ctrl_fd, (struct sockaddr *) &rt_ptr->rt_ctrl_sun,
-		   sizeof(struct sockaddr_un)) < 0) {
+	if (connect(rt_ptr->rt_dd.control, (struct sockaddr *) ctl_addr,
+		   sizeof(*ctl_addr)) < 0) {
 		rcode = -errno;
 		fprintf(stderr,"connect_to_switch(%s) : control connect failed, "
 		       "errno = %d\n", rt_ptr->rt_name, -rcode);
 		goto out;
 	}
 
-	rt_ptr->rt_data_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
-	if (rt_ptr->rt_data_fd < 0) {
+	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
+	if (fd < 0) {
 		rcode = -errno;
 		fprintf(stderr, "connect_to_switch(%s) : data socket failed, "
 		       "errno = %d\n", rt_ptr->rt_name, rcode);
 		goto out;
 	}
 	
-	rt_ptr->rt_data_sun.sun_family = AF_UNIX;
-	strncpy(rt_ptr->rt_data_sun.sun_path, rt_ptr->rt_data_path, strlen(rt_ptr->rt_data_path));
-	USRDEBUG("DATA sun_path=%s \n", rt_ptr->rt_data_sun.sun_path);
-
-	if (bind(rt_ptr->rt_data_fd, (struct sockaddr *) &rt_ptr->rt_data_sun, sizeof(struct sockaddr_un)) < 0) {
+	if (bind(fd, (struct sockaddr *) local_addr, sizeof(*local_addr)) < 0) {
 		rcode = -errno;
 		fprintf(stderr, "connect_to_switch(%s) : data bind failed, "
 		       "errno = %d\n", rt_ptr->rt_name, rcode);
 		goto out_close;
 	}
-
-	rt_ptr->rt_req.magic 	= SWITCH_MAGIC;
-	rt_ptr->rt_req.version  = SWITCH_VERSION;
-	rt_ptr->rt_req.type 	= REQ_NEW_CONTROL;
-	rt_ptr->rt_req.sock 	= rt_ptr->rt_data_sun;
 	
-	USRDEBUG("write to switch %s \n", rt_ptr->rt_name);
-	n = write(rt_ptr->rt_ctrl_fd, &rt_ptr->rt_req, sizeof(struct request_v3));
+	req.magic 	= SWITCH_MAGIC;
+	req.version = SWITCH_VERSION;
+	req.type 	= REQ_NEW_CONTROL;
+	req.sock 	= *local_addr;
+	rq_ptr = &req;
+	USRDEBUG("write to switch %s " RQ3_FORMAT, rt_ptr->rt_name, RQ3_FIELDS(rq_ptr));			
+	n = write(rt_ptr->rt_dd.control, &req, sizeof(req));
 	if (n != sizeof(struct request_v3)) {
 		fprintf(stderr, "connect_to_switch(%s) : control setup request "
 		       "failed, rcode = %d\n", rt_ptr->rt_name, errno);
@@ -83,96 +146,102 @@ static int connect_to_switch(rmttap_t *rt_ptr)
 		goto out_free;
 	}
 
-	USRDEBUG("read from switch %s \n", rt_ptr->rt_name);
-	n = read(rt_ptr->rt_ctrl_fd, &sun, sizeof(sun));
-	if (n != sizeof(sun)) {
+	USRDEBUG("read from switch %s\n", rt_ptr->rt_name);
+	n = read(rt_ptr->rt_dd.control, sun, sizeof(*sun));
+	if (n != sizeof(*sun)) {
 		fprintf(stderr, "connect_to_switch(%s) : read of data socket failed, "
 		       "rcode = %d\n", rt_ptr->rt_name, errno);
 		rcode = -ENOTCONN;
 		goto out_free;
 	}
-
-	rt_ptr->rt_data_sun = sun;
-	return rt_ptr->rt_data_fd;
+    USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));	
+	rt_ptr->rt_dd.data_addr = sun;
+	return fd;
 
  out_free:
  out_close:
-	close(rt_ptr->rt_data_fd);
+	close(fd);
  out:
-	close(rt_ptr->rt_ctrl_fd);
-	return rcode;
+	close(rt_ptr->rt_dd.control);
+	ERROR_RETURN(rcode);
 }
 
 /*===========================================================================*
- *				rt_send_packet				     *
+ *				rt_send_write_packet				     *
  *===========================================================================*/
-int rt_send_packet(rmttap_t *r_ptr, void *packet, int len, void *unused)
+int rt_send_write_packet(int wtype, rmttap_t *rt_ptr, void *packet, int len)
 {
-	int rcode;
+	int rcode, svr_ep;
 	message *m_ptr;
 
-	USRDEBUG("r_ptr->rt_name=%s r_ptr->rt_rmttap_idx=%d\n",
-		r_ptr->rt_name, r_ptr->rt_rmttap_idx);
+	USRDEBUG("rt_name=%s wtype=%d len=%d rt_rmt_idx=%d\n", 
+			rt_ptr->rt_name, wtype, len, rt_ptr->rt_rmt_idx);
 		
-	if( r_ptr->rt_rmttap_idx < 0) {
+	if( rt_ptr->rt_rmt_idx < 0) {
 		ERROR_RETURN(EDVSBADF);
 	}
 	
-	m_ptr = &sndr_msg;
-	m_ptr->m_type 	= REQ_RT_WRITE;
+	m_ptr 			= &sndr_msg;
+	m_ptr->m_type 	= wtype;
 	m_ptr->m3_p1	= packet;
-	m_ptr->m3_i1	= r_ptr->rt_rmttap_idx;
 	m_ptr->m3_i2	= len;
 	
- 	USRDEBUG("r_ptr->rt_nodeid=%d\n", r_ptr->rt_nodeid);
-	USRDEBUG("WRITE REQUEST: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
-	rcode = dvk_sendrec_T(r_ptr->rt_nodeid, m_ptr, TIMEOUT_MOLCALL);	
+    USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+	if( wtype == REQ_SW_WRITE){
+		svr_ep = rt_ptr->rt_rmt_ep - (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);	
+	}else{ // REQ_RT_WRITE
+		svr_ep = rt_ptr->rt_nodeid;
+	}
+	m_ptr->m3_i1 = rt_ptr->rt_rmt_idx;
+	USRDEBUG("SEND WRITE PACKET REQUEST: svr_ep=%d " MSG3_FORMAT, svr_ep, MSG3_FIELDS(m_ptr));
+	rcode = dvk_sendrec_T(svr_ep, m_ptr, TIMEOUT_MOLCALL);	
 	if( rcode < 0) {
 		ERROR_RETURN(rcode);
 	}
-	if( m_ptr->m3_i1 < 0) {
-		ERROR_RETURN(m_ptr->m3_i1);
+	USRDEBUG("RECEIVED WRITE PACKET REPLY: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
+	if( m_ptr->m_type < 0) {
+		ERROR_RETURN(m_ptr->m_type);
 	}
-	USRDEBUG("WRITE REPLY: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
-	
-	return(OK);
-	
+	return(m_ptr->m_type);
 }
 
 /*===========================================================================*
- *				rt_open_tap				     *
+ *				rt_open_rmttap				     *
  *===========================================================================*/
-int rt_open_tap(rmttap_t *r_ptr)
+int rt_open_rmttap(rmttap_t *rt_ptr)
 {
-	int rcode;
+	int rcode, svr_ep;
 	proc_usr_t *proc_ptr;
 	message *m_ptr;
 	
-    USRDEBUG(RT_FORMAT, RT_FIELDS(r_ptr));
+    USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
 
-	proc_ptr = &r_ptr->rt_proc; 
-	rcode = dvk_getprocinfo(sw_ptr->sw_dcid, r_ptr->rt_nodeid, proc_ptr);		
+	proc_ptr = &rt_ptr->rt_svr_proc; 
+	svr_ep = rt_ptr->rt_nodeid;
+	rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);		
 	//Get the status and parameter information about a process in a DC.
 	USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
 			
 	m_ptr = &sndr_msg;
 	m_ptr->m_type = REQ_RT_OPEN;
-	strncpy(m_ptr->m3_ca1, r_ptr->rt_tap, M3_STRING-1);
-	USRDEBUG("r_ptr->rt_nodeid=%d\n", r_ptr->rt_nodeid);
-	USRDEBUG("OPEN REQUEST: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
-	rcode = dvk_sendrec_T(r_ptr->rt_nodeid, m_ptr, TIMEOUT_MOLCALL);	
+	m_ptr->m3_i1  = rt_ptr->rt_index;
+	strncpy(m_ptr->m3_ca1, rt_ptr->rt_tap, M3_STRING-1);
+	USRDEBUG("rt_ptr->rt_nodeid=%d\n", rt_ptr->rt_nodeid);
+	USRDEBUG("SEND REQ_RT_OPEN REQUEST: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
+	rcode = dvk_sendrec_T(rt_ptr->rt_nodeid, m_ptr, TIMEOUT_MOLCALL);
 	if( rcode < 0) {
 		ERROR_RETURN(rcode);
 	}
-	if( m_ptr->m3_i1 < 0) {
-		ERROR_RETURN(m_ptr->m3_i1);
+	USRDEBUG("RCVD REQ_RT_OPEN REPLY: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
+	if( m_ptr->m_type < 0) {
+		ERROR_RETURN(m_ptr->m_type);
 	}
-	USRDEBUG("OPEN REPLY: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
-	r_ptr->rt_rmttap_idx = m_ptr->m3_i1; 
-	USRDEBUG("Remote TAP %s successfully opened with remote index %d\n", 
-		r_ptr->rt_tap, r_ptr->rt_rmttap_idx);
+	rt_ptr->rt_rmt_ep	 = m_ptr->m_source; 
+	rt_ptr->rt_rmt_idx	 = m_ptr->m_type; 
+	USRDEBUG("Remote TAP %s successfully opened on endpoint %d with remote index %d\n", 
+		rt_ptr->rt_tap, rt_ptr->rt_rmt_ep, rt_ptr->rt_rmt_idx);
 	
-	return(OK);
+	return(m_ptr->m_type);
 }
 
 /*===========================================================================*
@@ -213,22 +282,24 @@ void get_dc_params(int dcid)
 void try_rmttap_open(void)
 {
 	int i, rcode;
-	rmttap_t *r_ptr;
+	rmttap_t *rt_ptr;
 
 	USRDEBUG("nr_rmttap=%d\n", nr_rmttap);
 	
 	for( i = 0; i < nr_rmttap; i++) {
-		r_ptr = &rmttap_cfg[i];
-		// Only those remote tap devices with open unix sockets 
-        USRDEBUG(RT_FORMAT, RT_FIELDS(r_ptr));
-		if( r_ptr->rt_poll_idx >= 0 ){ //if it has a virtual port allocated
-			if( r_ptr->rt_nodeid != local_nodeid){ // it is a remote port 
-				if( r_ptr->rt_rmttap_idx < 0) {  // if it is yet opened
-					rcode = rt_open_tap(r_ptr);  
+		rt_ptr = &rmttap_cfg[i];
+		// Only those REMOTE TAP devices with open unix sockets 
+		if( rt_ptr->rt_nodeid != local_nodeid){ // it is a remote port 
+			USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+			if( rt_ptr->rt_poll_idx >= 0 ){  
+				if( rt_ptr->rt_rmttap_fd < 0) {  // if it is yet opened
+					rcode = rt_open_rmttap(rt_ptr);  
 					if( rcode < 0) {
 						ERROR_PRINT(rcode);
 						continue;
 					}
+					success_open++;
+					USRDEBUG("success_open=%d\n", success_open);
 				}
 			}
 		}
@@ -240,12 +311,12 @@ void try_rmttap_open(void)
  *===========================================================================*/	
 void *send_thread(void *arg)
 {
-	int i, j;
+	int i, j, write_type;
 	int rcode, n, timeout; 
 	proc_usr_t *proc_ptr;
 static struct packet packet;
     int len, socklen;
-	rmttap_t *r_ptr;
+	rmttap_t *rt_ptr;
 	
 	// Local Endpoint has is calculated from the first Client Endpoint plus the index 
 	sw_ptr->sw_send_ep = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
@@ -274,52 +345,71 @@ static struct packet packet;
 		n = poll(rt_fds, rt_nfds, timeout);
 		if(n == 0){
 			USRDEBUG("Timeout\n");
-			if( success_open < nr_rmttap)
+			if( success_open < (nr_rmttap-nr_lcltap))
 				try_rmttap_open();
 			continue;
 		}
 		if(n < 0){
 			if(errno == EINTR) {
-				if( success_open < nr_rmttap)
+				USRDEBUG("EINTR\n");
+				if( success_open < (nr_rmttap-nr_lcltap))
 					try_rmttap_open();
-				// USRDEBUG("EINTR\n");
 				continue;
 			}
 			ERROR_PRINT(-errno);
 			break;
 		}
+		// Check all monitored FDs 
 		for(i = 0; i < rt_nfds; i++){
-			if(rt_fds[i].revents == 0) 
-				continue;
+			if(rt_fds[i].revents == 0) continue;
+			// Check against LOCAL and REMOTE TAP devices 
 			for(j = 0; j < nr_rmttap; j++){
-				r_ptr = &rmttap_cfg[j];
-				if( i == r_ptr->rt_poll_idx){
-					USRDEBUG("%s rt_poll_idx=%d\n",r_ptr->rt_name ,r_ptr->rt_poll_idx);
-					// for those remote TAP which were down during initialization
-					// retry the open 
-					if( r_ptr->rt_poll_idx == (-1)){
-						rcode = rt_open_tap(r_ptr);  
-						if( rcode < 0 ) {
-							ERROR_PRINT(rcode);
+				rt_ptr = &rmttap_cfg[j];
+				if( i == rt_ptr->rt_poll_idx){
+					USRDEBUG("%s rt_poll_idx=%d\n",rt_ptr->rt_name ,rt_ptr->rt_poll_idx);
+					if( rt_ptr->rt_nodeid != local_nodeid) { //  REMOTE TAPs 
+						socklen = sizeof(struct sockaddr_un);
+						len = recvfrom(rt_ptr->rt_data_fd, &packet, sizeof(packet), 0, 
+							 (struct sockaddr *) &rt_ptr->rt_data_sun, &socklen);
+						if(len < 0){
+							if(errno != EAGAIN) 
+								perror("handle_sock_data");
+							ERROR_PRINT(-errno);
 							continue;
-						}						
+						}
+						write_type = REQ_RT_WRITE;	// Destination is REMOTE TAP   
+					} else { // LOCAL  TAP 
+						len = read(rt_ptr->rt_rmttap_fd, &packet, sizeof(packet));
+						if(len < 0){
+							if(errno != EAGAIN) {
+								close(rt_ptr->rt_rmttap_fd);
+								rt_fds[rt_ptr->rt_poll_idx].fd 		= (-1);
+								rt_fds[rt_ptr->rt_poll_idx].events 	= POLLNVAL;		
+								rt_ptr->rt_poll_idx 				= (-1);
+								rt_ptr->rt_rmttap_fd				= (-1);
+								rt_ptr->rt_rmt_ep 					= HARDWARE;
+								USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+								perror("Reading tap data");
+							}
+							continue;
+						}
+						// ignore packet if the remote client do not open the LOCAL TAP
+						if( rt_ptr->rt_rmt_ep == HARDWARE) continue;
+						write_type = REQ_SW_WRITE; // Destination is REMOTE SWITCH  
 					}
-					socklen = sizeof(struct sockaddr_un);
-					len = recvfrom(r_ptr->rt_data_fd, &packet, sizeof(packet), 0, 
-						 (struct sockaddr *) &r_ptr->rt_data_sun, &socklen);
-					if(len < 0){
-						if(errno != EAGAIN) 
-							perror("handle_sock_data");
-						ERROR_RETURN(-errno);
-					}
-					rcode = rt_send_packet(r_ptr, &packet, len, NULL);
+					// Write PACKET to Remote NODE 
+					rcode = rt_send_write_packet(write_type, rt_ptr, &packet, len);
 					if(rcode < 0){
-						// clear the remote index 
-						success_open--;
-						r_ptr->rt_poll_idx = (-1);
-						if( rcode != EDVSTIMEDOUT)
+						if( rcode != EDVSBADF){
+							// clear the remote index 
+							if( rt_ptr->rt_nodeid != local_nodeid) { //  REMOTE TAPs 
+								success_open--;
+								rt_ptr->rt_poll_idx = (-1);
+							}
+						}
+						if( success_open < (nr_rmttap-nr_lcltap))
 							try_rmttap_open();
-						ERROR_RETURN(rcode);
+						ERROR_PRINT(rcode);
 					}
 				}
 			} 
@@ -330,17 +420,29 @@ static struct packet packet;
 	pthread_exit(OK);
 }
 
+void add_rt_fd(int fd)
+{
+	struct pollfd *p;
+	USRDEBUG("LTAP fd=%d\n",fd);
+
+	rt_ptr->rt_poll_idx		= rt_nfds;
+	rt_fds[rt_nfds].fd 		= fd;
+	rt_fds[rt_nfds].events 	= POLLIN;
+	rt_nfds++;
+	USRDEBUG("LTAP rt_nfds=%d\n",rt_nfds);
+}
+
 /*===========================================================================*
  *				recv_thread			     
  *===========================================================================*/	
 void *recv_thread(void *arg)
 {
-	int rcode, i; 
+	int rcode, i,tap_fd, len, rmt_idx,lcl_idx ; 
 	proc_usr_t *proc_ptr;
 	static struct packet packet;
 	message *m_ptr;
-	rmttap_t *r_ptr;
-
+	rmttap_t *rt_ptr;
+	sock_data_t data;
 
 	sw_ptr->sw_recv_ep = (local_nodeid);
 	sw_ptr->sw_recv_tid = syscall (SYS_gettid);
@@ -364,63 +466,132 @@ void *recv_thread(void *arg)
 			ERROR_PRINT(rcode);
 			continue;
 		}
-		USRDEBUG(MSG3_FORMAT, MSG3_FIELDS(m_ptr));
+		USRDEBUG("RECEIVED REQUEST: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
 		switch( m_ptr->m_type){
 			case REQ_RT_OPEN:
+				USRDEBUG("RECEIVED REQ_RT_OPEN REQUEST\n");
 				//  m_ptr->m3_ca1 : local TAP name 
 				for( i = 0; i < nr_rmttap; i++) {
-					r_ptr = &rmttap_cfg[i];
-					if( !strncmp(r_ptr->rt_tap, m_ptr->m3_ca1, M3_STRING-1)) 
-						break;	
+					rt_ptr = &rmttap_cfg[i];
+					if( rt_ptr->rt_nodeid == local_nodeid){
+						if( !strncmp(rt_ptr->rt_tap, m_ptr->m3_ca1, M3_STRING-1)) 
+							break;	
+					}
 				}
 				if( i == nr_rmttap) { // TAP device not found 
 					ERROR_PRINT(EDVSNOENT);
 					rcode = EDVSNOENT;
 				} else {
-					rcode = i;
+					if( rt_ptr->rt_rmt_ep == HARDWARE){
+						rt_ptr->rt_rmttap_fd = open_lcltap(rt_ptr->rt_tap);
+						if( rt_ptr->rt_rmttap_fd < 0) {
+							rcode = (-errno);
+							ERROR_PRINT(rcode);
+							break;
+						}
+						add_rt_fd(rt_ptr->rt_rmttap_fd);
+					} else { // TAP Device is already OPENED 
+						ERROR_PRINT(EDVSBUSY);
+						rcode = EDVSBUSY;		
+						break;
+					}
+					// associate and remote endpoint to the LOCAL TAP 
+					rt_ptr->rt_rmt_ep  = m_ptr->m_source;
+					rt_ptr->rt_rmt_idx = m_ptr->m3_i1;
+					USRDEBUG("REQ_RT_OPEN: " RT_FORMAT, RT_FIELDS(rt_ptr));
+					rcode = rt_ptr->rt_index;
 				}						
 				break;
-			case REQ_RT_WRITE: // the remote process want to write into a local socket 	
+			case REQ_RT_WRITE: // the remote process want to write into a local TAP 
+				USRDEBUG("RECEIVED REQ_RT_WRITE REQUEST\n");
 				// get the remote packet 
 				// m_ptr->m3_p1	= packet;
-				// m_ptr->m3_i1	= r_ptr->rt_rmttap_idx;
+				// m_ptr->m3_i1	= rt_rmt_idx;
 				// m_ptr->m3_i2	= len;
+				lcl_idx = m_ptr->m3_i1;
+				len 	= m_ptr->m3_i2;
+				// search the port with the index  ATENCION!! Esto se puede cambiar con un vector  int rmtap_index[rt_nfds]
+				if( lcl_idx < 0 || lcl_idx >= nr_rmttap){
+					ERROR_PRINT(EDVSNODEV);
+					rcode = EDVSNODEV;
+					break;
+				}			
+				rt_ptr = &rmttap_cfg[lcl_idx];
+				USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+				if( rt_ptr->rt_nodeid != local_nodeid){
+					ERROR_PRINT(EDVSBADNODEID);
+					rcode = EDVSBADNODEID;	
+					break;
+				}
+				if( rt_ptr->rt_rmt_ep != m_ptr->m_source) {
+					ERROR_PRINT(EDVSBADOWNER);
+					rcode = EDVSBADOWNER;	
+					break;
+				} 
 				rcode = dvk_vcopy(m_ptr->m_source, m_ptr->m3_p1, 
-							sw_ptr->sw_recv_ep, &packet, m_ptr->m3_i1);
+								sw_ptr->sw_recv_ep, &packet, len);
 				if( rcode < 0){
 					ERROR_PRINT(rcode);
 					break;
 				}
-				// search the port with the index  ATENCION!! Esto se puede cambiar con un vector  int rmtap_index[rt_nfds]
-				for( i = 0; i < nr_rmttap; i++) {
-					r_ptr = &rmttap_cfg[i];
-					if( r_ptr->rt_rmttap_idx == m_ptr->m3_i1) 
-						break;	
-				}
-				if( i == nr_rmttap) { // index not found 
-					ERROR_PRINT(EDVSBADF);
-					rcode = EDVSBADF;
-				} else {
-					//  Send to socket or pipe 
-					send_sock(r_ptr->rt_data_fd, &packet, m_ptr->m3_i1, &r_ptr->rt_data_sun);
-					rcode = OK;
-				}
+				tap_fd = rt_ptr->rt_rmttap_fd;
+				send_tap(tap_fd, &packet, len, NULL);
+				rcode = OK;
 				break;
 			case REQ_RT_CLOSE:
-				//  m_ptr->m3_i1 : local TAP index  
-				for( i = 0; i < nr_rmttap; i++) {
-					r_ptr = &rmttap_cfg[i];
-					if( r_ptr->rt_rmttap_idx == m_ptr->m3_i1) {
-						r_ptr->rt_rmttap_idx = (-1);
-						break;
-					}
+				USRDEBUG("RECEIVED REQ_RT_CLOSE REQUEST\n");
+				if( lcl_idx < 0 || lcl_idx >= nr_rmttap){
+					ERROR_PRINT(EDVSNODEV);
+					rcode = EDVSNODEV;
+					break;
+				}			
+				rt_ptr = &rmttap_cfg[lcl_idx];
+				USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+				if( rt_ptr->rt_nodeid != local_nodeid){
+					ERROR_PRINT(EDVSBADNODEID);
+					rcode = EDVSBADNODEID;	
+					break;
 				}
-				if( i == nr_rmttap) {  
-					ERROR_PRINT(EDVSBADF);
-					rcode = EDVSBADF;
-				} else {
-					rcode = OK;
-				}						
+				if( rt_ptr->rt_rmt_ep != m_ptr->m_source) {
+					ERROR_PRINT(EDVSBADOWNER);
+					rcode = EDVSBADOWNER;	
+					break;
+				} 
+				rt_ptr->rt_rmttap_fd = (-1);
+				rt_ptr->rt_rmt_ep    = HARDWARE;
+				rcode 				 = OK;						
+				break;
+			case REQ_SW_WRITE: // the remote TAP device request to write to switch's local  virtual port 	
+				lcl_idx = m_ptr->m3_i1;
+				len 	= m_ptr->m3_i2;
+				USRDEBUG("RECEIVED REQ_SW_WRITE REQUEST lcl_idx=%d len=%d\n",lcl_idx, len);
+				// search the port with this socket FD
+				if( lcl_idx < 0 || lcl_idx >= nr_rmttap){
+					ERROR_PRINT(EDVSNODEV);
+					rcode = EDVSNODEV;
+					break;
+				}			
+				rt_ptr = &rmttap_cfg[lcl_idx];
+				USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+				if( rt_ptr->rt_nodeid == local_nodeid){
+					ERROR_PRINT(EDVSBADNODEID);
+					rcode = EDVSBADNODEID;	
+					break;
+				}
+				rcode = dvk_vcopy(m_ptr->m_source, m_ptr->m3_p1, 
+								sw_ptr->sw_recv_ep, &packet, len);
+				if( rcode < 0){
+					ERROR_PRINT(rcode);
+					break;
+				}
+				
+				data.fd = rt_ptr->rt_dd.fd;
+				memcpy( &data.sock, rt_ptr->rt_dd.data_addr, sizeof(struct sockaddr_un)); 
+				send_sock(data.fd, &packet, len, (void*) &data);	
+				
+//				send_sock(rt_ptr->rt_data_fd, &packet, len, (void*) &data);
+//				send_sock(rt_ptr->rt_ctrl_fd, &packet, len, (void*) &data);
+				rcode = OK;
 				break;
 			default:
 				USRDEBUG("Invalid Request: %d\n", m_ptr->m_type);
@@ -428,12 +599,12 @@ void *recv_thread(void *arg)
 				rcode = EDVSBADREQUEST;
 				break;
 		}
-		m_ptr->m_type |=  MASK_ACKNOWLEDGE;
-		m_ptr->m3_i1   =  rcode;
+		m_ptr->m_type  =  rcode;
+		USRDEBUG("SEND REPLY: " MSG3_FORMAT, MSG3_FIELDS(m_ptr));
 		rcode = dvk_send_T( m_ptr->m_source, m_ptr, TIMEOUT_MOLCALL);
 		if( rcode < 0){
 			ERROR_PRINT(rcode);
-			break;
+			continue;
 		}
 	}
 
@@ -444,19 +615,30 @@ void *recv_thread(void *arg)
 void rmttap_cleanup(void)
 {
 	int i, rcode, svr_ep, clt_ep; 
-	rmttap_t *r_ptr;
+	rmttap_t *rt_ptr;
 	
-	for( i = 0; i < nr_rmttap; i++) {
-		r_ptr = &rmttap_cfg[i];
-		// unbind remote client and server endpoints 
-		if( r_ptr->rt_nodeid != local_nodeid) {
-			svr_ep = r_ptr->rt_nodeid; 
+	USRDEBUG("\n");
+		// bind remote Client and Server endpoint getting information from DC 
+	for( i = 0; i < (sizeof(dc_ptr->dc_nodes) * DVK_CHAR_BITS); i++){
+		if( i == local_nodeid) continue;
+		if( TEST_BIT(dc_ptr->dc_nodes, i) ){
+			svr_ep = i;
+			USRDEBUG("dvk_unbind dcid=%d svr_ep=%d nodeid=%d\n", sw_ptr->sw_dcid, svr_ep, i);
 			rcode = dvk_unbind(sw_ptr->sw_dcid, svr_ep);
-			if(rcode) ERROR_PRINT(rcode);
+			if(rcode) ERROR_PRINT(rcode);			
 			clt_ep = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
-			clt_ep += r_ptr->rt_nodeid; 
+			clt_ep += i; 
+			USRDEBUG("dvk_unbind dcid=%d clt_ep=%d nodeid=%d\n\n", sw_ptr->sw_dcid, clt_ep, i);			
 			rcode = dvk_unbind(sw_ptr->sw_dcid, clt_ep);
 			if(rcode) ERROR_PRINT(rcode);
+		}
+	}
+
+	for( i = 0; i < nr_rmttap; i++) {
+		rt_ptr = &rmttap_cfg[i];
+		if( rt_ptr->rt_rmttap_fd != (-1)){
+			USRDEBUG("close %s fd=%d\n", rt_ptr->rt_name, rt_ptr->rt_rmttap_fd);			
+			close(rt_ptr->rt_rmttap_fd);
 		}
 	}
 }
@@ -480,128 +662,118 @@ void init_rt_threads( void)
  *===========================================================================*/
 void init_rt_sockets( void)
 {
-	int i, rcode, rmt_fd;
+	int i, rcode, rmt_fd, lcl_fd;
 	int svr_ep, clt_ep;
-	rmttap_t *r_ptr;
-	proc_usr_t *proc_ptr;
+	rmttap_t *rt_ptr;
+	proc_usr_t *proc_ptr, proc_usr;
 	node_usr_t *node_ptr;
-	static char my_node[M3_STRING];
+	static char node_name[M3_STRING];
 	
 	USRDEBUG("\n");
-
 	MTX_LOCK(sw_mutex);
+	if( nr_rmttap == 0) {
+		MTX_UNLOCK(sw_mutex);
+		pthread_exit(OK);	
+	}
+	
+	// bind remote Client and Server endpoint getting information from DC 
+	for( i = 0; i < (sizeof(dc_ptr->dc_nodes) * DVK_CHAR_BITS); i++){
+		if( i == local_nodeid) continue;
+		if( TEST_BIT(dc_ptr->dc_nodes, i) ){
+			//Get the status and parameter information about a process in a DC.
+			proc_ptr = &proc_usr;	
+			// remote endpoint is equal to remote nodeid 
+			svr_ep = i;
+			rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);	
+			if( proc_ptr->p_rts_flags == SLOT_FREE) {
+				// Bind Remote TAP Server endpoint
+				sprintf(node_name,"TAPserver%02d", i);
+				rcode = dvk_rmtbind(sw_ptr->sw_dcid, node_name,
+					svr_ep, i);
+				if( rcode != svr_ep) {
+					ERROR_PRINT(rcode);
+					continue;
+				}
+				//Get the status and parameter information about a process in a DC.
+				rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);	
+			}
+			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+				
+			// Bind Remote TAP Client endpoint
+			clt_ep = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
+			clt_ep += i; 
+			proc_ptr = &proc_usr; 
+			rcode = dvk_getprocinfo(sw_ptr->sw_dcid, clt_ep, proc_ptr);	
+			if( proc_ptr->p_rts_flags == SLOT_FREE) {	
+				sprintf(node_name,"TAPclient%02d", i);
+				rcode = dvk_rmtbind(sw_ptr->sw_dcid, node_name,
+					clt_ep, i);
+				if( rcode != clt_ep) {
+					ERROR_PRINT(rcode);
+					continue;
+				}
+				//Get the status and parameter information about a process in a DC.
+				rcode = dvk_getprocinfo(sw_ptr->sw_dcid, clt_ep, proc_ptr);
+			}
+			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+		}
+	}
+	
 	rt_nfds = 0;
 	for( i = 0; i < nr_rmttap; i++) {
-		r_ptr = &rmttap_cfg[i];
+		rt_ptr = &rmttap_cfg[i];
 
-		r_ptr->rt_ctrl_fd		= -1;
-		r_ptr->rt_data_fd		= -1;
-		r_ptr->rt_poll_idx		= -1;
-		r_ptr->rt_rmttap_idx 	= -1;
+		rt_ptr->rt_ctrl_fd		= -1;
+		rt_ptr->rt_data_fd		= -1;
+		rt_ptr->rt_poll_idx		= -1;
+		rt_ptr->rt_rmttap_fd 	= -1;
+		rt_ptr->rt_rmt_idx	 	= -1;
+		rt_ptr->rt_rmt_ep 		= HARDWARE;
 	
-		// If the entry is a local TAP continue 
-		if( r_ptr->rt_nodeid == local_nodeid) {
-			continue;
-		}
-        USRDEBUG(RT_FORMAT, RT_FIELDS(r_ptr));
-
-		rmttap_init(r_ptr);
-		rmt_fd = connect_to_switch(r_ptr);
-		if(rmt_fd < 0 ) {
-			ERROR_PRINT(rmt_fd);
+		// If the entry is a LOCAL TAP  
+		if( rt_ptr->rt_nodeid == local_nodeid) {
+		    nr_lcltap++; 
+			USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
 			continue;
 		}
 		
-		//Get the status and parameter information about a process in a DC.
-		// remote endpoint is equal to remote nodeid 
-		proc_ptr = &r_ptr->rt_proc; 
-        rcode = dvk_getprocinfo(sw_ptr->sw_dcid, r_ptr->rt_nodeid, proc_ptr);	
-		
-		if( proc_ptr->p_rts_flags != SLOT_FREE) {
-			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
-			continue; //the endpoint is already bound
-		} else { 
-			// Bind Remote TAP Server endpoint
-			sprintf(my_node,"TAPserver%02d",r_ptr->rt_nodeid);
-			svr_ep = r_ptr->rt_nodeid; 
-			rcode = dvk_rmtbind(sw_ptr->sw_dcid, my_node,
-				svr_ep, r_ptr->rt_nodeid);
-			if( rcode != svr_ep) {
-				ERROR_PRINT(rcode);
-				continue;
-			}
-			//Get the status and parameter information about a process in a DC.
-			proc_ptr = &r_ptr->rt_proc; 
-			rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);		
-			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
-			
-			// Bind Remote TAP Client endpoint
-			sprintf(my_node,"TAPclient%02d",r_ptr->rt_nodeid);
-			clt_ep = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
-			clt_ep += r_ptr->rt_nodeid; 
-			rcode = dvk_rmtbind(sw_ptr->sw_dcid, my_node,
-				clt_ep, r_ptr->rt_nodeid);
-			if( rcode != clt_ep) {
-				ERROR_PRINT(rcode);
-				continue;
-			}
-			//Get the status and parameter information about a process in a DC.
-			proc_ptr = &r_ptr->rt_proc; 
-			rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);		
-			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
-			
+		// Entries for REMOTE  TAPs
+        USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+		rcode = rmttap_init(rt_ptr);
+		if(rcode < 0 ) {
+			ERROR_PRINT(rcode);
+			continue;
 		}
+		rt_ptr->rt_data_fd = rt_ptr->rt_dd.fd;
+        USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+		
+		// get remote server process descriptor 
+		proc_ptr = &rt_ptr->rt_svr_proc;	
+		svr_ep = rt_ptr->rt_nodeid;
+		rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);	
 
-		r_ptr->rt_poll_idx		= rt_nfds;
+		// get remote client process descriptor 
+		proc_ptr = &rt_ptr->rt_clt_proc;	
+		clt_ep = (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);
+		clt_ep += rt_ptr->rt_nodeid;
+		rcode = dvk_getprocinfo(sw_ptr->sw_dcid, svr_ep, proc_ptr);
+		
+		rt_ptr->rt_poll_idx		= rt_nfds;
+		USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+
 		rt_fds[rt_nfds].fd 		= rmt_fd;
 		rt_fds[rt_nfds].events 	= POLLIN;
 		rt_nfds++;
 	}	
 
-	USRDEBUG("rt_nfds=%d\n", rt_nfds);
-
+	USRDEBUG("rt_nfds=%d nr_lcltap=%d\n", rt_nfds, nr_lcltap);
 	// Create SENDER, RECEIVER threads 
 	rcode = pthread_create( &sw_ptr->sw_send_thread, NULL, send_thread, (void *) NULL);
 	if(rcode < 0) ERROR_PRINT(rcode);
 	rcode = pthread_create( &sw_ptr->sw_recv_thread, NULL, recv_thread, (void *) NULL);
 	if(rcode < 0) ERROR_PRINT(rcode);
+
 	MTX_UNLOCK(sw_mutex);
 	pthread_exit(OK);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////7
-#ifdef ANULADO
-//////////////////////////////////////////////////////////////////////////////////////
-static void rt_send_packet(int fd, void *packet, int len, void *unused)
-{
-  int n;
-
-  n = write(fd, packet, len);
-  if(n != len){
-    if(errno != EAGAIN) perror("send_tap");
-  }
-}
-
-int open_rmttap(char *dev)
-{
-  struct ifreq ifr;
-  int fd, err;
-
-  if((fd = open("/dev/net/tun", O_RDWR)) < 0){
-    perror("Failed to open /dev/net/tun");
-    return(-1);
-  }
-  memset(&ifr, 0, sizeof(ifr));
-  ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
-  strncpy(ifr.ifr_name, dev, sizeof(ifr.ifr_name) - 1);
-  if(ioctl(fd, TUNSETIFF, (void *) &ifr) < 0){
-    perror("TUNSETIFF failed");
-    close(fd);
-    return(-1);
-  }
-  err = setup_port(fd, send_tap, NULL, 0);
-  if(err) return(err);
-  return(fd);
-}
-#endif // ANULADO
 

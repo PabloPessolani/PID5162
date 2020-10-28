@@ -11,6 +11,7 @@ extern int local_nodeid;
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN dc_usr_t  dcu, *dc_ptr;
 EXTERN int nr_rmttap;
+EXTERN int nr_lcltap;
 EXTERN int nr_switch;
 EXTERN switch_t switch_cfg;
 EXTERN switch_t *sw_ptr;
