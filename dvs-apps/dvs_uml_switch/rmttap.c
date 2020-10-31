@@ -173,6 +173,7 @@ int rt_send_write_packet(int wtype, rmttap_t *rt_ptr, void *packet, int len)
 {
 	int rcode, svr_ep;
 	message *m_ptr;
+	struct packet *pkt_ptr;
 
 	USRDEBUG("rt_name=%s wtype=%d len=%d rt_rmt_idx=%d\n", 
 			rt_ptr->rt_name, wtype, len, rt_ptr->rt_rmt_idx);
@@ -187,13 +188,19 @@ int rt_send_write_packet(int wtype, rmttap_t *rt_ptr, void *packet, int len)
 	m_ptr->m3_i2	= len;
 	
     USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
+	pkt_ptr= (struct packet *) &packet;
 	if( wtype == REQ_SW_WRITE){
 		svr_ep = rt_ptr->rt_rmt_ep - (dc_ptr->dc_nr_sysprocs - dc_ptr->dc_nr_tasks);	
+		USRDEBUG("REQ_SW_WRITE: " PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+		USRDEBUG("REQ_SW_WRITE: " PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
 	}else{ // REQ_RT_WRITE
 		svr_ep = rt_ptr->rt_nodeid;
+		USRDEBUG("REQ_RT_WRITE: " PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+		USRDEBUG("REQ_RT_WRITE: " PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
 	}
 	m_ptr->m3_i1 = rt_ptr->rt_rmt_idx;
 	USRDEBUG("SEND WRITE PACKET REQUEST: svr_ep=%d " MSG3_FORMAT, svr_ep, MSG3_FIELDS(m_ptr));
+
 	rcode = dvk_sendrec_T(svr_ep, m_ptr, TIMEOUT_MOLCALL);	
 	if( rcode < 0) {
 		ERROR_RETURN(rcode);
@@ -315,6 +322,7 @@ void *send_thread(void *arg)
 	int rcode, n, timeout; 
 	proc_usr_t *proc_ptr;
 static struct packet packet;
+	struct packet *pkt_ptr;
     int len, socklen;
 	rmttap_t *rt_ptr;
 	
@@ -398,6 +406,10 @@ static struct packet packet;
 						write_type = REQ_SW_WRITE; // Destination is REMOTE SWITCH  
 					}
 					// Write PACKET to Remote NODE 
+					pkt_ptr= (struct packet *) &packet;
+					USRDEBUG(PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+					USRDEBUG(PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
+		
 					rcode = rt_send_write_packet(write_type, rt_ptr, &packet, len);
 					if(rcode < 0){
 						if( rcode != EDVSBADF){
@@ -439,7 +451,7 @@ void *recv_thread(void *arg)
 {
 	int rcode, i,tap_fd, len, rmt_idx,lcl_idx ; 
 	proc_usr_t *proc_ptr;
-	static struct packet packet;
+	static struct packet packet, *pkt_ptr;
 	message *m_ptr;
 	rmttap_t *rt_ptr;
 	sock_data_t data;
@@ -535,6 +547,9 @@ void *recv_thread(void *arg)
 					break;
 				}
 				tap_fd = rt_ptr->rt_rmttap_fd;
+				pkt_ptr= &packet;
+				USRDEBUG("REQ_RT_WRITE: " PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+				USRDEBUG("REQ_RT_WRITE: " PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
 				send_tap(tap_fd, &packet, len, NULL);
 				rcode = OK;
 				break;
@@ -585,6 +600,9 @@ void *recv_thread(void *arg)
 					break;
 				}
 				
+				pkt_ptr= &packet;
+				USRDEBUG("REQ_SW_WRITE: " PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+				USRDEBUG("REQ_SW_WRITE: " PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
 				data.fd = rt_ptr->rt_dd.fd;
 				memcpy( &data.sock, rt_ptr->rt_dd.data_addr, sizeof(struct sockaddr_un)); 
 				send_sock(data.fd, &packet, len, (void*) &data);	

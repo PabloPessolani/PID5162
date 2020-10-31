@@ -3217,6 +3217,8 @@ EN NODE0: Se recibe una peticion para hacer un WRITE en la interface local LTAP1
 	 9:rmttap.c:recv_thread:565:SEND REPLY: source=31 type=8194 m3i1=0 m3i2=94 m3p1=0x44b460 m3ca1=[tap1]
 	DEBUG 6:dvk_send_T:864: endpoint=31 timeout=30000
 
+3424432055
+
 tcpdump -e -n -i tap1 
 Capturo el siguiente paquete:   puerto 4803 es un protocolo de discovery.
 12:33:12.022822 MAC_BR0_NOD0 > ETHERBCAST, ethertype IPv4 (0x0800), length 98: IP_ETH0_NODE0.55747 > IP_BROADCAST.4803: UDP, length 56
@@ -3823,8 +3825,69 @@ root@node1:/usr/src/dvs/dvs-apps/dvs_uml_switch# grep "rt_send_write_packet:178:
  547:rmttap.c:rt_send_write_packet:178:rt_name=LTAP1 wtype=4 len=70 rt_rmt_idx=0
 Deberia haber al menos algun wtype=2 - REQ_RT_WRITE
 
- ULTIMO_LOG 
+
 =====================================================================================
+20201029:
+	
+	EN NODE0 
+	Cuando algun dispositivo conectado al puerto a un switch realiza un WRITE/SEND
+	con destino multicast FF:FF:FF:FF:FF:FF deberia enviar un paquete hacia 
+	el RTAP1 (LTAP del NODO1)
+	Esto no se realiza porque el poll no se esta activando. Esto puede ser:
+	1) porque el switch no esta enviando al socket correspondiente
+	2) porque el poll no tiene indicado el socket correcto que monitorear.
+	
+	
+NODE0 HACE OPEN DE RTAP 
+		 1777:rmttap.c:try_rmttap_open:294:nr_rmttap=1
+		 1777:rmttap.c:try_rmttap_open:300:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1777:rmttap.c:rt_open_rmttap:224:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		DEBUG 1775:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+		DEBUG 1775:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 1775:dvk_getprocinfo:1195: ioctl ret=0
+		 1777:rmttap.c:rt_open_rmttap:230:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+		 1777:rmttap.c:rt_open_rmttap:236:rt_ptr->rt_nodeid=1
+		 1777:rmttap.c:rt_open_rmttap:237:SEND REQ_RT_OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		DEBUG 1775:dvk_sendrec_T:931: endpoint=1 timeout=30000
+		DEBUG 1775:dvk_sendrec_T:944: ioctl ret=0 errno=0
+		DEBUG 1775:dvk_sendrec_T:953: ioctl ret=0
+		 1777:rmttap.c:rt_open_rmttap:242:RCVD REQ_RT_OPEN REPLY: source=1 type=0 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		 1777:rmttap.c:rt_open_rmttap:249:Remote TAP tap1 successfully opened on endpoint 1 with remote index 0
+		  1777:rmttap.c:try_rmttap_open:309:success_open=1
+		  
+EL TAP REMOTO ENVIA UN PAQUETE AL SWITCH LOCAL 
+		 1778:rmttap.c:recv_thread:481:RECEIVED REQUEST: source=31 type=4 m3i1=0 m3i2=90 m3p1=0x47f460 m3ca1=[]
+		 1778:rmttap.c:recv_thread:582:RECEIVED REQ_SW_WRITE REQUEST lcl_idx=0 len=90
+		 1778:rmttap.c:recv_thread:590:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=1 rt_rmt_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+		DEBUG 1775:dvk_vcopy:126: src_ep=31 dst_ep=0 bytes=90
+		DEBUG 1775:dvk_vcopy:142: ioctl ret=0 errno=0
+		DEBUG 1775:dvk_vcopy:154: ioctl ret=0
+		 1778:rmttap.c:recv_thread:604:REQ_SW_WRITE: Dst: 33:33:00:00:00:16
+		 1778:rmttap.c:recv_thread:605:REQ_SW_WRITE: Src: 02:aa:bb:cc:dd:10 proto:459a6c <<<<<<<<<<< BR0 DE NODE1 
+		 1778:port.c:send_sock:182:fd=9 data_fd=9 len=90 
+		 1778:rmttap.c:recv_thread:621:SEND REPLY: source=31 type=0 m3i1=0 m3i2=90 m3p1=0x47f460 m3ca1=[]
+
+EL UML DE NODE0 HACE UN BROADCAST 
+		 1775:port.c:handle_sock_data:214:fd=5 hub=0
+		 1775:port.c:handle_sock_data:225:Dst: ff:ff:ff:ff:ff:ff
+		 1775:port.c:handle_sock_data:226:Src: 6a:d2:e6:65:28:32 proto:bfc2d44a
+		 1775:port.c:handle_data:112:fd=5 hub=0 len=42
+		 1775:port.c:match_sock:199:port_fd=10 data_fd=5
+		 1775:port.c:update_src:48:control=10 
+		 1775:port.c:send_dst:80:control=10 len=42 hub=0 
+		 1775:port.c:send_sock:182:fd=8 data_fd=5 len=42  >>>> Envia al puerto RTAP (CONFIRMARLO...PLEASE)
+		 1775:tuntap.c:send_tap:8:fd=6 len=42 			>>>>>> Envia al TAP local tap0 
+
+LUEGO , el send_thread, el poll no lo detecta !!!!!!!!
+
+	
+ULTIMO_LOG 
+=====================================================================================
+
+ANALIZAR UN LOOP DE PAQUETES:
+			Desde un UML NODO0 se envia un paquete a una IP desconocida
+			Como la desconoce se hace un Broadcast
+			Sale, entre otros por el puerto RTAP del NODO0 
 
 
 TODO:	Cuando muere el dvs_uml_switch automaticamente hace un unbind de los endpoints remotos

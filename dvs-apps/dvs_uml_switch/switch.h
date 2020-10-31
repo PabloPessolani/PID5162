@@ -161,6 +161,11 @@ struct packet {
   unsigned char data[1500];
 };
 
+#define PKTSRC_FORMAT "Src: %02x:%02x:%02x:%02x:%02x:%02x proto:%04x\n"
+#define PKTSRC_FIELDS(p) p->header.src[0], p->header.src[1], p->header.src[2], p->header.src[3], p->header.src[4], p->header.src[5], p->header.proto
+#define PKTDST_FORMAT "Dst: %02x:%02x:%02x:%02x:%02x:%02x\n"
+#define PKTDST_FIELDS(p) p->header.dest[0], p->header.dest[1], p->header.dest[2], p->header.dest[3], p->header.dest[4], p->header.dest[5] 
+
 struct switch_s{
 	int		sw_hub; 					// hub mode ?
 	int		sw_daemon; 					// deamon mode ?
@@ -172,7 +177,6 @@ struct switch_s{
 	int		sw_data_fd;					// data  FD	
 	char 	*sw_tap;					//  switch TAP name for the switch 
 	char 	*sw_ctrl_path;				// switch control socket path 
-	char 	*sw_data_path;				// switch data socket path 
 	char 	*sw_name; 					// switch name 
     pid_t	sw_recv_tid;				// receiver thread TID 
     pid_t	sw_send_tid;				// sender  thread TID 
@@ -206,13 +210,8 @@ struct rmttap_s{
 	int		rt_rmttap_fd;					// rmttap fd  in the remote node or local fd for remote switch  
 	char 	*rt_tap;						// name of the remote TAP device
 	char 	*rt_name;						// reference name in the local switch of the TAP device 
-	sock_data_t rt_ctrl_sd;
-	sock_data_t rt_data_sd;
-	sock_data_t rt_local_sd;
-	
 	struct sockaddr_un rt_ctrl_sun;			// control unix socket to the switch 
 	struct sockaddr_un rt_data_sun;			// data unix socket to the switch 
-	struct sockaddr_un rt_local_sun;		// local unix socket to the switch 
 	proc_usr_t 	rt_svr_proc;				// remote switch server process descriptor 
 	proc_usr_t 	rt_clt_proc;				// remote switch client process descriptor 
 	struct request_v3 rt_req;				// request to the local switch 

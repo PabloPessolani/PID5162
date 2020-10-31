@@ -132,7 +132,7 @@ static int match_tap(int port_fd, int data_fd, void *port_data,
 
 void handle_tap_data(int fd, int hub)
 {
-  struct packet packet;
+  struct packet packet, *pkt_ptr;
   int len;
   
   	USRDEBUG("fd=%d hub=%d\n", fd, hub);
@@ -142,6 +142,11 @@ void handle_tap_data(int fd, int hub)
     if(errno != EAGAIN) perror("Reading tap data");
     return;
   }
+  
+  pkt_ptr= (struct packet *) &packet;
+  USRDEBUG(PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+  USRDEBUG(PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
+  
   handle_data(fd, hub, &packet, len, NULL, match_tap);
 }
 
@@ -202,6 +207,8 @@ void handle_sock_data(int fd, int hub)
   struct packet packet;
   struct sock_data data;
   int len;
+  struct packet *pkt_ptr;
+
   unsigned int socklen = sizeof(data.sock);
 
   	USRDEBUG("fd=%d hub=%d\n", fd, hub);
@@ -213,7 +220,11 @@ void handle_sock_data(int fd, int hub)
     return;
   }
   data.fd = fd;
-
+  
+  pkt_ptr= (struct packet *) &packet;
+  USRDEBUG(PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
+  USRDEBUG(PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
+		
   handle_data(fd, hub, &packet, len, &data, match_sock);
 }
 

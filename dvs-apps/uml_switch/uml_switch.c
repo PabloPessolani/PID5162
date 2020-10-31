@@ -85,6 +85,8 @@ static struct sockaddr_un data_sun;
 
 static void cleanup(void)
 {
+    printf("Cleanup!!!!\n");
+	
   if(unlink(ctl_socket) < 0){
     printf("Couldn't remove control socket '%s' : ", ctl_socket);
     perror("");

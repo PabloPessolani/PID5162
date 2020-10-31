@@ -17,7 +17,7 @@ void rmttap_init(rmttap_t *rt_ptr)
 	sprintf(rt_ptr->rt_data_path,"/tmp/uml%0.2d%0.2d.data",sw_ptr->sw_dcid, rt_ptr->rt_index);
 	rt_ptr->rt_ctrl_fd	= -1;
 	rt_ptr->rt_data_fd	= -1;
-	rt_ptr->rt_tap	 	= -1;
+	rt_ptr->rt_tap	 	= NULL;
 	printf("rmttap_init (dvs_uml_switch version %d) - %s:%s\n",
 	       SWITCH_VERSION, rt_ptr->rt_sock_type, rt_ptr->rt_ctrl_path);
 }
