@@ -3880,7 +3880,168 @@ EL UML DE NODE0 HACE UN BROADCAST
 
 LUEGO , el send_thread, el poll no lo detecta !!!!!!!!
 
-	
+=====================================================================================
+20201031:
+
+ 2:switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+ 2:switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=1
+ 
+ 
+ 3:rmttap.c:init_rt_sockets:736:nr=32 endp=32 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPclient02 
+ 3:rmttap.c:init_rt_sockets:759:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ 3:rmttap.c:rmttap_init:17:rt_name=RTAP1
+ 3:rmttap.c:rmttap_init:31:rt_ptr->rt_ctrl_path=/tmp/uml.ctl
+ 3:rmttap.c:rmttap_init:39:rt_ptr->rt_dd.ctl_sock=/tmp/uml.ctl
+ 3:rmttap.c:connect_to_switch:102:rt_name=RTAP1
+ 2:dvs_uml_switch.c:accept_connection:171:fd=4
+ 2:dvs_uml_switch.c:add_fd:43:fd=8
+ 3:rmttap.c:connect_to_switch:140:write to switch RTAP1 magic=-17958194 version=3 type=0
+ 2:port.c:handle_port:263:fd=8
+ 2:dvs_uml_switch.c:new_port:138:ctrl_fd=8 data_fd=5
+ 2:dvs_uml_switch.c:new_port_v1_v3:108:ctrl_fd=8 type=0 data_fd=5
+ 2:port.c:setup_sock_port:235:ctrl_fd=8 data_fd=5 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LADO SWITCH 
+ 2:port.c:setup_port:158:ctrl_fd=8 
+New connection
+ 2:dvs_uml_switch.c:new_port_v1_v3:114:fd=8 sun.sun_path=
+ 3:rmttap.c:connect_to_switch:149:read from switch RTAP1
+ 3:rmttap.c:connect_to_switch:157:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+ 3:rmttap.c:rmttap_init:62:sock_type=unix ctl_sock=/tmp/uml.ctl fd=9 control=7 <<<<<<<<<<<<< LADO RTAP  
+ 3:rmttap.c:init_rt_sockets:766:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+SWITCH:
+ctrl_fd=8 
+data_fd=5
+RTAP:
+rt_ctrl_fd=7 
+rt_data_fd=9
+ 
+ Se supone que esta enviando algo al unix socket del RTAP 
+ 2:port.c:send_sock:182:fd=8 data_fd=5 len=90  
+ 2:port.c:send_sock:182:fd=8 data_fd=5 len=78 
+
+void send_sock(int fd, void *packet, int len, void *data)
+// NO utiliza el control_fd solo el data_fd que esta en data.fd 
+// en este caso el FD es data_fd=5
+
+
+El send_thread sale por timeout y no es notificado 
+ 4:rmttap.c:send_thread:355:Timeout
+
+--------------------------------------------------------------------------------------
+ EN NODE0
+		 
+		 1541:switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1541:switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=1
+		 
+		 
+		 1542:rmttap.c:init_rt_sockets:723:nr=32 endp=32 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=2 name=TAPclient02 
+		 1542:rmttap.c:init_rt_sockets:746:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1542:rmttap.c:rmttap_init:17:rt_name=RTAP1
+		 1542:rmttap.c:rmttap_init:30:rt_ptr->rt_ctrl_path=/tmp/uml.ctl
+		 1542:rmttap.c:rmttap_init:36:rt_ptr->rt_dd.ctl_sock=/tmp/uml.ctl
+		 1542:rmttap.c:connect_to_switch:88:rt_name=RTAP1
+		 1541:dvs_uml_switch.c:accept_connection:171:fd=4
+		 1541:dvs_uml_switch.c:add_fd:43:fd=8
+		 1542:rmttap.c:connect_to_switch:126:write to switch RTAP1 magic=-17958194 version=3 type=0
+		 1541:port.c:handle_port:263:fd=8
+		 1541:dvs_uml_switch.c:new_port:138:ctrl_fd=8 data_fd=5
+		 1541:dvs_uml_switch.c:new_port_v1_v3:108:ctrl_fd=8 type=0 data_fd=5
+		 1541:port.c:setup_sock_port:235:ctrl_fd=8 data_fd=5
+		 1541:port.c:setup_port:158:ctrl_fd=8 
+		New connection
+		 1541:dvs_uml_switch.c:new_port_v1_v3:114:fd=8 sun.sun_path=
+		 1542:rmttap.c:connect_to_switch:135:read from switch RTAP1
+		 1542:rmttap.c:connect_to_switch:143:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1542:rmttap.c:rmttap_init:48:sock_type=unix ctl_sock=/tmp/uml.ctl fd=9 control=7
+		 1542:rmttap.c:init_rt_sockets:753:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=-1 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+
+		SWITCH:
+		ctrl_fd=8 
+		data_fd=5
+		RTAP:
+		rt_ctrl_fd=7 
+		rt_data_fd=9
+		 
+		SE ACTIVO EL POLL !!!
+		1543:rmttap.c:send_thread:364:RTAP1 rt_poll_idx=0
+		 1543:rmttap.c:send_thread:397:Dst: 33:33:00:00:00:16
+		 1543:rmttap.c:send_thread:398:Src: 02:aa:bb:cc:dd:b0 proto:41b46
+
+		INTENTA EL WRITE HACIA NODE1 PERO REBOTA ANTES DE ENVIAR ALGO PORQUE TIENE  rt_rmt_idx=-1 QUE INDICA QUE NO HUBO UN OPEN 
+		 1543:rmttap.c:rt_send_write_packet:166:rt_name=RTAP1 wtype=2 len=90 rt_rmt_idx=-1
+		ERROR: rmttap.c:rt_send_write_packet:169: rcode=-9
+		 1543:rmttap.c:try_rmttap_open:281:nr_rmttap=1
+		 1543:rmttap.c:try_rmttap_open:287:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1543:rmttap.c:rt_open_rmttap:211:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=-1 rt_rmt_idx=-1 rt_rmttap_fd=-1 rt_name=RTAP1
+		DEBUG 1541:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+		DEBUG 1541:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 1541:dvk_getprocinfo:1195: ioctl ret=0
+		 1543:rmttap.c:rt_open_rmttap:217:nr=1 endp=1 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+		 1543:rmttap.c:rt_open_rmttap:223:rt_ptr->rt_nodeid=1
+		 
+		 INTENTA EL OPEN DEL TAP REMOTO 
+		 1543:rmttap.c:rt_open_rmttap:224:SEND REQ_RT_OPEN REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		DEBUG 1541:dvk_sendrec_T:931: endpoint=1 timeout=30000
+		DEBUG 1541:dvk_receive_T:920: ioctl ret=-61
+
+		IGNORAR ESTO PORQUE ESTO ES DEL RECEIVER LOCAL 
+		ERROR: rmttap.c:recv_thread:465: rcode=-61
+		DEBUG 1541:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+		EL SENDREC TERMINA BIAN 
+		DEBUG 1541:dvk_sendrec_T:944: ioctl ret=0 errno=0
+		DEBUG 1541:dvk_sendrec_T:953: ioctl ret=0
+		 1543:rmttap.c:rt_open_rmttap:229:RCVD REQ_RT_OPEN REPLY: source=1 type=0 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+		 1543:rmttap.c:rt_open_rmttap:236:Remote TAP tap1 successfully opened on endpoint 1 with remote index 0
+		 1543:rmttap.c:try_rmttap_open:296:success_open=1
+		 
+		 ESTO ES EL CODIGO DE ERROR ANTERIOR
+			ERROR: rmttap.c:send_thread:411: rcode=-9 
+
+		EL INDICE DEL RTAP EN EL NODO REMOTO ES 0 
+		INTENTA UN ENVIO DE PAQUETE AL TAP REMOTO 
+		 1543:rmttap.c:send_thread:364:RTAP1 rt_poll_idx=0
+		 1543:rmttap.c:send_thread:397:Dst: 33:33:00:00:00:16
+		 1543:rmttap.c:send_thread:398:Src: 02:aa:bb:cc:dd:00 proto:41b46c
+		 1543:rmttap.c:rt_send_write_packet:166:rt_name=RTAP1 wtype=2 len=90 rt_rmt_idx=0
+		 1543:rmttap.c:rt_send_write_packet:177:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=7 rt_data_fd=9 rt_poll_idx=0 rt_rmt_ep=1 rt_rmt_idx=0 rt_rmttap_fd=-1 rt_name=RTAP1
+		 1543:rmttap.c:rt_send_write_packet:185:REQ_RT_WRITE: Dst: 60:b4:41:00:5a:00
+		 1543:rmttap.c:rt_send_write_packet:186:REQ_RT_WRITE: Src: 00:00:00:00:00:00 proto:b6d96304
+		 1543:rmttap.c:rt_send_write_packet:189:SEND WRITE PACKET REQUEST: svr_ep=1 source=1 type=2 m3i1=0 m3i2=90 m3p1=0x41b460 m3ca1=[tap1]
+		DEBUG 1541:dvk_sendrec_T:931: endpoint=1 timeout=30000
+		DEBUG 1541:dvk_sendrec_T:944: ioctl ret=0 errno=0
+		DEBUG 1541:dvk_sendrec_T:953: ioctl ret=0
+		 1543:rmttap.c:rt_send_write_packet:195:RECEIVED WRITE PACKET REPLY: source=1 type=0 m3i1=0 m3i2=90 m3p1=0x41b460 m3ca1=[tap1]
+		 
+EN NODE1 
+
+10:switch_cfg.c:switch_config:392:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=-1 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=-1 rt_name=LTAP1
+ 10:switch_cfg.c:switch_config:402:nr_switch=1 nr_rmttap=1
+ 
+ 11:rmttap.c:init_rt_sockets:774:rt_nfds=0 nr_lcltap=1
+
+RECIBE EL REQ_RT_OPEN SOBRE LTAP1 
+ 13:rmttap.c:recv_thread:468:RECEIVED REQUEST: source=30 type=1 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+ 13:rmttap.c:recv_thread:471:RECEIVED REQ_RT_OPEN REQUEST
+ 13:rmttap.c:open_lcltap:59:dev=tap1
+ 13:rmttap.c:open_lcltap:75:dev=tap1 fd=7
+ 13:rmttap.c:add_rt_fd:425:LTAP fd=7 <<<<<<<<<<<<<<<<<<<<<< FD DEL TAP LOCAL 
+ 13:rmttap.c:add_rt_fd:431:LTAP rt_nfds=1
+ 13:rmttap.c:recv_thread:500:REQ_RT_OPEN: rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=0 rt_rmt_ep=30 rt_rmt_idx=0 rt_rmttap_fd=7 rt_name=LTAP1
+ 13:rmttap.c:recv_thread:608:SEND REPLY: source=30 type=0 m3i1=0 m3i2=0 m3p1=(nil) m3ca1=[tap1]
+
+RECIBE LA PETICION DE WRITE SOBRE EL TAP 
+ 13:rmttap.c:recv_thread:468:RECEIVED REQUEST: source=30 type=2 m3i1=0 m3i2=90 m3p1=0x41b460 m3ca1=[tap1]
+ 13:rmttap.c:recv_thread:505:RECEIVED REQ_RT_WRITE REQUEST
+ 13:rmttap.c:recv_thread:519:rt_index=0 rt_nodeid=1 rt_tap=tap1 rt_ctrl_fd=-1 rt_data_fd=-1 rt_poll_idx=0 rt_rmt_ep=30 rt_rmt_idx=0 rt_rmttap_fd=7 rt_name=LTAP1
+DEBUG 10:dvk_vcopy:126: src_ep=30 dst_ep=1 bytes=90
+DEBUG 10:dvk_vcopy:142: ioctl ret=0 errno=0
+DEBUG 10:dvk_vcopy:154: ioctl ret=0
+ 13:rmttap.c:recv_thread:538:REQ_RT_WRITE: Dst: 33:33:00:00:00:16
+ 13:rmttap.c:recv_thread:539:REQ_RT_WRITE: Src: 02:aa:bb:cc:dd:00 proto:45da6c
+ 13:tuntap.c:send_tap:8:fd=7 len=90  <<<<<<<<<< FD DEL TAP LOCAL 
+ 13:rmttap.c:recv_thread:608:SEND REPLY: source=30 type=0 m3i1=0 m3i2=90 m3p1=0x41b460 m3ca1=[tap1]
+
 ULTIMO_LOG 
 =====================================================================================
 
@@ -4243,6 +4404,7 @@ Oct 19 18:08:17 node1 kernel: [ 4439.294869] DEBUG RECEIVER:new_exit_unbind:386:
 	}
 	
 TODO: Convertir las asignaciones estaticas en malloc()
+
 
 
 nsenter -p -t $DC0 ./uml.linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node00 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=daemon

@@ -1,0 +1,63 @@
+INCORPORACION DE RTAP COMO DRIVER DE UML
+=========================================
+
+https://elixir.bootlin.com/linux/v4.9.88/source/arch/um/drivers
+
+Esto funciona de la siguiente forma 
+   -----------------------                    --------------------
+   |  UML DRIVER   = SDR |     M3-IPC         |                  |
+   |     RTAP      |-----|--------------------| DVS_UML_SWITCH   |
+   |               = RCV |                    | with LTAP        |
+   -----------------------                    --------------------
+
+EN /usr/src/linux/arch/um/drivers
+Se copiaron:
+	daemon_kern.c => rtap_kern.c 
+	daemon_user.c => rtap_user.c 
+	daemon.h => rtap.h 
+	
+La idea es arrancar en el init es hacer algo similar a lo que se hizo en dvs_uml_switch
+es decir, arrancar un thread que luego arranca 2 threads: Sender y Receiver.
+Los thread Sender/Receives se comporta como si fuese el switch con un RTAP configurado.
+Es decir:
+	SENDER: lee del unix socket y envia por M3IPC
+	RECEIVER: recibe por M3IPC y escribe en el Unix Socket
+
+Deberian pasarseles parametros:  eth0:rtap,<MAC_address>,<dcid>,<tap_name>,<nodeid>
+dcid: DC ID
+tap_name: nombre de la interface TAP en el nodo remoto
+nodeid: nodo remoto
+
+En el caso de daemon, los parametros de entrada son:
+			ethn=daemon,ethernet address,socket type,control socket,data socket
+
+En drivers/net_kern.c  se hace el parsing de la linea de comandos .
+__setup("eth", eth_setup);
+__uml_help(eth_setup,
+"eth[0-9]+=<transport>,<options>\n"
+"    Configure a network device.\n\n"
+);
+
+Ver /arch/um/drivers/pcap_kern.c
+ pcap_setup(char *str, char **mac_out, void *data)
+
+
+==========================================================================================
+20201103:
+
+En 
+	static int rtap_setup(char *str, char **mac_out, void *data)
+Aparentemente el str con la linea de comandos 
+	remain = split_if_spec(str, mac_out, &init->sock_type, &init->ctl_sock,
+			       NULL);
+retorna los parametros de la linea de comandos parseados 
+
+
+
+
+
+
+
+
+
+

@@ -989,9 +989,11 @@ if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
 
 	/* Removes the unbinding process descriptor from other process SENDING queue */
 	if( test_bit(BIT_SENDING, &proc_ptr->p_usr.p_rts_flags)) {
-		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_sendto) - dc_ptr->dc_usr.dc_nr_tasks));
+//		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_sendto) + dc_ptr->dc_usr.dc_nr_tasks));
+		rp = ENDPOINT2PTR(dc_ptr, proc_ptr->p_usr.p_sendto);
 		uproc_ptr = &rp->p_usr;
-		DVKDEBUG(INTERNAL,"sendto" PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
+		DVKDEBUG(INTERNAL,"sendto %d:" PROC_USR_FORMAT, 
+			proc_ptr->p_usr.p_sendto, PROC_USR_FIELDS(uproc_ptr));
 		if( proc_ptr->p_usr.p_nr < rp->p_usr.p_nr) {
 			WLOCK_PROC(rp); /* Caller LOCK is just locked */
 		}else{	
@@ -1010,7 +1012,8 @@ if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
 	
 	/* Removes the unbinding process descriptor from other process MIGRATING queue */
 	if( test_bit(BIT_WAITMIGR, &proc_ptr->p_usr.p_rts_flags)) {
-		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_waitmigr) - dc_ptr->dc_usr.dc_nr_tasks));
+//		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_waitmigr) + dc_ptr->dc_usr.dc_nr_tasks));
+		rp = ENDPOINT2PTR(dc_ptr, proc_ptr->p_usr.p_waitmigr);
 		uproc_ptr = &rp->p_usr;
 		DVKDEBUG(INTERNAL,"waitmigr " PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 		if( proc_ptr->p_usr.p_nr < rp->p_usr.p_nr) {
@@ -1059,7 +1062,8 @@ if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
 	
 	/* Removes the process descriptor waiting for UNBINDING queue */
 	if( test_bit(BIT_WAITUNBIND, &proc_ptr->p_usr.p_rts_flags)) {
-		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_waitunbind) - dc_ptr->dc_usr.dc_nr_tasks));
+//		rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_waitunbind) + dc_ptr->dc_usr.dc_nr_tasks));
+		rp = ENDPOINT2PTR(dc_ptr, proc_ptr->p_usr.p_waitunbind);
 		uproc_ptr = &rp->p_usr;
 		DVKDEBUG(INTERNAL,"waitunbind " PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 		if( proc_ptr->p_usr.p_nr < rp->p_usr.p_nr) {

@@ -33,8 +33,7 @@ update-grub2
   x   Defined at init/Kconfig:254                                                                      x
   x   Depends on: SYSVIPC [=y]                                                                         x
   x                             
-  
-
+ 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 EN EL MAN DE IPC 
@@ -4418,7 +4417,7 @@ Oct 27 17:15:24 node1 kernel: [33451.742763] DEBUG 10463:do_unbind:936: WUNLOCK_
 Oct 27 17:15:24 node1 kernel: [33451.742765] DEBUG 10463:do_unbind:937: WLOCK_PROC ep=1 count=2
 Oct 27 17:15:24 node1 kernel: [33451.742767] DEBUG 10463:do_unbind:938: WLOCK_PROC ep=30 count=28
 Oct 27 17:15:24 node1 kernel: [33451.742769] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=1 count=2
-Oct 27 17:15:24 node1 kernel: [33451.742772] DEBUG 10463:do_unbind:936: WUNLOCK_PROC ep=30 count=28 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< COUNT A LA MIERDA!!!
+Oct 27 17:15:24 node1 kernel: [33451.742772] DEBUG 10463:do_unbind:936: WUNLOCK_PROC ep=30 count=28 <<<<<<<<<<<<<<<<<<<< COUNT A LA MIERDA!!!
 Oct 27 17:15:24 node1 kernel: [33451.742774] DEBUG 10463:do_unbind:937: WLOCK_PROC ep=2 count=21
 Oct 27 17:15:24 node1 kernel: [33451.742776] DEBUG 10463:do_unbind:938: WLOCK_PROC ep=30 count=28
 Oct 27 17:15:24 node1 kernel: [33451.742778] DEBUG 10463:do_unbind:970: WUNLOCK_PROC ep=2 count=21
@@ -4577,10 +4576,109 @@ Message from syslogd@node1 at Oct 27 17:15:24 ...
 Message from syslogd@node1 at Oct 27 17:15:24 ...
  kernel:[33451.873027] EIP: [<d40b47d2>] 
 
+------------------------------------------------------------------------------------------------
+Oct 31 20:04:45 node0 kernel: [ 1378.565244] DEBUG 757:dvk_ioctl:349: cmd=4004E30A arg=BFEB38A0
+Oct 31 20:04:45 node0 kernel: [ 1378.565247] DEBUG 757:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+Oct 31 20:04:45 node0 kernel: [ 1378.565249] DEBUG 757:io_unbind:109: 
+Oct 31 20:04:45 node0 kernel: [ 1378.565252] DEBUG 757:new_unbind:1912: dcid=0 proc_ep=1
+Oct 31 20:04:45 node0 kernel: [ 1378.565256] DEBUG 757:check_caller:605: caller_pid=757 caller_tgid=757
+Oct 31 20:04:45 node0 kernel: [ 1378.565257] ERROR: 757:check_caller:642: rcode=-310
+Oct 31 20:04:45 node0 kernel: [ 1378.565259] DEBUG 757:new_unbind:1928: RLOCK_DC dc=0 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565261] DEBUG 757:new_unbind:1940: RUNLOCK_DC dc=0 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565262] DEBUG 757:new_unbind:1942: RLOCK_PROC ep=1 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565264] DEBUG 757:new_unbind:1959: RUNLOCK_PROC ep=1 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565265] DEBUG 757:new_unbind:1986: WLOCK_DC dc=0 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565266] DEBUG 757:new_unbind:1990: WLOCK_PROC ep=1 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565269] DEBUG 757:do_unbind:733: nr=1 endp=1 dcid=0 flags=1004 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+Oct 31 20:04:45 node0 kernel: [ 1378.565271] DEBUG 757:do_unbind:826: wakeup with error those processes trying to send a message to the proc
+Oct 31 20:04:45 node0 kernel: [ 1378.565272] DEBUG 757:do_unbind:864: delete notify messages bits sent by the proc
+Oct 31 20:04:45 node0 kernel: [ 1378.565277] DEBUG 757:do_unbind:876: Skip, self process
+Oct 31 20:04:45 node0 kernel: [ 1378.565280] DEBUG 757:do_unbind:908: Check if another process is waiting to receive a message from the unbound process
+Oct 31 20:04:45 node0 kernel: [ 1378.565281] DEBUG 757:do_unbind:936: WUNLOCK_PROC ep=1 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565282] DEBUG 757:do_unbind:937: WLOCK_PROC ep=0 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565284] DEBUG 757:do_unbind:938: WLOCK_PROC ep=1 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565285] DEBUG 757:do_unbind:970: WUNLOCK_PROC ep=0 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565286] DEBUG 757:do_unbind:926: Skip, self process
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565287] DEBUG 757:do_unbind:933: WLOCK_PROC ep=2 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565288] DEBUG 757:do_unbind:970: WUNLOCK_PROC ep=2 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565290] DEBUG 757:do_unbind:933: WLOCK_PROC ep=30 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565291] DEBUG 757:do_unbind:970: WUNLOCK_PROC ep=30 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565292] DEBUG 757:do_unbind:933: WLOCK_PROC ep=31 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565293] DEBUG 757:do_unbind:970: WUNLOCK_PROC ep=31 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565294] DEBUG 757:do_unbind:933: WLOCK_PROC ep=32 count=0
+Oct 31 20:04:45 node0 kernel: [ 1378.565295] DEBUG 757:do_unbind:970: WUNLOCK_PROC ep=32 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.565444] DEBUG 757:do_unbind:974: nr=1 endp=1 dcid=0 flags=1004 misc=0 lpid=-1 vpid=-1 nodeid=1 name=TAPserver01 
+Oct 31 20:04:45 node0 kernel: [ 1378.565447] DEBUG 757:do_unbind:994: sendtonr=0 endp=0 dcid=0 flags=0 misc=0 lpid=0 vpid=0 nodeid=0 name= 
+Oct 31 20:04:45 node0 kernel: [ 1378.565448] DEBUG 757:do_unbind:999: WUNLOCK_PROC ep=1 count=0
+
+Oct 31 20:04:45 node0 kernel: [ 1378.572146] BUG: unable to handle kernel NULL pointer dereference at   (null)
+Oct 31 20:04:45 node0 kernel: [ 1378.572721] IP: [<d22d0b4b>] __list_add+0xb/0x120
+Oct 31 20:04:45 node0 kernel: [ 1378.573285] *pdpt = 000000000eee0001 *pde = 0000000000000000 
+Oct 31 20:04:45 node0 kernel: [ 1378.573349] 
+Oct 31 20:04:45 node0 kernel: [ 1378.573867] Oops: 0000 [#1] SMP
+Oct 31 20:04:45 node0 kernel: [ 1378.574435] Modules linked in: tun bridge stp llc dvk(O) iptable_filter fuse pcspkr joydev vmw_balloon serio_raw vmwgfx evdev ttm drm_kms_helper drm shpchp vmw_vmci sg ac button ip_tables x_tables autofs4 overlay ext4 crc16 jbd2 fscrypto mbcache sr_mod cdrom sd_mod ata_generic hid_generic usbhid hid psmouse uhci_hcd ata_piix xhci_pci xhci_hcd ehci_pci ehci_hcd libata pcnet32 mii usbcore mptspi scsi_transport_spi mptscsih mptbase i2c_piix4 scsi_mod
+Oct 31 20:04:45 node0 kernel: [ 1378.579123] CPU: 0 PID: 757 Comm: dvs_uml_switch Tainted: G           O    4.9.88-DVK #159
+Oct 31 20:04:45 node0 kernel: [ 1378.580225] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 07/29/2019
+Oct 31 20:04:45 node0 kernel: [ 1378.582610] task: e123ea80 task.stack: e9ee0000
+Oct 31 20:04:45 node0 kernel: [ 1378.583850] EIP: 0060:[<d22d0b4b>] EFLAGS: 00010246 CPU: 0
+Oct 31 20:04:45 node0 kernel: [ 1378.585144] EIP is at __list_add+0xb/0x120 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LIST ADD !
+Oct 31 20:04:45 node0 kernel: [ 1378.587137] EAX: e9ee1d6c EBX: 00000000 ECX: e9ebf9e0 EDX: 00000000
+Oct 31 20:04:45 node0 kernel: [ 1378.588915] ESI: e9ebf9dc EDI: e123ea80 EBP: e9ee1d88 ESP: e9ee1d3c
+Oct 31 20:04:45 node0 kernel: [ 1378.590381]  DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068
+Oct 31 20:04:45 node0 kernel: [ 1378.591877] CR0: 80050033 CR2: 00000000 CR3: 22db1300 CR4: 000006f0
+Oct 31 20:04:45 node0 kernel: [ 1378.593450] Stack:
+Oct 31 20:04:45 node0 kernel: [ 1378.595003]  e123ea80 e9ebf9ec e123ea80 00000000 e9ebf9e8 00000000 e9ebf9d8 e9ec47d8
+Oct 31 20:04:45 node0 kernel: [ 1378.596691]  e9ebf9d8 e9ebf9d8 d25bcd08 e9ebf9e0 e9ee1d8c d20ba8e7 00000000 26a25947
+Oct 31 20:04:45 node0 kernel: [ 1378.598556]  e9ebf9d8 e9ec47d8 e9ec4600 e9ee1d94 d25bc51c e9ebf800 e9ee1df8 f896e471
+Oct 31 20:04:45 node0 kernel: [ 1378.600389] Call Trace:
+Oct 31 20:04:45 node0 kernel: [ 1378.602198]  [<d25bcd08>] ? __mutex_lock_slowpath+0x78/0x100
+Oct 31 20:04:45 node0 kernel: [ 1378.604518]  [<d20ba8e7>] ? vprintk_default+0x37/0x40
+Oct 31 20:04:45 node0 kernel: [ 1378.606446]  [<d25bc51c>] ? mutex_lock+0x1c/0x30
+Oct 31 20:04:45 node0 kernel: [ 1378.608497]  [<f896e471>] ? do_unbind+0x136b/0x2721 [dvk]
+Oct 31 20:04:45 node0 kernel: [ 1378.610763]  [<f8974c00>] ? new_unbind+0x284/0x1577 [dvk]
+Oct 31 20:04:45 node0 kernel: [ 1378.612777]  [<d20ba4fe>] ? vprintk_emit+0x2ee/0x4f0
+Oct 31 20:04:45 node0 kernel: [ 1378.614814]  [<f8969148>] ? io_unbind+0x4e/0xce [dvk]
+Oct 31 20:04:45 node0 kernel: [ 1378.616934]  [<f89681fe>] ? dvk_ioctl+0x91/0x1a8 [dvk]
+Oct 31 20:04:45 node0 kernel: [ 1378.619225]  [<f896816d>] ? dvk_write+0x49/0x49 [dvk]
+Oct 31 20:04:45 node0 kernel: [ 1378.621881]  [<d21e6624>] ? do_vfs_ioctl+0x94/0x730
+Oct 31 20:04:45 node0 kernel: [ 1378.624028]  [<d21d316d>] ? vfs_write+0x15d/0x1c0
+Oct 31 20:04:45 node0 kernel: [ 1378.626252]  [<d21e6d20>] ? SyS_ioctl+0x60/0x70
+Oct 31 20:04:45 node0 kernel: [ 1378.628431]  [<d2003708>] ? do_fast_syscall_32+0x98/0x160
+Oct 31 20:04:45 node0 kernel: [ 1378.630682]  [<d25bf682>] ? sysenter_past_esp+0x47/0x75
+Oct 31 20:04:45 node0 kernel: [ 1378.632827] Code: 00 89 ea c7 41 04 00 00 00 00 e9 ce fe ff ff 89 ea 83 cf 01 e9 c4 fe ff ff e8 82 69 d9 ff 66 90 53 83 ec 24 8b 59 04 39 d3 75 25 <8b> 1a 39 d9 75 6f 39 c2 0f 84 af 00 00 00 39 c1 0f 84 a7 00 00
+Oct 31 20:04:45 node0 kernel: [ 1378.639663] EIP: [<d22d0b4b>] 
+
+Oct 31 20:04:45 node0 kernel: [ 1378.639706] __list_add+0xb/0x120   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LIST ADD ! 
+
+Oct 31 20:04:45 node0 kernel: [ 1378.641897]  SS:ESP 0068:e9ee1d3c
+Oct 31 20:04:45 node0 kernel: [ 1378.644018] CR2: 0000000000000000
+Oct 31 20:04:45 node0 kernel: [ 1378.649965] ---[ end trace fbb25607f3cc277e ]---
+Oct 31 20:04:45 node0 kernel: [ 1378.652663] do_exit: local_nodeid:0
+
+==============================================================================================================
+20201103:
+		APARENTEMENTE EL PROBLEMA DEL UNBIND Y EVENTUALMENTE OTROS ESTA ES EN LAS SENTENCIAS:
+		ERRONEA 
+			rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_sendto) - dc_ptr->dc_usr.dc_nr_tasks)); <<<<< LA RESTA ES SUMA 
+		CORRECTA 
+			rp = ENDPOINT2PTR(dc_ptr, proc_ptr->p_usr.p_sendto);  <<<< ESTO EVITA ESE ERROR 
+
+#define ENDPOINT2PTR(dc_ptr, ep) DC_PROC(dc_ptr,(_ENDPOINT_P(ep)+dc_ptr->dc_usr.dc_nr_tasks)) <<<<<<<<<<<<< SUMA, CORRECTO 
+
 
 ULTIMO_LOG
 ==============================================================================================================
-
+TODO:  SEGURIZAR EL CODIGO CON  
+		BUG_ON(!list_empty(&new->list));
+		Que seria equivalente a assert() 
+		
 
 TODO: 	MODIFICAR LOS PROXIES PARA QUE SI EL PAR QUEDA RENGO, SE REARRANCAN AMBOS 
 

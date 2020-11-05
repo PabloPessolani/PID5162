@@ -34,21 +34,27 @@ read  -p "Configuring tap0. Enter para continuar... "
 mknod /dev/tap0 c 36 $[ 0 + 16 ]
 chmod 666 /dev/tap0
 ip tuntap add dev tap0 mode tap
+if [ $lcl -eq 0 ]
+then
 ip link set dev tap0 address $mactap0
+fi 
 ip link set dev tap0 up 
 brctl addif br0 tap0
+if [ $lcl -eq 0 ]
+then
 ifconfig tap0 $iptap0 netmask $netmask
 ifconfig tap0 | grep addr
+fi 
 # TAP1 configuration --------------------------------------------------------
 read  -p "Configuring tap1. Enter para continuar... "
 mknod /dev/tap1 c 36 $[ 1 + 16 ]
 chmod 666 /dev/tap1
 ip tuntap add dev tap1 mode tap
-ip link set dev tap1 address $mactap1
+# ip link set dev tap1 address $mactap1
 ip link set dev tap1 up 
-# brctl addif br0 tap1
-ifconfig tap1  $iptap1 netmask  $netmask
-ifconfig tap1 | grep addr
+brctl addif br0 tap1
+#ifconfig tap1  $iptap1 netmask  $netmask
+#ifconfig tap1 | grep addr
 # Link ETH0 to BRIDGE
 #read  -p "Conecting eth0 to br0. Enter para continuar... "
 #brctl addif br0 eth0

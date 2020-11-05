@@ -26,12 +26,9 @@ int rmttap_init(rmttap_t *rt_ptr)
 	strcpy(rt_ptr->rt_sock_type,"unix");
 	rt_ptr->rt_dd.sock_type = rt_ptr->rt_sock_type;
 
-//	sprintf(rt_ptr->rt_ctrl_path,"/tmp/uml%0.2d%0.2d.ctl", sw_ptr->sw_dcid, rt_ptr->rt_index);
 	strcpy(rt_ptr->rt_ctrl_path, sw_ptr->sw_ctrl_path);
 	USRDEBUG("rt_ptr->rt_ctrl_path=%s\n", rt_ptr->rt_ctrl_path);
-//	rcode = remove(rt_ptr->rt_ctrl_path);
-//	if (rcode == -1 && errno != ENOENT)
-//		ERROR_PRINT(-errno);
+
 	rt_ptr->rt_ctrl_sun.sun_family = AF_UNIX;
 	memcpy(rt_ptr->rt_ctrl_sun.sun_path, rt_ptr->rt_ctrl_path, strlen(rt_ptr->rt_ctrl_path)+1);
 	rt_ptr->rt_dd.ctl_addr = &rt_ptr->rt_ctrl_sun;
@@ -45,17 +42,6 @@ int rmttap_init(rmttap_t *rt_ptr)
 	rt_ptr->rt_data_sun.sun_family = AF_UNIX;
 	memcpy(rt_ptr->rt_data_sun.sun_path, &name,  sizeof(name));
 	rt_ptr->rt_dd.local_addr = &rt_ptr->rt_data_sun;
-
-#ifdef ANULADO
-	sprintf(rt_ptr->rt_data_path,"/tmp/uml%0.2d%0.2d.data",sw_ptr->sw_dcid, rt_ptr->rt_index);
-	rt_ptr->rt_data_sun.sun_family = AF_UNIX;
-	memcpy(rt_ptr->rt_data_sun.sun_path,rt_ptr->rt_data_path,strlen(rt_ptr->rt_data_path)+1);
-	rt_ptr->rt_dd.local_addr = &rt_ptr->rt_data_sun;
-	rcode = remove(rt_ptr->rt_data_path);
-	if (rcode == -1 && errno != ENOENT)
-        ERROR_PRINT(-errno);
-	USRDEBUG("rt_data_sun.sun_path=%s\n", rt_ptr->rt_data_sun.sun_path);
-#endif // ANULADO
 	
 	rt_ptr->rt_dd.fd = connect_to_switch(rt_ptr);
 	dd_ptr = &rt_ptr->rt_dd;
@@ -156,6 +142,7 @@ static int connect_to_switch(rmttap_t *rt_ptr)
 	}
     USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));	
 	rt_ptr->rt_dd.data_addr = sun;
+	rt_ptr->rt_ctrl_fd = rt_ptr->rt_dd.control;
 	return fd;
 
  out_free:
@@ -757,12 +744,12 @@ void init_rt_sockets( void)
 		
 		// Entries for REMOTE  TAPs
         USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
-		rcode = rmttap_init(rt_ptr);
-		if(rcode < 0 ) {
-			ERROR_PRINT(rcode);
+		rmt_fd = rmttap_init(rt_ptr);
+		if(rmt_fd < 0 ) {
+			ERROR_PRINT(rmt_fd);
 			continue;
 		}
-		rt_ptr->rt_data_fd = rt_ptr->rt_dd.fd;
+		rt_ptr->rt_data_fd = rmt_fd;
         USRDEBUG(RT_FORMAT, RT_FIELDS(rt_ptr));
 		
 		// get remote server process descriptor 

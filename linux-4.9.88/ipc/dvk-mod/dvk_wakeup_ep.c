@@ -92,7 +92,8 @@ asmlinkage long mm_wakeup_ep(int dcid, int proc_ep, int signo)
 
 		if (test_bit(BIT_SENDING, &proc_ptr->p_usr.p_rts_flags)){
 			if( ! test_bit(BIT_RMTOPER, &proc_ptr->p_usr.p_rts_flags)){
-				rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_sendto) - dc_ptr->dc_usr.dc_nr_tasks));
+//				rp = DC_PROC(dc_ptr,(_ENDPOINT_P(proc_ptr->p_usr.p_sendto) + dc_ptr->dc_usr.dc_nr_tasks));
+				rp = ENDPOINT2PTR(dc_ptr, proc_ptr->p_usr.p_sendto);
 				uproc_ptr = &rp->p_usr;
 				DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 				if( proc_ptr->p_usr.p_nr < rp->p_usr.p_nr) {
