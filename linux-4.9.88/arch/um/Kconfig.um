@@ -11,11 +11,25 @@ config STATIC_LINK
 
 
 config DVS
-	bool "Distributed Virtualization System (IPC) support"
+	bool "Distributed Virtualization System support"
+	default y
+	help
+		Distributed Virtualization System support
+
+config DVKIOCTL
+	bool "Use UML IOCTL interface for DVK calls"
+	depends on DVS 
+	default y
+	help
+		Use IOCTL interface for DVK calls
+
+config DVKIPC
+	bool "Use UML IPC interface for DVK calls"
+	depends on DVS && !DVKIOCTL
 	default n
 	help
-		Distributed Virtualization System (IPC) support
-	  
+		Use DVKIPC interface for DVK calls
+		
 source "mm/Kconfig"
 
 config LD_SCRIPT_STATIC

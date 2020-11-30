@@ -32,43 +32,6 @@
 
 extern int umlkrn_fd;
 
-long usr_getep(int pid)
-{
-	return(dvk_getep(pid));
-}
-
-long usr_sendrec_T(int endpoint , message *mptr, long timeout)
-{
-	long ret;
-	do {
-		ret = 0;
-		ret = dvk_sendrec_T(endpoint , mptr, timeout);
-	}while(ret == (EDVSRESTARTSYS));
-	return(ret);
-}
-
-long usr_getdvsinfo(dvs_usr_t *dvsu_ptr)
-{
-	return(dvk_getdvsinfo(dvsu_ptr));
-}
-
-long usr_getdcinfo(int dcid, dc_usr_t *dcu_ptr)
-{
-	return(dvk_getdcinfo(dcid, dcu_ptr));
-}
-
-long usr_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
-{
-	return(dvk_getprocinfo( dcid, p_nr, p_usr));
-
-}
-
-long usr_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
-{
-	return( dvk_bind_X(cmd, dcid, pid, endpoint, nodeid));
-}
-
-
 int start_rd_thread(unsigned long sp, int *fd_out)
 {
 	int pid, fds[2], err;

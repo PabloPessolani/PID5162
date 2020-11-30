@@ -17,7 +17,8 @@
 #include <sys/syscall.h>
 #include <sys/ipc.h>
 #include <os.h>
-
+#include <pthread.h>
+		
 static void copy_stat(struct uml_stat *dst, const struct stat64 *src)
 {
 	*dst = ((struct uml_stat) {

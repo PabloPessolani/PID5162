@@ -370,10 +370,11 @@ int sleep_proc(struct proc *proc, long timeout)
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
-		old_set = current->blocked;
+		sigaddset(&new_set, SIGTERM);
+	//	old_set = current->blocked;
+		sigprocmask(SIG_BLOCK, &new_set, &old_set);
 		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
 			new_set.sig[0], old_set.sig[0]); 
-		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 	}
 	
 	do {
@@ -391,7 +392,15 @@ int sleep_proc(struct proc *proc, long timeout)
 		DVKDEBUG(INTERNAL,"shared_pending sig[0]:0x%08x, sig[1]:0x%08x\n",
 			current->signal->shared_pending.signal.sig[0], 
 			current->signal->shared_pending.signal.sig[1]);	
+#define ONLY_FOR_TEST 1				
+			
 #ifdef ONLY_FOR_TEST				
+		if( sigismember(&current->pending.signal,  SIGALRM) ||
+			sigismember(&current->signal->shared_pending.signal, SIGALRM))
+			DVKDEBUG(INTERNAL,"SIGALRM received\n");
+		if( sigismember(&current->pending.signal,  SIGKILL) ||
+			sigismember(&current->signal->shared_pending.signal, SIGKILL))
+			DVKDEBUG(INTERNAL,"SIGKILL received\n");
 		if( sigismember(&current->pending.signal,  SIGTERM) ||
 			sigismember(&current->signal->shared_pending.signal, SIGTERM))
 			DVKDEBUG(INTERNAL,"SIGTERM received\n");
@@ -407,7 +416,9 @@ int sleep_proc(struct proc *proc, long timeout)
 	}while(ret < 0);
 
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
-		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 		
 	}
 	
 	if( ret == -ERESTARTSYS){ // a SIGNAL has been received 
@@ -844,10 +855,10 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
-		old_set = current->blocked;
+		//old_set = current->blocked;
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
 			new_set.sig[0], old_set.sig[0]); 
-		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 	}
 
 	proc_nr = proc->p_usr.p_nr;
@@ -888,7 +899,9 @@ int sleep_proc2(struct proc *proc, struct proc *other , long timeout)
 	}while(ret < 0);
 	
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
-		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 		 
 	}
 	
 	if( ret == -ERESTARTSYS){
@@ -961,10 +974,10 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
 		sigaddset(&new_set, SIGALRM);
 		sigaddset(&new_set, SIGIO);
-		old_set = current->blocked;
+		//old_set = current->blocked;
+		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
 			new_set.sig[0], old_set.sig[0]); 
-		 sigprocmask(SIG_BLOCK, &new_set, &old_set);
 	}
 	proc_nr = proc->p_usr.p_nr;
 	other1_nr = other1->p_usr.p_nr;
@@ -1004,7 +1017,9 @@ int sleep_proc3(struct proc *proc, struct proc *other1, struct proc *other2 , lo
 	}while(ret < 0);
 	
 	if(test_bit(MIS_BIT_USERMODE, &proc->p_usr.p_misc_flags)){
-		 sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		sigprocmask(SIG_UNBLOCK, &new_set, &old_set);
+		DVKDEBUG(INTERNAL,"new_set.sig[0]=0x%08x old_set.sig[0]=0x%08x\n",
+			new_set.sig[0], old_set.sig[0]); 
 	}
 	
 	if( ret == -ERESTARTSYS){

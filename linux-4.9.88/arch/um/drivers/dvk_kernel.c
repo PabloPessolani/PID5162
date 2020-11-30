@@ -186,8 +186,8 @@ static int init_dvk_thread(void)
 	proc_usr_t *uml_ptr;  
 	int my_ep;
 	
-	uml_pid = os_gettid();
-	DVKDEBUG(INTERNAL,"uml_pid=%d\n", uml_pid);
+	uml_tid = os_gettid();
+	DVKDEBUG(INTERNAL,"uml_tid=%d\n", uml_tid);
 
 	rcode = dvk_open();
 	if( rcode < 0) ERROR_RETURN(rcode);
@@ -205,8 +205,8 @@ static int init_dvk_thread(void)
 	DVKDEBUG(INTERNAL, DC_USR1_FORMAT, DC_USR1_FIELDS(dcu_ptr));	
 	DVKDEBUG(INTERNAL, DC_USR2_FORMAT, DC_USR2_FIELDS(dcu_ptr));	
  
-//	rcode = dvk_lclbind(dcid, uml_pid, uml_ep);
-	rcode = dvk_umbind(dcid,uml_pid,uml_ep);
+//	rcode = dvk_lclbind(dcid, uml_tid, uml_ep);
+	rcode = dvk_umbind(dcid,uml_tid,uml_ep);
 	if(rcode != uml_ep) ERROR_RETURN(rcode);
 		
 	DVKDEBUG(INTERNAL,"DVK bind uml_ep=%d\n",uml_ep);
@@ -293,7 +293,7 @@ static int __init uml_dvk_init_module(void)
 	kernel_param_unlock(THIS_MODULE);
 	
 	kpid = os_getpid();
-	ktid = os_getpid();
+	ktid = os_gettid();
 	DVKDEBUG(INTERNAL, "UML-kernel PID=%d  UML-kernel TID=%d\n", kpid, ktid);
 
 	ret = dvk_driver_init();

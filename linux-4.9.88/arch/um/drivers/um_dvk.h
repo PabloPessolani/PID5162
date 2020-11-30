@@ -1,7 +1,7 @@
 
 #ifdef CONFIG_UML_DVK 
 
-#pragma message ("Including header files")
+#pragma message ("Including DVS header files")
 
 #include "/usr/src/linux/arch/sh/include/uapi/asm/unistd_32.h"
 

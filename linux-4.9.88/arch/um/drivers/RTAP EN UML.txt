@@ -41,6 +41,10 @@ __uml_help(eth_setup,
 Ver /arch/um/drivers/pcap_kern.c
  pcap_setup(char *str, char **mac_out, void *data)
 
+ENTORNO DE DESARROLLO:
+ Conviene tener 2 VMS:
+ NODE0: Con el kernel de Linux para el HOST de tal forma de poder modificar el modulo dvk.ko
+ NODE1: Con el kernel de Linux para el UML para realizar pruebas 
 
 ==========================================================================================
 20201103:
@@ -52,12 +56,2206 @@ Aparentemente el str con la linea de comandos
 			       NULL);
 retorna los parametros de la linea de comandos parseados 
 
+La funcion está definida en:
+		drivers/net_user.c:char *split_if_spec(char *str, ...)
+
+==========================================================================================
+20201107:
+			Se cambiaron los archivos Kconfig para reflejar el nuevo parametro
+			CONFIG_UML_NET_RTAP
+			
+==========================================================================================
+20201109:
+		Se preparo todo para la compilacion que da MUCHOS ERRORES .
+		El tema es que hay estructuras de datos de usuario que el kernel no las conoce 
+		Voy a tener que armar doble estructuras, una que compartan entre user y kernel 
+		y otra exclusiva para user.
+		
+make ARCH=um menuconfig
+make ARCH=um
+
+
+long os_getep(int pid)
+{
+	return(dvk_getep(pid));
+}
+
+long os_sendrec_T(int endpoint , message *mptr, long timeout)
+{
+	long ret;
+	do {
+		ret = 0;
+		ret = dvk_sendrec_T(endpoint , mptr, timeout);
+	}while(ret == (EDVSRESTARTSYS));
+	return(ret);
+}
+
+long os_getdvsinfo(dvs_usr_t *dvsu_ptr)
+{
+	return(dvk_getdvsinfo(dvsu_ptr));
+}
+
+long os_getdcinfo(int dcid, dc_usr_t *dcu_ptr)
+{
+	return(dvk_getdcinfo(dcid, dcu_ptr));
+}
+
+long os_getprocinfo(int dcid, int p_nr, proc_usr_t *p_usr)
+{
+	return(dvk_getprocinfo( dcid, p_nr, p_usr));
+
+}
+
+long os_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
+{
+	return( dvk_bind_X(cmd, dcid, pid, endpoint, nodeid));
+}
+
+int os_mutex_init(pthread_mutex_t *mutex)
+{
+	printk(UM_KERN_DEBUG "os_mutex_init\n");	
+	return(pthread_mutex_init(*mutex, NULL));
+}
+
+int os_mutex_lock(pthread_mutex_t *mutex)
+{
+	printk(UM_KERN_DEBUG "os_mutex_lock\n");	
+	return(pthread_mutex_lock(*mutex));
+}
+
+int os_mutex_unlock(pthread_mutex_t *mutex)
+{
+	printk(UM_KERN_DEBUG "os_mutex_unlock\n");	
+	return(pthread_mutex_unlock(*mutex));
+}
+
+==========================================================================================
+20201110:  TODO- Trabajar en el codigo para depurar
+
+==========================================================================================
+20201112:
+			Los Sender y Receiver Threads van a tener que dividirse en funciones  multiples
+			
+			Todo lo referente al DVK va en el KERNEL
+			Todo lo referente al OS  ve en el USER 
+						
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+	
+
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 24850432 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=465 TID=465 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #8 Thu Nov 12 19:48:20 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 266115
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033936K/1072844K available (2788K kernel code, 813K rwdata, 804K rodata, 82K init, 136K bss, 38908K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1771.11 BogoMIPS (lpj=8855552)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:489: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:496: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:501: rt_tap=02:AA:BB:CC:DD:01 mac_out=tap1 rt_nodeid=0
+DEBUG rtap_setup:504: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_krnl_fd=0 rt_thread_fd=0 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=0 rt_name=(null)
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+
+DEBUG rtap_init:438: local_nodeid=-1
+DEBUG rtap_init:440: d_name= d_nr_dcs=0 d_nr_nodes=0 d_nr_procs=0 d_nr_tasks=0 d_nr_sysprocs=0
+DEBUG rtap_init:442: dcid=0
+DEBUG rtap_init:444: dc_dcid=0 dc_nr_procs=0 dc_nr_tasks=0 dc_nr_sysprocs=0 dc_nr_nodes=0
+DEBUG rtap_init:445: flags=0 dc_nodes=0 dc_pid=0 dc_name=
+
+start_sw_threads - sp=1229893628
+start_rd_thread sw_send_thread tid=493
+start_rd_thread sw_recv_thread tid=494
+
+DEBUG rtap_init:456: sw_recv_tid=0
+DEBUG rtap_init:457: sw_send_tid=0
+DEBUG rtap_init:459: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_krnl_fd=13 rt_thread_fd=14 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=0 rt_name=(null)
+rtap_open : control connect failed, errno = 2
+DEBUG recv_kthread:237: RECEIVER THREAD: sw_recv_ep=-1 sw_recv_tid=494
+DEBUG 494:dvk_bind_X:1221: cmd=0 dcid=0 pid=494 endpoint=-1 nodeid=-1
+DEBUG 494:dvk_bind_X:1251: ioctl ret=-25
+DEBUG 494:dvk_bind_X:1254: ret=-25
+ERROR: 0:recv_kthread:242: rcode=-25
+random: fast init done
+random: crng init done
+
+SE CUELGA LUEGO 
+
+
+==========================================================================================
+20201113:
+
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 19124224 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=156 TID=156 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #29 Fri Nov 13 10:21:25 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 264728
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033960K/1067252K available (2788K kernel code, 817K rwdata, 808K rodata, 82K init, 136K bss, 33292K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1816.98 BogoMIPS (lpj=9084928)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+
+DEBUG rtap_setup:572: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:579: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:584: rt_tap=02:AA:BB:CC:DD:01 mac_out=tap1 rt_nodeid=0
+DEBUG rtap_setup:587: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_krnl_fd=0 rt_thread_fd=0 rt_rmt_ep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+
+DEBUG 156:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:598: dvk_open=13
+
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+
+DEBUG rtap_init:484: local_nodeid=-1
+DEBUG rtap_init:485: dcid=0
+DEBUG 156:dvk_getdvsinfo:265:
+DEBUG 156:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 156:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 156:dvk_getdcinfo:366: dcid=0
+DEBUG 156:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 156:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:496: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:504: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:505: flags=0 dc_nodes=7 dc_pid=696 dc_name=DC0
+
+start_sw_threads - sp=1212526588
+
+start_rd_thread sw_send_thread tid=164
+DEBUG send_kthread:112: SENDER THREAD: sw_send_ep=31 sw_send_tid=164
+DEBUG 164:dvk_bind_X:1221: cmd=0 dcid=0 pid=164 endpoint=31 nodeid=-1
+DEBUG 164:dvk_bind_X:1251: ioctl ret=31
+DEBUG 164:dvk_bind_X:1254: ret=31
+DEBUG 164:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 164:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 164:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG send_kthread:124: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=27198 vpid=164 nodeid=1 name=linux
+DEBUG 164:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 164:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 164:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 164:dvk_bind_X:1221: cmd=2 dcid=0 pid=137950222 endpoint=0 nodeid=0
+start_rd_thread sw_recv_thread tid=165
+DEBUG 164:dvk_bind_X:1251: ioctl ret=0
+DEBUG 164:dvk_bind_X:1254: ret=0
+DEBUG 164:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 164:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 164:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG 164:dvk_unbind_T:835: dcid=0 endpoint=31 timeout=-1
+DEBUG 164:dvk_unbind_T:848: ioctl ret=0 errno=0
+DEBUG 164:dvk_unbind_T:853: ioctl ret=0
+
+  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                
+20977 root      20   0 1051244  19856  19444 R 99,3  1,9   7:35.78 linux   <<<<<<<<<<<<<<<<<<<
+
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server 
+			
+==========================================================================================
+20201118:
+
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+	soft - 0
+	hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 2158592 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=82 TID=82 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #50 Wed Nov 18 12:48:09 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 260618
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+Memory: 1034852K/1050684K available (2792K kernel code, 813K rwdata, 808K rodata, 82K init, 139K bss, 15832K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1816.98 BogoMIPS (lpj=9084928)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
+TCP: Hash tables configured (established 8192 bind 8192)
+UDP hash table entries: 512 (order: 1, 8192 bytes)
+UDP-Lite hash table entries: 512 (order: 1, 8192 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+
+DEBUG rtap_setup:560: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:567: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:572: rt_tap=tap1 mac_out=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:574: rt_index=-1 rt_nodeid=0 rt_tap=(null) rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+
+DEBUG 82:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:585: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:465: local_nodeid=-1
+DEBUG rtap_init:466: dcid=0
+DEBUG 82:dvk_getdvsinfo:265: 
+DEBUG 82:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 82:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 82:dvk_getdcinfo:366: dcid=0
+DEBUG 82:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 82:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:477: local_nodeid=1
+DEBUG rtap_init:478: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG rtap_init:486: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:487: flags=0 dc_nodes=7 dc_pid=12004 dc_name=DC0
+
+start_sw_threads - sp=1195929596
+
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/switch00.ctl data_fd=15
+fd=14 name=/tmp/switch00.ctl
+sun_path=/tmp/switch00.ctl 
+still_used
+bind_data_socket fd=15 
+bind_data_socket sun_path= 
+
+DEBUG init_sync:74: 
+	DEBUG enter_sync:86: 
+		start_rd_thread sw_send_thread tid=90
+	DEBUG leave_sync:92: 
+
+	DEBUG enter_sync:86: 
+		DEBUG init_send_kthread:226: SENDER THREAD: sw_send_ep=31 sw_send_tid=90
+		DEBUG 90:dvk_bind_X:1221: cmd=0 dcid=0 pid=90 endpoint=31 nodeid=-1
+		DEBUG 90:dvk_bind_X:1251: ioctl ret=31
+		DEBUG 90:dvk_bind_X:1254: ret=31
+		DEBUG 90:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+		DEBUG 90:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 90:dvk_getprocinfo:1195: ioctl ret=0
+		DEBUG init_send_kthread:238: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=4829 vpid=90 nodeid=1 name=linux 
+		DEBUG 90:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+		DEBUG 90:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 90:dvk_getprocinfo:1195: ioctl ret=0
+		DEBUG 90:dvk_bind_X:1221: cmd=2 dcid=0 pid=137955092 endpoint=0 nodeid=0
+		DEBUG 90:dvk_bind_X:1251: ioctl ret=0
+		DEBUG 90:dvk_bind_X:1254: ret=0
+		DEBUG 90:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+		DEBUG 90:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 90:dvk_getprocinfo:1195: ioctl ret=0
+	DEBUG leave_thread:100: 
+
+	send_thread init_send_kthread rcode=139165668
+
+	DEBUG enter_sync:86: 
+		start_rd_thread sw_recv_thread tid=91
+		DEBUG leave_sync:92: 
+		DEBUG enter_sync:86: 
+		DEBUG init_recv_kthread:331: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=91
+		DEBUG 91:dvk_bind_X:1221: cmd=0 dcid=0 pid=91 endpoint=1 nodeid=-1
+		DEBUG 91:dvk_bind_X:1251: ioctl ret=1
+		DEBUG 91:dvk_bind_X:1254: ret=1
+		DEBUG 91:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+		DEBUG 91:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 91:dvk_getprocinfo:1195: ioctl ret=0
+		DEBUG init_recv_kthread:342: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=4830 vpid=91 nodeid=1 name=linux 
+		DEBUG 91:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+		DEBUG 91:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+		DEBUG 91:dvk_getprocinfo:1195: ioctl ret=0
+	DEBUG leave_thread:100: 
+
+	recv_thread init_recv_kthread rcode=0
+
+	DEBUG recv_kthread:376: recv_kthread
+	DEBUG 91:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:80: 
+
+DEBUG rtap_init:508: sw_send_tid=90
+DEBUG 82:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+DEBUG 82:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 82:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:515: nr=31 endp=31 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname 
+DEBUG rtap_init:518: sw_recv_tid=91
+DEBUG 82:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 82:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 82:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:525: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=4830 vpid=91 nodeid=1 name=linux 
+DEBUG rtap_init:528: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=31 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:530: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=91 sw_send_tid=90  sw_name=DC0
+
+rtap_open : control connect failed, errno = 2
+
+random: fast init done
+
+DEBUG 91:dvk_receive_T:910: ioctl ret=-61 errno=0
+DEBUG 91:dvk_receive_T:920: ioctl ret=-61
+ERROR: 91:dvk_receive_T:922: rcode=-61
+DEBUG recv_kthread:383: error=-61
+DEBUG 91:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+==========================================================================================
+20201119:
+	PORQUE NO EJECUTA  send_kthread ??
+			PORQUE DA ESTE RCODE
+				send_thread init_send_kthread rcode=139165668
+			RESUELTO!!!
+			
+	PORQUE DA ERROR rtap_open : control connect failed, errno = 2
+			RESUELTO ??? 
+	
+root@node1:/usr/src/dvs/dvk-tests# cd /usr/src/linux
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 25829376 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=92 TID=92 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #59 Thu Nov 19 16:50:39 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 266352
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033884K/1073800K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 39916K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1836.64 BogoMIPS (lpj=9183232)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+
+DEBUG rtap_setup:564: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:571: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:579: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:586: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:587: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+
+DEBUG 92:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:593: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:469: local_nodeid=-1
+DEBUG rtap_init:470: dcid=0
+DEBUG 92:dvk_getdvsinfo:265:
+DEBUG 92:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 92:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 92:dvk_getdcinfo:366: dcid=0
+DEBUG 92:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 92:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:481: local_nodeid=1
+DEBUG rtap_init:482: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:490: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:491: flags=0 dc_nodes=7 dc_pid=766 dc_name=DC0
+start_sw_threads - sp=1220898812
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+still_used
+bind_data_socket fd=15
+bind_data_socket sun_path=
+
+DEBUG init_sync:74:
+
+DEBUG enter_sync:86:
+start_rd_thread sw_send_thread tid=100
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_send_kthread:226: SENDER THREAD: sw_send_ep=31 sw_send_tid=100
+DEBUG 100:dvk_bind_X:1221: cmd=0 dcid=0 pid=100 endpoint=31 nodeid=-1
+DEBUG 100:dvk_bind_X:1251: ioctl ret=31
+DEBUG 100:dvk_bind_X:1254: ret=31
+DEBUG 100:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 100:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 100:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:238: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=32062 vpid=100 nodeid=1 name=linux
+DEBUG 100:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 100:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 100:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:246: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 100:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959246 endpoint=0 nodeid=0
+DEBUG 100:dvk_bind_X:1251: ioctl ret=0
+DEBUG 100:dvk_bind_X:1254: ret=0
+DEBUG 100:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 100:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 100:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:253: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:100:
+
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:271: send_kthread
+DEBUG rt_open_rtap:168: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=31 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 100:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 100:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 100:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:172: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:178: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:179: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 100:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 100:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 100:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 100:dvk_sendrec_T:955: rcode=-64
+ERROR: 0:rt_open_rtap:182: rcode=-64
+ERROR: 0:try_rtap_open:204: rcode=-64
+DEBUG send_kthread:278: waiting to retry open
+
+DEBUG enter_sync:86:
+start_rd_thread sw_recv_thread tid=101
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_recv_kthread:334: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=101
+DEBUG 101:dvk_bind_X:1221: cmd=0 dcid=0 pid=101 endpoint=1 nodeid=-1
+DEBUG 101:dvk_bind_X:1251: ioctl ret=1
+DEBUG 101:dvk_bind_X:1254: ret=1
+DEBUG 101:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 101:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 101:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:345: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=32063 vpid=101 nodeid=1 name=linux
+DEBUG 101:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 101:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 101:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:353: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=32062 vpid=100 nodeid=1 name=linux
+DEBUG leave_thread:100:
+
+recv_thread init_recv_kthread rcode=0
+
+DEBUG recv_kthread:380: recv_kthread
+DEBUG 101:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:80:
+DEBUG rtap_init:512: sw_send_tid=100
+DEBUG 92:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 92:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 92:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:519: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=32062 vpid=100 nodeid=1 name=linux
+DEBUG rtap_init:522: sw_recv_tid=101
+DEBUG 92:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 92:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 92:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:529: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=32063 vpid=101 nodeid=1 name=linux
+DEBUG rtap_init:532: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=31 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:534: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=101 sw_send_tid=100  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+
+EIP: 0073:[<48c48027>] CPU: 0 Not tainted ESP: 007b:48c56f64
+ EFLAGS: 00010286
+    Not tainted
+EAX: 00000000 EBX: 00000001 ECX: 0000000d EDX: 080680a0
+ESI: 00000000 EDI: 00000006 EBP: 48c56f94 DS: 007b ES: 007b
+Kernel panic - not syncing: Segfault with no mm
+CPU: 0 PID: 0 Comm:  Not tainted 4.9.88-DVK #59
+Stack:
+ 48c56f80 08393fed 00000065 08316bf4 00000381 00007ace 00007530 00007ace
+ 084b97e0 00007530 084b98a0 00000000 48c56fc4 0806109f 00007ace 084b97e0
+ 00007530 48c56fc8 084b99c8 084b99bc 08391c5d 00000000 00000000 00000500
+Call Trace:
+ [<0806109f>] recv_kthread+0x4c/0x345
+ [<08061741>] recv_thread+0x28/0x35
+ [<08061719>] ? recv_thread+0x0/0x35
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+ [<08246315>] ? tty_device_create_release+0x0/0xe
+	
+
+
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
+ 0   1     1 32063/101    1    8   20 31438 27342 27342 27342 linux          
+ 0  31    31 32062/100    1    0   20     0 27342 27342 27342 linux 
+ 
+PROBLEMA: Porque no aparece el rtap_client ???
+			SOLUCIONADO 
+			
+			
+PROBLEMA: Aparentemente en el recv_kthread tanto cuando se hace el dvk_receive_T 
+		como cuando se hace un os_idle_sleep el UML queda esperando COMPLETO.
+		Al menos el hilo main no sigue.
+		
+	PROBLEMA EN EL KERNEL (dvk.ko) DEL HOST !!!
+	Nov 19 15:46:29 node1 kernel: [10063.002415] DEBUG 6129:new_exit_unbind:384: WUNLOCK_PROC ep=1 count=1 <<<<<<<
+	Nov 19 15:46:29 node1 kernel: [10063.005525] DEBUG 6128:do_unbind:914: WUNLOCK_PROC ep=1 count=2<<<<<<<<<<<<<<<<< 
+	Como se puede ver hay un unbind del proceso 6129 con ep=1 y un del proceso 6128 con ep=1.
+	Alli se despelota tod.
+
+
+==========================================================================================
+20201121: 
+
+	SE MODIFICARON del dvk.ko, dvk_unbind y tambien wait4bind. Por ahora el count de los mutexes sigue en 0 CORRECTAMENTE
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 31645696 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=2 TID=2 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #60 Thu Nov 19 16:56:40 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 267761
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033852K/1079480K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 45628K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1219.78 BogoMIPS (lpj=6098944)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+
+DEBUG rtap_setup:564: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:571: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:579: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:586: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:587: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+
+DEBUG 2:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:593: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:469: local_nodeid=-1
+DEBUG rtap_init:470: dcid=0
+DEBUG 2:dvk_getdvsinfo:265:
+DEBUG 2:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 2:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 2:dvk_getdcinfo:366: dcid=0
+DEBUG 2:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 2:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:481: local_nodeid=1
+DEBUG rtap_init:482: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:490: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:491: flags=0 dc_nodes=7 dc_pid=683 dc_name=DC0
+
+start_sw_threads - sp=1225142268
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+bind_data_socket fd=15
+bind_data_socket sun_path=
+
+DEBUG init_sync:74:
+
+DEBUG enter_sync:86:
+start_rd_thread sw_send_thread tid=10
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_send_kthread:226: SENDER THREAD: sw_send_ep=31 sw_send_tid=10
+DEBUG 10:dvk_bind_X:1221: cmd=0 dcid=0 pid=10 endpoint=31 nodeid=-1
+DEBUG 10:dvk_bind_X:1251: ioctl ret=31
+DEBUG 10:dvk_bind_X:1254: ret=31
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:238: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=754 vpid=10 nodeid=1 name=linux
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:246: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 10:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959246 endpoint=0 nodeid=0
+DEBUG 10:dvk_bind_X:1251: ioctl ret=0
+DEBUG 10:dvk_bind_X:1254: ret=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:253: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:100:
+
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:271: send_kthread
+DEBUG rt_open_rtap:168: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:172: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:178: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:179: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 10:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 10:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 10:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 10:dvk_sendrec_T:955: rcode=-64
+ERROR: 0:rt_open_rtap:182: rcode=-64
+ERROR: 0:try_rtap_open:204: rcode=-64
+DEBUG send_kthread:278: waiting to retry open
+
+DEBUG enter_sync:86:
+start_rd_thread sw_recv_thread tid=11
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_recv_kthread:334: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=11
+DEBUG 11:dvk_bind_X:1221: cmd=0 dcid=0 pid=11 endpoint=1 nodeid=-1
+DEBUG 11:dvk_bind_X:1251: ioctl ret=1
+DEBUG 11:dvk_bind_X:1254: ret=1
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:345: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=755 vpid=11 nodeid=1 name=linux
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:353: nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 11:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959533 endpoint=30 nodeid=0
+DEBUG 11:dvk_bind_X:1251: ioctl ret=30
+DEBUG 11:dvk_bind_X:1254: ret=30
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:360: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:100:
+
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:380: recv_kthread
+DEBUG 11:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+DEBUG end_sync:80:
+
+DEBUG rtap_init:512: sw_send_tid=10
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:519: nr=31 endp=31 dcid=0 flags=0 misc=20 lpid=754 vpid=10 nodeid=1 name=linux
+DEBUG rtap_init:522: sw_recv_tid=11
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:529: nr=1 endp=1 dcid=0 flags=8 misc=20 lpid=755 vpid=11 nodeid=1 name=linux
+DEBUG rtap_init:532: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:534: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+
+DEBUG 11:dvk_receive_T:910: ioctl ret=-61 errno=0
+DEBUG 11:dvk_receive_T:920: ioctl ret=-61
+ERROR: 11:dvk_receive_T:922: rcode=-61
+DEBUG recv_kthread:387: rcode=-61
+DEBUG 11:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+EIP: 0073:[<49048568>] CPU: 0 Not tainted ESP: 007b:49062f64
+ EFLAGS: 00010206
+    Not tainted
+EAX: 00000000 EBX: 00000001 ECX: 0000000c EDX: 0806809b
+ESI: 00000000 EDI: 00000006 EBP: 49062f94 DS: 007b ES: 007b
+Kernel panic - not syncing: Segfault with no mm
+CPU: 0 PID: 0 Comm:  Not tainted 4.9.88-DVK #60
+Stack:
+ 49062f80 08393fed 0000000b 08316bf4 00000381 00007ace 00007530 00007ace
+ 084b97e0 00007530 084b98a0 00000000 49062fc4 0806109a 00007ace 084b97e0
+ 00007530 49062fc8 084b99c8 084b99bc 08391c5d 00000000 00000000 00000500
+Call Trace:
+ [<0806109a>] recv_kthread+0x4c/0x345
+ [<0806173c>] recv_thread+0x28/0x35
+ [<08061714>] ? recv_thread+0x0/0x35
+
+Abortado
+root@node
+
+Nov 21 11:52:50 node1 kernel: [  152.550438] DEBUG 755:new_mini_receive:517: Any suitable message from 31438 was not found.
+Nov 21 11:52:50 node1 kernel: [  152.550439] DEBUG 755:sleep_proc:355: timeout=30000
+Nov 21 11:52:50 node1 kernel: [  152.550440] DEBUG 755:sleep_proc:366: BEFORE DOWN lpid=755 p_sem=0 timeout=30000
+Nov 21 11:52:50 node1 kernel: [  152.550442] DEBUG 755:sleep_proc:368: endpoint=1 flags=8
+Nov 21 11:52:50 node1 kernel: [  152.550443] DEBUG 755:sleep_proc:381: WUNLOCK_PROC ep=1 count=0
+Nov 21 11:52:52 node1 kernel: [  154.320757] DEBUG 755:sleep_proc:390: pending: sig[0]:0x00000100, sig[1]:0x00000000
+Nov 21 11:52:52 node1 kernel: [  154.320763] DEBUG 755:sleep_proc:393: shared_pending sig[0]:0x00004000, sig[1]:0x00000000
+Nov 21 11:52:52 node1 kernel: [  154.320765] DEBUG 755:sleep_proc:399: endpoint=1 ret=-512 p_rcode=0
+Nov 21 11:52:52 node1 kernel: [  154.320766] DEBUG 755:sleep_proc:400: endpoint=1 flags=8 cpuid=0
+Nov 21 11:52:52 node1 kernel: [  154.320768] DEBUG 755:sleep_proc:401: WLOCK_PROC ep=1 count=0
+Nov 21 11:52:52 node1 kernel: [  154.320770] DEBUG 755:sleep_proc:429: pid=755 ret=-4
+Nov 21 11:52:52 node1 kernel: [  154.320772] DEBUG 755:sleep_proc:454: nr=1 endp=1 dcid=0 lpid=755 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 21 11:52:52 node1 kernel: [  154.320774] DEBUG 755:sleep_proc:456: someone wakeups me: sem=0 p_rcode=-4
+Nov 21 11:52:52 node1 kernel: [  154.320777] DEBUG 755:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+
+Nov 21 11:52:52 node1 kernel: [  154.320778] ERROR: 755:new_mini_receive:534: rcode=-4 #define EDVSINTR         (_SIGN  4) 
+																				/* interrupted function call */
+Nov 21 11:52:52 node1 kernel: [  154.320781] ERROR: 755:dvk_ioctl:373: rcode=-4
+
+
+VER QUE HACE EL KERNEL CON ESTO ???? 
+HABRIA QUE SETEAR EL TIPO DE PROCESO EN USERMODE 
+#define MIS_BIT_USERMODE	10
+COMO SE HACE PARA SETEAR EN USERMODE ???
+
+	rdc_ep = dvk_umbind(dcid, my_tid, FS_PROC_NR);
+
+
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
+ 0   1     1  3408/21     1    8  420 31438 27342 27342 27342 linux          
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_client    
+ 0  31    31  3407/20     1    0  420     0 27342 27342 27342 linux 
+ 
+ 
+Initializing software serial port version 1
+DEBUG rtap_setup:563: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:570: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:578: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:585: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:586: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 12:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:592: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:468: local_nodeid=-1
+DEBUG rtap_init:469: dcid=0
+DEBUG 12:dvk_getdvsinfo:265:
+DEBUG 12:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 12:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 12:dvk_getdcinfo:366: dcid=0
+DEBUG 12:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 12:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:480: local_nodeid=1
+DEBUG rtap_init:481: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:489: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:490: flags=0 dc_nodes=7 dc_pid=683 dc_name=DC0
+start_sw_threads - sp=1225506812
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+still_used
+bind_data_socket fd=15
+bind_data_socket sun_path=
+DEBUG init_sync:74:
+DEBUG enter_sync:86:
+start_rd_thread sw_send_thread tid=20
+DEBUG leave_sync:92:
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+DEBUG enter_sync:86:
+DEBUG init_send_kthread:226: SENDER THREAD: sw_send_ep=31 sw_send_tid=20
+DEBUG 20:dvk_bind_X:1221: cmd=5 dcid=0 pid=20 endpoint=31 nodeid=-1
+DEBUG 20:dvk_bind_X:1251: ioctl ret=31
+DEBUG 20:dvk_bind_X:1254: ret=31
+DEBUG 20:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 20:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 20:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:237: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=3407 vpid=20 nodeid=1 name=linux
+DEBUG 20:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 20:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 20:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:245: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:100:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:270: send_kthread
+DEBUG rt_open_rtap:168: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 20:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 20:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 20:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:172: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:178: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:179: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 20:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 20:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 20:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 20:dvk_sendrec_T:955: rcode=-64
+ERROR: 0:rt_open_rtap:182: rcode=-64
+ERROR: 0:try_rtap_open:204: rcode=-64
+DEBUG send_kthread:277: waiting to retry open
+DEBUG enter_sync:86:
+start_rd_thread sw_recv_thread tid=21
+DEBUG leave_sync:92:
+DEBUG enter_sync:86:
+DEBUG init_recv_kthread:333: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=21
+DEBUG 21:dvk_bind_X:1221: cmd=5 dcid=0 pid=21 endpoint=1 nodeid=-1
+DEBUG 21:dvk_bind_X:1251: ioctl ret=1
+DEBUG 21:dvk_bind_X:1254: ret=1
+DEBUG 21:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 21:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 21:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:344: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=3408 vpid=21 nodeid=1 name=linux
+DEBUG 21:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 21:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 21:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:352: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:100:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:379: recv_kthread
+DEBUG 21:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:80:
+DEBUG rtap_init:511: sw_send_tid=20
+DEBUG 12:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 12:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 12:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:518: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=3407 vpid=20 nodeid=1 name=linux
+DEBUG rtap_init:521: sw_recv_tid=21
+DEBUG 12:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 12:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 12:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:528: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=3408 vpid=21 nodeid=1 name=linux
+DEBUG rtap_init:531: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:533: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=21 sw_send_tid=20  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+DEBUG 21:dvk_receive_T:910: ioctl ret=-61 errno=0
+DEBUG 21:dvk_receive_T:920: ioctl ret=-61
+ERROR: 21:dvk_receive_T:922: rcode=-61
+DEBUG recv_kthread:386: rcode=-61
+DEBUG 21:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+Kernel panic - not syncing: Kernel mode signal 4
+CPU: 0 PID: 0 Comm:  Not tainted 4.9.88-DVK #61
+Stack:
+ 083b45f8 00000000 49138400 49138400 490bba9c 0823348f 00000000 00000000
+ 083b45f8 490bbab4 080b34f5 02080020 00000004 49138400 49138400 490bbb58
+ 0805cef0 08390459 00000004 00000000 00000000 00000000 00000000 00000000
+Call Trace:
+ [<0805be07>] show_stack+0xaf/0xf7
+ [<0823348f>] dump_stack+0x16/0x1b
+ [<080b34f5>] panic+0x84/0x18a
+ [<0805cef0>] relay_signal+0x39/0xef
+ [<080da974>] ? __kmalloc+0x67/0x88
+ [<0806b49c>] sig_handler_common+0x90/0xa9
+ [<0806b51e>] sig_handler+0x34/0x40
+ [<0806b1f3>] hard_handler+0x67/0x89
+ [<0805e4ca>] ? console_write_chan+0x24/0x32
+ [<0805db94>] ? uml_console_write+0x37/0x41
+ [<08092994>] ? call_console_drivers.isra.0.constprop.14+0x4a/0x5c
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<08093914>] ? console_unlock+0x22d/0x46e
+ [<0809392e>] ? console_unlock+0x247/0x46e
+ [<08093de6>] ? vprintk_emit+0x291/0x29b
+ [<08069444>] ? os_ioctl_generic+0x11/0x23
+ [<08068089>] ? dvk_receive_T+0x4a/0xbe
+ [<08061088>] ? recv_kthread+0x4c/0x345
+ [<0806172a>] ? recv_thread+0x28/0x35
+ [<08061702>] ? recv_thread+0x0/0x35
+
+ 
+
+Nov 21 13:19:09 node1 kernel: [ 5332.063541] DEBUG 3408:dvk_ioctl:349: cmd=4004E303 arg=490BBF80
+Nov 21 13:19:09 node1 kernel: [ 5332.063545] DEBUG 3408:dvk_ioctl:369: DVK_CALL=3 (io_mini_receive) 
+Nov 21 13:19:09 node1 kernel: [ 5332.063546] DEBUG 3408:io_mini_receive:35: 
+Nov 21 13:19:09 node1 kernel: [ 5332.063548] DEBUG 3408:new_mini_receive:314: src_ep=31438
+Nov 21 13:19:09 node1 kernel: [ 5332.063550] DEBUG 3408:check_caller:605: caller_pid=3408 caller_tgid=3408
+Nov 21 13:19:09 node1 kernel: [ 5332.063552] DEBUG 3408:check_caller:646: WLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063555] DEBUG 3408:check_caller:651: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=3408 vpid=21 nodeid=1 name=linux 
+Nov 21 13:19:09 node1 kernel: [ 5332.063556] DEBUG 3408:check_caller:711: WUNLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063557] DEBUG 3408:check_caller:714: dcid=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063559] DEBUG 3408:check_caller:718: RLOCK_DC dc=0 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063560] DEBUG 3408:check_caller:722: RUNLOCK_DC dc=0 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063561] DEBUG 3408:check_caller:728: caller_pid=3408 
+Nov 21 13:19:09 node1 kernel: [ 5332.063562] DEBUG 3408:check_caller:731: RLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063564] DEBUG 3408:check_caller:735: RUNLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063565] DEBUG 3408:new_mini_receive:325: RLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063566] DEBUG 3408:new_mini_receive:329: caller_nr=1 caller_ep=1 src_ep=31438 
+Nov 21 13:19:09 node1 kernel: [ 5332.063567] DEBUG 3408:new_mini_receive:333: dcid=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063569] DEBUG 3408:new_mini_receive:341: RUNLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063570] DEBUG 3408:new_mini_receive:343: RLOCK_DC dc=0 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063571] DEBUG 3408:new_mini_receive:399: RUNLOCK_DC dc=0 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063573] DEBUG 3408:new_mini_receive:402: WLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063574] DEBUG 3408:new_mini_receive:418: WUNLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063575] DEBUG 3408:new_mini_receive:452: WLOCK_PROC ep=1 count=0
+Nov 21 13:19:09 node1 kernel: [ 5332.063577] DEBUG 3408:new_mini_receive:517: Any suitable message from 31438 was not found.
+Nov 21 13:19:09 node1 kernel: [ 5332.063578] DEBUG 3408:sleep_proc:355: timeout=30000
+Nov 21 13:19:09 node1 kernel: [ 5332.063580] DEBUG 3408:sleep_proc:366: BEFORE DOWN lpid=3408 p_sem=0 timeout=30000
+Nov 21 13:19:09 node1 kernel: [ 5332.063581] DEBUG 3408:sleep_proc:368: endpoint=1 flags=8
+Nov 21 13:19:09 node1 kernel: [ 5332.063583] DEBUG 3408:sleep_proc:375: new_set.sig[0]=0x10002000 old_set.sig[0]=0x00001000
+Nov 21 13:19:09 node1 kernel: [ 5332.063585] DEBUG 3408:sleep_proc:381: WUNLOCK_PROC ep=1 count=0
+
+Nov 21 13:19:40 node1 kernel: [ 5362.781788] DEBUG 3408:sleep_proc:390: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Nov 21 13:19:40 node1 kernel: [ 5362.781808] DEBUG 3408:sleep_proc:393: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Nov 21 13:19:40 node1 kernel: [ 5362.781810] DEBUG 3408:sleep_proc:399: endpoint=1 ret=0 p_rcode=0
+Nov 21 13:19:40 node1 kernel: [ 5362.781812] DEBUG 3408:sleep_proc:400: endpoint=1 flags=8 cpuid=0
+Nov 21 13:19:40 node1 kernel: [ 5362.781813] DEBUG 3408:sleep_proc:401: WLOCK_PROC ep=1 count=0
+Nov 21 13:19:40 node1 kernel: [ 5362.781816] DEBUG 3408:sleep_proc:429: pid=3408 ret=-61
+Nov 21 13:19:40 node1 kernel: [ 5362.781819] DEBUG 3408:sleep_proc:454: nr=1 endp=1 dcid=0 lpid=3408 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 21 13:19:40 node1 kernel: [ 5362.781820] DEBUG 3408:sleep_proc:456: someone wakeups me: sem=0 p_rcode=-61
+Nov 21 13:19:40 node1 kernel: [ 5362.781822] DEBUG 3408:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 21 13:19:40 node1 kernel: [ 5362.781824] ERROR: 3408:new_mini_receive:534: rcode=-61
+Nov 21 13:19:40 node1 kernel: [ 5362.781826] ERROR: 3408:dvk_ioctl:373: rcode=-61
+Nov 21 13:19:40 node1 kernel: [ 5362.785086] do_exit: local_nodeid:1
+--------------------------------------------------------------------------------------------------------------
+
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 8642560 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=2 TID=2 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #62 Sat Nov 21 19:48:54 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 262189
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1034012K/1057016K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 23004K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1823.53 BogoMIPS (lpj=9117696)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 512 (order: 1, 8192 bytes)
+UDP-Lite hash table entries: 512 (order: 1, 8192 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:563: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:570: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:578: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:585: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:586: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 2:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:592: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:468: local_nodeid=-1
+DEBUG rtap_init:469: dcid=0
+DEBUG 2:dvk_getdvsinfo:265:
+DEBUG 2:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 2:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 2:dvk_getdcinfo:366: dcid=0
+DEBUG 2:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 2:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:480: local_nodeid=1
+DEBUG rtap_init:481: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:489: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:490: flags=0 dc_nodes=7 dc_pid=678 dc_name=DC0
+start_sw_threads - sp=1216409596
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+bind_data_socket fd=15
+bind_data_socket sun_path=
+DEBUG init_sync:74:
+DEBUG enter_sync:86:
+start_rd_thread sw_send_thread tid=10
+DEBUG leave_sync:92:
+DEBUG enter_sync:86:
+DEBUG init_send_kthread:226: SENDER THREAD: sw_send_ep=31 sw_send_tid=10
+DEBUG 10:dvk_bind_X:1221: cmd=5 dcid=0 pid=10 endpoint=31 nodeid=-1
+DEBUG 10:dvk_bind_X:1251: ioctl ret=31
+DEBUG 10:dvk_bind_X:1254: ret=31
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:237: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=748 vpid=10 nodeid=1 name=linux
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:245: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 10:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959246 endpoint=0 nodeid=0
+DEBUG 10:dvk_bind_X:1251: ioctl ret=0
+DEBUG 10:dvk_bind_X:1254: ret=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:252: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:100:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:270: send_kthread
+DEBUG rt_open_rtap:168: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:172: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:178: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:179: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 10:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 10:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 10:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 10:dvk_sendrec_T:955: rcode=-64
+ERROR: 364:rt_open_rtap:182: rcode=-64
+ERROR: 364:try_rtap_open:204: rcode=-64
+DEBUG send_kthread:277: waiting to retry open
+DEBUG enter_sync:86:
+start_rd_thread sw_recv_thread tid=11
+DEBUG leave_sync:92:
+DEBUG enter_sync:86:
+DEBUG init_recv_kthread:333: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=11
+DEBUG 11:dvk_bind_X:1221: cmd=5 dcid=0 pid=11 endpoint=1 nodeid=-1
+DEBUG 11:dvk_bind_X:1251: ioctl ret=1
+DEBUG 11:dvk_bind_X:1254: ret=1
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:344: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=749 vpid=11 nodeid=1 name=linux
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:352: nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 11:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959533 endpoint=30 nodeid=0
+DEBUG 11:dvk_bind_X:1251: ioctl ret=30
+DEBUG 11:dvk_bind_X:1254: ret=30
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:359: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:100:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:379: recv_kthread
+DEBUG 11:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:80:
+DEBUG rtap_init:511: sw_send_tid=10
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:518: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=748 vpid=10 nodeid=1 name=linux
+DEBUG rtap_init:521: sw_recv_tid=11
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:528: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=749 vpid=11 nodeid=1 name=linux
+DEBUG rtap_init:531: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:533: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+
+EIP: 0073:[<47c48408>] CPU: 0 Not tainted ESP: 007b:4880ef60
+ EFLAGS: 00010297
+    Not tainted
+EAX: ffffffff EBX: 00000001 ECX: 0000000d EDX: 08068089
+ESI: 00000000 EDI: 00000006 EBP: 4880ef94 DS: 007b ES: 007b
+Kernel panic - not syncing: Segfault with no mm
+CPU: 0 PID: 1 Comm: swapper Not tainted 4.9.88-DVK #62
+Stack:
+ 4880ef94 4880ef80 08393fed 0000000b 08316bf4 00000381 00007ace 00007530
+ 00007ace 084b97e0 00007530 084b98a0 00000000 4880efc4 08061088 00007ace
+ 084b97e0 00007530 4880efc8 084b99c8 084b99bc 08391c5d 00000000 00000000
+Call Trace:
+ [<08061088>] recv_kthread+0x4c/0x345
+ [<0806172a>] recv_thread+0x28/0x35
+ [<08061702>] ? recv_thread+0x0/0x35
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<080da38d>] ? kmem_cache_alloc+0x56/0x77
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<080eeead>] ? __d_alloc+0x150/0x15c
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<0808e638>] ? __wake_up+0x2b/0x33
+ [<080ef67e>] ? __d_lookup_done+0x2a/0x50
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<080917fe>] ? __up_read+0x3c/0x44
+ [<08090bb4>] ? up_read+0xb/0xe
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<08098abe>] ? __call_rcu.isra.0+0x2e/0x53
+ [<08098bbb>] ? call_rcu_sched+0x13/0x15
+ [<080edd5f>] ? dentry_free+0x4f/0x56
+ [<0806b4d9>] ? set_signals+0x1a/0x2b
+ [<08098abe>] ? __call_rcu.isra.0+0x2e/0x53
+ [<08098bbb>] ? call_rcu_sched+0x13/0x15
+ [<080df976>] ? put_filp+0x24/0x28
+ [<080df558>] ? file_free_rcu+0x0/0x28
+ [<080e84b9>] ? path_openat+0xb0e/0xb7e
+ [<08238eb1>] ? number+0x15f/0x234
+ [<0808bf59>] ? __enqueue_entity+0x5e/0x68
+ [<0808c12d>] ? check_preempt_wakeup+0x120/0x167
+ [<08088d9a>] ? check_preempt_curr+0x29/0x65
+ [<0808bea7>] ? set_next_entity+0x2c/0x5a
+ [<0806cffc>] ? start_idle_thread+0x0/0x9a
+ [<0805afff>] ? __switch_to+0x3d/0x61
+ [<08311179>] ? __schedule+0x231/0x279
+ [<08072bd8>] ? delayed_put_task_struct+0x0/0x1d
+ [<08089394>] ? do_task_dead+0x2f/0x52
+ [<08074825>] ? complete_and_exit+0x0/0x19
+ [<0807fbc7>] ? call_usermodehelper_exec_async+0xda/0xe4
+ [<0805aecf>] ? new_thread_handler+0x63/0x7c
+
+
+Nov 21 20:34:34 node1 kernel: [  440.474086] DEBUG 749:dvk_ioctl:369: DVK_CALL=3 (io_mini_receive) 
+Nov 21 20:34:34 node1 kernel: [  440.474087] DEBUG 749:io_mini_receive:35: 
+Nov 21 20:34:34 node1 kernel: [  440.474088] DEBUG 749:new_mini_receive:314: src_ep=31438
+Nov 21 20:34:34 node1 kernel: [  440.474090] DEBUG 749:check_caller:615: caller_pid=749 caller_tgid=749
+Nov 21 20:34:34 node1 kernel: [  440.474092] DEBUG 749:check_caller:656: WLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474094] DEBUG 749:check_caller:661: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=749 vpid=11 nodeid=1 name=linux 
+Nov 21 20:34:34 node1 kernel: [  440.474096] DEBUG 749:check_caller:721: WUNLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474097] DEBUG 749:check_caller:724: dcid=0
+Nov 21 20:34:34 node1 kernel: [  440.474098] DEBUG 749:check_caller:728: RLOCK_DC dc=0 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474099] DEBUG 749:check_caller:732: RUNLOCK_DC dc=0 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474100] DEBUG 749:check_caller:738: caller_pid=749 
+Nov 21 20:34:34 node1 kernel: [  440.474101] DEBUG 749:check_caller:741: RLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474102] DEBUG 749:check_caller:745: RUNLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474104] DEBUG 749:new_mini_receive:325: RLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474105] DEBUG 749:new_mini_receive:329: caller_nr=1 caller_ep=1 src_ep=31438 
+Nov 21 20:34:34 node1 kernel: [  440.474106] DEBUG 749:new_mini_receive:333: dcid=0
+Nov 21 20:34:34 node1 kernel: [  440.474108] DEBUG 749:new_mini_receive:341: RUNLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474109] DEBUG 749:new_mini_receive:343: RLOCK_DC dc=0 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474110] DEBUG 749:new_mini_receive:399: RUNLOCK_DC dc=0 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474112] DEBUG 749:new_mini_receive:402: WLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474113] DEBUG 749:new_mini_receive:418: WUNLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474114] DEBUG 749:new_mini_receive:452: WLOCK_PROC ep=1 count=0
+Nov 21 20:34:34 node1 kernel: [  440.474116] DEBUG 749:new_mini_receive:517: Any suitable message from 31438 was not found.
+Nov 21 20:34:34 node1 kernel: [  440.474117] DEBUG 749:sleep_proc:355: timeout=30000
+Nov 21 20:34:34 node1 kernel: [  440.474119] DEBUG 749:sleep_proc:366: BEFORE DOWN lpid=749 p_sem=0 timeout=30000
+Nov 21 20:34:34 node1 kernel: [  440.474120] DEBUG 749:sleep_proc:368: endpoint=1 flags=8
+Nov 21 20:34:34 node1 kernel: [  440.474138] DEBUG 749:sleep_proc:376: new_set.sig[0]=0x10002000 old_set.sig[0]=0x00001000
+Nov 21 20:34:34 node1 kernel: [  440.474141] DEBUG 749:sleep_proc:381: WUNLOCK_PROC ep=1 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476829] DEBUG 740:dvk_ioctl:349: cmd=8004E30F arg=48489E9C
+Nov 21 20:34:35 node1 kernel: [  441.476832] DEBUG 740:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Nov 21 20:34:35 node1 kernel: [  441.476834] DEBUG 740:io_getprocinfo:164: 
+Nov 21 20:34:35 node1 kernel: [  441.476836] DEBUG 740:new_getprocinfo:2183: dcid=0 p_nr=31
+Nov 21 20:34:35 node1 kernel: [  441.476839] DEBUG 740:new_getprocinfo:2212: RLOCK_DC dc=0 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476841] DEBUG 740:new_getprocinfo:2219: RUNLOCK_DC dc=0 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476843] DEBUG 740:new_getprocinfo:2296: RLOCK_PROC ep=31 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476844] DEBUG 740:new_getprocinfo:2297: lpid=748 name=linux
+Nov 21 20:34:35 node1 kernel: [  441.476846] DEBUG 740:new_getprocinfo:2299: RUNLOCK_PROC ep=31 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476926] DEBUG 740:dvk_ioctl:349: cmd=8004E30F arg=48489E9C
+Nov 21 20:34:35 node1 kernel: [  441.476927] DEBUG 740:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Nov 21 20:34:35 node1 kernel: [  441.476928] DEBUG 740:io_getprocinfo:164: 
+Nov 21 20:34:35 node1 kernel: [  441.476930] DEBUG 740:new_getprocinfo:2183: dcid=0 p_nr=1
+Nov 21 20:34:35 node1 kernel: [  441.476931] DEBUG 740:new_getprocinfo:2212: RLOCK_DC dc=0 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476932] DEBUG 740:new_getprocinfo:2219: RUNLOCK_DC dc=0 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476933] DEBUG 740:new_getprocinfo:2296: RLOCK_PROC ep=1 count=0
+Nov 21 20:34:35 node1 kernel: [  441.476935] DEBUG 740:new_getprocinfo:2297: lpid=749 name=linux
+Nov 21 20:34:35 node1 kernel: [  441.476936] DEBUG 740:new_getprocinfo:2299: RUNLOCK_PROC ep=1 count=0
+Nov 21 20:35:05 node1 kernel: [  471.173778] DEBUG 749:sleep_proc:390: pending: sig[0]:0x00000100, sig[1]:0x00000000
+Nov 21 20:35:05 node1 kernel: [  471.173782] DEBUG 749:sleep_proc:393: shared_pending sig[0]:0x00004000, sig[1]:0x00000000
+Nov 21 20:35:05 node1 kernel: [  471.173783] DEBUG 749:sleep_proc:402: SIGKILL received <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Nov 21 20:35:05 node1 kernel: [  471.173784] DEBUG 749:sleep_proc:405: SIGTERM received <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Nov 21 20:35:05 node1 kernel: [  471.173785] DEBUG 749:sleep_proc:407: endpoint=1 ret=0 p_rcode=0
+Nov 21 20:35:05 node1 kernel: [  471.173787] DEBUG 749:sleep_proc:408: endpoint=1 flags=8 cpuid=0
+Nov 21 20:35:05 node1 kernel: [  471.173788] DEBUG 749:sleep_proc:409: WLOCK_PROC ep=1 count=0
+Nov 21 20:35:05 node1 kernel: [  471.173790] DEBUG 749:sleep_proc:420: new_set.sig[0]=0x10002000 old_set.sig[0]=0x10003000
+Nov 21 20:35:05 node1 kernel: [  471.173791] DEBUG 749:sleep_proc:439: pid=749 ret=-61
+Nov 21 20:35:05 node1 kernel: [  471.173794] DEBUG 749:sleep_proc:464: nr=1 endp=1 dcid=0 lpid=749 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 21 20:35:05 node1 kernel: [  471.173795] DEBUG 749:sleep_proc:466: someone wakeups me: sem=0 p_rcode=-61
+Nov 21 20:35:05 node1 kernel: [  471.173797] DEBUG 749:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 21 20:35:05 node1 kernel: [  471.173798] ERROR: 749:new_mini_receive:534: rcode=-61
+Nov 21 20:35:05 node1 kernel: [  471.173800] ERROR: 749:dvk_ioctl:373: rcode=-61
+
+==========================================================================================
+20201124:
+
+Nov 24 11:08:58 node1 kernel: [ 1994.004623] DEBUG 4696:sleep_proc:391: pending: sig[0]:0x00000100, sig[1]:0x00000000
+Nov 24 11:08:58 node1 kernel: [ 1994.004624] DEBUG 4696:sleep_proc:394: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Nov 24 11:08:58 node1 kernel: [ 1994.004626] DEBUG 4696:sleep_proc:403: SIGKILL received
+Nov 24 11:08:58 node1 kernel: [ 1994.004627] DEBUG 4696:sleep_proc:408: endpoint=1 ret=-512 p_rcode=0
+Nov 24 11:08:58 node1 kernel: [ 1994.004628] DEBUG 4696:sleep_proc:409: endpoint=1 flags=8 cpuid=0
+Nov 24 11:08:58 node1 kernel: [ 1994.004630] DEBUG 4696:sleep_proc:410: WLOCK_PROC ep=1 count=0
+Nov 24 11:08:58 node1 kernel: [ 1994.004632] DEBUG 4696:sleep_proc:421: new_set.sig[0]=0x10006000 old_set.sig[0]=0x7ffbfeff
+Nov 24 11:08:58 node1 kernel: [ 1994.004633] DEBUG 4696:sleep_proc:440: pid=4696 ret=-4
+Nov 24 11:08:58 node1 kernel: [ 1994.004635] DEBUG 4696:sleep_proc:465: nr=1 endp=1 dcid=0 lpid=4696 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 24 11:08:58 node1 kernel: [ 1994.004637] DEBUG 4696:sleep_proc:467: someone wakeups me: sem=0 p_rcode=-4
+Nov 24 11:08:58 node1 kernel: [ 1994.004638] DEBUG 4696:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 24 11:08:58 node1 kernel: [ 1994.004640] ERROR: 4696:new_mini_receive:534: rcode=-4 <<<  #define EDVSINTR (_SIGN  4)  /* interrupted function call */
+Nov 24 11:08:58 node1 kernel: [ 1994.004642] ERROR: 4696:dvk_ioctl:373: rcode=-4
+
+==========================================================================================
+20201125:
+		El  start_sw_threads crea el socket en estado LISTEN para que el pseudo-switch del SENDER haga el accept
+		pero el send_kthread hace un  os_read_file en su lugar int os_accept_connection(int fd)
+		El switch hace 
+			accept_connection(connect_fd);
+		y luego
+			handle_sock_data
+		que hace un 
+		  len = recvfrom(fd, &packet, sizeof(packet), 0, (struct sockaddr *) &data.sock, &socklen);
+		  
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 23744512 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=10 TID=10 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #68 Sat Nov 28 20:37:22 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 265847
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033916K/1071764K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 37848K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1784.21 BogoMIPS (lpj=8921088)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:587: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:594: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:602: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:609: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:610: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 10:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:616: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:492: local_nodeid=-1
+DEBUG rtap_init:493: dcid=0
+DEBUG 10:dvk_getdvsinfo:265:
+DEBUG 10:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 10:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 10:dvk_getdcinfo:366: dcid=0
+DEBUG 10:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 10:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:504: local_nodeid=1
+DEBUG rtap_init:505: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:513: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:514: flags=0 dc_nodes=7 dc_pid=770 dc_name=DC0
+start_sw_threads - sp=1217966076
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+still_used
+bind_data_socket fd=15
+bind_data_socket sun_path=
+DEBUG init_sync:74:
+DEBUG enter_sync:86:
+start_rd_thread sw_send_thread tid=18
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_send_kthread:228: SENDER THREAD: sw_send_ep=31 sw_send_tid=18
+DEBUG 18:dvk_bind_X:1221: cmd=5 dcid=0 pid=18 endpoint=31 nodeid=-1
+DEBUG 18:dvk_bind_X:1251: ioctl ret=31
+DEBUG 18:dvk_bind_X:1254: ret=31
+DEBUG 18:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 18:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 18:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:239: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=6022 vpid=18 nodeid=1 name=linux
+DEBUG 18:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 18:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 18:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:247: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 18:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959310 endpoint=0 nodeid=0
+DEBUG 18:dvk_bind_X:1251: ioctl ret=0
+DEBUG 18:dvk_bind_X:1254: ret=0
+DEBUG 18:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 18:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 18:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:255: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:100:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:290: send_kthread
+DEBUG rt_open_rtap:168: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 18:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 18:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 18:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:172: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:178: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:179: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 18:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 18:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 18:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 18:dvk_sendrec_T:955: rcode=-64
+ERROR: 0:rt_open_rtap:182: rcode=-64
+ERROR: 0:try_rtap_open:204: rcode=-64
+DEBUG send_kthread:296: waiting to retry open
+DEBUG enter_sync:86:
+start_rd_thread sw_recv_thread tid=19
+DEBUG leave_sync:92:
+
+DEBUG enter_sync:86:
+DEBUG init_recv_kthread:357: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=19
+DEBUG 19:dvk_bind_X:1221: cmd=5 dcid=0 pid=19 endpoint=1 nodeid=-1
+DEBUG 19:dvk_bind_X:1251: ioctl ret=1
+DEBUG 19:dvk_bind_X:1254: ret=1
+DEBUG 19:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 19:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 19:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:368: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=6023 vpid=19 nodeid=1 name=linux
+DEBUG 19:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 19:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 19:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:376: nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 19:dvk_bind_X:1221: cmd=2 dcid=0 pid=137959625 endpoint=30 nodeid=0
+DEBUG 19:dvk_bind_X:1251: ioctl ret=30
+DEBUG 19:dvk_bind_X:1254: ret=30
+DEBUG 19:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 19:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 19:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:384: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:100:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:403: recv_kthread
+DEBUG 19:dvk_receive_T:897: endpoint=31438 timeout=30000
+
+DEBUG end_sync:80:
+DEBUG rtap_init:535: sw_send_tid=18
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:542: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=6022 vpid=18 nodeid=1 name=linux
+DEBUG rtap_init:545: sw_recv_tid=19
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:552: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=6023 vpid=19 nodeid=1 name=linux
+DEBUG rtap_init:555: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:557: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=19 sw_send_tid=18  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+DEBUG 19:dvk_receive_T:910: ioctl ret=-61 errno=0
+DEBUG 19:dvk_receive_T:920: ioctl ret=-61
+ERROR: 19:dvk_receive_T:922: rcode=-61
+DEBUG recv_kthread:410: rcode=-61
+DEBUG 19:dvk_receive_T:897: endpoint=31438 timeout=30000
+ViolaciÃ³n de segmento
+
+
+Nov 28 20:38:29 node1 kernel: [ 1133.556597] DEBUG 6023:dvk_ioctl:349: cmd=4004E303 arg=4898AF80
+Nov 28 20:38:29 node1 kernel: [ 1133.556601] DEBUG 6023:dvk_ioctl:369: DVK_CALL=3 (io_mini_receive) 
+Nov 28 20:38:29 node1 kernel: [ 1133.556603] DEBUG 6023:io_mini_receive:35: 
+Nov 28 20:38:29 node1 kernel: [ 1133.556604] DEBUG 6023:new_mini_receive:314: src_ep=31438
+Nov 28 20:38:29 node1 kernel: [ 1133.556607] DEBUG 6023:check_caller:616: caller_pid=6023 caller_tgid=6023
+Nov 28 20:38:29 node1 kernel: [ 1133.556609] DEBUG 6023:check_caller:657: WLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556611] DEBUG 6023:check_caller:662: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=6023 vpid=19 nodeid=1 name=linux 
+Nov 28 20:38:29 node1 kernel: [ 1133.556613] DEBUG 6023:check_caller:722: WUNLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556614] DEBUG 6023:check_caller:725: dcid=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556616] DEBUG 6023:check_caller:729: RLOCK_DC dc=0 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556617] DEBUG 6023:check_caller:733: RUNLOCK_DC dc=0 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556618] DEBUG 6023:check_caller:739: caller_pid=6023 
+Nov 28 20:38:29 node1 kernel: [ 1133.556619] DEBUG 6023:check_caller:742: RLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556620] DEBUG 6023:check_caller:746: RUNLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556622] DEBUG 6023:new_mini_receive:325: RLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556624] DEBUG 6023:new_mini_receive:329: caller_nr=1 caller_ep=1 src_ep=31438 
+Nov 28 20:38:29 node1 kernel: [ 1133.556625] DEBUG 6023:new_mini_receive:333: dcid=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556626] DEBUG 6023:new_mini_receive:341: RUNLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556627] DEBUG 6023:new_mini_receive:343: RLOCK_DC dc=0 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556629] DEBUG 6023:new_mini_receive:399: RUNLOCK_DC dc=0 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556630] DEBUG 6023:new_mini_receive:402: WLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556631] DEBUG 6023:new_mini_receive:418: WUNLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556633] DEBUG 6023:new_mini_receive:452: WLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.556634] DEBUG 6023:new_mini_receive:517: Any suitable message from 31438 was not found.
+Nov 28 20:38:29 node1 kernel: [ 1133.556636] DEBUG 6023:sleep_proc:355: timeout=30000
+Nov 28 20:38:29 node1 kernel: [ 1133.556637] DEBUG 6023:sleep_proc:366: BEFORE DOWN lpid=6023 p_sem=0 timeout=30000
+Nov 28 20:38:29 node1 kernel: [ 1133.556638] DEBUG 6023:sleep_proc:368: endpoint=1 flags=8
+Nov 28 20:38:29 node1 kernel: [ 1133.556640] DEBUG 6023:sleep_proc:377: new_set.sig[0]=0x10006000 old_set.sig[0]=0x6ffb9eff
+Nov 28 20:38:29 node1 kernel: [ 1133.556642] DEBUG 6023:sleep_proc:382: WUNLOCK_PROC ep=1 count=0
+
+Nov 28 20:38:29 node1 kernel: [ 1133.594232] DEBUG 6023:sleep_proc:391: pending: sig[0]:0x00000100, sig[1]:0x00000000
+Nov 28 20:38:29 node1 kernel: [ 1133.594233] DEBUG 6023:sleep_proc:394: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Nov 28 20:38:29 node1 kernel: [ 1133.594235] DEBUG 6023:sleep_proc:403: SIGKILL received
+Nov 28 20:38:29 node1 kernel: [ 1133.594236] DEBUG 6023:sleep_proc:408: endpoint=1 ret=-512 p_rcode=0
+Nov 28 20:38:29 node1 kernel: [ 1133.594238] DEBUG 6023:sleep_proc:409: endpoint=1 flags=8 cpuid=0
+Nov 28 20:38:29 node1 kernel: [ 1133.594239] DEBUG 6023:sleep_proc:410: WLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.594242] DEBUG 6023:sleep_proc:421: new_set.sig[0]=0x10006000 old_set.sig[0]=0x7ffbfeff
+Nov 28 20:38:29 node1 kernel: [ 1133.594243] DEBUG 6023:sleep_proc:440: pid=6023 ret=-4
+Nov 28 20:38:29 node1 kernel: [ 1133.594246] DEBUG 6023:sleep_proc:465: nr=1 endp=1 dcid=0 lpid=6023 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 28 20:38:29 node1 kernel: [ 1133.594247] DEBUG 6023:sleep_proc:467: someone wakeups me: sem=0 p_rcode=-4
+Nov 28 20:38:29 node1 kernel: [ 1133.594249] DEBUG 6023:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 28 20:38:29 node1 kernel: [ 1133.594250] ERROR: 6023:new_mini_receive:534: rcode=-4
+Nov 28 20:38:29 node1 kernel: [ 1133.594252] ERROR: 6023:dvk_ioctl:373: rcode=-4
+
+SE PUSIERON 120 SEGUNDOS DE TIMEOUT PARA EL RECEIVE y SE PRODUCE EL SEGMENTATION FAULT ANTES
+
+
+
+DEBUG 29:dvk_receive_T:897: endpoint=31438 timeout=120000 <<<<<<<<<<<<<<<<<<<<<
+DEBUG end_sync:80:
+DEBUG rtap_init:535: sw_send_tid=28
+DEBUG 20:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 20:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 20:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:542: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=8637 vpid=28 nodeid=1 name=linux
+DEBUG rtap_init:545: sw_recv_tid=29
+DEBUG 20:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 20:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 20:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:552: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=8638 vpid=29 nodeid=1 name=linux
+DEBUG rtap_init:555: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:557: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=29 sw_send_tid=28  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+ViolaciÃ³n de segmento
+
+
+Nov 28 20:45:28 node1 kernel: [ 1551.751328] DEBUG 8638:sleep_proc:355: timeout=120000
+Nov 28 20:45:28 node1 kernel: [ 1551.751330] DEBUG 8638:sleep_proc:366: BEFORE DOWN lpid=8638 p_sem=0 timeout=120000
+Nov 28 20:45:28 node1 kernel: [ 1551.751332] DEBUG 8638:sleep_proc:368: endpoint=1 flags=8
+Nov 28 20:45:28 node1 kernel: [ 1551.751335] DEBUG 8638:sleep_proc:377: new_set.sig[0]=0x10006000 old_set.sig[0]=0x7ffbfeff
+Nov 28 20:45:28 node1 kernel: [ 1551.751337] DEBUG 8638:sleep_proc:382: WUNLOCK_PROC ep=1 count=0
+
+TIEMPO DE INICIO 	1551
+TIEMPO DE FIN 		1582
+DIFERENCIA 31 SEGUNDOS =====>>> el problema no esta en DVK_RECEIVE 
+
+Nov 28 20:45:58 node1 kernel: [ 1582.253403] DEBUG 8638:sleep_proc:391: pending: sig[0]:0x00000100, sig[1]:0x00000000
+Nov 28 20:45:58 node1 kernel: [ 1582.253405] DEBUG 8638:sleep_proc:394: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Nov 28 20:45:58 node1 kernel: [ 1582.253406] DEBUG 8638:sleep_proc:403: SIGKILL received
+Nov 28 20:45:58 node1 kernel: [ 1582.253408] DEBUG 8638:sleep_proc:408: endpoint=1 ret=-512 p_rcode=0
+Nov 28 20:45:58 node1 kernel: [ 1582.253409] DEBUG 8638:sleep_proc:409: endpoint=1 flags=8 cpuid=0
+Nov 28 20:45:58 node1 kernel: [ 1582.253410] DEBUG 8638:sleep_proc:410: WLOCK_PROC ep=1 count=0
+Nov 28 20:45:58 node1 kernel: [ 1582.253413] DEBUG 8638:sleep_proc:421: new_set.sig[0]=0x10006000 old_set.sig[0]=0x7ffbfeff
+Nov 28 20:45:58 node1 kernel: [ 1582.253414] DEBUG 8638:sleep_proc:440: pid=8638 ret=-4
+Nov 28 20:45:58 node1 kernel: [ 1582.253417] DEBUG 8638:sleep_proc:465: nr=1 endp=1 dcid=0 lpid=8638 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 28 20:45:58 node1 kernel: [ 1582.253418] DEBUG 8638:sleep_proc:467: someone wakeups me: sem=0 p_rcode=-4
+Nov 28 20:45:58 node1 kernel: [ 1582.253420] DEBUG 8638:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 28 20:45:58 node1 kernel: [ 1582.253422] ERROR: 8638:new_mini_receive:534: rcode=-4
+Nov 28 20:45:58 node1 kernel: [ 1582.253424] ERROR: 8638:dvk_ioctl:373: rcode=-4
+
+El problema parece estar en el SENDER despues del dvk_sendrec_T ya que termina correctamente
+Nov 28 20:54:52 node1 kernel: [ 2116.461492] DEBUG 8674:new_mini_sendrec:882: WUNLOCK_PROC ep=31 count=0
+Nov 28 20:54:52 node1 kernel: [ 2116.461579] ERROR: 8674:new_mini_sendrec:883: rcode=-64
+Nov 28 20:54:52 node1 kernel: [ 2116.461583] ERROR: 8674:dvk_ioctl:373: rcode=-64
+
+El problema tampoco parece estar en el SENDER, debe ester en el MAIN 
+
+==========================================================================================
+20201129:
+	
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 18432000 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=22 TID=22 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #79 Sun Nov 29 10:18:33 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 264560
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033948K/1066576K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 32628K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1581.05 BogoMIPS (lpj=7905280)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:591: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:598: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:606: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:613: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:614: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 22:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:620: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:496: local_nodeid=-1
+DEBUG rtap_init:497: dcid=0
+DEBUG 22:dvk_getdvsinfo:265:
+DEBUG 22:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 22:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 22:dvk_getdcinfo:366: dcid=0
+DEBUG 22:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 22:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:508: local_nodeid=1
+DEBUG rtap_init:509: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:517: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:518: flags=0 dc_nodes=7 dc_pid=759 dc_name=DC0
+start_sw_threads - sp=1212833788
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+still_used
+bind_data_socket fd=15
+bind_data_socket sun_path=
+DEBUG init_sync:75:
+DEBUG enter_sync:87:
+start_rd_thread sw_send_thread tid=30
+DEBUG leave_sync:93:
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+DEBUG enter_sync:87:
+DEBUG init_send_kthread:231: SENDER THREAD: sw_send_ep=31 sw_send_tid=30
+DEBUG 30:dvk_bind_X:1221: cmd=5 dcid=0 pid=30 endpoint=31 nodeid=-1
+DEBUG 30:dvk_bind_X:1251: ioctl ret=31
+DEBUG 30:dvk_bind_X:1254: ret=31
+DEBUG 30:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 30:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 30:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:242: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=3494 vpid=30 nodeid=1 name=linux
+DEBUG 30:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 30:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 30:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:250: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG 30:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 30:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 30:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:258: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:101:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:293: send_kthread
+DEBUG rt_open_rtap:170: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 30:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 30:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 30:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:174: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:180: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:181: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 30:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 30:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 30:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 30:dvk_sendrec_T:955: rcode=-64
+DEBUG rt_open_rtap:183: rcode=-64
+ERROR: 0:rt_open_rtap:185: rcode=-64
+ERROR: 0:try_rtap_open:207: rcode=-64
+DEBUG send_kthread:299: waiting to retry open
+DEBUG enter_sync:87:
+start_rd_thread sw_recv_thread tid=31
+DEBUG leave_sync:93:
+DEBUG enter_sync:87:
+DEBUG init_recv_kthread:361: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=31
+DEBUG 31:dvk_bind_X:1221: cmd=5 dcid=0 pid=31 endpoint=1 nodeid=-1
+DEBUG 31:dvk_bind_X:1251: ioctl ret=1
+DEBUG 31:dvk_bind_X:1254: ret=1
+DEBUG 31:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 31:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 31:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:372: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=3495 vpid=31 nodeid=1 name=linux
+DEBUG 31:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 31:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 31:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:380: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG 31:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 31:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 31:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:388: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:101:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:407: recv_kthread
+DEBUG 31:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:81:
+DEBUG rtap_init:539: sw_send_tid=30
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:546: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=3494 vpid=30 nodeid=1 name=linux
+DEBUG rtap_init:549: sw_recv_tid=31
+DEBUG 22:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 22:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 22:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:556: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=3495 vpid=31 nodeid=1 name=linux
+DEBUG rtap_init:559: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:561: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=31 sw_send_tid=30  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+random: fast init done
+ViolaciÃ³n de segmento
+
+
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
+ 0   1     1  3495/31     1    8  420 31438 27342 27342 27342 linux          
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_client    
+ 0  31    31  3494/30     1    0  420     0 27342 27342 27342 linux        
+ 
+ 
+Nov 29 10:32:46 node1 kernel: [ 1102.254279] DEBUG 3486:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Nov 29 10:32:46 node1 kernel: [ 1102.254281] DEBUG 3486:io_getprocinfo:164: 
+Nov 29 10:32:46 node1 kernel: [ 1102.254283] DEBUG 3486:new_getprocinfo:2183: dcid=0 p_nr=31
+Nov 29 10:32:46 node1 kernel: [ 1102.254286] DEBUG 3486:new_getprocinfo:2212: RLOCK_DC dc=0 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254287] DEBUG 3486:new_getprocinfo:2219: RUNLOCK_DC dc=0 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254289] DEBUG 3486:new_getprocinfo:2296: RLOCK_PROC ep=31 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254291] DEBUG 3486:new_getprocinfo:2297: lpid=3494 name=linux
+Nov 29 10:32:46 node1 kernel: [ 1102.254292] DEBUG 3486:new_getprocinfo:2299: RUNLOCK_PROC ep=31 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254381] DEBUG 3486:dvk_ioctl:349: cmd=8004E30F arg=48C89E9C
+Nov 29 10:32:46 node1 kernel: [ 1102.254382] DEBUG 3486:dvk_ioctl:369: DVK_CALL=15 (io_getprocinfo) 
+Nov 29 10:32:46 node1 kernel: [ 1102.254383] DEBUG 3486:io_getprocinfo:164: 
+Nov 29 10:32:46 node1 kernel: [ 1102.254384] DEBUG 3486:new_getprocinfo:2183: dcid=0 p_nr=1
+Nov 29 10:32:46 node1 kernel: [ 1102.254386] DEBUG 3486:new_getprocinfo:2212: RLOCK_DC dc=0 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254387] DEBUG 3486:new_getprocinfo:2219: RUNLOCK_DC dc=0 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254388] DEBUG 3486:new_getprocinfo:2296: RLOCK_PROC ep=1 count=0
+Nov 29 10:32:46 node1 kernel: [ 1102.254390] DEBUG 3486:new_getprocinfo:2297: lpid=3495 name=linux
+Nov 29 10:32:46 node1 kernel: [ 1102.254391] DEBUG 3486:new_getprocinfo:2299: RUNLOCK_PROC ep=1 count=0
+
+Nov 29 10:32:56 node1 kernel: [ 1112.016327] DEBUG 3486:new_exit_unbind:267: code=-730393130
+Nov 29 10:32:56 node1 kernel: [ 1112.016329] DEBUG 3486:new_exit_unbind:271: WLOCK_TASK pid=3486 count=0
+Nov 29 10:32:56 node1 kernel: [ 1112.016331] DEBUG 3486:new_exit_unbind:400: Process not bound pid=3486 linux
+Nov 29 10:32:56 node1 kernel: [ 1112.016332] DEBUG 3486:new_exit_unbind:402: WUNLOCK_TASK pid=3486 count=0
+
+DIFERENCIA 10 SEGUNDOS !!! 
+			DVKDEBUG(INTERNAL,"waiting to retry open\n");
+			os_idle_sleep(WAIT10SECS);
+			
+			
+
+Nov 29 11:05:17 node1 kernel: [ 3053.480570] DEBUG 6199:dvk_ioctl:349: cmd=4004E303 arg=47CA1F80
+Nov 29 11:05:17 node1 kernel: [ 3053.480574] DEBUG 6199:dvk_ioctl:369: DVK_CALL=3 (io_mini_receive) 
+Nov 29 11:05:17 node1 kernel: [ 3053.480576] DEBUG 6199:io_mini_receive:35: 
+Nov 29 11:05:17 node1 kernel: [ 3053.480577] DEBUG 6199:new_mini_receive:314: src_ep=31438
+Nov 29 11:05:17 node1 kernel: [ 3053.480580] DEBUG 6199:check_caller:616: caller_pid=6199 caller_tgid=6199
+Nov 29 11:05:17 node1 kernel: [ 3053.480582] DEBUG 6199:check_caller:657: WLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480584] DEBUG 6199:check_caller:662: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=6199 vpid=60 nodeid=1 name=linux 
+Nov 29 11:05:17 node1 kernel: [ 3053.480586] DEBUG 6199:check_caller:722: WUNLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480587] DEBUG 6199:check_caller:725: dcid=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480588] DEBUG 6199:check_caller:729: RLOCK_DC dc=0 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480590] DEBUG 6199:check_caller:733: RUNLOCK_DC dc=0 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480591] DEBUG 6199:check_caller:739: caller_pid=6199 
+Nov 29 11:05:17 node1 kernel: [ 3053.480592] DEBUG 6199:check_caller:742: RLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480593] DEBUG 6199:check_caller:746: RUNLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480595] DEBUG 6199:new_mini_receive:325: RLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480596] DEBUG 6199:new_mini_receive:329: caller_nr=31 caller_ep=31 src_ep=31438 
+Nov 29 11:05:17 node1 kernel: [ 3053.480597] DEBUG 6199:new_mini_receive:333: dcid=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480598] DEBUG 6199:new_mini_receive:339: RUNLOCK_PROC ep=31 count=0
+Nov 29 11:05:17 node1 kernel: [ 3053.480600] ERROR: 6199:new_mini_receive:339: rcode=-102
+Nov 29 11:05:17 node1 kernel: [ 3053.480601] ERROR: 6199:dvk_ioctl:373: rcode=-102 <<<<<<<<<<<<<<<<<< EDVSBADCALL problema de PRIVILEGIOS
+
+PORQUE EL ENDPOINT 31 CON PID 6199 HACE UN RECEIVE ????
+
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/dvkcalls 
+-nr id --wr- lv 765432109876543210987654321098765432109876543210
+  0 34 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  1 35 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ 30 64 27342  0 ------------------X--X---------------X----X-----
+ 31 64 27342  0 ------------------X--X---------------X----X-----
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
+ 0   1     1  6200/61     1    8  420 31438 27342 27342 27342 linux          
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_client    
+ 0  31    31  6199/60     1    0  420     0 27342 27342 27342 linux     
+
+PORQUE EL dvk_receive_T retorna 0 si deberia retornar TIMEOUT ???
+ 
+DEBUG 61:dvk_receive_T:897: endpoint=31438 timeout=30000 <<<<<<< VPID=61
+DEBUG 60:dvk_receive_T:910: ioctl ret=0 errno=0			 <<<<<<< VPID=60 !!!!!!
+DEBUG 60:dvk_receive_T:920: ioctl ret=0					 <<<<<<< VPID=60 !!!!!!
+
+Nov 29 11:05:19 node1 kernel: [ 3054.574923] DEBUG 6200:sleep_proc:391: pending: sig[0]:0x00000000, sig[1]:0x00000000
+Nov 29 11:05:19 node1 kernel: [ 3054.574927] DEBUG 6200:sleep_proc:394: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+Nov 29 11:05:19 node1 kernel: [ 3054.574929] DEBUG 6200:sleep_proc:408: endpoint=1 ret=0 p_rcode=0
+Nov 29 11:05:19 node1 kernel: [ 3054.574930] DEBUG 6200:sleep_proc:409: endpoint=1 flags=8 cpuid=0
+Nov 29 11:05:19 node1 kernel: [ 3054.574932] DEBUG 6200:sleep_proc:410: WLOCK_PROC ep=1 count=0
+Nov 29 11:05:19 node1 kernel: [ 3054.574935] DEBUG 6200:sleep_proc:421: new_set.sig[0]=0x10006000 old_set.sig[0]=0x7ffbfeff
+Nov 29 11:05:19 node1 kernel: [ 3054.574937] DEBUG 6200:sleep_proc:440: pid=6200 ret=-61
+Nov 29 11:05:19 node1 kernel: [ 3054.574940] DEBUG 6200:sleep_proc:465: nr=1 endp=1 dcid=0 lpid=6200 p_cpumask=FFFFFFFF nodemap=2 name=linux 
+Nov 29 11:05:19 node1 kernel: [ 3054.574941] DEBUG 6200:sleep_proc:467: someone wakeups me: sem=0 p_rcode=-61
+Nov 29 11:05:19 node1 kernel: [ 3054.574943] DEBUG 6200:new_mini_receive:533: WUNLOCK_PROC ep=1 count=0
+Nov 29 11:05:19 node1 kernel: [ 3054.574945] ERROR: 6200:new_mini_receive:534: rcode=-61
+Nov 29 11:05:19 node1 kernel: [ 3054.574947] ERROR: 6200:dvk_ioctl:373: rcode=-61
+
+
+DEBUG recv_kthread:418: RECEIVED REQUEST: source=0 type=0 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[]
+ERROR: 0:recv_kthread:420: rcode=-103 <<<<<<<<<<<<<<< EDVSBADSRCDST
+
+LUEGO APARENTEMENTE ES EL SENDER EL QUE HACE ESTO !!!! 
+DEBUG 60:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG 60:dvk_receive_T:910: ioctl ret=-102 errno=0
+DEBUG 60:dvk_receive_T:920: ioctl ret=-102
+ERROR: 60:dvk_receive_T:922: rcode=-102
+DEBUG recv_kthread:415: rcode=-102
+
+----------------------------------------------------------------------------------------------
+
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/dvkcalls 
+-nr id --wr- lv 765432109876543210987654321098765432109876543210
+  0 34 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  1 35 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ 30 64 27342  0 ------------------X--X---------------X----X-----
+ 31 64 27342  0 ------------------X--X---------------X----X-----
+root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
+ 0   1     1  6255/71     1    8  420 31438 27342 27342 27342 linux          
+ 0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_client    
+ 0  31    31  6254/70     1    0  420     0 27342 27342 27342 linux  
+ 
+ 
+ 
 
 
 
 
 
-
-
-
-
+		
+ULTIMO_LOG 
+==========================================================================================

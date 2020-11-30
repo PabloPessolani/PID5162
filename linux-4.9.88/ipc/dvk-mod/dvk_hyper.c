@@ -909,12 +909,6 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 	FOR_EACH_PROC(dc_ptr, i) {
 		rp = DC_PROC(dc_ptr,i);
 
-// TERPORARIO 		
-if(test_bit(BIT_SLOT_FREE, &rp->p_usr.p_rts_flags)) {
-		WUNLOCK_PROC(rp); 
-		continue;
-}		
-
 		if( caller_ptr != NULL){
 			if( rp == caller_ptr){
 			DVKDEBUG(GENERIC,"Skip, caller process\n");
@@ -2475,7 +2469,7 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 			if(ret == OK) {		/*The process is just bound  */
 				if( !test_bit(MIS_BIT_RMTBACKUP, &caller_ptr->p_usr.p_misc_flags)) {
 					ret = caller_ptr->p_usr.p_endpoint;
-					RUNLOCK_PROC(caller_ptr);
+				//	RUNLOCK_PROC(caller_ptr);
 					DVKDEBUG(INTERNAL,"ret=%d\n", ret);
 					return(ret);
 				}

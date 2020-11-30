@@ -198,5 +198,17 @@ config UML_NET_SLIRP
 
         Startup example: "eth0=slirp,FE:FD:01:02:03:04,/usr/local/bin/slirp"
 
+config UML_NET_RTAP
+	bool "Remote TAP transport"
+	depends on UML_NET && UML_NET_DAEMON && DVS 
+	default n
+	help
+        The RTAP User-Mode Linux network transport allows a single
+        running UML to exchange packets with a remote host over one 
+		of the remote host's TAP devices, such as /dev/tap0. 
+		boot line format: "eth0=rtap,MAC_address,rtap_name,nodeid"
+        Startup example:  "eth0=rtap,02:AA:BB:CC:DD:01,tap1,0"
+		This means that UML's eth0 will be an RTAP device with a MAC_address
+		"02:AA:BB:CC:DD:01". The remote device name will be "tap1" on NODEID=0.
 endmenu
 

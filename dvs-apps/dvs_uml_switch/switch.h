@@ -6,8 +6,8 @@
 #define __SWITCH_H__
 
 #define SWITCH_VERSION 3
-#define ETH_ALEN 		6
 #define LISTEN_BACKLOG 	15
+#define ETH_ALEN 		6
 #define NR_RMTTAP		NR_NODES
 #define NO_DCID 	PROC_NO_PID	
 #define YES				1
@@ -202,8 +202,8 @@ typedef struct sock_data sock_data_t;
 struct rmttap_s{
 	int		rt_index; 						// index in the array of local structures 
 	int		rt_nodeid;						// in which node is this TAP 
-	int		rt_ctrl_fd;						// control FD to the local switch 
-	int		rt_data_fd;						// data  FD to the local switch 
+	int		rt_krnl_fd;						// kernel FD  
+	int		rt_rtap_fd;						// RTAP   FD  
 	int		rt_poll_idx;					// index in the fds array when polling 
 	int		rt_rmt_idx;
 	int		rt_rmt_ep;						// remote endpoint who opens this TAP 

@@ -4406,7 +4406,6 @@ Oct 19 18:08:17 node1 kernel: [ 4439.294869] DEBUG RECEIVER:new_exit_unbind:386:
 TODO: Convertir las asignaciones estaticas en malloc()
 
 
-
 nsenter -p -t $DC0 ./uml.linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node00 ubda=/dev/sdb6 rw mem=1024M dcid=0 eth0=daemon
 
 	rt_ptr->rt_ctrl_sun.sun_family = AF_UNIX;
