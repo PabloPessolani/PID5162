@@ -4675,6 +4675,84 @@ Oct 31 20:04:45 node0 kernel: [ 1378.652663] do_exit: local_nodeid:0
 
 ULTIMO_LOG
 ==============================================================================================================
+
+TEMA MIGRACION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ERROR:
+		Cuando de migra un proceso en el siguiente escenario:
+		Antes
+			NODE0: Nada
+			NODE1: Client,Server
+		Despues 
+			NODE0: Server
+			NODE1: Client
+			
+    En dvk_migrate, migr_start, cualquier proceso que haya ejecutado un IPC 
+	send, sendrec, receive, wait4bind, etc, 
+	deberia chequearese el bit misc  MIS_BIT_NEEDMIGR
+	de esta forma aun cuando alguien le haya echo un UP, setearia el bit BIT_MIGRATE
+	
+	Es decir: si el proceso es local y esta ejecutando algo, cuando haga un RETURN
+	con o sin error deberia verificarse el bit MIS_BIT_NEEDMIGR y setear el bit BIT_MIGRATE
+	y quedar bloqueado.
+	
+RESUMIENDO:
+		1) El proceso a migrar esta bloqueado en un IPC: Quien le haga UP debera chequear el bit y no hacer el UP.
+		2) El propio proceso esta ejecutando y va a hacer el return, debe verificar ese bit antes
+		
+		Cuando se pone a dormir un proceso, deben verificarse la cola de los procesos que estan haciendo send al proceso migrante
+		y 
+		
+EN long int migr_start(struct proc *proc_ptr)
+		Se deberian rastrear todos los procesos que estan en SENDING en la cola del proceso migrante 
+		para ponerlos en la cola de WAITING FOR OTHER PROCESS MIGRATION 
+		O sino directamente devolverles un codigo de error y que el programa decida
+
+
+CUANDO UN PROCESO LOCAL migro a un nodo REMOTE
+SE EJECUTA 
+long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
+
+			/* Convert the LOCAL descriptor into a REMOTE descriptor */
+			p_ptr->p_usr.p_lpid 	= PROC_NO_PID;	/* Update Linu PID	*/
+			p_ptr->p_usr.p_vpid 	= PROC_NO_PID;	/* Update virtual PID	*/
+			p_ptr->p_usr.p_nodeid 	= new_nodeid;
+			thread_ptr->task_proc	= NULL;
+			p_ptr->p_task 			= NULL;
+			put_task_struct(thread_ptr);	 <<<<  /* decrement the reference count of the task struct */
+			
+	SEGURAMENTE el kernel libera la estructura thread_ptr y termina haciendo un unbind 
+		y se pudre todo. 
+		
+
+			// ATENCION, ESTO NO ESTA RESUELTO 
+			// Si el proceso es del sistema, puede tener acumulados mensajes de tipo NOTIFY 
+			// Como transferirlos al remoto ??  (ver do_unbind()(	
+			// ATENCION OTRO
+			// que pasa con los mensajes que estan encolados en el proxy modo kernel listos para salir ??
+			// Se deberia cambiar el nodo origne por new_node, pero el proxy receiver del otro nodo, lo 
+			// deberia rechazar ya que el nodo origen no se corresponde con el nodo emisor 
+			// Se deberia poner algun flag que indique que el proceso cambio de nodo
+			// ATENCION !!! 
+			// Ademas de envier mensajes y datos, se podria enviar al nodo remoto PROC_DESCRIPTOR 
+			// ATENCION: Al migrar un proceso local hacia uno remoto, este queda como BACKUP 
+			// Luego, cuando se hace el KILL del proceso BACKUP, tambien remueve al descriptor REMOTE!!! No deberia 
+			
+Cuando se hace old_node_migrate() y el proceso esta en estado MIS_BIT_NOMIGRATE
+producto de que cuando se hace un send o sendrec o notify queda este bit seteado
+
+PARA HACER UNA MIGRACION 
+	1) El proceso esta fuera del DVK 
+	2) El proceso esta dentro del DVK
+	
+	Si esta fuera del DVK no deberia haber ningun problema 
+	Si esta dentro del DVK se deberia marcar con MIS_NEEDMIGR
+		Si esta esperando un evento 
+
+
+TEMA MIGRACION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			
+		
 TODO:  SEGURIZAR EL CODIGO CON  
 		BUG_ON(!list_empty(&new->list));
 		Que seria equivalente a assert() 
@@ -4960,6 +5038,33 @@ TODO:   Incluir impresion de PRIVILEGIOS en /proc
   ipc_map_t priv_ipc_to;		/* allowed destination processes */
   dvk_map_t	priv_dvk_allowed;		/* allowed dvk calls */
   	
+TODO:   dvk_sproxy. new_get2rmt()
+		VERIFICAR SI SE HACE ESTO 
+	ESTO HACE
+		cuando el dvk detecta que el nodo del endpoint destino es diferente al que el cmd 
+		retorna EDVSMIGRATE pero al send, sendrec, etc. 
+	ESTO DEBERIA HACER 
+		cuando el dvk detecta que el nodo del endpoint destino es diferente al que el cmd 
+		tiene, entonces cambia el nodo en el cmd.
+				
+TODO:   dvk_rproxy. new_put2lcl()
+		VERIFICAR SI SE HACE ESTO 
+	ESTO HACE
+		cuando el dvk detecta que el nodo del endpoint destino es diferente al que el cmd 
+		retorna EDVSMIGRATE al nodoo remoto
+	ESTO DEBERIA HACER 
+		cuando el dvk detecta que el nodo del endpoint destino es diferente al que el cmd 
+		tiene, entonces registra al endpoint remoto en el nuevo nodo.
+
+TODO  ANALIZAR ESTAS SITUACIONES
+Se pueden presentar las siguientes situaciones:
+Si un proceso local ha enviado un mensaje hacia un endpoint de un proceso remoto, el DVK antes de entregárselo al proxy para su envío, verifica si el endpoint destino está registrado en un nodo diferente al del momento en que se envió el mensaje. De ser así, esto quiere decir que el proceso ha migrado. El DVK cambia el nodo destino original por el nodo destino actual.
+Si un proceso local ha enviado un mensaje a un endpoint remoto y éste se encuentra en proceso de migración, el DVK verifica si el proceso (local) emisor ha establecido un tiempo de espera para enviar el mensaje (timeout). Si estableció un tiempo de espera, el proceso se bloquea durante ese tiempo y el DVK volverá a intentar el envío, de lo contrario, retornará un código de error EDVSMIGRATE.
+Si el DVK del nodo local ha recibido a través de un proxy un mensaje desde un endpoint localizado en un nodo remoto y el DVK local lo tiene registrado en un nodo diferente, se cambiará en el nodo local la registración de ese endpoint en el nodo origen del mensaje.
+Si el DVK del nodo local ha recibido a través de un proxy un mensaje desde un endpoint en un nodo remoto hacia un endpoint cuyo nodo no es el nodo local, le retorna al nodo remoto un mensaje EDVSMIGRATE.
+
+
+
 		
 TODO:  Probar Kernel con IPC y modulo con IOCTL juntos 
 

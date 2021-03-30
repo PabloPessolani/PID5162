@@ -11,6 +11,7 @@ char *buffer;
 int svr_ep, dcid;
 dvs_usr_t dvs, *dvs_ptr;
 proc_usr_t proc_usr, *proc_ptr;
+int old_nodeid;
 
 double dwalltime()
 {
@@ -32,21 +33,22 @@ fprintf(stderr,"Usage: %s <dcid> <svr_ep> \n", argv0 );
 int migr_restart(void) 
 {
 	int rcode;
-	int nodeid;
+	int new_nodeid;
 	
-	nodeid = get_dvs_params();
-	if ( nodeid == EDVSNOTTY) { 
-		// open the DVK pseudo-device 
-		rcode = dvk_open();
-		USRDEBUG("dvk_open rcode=%d\n", rcode);
-		if (rcode < 0)  ERROR_EXIT(rcode);
-	}
+	rcode = close(dvk_fd);
+	if (rcode < 0)  ERROR_PRINT(errno);
+
+	// open the DVK pseudo-device 
+	rcode = dvk_open();
+	USRDEBUG("dvk_open rcode=%d\n", rcode);
+	if (rcode < 0)  ERROR_EXIT(rcode);
+
 	// Get the new node ID 
-	nodeid = get_dvs_params();
-	if( nodeid < 0) ERROR_EXIT(nodeid);
-	USRDEBUG("nodeid=%d local_nodeid=%d\n", nodeid, local_nodeid);		
-	if( nodeid != local_nodeid) { // Migrated to other node 
-		local_nodeid = nodeid;
+	new_nodeid = get_dvs_params();
+	if( new_nodeid < 0) ERROR_EXIT(new_nodeid);
+	USRDEBUG("new_nodeid=%d local_nodeid=%d\n", new_nodeid, local_nodeid);		
+	if( new_nodeid != local_nodeid) { // Migrated to other node 
+		old_nodeid = local_nodeid;
 		// try to BIND the process 
 		USRDEBUG("dcid=%d svr_ep=%d\n", dcid, svr_ep);
 		rcode = dvk_bind(dcid, svr_ep);
@@ -54,20 +56,21 @@ int migr_restart(void)
 		if( rcode == EDVSSLOTUSED) {
 			proc_ptr = &proc_usr;
 			rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
-			printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+			USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
 			if( TEST_BIT(proc_ptr->p_rts_flags, BIT_REMOTE) 
 			 &&!TEST_BIT(proc_ptr->p_rts_flags, MIS_BIT_RMTBACKUP)){
 				
-				if( !TEST_BIT(proc_ptr->p_rts_flags, BIT_MIGRATE)) {
+//				if( !TEST_BIT(proc_ptr->p_rts_flags, BIT_MIGRATE)) {
 					rcode = dvk_migr_start(dcid, svr_ep);
 					if( rcode < 0) ERROR_EXIT(rcode);
 					rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
-					printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
-				}
+					USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+//				}
+				local_nodeid = new_nodeid;
 				rcode = dvk_migr_commit(PROC_NO_PID, dcid, svr_ep, local_nodeid);					
 				if( rcode < 0) ERROR_EXIT(rcode);
 				rcode = dvk_getprocinfo(dcid, _ENDPOINT_P(svr_ep), proc_ptr);
-				printf(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
+				USRDEBUG(PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));
 			 }
 		} else {
 			if( rcode != svr_ep) ERROR_EXIT(rcode);
@@ -86,16 +89,16 @@ int migr_restart(void)
  *===========================================================================*/
 int get_dvs_params(void)
 {
-	int nodeid; 
+	int new_nodeid; 
 	
 	USRDEBUG("\n");
-	nodeid = dvk_getdvsinfo(&dvs);
-	USRDEBUG("nodeid=%d\n",nodeid);
-	if( nodeid < DVS_NO_INIT) 
-		ERROR_RETURN(nodeid);
+	new_nodeid = dvk_getdvsinfo(&dvs);
+	USRDEBUG("new_nodeid=%d\n",new_nodeid);
+	if( new_nodeid < DVS_NO_INIT) 
+		ERROR_RETURN(new_nodeid);
 	dvs_ptr = &dvs;
 	USRDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
-	return(nodeid);
+	return(new_nodeid);
 }
  
 int  main ( int argc, char *argv[] )

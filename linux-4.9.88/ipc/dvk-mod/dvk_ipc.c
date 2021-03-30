@@ -110,6 +110,7 @@ send_replay: /* Return point for a migrated destination process */
 			LIST_ADD_TAIL(&caller_ptr->p_mlink, &dst_ptr->p_mlist);
 			sleep_proc2(caller_ptr, dst_ptr, timeout_ms);
 			ret = caller_ptr->p_rcode;
+			if(ret != OK) break;
 			retry = 1;
 			continue;
 		} 	
@@ -639,12 +640,7 @@ sendrec_replay:
 			LIST_ADD_TAIL(&caller_ptr->p_mlink, &srcdst_ptr->p_mlist);
 			sleep_proc2(caller_ptr, srcdst_ptr, timeout_ms);
 			ret = caller_ptr->p_rcode;
-			if( ret != OK){
-				ERROR_PRINT(ret);
-				LIST_DEL_INIT(&caller_ptr->p_mlink);
-				clear_bit(BIT_WAITMIGR, &caller_ptr->p_usr.p_rts_flags);
-				caller_ptr->p_usr.p_waitmigr = NONE;
-			}	
+			if( ret != OK) break;
 			retry = 1;
 			continue;
 		} 	
@@ -1024,8 +1020,8 @@ notify_replay:
   		/* Add to destination the bit map with pending notifications  */
 		/* ATENCION-WARNING_ Revisar que estas notificaciones pendientes se envien al terminar la migracion  */
 		if(get_sys_bit(dst_ptr->p_priv.priv_notify_pending, caller_ptr->p_priv.priv_usr.priv_id)){
-		WUNLOCK_PROC2(caller_ptr, dst_ptr);
-		ERROR_RETURN(EDVSOVERRUN);
+			WUNLOCK_PROC2(caller_ptr, dst_ptr);
+			ERROR_RETURN(EDVSOVERRUN);
 		}
 			
 		DVKDEBUG(INTERNAL,"set_sys_bit caller_ptr->p_priv.priv_usr.priv_id=%d\n",
@@ -1365,6 +1361,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				else
 					sleep_proc3(caller_ptr, src_ptr, dst_ptr, TIMEOUT_MOLCALL);				
 				ret = caller_ptr->p_rcode;
+				if(ret != OK) break;
 				retry = 1;
 				continue;
 			}
@@ -1404,6 +1401,7 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				else
 					sleep_proc3(caller_ptr, dst_ptr, src_ptr, TIMEOUT_MOLCALL);				
 				ret = caller_ptr->p_rcode;
+				if(ret != OK) break;
 				retry = 1;
 				continue;
 			}
@@ -1960,6 +1958,7 @@ reply_replay: /* Return point for a migrated destination process */
 			LIST_ADD_TAIL(&caller_ptr->p_mlink, &dst_ptr->p_mlist);
 			sleep_proc2(caller_ptr, dst_ptr, timeout_ms);
 			ret = caller_ptr->p_rcode;
+			if(ret != OK) break;
 			retry = 1;
 			continue;
 		} 	

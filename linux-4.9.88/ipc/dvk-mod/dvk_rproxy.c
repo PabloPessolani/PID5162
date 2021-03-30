@@ -939,6 +939,7 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 			DVKDEBUG(INTERNAL,"CMD_SEND_ACK dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
 				,dcid, rmt_ptr->p_usr.p_endpoint, rmt_nr, lcl_ptr->p_usr.p_endpoint, lcl_nr);
 			ret = send_ack_rmt2lcl(rmt_ptr, lcl_ptr, h_ptr->c_rcode);
+			clear_bit(MIS_BIT_NOMIGRATE, &lcl_ptr->p_usr.p_misc_flags);
 			break;
 		case CMD_COPYIN_ACK: 	/* The remote process has sent COPYIN acknowledge to a local process	*/
 			DVKDEBUG(INTERNAL,"CMD_COPYIN_ACK dcid=%d rmt_ep=%d rmt_nr=%d lcl_ep=%d lcl_nr=%d\n"
@@ -978,7 +979,7 @@ asmlinkage long new_put2lcl(proxy_hdr_t *usr_hdr_ptr, proxy_payload_t *usr_pay_p
 
 	/* If an error acknowledge says that the remote process does not exist or it is erroneous, unbind it in local node */
 	if( h_ptr->c_cmd & MASK_ACKNOWLEDGE) { /* any kind of acknowledge message */
-		if( h_ptr->c_rcode == EDVSRMTPROC
+		if( (h_ptr->c_rcode == EDVSRMTPROC 	&& !test_bit(MIS_BIT_RMTBACKUP, &rmt_ptr->p_usr.p_misc_flags))
 		 || h_ptr->c_rcode == EDVSDSTDIED
 		 || h_ptr->c_rcode == EDVSENDPOINT) {
 			RLOCK_DC(dc_ptr);

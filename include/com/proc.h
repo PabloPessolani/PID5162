@@ -44,8 +44,8 @@ struct proc {
   struct list_head p_list;	/* head of list of procs wishing to send 	*/
   struct list_head p_link;	/* link of the list of procceses whishing to send to other process */
 
-  struct list_head p_mlist;	/* head of list of procs waiting to send to a migrating process 	*/
-  struct list_head p_mlink;	/* link of the list of procceses whishing to send to migrating process */
+  struct list_head p_mlist;	/* head of list of procs waiting a migrating process 	*/
+  struct list_head p_mlink;	/* link of the list of procceses whishing a migrating process */
 
   struct list_head p_ulist;	/* head of list of procs waiting to process unbinding		  */
   struct list_head p_ulink;	/* link of the list of procceses waiting to process unbinding */

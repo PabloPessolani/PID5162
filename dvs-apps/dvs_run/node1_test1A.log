@@ -1,0 +1,37 @@
+DC0=725
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10  1124/1124   1    8   20 31438 27342 27342 27342 migr_server    
+ 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client    
+startMigr=1617064772630149303
+DEBUG 1159:dvk_open:108: Open dvk device file /dev/dvk
+ 1159:dvs_migrate.c:get_dvs_params:27:
+DEBUG 1159:dvk_getdvsinfo:265: 
+DEBUG 1159:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 1159:dvk_getdvsinfo:279: ioctl ret=1
+ 1159:dvs_migrate.c:get_dvs_params:29:local_nodeid=1
+ 1159:dvs_migrate.c:get_dvs_params:32:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ 1159:dvs_migrate.c:main:135:getopt migr_type=0
+ 1159:dvs_migrate.c:main:141:dcid=0
+ 1159:dvs_migrate.c:get_dc_params:42:dcid=0
+DEBUG 1159:dvk_getdcinfo:366: dcid=0
+DEBUG 1159:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 1159:dvk_getdcinfo:383: ioctl ret=0
+ 1159:dvs_migrate.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ 1159:dvs_migrate.c:get_dc_params:51:flags=0 dc_nodes=7 dc_pid=725 dc_name=DC0
+ 1159:dvs_migrate.c:main:152:proc_ep=10
+ 1159:dvs_migrate.c:main:168:migr_type=0 argc=4 
+DEBUG 1159:dvk_migrate_X:1301: cmd=0 pid=-1 dcid=0 endpoint=10 nodeid=-1
+DEBUG 1159:dvk_migrate_X:1316: ioctl ret=0 errno=0
+DEBUG 1159:dvk_migrate_X:1325: ioctl ret=0
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10  1124/1124   1  808   20 31438 27342 27342 27342 migr_server    
+ 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client    
+startTranfer=1617064773406825706
+endTranfer=1617064773994471662
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10  1124/1124   0 1000   10 27342 27342 27342 27342 migr_server    
+ 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client    
+endMigr=1617064774502032005
+Migration time was 1871882702 nanoseconds
+Tranfer time was 587645956 nanoseconds
+SERVER checkpoint image file size=2513251

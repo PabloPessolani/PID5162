@@ -2236,26 +2236,1178 @@ DEBUG recv_kthread:415: rcode=-102
 
 ----------------------------------------------------------------------------------------------
 
-root@node1:/usr/src/linux# cat /proc/dvs/DC0/dvkcalls 
--nr id --wr- lv 765432109876543210987654321098765432109876543210
-  0 34 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  1 35 27342  0 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- 30 64 27342  0 ------------------X--X---------------X----X-----
- 31 64 27342  0 ------------------X--X---------------X----X-----
 root@node1:/usr/src/linux# cat /proc/dvs/DC0/procs 
 DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0   0     0    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_server    
- 0   1     1  6255/71     1    8  420 31438 27342 27342 27342 linux          
+ 0   1     1 13845/70     1    8  420 31438 27342 27342 27342 linux          
  0  30    30    -1/-1     0 1000    0 27342 27342 27342 27342 rtap_client    
- 0  31    31  6254/70     1    0  420     0 27342 27342 27342 linux  
- 
- 
- 
+ 0  31    31 13844/69     1    0  420     0 27342 27342 27342 linux    
+  
+
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 13774848 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=60 TID=60 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #85 Mon Nov 30 20:49:41 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 263432
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033980K/1062028K available (2796K kernel code, 817K rwdata, 808K rodata, 82K init, 139K bss, 28048K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1790.77 BogoMIPS (lpj=8953856)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:596: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:603: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:611: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:618: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:619: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 60:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:625: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:501: local_nodeid=-1
+DEBUG rtap_init:502: dcid=0
+DEBUG 60:dvk_getdvsinfo:265:
+DEBUG 60:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 60:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 60:dvk_getdcinfo:366: dcid=0
+DEBUG 60:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 60:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:513: local_nodeid=1
+DEBUG rtap_init:514: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:522: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:523: flags=0 dc_nodes=7 dc_pid=755 dc_name=DC0
+start_sw_threads - sp=1208639484
+sw_ptr->sw_conn_fd=14
+sw_ptr->sw_data_fd=15
+ctl_fd=14 ctl_name=/tmp/rtap00.ctl data_fd=15
+fd=14 name=/tmp/rtap00.ctl
+sun_path=/tmp/rtap00.ctl
+bind_data_socket fd=15
+bind_data_socket sun_path=
+DEBUG init_sync:75:
+DEBUG enter_sync:87:
+start_rd_thread sw_send_thread tid=69
+DEBUG leave_sync:93:
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+DEBUG enter_sync:87:
+DEBUG init_send_kthread:231: SENDER THREAD: sw_send_ep=31 sw_send_tid=69
+DEBUG 69:dvk_bind_X:1221: cmd=5 dcid=0 pid=69 endpoint=31 nodeid=-1
+DEBUG 69:dvk_bind_X:1251: ioctl ret=31
+DEBUG 69:dvk_bind_X:1254: ret=31
+DEBUG 69:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 69:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 69:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:242: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=13844 vpid=69 nodeid=1 name=linux
+DEBUG 69:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 69:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 69:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:250: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG 69:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 69:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 69:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:258: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG leave_thread:101:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:293: send_kthread
+DEBUG rt_open_rtap:170: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 69:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 69:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 69:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:174: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:180: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:181: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 69:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 69:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 69:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 69:dvk_sendrec_T:955: rcode=-64
+DEBUG rt_open_rtap:183: rcode=-64
+ERROR: 0:rt_open_rtap:185: rcode=-64
+ERROR: 0:try_rtap_open:207: rcode=-64
+DEBUG send_kthread:303: waiting to retry open
+DEBUG enter_sync:87:
+start_rd_thread sw_recv_thread tid=70
+DEBUG leave_sync:93:
+DEBUG enter_sync:87:
+DEBUG init_recv_kthread:366: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=70
+DEBUG 70:dvk_bind_X:1221: cmd=5 dcid=0 pid=70 endpoint=1 nodeid=-1
+DEBUG 70:dvk_bind_X:1251: ioctl ret=1
+DEBUG 70:dvk_bind_X:1254: ret=1
+DEBUG 70:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 70:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 70:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:377: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=13845 vpid=70 nodeid=1 name=linux
+DEBUG 70:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 70:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 70:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:385: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG 70:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 70:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 70:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:393: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:101:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:412: recv_kthread
+DEBUG 70:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:81:
+DEBUG rtap_init:544: sw_send_tid=69
+DEBUG 60:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 60:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 60:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:551: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=13844 vpid=69 nodeid=1 name=linux
+DEBUG rtap_init:554: sw_recv_tid=70
+DEBUG 60:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 60:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 60:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:561: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=13845 vpid=70 nodeid=1 name=linux
+DEBUG rtap_init:564: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_kernel_fd=0 rt_thread_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:566: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_conn_fd=14 sw_data_fd=15 sw_recv_tid=70 sw_send_tid=69  sw_name=DC0
+rtap_user.c:rtap_user_init
+sock_type=unix ctl_sock=/tmp/rtap00.ctl fd=-1 control=-1
+rtap_user.c:connect_to_switch
+rtap_user.c:connect_to_switch: control socket pri->control=16
+rtap_user.c:connect_to_switch:control connect
+rtap_user.c:connect_to_switch: data socket fd=17
+rtap_user.c:connect_to_switch:data bind
+rtap_user.c:connect_to_switch:uml_kmalloc
+rtap_user.c:connect_to_switch:magic=-17958194 version=3 type=0
+rtap_user.c:connect_to_switch:write <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< QUIERE DECIR QUE YA HIZO EL WRITE => FALLA EL READ 
+random: fast init done
+ViolaciÃ³n de segmento
+
+QUIERE DECIR QUE ESTA FALLANDO LA COMUNICACION ENTRE EL MAIN Y EL SWITCH DEL SENDER 
+
+De echo, el switch sender nunca escucha en el socket.
+	
+	DVKDEBUG(INTERNAL,"send_kthread\n");
+
+	// AQUI DEBERIA LEER EL SOCKET DE CONTROL 
+	// CREAR EL PUERTO COMO EN EL CASO DEL SWITCH
+	// Y RECIEN INTENTAR CONECTARSE CON EL TAP REMOTO 
+	
+Hay que definir bien la conexion por socket entre el driver y el pseudoswitch
+
+================================================================================
+20201203: CAMBIO DE PLANES, NO VA A FUNCIONAR COMO UN SWITCH SINO COMO UN PROXY
+		ENTRE UNIX_SOCKET <=> M3IPC
+	
 
 
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 17809408 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=2 TID=2 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #90 Sun Dec 6 20:22:59 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 264410
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033956K/1065968K available (2792K kernel code, 813K rwdata, 808K rodata, 82K init, 139K bss, 32012K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1764.55 BogoMIPS (lpj=8822784)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+umid "node1" is already in use by pid 2
+Failed to initialize umid "node1", trying with a random umid
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/OLzl5H/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:589: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:596: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:604: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:611: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_clt_fd=0 rt_svr_fd=0 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:612: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 2:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:618: dvk_open=14
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend - unix:/tmp/rtap00.ctl
+DEBUG rtap_init:490: local_nodeid=-1
+DEBUG rtap_init:491: dcid=0
+DEBUG 2:dvk_getdvsinfo:265:
+DEBUG 2:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 2:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 2:dvk_getdcinfo:366: dcid=0
+DEBUG 2:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 2:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:502: local_nodeid=1
+DEBUG rtap_init:503: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:511: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:512: flags=0 dc_nodes=7 dc_pid=779 dc_name=DC0
+start_sw_threads - sp=1221787644
+DEBUG init_sync:75:
+DEBUG enter_sync:87:
+start_rd_thread sw_send_thread tid=10
+DEBUG leave_sync:93:
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+DEBUG enter_sync:87:
+DEBUG init_send_kthread:231: SENDER THREAD: sw_send_ep=31 sw_send_tid=10
+DEBUG 10:dvk_bind_X:1221: cmd=5 dcid=0 pid=10 endpoint=31 nodeid=-1
+DEBUG 10:dvk_bind_X:1251: ioctl ret=31
+DEBUG 10:dvk_bind_X:1254: ret=31
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:242: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=848 vpid=10 nodeid=1 name=linux
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:250: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 10:dvk_bind_X:1221: cmd=2 dcid=0 pid=137955201 endpoint=0 nodeid=0
+DEBUG 10:dvk_bind_X:1251: ioctl ret=0
+DEBUG 10:dvk_bind_X:1254: ret=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:258: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+rtap_server_init
+DEBUG leave_thread:101:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:280: send_kthread
+rtap_server_wait
+DEBUG enter_sync:87:
+start_rd_thread sw_recv_thread tid=11
+DEBUG leave_sync:93:
+DEBUG enter_sync:87:
+DEBUG init_recv_kthread:353: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=11
+DEBUG 11:dvk_bind_X:1221: cmd=5 dcid=0 pid=11 endpoint=1 nodeid=-1
+DEBUG 11:dvk_bind_X:1251: ioctl ret=1
+DEBUG 11:dvk_bind_X:1254: ret=1
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:364: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=849 vpid=11 nodeid=1 name=linux
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:372: nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 11:dvk_bind_X:1221: cmd=2 dcid=0 pid=137955524 endpoint=30 nodeid=0
+DEBUG 11:dvk_bind_X:1251: ioctl ret=30
+DEBUG 11:dvk_bind_X:1254: ret=30
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:380: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+DEBUG leave_thread:101:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:399: recv_kthread
+DEBUG 11:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:81:
+DEBUG rtap_init:533: sw_send_tid=10
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:540: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=848 vpid=10 nodeid=1 name=linux
+DEBUG rtap_init:543: sw_recv_tid=11
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:550: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=849 vpid=11 nodeid=1 name=linux
+DEBUG rtap_init:553: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_clt_fd=0 rt_svr_fd=0 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:555: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_svr_fd=15 sw_clt_fd=0 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+starting connect_to_server
+connect_to_server OK!
+ViolaciÃ³n de segmento
+root@node1:/usr/src/linux#
 
+================================================================================
+20201207:
 
+Cuando puse el sleep rtap_server_wait antes del os_accept_connection
 
+// PARA PROBAR 
+sleep(30);
+
+	printk( "rtap_server_wait: os_accept_connection\n");
+	sw_ptr->sw_clt_fd = os_accept_connection(sw_ptr->sw_svr_fd);
+
+booteo, pero luego da error .
+
+node1 login: 
+
+DEBUG 398:dvk_receive_T:910: ioctl ret=0 errno=0
+DEBUG 398:dvk_receive_T:920: ioctl ret=0
+Code should not be reached 'Invalid wake-up pointer' at ../src/libsystemd/sd-event/sd-event.c:3160, function sd_event_wait(). 
+Aborting.InstrucciÃ³n ilegal
+
+ERROR: APARENTEMENTE HAY ERROR EN EL MANEJO DE SOCKETS
 		
+		
+================================================================================
+20201213:
+		CAMBIO DE PARADIGMA DE COMUNICACION -  USEMOS PIPES 
+		PLANIFICAR CORRECTAMENTE COMO SERIA EL USO DE PIPES, DADO QUE 
+		EN SENDER Y EL RECEIVER DEBERIAN TRABAJAR COMO UN UNICO PROCESO
+		QUE SE COMUNICA CON EL MAIN
+		
+		ENTONCES: Crear el pipe en el main() thread, y  
+		compartirlo en los otros 2 threads 
+		pero el sender y el receiver deben compartir el cerrado del mismo fd
+		por lo que el CLONE del receiver lo deberia hacer el sender 
+		
+		       CLONE_FILES (since Linux 2.0)
+              If CLONE_FILES is set, the calling process and the child
+              process share the same file descriptor table.  Any file de‐
+              scriptor created by the calling process or by the child
+              process is also valid in the other process.  Similarly, if one
+              of the processes closes a file descriptor, or changes its as‐ <<<<<<<<<<<<<<<<<<<
+              sociated flags (using the fcntl(2) F_SETFD operation), the<<<<<<<<<<<<<<<<<
+              other process is also affected.  If a process sharing a file<<<<<<<<<<<<<<<<<<<<<<
+              descriptor table calls execve(2), its file descriptor table is
+              duplicated (unshared).
+
+              If CLONE_FILES is not set, the child process inherits a copy
+              of all file descriptors opened in the calling process at the <<<<<<<<<<<<<<<<<<<
+              time of the clone call.  Subsequent operations that open or
+              close file descriptors, or change file descriptor flags, per‐
+              formed by either the calling process or the child process do <<<<<<<<<<<<<<
+              not affect the other process.  Note, however, that the dupli‐< <<<<<<<<<<<<<<<<<<<< 
+              cated file descriptors in the child refer to the same open
+              file descriptions as the corresponding file descriptors in the
+              calling process, and thus share file offsets and file status  
+              flags (see open(2)).
+			 
+ Each thread has its own signal mask, as set by sigprocmask(2).			 
+		
+       #define _GNU_SOURCE             /* See feature_test_macros(7) */
+       #include <fcntl.h>              /* Obtain O_* constant definitions */
+       #include <unistd.h>
+
+       int pipe2(int pipefd[2], int flags);
+
+pipe() creates a pipe, a unidirectional data channel that can be used
+       for interprocess communication.  The array pipefd is used to return
+       two file descriptors referring to the ends of the pipe.  pipefd[0]
+       refers to the read end of the pipe.  pipefd[1] refers to the write
+       end of the pipe.
+
+O_DIRECT (since Linux 3.4)
+              Create a pipe that performs I/O in "packet" mode.  Each
+              write(2) to the pipe is dealt with as a separate packet, and
+              read(2)s from the pipe will read one packet at a time. 
+			
+Specifying the  O_NONBLOCK  flag when opening a file serves two purposes:
+z If the file can’t be opened immediately, then open() returns an error instead of
+blocking. One case where open() can block is with FIFOs (Section 44.7).
+z After a successful open(), subsequent I/O operations are also nonblocking. If
+an I/O system call can’t complete immediately, then either a partial data trans-
+fer  is  performed  or  the  system  call  fails  with  one  of  the  errors  EAGAIN   or
+EWOULDBLOCK . Which error is returned depends on the system call. On Linux, as
+on many UNIX implementations, these two error constants are synonymous.
+
+PROBLEMA: Sigue dando segmentation fault 		
+
+nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubd
+da=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu 
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+	soft - 0
+	hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 6844416 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=989 TID=989 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #110 Mon Dec 14 16:26:38 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 261753
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+Memory: 1034820K/1055260K available (2792K kernel code, 813K rwdata, 808K rodata, 82K init, 139K bss, 20440K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1816.98 BogoMIPS (lpj=9084928)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
+TCP: Hash tables configured (established 8192 bind 8192)
+UDP hash table entries: 512 (order: 1, 8192 bytes)
+UDP-Lite hash table entries: 512 (order: 1, 8192 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:610: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:617: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:625: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:634: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:635: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 989:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:641: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend -> pipe
+DEBUG rtap_init:511: local_nodeid=-1
+DEBUG rtap_init:512: dcid=0
+DEBUG 989:dvk_getdvsinfo:265: 
+DEBUG 989:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 989:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 989:dvk_getdcinfo:366: dcid=0
+DEBUG 989:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 989:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:523: local_nodeid=1
+DEBUG rtap_init:524: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+DEBUG rtap_init:532: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:533: flags=0 dc_nodes=7 dc_pid=687 dc_name=DC0
+start_sw_threads - sp=1212420092
+start_rd_thread: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=0 sw_send_tid=0  sw_name=DC0
+DEBUG init_sync:75: 
+DEBUG enter_sync:87: 
+start_rd_thread sw_send_thread tid=997
+DEBUG leave_sync:93: 
+DEBUG enter_sync:87: 
+DEBUG init_send_kthread:233: SENDER THREAD: sw_send_ep=31 sw_send_tid=997
+DEBUG 997:dvk_bind_X:1221: cmd=5 dcid=0 pid=997 endpoint=31 nodeid=-1
+DEBUG 997:dvk_bind_X:1251: ioctl ret=31
+DEBUG 997:dvk_bind_X:1254: ret=31
+DEBUG 997:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+DEBUG 997:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 997:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:244: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=2285 vpid=997 nodeid=1 name=linux 
+DEBUG 997:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 997:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 997:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:252: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server 
+DEBUG 997:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 997:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 997:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:260: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server 
+rtap_sender_kinit
+rtap_sender_kinit: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=0 sw_send_tid=997  sw_name=DC0
+DEBUG leave_thread:101: 
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:282: 
+DEBUG try_rtap_open:205: 
+DEBUG rt_open_rtap:170: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 997:dvk_getprocinfo:1177: dcid=0 p_nr=0 
+DEBUG 997:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 997:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:174: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server 
+DEBUG rt_open_rtap:180: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:181: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 997:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 997:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 997:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 997:dvk_sendrec_T:955: rcode=-64
+DEBUG rt_open_rtap:183: rcode=-64
+ERROR: 0:rt_open_rtap:185: rcode=-64
+ERROR: 0:try_rtap_open:209: rcode=-64
+DEBUG send_kthread:295: waiting to retry open
+DEBUG enter_sync:87: 
+start_rd_thread sw_recv_thread tid=998
+DEBUG leave_sync:93: 
+DEBUG enter_sync:87: 
+DEBUG init_recv_kthread:361: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=998
+DEBUG 998:dvk_bind_X:1221: cmd=5 dcid=0 pid=998 endpoint=1 nodeid=-1
+DEBUG 998:dvk_bind_X:1251: ioctl ret=1
+DEBUG 998:dvk_bind_X:1254: ret=1
+DEBUG 998:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 998:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 998:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:372: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=2286 vpid=998 nodeid=1 name=linux 
+DEBUG 998:dvk_getprocinfo:1177: dcid=0 p_nr=30 
+DEBUG 998:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 998:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:380: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client 
+DEBUG 998:dvk_getprocinfo:1177: dcid=0 p_nr=30 
+DEBUG 998:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 998:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:388: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client 
+rtap_receiver_kinit
+rtap_receiver_kinit: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=998 sw_send_tid=997  sw_name=DC0
+DEBUG leave_thread:101: 
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:412: recv_kthread
+DEBUG 998:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:81: 
+start_sw_threads: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=998 sw_send_tid=997  sw_name=DC0
+DEBUG rtap_init:554: sw_send_tid=997
+DEBUG 989:dvk_getprocinfo:1177: dcid=0 p_nr=31 
+DEBUG 989:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 989:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:561: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=2285 vpid=997 nodeid=1 name=linux 
+DEBUG rtap_init:564: sw_recv_tid=998
+DEBUG 989:dvk_getprocinfo:1177: dcid=0 p_nr=1 
+DEBUG 989:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 989:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:571: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=2286 vpid=998 nodeid=1 name=linux 
+DEBUG rtap_init:574: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:576: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=998 sw_send_tid=997  sw_name=DC0
+rtap_user.c:rtap_user_init
+console [mc-1] enabled
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): warning: mounting unchecked fs, running e2fsck is recommended
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to Debian GNU/Linux 10 (buster)
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+systemd[1]: Created slice User and Session Slice.
+  OKCreated slice User and Session Slicem.
+systemd[1]: Listening on udev Kernel Socket.
+  OKListening on udev Kernel Socketm.
+systemd[1]: Listening on udev Control Socket.
+  OKListening on udev Control Socketm.
+  OKStarted Dispatch Password …ts to Console Directory Watchm.
+  OKListening on Journal Socketm.
+         Starting Remount Root and Kernel File Systemsm...
+  OKListening on initctl Compatibility Named Pipem.
+  OKReached target Slicesm.
+         Mounting Kernel Debug File Systemm...
+  OKReached target Remote File Systemsm.
+         Mounting POSIX Message Queue File Systemm...
+;1;33mUNSUPPm] Starting of Arbitrary Exec…Automount Pointm not supported.
+         Starting Load Kernel Modulesm...
+  OKCreated slice system-getty.slicem.
+  OKListening on Syslog Socketm.
+  OKReached target Swapm.
+  OKStarted Forward Password R…uests to Wall Directory Watchm.
+  OKReached target Local Encrypted Volumesm.
+  OKReached target Pathsm.
+  OKListening on Journal Socket (/dev/log)m.
+         Starting Journal Servicem...
+  OKStarted Remount Root and Kernel File Systemsm.
+  OKMounted Kernel Debug File Systemm.
+  OKMounted POSIX Message Queue File Systemm.
+         Starting Load/Save Random Seedm...
+         Starting udev Coldplug all Devicesm...
+         Starting Create System Usersm...
+  OKStarted Load Kernel Modulesm.
+         Mounting FUSE Control File Systemm...
+         Starting Apply Kernel Variablesm...
+  OKStarted Load/Save Random Seedm.
+  OKMounted FUSE Control File Systemm.
+  OKStarted Create System Usersm.
+         Starting Create Static Device Nodes in /devm...
+  OKStarted Apply Kernel Variablesm.
+  OKStarted Journal Servicem.
+         Starting Flush Journal to Persistent Storagem...
+  OKStarted Create Static Device Nodes in /devm.
+  OKReached target Local File Systems (Pre)m.
+  OKReached target Local File Systemsm.
+         Starting Raise network interfacesm...
+         Starting udev Kernel Device Managerm...
+systemd-journald[399]: Received request to flush runtime journal from PID 1
+  OKStarted Flush Journal to Persistent Storagem.
+         Starting Create Volatile Files and Directoriesm...
+  OKStarted udev Coldplug all Devicesm.
+  OKStarted udev Kernel Device Managerm.
+  OKStarted Create Volatile Files and Directoriesm.
+         Starting Network Time Synchronizationm...
+         Starting Update UTMP about System Boot/Shutdownm...
+  OKStarted Network Time Synchronizationm.
+  OKStarted Update UTMP about System Boot/Shutdownm.
+ Failed to start Raise network interfacesm.
+See 'systemctl status networking.service' for details.
+  OKReached target Networkm.
+  OKReached target System Time Synchronizedm.
+  OKReached target System Initializationm.
+  OKStarted Daily Cleanup of Temporary Directoriesm.
+  OKStarted Daily apt download activitiesm.
+  OKStarted Daily apt upgrade and clean activitiesm.
+  OKReached target Timersm.
+Violación de segmento
+
+TODO_: ANULAR TODO LO QUE SEA M3IPC PARA VER COMO FUNCIONA
+
+
+================================================================================
+20201217:
+
+login as: root
+root@192.168.0.101's password:
+Linux node1 4.9.88-DVK #159 SMP Thu Oct 22 10:23:49 -03 2020 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Thu Dec 17 22:39:36 2020 from 192.168.0.196
+root@node1:~# . /dev/shm/DC0.sh
+root@node1:~# cd /usr/src/linux
+root@node1:/usr/src/linux# nsenter -p -t $DC0 ./linux con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null umid=node1 ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu
+uml_dcid: dcid=0
+uml_uml_ep: uml_ep=-2
+Locating the bottom of the address space ... 0x0
+Locating the top of the address space ... 0xc0000000
+Core dump limits :
+        soft - 0
+        hard - NONE
+Checking that ptrace can change system call numbers...OK
+Checking syscall emulation patch for ptrace...OK
+Checking advanced syscall emulation patch for ptrace...OK
+Checking environment variables for a tempdir...none found
+Checking if /dev/shm is on tmpfs...OK
+Checking PROT_EXEC mmap in /dev/shm...OK
+Adding 28831744 bytes to physical memory to account for exec-shield gap
+DEBUG start_kernel_proc:91: UML-kernel PID=2 TID=2 uml_ep=-2
+Linux version 4.9.88-DVK (root@node1) (gcc version 6.3.0 20170516 (Debian 6.3.0-18+deb9u1) ) #110 Mon Dec 14 16:26:38 -03 2020
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 267080
+Kernel command line: con0=null,fd:2 con1=fd:0,fd:1 con=null ssl=null ubda=/dev/sdb6 rw mem=1024M dcid=0 uml_ep=-2 eth0=rtap,02:AA:BB:CC:DD:01,tap1,0 nosysemu root=98:0
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 262144 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 131072 (order: 7, 524288 bytes)
+Memory: 1033892K/1076732K available (2792K kernel code, 813K rwdata, 808K rodata, 82K init, 139K bss, 42840K reserved, 0K cma-reserved)
+NR_IRQS:15
+clocksource: timer: mask: 0xffffffffffffffff max_cycles: 0x1cd42e205, max_idle_ns: 881590404426 ns
+Calibrating delay loop... 1718.68 BogoMIPS (lpj=8593408)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Mountpoint-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Checking for host processor cmov support...Yes
+Checking that host ptys support output SIGIO...Yes
+Checking that host ptys support SIGIO on close...No, enabling workaround
+devtmpfs: initialized
+Using 2.6 host AIO
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 256 (order: -1, 3072 bytes)
+NET: Registered protocol family 16
+clocksource: Switched to clocksource timer
+NET: Registered protocol family 2
+TCP established hash table entries: 16384 (order: 4, 65536 bytes)
+TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 16384 bind 16384)
+UDP hash table entries: 1024 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 1024 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+console [stderr0] disabled
+mconsole (version 2) initialized on /root/.uml/node1/mconsole
+Checking host MADV_REMOVE support...OK
+Host TLS support detected
+Detected host type: i386 (GDT indexes 6 to 9)
+workingset: timestamp_bits=30 max_order=18 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+fuse init (API version 7.26)
+io scheduler noop registered
+io scheduler deadline registered (default)
+io scheduler cfq registered
+loop: module loaded
+nbd: registered device at major 43
+tun: Universal TUN/TAP device driver, 1.6
+tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+PPP generic driver version 2.4.2
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
+NET: Registered protocol family 17
+tipc: Activated (version 2.0.0)
+NET: Registered protocol family 30
+tipc: Started in single node mode
+Key type dns_resolver registered
+Initialized stdio console driver
+Console initialized on /dev/tty0
+console [tty0] enabled
+Initializing software serial port version 1
+DEBUG rtap_setup:610: if_spec=02:AA:BB:CC:DD:01,tap1,0 dcid=0
+DEBUG rtap_setup:617: mac_out=02:AA:BB:CC:DD:01 tap_str=tap1 node_str=0
+DEBUG rtap_setup:625: rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01 rt_nodeid=0
+DEBUG rtap_setup:634: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=0 rt_rmt_sep=0 rt_rmt_idx=0 rt_rmttap_fd=0
+DEBUG rtap_setup:635: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_mac=02:AA:BB:CC:DD:01
+DEBUG 2:dvk_open:108: Open dvk device file /dev/dvk
+DEBUG rtap_setup:641: dvk_open=13
+Netdevice 0 (02:aa:bb:cc:dd:01) : rtap backend -> pipe
+DEBUG rtap_init:511: local_nodeid=-1
+DEBUG rtap_init:512: dcid=0
+DEBUG 2:dvk_getdvsinfo:265:
+DEBUG 2:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 2:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 2:dvk_getdcinfo:366: dcid=0
+DEBUG 2:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 2:dvk_getdcinfo:383: ioctl ret=0
+DEBUG rtap_init:523: local_nodeid=1
+DEBUG rtap_init:524: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+DEBUG rtap_init:532: dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+DEBUG rtap_init:533: flags=0 dc_nodes=7 dc_pid=715 dc_name=DC0
+start_sw_threads - sp=1233317884
+start_rd_thread: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=0 sw_send_tid=0  sw_name=DC0
+DEBUG init_sync:75:
+DEBUG enter_sync:87:
+start_rd_thread sw_send_thread tid=10
+DEBUG leave_sync:93:
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+do_exit: local_nodeid:1
+DEBUG enter_sync:87:
+DEBUG init_send_kthread:233: SENDER THREAD: sw_send_ep=31 sw_send_tid=10
+DEBUG 10:dvk_bind_X:1221: cmd=5 dcid=0 pid=10 endpoint=31 nodeid=-1
+DEBUG 10:dvk_bind_X:1251: ioctl ret=31
+DEBUG 10:dvk_bind_X:1254: ret=31
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:244: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=776 vpid=10 nodeid=1 name=linux
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:252: nr=0 endp=0 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 10:dvk_bind_X:1221: cmd=2 dcid=0 pid=137955213 endpoint=0 nodeid=0
+DEBUG 10:dvk_bind_X:1251: ioctl ret=0
+DEBUG 10:dvk_bind_X:1254: ret=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_send_kthread:260: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+rtap_sender_kinit
+rtap_sender_kinit: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=0 sw_send_tid=10  sw_name=DC0
+DEBUG leave_thread:101:
+send_thread init_send_kthread rcode=0
+DEBUG send_kthread:282:
+DEBUG try_rtap_open:205:
+DEBUG rt_open_rtap:170: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG 10:dvk_getprocinfo:1177: dcid=0 p_nr=0
+DEBUG 10:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 10:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rt_open_rtap:174: nr=0 endp=0 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_server
+DEBUG rt_open_rtap:180: rt_ptr->rt_rmt_sep=0
+DEBUG rt_open_rtap:181: SEND REQ_RT_OPEN REQUEST: source=0 type=1 m3i1=0 m3i2=0 m3p1=  (null) m3ca1=[tap1]
+DEBUG 10:dvk_sendrec_T:931: endpoint=0 timeout=30000
+DEBUG 10:dvk_sendrec_T:944: ioctl ret=-64 errno=0
+DEBUG 10:dvk_sendrec_T:953: ioctl ret=-64
+ERROR: 10:dvk_sendrec_T:955: rcode=-64
+DEBUG rt_open_rtap:183: rcode=-64
+ERROR: 369:rt_open_rtap:185: rcode=-64
+ERROR: 369:try_rtap_open:209: rcode=-64
+DEBUG send_kthread:295: waiting to retry open
+DEBUG enter_sync:87:
+start_rd_thread sw_recv_thread tid=11
+DEBUG leave_sync:93:
+DEBUG enter_sync:87:
+DEBUG init_recv_kthread:361: RECEIVER THREAD: sw_recv_ep=1 sw_recv_tid=11
+DEBUG 11:dvk_bind_X:1221: cmd=5 dcid=0 pid=11 endpoint=1 nodeid=-1
+DEBUG 11:dvk_bind_X:1251: ioctl ret=1
+DEBUG 11:dvk_bind_X:1254: ret=1
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:372: nr=1 endp=1 dcid=0 flags=0 misc=420 lpid=777 vpid=11 nodeid=1 name=linux
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:380: nr=30 endp=30 dcid=0 flags=1 misc=0 lpid=-1 vpid=-1 nodeid=-1 name=$noname
+DEBUG 11:dvk_bind_X:1221: cmd=2 dcid=0 pid=137955489 endpoint=30 nodeid=0
+DEBUG 11:dvk_bind_X:1251: ioctl ret=30
+DEBUG 11:dvk_bind_X:1254: ret=30
+DEBUG 11:dvk_getprocinfo:1177: dcid=0 p_nr=30
+DEBUG 11:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 11:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG init_recv_kthread:388: nr=30 endp=30 dcid=0 flags=1000 misc=0 lpid=-1 vpid=-1 nodeid=0 name=rtap_client
+rtap_receiver_kinit
+rtap_receiver_kinit: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+DEBUG leave_thread:101:
+recv_thread init_recv_kthread rcode=0
+DEBUG recv_kthread:412: recv_kthread
+DEBUG 11:dvk_receive_T:897: endpoint=31438 timeout=30000
+DEBUG end_sync:81:
+start_sw_threads: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+DEBUG rtap_init:554: sw_send_tid=10
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=31
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:561: nr=31 endp=31 dcid=0 flags=0 misc=420 lpid=776 vpid=10 nodeid=1 name=linux
+DEBUG rtap_init:564: sw_recv_tid=11
+DEBUG 2:dvk_getprocinfo:1177: dcid=0 p_nr=1
+DEBUG 2:dvk_getprocinfo:1190: ioctl ret=0 errno=0
+DEBUG 2:dvk_getprocinfo:1195: ioctl ret=0
+DEBUG rtap_init:571: nr=1 endp=1 dcid=0 flags=8 misc=420 lpid=777 vpid=11 nodeid=1 name=linux
+DEBUG rtap_init:574: rt_index=0 rt_nodeid=0 rt_tap=tap1 rt_rmt_cep=30 rt_rmt_sep=0 rt_rmt_idx=-1 rt_rmttap_fd=0
+DEBUG rtap_init:576: sw_recv_ep=1 sw_send_ep=31 sw_dcid=0 sw_Sfdes[1]=15 sw_Rfdes[0]=16 sw_recv_tid=11 sw_send_tid=10  sw_name=DC0
+rtap_user.c:rtap_user_init
+console [mc-1] enabled
+winch_thread : TIOCSCTTY failed on fd 2 err = 1
+EXT4-fs (ubda): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (ubda): warning: mounting unchecked fs, running e2fsck is recommended
+EXT4-fs (ubda): mounted filesystem without journal. Opts: (null)
+VFS: Mounted root (ext4 filesystem) on device 98:0.
+devtmpfs: mounted
+This architecture does not have kernel memory protection.
+random: fast init done
+systemd[1]: Failed to lookup module alias 'autofs4': Function not implemented
+cgroup: cgroup2: unknown option "nsdelegate"
+systemd[1]: systemd 241 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN2 +IDN -PCRE2 default-hierarchy=hybrid)
+systemd[1]: Detected virtualization vmware.
+systemd[1]: Detected architecture x86.
+
+Welcome to Debian GNU/Linux 10 (buster)!
+
+systemd[1]: Set hostname to <node1>.
+systemd[1]: Failed to enable kbrequest handling: Inappropriate ioctl for device
+systemd[1]: File /lib/systemd/system/systemd-journald.service:12 configures an IP firewall (IPAddressDeny=any), but the local system does not support BPF/cgroup based firewalling.
+systemd[1]: Proceeding WITHOUT firewalling in effect! (This warning is only shown for the first loaded unit using IP firewalling.)
+systemd[1]: Listening on udev Control Socket.
+[  OK  ] Listening on udev Control Socket.
+systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[  OK  ] Started Forward Password Râ¦uests to Wall Directory Watch.
+systemd[1]: Listening on Syslog Socket.
+[  OK  ] Listening on Syslog Socket.
+[  OK  ] Started Dispatch Password â¦ts to Console Directory Watch.
+[  OK  ] Listening on udev Kernel Socket.
+[  OK  ] Created slice system-getty.slice.
+[UNSUPP] Starting of Arbitrary Execâ¦Automount Point not supported.
+[  OK  ] Reached target Remote File Systems.
+[  OK  ] Listening on Journal Socket.
+         Starting Remount Root and Kernel File Systems...
+         Mounting Kernel Debug File System...
+[  OK  ] Listening on Journal Socket (/dev/log).
+         Starting Journal Service...
+[  OK  ] Reached target Local Encrypted Volumes.
+         Mounting POSIX Message Queue File System...
+[  OK  ] Created slice User and Session Slice.
+         Starting Load Kernel Modules...
+[  OK  ] Listening on initctl Compatibility Named Pipe.
+[  OK  ] Reached target Swap.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Slices.
+[  OK  ] Started Remount Root and Kernel File Systems.
+[  OK  ] Mounted Kernel Debug File System.
+[  OK  ] Mounted POSIX Message Queue File System.
+         Starting Load/Save Random Seed...
+         Starting Create System Users...
+         Starting udev Coldplug all Devices...
+[  OK  ] Started Load Kernel Modules.
+[  OK  ] Started Journal Service.
+[  OK  ] Started Load/Save Random Seed.
+         Starting Flush Journal to Persistent Storage...
+         Starting Apply Kernel Variables...
+         Mounting FUSE Control File System...
+[  OK  ] Started Create System Users.
+         Starting Create Static Device Nodes in /dev...
+systemd-journald[399]: Received request to flush runtime journal from PID 1
+[  OK  ] Started Flush Journal to Persistent Storage.
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Started Apply Kernel Variables.
+[  OK  ] Started Create Static Device Nodes in /dev.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+         Starting Raise network interfaces...
+         Starting Create Volatile Files and Directories...
+         Starting udev Kernel Device Manager...
+ViolaciÃ³n de segmento
+root@node1:/usr/src/linux#
+
+NO SE DONDE PUEDE ESTAR EL PROBLEMA !!!! 
+
+Si anulo esto levanta 
+	#ifdef CANCELLED_FOR_TEST
+			while( rt_ptr->rt_rmt_idx == (-1) ) { // not open 
+				DVKDEBUG(INTERNAL,"waiting to retry open\n");
+				// os_idle_sleep(WAIT60SECS);
+				// os_sleep_secs(30);
+				DVKDEBUG(INTERNAL,"try_rtap_open\n");
+				rcode = try_rtap_open();
+			}
+	#endif // CANCELLED_FOR_TEST 
+	
+================================================================================
+20201218:
+			Se anulo la comprobacion ANTES de leer del pipe y se verifica 
+			si se pudo contactar al server remoto try_rtap_open, una vez recibido 
+			un paquete desde el kernel
+			
+
+
+root@node1:~# ifconfig eth0
+eth0: flags=4098<BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.1.101  netmask 255.255.255.0  broadcast 192.168.1.255
+        ether 02:aa:bb:cc:dd:01  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 5 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ??????? 
+
+root@node1:~#  systemctl status networking.service
+â networking.service - Raise network interfaces
+   Loaded: loaded (/lib/systemd/system/networking.service; enabled; vendor preset: enabled)
+   Active: failed (Result: exit-code) since Fri 2020-12-18 18:55:30 UTC; 55s ago
+     Docs: man:interfaces(5)
+  Process: 708 ExecStartPre=/bin/sh -c [ "$CONFIGURE_INTERFACES" != "no" ] && [ -n "$(ifquery --read-environment --
+list --exclude=lo)" ] && udevadm settle (code=exited, status=0/SUCCESS)
+  Process: 713 ExecStart=/sbin/ifup -a --read-environment (code=exited, status=1/FAILURE)
+ Main PID: 713 (code=exited, status=1/FAILURE)
+
+Dec 18 18:55:29 node1 systemd[1]: Starting Raise network interfaces...
+Dec 18 18:55:30 node1 ifup[713]: RTNETLINK answers: File exists
+Dec 18 18:55:30 node1 ifup[713]: ifup: failed to bring up eth0
+Dec 18 18:55:30 node1 systemd[1]: networking.service: Main process exited, code=exited, sta
+tus=1/FAILURE
+Dec 18 18:55:30 node1 systemd[1]: networking.service: Failed with result 'exit-code'.
+Dec 18 18:55:30 node1 systemd[1]: Failed to start Raise network interfaces.
+do_exit: local_nodeid:1
+
+EN /var/log/syslog 
+Dec 18 18:55:30 node1 ifup[713]: ifup: failed to bring up eth0
+Dec 18 18:55:30 node1 systemd[1]: systemd-update-utmp-runlevel.service: Succeeded.
+Dec 18 18:55:30 node1 systemd[1]: Started Update UTMP about System Runlevel Changes.
+Dec 18 18:55:30 node1 systemd[1]: networking.service: Main process exited, code=exited, status=1/FAILURE
+Dec 18 18:55:30 node1 systemd[1]: networking.service: Failed with result 'exit-code'.
+Dec 18 18:55:30 node1 systemd[1]: Failed to start Raise network interfaces.
+Dec 18 18:55:30 node1 systemd[1]: Reached target Network is Online.
+Dec 18 18:55:30 node1 systemd[1]: Starting Daily apt download activities...
+
+root@node1:/var/log#  systemctl start networking
+Job for networking.service failed because the control process exited with error code.
+See "systemctl status networking.service" and "journalctl -xe" for details.
+
+EN /var/log/syslog 
+Dec 18 18:59:55 node1 systemd[1]: Starting Raise network interfaces...
+Dec 18 18:59:55 node1 ifup[818]: RTNETLINK answers: File exists
+Dec 18 18:59:55 node1 ifup[818]: ifup: failed to bring up eth0
+Dec 18 18:59:55 node1 systemd[1]: networking.service: Main process exited, code=exited, status=1/FAILURE
+Dec 18 18:59:55 node1 systemd[1]: networking.service: Failed with result 'exit-code'.
+Dec 18 18:59:55 node1 systemd[1]: Failed to start Raise network interfaces.
+
+	
+			
 ULTIMO_LOG 
 ==========================================================================================
+
+TODO:   Utilizar funciones previamente definidas en UML /arch/um/kernel/ksyms.c
+    os_create_unix_socket(const char *file, int len, int close_on_exec)
+
+EXPORT_SYMBOL(set_signals);
+EXPORT_SYMBOL(get_signals);
+
+EXPORT_SYMBOL(os_stat_fd);
+EXPORT_SYMBOL(os_stat_file);
+EXPORT_SYMBOL(os_access);
+EXPORT_SYMBOL(os_set_exec_close);
+EXPORT_SYMBOL(os_getpid);
+EXPORT_SYMBOL(os_open_file);
+EXPORT_SYMBOL(os_read_file);
+EXPORT_SYMBOL(os_write_file);
+EXPORT_SYMBOL(os_seek_file);
+EXPORT_SYMBOL(os_lock_file);
+EXPORT_SYMBOL(os_ioctl_generic);
+EXPORT_SYMBOL(os_pipe);
+EXPORT_SYMBOL(os_file_type);
+EXPORT_SYMBOL(os_file_mode);
+EXPORT_SYMBOL(os_file_size);
+EXPORT_SYMBOL(os_flush_stdout);
+EXPORT_SYMBOL(os_close_file);
+EXPORT_SYMBOL(os_set_fd_async);
+EXPORT_SYMBOL(os_set_fd_block);
+EXPORT_SYMBOL(helper_wait);
+EXPORT_SYMBOL(os_shutdown_socket);
+EXPORT_SYMBOL(os_create_unix_socket);
+EXPORT_SYMBOL(os_connect_socket);
+EXPORT_SYMBOL(os_accept_connection);
+EXPORT_SYMBOL(os_rcv_fd);
+EXPORT_SYMBOL(run_helper);
+EXPORT_SYMBOL(os_major);
+EXPORT_SYMBOL(os_minor);
+EXPORT_SYMBOL(os_makedev);
+
+EXPORT_SYMBOL(add_sigio_fd);
+EXPORT_SYMBOL(ignore_sigio_fd);
+EXPORT_SYMBOL(sigio_broken);
+
+
+
+	
+	
+	

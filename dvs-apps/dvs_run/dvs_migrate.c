@@ -72,6 +72,21 @@ int main ( int argc, char *argv[] )
 	int rcode, opt, i, first_arg, arg_c;
 	char **arg_v;
 	pid_t child_pid;
+
+
+#ifdef ONLY4TEST		
+#define CLIENT_EP 	11	
+	int ret;
+	proc_usr_t *uproc_ptr;
+
+	posix_memalign( (void**) &uproc_ptr, getpagesize(), sizeof(proc_usr_t));
+	if (uproc_ptr== NULL) {
+		fprintf(stderr, "uproc_ptr posix_memalign\n");
+		exit(EXIT_FAILURE);
+	}
+#endif // ONLY4TEST		
+	
+	proc_pid = PROC_NO_PID;
 	
 	if ( argc != 4 &&  argc != 5  &&  argc != 6 ) {
 		USRDEBUG("argc=%d\n", argc);
@@ -126,10 +141,13 @@ int main ( int argc, char *argv[] )
 	USRDEBUG("dcid=%d\n", dcid);
 	get_dc_params(dcid);
 
+#ifdef ONLY4TEST		
 if(	migr_type == MIGR_COMMIT) {
-	printf("please wait1...\n");
+	printf("MIGR_COMMIT please wait1...\n");
 	sleep(2); /// NO SACAR, vaya a saber porque no funciona si se lo saca.
-}			
+}
+#endif // ONLY4TEST
+
 	proc_ep = atoi(argv[3]);
 	USRDEBUG("proc_ep=%d\n", proc_ep);
 
@@ -148,11 +166,13 @@ if(	migr_type == MIGR_COMMIT) {
 	}
 	
 	USRDEBUG("migr_type=%d argc=%d \n", migr_type, argc);
-	
+#ifdef ONLY4TEST		
 if(	migr_type == MIGR_COMMIT) {
-	printf("please wait2...\n");
+	printf("MIGR_COMMIT please wait2...\n");
 	sleep(2); /// NO SACAR, vaya a saber porque no funciona si se lo saca.
 }
+#endif // ONLY4TEST			
+
 	switch(migr_type){
 		case MIGR_START:
 			rcode = dvk_migr_start(dcid, proc_ep);
@@ -161,7 +181,25 @@ if(	migr_type == MIGR_COMMIT) {
 			rcode = dvk_migr_rollback(dcid, proc_ep);
 			break;
 		case MIGR_COMMIT:
-			if(proc_pid == 0) proc_pid = PROC_NO_PID;
+			if( new_nodeid != local_nodeid) 
+				proc_pid = PROC_NO_PID;
+			if(proc_pid == 0) 
+				proc_pid = PROC_NO_PID;
+			// getting process info 
+#ifdef ONLY4TEST		
+			if( new_nodeid != local_nodeid) {
+				do {
+					ret = dvk_getprocinfo(dcid, CLIENT_EP, uproc_ptr);
+					if(ret < 0) { 
+						ERROR_PRINT(ret);
+						exit(1);
+					}	
+					printf(PROC_USR_FORMAT, PROC_USR_FIELDS(uproc_ptr));
+					printf(PROC_WAIT_FORMAT, PROC_WAIT_FIELDS(uproc_ptr));
+					printf(PROC_COUNT_FORMAT, PROC_COUNT_FIELDS(uproc_ptr));
+				} while(uproc_ptr->p_rts_flags != 0);
+			}
+#endif // ONLY4TEST			
 			rcode = dvk_migr_commit(proc_pid, dcid, proc_ep, new_nodeid);
 			break;
 		default:

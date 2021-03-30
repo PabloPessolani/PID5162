@@ -69,7 +69,7 @@
 static DEFINE_MUTEX(rt_main_mutex);
 static DEFINE_MUTEX(rt_thread_mutex);
 
-#define WAIT10SECS 	10000000000
+#define WAIT60SECS 	60000000000
 
 int init_sync(void ){
 	DVKDEBUG(INTERNAL,"\n");
@@ -161,7 +161,7 @@ int rt_send_packet(void *packet, int len)
 /*===========================================================================*
  *				rt_open_rtap				     *
  *===========================================================================*/
-int rt_open_rtap(rmttap_t *rt_ptr)
+int rt_open_rtap( void)
 {
 	int rcode, svr_ep;
 	proc_usr_t *proc_ptr;
@@ -202,7 +202,9 @@ int try_rtap_open(void)
 {
 	int i, rcode;
 
-	rcode = rt_open_rtap(rt_ptr);  
+	DVKDEBUG(INTERNAL, "\n"); 
+
+	rcode = rt_open_rtap();  
 	if( rcode < 0) {
 		ERROR_PRINT(rcode);
 		return(rcode);
@@ -257,28 +259,15 @@ int init_send_kthread(void *arg)
 		if(rcode < 0) ERROR_PRINT(rcode);
 		   DVKDEBUG(INTERNAL,PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));		
 	}
+	
+	ret = rtap_sender_kinit();
+	if(ret) ERROR_PRINT(rcode);
+
 	ret = leave_thread();
 	if(ret) ERROR_PRINT(rcode);
 	return(rcode); 
 }
 
-int sw_accept_connection(int fd)
-{
-  int rcode;
-  int new;
-
-  DVKDEBUG(INTERNAL,"fd=%d\n", fd);
-
-  new = os_accept_connection(fd);
-  if(new < 0){
-    ERROR_RETURN(new);
-  }
-  if((rcode =os_set_fd_block(new, 0)) < 0 ){ // 0 means O_NONBLOCK
-    os_close_file(new);
-    ERROR_RETURN(rcode);
-  }
-  return(new);
-}
 
 /*===========================================================================*
  *				send_kthread		     
@@ -288,53 +277,54 @@ void *send_kthread(void *arg)
 	int rcode; 
 	proc_usr_t *proc_ptr;
 	packet_t *pkt_ptr;
-    int len;
+    int len, ctl_fd, data_fd;
 		
-	DVKDEBUG(INTERNAL,"send_kthread\n");
+	DVKDEBUG(INTERNAL,"\n");
 
+#if RTAP_IPC == RTAP_UNIX
+	do {
+		rcode = rtap_server_wait( );
+	} while (rcode != OK);
+	DVKDEBUG(INTERNAL,"client connected\n");
+#endif //  RTAP_IPC
+	
 	rcode = try_rtap_open();
 	pkt_ptr = &rt_ptr->rt_packet;
 	while(1){
-		while( rt_ptr->rt_rmt_idx == (-1) ) { // not open 
-			DVKDEBUG(INTERNAL,"waiting to retry open\n");
-			// os_idle_sleep(WAIT10SECS);
-			os_sleep_secs(30);
-			DVKDEBUG(INTERNAL,"try_rtap_open\n");
-			rcode = try_rtap_open();
+
+#if RTAP_IPC == RTAP_PIPE
+		len = os_read_file(sw_ptr->sw_Sfdes[PIPE_READ], pkt_ptr, sizeof(packet_t));
+#else  //  RTAP_IPC
+		// read from SOCKET
+		len = net_recvfrom(rt_ptr->rt_clt_fd, pkt_ptr, sizeof(packet_t));
+#endif //  RTAP_IPC
+		if( len < sizeof(ETH_HDR_LEN) || len > sizeof(packet_t)){
+			printk("send_kthread - failed, err=%d\n", len);
+			ERROR_PRINT(len);
+			continue;
 		}
-		while(1){
+		
+		DVKDEBUG(INTERNAL,PKTSRC_FORMAT,PKTSRC_FIELDS(pkt_ptr));
+		DVKDEBUG(INTERNAL,PKTDST_FORMAT,PKTDST_FIELDS(pkt_ptr));
 
-			// read from PIPE
-			len = net_recvfrom(rt_ptr->rt_kernel_fd, pkt_ptr, sizeof(packet_t));
-			if( len < sizeof(ETH_HDR_LEN) || len > sizeof(packet_t)){
-				printk("send_kthread - net_recvfrom failed, fd=%d, err=%d\n", 
-					rt_ptr->rt_kernel_fd, len);
-				ERROR_PRINT(len);
-				continue;
-			}
-			
-			DVKDEBUG(INTERNAL,PKTSRC_FORMAT,PKTSRC_FIELDS(pkt_ptr));
-			DVKDEBUG(INTERNAL,PKTDST_FORMAT,PKTDST_FIELDS(pkt_ptr));
-
-			// Check if the remote TAP is OPEN 		 
-			if( rt_ptr->rt_rmt_idx < 0){
-					rcode = try_rtap_open();
-					if( rcode < 0){
-						ERROR_PRINT(rcode);
-						continue;
-					}
-			} 
-			
-			rcode = rt_send_packet(pkt_ptr, len);
-			if (rcode < EDVSERRCODE) {
-				rt_ptr->rt_rmt_idx = (-1);
-				ERROR_PRINT(rcode);
-				continue;
-			}
-			if( rcode < 0){		
-				ERROR_PRINT(rcode);
-				continue;
-			}
+		// Check if the remote TAP is OPEN 		 
+		if( rt_ptr->rt_rmt_idx < 0){
+				rcode = try_rtap_open();
+				if( rcode < 0){
+					ERROR_PRINT(rcode);
+					continue;
+				}
+		} 
+		
+		rcode = rt_send_packet(pkt_ptr, len);
+		if (rcode < EDVSERRCODE) {
+			rt_ptr->rt_rmt_idx = (-1);
+			ERROR_PRINT(rcode);
+			continue;
+		}
+		if( rcode < 0){		
+			ERROR_PRINT(rcode);
+			continue;
 		}
 	}
 }
@@ -388,9 +378,14 @@ int  init_recv_kthread(void *arg)
 		if(rcode < 0) ERROR_PRINT(rcode);
 		DVKDEBUG(INTERNAL,PROC_USR_FORMAT, PROC_USR_FIELDS(proc_ptr));	
 	}
+	rcode  = rtap_receiver_kinit();
+	if( rcode < 0)
+		ERROR_PRINT(rcode);
+	
 	ret = leave_thread();
 	if(ret) ERROR_PRINT(ret);
-	return(rcode);
+		
+	return(OK);
 }
 
 
@@ -441,8 +436,12 @@ void *recv_kthread(void *arg)
 				
 				DVKDEBUG(INTERNAL,"REQ_SW_WRITE: " PKTDST_FORMAT, PKTDST_FIELDS(pkt_ptr));
 				DVKDEBUG(INTERNAL,"REQ_SW_WRITE: " PKTSRC_FORMAT, PKTSRC_FIELDS(pkt_ptr));
-				
-				n = os_write_file(rt_ptr->rt_thread_fd, pkt_ptr, len);
+		
+#if RTAP_IPC == RTAP_PIPE
+				n = os_write_file(sw_ptr->sw_Rfdes[PIPE_WRITE], pkt_ptr, len);
+#else  //  RTAP_IPC		
+				n = os_write_file(rt_ptr->rt_clt_fd, pkt_ptr, len);
+#endif //  RTAP_IPC		
 				DVKDEBUG(INTERNAL,"os_write_file n=%d len=%d\n", n, len);
 				if( n < 0 || n != len ) 
 					DVKDEBUG(INTERNAL,"os_write_file n=%d\n", n);
@@ -481,19 +480,25 @@ static void rtap_init(struct net_device *dev, void *data)
 
 	pri = netdev_priv(dev);
 	dpri = (struct rtap_data *) pri->user;
+	dpri->fd = -1;
+#if RTAP_IPC == RTAP_PIPE
+	printk("rtap backend -> pipe\n");
+#else // RTAP_IPC
+	printk("rtap backend -> unix socket\n");
 	dpri->sock_type = init->sock_type;
 	dpri->ctl_sock = init->ctl_sock;
-	dpri->fd = -1;
 	dpri->control = -1;
 	dpri->dev = dev;
 	/* We will free this pointer. If it contains crap we're burned. */
 	dpri->ctl_addr = NULL;
 	dpri->data_addr = NULL;
 	dpri->local_addr = NULL;
-
 	rtap.rt_rd = dpri;
 	printk("rtap backend - %s:%s\n", dpri->sock_type, dpri->ctl_sock);
-
+	sw_ptr->sw_sock_type = dpri->sock_type;
+	sw_ptr->sw_svr_sock  = dpri->ctl_sock;
+#endif // RTAP_IPC
+	
 	DVKDEBUG(INTERNAL,"local_nodeid=%d\n",local_nodeid);
 	DVKDEBUG(INTERNAL,"dcid=%d\n",dcid);	
 	dvsu_ptr 	= &dvs;
@@ -531,7 +536,7 @@ static void rtap_init(struct net_device *dev, void *data)
 	rt_ptr->rt_rmt_cep += (rt_ptr->rt_nodeid);
 
 	stack = alloc_stack(0, 0);
-	rcode = start_sw_threads(stack + PAGE_SIZE - sizeof(void *), NULL);
+	rcode = start_sw_threads(stack + PAGE_SIZE - sizeof(void *));
 	if(rcode < 0) {
 		printk(KERN_ERR "Failed to start pseudo-switch threads (rcode = %d) - ", rcode);
 		return;
@@ -558,18 +563,22 @@ static void rtap_init(struct net_device *dev, void *data)
 	}
 	
 	DVKDEBUG(INTERNAL, RT_FORMAT, RT_FIELDS(rt_ptr));
- 	
+ 		
 	DVKDEBUG(INTERNAL, SW_FORMAT, SW_FIELDS(sw_ptr));	
+	
+
 }
 
 static int rtap_read(int fd, struct sk_buff *skb, struct uml_net_private *lp)
 {
-	return net_read(fd, skb_mac_header(skb),
+	DVKDEBUG(INTERNAL, "fd=%d\n",fd);
+	return rtap_user_read(fd, skb_mac_header(skb),
 			    skb->dev->mtu + ETH_HEADER_OTHER);
 }
 
 static int rtap_write(int fd, struct sk_buff *skb, struct uml_net_private *lp)
 {
+	DVKDEBUG(INTERNAL, "fd=%d\n",fd);
 	return rtap_user_write(fd, skb->data, skb->len,
 				 (struct rtap_data *) &lp->user);
 }
@@ -606,10 +615,12 @@ static int rtap_setup(char *str, char **mac_out, void *data)
 	DVKDEBUG(INTERNAL,"rt_tap=%s rt_mac=%s rt_nodeid=%d\n",  
 			rt_ptr->rt_tap, rt_ptr->rt_mac , rt_ptr->rt_nodeid);
 
+#if RTAP_IPC == RTAP_UNIX 
 	strncpy(rt_ptr->rt_sock_type, "unix", MAXSOCKNAME-1);
 	sprintf(rt_ptr->rt_ctrl_path,"/tmp/rtap%02d.ctl",dcid);  
 	init->sock_type = rt_ptr->rt_sock_type;
 	init->ctl_sock  = rt_ptr->rt_ctrl_path;
+#endif // RTAP_IPC
  
  	DVKDEBUG(INTERNAL,RT_FORMAT, RT_FIELDS(rt_ptr));
 	DVKDEBUG(INTERNAL,RT2_FORMAT, RT2_FIELDS(rt_ptr));

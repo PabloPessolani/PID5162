@@ -1232,18 +1232,20 @@ long dvk_bind_X(int cmd, int dcid, int pid, int endpoint, int nodeid)
 	parm.parm_ep	= endpoint;	
 	parm.parm_nodeid= nodeid;	
 	ret = DVK_IOCTL(dvk_fd,DVK_IOCSDVKBIND, (int) &parm);
-#ifndef CONFIG_UML_DVK
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d errno=%d\n",ret, errno);	
+#ifndef CONFIG_UML_DVK
  	if( ret == (-1)){
+	    LIBDEBUG(DBGPARAMS,"ret=%d errno=%d\n",ret, errno);
 		if( -errno == endpoint){
 			errno = 0;
 			ret = endpoint;
 			goto bind_return;
 		} else { 	
-			if (  -errno < EDVSERRCODE) 
-				ERROR_PRINT(-errno); 
 			ret = -errno;
 		}
+	    LIBDEBUG(DBGPARAMS,"ret=%d\n",ret);		
+	}else{
+	    LIBDEBUG(DBGPARAMS,"ret=%d errno=%d\n",ret, errno);		
 	}
 	errno = 0;
 bind_return:	
@@ -1292,6 +1294,8 @@ long dvk_proxies_bind(char *name, int pxid, int spid, int rpid, int maxcopybuf)
 long dvk_migrate_X(int cmd, int pid, int dcid, int endpoint, int nodeid)
 {
     long ret;
+	dvs_usr_t dvsu;
+	int my_nodeid;  
 
     LIBDEBUG(DBGPARAMS, "cmd=%d pid=%d dcid=%d endpoint=%d nodeid=%d\n", 
 		 cmd, pid, dcid, endpoint, nodeid);
@@ -1321,6 +1325,15 @@ long dvk_migrate_X(int cmd, int pid, int dcid, int endpoint, int nodeid)
     LIBDEBUG(DBGPARAMS,"ioctl ret=%d\n",ret);	
 #endif // CONFIG_DVKIPC		 
 	if (ret < 0) ERROR_RETURN(ret);
+	if(cmd == MIGR_COMMIT) {
+		my_nodeid = dvk_getdvsinfo(&dvsu);
+		LIBDEBUG(DBGPARAMS,"my_nodeid=%d\n",my_nodeid);	
+		if(my_nodeid == nodeid) {
+			LIBDEBUG(DBGPARAMS,"OLD local_nodeid=%d\n",local_nodeid);	
+			local_nodeid = my_nodeid;
+			LIBDEBUG(DBGPARAMS,"NEW local_nodeid=%d\n",local_nodeid);
+		}
+	}
 	return(ret);
 }
 				

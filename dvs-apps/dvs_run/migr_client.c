@@ -174,7 +174,10 @@ int  main ( int argc, char *argv[] )
 			buffer[30] = 0;	
 		USRDEBUG("CLIENT buffer AFTER [%s]\n", buffer);
 		
-		if (delay > 0) sleep(delay);
+		if (delay > 0) {
+			USRDEBUG("CLIENT sleeping for %d seconds\n", delay);
+			sleep(delay);
+		}
 	}
    	t_stop  = dwalltime();
 

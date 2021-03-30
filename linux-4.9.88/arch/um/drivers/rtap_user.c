@@ -31,8 +31,8 @@ pthread_mutex_t rt_main_mutex;
 // PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t rt_thread_mutex;
 
-static char *data_socket = NULL;
-static struct sockaddr_un data_sun;
+static struct sockaddr_un sw_svr_sun;		
+static struct sockaddr_un rt_data_sun;			
 
 unsigned int os_sleep_secs(unsigned int seconds)
 {
@@ -68,129 +68,28 @@ static struct sockaddr_un *new_addr(void *name, int len)
 	return sun;
 }
 
-static int connect_to_switch(struct rtap_data *pri)
-{
-	struct sockaddr_un *ctl_addr = pri->ctl_addr;
-	struct sockaddr_un *local_addr = pri->local_addr;
-	struct sockaddr_un *sun;
-	struct request_v3 req;
-	int fd, n, err;
-
-	pri->control = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (pri->control < 0) {
-		err = -errno;
-		printk( "rtap_open : control socket failed, "
-		       "errno = %d\n", -err);
-		return err;
-	}
-
-	if (connect(pri->control, (struct sockaddr *) ctl_addr,
-		   sizeof(*ctl_addr)) < 0) {
-		err = -errno;
-		printk( "rtap_open : control connect failed, "
-		       "errno = %d\n", -err);
-		goto out;
-	}
-
-	fd = socket(AF_UNIX, SOCK_DGRAM, 0);
-	if (fd < 0) {
-		err = -errno;
-		printk( "rtap_open : data socket failed, "
-		       "errno = %d\n", -err);
-		goto out;
-	}
-	if (bind(fd, (struct sockaddr *) local_addr, sizeof(*local_addr)) < 0) {
-		err = -errno;
-		printk( "rtap_open : data bind failed, "
-		       "errno = %d\n", -err);
-		goto out_close;
-	}
-
-	sun = uml_kmalloc(sizeof(struct sockaddr_un), UM_GFP_KERNEL);
-	if (sun == NULL) {
-		printk( "new_addr: allocation of sockaddr_un "
-		       "failed\n");
-		err = -ENOMEM;
-		goto out_close;
-	}
-
-	req.magic = SWITCH_MAGIC;
-	req.version = SWITCH_VERSION;
-	req.type = REQ_NEW_CONTROL;
-	req.sock = *local_addr;
-	n = write(pri->control, &req, sizeof(req));
-	if (n != sizeof(req)) {
-		printk( "rtap_open : control setup request "
-		       "failed, err = %d\n", -errno);
-		err = -ENOTCONN;
-		goto out_free;
-	}
-
-	n = read(pri->control, sun, sizeof(*sun));
-	if (n != sizeof(*sun)) {
-		printk( "rtap_open : read of data socket failed, "
-		       "err = %d\n", -errno);
-		err = -ENOTCONN;
-		goto out_free;
-	}
-
-	printk( "rtap_user.c:connect_to_switch: pri->control=%d fd=%d\n", pri->control, fd );
-	pri->data_addr = sun;
-	return fd;
-
- out_free:
-	kfree(sun);
- out_close:
-	close(fd);
- out:
-	close(pri->control);
-	return err;
-}
-
 static int rtap_user_init(void *data, void *dev)
 {
-	struct rtap_data *pri = data;
-	struct timeval tv;
-	struct {
-		char zero;
-		int pid;
-		int usecs;
-	} name;
-
-	printk( "rtap_user.c:rtap_user_init\n");
-
-	if (!strcmp(pri->sock_type, "unix"))
-		pri->ctl_addr = new_addr(pri->ctl_sock,
-					 strlen(pri->ctl_sock) + 1);
-					 
-	name.zero = 0;
-	name.pid = os_getpid();
-	gettimeofday(&tv, NULL);
-	name.usecs = tv.tv_usec;
-	pri->local_addr = new_addr(&name, sizeof(name));
-	pri->dev = dev;
-
-	printk( RTD_FORMAT, RTD_FIELDS(pri));
-
-	pri->fd = connect_to_switch(pri);
-	if (pri->fd < 0) {
-		kfree(pri->local_addr);
-		pri->local_addr = NULL;
-		return pri->fd;
-	}
-
+	int rcode;
+	
+	printk("rtap_user.c:rtap_user_init\n");
+	
 	return 0;
 }
 
 static int rtap_open(void *data)
 {
 	struct rtap_data *pri = data;
+	printk("rtap_user.c:rtap_open\n");
+
 	return pri->fd;
 }
 
 static void rtap_remove(void *data)
 {
 	struct rtap_data *pri = data;
+
+	printk("rtap_user.c:rtap_remove\n");
 
 	close(pri->fd);
 	pri->fd = -1;
@@ -207,10 +106,40 @@ static void rtap_remove(void *data)
 
 int rtap_user_write(int fd, void *buf, int len, struct rtap_data *pri)
 {
-	struct sockaddr_un *data_addr = pri->data_addr;
-	printk( "rtap_user.c:connect_to_switch: fd=%d len=%d\n",  fd, len );
+	printk( "rtap_user.c:rtap_user_write: fd=%d len=%d\n",  fd, len );
 
+#if RTAP_IPC == RTAP_PIPE
+	int bytes;
+	bytes = write(sw_ptr->sw_Sfdes[PIPE_WRITE], buf, len);
+	if( bytes < len) {
+		printk( "rtap_user.c:rtap_user_write: write errno=%d\n", errno);
+		return(-errno);
+	}
+	return(bytes);
+#else //  RTAP_IPC
+	struct sockaddr_un *data_addr = pri->data_addr;
 	return net_send(fd, buf, len);
+#endif //  RTAP_IPC
+
+}
+
+int rtap_user_read(int fd, void *buf, int len)
+{
+	printk( "rtap_user.c:rtap_user_read: fd=%d len=%d\n",  fd, len );
+
+#if RTAP_IPC == RTAP_PIPE
+	int bytes;
+	bytes = read(sw_ptr->sw_Rfdes[PIPE_READ], buf, len);
+	if( bytes < len) {
+		printk( "rtap_user.c:rtap_user_read: read errno=%d\n", errno);
+		return(-errno);
+	}
+	return(bytes);
+#else //  RTAP_IPC
+	struct sockaddr_un *data_addr = pri->data_addr;
+	return net_send(fd, buf, len);
+#endif //  RTAP_IPC
+
 }
 
 const struct net_user_info rtap_user_info = {
@@ -246,9 +175,12 @@ long os_sendrec_T(int dst, message *m_ptr, long int timeout)
 void *send_thread(void *arg)
 {
 	int rcode;
+
 	rcode = init_send_kthread(arg);
 	printk( "send_thread init_send_kthread rcode=%d\n", rcode);
-	if( rcode == OK) send_kthread(arg);
+	if( rcode == OK){
+		send_kthread(arg);
+	}
 	return(1);
 }
 
@@ -259,6 +191,8 @@ void *recv_thread(void *arg)
 {
 	int rcode;
 
+
+
 	rcode = init_recv_kthread(arg);
 	printk( "recv_thread init_recv_kthread rcode=%d\n", rcode);
 	if( rcode == OK) recv_kthread(arg);
@@ -268,130 +202,25 @@ void *recv_thread(void *arg)
 void rmttap_cleanup(void)
 {
 	int i, rcode, svr_ep, clt_ep; 
-	
-	printk( "\n");
 
+#if RTAP_IPC == RTAP_PIPE
+	printk( "\n");
+	
+#else //  RTAP_IPC
+	printk( "\n");
 	if(unlink(sw_ptr->sw_ctrl_path) < 0){
 		printf("Couldn't remove control socket '%s' : ", sw_ptr->sw_ctrl_path);
 		perror("");
 	}
-	if((data_socket != NULL) && (unlink(sw_ptr->sw_ctrl_path) < 0)){
-		printf("Couldn't remove data socket '%s' : ", sw_ptr->sw_ctrl_path);
-		perror("");
-	}
 	if( sw_ptr->sw_tap_fd != (-1))
 		close(sw_ptr->sw_tap_fd);
+#endif //  RTAP_IPC
 	
 	rtap_kcleanup();
-#ifdef ANULADO 	
-	for( i = 0; i < nr_rmttap; i++) {
-		rt_ptr = &rmttap_cfg[i];
-		if( rt_ptr->rt_rmttap_fd != (-1)){
-			printk( "close %s fd=%d\n", rt_ptr->rt_name, rt_ptr->rt_rmttap_fd);			
-			os_close(rt_ptr->rt_rmttap_fd);
-		}
-	}
-#endif  // ANULADO 	
 	
 }
 
-int still_used(struct sockaddr_un *sun)
-{
-	int test_fd, ret = 1;
-
-	printk( "still_used\n");
-
-	if((test_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
-		printk( "socket\n");
-		return(1);
-	}
-	if(connect(test_fd, (struct sockaddr *) sun, sizeof(*sun)) < 0){
-		if(errno == ECONNREFUSED){
-			if(unlink(sun->sun_path) < 0){
-				printk( "Failed to removed unused socket '%s': \n", 
-				sun->sun_path);
-			printk( "\n");
-			}
-		ret = 0;
-	  }
-	  else printk( "connect\n");
-	}
-	close(test_fd);
-	return(ret);
-}
-
-int bind_socket(int fd, const char *name, struct sockaddr_un *sock_out)
-{
-	struct sockaddr_un sun;
-
-	printk( "fd=%d name=%s\n",fd, name);
-		
-	sun.sun_family = AF_UNIX;
-	strncpy(sun.sun_path, name, sizeof(sun.sun_path));
-	printk( "sun_path=%s \n", sun.sun_path);
-
-	if(bind(fd, (struct sockaddr *) &sun, sizeof(sun)) < 0){
-		if((errno  == EADDRINUSE) && still_used(&sun)) return(EADDRINUSE);
-		else if(bind(fd, (struct sockaddr *) &sun, sizeof(sun)) < 0){
-			printk( "bind");
-		return(EPERM);
-		}
-	}
-	if(sock_out != NULL) *sock_out = sun;
-	return(0);
-}
-
-int bind_data_socket(int fd, struct sockaddr_un *sun)
-{
-	struct {
-		char zero;
-		int pid;
-		int usecs;
-	} name;
-	struct timeval tv;
-
-	printk( "bind_data_socket fd=%d \n", fd);
-
-	name.zero = 0;
-	name.pid = os_getpid();
-	gettimeofday(&tv, NULL);
-	name.usecs = tv.tv_usec;
-	sun->sun_family = AF_UNIX;
-	memcpy(sun->sun_path, &name, sizeof(name));
-	printk( "bind_data_socket sun_path=%s \n", sun->sun_path);
-	if(bind(fd, (struct sockaddr *) sun, sizeof(*sun)) < 0){
-		printk( "bind_data_socket Binding to data socket");
-		return(-errno);
-	}
-	return(OK);
-}
-
-int bind_sockets(int ctl_fd, const char *ctl_name, int data_fd)
-{
-	int rcode;
-
-	printk( "ctl_fd=%d ctl_name=%s data_fd=%d\n", ctl_fd, ctl_name, data_fd);
-
-	rcode = bind_socket(ctl_fd, ctl_name, NULL);
-	if(rcode == 0){
-		rcode = bind_data_socket(data_fd, &data_sun);
-		return(rcode);
-	}
-	if(rcode == EADDRINUSE) {
-		printk( "The control socket '%s' has another server "
-			"attached to it\n", ctl_name);
-		printk( "You can either\n");
-		printk( "\tremove '%s'\n", ctl_name);
-		printk( "\tor rerun with a different, unused filename for a "
-			"socket\n");
-	} else {
-		printk( "The control socket '%s' exists, isn't used, but couldn't "
-			"be removed\n", ctl_name);
-	}
-	return(rcode);
-}
-
-int start_sw_threads(unsigned long sp, int *fd_out)
+int start_sw_threads(unsigned long sp)
 {
 	int err;
 	int one = 1;
@@ -399,43 +228,23 @@ int start_sw_threads(unsigned long sp, int *fd_out)
 	
 	printk("start_sw_threads - sp=%ld\n", sp);
 
-	if((sw_ptr->sw_conn_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
-		printk( "socket\n");
+#if RTAP_IPC == RTAP_PIPE
+
+	if( pipe2(sw_ptr->sw_Sfdes,O_DIRECT ) == -1){
+		err = -errno;
+		printk( "start_rd_thread - pipe2 sw_Sfdes failed : errno = %d\n", errno);
 		goto ss_out;
 	}
-	printk( "sw_ptr->sw_conn_fd=%d\n", sw_ptr->sw_conn_fd);
 
-	if(setsockopt(sw_ptr->sw_conn_fd, SOL_SOCKET, SO_REUSEADDR, (char *) &one, 
-		sizeof(one)) < 0){
-		printk( "setsockopt\n");
-		goto ss_out_close_conn;
+	if( pipe2(sw_ptr->sw_Rfdes,O_DIRECT | O_NONBLOCK) == -1){
+		err = -errno;
+		printk( "start_rd_thread - pipe2 sw_Rfdes failed : errno = %d\n", errno);
+		goto ss_out;
 	}
+
+	printk( "start_rd_thread: " SW_FORMAT, SW_FIELDS(sw_ptr));
+#endif // RTAP_IPC
 	
-	if(fcntl(sw_ptr->sw_conn_fd, F_SETFL, O_NONBLOCK) < 0){
-		printk( "Setting O_NONBLOCK on connection fd\n");
-		goto ss_out_close_conn;
-	}
-
-	if((sw_ptr->sw_data_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
-		printk( "socket\n");
-		goto ss_out_close;
-	}
-	printk( "sw_ptr->sw_data_fd=%d\n", sw_ptr->sw_data_fd);
-
-	if(fcntl(sw_ptr->sw_data_fd, F_SETFL, O_NONBLOCK) < 0){
-		printk( "Setting O_NONBLOCK on data fd\n");
-		goto ss_out_close;
-	}
-   
-    sprintf(sw_ptr->sw_ctrl_path,"/tmp/rtap%02d.ctl",dcid);
-	
-	bind_sockets(sw_ptr->sw_conn_fd, sw_ptr->sw_ctrl_path, sw_ptr->sw_data_fd);
-
-	if(listen(sw_ptr->sw_conn_fd, LISTEN_BACKLOG) < 0){
-		printk( "listen\n");
-		goto ss_out_close;
-	}
-
 	err = init_sync();
 	if( err) goto ss_out_close;
 
@@ -443,7 +252,11 @@ int start_sw_threads(unsigned long sp, int *fd_out)
 	if( err) goto ss_out_close;
 	
 	// create send_thread 
+#if RTAP_IPC == RTAP_PIPE
+	tid = clone((int (*)(void *))send_thread, (void *) sp, CLONE_VM, NULL);
+#else //  RTAP_IPC
 	tid = clone((int (*)(void *))send_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
+#endif // RTAP_IPC
 	printk("start_rd_thread sw_send_thread tid=%d\n", tid);
 	if(tid < 0){
 		err = -errno;
@@ -461,7 +274,11 @@ int start_sw_threads(unsigned long sp, int *fd_out)
 	if( err) goto ss_out_close;
 	
 	// create recv_thread 
+#if RTAP_IPC == RTAP_PIPE
+	tid = clone((int (*)(void *))recv_thread, (void *) sp, CLONE_VM, NULL);
+#else //  RTAP_IPC
 	tid = clone((int (*)(void *))recv_thread, (void *) sp, CLONE_FILES | CLONE_VM, NULL);
+#endif // RTAP_IPC
 	printk("start_rd_thread sw_recv_thread tid=%d\n", tid);
 	if(tid < 0){
 		err = -errno;
@@ -472,20 +289,158 @@ int start_sw_threads(unsigned long sp, int *fd_out)
 		sw_ptr->sw_recv_tid = tid;
 	}
 
+ss_out_close:
+
 	err = leave_sync();
 	if( err) goto ss_out_close;
 
 	err = end_sync();
 	if( err) goto ss_out_close;
 	
-	return(OK);
+	if( close(sw_ptr->sw_Sfdes[PIPE_READ]) == -1) {
+		err = -errno;
+		printk( "start_rd_thread - close sw_Sfdes failed : errno = %d\n", errno);
+		goto ss_out;
+	}
 	
- 	
-ss_out_close:
-	os_close_file(sw_ptr->sw_data_fd);
-ss_out_close_conn:
-	os_close_file(sw_ptr->sw_conn_fd);
-	*fd_out = -1;
+	if( close(sw_ptr->sw_Rfdes[PIPE_WRITE]) == -1) {
+		err = -errno;
+		printk( "start_rd_thread - close sw_Rfdes failed : errno = %d\n", errno);
+		goto ss_out;
+	}	
+	
+	printk( "start_sw_threads: " SW_FORMAT, SW_FIELDS(sw_ptr));
+
+	return(OK);
+
 ss_out:
 	return err;
 }
+
+int rtap_receiver_kinit(void)
+{
+	int err;
+	printk( "rtap_receiver_kinit\n");
+
+#if RTAP_IPC == RTAP_PIPE
+	if( close(sw_ptr->sw_Rfdes[PIPE_READ]) == -1) {
+		err = -errno;
+		printk( "rtap_receiver_kinit - close sw_Rfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+
+	if( close(sw_ptr->sw_Sfdes[PIPE_READ]) == -1) {
+		err = -errno;
+		printk( "rtap_receiver_kinit - close sw_Sfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+	
+	if( close(sw_ptr->sw_Sfdes[PIPE_WRITE]) == -1) {
+		err = -errno;
+		printk( "rtap_receiver_kinit - close sw_Sfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+
+	printk( "rtap_receiver_kinit: " SW_FORMAT, SW_FIELDS(sw_ptr));
+
+#else //  RTAP_IPC
+
+	rt_ptr->rt_clt_fd = socket(AF_UNIX, SOCK_STREAM, 0);  
+    if (rt_ptr->rt_clt_fd == -1){
+		printk("rtap_receiver_kinit socket errno:%d\n", errno );
+		return(-errno);
+	}
+	
+	printk( "rtap_receiver_kinit: rt_clt_fd=%d\n",rt_ptr->rt_clt_fd);
+
+    memset(&rt_data_sun, 0, sizeof(struct sockaddr_un));
+	rt_data_sun.sun_family = AF_UNIX;
+    strncpy(rt_data_sun.sun_path, sw_ptr->sw_svr_sock, sizeof(rt_data_sun.sun_path) - 1);
+
+	printk( "rtap_receiver_kinit: sun_path=%s\n",rt_data_sun.sun_path);
+    if (connect(rt_ptr->rt_clt_fd, (struct sockaddr *) &rt_data_sun,
+                sizeof(struct sockaddr_un)) == -1){
+        printk( "rtap_receiver_kinit connect errno:%d\n", errno );
+		return(-errno);
+	}
+	printk( "rtap_receiver_kinit OK!\n");
+#endif //  RTAP_IPC
+	
+	return(OK);			
+}
+
+int  rtap_sender_kinit( void)
+{
+	int err;
+
+	printk( "rtap_sender_kinit\n");
+
+#if RTAP_IPC == RTAP_PIPE
+	if( close(sw_ptr->sw_Sfdes[PIPE_WRITE]) == -1) {
+		err = -errno;
+		printk( "rtap_sender_kinit - close sw_Sfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+
+	if( close(sw_ptr->sw_Rfdes[PIPE_READ]) == -1) {
+		err = -errno;
+		printk( "rtap_sender_kinit - close sw_Rfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+	
+	if( close(sw_ptr->sw_Rfdes[PIPE_WRITE]) == -1) {
+		err = -errno;
+		printk( "rtap_sender_kinit - close sw_Rfdes failed : errno = %d\n", errno);
+		return(err);
+	}
+
+	printk( "rtap_sender_kinit: " SW_FORMAT, SW_FIELDS(sw_ptr));
+
+#else //  RTAP_IPC
+
+    sw_ptr->sw_svr_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (sw_ptr->sw_svr_fd  == -1){
+		printk("rtap_sender_kinit socket errno:%d\n", errno );
+		return(-errno);
+	}
+
+    if (remove(sw_ptr->sw_svr_sock) == -1 && errno != ENOENT)
+        printk("rtap_sender_kinit remove-%s errno:%d\n",sw_ptr->sw_svr_sock, errno);
+
+    memset(&sw_svr_sun, 0, sizeof(struct sockaddr_un));
+    sw_svr_sun.sun_family = AF_UNIX;
+    strncpy(sw_svr_sun.sun_path, sw_ptr->sw_svr_sock, sizeof(sw_svr_sun.sun_path) - 1);
+    if (bind(sw_ptr->sw_svr_fd, (struct sockaddr *) &sw_svr_sun, sizeof(struct sockaddr_un)) == -1){
+        printk("rtap_sender_kinit bind errno:%d\n", errno);
+		return(-errno);
+	}
+	printk( "rtap_sender_kinit bind OK: sw_svr_fd=%d\n",sw_ptr->sw_svr_fd);
+
+    if (listen(sw_ptr->sw_svr_fd, LISTEN_BACKLOG) == -1){
+        printk("rtap_sender_kinit listen errno:%d\n", errno);
+		return(-errno);
+	}
+	printk( "rtap_sender_kinit: listen OK\n");
+#endif //  RTAP_IPC
+	
+	return(OK);
+}
+
+
+#if RTAP_IPC == RTAP_UNIX
+int  rtap_server_wait( void)
+{
+	printk( "rtap_server_wait: sw_svr_fd=%d\n",sw_ptr->sw_svr_fd);
+
+	printk( "rtap_server_wait: os_accept_connection\n");
+//	sw_ptr->sw_clt_fd = os_accept_connection(sw_ptr->sw_svr_fd);
+    sw_ptr->sw_clt_fd = accept(sw_ptr->sw_svr_fd, NULL, NULL);
+	if (sw_ptr->sw_clt_fd  == -1){
+        printk("rtap_server_wait accept errno:%d\n", errno);
+		return(-errno);
+	}
+	
+	printk( "rtap_server_wait OK: sw_clt_fd=%d\n",sw_ptr->sw_clt_fd);
+	return(OK);
+}
+#endif //  RTAP_IPC

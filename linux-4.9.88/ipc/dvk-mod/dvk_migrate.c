@@ -248,41 +248,46 @@ long int migr_start(struct proc *proc_ptr)
 				if( test_bit(BIT_ONCOPY, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSONCOPY; break;}
 				if( test_bit(BIT_RMTOPER, &p_ptr->p_usr.p_rts_flags))	{ret = EDVSBUSY; break;}
 				if(test_bit(BIT_NO_ENDPOINT, &p_ptr->p_usr.p_rts_flags)){ret = EDVSENDPOINT; break;}
-				if(test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 	{ret = OK; break;}
 				if(test_bit(MIS_BIT_NOMIGRATE, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSPROCSTS; break;}	
 				if(test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) 	{ret = EDVSLCLPROC; break;}			
+				if(test_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags)) 	{ret = OK; break;}
 			}while(0);
-			RUNLOCK_PROC(p_ptr);
-			if(ret) {
+			if(ret < 0) {
+				RUNLOCK_PROC(p_ptr);
 				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 				WLOCK_PROC(proc_ptr);
 				ERROR_RETURN(ret);
 			}
+			
+			if (p_ptr->p_usr.p_rts_flags == PROC_RUNNING) {	
+				/* Cant set BIT_MIGRATE because the process is running */
+				/* Set the MIS_BIT_NEEDMIGR to set this BIT_MIGRATE in the next IPC call  */
+				if( p_ptr != NULL){ 		/* Ignore not binded threads */
+					set_bit(MIS_BIT_NEEDMIGR, &p_ptr->p_usr.p_misc_flags);
+#ifdef ANULADO			
+					if( test_bit(BIT_RECEIVING, &p_ptr->p_usr.p_rts_flags) ){
+						LOCAL_PROC_UP(p_ptr, EDVSAGAIN); 
+					}
+					DVKDEBUG(INTERNAL,"Sending SIGTERM to pid=%d\n", p_ptr->p_usr.p_lpid);
+					ret = send_sig_info(SIGTERM, SEND_SIG_NOINFO, thread_ptr);
+					if(ret) ERROR_PRINT(ret);
+#endif // ANULADO			
+				}	
+			} else {
+				set_bit(BIT_MIGRATE, &p_ptr->p_usr.p_rts_flags);
+				// AQUI SE DEBERIAN PONER TODOS LOS PROCESOS QUE QUIEREN ENVIARLE MENSAJES
+				// AL PROCESO MIGRANTE QUE ESTAN EN LA COLA DE SENDING
+				// PONERLOS ADEMAS EN LA COLA DE MIGRATING 
+				// O DIRECTAMENTE DEVOLVERLE UN CODIGO DE ERROR 
+			}
+			pu_ptr= &p_ptr->p_usr;
+			RUNLOCK_PROC(p_ptr);
+			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(pu_ptr));
 		}
 	}while_each_thread(task_ptr, thread_ptr);
 
-	WLOCK_PROC(proc_ptr);
-	/* SECOND LOOP: Signal all LOCAL process' threads with the  MIS_BIT_NEEDMIGR */
-	task_ptr = thread_ptr = proc_ptr->p_task;
-	do {
-		/* Cant set BIT_MIGRATE because the process is running */
-		/* Set the MIS_BIT_NEEDMIGR to set this BIT_MIGRATE in the next IPC call  */
-		p_ptr = thread_ptr->task_proc;
-		if( p_ptr != NULL){ 		/* Ignore not binded threads */
-			set_bit(MIS_BIT_NEEDMIGR, &p_ptr->p_usr.p_misc_flags);
-			if( test_bit(BIT_RECEIVING, &p_ptr->p_usr.p_rts_flags) ){
-				LOCAL_PROC_UP(p_ptr, EDVSAGAIN); 
-			}
-#ifdef ANULADO			
-			DVKDEBUG(INTERNAL,"Sending SIGTERM to pid=%d\n", p_ptr->p_usr.p_lpid);
-			ret = send_sig_info(SIGTERM, SEND_SIG_NOINFO, thread_ptr);
-			if(ret) ERROR_PRINT(ret);
-#endif // ANULADO			
-			pu_ptr= &p_ptr->p_usr;
-			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(pu_ptr));
-		}	
-	}while_each_thread(task_ptr, thread_ptr);
 	UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
+	WLOCK_PROC(proc_ptr);
 	return(OK);
 }
 
@@ -342,27 +347,41 @@ long int old_node_migrate(struct proc *proc_ptr, int new_nodeid)
 		p_ptr = thread_ptr->task_proc;
 		if( p_ptr != NULL) {		/* Ignore not binded threads */
 			WLOCK_PROC(p_ptr);
-			if(test_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags))
-				clear_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags);
+//			if(test_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags))
+//			clear_bit(MIS_BIT_GRPLEADER, &p_ptr->p_usr.p_misc_flags);
 			/* Convert the LOCAL descriptor into a REMOTE descriptor */
-			p_ptr->p_usr.p_lpid 	= PROC_NO_PID;	/* Update Linu PID	*/
-			p_ptr->p_usr.p_vpid 	= PROC_NO_PID;	/* Update virtual PID	*/
+			
+//			p_ptr->p_usr.p_lpid 	= PROC_NO_PID;	/* Update Linu PID	*/
+//			p_ptr->p_usr.p_vpid 	= PROC_NO_PID;	/* Update virtual PID	*/
 			p_ptr->p_usr.p_nodeid 	= new_nodeid;
-			thread_ptr->task_proc	= NULL;
-			p_ptr->p_task 			= NULL;
-			put_task_struct(thread_ptr);		/* decrement the reference count of the task struct */
+//			thread_ptr->task_proc	= NULL;
+//			p_ptr->p_task 			= NULL;
+//			put_task_struct(thread_ptr);		/* decrement the reference count of the task struct */
 
 			/* if a LOCAL process remainder is into IPC kernel 	*/
 			/* wakeup it with error					*/
 			clear_bit(BIT_MIGRATE,&p_ptr->p_usr.p_rts_flags);
-			if (p_ptr->p_usr.p_rts_flags == PROC_RUNNING) {	
-				set_bit(BIT_REMOTE,&p_ptr->p_usr.p_rts_flags);
-				LOCAL_PROC_UP(p_ptr, EDVSRMTPROC);
-			}else{
-				set_bit(BIT_REMOTE,&p_ptr->p_usr.p_rts_flags);
-			}
-			flush_sending_list(p_ptr);
+			// convert the task into a backup process 
+			set_bit(BIT_REMOTE,&p_ptr->p_usr.p_rts_flags);
+			set_bit(MIS_BIT_RMTBACKUP, &p_ptr->p_usr.p_misc_flags);
 			flush_migr_list(p_ptr);
+			flush_sending_list(p_ptr);
+			// ATENCION, ESTO NO ESTA RESUELTO 
+			// Si el proceso es del sistema, puede tener acumulados mensajes de tipo NOTIFY 
+			// Como transferirlos al remoto ??  (ver do_unbind()(	
+			// ATENCION OTRO
+			// que pasa con los mensajes que estan encolados en el proxy modo kernel listos para salir ??
+			// Se deberia cambiar el nodo origne por new_node, pero el proxy receiver del otro nodo, lo 
+			// deberia rechazar ya que el nodo origen no se corresponde con el nodo emisor 
+			// Se deberia poner algun flag que indique que el proceso cambio de nodo
+			// ATENCION !!! 
+			// Ademas de envier mensajes y datos, se podria enviar al nodo remoto PROC_DESCRIPTOR 
+			
+			// ATENCION: Al migrar un proceso local hacia uno remoto, este queda como BACKUP 
+			// Luego, cuando se hace el KILL del proceso BACKUP, tambien remueve al descriptor REMOTE!!! No deberia 
+			//  		Problema de do_unbind 
+					
+
 			WUNLOCK_PROC(p_ptr);
 		}
 	}while_each_thread(task_ptr, thread_ptr);  /*!!!! DONT USE BREAK, BECAUSE HERE ARE TWO LOOPS !!!! */
@@ -464,6 +483,9 @@ long int migr_commit(unsigned long int dc_bitmap_nodes, struct proc *proc_ptr, i
 		ret = old_node_migrate(proc_ptr, new_nodeid);
 	}else if(atomic_read(&local_nodeid) == new_nodeid) {		
 		ret = new_node_migrate(proc_ptr, pid);
+		proc_ptr->p_usr.p_nodeid = new_nodeid;
+		flush_migr_list(proc_ptr);
+		ret = OK;		
 	}else{
 		proc_ptr->p_usr.p_nodeid = new_nodeid;
 		flush_migr_list(proc_ptr);

@@ -1,0 +1,66 @@
+DC0=727
+startMigr=1617070891159500764
+DEBUG 986:dvk_open:108: Open dvk device file /dev/dvk
+ 986:dvs_migrate.c:get_dvs_params:27:
+DEBUG 986:dvk_getdvsinfo:265: 
+DEBUG 986:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 986:dvk_getdvsinfo:279: ioctl ret=1
+ 986:dvs_migrate.c:get_dvs_params:29:local_nodeid=1
+ 986:dvs_migrate.c:get_dvs_params:32:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ 986:dvs_migrate.c:main:135:getopt migr_type=0
+ 986:dvs_migrate.c:main:141:dcid=0
+ 986:dvs_migrate.c:get_dc_params:42:dcid=0
+DEBUG 986:dvk_getdcinfo:366: dcid=0
+DEBUG 986:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 986:dvk_getdcinfo:383: ioctl ret=0
+ 986:dvs_migrate.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ 986:dvs_migrate.c:get_dc_params:51:flags=0 dc_nodes=7 dc_pid=727 dc_name=DC0
+ 986:dvs_migrate.c:main:152:proc_ep=10
+ 986:dvs_migrate.c:main:168:migr_type=0 argc=4 
+DEBUG 986:dvk_migrate_X:1301: cmd=0 pid=-1 dcid=0 endpoint=10 nodeid=-1
+DEBUG 986:dvk_migrate_X:1316: ioctl ret=0 errno=0
+DEBUG 986:dvk_migrate_X:1325: ioctl ret=0
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10   955/955    1  808   20 31438 27342 27342 27342 migr_server    
+ 0  11    11   982/4      1    0   20 27342 27342 27342 27342 migr_client    
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10   955/955    1  800   20 27342 27342 27342 27342 migr_server    
+ 0  11    11   982/4      1 8000   20 27342 27342    10 27342 migr_client    
+startTranfer=1617070891647493528
+endTranfer=1617070892450978333
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10   955/955    1  800   20 27342 27342 27342 27342 migr_server    
+ 0  11    11   982/4      1 8000   20 27342 27342    10 27342 migr_client    
+DEBUG 1001:dvk_open:108: Open dvk device file /dev/dvk
+ 1001:dvs_migrate.c:get_dvs_params:27:
+DEBUG 1001:dvk_getdvsinfo:265: 
+DEBUG 1001:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 1001:dvk_getdvsinfo:279: ioctl ret=1
+ 1001:dvs_migrate.c:get_dvs_params:29:local_nodeid=1
+ 1001:dvs_migrate.c:get_dvs_params:32:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ 1001:dvs_migrate.c:main:120:new_nodeid=0
+ 1001:dvs_migrate.c:main:126:proc_pid=-1
+ 1001:dvs_migrate.c:main:135:getopt migr_type=1
+ 1001:dvs_migrate.c:main:141:dcid=0
+ 1001:dvs_migrate.c:get_dc_params:42:dcid=0
+DEBUG 1001:dvk_getdcinfo:366: dcid=0
+DEBUG 1001:dvk_getdcinfo:378: ioctl ret=0 errno=0
+DEBUG 1001:dvk_getdcinfo:383: ioctl ret=0
+ 1001:dvs_migrate.c:get_dc_params:50:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ 1001:dvs_migrate.c:get_dc_params:51:flags=0 dc_nodes=7 dc_pid=727 dc_name=DC0
+ 1001:dvs_migrate.c:main:152:proc_ep=10
+ 1001:dvs_migrate.c:main:168:migr_type=1 argc=5 
+DEBUG 1001:dvk_migrate_X:1301: cmd=1 pid=-1 dcid=0 endpoint=10 nodeid=0
+DEBUG 1001:dvk_migrate_X:1316: ioctl ret=0 errno=0
+DEBUG 1001:dvk_migrate_X:1325: ioctl ret=0
+DEBUG 1001:dvk_getdvsinfo:265: 
+DEBUG 1001:dvk_getdvsinfo:274: ioctl ret=1 errno=0
+DEBUG 1001:dvk_getdvsinfo:279: ioctl ret=1
+DEBUG 1001:dvk_migrate_X:1330: my_nodeid=1
+DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+ 0  10    10   955/955    0 1000 1010 27342 27342 27342 27342 migr_server    
+ 0  11    11   982/4      1    8 2020    10 27342 27342 27342 migr_client    
+endMigr=1617070892886892577
+Migration time was 1727391813 nanoseconds
+Tranfer time was 803484805 nanoseconds
+SERVER checkpoint image file size=2513142
