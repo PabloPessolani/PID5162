@@ -1,0 +1,325 @@
+DISTRIBUTED LOAD BALANCER 
+
+OBJETIVO: Que a la demanda de clientes se corresponda la creación de nuevos procesos servidores, 
+y que a medida que los servidores se saturan, se van habilitando nuevos nodos servidores.
+Scale-up: se habilitan nuevos nodos servidores cuando los actuales estan saturados
+Scale-down: si los nodos servidores que antes estaban saturados, dejan de estarlo, ellos son los primeros en recibir 
+las nuevas demandas, de tal modo que los ultimos nodos servidores incorporados, al no recibir nuevas demandas
+se van descargando. Cuando la carga es nula, entonces se terminan los servicios en el.
+
+CLUSTER DVS: Estará constituido por nodos servidores y nodos clientes.
+Estos se definen en un archivo de configuración (solo los servidores), 
+los nodos que no están incluidos en la configuración se consideran nodos clientes.
+
+server node1 {
+	nodeid 		1;
+};
+
+server node2 {
+	nodeid 		2;
+};
+
+SERVICIOS: Se describirán en el archivo de configuración.
+service latency {
+	dcid	0;
+	ext_ep	10;
+	min_ep	10;
+	max_ep	19;	
+};
+
+service m3ftp {
+	dcid	0;
+	ext_ep	20;
+	min_ep	20;
+	max_ep	29;	
+};
+
+FUNCIONAMIENTO:
+Supongamos que NODE0, NODE1 y NODE2 son nodos servidores.
+NODE10, NODE11 y NODE12 son nodos clientes.
+Todos los nodos, tanto clientes como servidores perteneceran al grupo spread "DLB" y el nombre de cada
+miembro sera "DLB_AGENT_xx" siendo xx el nodeid del nodo. Ejemplo para NODE1 => "DLB_AGENT_01"
+
+En todos los nodos del cluster se ejecutará un agente dlb_agent.
+
+Supongamos que arrancan NODE0, NODE1 como servers y NODE10, NODE11 como clientes.
+Desde una linea de comando se ejecutará:
+	dlbcmd config <archivo.cfg>
+Este comando:
+ 	- leerá el archivo de configuración y comprobará sus sintaxis y valores admitidos.
+	- completará una estructura de datos dlb_config_t con los datos de la configuración
+    - Se incorporará al grupo DLB pero como miembro DLB_CMD_xx para distinguirlo de los agentes.
+	- enviará un multicast al grupo DLB transfiriendo la información contenida en la estructura dlb_config_t
+
+Al arrancar cada agente en cada nodo, estos no saben que función cumplen ni el estado en que se encuentran
+por lo que arrancan con un estado STS_WAIT_CONFIG esperando recibir info de configuración.
+A medida que van arrancando cada uno de los agentes, van tomando nota de que nodos van incorporandose al cluster
+en un bitmap bm_cluster que considerará tanto a clientes como a servidores.
+
+El comando "dlbcmd config" envia un multicast de tipo CMD_CONFIG conjuntamente con la estructura dlb_config_t
+cuando un nodo recibe el CMD_CONFIG busca en la configuración para saber si es CLIENT o SERVER.
+Si es CLIENT:
+	- copia la estructura de datos en su area de datos local
+	- crea el bitmap de nodos servidores activos bm_servers que es el AND de bm_cluster con los nodos servers 
+		declarados en la estructura dlb_config_t
+	- su estado cambia a STS_CLIENT 
+Si es SERVER: 
+	- copia la estructura de datos en su area de datos local
+	- su estado cambia a STS_SERVER
+	- crea el bitmap de nodos servidores activos bm_servers que es el AND de bm_cluster con los nodos servers 
+		declarados en la estructura dlb_config_t
+	- envia un multicast CMD_INITIALIZED
+
+Cuando un nodo (incluso el mismo emisor) recibe un mensaje CMD_INITIALIZED 
+    - incluye en el bitmap de nodos inicializados bm_init al nuevo nodo 
+En el nodo emisor, si es SERVER, entonces:
+	- cambia su estado a STS_INITIALIZED 
+	- arranca el thread que monitorea el rendimiento del NODO  
+	- reporta su nivel de carga (LVL_FREE, LVL_UNLOADED, LVL_LOADED, LVL_SATURATED) con un multicast CMD_LOADLVL
+Cada nodo, CLIENT o SERVER almacenará/actualizara el estado de carga del nodo recibido.
+Los otros nodos SERVERs inicializados también haran multicast de su nivel de carga CMD_LOADLVL de tal forma
+que el nuevo nodo inicializado conozca el nivel de carga del resto de los servers.
+
+BITMAPS
+bm_cluster= bitmap de todos los nodos del cluster que tienen el agente arrancado y registrado en spread 
+bm_servers= bitmap de los nodos SERVERS (subconjunto de bm_cluster)
+bm_init   = bitmap de los nodos SERVERS inicializados (subconjunto de bm_servers)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+TODOS LOS NODOS MANTIENEN UNA TABLA SINCRONIZADA DE SESIONES 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+JOIN DE SERVERS POSTERIOR A LA INICIALIZACION
+=============================================
+
+Cuando se incorpora un nuevo servidor al cluster (Ej:NODE2)
+Al arrancar no sabe que función cumple ni el estado en que se encuentra
+por lo que arranca con un estado STS_WAIT_CONFIG esperando recibir info de configuración.
+PERO TAMBIEN INFORMACION DE LAS SESIONES ACTIVAS 
+Hasta que el nuevo nodo no haga un  multicast de STS_ACK_CONFIG el resto de los nodos 
+no puede hacer nada.
+
+Cuando un nodo SERVER en estado STS_INITIALIZED es el de menor ID, es el responsable 
+de suministrar la configuración al nuevo nodo enviando la estructura dlb_config_t
+en un mensaje CMD_CONFIG
+
+Aquellos nodos que NO ESTAN en estado STS_INITIALIZED ignoran el mensaje 
+
+Luego, cuando el nuevo nodo server  se ha inicializado y envia el mensaje CMD_INITIALIZED
+Todos los nodos actualizan sus 3 bitmaps.
+ 
+PRESENTAR LA CONFIGURACION EN PANTALLA 
+comando: dlbcmd cluster 
+El comando "dlbcmd cluster" envia un multicast de tipo CMD_GET_CLUSTER 
+y queda a la espera de un mensaje CMD_PUT_CLUSTER con la estructura dlb_config_t
+cuando un nodo recibe el CMD_GET_CLUSTER:
+	Si bm_init es CERO
+		Si bm_servers es CERO 
+			Si local_nodeid es el nodo de menor ID en bm_cluster
+				Multicast CMD_PUT_CLUSTER con resultado STS_INVALID 
+			sino
+				no hace nada
+		sino
+			Si local_nodeid es el nodo de menor ID en bm_servers
+				Multicast CMD_PUT_CLUSTER con resultado STS_INVALID
+			sino
+				no hace nada			
+	sino 
+		Si local_nodeid es el nodo de menor ID en bm_init 
+			Multicast CMD_PUT_CLUSTER con resultado STS_OK y la estructura dlb_config_t
+		sino
+			no hace nada
+Cuando un nodo CLIENT o SERVER recibe un mensaje CMD_PUT_CLUSTER lo ignora.
+Cuando el comando dlbcmd cluster recibe el mensaje CMD_PUT_CLUSTER 
+si el resultado es STS_INVALID entonces indica que el cluster no fue configurado aun
+sino presenta los datos en pantalla de la configuracion de la estructura dlb_config_t
+
+PRESENTAR EL ESTADO DE CARGA EN PANTALLA 
+comando: dlbcmd loadlvl  
+El comando "dlbcmd loadlvl" envia un multicast de tipo CMD_GET_LOADLVL
+y queda a la espera de un mensaje CMD_PUT_LOADLVL con un vector de nivel de carga de los SERVERS
+cuando un nodo recibe el CMD_GET_LOADLVL:
+	Si bm_init es CERO
+		Si bm_servers es CERO 
+			Si local_nodeid es el nodo de menor ID en bm_cluster
+				Multicast CMD_PUT_LOADLVL con resultado STS_INVALID 
+			sino
+				no hace nada
+		sino
+			Si local_nodeid es el nodo de menor ID en bm_servers
+				Multicast CMD_PUT_LOADLVL con resultado STS_INVALID
+			sino
+				no hace nada			
+	sino 
+		Si local_nodeid es el nodo de menor ID en bm_init 
+			Multicast CMD_PUT_LOADLVL con resultado STS_OK y el vector de nivel de carga de los SERVERS
+		sino
+			no hace nada
+Cuando un nodo CLIENT o SERVER recibe un mensaje CMD_PUT_LOADLVL lo ignora.
+Cuando el comando dlbcmd loadlvl recibe el mensaje CMD_PUT_LOADLVL 
+si el resultado es STS_INVALID entonces indica que el cluster no fue configurado aun
+sino presenta los datos en pantalla del vector de nivel de carga de los SERVERS
+ 
+ACTUALIZAR EL ESTADO DE CARGA EN PANTALLA 
+comando: dlbcmd updtlvl  
+El comando "dlbcmd updtlvl" envia un multicast de tipo CMD_UPDTLVL
+y queda a la espera de recibir mensajes CMD_LOADLVL de todos los servers inicializados.
+cuando un nodo recibe el CMD_UPDTLVL:
+	Si bm_init es CERO
+		Si bm_servers es CERO 
+			Si local_nodeid es el nodo de menor ID en bm_cluster
+				Multicast CMD_LOADLVL con resultado STS_INVALID 
+			sino
+				no hace nada
+		sino
+			Si local_nodeid es el nodo de menor ID en bm_servers
+				Multicast CMD_LOADLVL con resultado STS_INVALID
+			sino
+				no hace nada			
+	sino 
+		Multicast CMD_LOADLVL con resultado STS_OK, el bm_init del cluster y su propio estado de carga
+
+Cuando un nodo CLIENT o SERVER recibe un mensaje CMD_LOADLVL actualiza el estado de carga del nodo emisor 
+Si es el primer emisor, guarda el valor del bm_init en su propia variable local.
+Cuando el comando dlbcmd updtlvl recibe el mensaje CMD_LOADLVL va reportando el estado de carga en la pantalla
+y anula la espera de un mensaje CMD_LOADLVL del emisor en su bm_init.
+Si el bm_init == 0 es porque recibio el estado de carga de todos los SERVERs inicializados.
+
+Cuando finaliza el comando "dlbcmd" en spread se produce un mensaje DISCONNECT  que se le envia a todos
+los miembros.
+Como el DISCONNECT es de un miembro tipo DLB_CMD_xx es ignorado por los agentes.
+
+ 
+============================================================================================
+
+El agente debería formar parte de los proxies de tal forma de alterar su funcionamiento
+en función de la info que obtiene por Spread.
+Por lo tanto hay que:
+
+- Crear un proxy multinodo, es decir que un mismo proceso levante multiples hilos.
+	Cambiar la asignacion de ports, de tal forma que:
+			NODE0 escuche en port 3000 y desde port 3500 se conecta al resto de los nodos
+		Es decir:
+		receiver port 	= 3000 + local_nodeid
+		sender   port 	= 3500 + local_nodeid
+		web server port = 4000 + local_nodeid 
+		remote receiver port= 3000 + (destination nodeid)
+
+
+	Se crean:
+	    - 1 main 
+		- 1 solo hilo receiver
+		- (NR_NODES-1) hilos sender 
+		- 1 hilo agente 
+		- 1 web para info 
+- Habilitar el AUTOBIND 
+- Al arrancar, levanta el agente con spread y espera disponer de la configuración.
+- Con esta configuración se levantan todos los proxies entre clientes y servidores
+En principio solo un thread receiver y NR_NODES-1 sender por nodo
+LOS PROXIES quedarían asi.
+Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+      1     1    811      810           node1 ------------------------------X-
+      2     1    812      810           node2 ------------------------------X-
+      3     1    813      810           node3 ------------------------------X-
+      4     1    814      810           node4 ------------------------------X-
+
+============================================================================================
+		
+Supongamos que NODE3 es Cliente m3ftp y NODO0 es Server que escucha en port 20 para m3ftpd.
+
+En NODE3 debe tener un "rmtbind 0 20 0 m3ftpd" indicando que el endpoint 20 del DC=0 esta en el nodeid=0 con nombre m3ftpd
+NODE3 
+	El cliente con endpoint=50 hace un sendrec(20, msg)
+	EL proxy sender de NODE3 hace dvk_get2rmt() y obtiene el mensaje del cliente con destino 20.
+	Se fija si hay sesiones activas  con client(clt_endp, clt_nodeid, clt_pid) y server(svr_ep, svr_nodeid, server_pid)
+	si no hay sesiones 
+		Busca en la base de datos del agente el nodo en donde se encuentra el endpoint 20, supongamos NODE0 
+	Envia el mensaje al svr_nodeid
+NODE0 	
+	Cuando el mensaje llega a NODE0 se fija en las sesiones activas 
+	Si no hay sesiones activas, 
+		arranca el server en svr_ep
+		hace el bind del client_ep en el clt_nodeid
+		crea la sesion 
+		hace multicast de la sesion 
+	luego hace un put2lcl(svr_ep)
+
+Supongamos que en NODE3 hay otro cliente con endpoint=51 hace un sendrec(20, msg)
+NODE3 
+	El cliente con endpoint=51 hace un sendrec(20, msg)
+	EL proxy sender de NODE3 hace dvk_get2rmt() y obtiene el mensaje del cliente con destino 20.
+	Se fija si hay sesiones activas con client(clt_ep, clt_nodeid, clt_pid) y server(svr_ep, svr_nodeid, server_pid)
+	si no hay sesiones 
+		Busca en la base de datos del agente el nodo en donde se encuentra el endpoint 20, supongamos NODE0 
+	Envia el mensaje al svr_nodeid
+NODE0 	
+	Cuando el mensaje llega a NODE0 se fija en las sesiones activas que involucren al svr_ep=20 
+	Si no hay sesiones activas
+		arranca el server en svr_ep=21 con ext_ep=20
+		crea la sesion 
+		hace multicast de la sesion 
+	luego hace un put2lcl(svr_ep)
+	Cuando el NODE0 devuelve la respuesta, lo hace desde el svr_ep=21 y clt_ep=51
+	Se fija si hay sesion activa y cambia el svr_ep por ext_ep;
+	Si no hay, hace multicast DELETE SESSION 
+	Si hay sesion activa envia un mensaje al NODE3 {svr_ep,svr_nodeid,svr_pid, clt_ep, clt_nodeid, clt_pid}
+	que en este caso seria {20, 0, SSS, 51, 3, CCC}
+NODE3
+	El proxy receiver busca una sesion activa que involucre {20, 0, SSS, 51, 3, CCC}
+	hace el put2lcl()
+
+Supongamos que en NODE4 hay otro cliente con endpoint=51 hace un sendrec(20, msg)
+NODE4 
+	El cliente con endpoint=51 hace un sendrec(20, msg)
+	EL proxy sender de NODE4 hace dvk_get2rmt() y obtiene el mensaje del cliente con destino 20.
+	Se fija si hay sesiones activas con client(clt_ep, clt_nodeid, clt_pid) y server(svr_ep, svr_nodeid, server_pid)
+	si no hay sesiones 
+		Busca en la base de datos del agente el nodo en donde se encuentra el endpoint 20, supongamos NODE0
+		Pero NODE0 esta saturado asi que busca un nodo descargado y asigna el svr_nodeid=1, es decir NODE1 
+	Envia el mensaje al svr_nodeid
+NODE1 	
+	Cuando el mensaje llega a NODE1 se fija en las sesiones activas que involucren al svr_ep=20 
+	Si no hay sesiones activas
+		arranca el server en svr_ep=20 con ext_ep=20
+		crea la sesion 
+		hace multicast de la sesion 
+	luego hace un put2lcl(svr_ep)
+	Cuando el NODE1 devuelve la respuesta, lo hace desde el svr_ep=20 y clt_ep=51
+	Se fija si hay sesion activa y cambia el svr_ep por ext_ep;
+	Si no hay, hace multicast DELETE SESSION 
+	Si hay sesion activa envia un mensaje al NODE4 {svr_ep,svr_nodeid,svr_pid, clt_ep, clt_nodeid, clt_pid}
+	que en este caso seria {20, 1, SSS, 51, 4, CCC}
+NODE3
+	El proxy receiver busca una sesion activa que involucre {20, 1, SSS, 51, 4, CCC}
+	Sabe que esta sesion cambio el svr_nodeid=0 por server_nodeid=1
+	Entonces modifica el header para src_nodeid=0 
+	hace el put2lcl()
+ 
+
+
+		
+		
+			
+
+		
+			
+			
+			
+
+
+	
+      	
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+

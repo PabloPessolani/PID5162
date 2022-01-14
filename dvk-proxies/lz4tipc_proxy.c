@@ -310,7 +310,7 @@ int pr_process_message(void) {
 						raw_len = decompress_payload(&px_desc); 
 						if(raw_len < 0)
 							ERROR_EXIT(raw_len);
-						if( raw_len != px_desc.px_header->c_u.cu_vcopy.v_bytes){
+						if( raw_len != px_desc.px_header->c_vcopy.v_bytes){
 							fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(px_desc.px_header));
 							ERROR_EXIT(EDVSBADVALUE);
 						}
@@ -328,7 +328,7 @@ int pr_process_message(void) {
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &px_desc.px_header->c_u.cu_msg;
+				m_ptr = &px_desc.px_header->c_msg;
 				PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 				break;
@@ -685,10 +685,10 @@ int  ps_start_serving(void)
 					if(px_desc.px_header->c_dst	!= PM_PROC_NR ) {ret=3;break;}	
 					if(px_desc.px_header->c_snode	!= local_nodeid ) {ret=4;break;}	
 					if(px_desc.px_header->c_dnode	!= px_desc.px_header->c_snode ) {ret=5;break;}
-					m_ptr = &px_desc.px_header->c_u.cu_msg;
+					m_ptr = &px_desc.px_header->c_msg;
 					PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr))
-					if(px_desc.px_header->c_u.cu_msg.m_source != SYSTASK(local_nodeid)) {ret=6;break;}	
-					if((int) px_desc.px_header->c_u.cu_msg.M1_OPER != RMT_BIND) {ret=7;break;}	
+					if(px_desc.px_header->c_msg.m_source != SYSTASK(local_nodeid)) {ret=6;break;}	
+					if((int) px_desc.px_header->c_msg.M1_OPER != RMT_BIND) {ret=7;break;}	
 				}while(0);
 				if( ret == 0 ){
 					PXYDEBUG("SPROXY: reply for REMOTE CLIENT BINDING - Discard it ret=%d\n",ret);
@@ -699,7 +699,7 @@ int  ps_start_serving(void)
 				break;	
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &px_desc.px_header->c_u.cu_msg;
+				m_ptr = &px_desc.px_header->c_msg;
 				PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:

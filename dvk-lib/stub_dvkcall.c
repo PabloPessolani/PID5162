@@ -91,6 +91,8 @@ int errno;
 
 int dvk_fd;
 
+#define LIBDBG		1
+
 #include "stub_debug.h"
 #include "stub_dvkcall.h"
 

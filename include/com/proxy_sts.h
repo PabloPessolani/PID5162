@@ -26,14 +26,17 @@ enum mis_status {
 		MIS_CONNECTED	= (1<<MIS_BIT_CONNECTED),	/* The proxy is connected 			*/
 		MIS_NOTIFY		= (1<<MIS_BIT_NOTIFY),		/* A notify is pending 	 			*/
 		MIS_NEEDMIG		= (1<<MIS_BIT_NEEDMIGR), 	/* The proccess need to migrate		*/
+		
 		MIS_RMTBACKUP	= (1<<MIS_BIT_RMTBACKUP), 	/* The proccess is a remote process' backup	*/
 		MIS_GRPLEADER	= (1<<MIS_BIT_GRPLEADER), 	/* The proccess is the thread group leader 	*/	
 		MIS_KTHREAD		= (1<<MIS_BIT_KTHREAD), 	/* The proccess is a KERNEL thread 	*/	
 		MIS_REPLICATED	= (1<<MIS_BIT_REPLICATED), 	/* The ep is LOCAL but it is replicated on other nodes */	
+		
 		MIS_KILLED		= (1<<MIS_BIT_KILLED), 		/* The process has been killed 		*/
 		MIS_WOKENUP 	= (1<<MIS_BIT_WOKENUP), 	/* The process has been signaled 	*/
 		MIS_USERMODE 	= (1<<MIS_BIT_USERMODE), 	/* The process is running inside a local USERMODE VOS */
 		MIS_RMTINFO 	= (1<<MIS_BIT_RMTINFO), 	/* The process is waiting remote information */
+		
 		MIS_NOMIGRATE	= (1<<MIS_BIT_NOMIGRATE), 	/* Do not migrate this process */
 		MIS_ENQUEUED	= (1<<MIS_BIT_ENQUEUED), 	/* The process descriptor is enqueued in other' process queue */
 };

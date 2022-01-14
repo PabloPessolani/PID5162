@@ -34,6 +34,7 @@ int child_function(int child) {
    		fprintf(stderr, "CHILD child_nr %d:buffer posix_memalign\n", child_nr);
    		exit(1);
   	}
+	USRDEBUG("CHILD child %d: buffer=%p\n",child_nr, buffer);
 	
 	/*---------------- Fill with EDVSacters the DATA BUFFER ---------------*/
 	srandom( getpid());

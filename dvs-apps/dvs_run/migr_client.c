@@ -1,3 +1,6 @@
+
+#define  USRDBG 1
+
 #include "dvs_run.h"
 
 #define	 USE_WAIT4BIND	0
@@ -144,7 +147,6 @@ int  main ( int argc, char *argv[] )
 
 	/*---------------------- M3-IPC CLIENT LOOP ----------------------------  */
  	USRDEBUG("CLIENT: Starting loops\n");
-	t_start = dwalltime();
 	for( i = 0; i < loops; i++) {
 		
 		memset(buffer,'A',maxbuf-2);
@@ -158,12 +160,16 @@ int  main ( int argc, char *argv[] )
 		m_ptr->m1_i3  = 0;
 		m_ptr->m1_p1  = buffer;
 		USRDEBUG("CLIENT SEND:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
+		t_start = dwalltime();
 		ret = dvk_sendrec_T(svr_ep, (long) m_ptr, TIMEOUT_MOLCALL);
-		if( ret == EDVSTIMEDOUT 
-			|| ret == EDVSAGAIN
-			|| ret == EDVSINTR) continue;
+		printf("dvk_sendrec_T ret=%d\n",ret);
+		if(ret == EDVSTIMEDOUT 
+		|| ret == EDVSAGAIN
+		|| ret == EDVSINTR) continue;
 		if( ret < 0) ERROR_EXIT(ret);
-
+	   	t_stop  = dwalltime();
+		t_total = (t_stop-t_start);
+		printf("t_start=%.10f t_stop=%.10f t_total=%.10f\n",t_start, t_stop, t_total);
 		USRDEBUG("CLIENT RECEIVE:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
 		if( m_ptr->m_type < 0){
 		   	fprintf(stderr, "CLIENT: Server error (%d)\n", m_ptr->m_type);
@@ -179,18 +185,7 @@ int  main ( int argc, char *argv[] )
 			sleep(delay);
 		}
 	}
-   	t_stop  = dwalltime();
 
-	t_total = (t_stop-t_start);
-	total_bytes = loops*maxbuf;
-	loopbysec = (double)(loops)/t_total;
-	tput = loopbysec * (double)maxbuf;	
-	printf("t_start=%.2f t_stop=%.2f t_total=%.2f\n",t_start, t_stop, t_total);
-	printf("Requests message size=%d #transfers=%d loopbysec=%f\n", sizeof(message), loops, loopbysec);
-	printf("Message Transfer Throuput=%f [msg/s]\n", loopbysec*2);
-	printf("Data Transfer size=%d #transfers=%d loopbysec=%f\n", maxbuf, loops, loopbysec);
-	printf("Throuhput = %f [bytes/s]\n", tput);
-		
 	USRDEBUG("CLIENT END\n");
 }
 

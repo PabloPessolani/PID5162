@@ -18,16 +18,16 @@ cat /proc/dvs/DC0/procs >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 
 # le dice al DVK del NODE0 que el server esta por migrar
 startMigr=`date +%s%N`
-echo startMigr=$startMigr >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 cd /usr/src/dvs/dvs-apps/dvs_run
+chown root:root checkpoint_migr_server.dmtcp
 ./dvs_migrate -s 0 10 >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
-cat /proc/dvs/DC0/procs >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
-
+#cat /proc/dvs/DC0/procs >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 # se hace el restart del server en el entorno del DC0 que internamente le notifica de la migracion exitosa al DVK local
 # nsenter -p -t$DC0 
-stat --printf="SERVER checkpoint image file size=%s\n" checkpoint_migr_server.dmtcp >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 bash -c "/usr/local/bin/dmtcp_restart checkpoint_migr_server.dmtcp > /usr/src/dvs/dvs-apps/dvs_run/node0_test2_server.log &"
 endMigr=`date +%s%N`
+stat --printf="SERVER checkpoint image file size=%s\n" checkpoint_migr_server.dmtcp >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
+echo startMigr=$startMigr >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 echo endMigr=$endMigr >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 echo Migration time was `expr $endMigr - $startMigr` nanoseconds >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log
 cat /proc/dvs/DC0/procs >> /usr/src/dvs/dvs-apps/dvs_run/node0_test2.log

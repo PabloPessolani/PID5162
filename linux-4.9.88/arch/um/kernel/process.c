@@ -234,6 +234,8 @@ extern exitcall_t __uml_exitcall_begin, __uml_exitcall_end;
 void do_uml_exitcalls(void)
 {
 	exitcall_t *call;
+	
+	USRDEBUG("/n");
 
 	call = &__uml_exitcall_end;
 	while (--call >= &__uml_exitcall_begin)

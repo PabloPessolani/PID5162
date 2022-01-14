@@ -101,7 +101,7 @@ void flush_sending_list(struct proc *proc_ptr)
 				memcpy(&header, &xpp->p_rmtcmd, sizeof(proxy_hdr_t));
 				h_ptr = &header;
 				/* Send an ACKNOWLEDGE to the sending process with EDVSMIGRATE error */
-				error_lcl2rmt( xpp->p_rmtcmd.c_cmd | (1 << BIT_ACKNOWLEDGE), xpp, h_ptr, EDVSMIGRATE);
+				error_lcl2rmt( xpp->p_rmtcmd.c_cmd | (1 << BIT_ACKNOWLEDGE), xpp, proc_ptr, h_ptr, EDVSMIGRATE);
 			}else{
 				DVKDEBUG(GENERIC,"Ignore ACKs message from remote=%d\n", xpp->p_usr.p_endpoint);
 			}

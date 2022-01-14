@@ -25,6 +25,7 @@ long generic_ack_lcl2rmt(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, in
 	rmt_ptr->p_rmtcmd.c_dnode = rmt_ptr->p_usr.p_nodeid;	/* destination node		*/
 	rmt_ptr->p_rmtcmd.c_len   = 0;
 	rmt_ptr->p_rmtcmd.c_rcode = rcode;
+	rmt_ptr->p_rmtcmd.c_pid   = lcl_ptr->p_usr.p_lpid;
 
 	return(sproxy_enqueue(rmt_ptr));
 }
@@ -35,7 +36,7 @@ long generic_ack_lcl2rmt(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, in
 /* with an ACKNOWLEDGE with an error. 				*/
 /* The error header is obtained from the received header 	*/
 /*--------------------------------------------------------------*/
-long error_lcl2rmt( int ack, struct proc *rmt_ptr, proxy_hdr_t *h_ptr, int rcode)
+long error_lcl2rmt( int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, proxy_hdr_t *h_ptr, int rcode)
 {
 	DVKDEBUG(DBGPARAMS,"ack=%d rcode=%d\n", ack, rcode);
 
@@ -47,6 +48,7 @@ long error_lcl2rmt( int ack, struct proc *rmt_ptr, proxy_hdr_t *h_ptr, int rcode
 	rmt_ptr->p_rmtcmd.c_dnode = rmt_ptr->p_usr.p_nodeid;
 	rmt_ptr->p_rmtcmd.c_len   = 0;
 	rmt_ptr->p_rmtcmd.c_rcode = rcode;
+	rmt_ptr->p_rmtcmd.c_pid   = lcl_ptr->p_usr.p_lpid;
 
 	return(sproxy_enqueue(rmt_ptr));
 }
@@ -70,8 +72,9 @@ long copyin_rqst_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr)
 	rmt_ptr->p_rmtcmd.c_dst   = rmt_ptr->p_usr.p_nodeid;		/* Destination endpoint 	*/
 	rmt_ptr->p_rmtcmd.c_snode = atomic_read(&local_nodeid);		/* source node			*/
 	rmt_ptr->p_rmtcmd.c_dnode = rmt_ptr->p_usr.p_nodeid;		/* destination node		*/
-	rmt_ptr->p_rmtcmd.c_len   = rmt_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes;
+	rmt_ptr->p_rmtcmd.c_len   = rmt_ptr->p_rmtcmd.c_vcopy.v_bytes;
 	rmt_ptr->p_rmtcmd.c_rcode = OK;
+	rmt_ptr->p_rmtcmd.c_pid   = lcl_ptr->p_usr.p_lpid;
 	
 	c_ptr = &rmt_ptr->p_rmtcmd;	
 	DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
@@ -97,8 +100,9 @@ long copyout_data_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 	rmt_ptr->p_rmtcmd.c_dst   = rmt_ptr->p_usr.p_endpoint;		/* Destination endpoint 	*/
 	rmt_ptr->p_rmtcmd.c_snode = atomic_read(&local_nodeid);		/* source node			*/
 	rmt_ptr->p_rmtcmd.c_dnode = rmt_ptr->p_usr.p_nodeid;		/* destination node		*/
-	rmt_ptr->p_rmtcmd.c_len   = rmt_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes;
+	rmt_ptr->p_rmtcmd.c_len   = rmt_ptr->p_rmtcmd.c_vcopy.v_bytes;
 	rmt_ptr->p_rmtcmd.c_rcode = rcode;
+	rmt_ptr->p_rmtcmd.c_pid   = lcl_ptr->p_usr.p_lpid;
 
 	c_ptr = &rmt_ptr->p_rmtcmd;	
 	DVKDEBUG(DBGVCOPY, VCOPY_FORMAT,VCOPY_FIELDS(c_ptr) );
@@ -113,6 +117,35 @@ long copyout_data_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 /*	ACKNOWLEDGES FROM REMOTE NODE TO LOCAL NODE		*/
 /****************************************************************/
 /****************************************************************/
+
+/*--------------------------------------------------------------*/
+/*			sendrec_ack_rmt2lcl			*/
+/* proxy sends a SENDREC ACK to a local process		 	*/
+/*--------------------------------------------------------------*/
+asmlinkage long sendrec_ack_rmt2lcl(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
+{
+	DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d rcode=%d\n",
+		lcl_ptr->p_usr.p_dcid, rmt_ptr->p_usr.p_endpoint, 
+		lcl_ptr->p_usr.p_endpoint, rcode);
+
+	/* checks if the remote source does not have pending operations */
+	if( test_bit(BIT_SENDING, &rmt_ptr->p_usr.p_rts_flags))	ERROR_RETURN(EDVSPROCSTS);
+
+	/* verify if the local destination is waiting in RECEIVING state */
+	if(!test_bit(BIT_RECEIVING, &lcl_ptr->p_usr.p_rts_flags))  	ERROR_RETURN(EDVSACKDST);
+	
+	/* verify if the local ack destination is waiting the ack from the remote source */
+	if(lcl_ptr->p_usr.p_sendto != rmt_ptr->p_usr.p_endpoint) 	ERROR_RETURN(EDVSACKSRC);
+
+	clear_bit(BIT_RECEIVING, &lcl_ptr->p_usr.p_rts_flags);
+	lcl_ptr->p_usr.p_sendto = NONE;
+
+	/* Wakes up the local ack destinantion */
+	if( lcl_ptr->p_usr.p_rts_flags == 0)
+		READY_UP_RCODE(lcl_ptr, CMD_SNDREC_ACK, rcode);
+
+	return(OK);
+}
 
 /*--------------------------------------------------------------*/
 /*			send_ack_rmt2lcl			*/
@@ -150,7 +183,8 @@ asmlinkage long send_ack_rmt2lcl(struct proc *rmt_ptr, struct proc *lcl_ptr, int
 long generic_ack_rmt2lcl(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode)
 {
 	int ret;
-
+	proc_usr_t *p_ptr;
+	
 	DVKDEBUG(DBGPARAMS,"dcid=%d src_ep=%d dst_ep=%d ack=%d rcode=%d\n",
 		lcl_ptr->p_usr.p_dcid, rmt_ptr->p_usr.p_endpoint, 
 		lcl_ptr->p_usr.p_endpoint,ack, rcode);
@@ -162,7 +196,7 @@ long generic_ack_rmt2lcl(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, in
 		if( lcl_ptr->p_usr.p_rts_flags == PROC_RUNNING) {ret= EDVSPROCRUN; break;}
 
 		/*check that all envolved processes are on ONCOPY state */
-		if(!test_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags)){ret= EDVSPROCSTS; break;}
+		if(!test_bit(BIT_ONCOPY, &lcl_ptr->p_usr.p_rts_flags))  {ret= EDVSPROCSTS; break;}
 	    if(!test_bit(BIT_ONCOPY, &rmt_ptr->p_usr.p_rts_flags))  {ret= EDVSPROCSTS; break;}
 	}while(0);
 	if(ret == OK) {
@@ -171,6 +205,10 @@ long generic_ack_rmt2lcl(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, in
 			READY_UP_RCODE(lcl_ptr, ack, rcode);
 		return(ret);
 	} else{
+		p_ptr = &rmt_ptr->p_usr;
+		DVKDEBUG(INTERNAL, "REMOTE PROC " PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));
+		p_ptr = &lcl_ptr->p_usr;
+		DVKDEBUG(INTERNAL, "LOCAL  PROC " PROC_USR_FORMAT, PROC_USR_FIELDS(p_ptr));			
 		ERROR_RETURN(ret);
 	}
 }

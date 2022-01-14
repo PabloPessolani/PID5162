@@ -1355,9 +1355,9 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 		caller_ptr->p_message.m_source = caller_ptr->p_usr.p_endpoint;
 		m_ptr = &caller_ptr->p_message;
 		DVKDEBUG(DBGPARAMS, MSG1_FORMAT,MSG1_FIELDS(m_ptr));
-		memcpy(	&caller_ptr->p_rmtcmd.c_u.cu_msg,&caller_ptr->p_message, sizeof(message));
+		memcpy(	&caller_ptr->p_rmtcmd.c_msg,&caller_ptr->p_message, sizeof(message));
 		
-		m_ptr = &caller_ptr->p_rmtcmd.c_u.cu_msg;
+		m_ptr = &caller_ptr->p_rmtcmd.c_msg;
 		DVKDEBUG(GENERIC, MSG1_FORMAT, MSG1_FIELDS(m_ptr));		
 						
 //		set_bit(BIT_RECEIVING, &caller_ptr->p_usr.p_rts_flags);

@@ -36,11 +36,17 @@
 
 #define	NO_PROXIES		(-1)
 
-#define MAXBATCMD		(MAXCOPYBUF/sizeof(cmd_t))		
+#define MAXBATCMD		(MAXCOPYBUF/sizeof(cmd_t))	
+
+#ifndef _COM_PROC_USR_H
+#include "../include/com/proc_usr.h"
+#endif // 
+	
 typedef union {
 	cmd_t 	pay_cmd[MAXBATCMD];		/* Proxies commands (ONLY FOR MESSAGE)  */
 									/* can be used to transport multiple batch messages 			*/
 	char 	pay_data[MAXCOPYBUF];	/* buffer space to copy data	*/  
+	proc_usr_t 	pay_proc_usr;		/* process descriptor	*/  
 } proxy_payload_t;
 
 #define TIME_FORMAT "TIMESTAMP sec=%ld nsec=%ld\n"

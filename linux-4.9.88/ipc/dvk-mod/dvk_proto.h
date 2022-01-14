@@ -19,6 +19,7 @@ int kernel_warn2proc( dc_desc_t *dc_ptr, struct proc *caller_ptr, struct proc *w
 asmlinkage long send_rmt2lcl(proxy_hdr_t *usr_h_ptr, proxy_hdr_t *h_ptr, struct proc *src_ptr, struct proc *dst_ptr);
 asmlinkage long notify_rmt2lcl(proxy_hdr_t *usr_h_ptr, proxy_hdr_t *h_ptr, struct proc *src_ptr,struct proc *dst_ptr, int update_proc);
 asmlinkage long send_ack_rmt2lcl(struct proc *src_ptr,struct proc *dst_ptr, int rcode);
+asmlinkage long sendrec_ack_rmt2lcl(struct proc *src_ptr,struct proc *dst_ptr, int rcode);
 asmlinkage long copyout_data_rmt2lcl(struct proc *caller_ptr, struct proc *src_ptr,struct proc *dst_ptr, 
 		proxy_hdr_t *h_ptr, proxy_payload_t *usr_pay_ptr);
 asmlinkage long copyin_data_rmt2lcl(struct proc *caller_ptr, struct proc *src_ptr, struct proc *dst_ptr, 
@@ -40,7 +41,7 @@ long generic_ack_rmt2lcl(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, in
 
 long copyin_rqst_lcl2rmt(struct proc *dst_ptr, struct proc *lcl_ptr);	
 long copyout_data_lcl2rmt(struct proc *rmt_ptr, struct proc *lcl_ptr, int rcode);
-long error_lcl2rmt(int ack, struct proc *rmt_ptr, proxy_hdr_t *h_ptr,   int rcode);
+long error_lcl2rmt(int ack, struct proc *rmt_ptr, struct proc *lcl_ptr, proxy_hdr_t *h_ptr,   int rcode);
 
 long sproxy_enqueue(struct proc *proc_ptr);
 long kill_unbind(struct proc *dst_ptr, struct proc *src_ptr);

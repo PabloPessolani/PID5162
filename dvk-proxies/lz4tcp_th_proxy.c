@@ -293,7 +293,7 @@ int pr_process_message(void) {
 					raw_len = decompress_payload(&rdesc); 
 					if(raw_len < 0)
 						ERROR_EXIT(raw_len);
-					if( raw_len != rdesc.td_header->c_u.cu_vcopy.v_bytes){
+					if( raw_len != rdesc.td_header->c_vcopy.v_bytes){
 						fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(rdesc.td_header));
 						ERROR_EXIT(EDVSBADVALUE);
 					}
@@ -311,7 +311,7 @@ int pr_process_message(void) {
  		case CMD_SEND_MSG:
 		case CMD_SNDREC_MSG:
 		case CMD_REPLY_MSG:
-			m_ptr = &rdesc.td_header->c_u.cu_msg;
+			m_ptr = &rdesc.td_header->c_msg;
 			PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 			break;
 		default:
@@ -606,7 +606,7 @@ int  ps_start_serving(void)
 			case CMD_SNDREC_ACK: 		
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &sdesc.td_header->c_u.cu_msg;
+				m_ptr = &sdesc.td_header->c_msg;
 				PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:

@@ -1,7 +1,5 @@
 
 
-#define USRDBG		1
-
 #if USRDBG
  #define USRDEBUG(text, args ...) \
  do { \

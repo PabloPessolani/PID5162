@@ -15,6 +15,7 @@
 #define M4                 4
 #define M3_STRING         14
 #define MD5_SIZE		  16
+#define MC_STRING 			(M3_STRING-sizeof(int))
 
 #define MINIX_MSG	1	/* the payload is a MINIX message */
 
@@ -30,8 +31,11 @@ typedef struct {int m7i1, m7i2, m7i3, m7i4; char *m7p1, *m7p2;} mess_7;
 typedef struct {int m8i1, m8i2; char *m8p1, *m8p2, *m8p3, *m8p4;} mess_8;
 typedef struct {int m9i1, m9l1; struct timespec m9t1;} mess_9;
 typedef struct {int mAdst, mAnr, mAia[SLOTS_BY_MSG];} mess_A;
-typedef struct {long mBnr, mBmd5[MD5_SIZE];} mess_B;
-
+//typedef struct {long mBnr, mBmd5[MD5_SIZE];} mess_B; /////////////////////// ESTE ESTA MAL PORQUE HACE UN ARRAY DE long 
+typedef struct {long mBnr; char mBmd5[MD5_SIZE];} mess_B; 
+// UNA VEZ PUESTO TODO BIEN HAY QUE RECOMPILAR TODO - Modulo de kernel, librerias, proxies y programas 
+// al cambiar el TAMAÑO DE MENSAJE cambia tambien el tamaño del cmd_t usado en los proxies 
+typedef struct {int mCi1, mCi2, mCi3, mCi4;char mCca1[MC_STRING];} mess_C;
 
 typedef struct {
   int m_source;			/* who sent the message */
@@ -48,6 +52,7 @@ typedef struct {
 	mess_9 m_m9;
 	mess_A m_mA;
 	mess_B m_mB; 
+	mess_C m_mC; 
   } m_u;
 } message;
 
@@ -113,6 +118,12 @@ typedef struct {
 #define mB_nr  m_u.m_mB.mBnr
 #define mB_md5 m_u.m_mB.mBmd5
 
+#define mC_i1  m_u.m_mC.mCi1
+#define mC_i2  m_u.m_mC.mCi2
+#define mC_i3  m_u.m_mC.mCi3
+#define mC_i4  m_u.m_mC.mCi4
+#define mC_ca1 m_u.m_mC.mCca1
+
 #define MSG1_FORMAT "source=%d type=%d m1i1=%d m1i2=%d m1i3=%d m1p1=%p m1p2=%p m1p3=%p \n"
 #define MSG2_FORMAT "source=%d type=%d m2i1=%d m2i2=%d m2i3=%d m2l1=%ld m2l2=%ld m2p1=%p\n"
 #define MSG3_FORMAT "source=%d type=%d m3i1=%d m3i2=%d m3p1=%p m3ca1=[%s]\n"
@@ -124,6 +135,7 @@ typedef struct {
 #define MSG9_FORMAT "source=%d type=%d m9i1=%d m9l1=%ld m9t1.tv_sec=%ld m9t1.tv_nsec=%ld\n"
 #define MSGA_FORMAT "source=%d type=%d dest=%d mAnr=%d mAia[0]=%d mAia[1]=%d mAia[2]=%d mAia[3]=%d\n"
 #define MSGB_FORMAT "source=%d type=%d mBnr=%ld mBmd5=[%s]\n"
+#define MSGC_FORMAT "source=%d type=%d mCi1=%d mCi2=%d mCi3=%d mCi4=%d mCca1=[%s]\n"
 
 #define MSG1_FIELDS(p) 	p->m_source,p->m_type, p->m1_i1, p->m1_i2, p->m1_i3, p->m1_p1, p->m1_p2, p->m1_p3
 #define MSG2_FIELDS(p) 	p->m_source,p->m_type, p->m2_i1, p->m2_i2, p->m2_i3, p->m2_l1, p->m2_l2, p->m2_p1
@@ -136,5 +148,6 @@ typedef struct {
 #define MSG9_FIELDS(p) 	p->m_source,p->m_type, p->m9_i1, p->m9_l1, p->m9_t1.tv_sec, p->m9_t1.tv_nsec
 #define MSGA_FIELDS(p) 	p->m_source,p->m_type, p->mA_dst, p->mA_nr, p->mA_ia[0], p->mA_ia[1], p->mA_ia[2],p->mA_ia[3]
 #define MSGB_FIELDS(p)  p->m_source,p->m_type, ,p->mB_nr, p->mB_md5
+#define MSGC_FIELDS(p) 	p->m_source,p->m_type, p->mC_i1, p->mC_i2, p->mC_i3, p->mC_i4, p->mC_ca1
 
 #endif /* _COM_IPC_H */

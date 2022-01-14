@@ -186,7 +186,7 @@ send_replay: /* Return point for a migrated destination process */
 		}
 		WUNLOCK_PROC(dst_ptr); 
 
-		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_u.cu_msg, 
+		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_msg, 
 			m_ptr, sizeof(message) );
 			
 		INIT_LIST_HEAD(&caller_ptr->p_link);
@@ -722,7 +722,7 @@ sendrec_replay:
 		caller_ptr->p_rmtcmd.c_len  	= 0;
 		set_bit(MIS_BIT_NOMIGRATE, &srcdst_ptr->p_usr.p_misc_flags);
 		WUNLOCK_PROC(srcdst_ptr);
-		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_u.cu_msg, 
+		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_msg, 
 			m_ptr, sizeof(message) );
 		
 		INIT_LIST_HEAD(&caller_ptr->p_link);
@@ -1082,7 +1082,7 @@ notify_replay:
 		WUNLOCK_PROC(dst_ptr);
 		
 		// copy message from destination buffer to caller buffer 
-		memcpy(&caller_ptr->p_rmtcmd.c_u.cu_msg, 
+		memcpy(&caller_ptr->p_rmtcmd.c_msg, 
 			   &dst_ptr->p_message, 
 			   sizeof(message) );
 		
@@ -1493,13 +1493,12 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				caller_ptr->p_rmtcmd.c_len   = copylen;
 
 				/* subheader for the vcopy operation */
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src   = src_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst   = dst_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr  = caller_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = src_addr;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;	
-
+				caller_ptr->p_rmtcmd.c_vcopy.v_src   = src_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_dst   = dst_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_rqtr  = caller_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_saddr = src_addr;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_daddr = dst_addr;	
+				caller_ptr->p_rmtcmd.c_vcopy.v_bytes = copylen;	
 
 				cmd_ptr = &caller_ptr->p_rmtcmd;
 				DVKDEBUG(DBGCMD,"CMD_COPYIN_DATA " CMD_FORMAT, CMD_FIELDS(cmd_ptr));
@@ -1550,12 +1549,12 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 				caller_ptr->p_rmtcmd.c_len   = 0;
 
 				/* subheader for the vcopy operation */
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src =  src_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst =  dst_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr=  caller_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = src_addr;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;
+				caller_ptr->p_rmtcmd.c_vcopy.v_src =  src_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_dst =  dst_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_rqtr=  caller_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_saddr = src_addr;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_daddr = dst_addr;	
+				caller_ptr->p_rmtcmd.c_vcopy.v_bytes = copylen;
 
 				cmd_ptr = &caller_ptr->p_rmtcmd;
 				DVKDEBUG(DBGCMD,"CMD_COPYOUT_RQST " CMD_FORMAT, CMD_FIELDS(cmd_ptr));
@@ -1635,12 +1634,12 @@ asmlinkage long new_vcopy(int src_ep, char *src_addr, int dst_ep,char *dst_addr,
 					caller_ptr->p_rmtcmd.c_len   = 0;
 				}
 				/* subheader for the vcopy operation */
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_src =  src_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst =  dst_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr=  caller_ptr->p_usr.p_endpoint;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr = src_addr;		
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr = dst_addr;	
-				caller_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes = copylen;	
+				caller_ptr->p_rmtcmd.c_vcopy.v_src =  src_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_dst =  dst_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_rqtr=  caller_ptr->p_usr.p_endpoint;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_saddr = src_addr;		
+				caller_ptr->p_rmtcmd.c_vcopy.v_daddr = dst_addr;	
+				caller_ptr->p_rmtcmd.c_vcopy.v_bytes = copylen;	
 				ret = sproxy_enqueue(caller_ptr);
 				if(ret < 0) break;
 				sleep_proc3(caller_ptr, src_ptr, dst_ptr,TIMEOUT_MOLCALL);
@@ -2025,7 +2024,7 @@ reply_replay: /* Return point for a migrated destination process */
 		caller_ptr->p_rmtcmd.c_rcode  	= OK;
 		caller_ptr->p_rmtcmd.c_len  	= 0;
 		WUNLOCK_PROC(dst_ptr); 
-		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_u.cu_msg, 
+		COPY_FROM_USER_PROC(ret, (char*) &caller_ptr->p_rmtcmd.c_msg, 
 			m_ptr, sizeof(message) );
 			
 		INIT_LIST_HEAD(&caller_ptr->p_link);

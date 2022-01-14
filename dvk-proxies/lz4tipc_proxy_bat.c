@@ -296,7 +296,7 @@ int pr_process_message(void) {
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:
@@ -319,7 +319,7 @@ int pr_process_message(void) {
 					raw_len = decompress_payload(p_header, p_payload); 
 					if(raw_len < 0)	ERROR_RETURN(raw_len);
 					if(!TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) { // ONLY CMD_COPYIN_DATA AND  CMD_COPYOUT_DATA  
-						if( raw_len != p_header->c_u.cu_vcopy.v_bytes){
+						if( raw_len != p_header->c_vcopy.v_bytes){
 								fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(p_header));
 								ERROR_RETURN(EDVSBADVALUE);
 						}
@@ -386,12 +386,12 @@ int pr_process_message(void) {
 		p_pseudo->c_snd_seq             = 0;
 		p_pseudo->c_ack_seq             = 0;
 		p_pseudo->c_timestamp           =  p_header->c_timestamp;
-		p_pseudo->c_u.cu_msg.m_source 	= PM_PROC_NR;
-		p_pseudo->c_u.cu_msg.m_type 	= SYS_BINDPROC;
-		p_pseudo->c_u.cu_msg.M3_ENDPT 	= p_header->c_src;
-		p_pseudo->c_u.cu_msg.M3_NODEID 	= p_header->c_snode;
-		p_pseudo->c_u.cu_msg.M3_OPER 	= RMT_BIND;
-		sprintf(&p_pseudo->c_u.cu_msg.m3_ca1,"RClient%d", p_header->c_snode);
+		p_pseudo->c_msg.m_source 	= PM_PROC_NR;
+		p_pseudo->c_msg.m_type 	= SYS_BINDPROC;
+		p_pseudo->c_msg.M3_ENDPT 	= p_header->c_src;
+		p_pseudo->c_msg.M3_NODEID 	= p_header->c_snode;
+		p_pseudo->c_msg.M3_OPER 	= RMT_BIND;
+		sprintf(&p_pseudo->c_msg.m3_ca1,"RClient%d", p_header->c_snode);
 		
 		/* send PSEUDO message to local SYSTASK */	
 		ret = dvk_put2lcl(p_pseudo, p_payload);
@@ -854,7 +854,7 @@ int  ps_start_serving(void)
 				if ( (p_header->c_cmd  == CMD_SEND_MSG) 
 					||(p_header->c_cmd == CMD_SNDREC_MSG)
 					||(p_header->c_cmd == CMD_REPLY_MSG)){
-					m_ptr = &p_header->c_u.cu_msg;
+					m_ptr = &p_header->c_msg;
 					PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				}
 				// store original header into batched header 

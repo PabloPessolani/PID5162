@@ -3,11 +3,12 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
 		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
-		uml_test test_priv_info test_set_priv test_umbind
+		uml_test test_priv_info test_set_priv test_umbind client_server \
+		latency_client latency_server
 	
 INCLUDE = ..
-#LIBS = ../dvk-lib//stub_dvkcall.o
-LIBS = ../dvk-lib/libdvkipc.so
+LIBS = ../dvk-lib//stub_dvkcall.o
+#LIBS = ../dvk-lib/libdvkipc.so
 CFLAGS = -MMD -MP -ldl -lm -lrt -lnsl -pthread -rdynamic
 
 all: $(BINS)
@@ -86,8 +87,16 @@ test_lclvcopy3: test_lclvcopy3.c
 	
 uml_test: uml_test.c 
 	$(CC)  $(CFLAGS) -o uml_test uml_test.c  $(LIBS) -I$(INCLUDE)
+
+latency_client: latency_client.c 
+	$(CC)  $(CFLAGS) -o latency_client latency_client.c  $(LIBS) -I$(INCLUDE)
+
+latency_server: latency_server.c 
+	$(CC)  $(CFLAGS) -o latency_server latency_server.c  $(LIBS) -I$(INCLUDE)
 	
 clean:
 	rm -f $(BINS)
 
-
+client_server: client_server.c 
+	$(CC)  $(CFLAGS) -o client_server client_server.c  $(LIBS) -I$(INCLUDE)
+	

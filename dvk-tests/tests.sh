@@ -5,22 +5,6 @@ then
  exit 1 
 fi
 lcl=$1
-if [ $1 -eq 0 ]
-then
-let rmtA=1
-let rmtB=2
-fi
-if [ $1 -eq 1 ]
-then
-let rmtA=0
-let rmtB=2
-fi
-if [ $1 -eq 2 ]
-then
-let rmtA=0
-let rmtB=1
-fi
-echo "lcl=$lcl rmtA=$rmtA rmtB=$rmtB"
 dcid=$2
 echo "lcl_nodeid=$lcl dcid=$dcid" 
 read  -p "Read to initilize TAP devices. Enter para continuar... "
@@ -32,6 +16,7 @@ dmesg -c > /dev/null
 read  -p "Spread Enter para continuar... "
 mkdir /var/run/spread
 /usr/local/sbin/spread -c /etc/spread.conf > /dev/shm/spread.txt &
+read  -p "DVK module Enter para continuar... "
 cd /usr/src/dvs/dvk-mod
 mknod /dev/dvk c 33 0
 dmesg -c > /dev/shm/dmesg.txt
@@ -68,7 +53,6 @@ echo "image \"/usr/src/dvs/vos/images/debian$dcid.img\";"  	>> /dev/shm/DC$dcid.
 echo "};"          					>> DC$dcid.cfg
 /usr/src/dvs/dvs-apps/dc_init/dc_init /dev/shm/DC$dcid.cfg > /dev/shm/dc_init$dcid.out 2> /dev/shm/dc_init$dcid.err
 dmesg -c >> /dev/shm/dmesg.txt
-read  -p " TCP LZ4 BAT PROXY Enter para continuar... "
 # read  -p "TCP PROXY Enter para continuar... "
 #     PARA DESHABILITAR EL ALGORITMO DE NAGLE!! 
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency
@@ -80,17 +64,10 @@ echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 #echo 60 > /proc/sys/net/ipv4/tcp_keepalive_time
 #echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
 # echo 3  > /proc/sys/net/ipv4/tcp_keepalive_probes
+read  -p " MULTIPROXY Enter para continuar... "
 cd /usr/src/dvs/dvk-proxies
-#./tcp_proxy node$rmtA $rmtA >/dev/shm/node$rmtA.txt 2>/dev/shm/error$rmtA.txt &
-/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmtA -i $rmtA > /dev/shm/node$rmtA.txt 2> /dev/shm/error$rmtA.txt &	
-/usr/src/dvs/dvk-proxies/lz4tcp_proxy_bat -bBZP -n node$rmtB -i $rmtB > /dev/shm/node$rmtB.txt 2> /dev/shm/error$rmtB.txt &	
-#read  -p "TIPC LZ4 BAT PROXY Enter para continuar... "
-#tipc node set netid 4711
-#tipc_addr="1.1.10$lcl"
-#tipc node set addr $tipc_addr
-#tipc bearer enable media eth dev eth0 
-#read  -p "Enter para continuar... "
-#/usr/src/dvs/dvk-proxies/tipc_proxy_bat -bBZ -n node$rmtA -i $rmtA > /dev/shm/node$rmtA.txt 2> /dev/shm/error$rmtA.txt &	
+cat /usr/src/dvs/dvk-proxies/multi_proxy$lcl.cfg  
+/usr/src/dvs/dvk-proxies/multi_proxy  multi_proxy$lcl.cfg > /dev/shm/node$lcl.txt 2> /dev/shm/error$lcl.txt &	
 sleep 5
 netstat  -nat
 #tipc bearer list
@@ -100,11 +77,15 @@ read  -p "Enter para continuar... "
 cat /proc/dvs/nodes
 cat /proc/dvs/proxies/info
 cat /proc/dvs/proxies/procs
-read  -p "ADDNODE Enter para continuar... "
+read  -p "ADDNODE to DC$dcid Enter para continuar... "
 cd /usr/src/dvs/dvk-tests
 cat /proc/dvs/DC$dcid/info
-./test_add_node $dcid $rmtA
-./test_add_node $dcid $rmtB
+grep proxyid /usr/src/dvs/dvk-proxies/multi_proxy$lcl.cfg | while read line
+do 
+	proxyid=`echo $line | awk '{print $2;}' | sed -r 's/\;//g'`
+	echo test_add_node $dcid $proxyid
+	./test_add_node $dcid $proxyid
+done
 sleep 1
 cat /proc/dvs/nodes
 cat /proc/dvs/DC$dcid/info

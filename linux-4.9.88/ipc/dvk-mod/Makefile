@@ -34,8 +34,8 @@ clean:
 	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions 
 
 install:
-	echo moving dvk.ko
-	mv  dvk.ko  /usr/src/dvs/dvk-mod 
+	echo copying dvk.ko
+	cp  dvk.ko  /usr/src/dvs/dvk-mod 
 	
 depend .depend dep:
 	$(CC) $(EXTRA_CFLAGS) -M *.c > .depend

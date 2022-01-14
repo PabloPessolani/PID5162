@@ -1,0 +1,195 @@
+MULTINODE TCP PROXY
+
+===================================================================================================
+20211110:
+
+PASO 0: Volver los mensajes al tamaño correcto LISTO 
+		Habria que hacer un nuevo formato de cmd_t que contenga tanto mensaje como payload. LISTO 
+			si usa batch y un mensaje, no hay payload
+			si usa batch y mas de un mensaje, van el resto en el payload 
+			si usa mensaje y payload 
+				
+	1- Modificar el proxy para que inserte el PID en todo header saliente ====> LISTO
+	Probar con el proxy lz4tcp_proxy_bat (sin PID y sin Timestamp) que ambos campos se insertan automaticamente.
+	
+VERIFICACION DE PID:
+	NODE0:
+	 lz4tcp_proxy_bat.c:ps_start_serving:899:SPROXY: 751 cmd=0x1 dcid=0 src=0 dst=1 snode=0 dnode=1 rcode=0 len=0 PID=772
+	[  162.248907] DEBUG 772:check_caller:662: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=772 vpid=2 nodeid=0 name=loop_r-s_server 
+
+	NODE1:
+	 lz4tcp_proxy_bat.c:ps_start_serving:899:SPROXY: 719 cmd=0x2001 dcid=0 src=1 dst=0 snode=1 dnode=0 rcode=0 len=0 PID=738
+	[  146.437219] DEBUG 738:check_caller:662: nr=1 endp=1 dcid=0 flags=0 misc=20 lpid=738 vpid=2 nodeid=1 name=loop_sr_client 
+
+VERIFICACION DEL TIMESTAMP
+	NODE0:
+	lz4tcp_proxy_bat.c:pr_process_message:323:RPROXY: 752 c_timestamp=1636576677.196467743
+	[  162.233243] DEBUG 752:new_put2lcl:687: TIMESTAMP sec=1636576677 nsec=214764214
+
+	NODE1:
+	 lz4tcp_proxy_bat.c:pr_process_message:323:RPROXY: 720 c_timestamp=1636576677.194763668
+	[  143.438436] DEBUG 719:new_get2rmt:274: TIMESTAMP sec=1636576677 nsec=224472367
+
+===================================================================================================
+20211113:
+
+Last login: Sat Nov 13 09:18:56 2021 from 192.168.0.196
+root@node0:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN      <<<<<<<<<<<
+tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     	<<<<<<<<<<<
+tcp        0      0 0.0.0.0:16385           0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:873             0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:10000           0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:22        192.168.0.196:51995     ESTABLISHED
+tcp        0     52 192.168.0.100:22        192.168.0.196:52000     ESTABLISHED
+tcp        0      1 192.168.0.100:50034     192.168.0.101:3000      SYN_SENT   <<<<<<<<<<<
+tcp        0      1 192.168.0.100:40246     192.168.0.102:3000      SYN_SENT   <<<<<<<<<<<
+tcp        0      0 192.168.0.100:22        192.168.0.196:51996     ESTABLISHED
+tcp6       0      0 :::873                  :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN   
+
+ multi_proxy.c:ps_connect_to_remote:994:SPROXY(37851628): for node 192.168.0.101 running at  IP=192.168.0.101
+ multi_proxy.c:ps_connect_to_remote:976:SPROXY(2): for node node2 running at port=3000
+ multi_proxy.c:ps_connect_to_remote:986:SPROXY(2): remote host address 0: 192.168.0.102
+ multi_proxy.c:ps_connect_to_remote:994:SPROXY(37852820): for node 192.168.0.102 running at  IP=192.168.0.102
+ multi_proxy.c:ps_thread:1115:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ multi_proxy.c:ps_thread:1115:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ 
+ 
+ root@node0:/usr/src/dvs/dvk-proxies# cat /proc/dvs/proxies/info 
+Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+      1     1    785      784           node1 --------------------------------
+      2     1    787      786           node2 --------------------------------
+root@node0:/usr/src/dvs/dvk-proxies# cat /proc/dvs/proxies/procs 
+ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+ 1 send    785      0      1        0        0  27342  27342  27342 multi_proxy    
+ 1 recv    784      0      1        0        0  27342  27342  27342 multi_proxy    
+ 2 send    787      0      1        0        0  27342  27342  27342 multi_proxy    
+ 2 recv    786      0      1        0        0  27342  27342  27342 multi_proxy  
+ 
+ root@node0:/usr/src/dvs/dvk-proxies# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     6      -1        0        0 -------------------------------X node0    
+  
+===================================================================================================
+20211115:
+SIN HABILITAR NINGUNA FACILIDAD
+	proxy node1 {
+		proxyid		1;
+		proto		tcp; 
+		rport		3001;
+		sport		3000; 
+		compress	NO; 
+		batch		NO;
+		autobind	NO;		
+	};
+		TRANSFERENCIA DE MENSAJES OK! 
+		TRANSFERENCIA DE BLOQUES  OK!
+
+HABILITANDO COMPRESION Y AUTOBIND
+	proxy node1 {
+		proxyid		1;
+		proto		tcp; 
+		rport		3001;
+		sport		3000; 
+		compress	YES; 
+		batch		NO;
+		autobind	YES;		
+	};
+		TRANSFERENCIA DE MENSAJES OK! 
+		TRANSFERENCIA DE BLOQUES ERRRROOOOOOOOOOOOOOOOORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR! 
+
+===================================================================================================
+20211117:
+		SIN NADA 
+			MENSAJES 	OK
+			BLOQUES 	OK
+		COMPRESS SOLO
+			MENSAJES 	OK
+			BLOQUES 	OK
+		BATCH SOLO
+			MENSAJES 	OK
+			BLOQUES 	OK
+		BATCH+COMPRESION 
+			MENSAJES    OK	
+			BLOQUES		OK 
+		BATCH+COMPRESION+AUTOBIND 
+			MENSAJES    OK	
+			BLOQUES		OK 
+			AUTOBIND    FALTA PROBAR 
+			
+			
+===================================================================================================
+TODO
+		AGREGAR EN EL CONFIG 
+			SEQUENCE	YES/NO 
+		para activar o no el nro de secuencia.
+		
+
+		UTILIZAR LOS NUMEROS DE SECUENCIA PARA UNA MEJOR DETECCION DE LOS MENSAJES 
+		INCORPORAR MD5 A LA VERIFICACION DE BLOQUES DE DATOS 
+		
+		CAMBIAR NR_NODES y otras constantes generales por lo obtenido del dvs_usr_t 
+		
+		MODIFICAR EL PROXY lz4tcp_proxy_bat para que no use insercion de PID 
+		
+
+PASO 1: Utilizar un archivo de configuracion para pasarle los parametros
+
+PASO 2: Convertir lz4tcp_proxy_bat en lz4tcp_th_bat con THREADs en lugar de procesos.
+ACTUALMENTE el lz4tcp_proxy_bat inserta por si mismo el PID del emisor.
+Modificarlo para que sea una OPCION de COMPILACION
+Si lo hace el mismo kernel, se ahorra un dvk_getprocinfo() en el proxy.
+Habria que incluir como payload el descriptor de un proceso,  pero eso lo puede
+hacer el proxy
+
+# this is a comment 
+node node0 {
+	nodeid 		0;
+	baseport	3000;
+;
+
+proxy node1 {
+	proxyID		1;
+	sendPID		YES;
+	compression	YES; 
+	batch		YES;
+	autobind	YES;	
+};
+
+proxy node2 {
+	proxyID		2;
+	sendPID		NO;
+	compression	NO; 
+	batch		NO;
+	autobind	NO;	
+};
+
+
+Es un proxy cuyo RPROXY escucha en el puerto (BASE_PORT+nodeid)
+y cuando un nodo remoto se conecta por primera vez, crea una nueva sesion
+y un hilo para atenderlo.
+
+==============================================================================
+
+Adding node 1 to DC 0... 
+DEBUG 929:dvk_add_node:507: dcid=0 nodeid=1
+DEBUG 929:dvk_add_node:519: ioctl ret=-1 errno=325 <<<< EDVSNODEFREE (_SIGN 325)  /* NODE is FREE */
+ERROR: 929:dvk_add_node:521: rcode=-325
+DEBUG 929:dvk_add_node:524: ioctl ret=-325
+ERROR: 929:dvk_add_node:526: rcode=-325
+ERROR: test_add_node.c:main:30: rcode=-325
+DEBUG 930:dvk_open:110: Open dvk device file /dev/dvk
+Adding node 2 to DC 0... 
+DEBUG 930:dvk_add_node:507: dcid=0 nodeid=2
+DEBUG 930:dvk_add_node:519: ioctl ret=-1 errno=325
+ERROR: 930:dvk_add_node:521: rcode=-325
+DEBUG 930:dvk_add_node:524: ioctl ret=-325
+ERROR: 930:dvk_add_node:526: rcode=-325
+ERROR: test_add_node.c:main:30: rcode=-325
+
+

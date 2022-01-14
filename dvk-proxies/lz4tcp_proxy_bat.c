@@ -331,7 +331,7 @@ int pr_process_message(void) {
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:
@@ -354,7 +354,7 @@ int pr_process_message(void) {
 					raw_len = decompress_payload(p_header, p_payload); 
 					if(raw_len < 0)	ERROR_RETURN(raw_len);
 					if(!TEST_BIT(p_header->c_flags, FLAG_BATCH_BIT)) { // ONLY CMD_COPYIN_DATA AND  CMD_COPYOUT_DATA  
-						if( raw_len != p_header->c_u.cu_vcopy.v_bytes){
+						if( raw_len != p_header->c_vcopy.v_bytes){
 								fprintf(stderr,"raw_len=%d " VCOPY_FORMAT, raw_len, VCOPY_FIELDS(p_header));
 								ERROR_RETURN(EDVSBADVALUE);
 						}
@@ -375,86 +375,86 @@ int pr_process_message(void) {
 		rcode = dvk_put2lcl(p_header, p_payload);
 	}
 	
-	if( autobind_opt == AUTOBIND_NO) {
+	if( autobind_opt == AUTOBIND_YES) {
 		if( rcode < 0 ) ERROR_RETURN(rcode);
-	    return(OK);    
-	}
-		
-	/******************** REMOTE CLIENT BINDING ************************************/
-	ret = 0;
-	if( rcode < 0) {
-		/* rcode: the result of the las dvk_put2lcl 	*/
-		/* ret: the result of the following operations	*/
-		PXYDEBUG("RPROXY: REMOTE CLIENT BINDING rcode=%d\n", rcode);
-		
-		if( p_header->c_src <= NR_SYS_PROCS) {
-			PXYDEBUG("RPROXY: src=%d <= NR_SYS_PROCS\n", p_header->c_src);
-			ERROR_RETURN(rcode);
-		}
-		
-		switch(rcode){
-			case EDVSNONODE:	/* local node register other node for this endpoint   */
-			case EDVSENDPOINT:	/* local node registers other endpoint using the slot */
-				ret = dvk_unbind(p_header->c_dcid,p_header->c_src);
-				if(ret != 0) ERROR_RETURN(rcode);
-				// fall down 
-			case EDVSNOTBIND:	/* the slot is free */
-				ret = dvk_rmtbind(p_header->c_dcid,"rclient",p_header->c_src,p_header->c_snode);
-				if( ret != p_header->c_src) ERROR_RETURN(rcode);
-				break;
-			default:
+			
+		/******************** REMOTE CLIENT BINDING ************************************/
+		ret = 0;
+		if( rcode < 0) {
+			/* rcode: the result of the las dvk_put2lcl 	*/
+			/* ret: the result of the following operations	*/
+			PXYDEBUG("RPROXY: REMOTE CLIENT BINDING rcode=%d\n", rcode);
+			
+			if( p_header->c_src <= (NR_SYS_PROCS-NR_TASKS)) {
+				PXYDEBUG("RPROXY: src=%d <= (NR_SYS_PROCS-NR_TASKS)\n", p_header->c_src);
 				ERROR_RETURN(rcode);
-		} 
-
-#ifdef SYSTASK_BIND
-		/*Build a pseudo header */
-		p_pseudo->c_cmd 	            = CMD_SNDREC_MSG;
-		p_pseudo->c_dcid	            = p_header->c_dcid;
-		p_pseudo->c_src	 	            = PM_PROC_NR;
-		p_pseudo->c_dst 	            = SYSTASK(localnodeid);
-		p_pseudo->c_snode 	            = p_header->c_snode;
-		p_pseudo->c_dnode 	            = local_nodeid;
-		p_pseudo->c_rcode	            = 0;
-		p_pseudo->c_len		            = 0;
-		p_pseudo->c_flags	            = 0;
-		p_pseudo->c_batch_nr            = 0;
-		p_pseudo->c_snd_seq             = 0;
-		p_pseudo->c_ack_seq             = 0;
-		p_pseudo->c_timestamp           =  p_header->c_timestamp;
-		p_pseudo->c_u.cu_msg.m_source 	= PM_PROC_NR;
-		p_pseudo->c_u.cu_msg.m_type 	= SYS_BINDPROC;
-		p_pseudo->c_u.cu_msg.M3_ENDPT 	= p_header->c_src;
-		p_pseudo->c_u.cu_msg.M3_NODEID 	= p_header->c_snode;
-		p_pseudo->c_u.cu_msg.M3_OPER 	= RMT_BIND;
-		sprintf(&p_pseudo->c_u.cu_msg.m3_ca1,"RClient%d", p_header->c_snode);
-		
-		/* send PSEUDO message to local SYSTASK */	
-		ret = dvk_put2lcl(p_pseudo, p_payload);
-		if( ret < 0 ) {
-			ERROR_PRINT(ret);
-			ERROR_RETURN(rcode);
-		}
-	
-#endif // SYSTASK_BIND
-
-		/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
-		PXYDEBUG("RPROXY: put2lcl (autobind)\n");
-		if( compress_opt) {
-			if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
-				rcode = dvk_put2lcl(p_header, p_decomp_pl);
-			} else{
-				rcode = dvk_put2lcl(p_header, p_payload);
 			}
-		}else {
-			rcode = dvk_put2lcl(p_header, p_payload);			
-		}
+			
+			switch(rcode){
+				case EDVSNONODE:	/* local node register other node for this endpoint   */
+				case EDVSENDPOINT:	/* local node registers other endpoint using the slot */
+					ret = dvk_unbind(p_header->c_dcid,p_header->c_src);
+					if(ret != 0) ERROR_RETURN(rcode);
+					// fall down 
+				case EDVSNOTBIND:	/* the slot is free */
+					ret = dvk_rmtbind(p_header->c_dcid,"rclient",p_header->c_src,p_header->c_snode);
+					if( ret != p_header->c_src) ERROR_RETURN(rcode);
+					break;
+				default:
+					ERROR_RETURN(rcode);
+			} 
+
+	#ifdef SYSTASK_BIND
+			/*Build a pseudo header */
+			p_pseudo->c_cmd 	            = CMD_SNDREC_MSG;
+			p_pseudo->c_dcid	            = p_header->c_dcid;
+			p_pseudo->c_src	 	            = PM_PROC_NR;
+			p_pseudo->c_dst 	            = SYSTASK(localnodeid);
+			p_pseudo->c_snode 	            = p_header->c_snode;
+			p_pseudo->c_dnode 	            = local_nodeid;
+			p_pseudo->c_rcode	            = 0;
+			p_pseudo->c_len		            = 0;
+			p_pseudo->c_flags	            = 0;
+			p_pseudo->c_batch_nr            = 0;
+			p_pseudo->c_snd_seq             = 0;
+			p_pseudo->c_ack_seq             = 0;
+			p_pseudo->c_timestamp           =  p_header->c_timestamp;
+			p_pseudo->c_msg.m_source 	= PM_PROC_NR;
+			p_pseudo->c_msg.m_type 	= SYS_BINDPROC;
+			p_pseudo->c_msg.M3_ENDPT 	= p_header->c_src;
+			p_pseudo->c_msg.M3_NODEID 	= p_header->c_snode;
+			p_pseudo->c_msg.M3_OPER 	= RMT_BIND;
+			sprintf(&p_pseudo->c_msg.m3_ca1,"RClient%d", p_header->c_snode);
+			
+			/* send PSEUDO message to local SYSTASK */	
+			ret = dvk_put2lcl(p_pseudo, p_payload);
+			if( ret < 0 ) {
+				ERROR_PRINT(ret);
+				ERROR_RETURN(rcode);
+			}
 		
-		if( ret < 0) {
-			ERROR_PRINT(ret);
-			if( rcode < 0) ERROR_RETURN(rcode);
+	#endif // SYSTASK_BIND
+
+			/* PUT2LCL retry after REMOTE CLIENT AUTOMATIC  BINDING */
+			PXYDEBUG("RPROXY: put2lcl (autobind)\n");
+			if( compress_opt) {
+				if( TEST_BIT(p_header->c_flags, FLAG_LZ4_BIT)) {
+					rcode = dvk_put2lcl(p_header, p_decomp_pl);
+				} else{
+					rcode = dvk_put2lcl(p_header, p_payload);
+				}
+			}else {
+				rcode = dvk_put2lcl(p_header, p_payload);			
+			}
+			
+			if( ret < 0) {
+				ERROR_PRINT(ret);
+				if( rcode < 0) ERROR_RETURN(rcode);
+			}
+			rcode = 0;
 		}
-		rcode = 0;
 	}
+	
 	PXYDEBUG("RPROXY:" CMD_FORMAT, CMD_FIELDS(p_header));
 	PXYDEBUG("RPROXY:" CMD_XFORMAT, CMD_XFIELDS(p_header));
 	
@@ -911,13 +911,13 @@ int  ps_start_serving(void)
 			if(ret == 0){
 				p_header->c_src_pid = src_ptr->p_lpid;
 			}else {
-				p_header->c_src_pid = ret;
+				p_header->c_src_pid = PROC_NO_PID;
 			}
 			ret = dvk_getprocinfo(p_header->c_dcid, _ENDPOINT_P(p_header->c_dst), dst_ptr);
 			if(ret == 0){
 				p_header->c_dst_pid = dst_ptr->p_lpid;
 			}else {
-				p_header->c_dst_pid = ret;
+				p_header->c_dst_pid = PROC_NO_PID;
 			}
 			PXYDEBUG("SPROXY: %d "CMD_PIDFORMAT, spid, CMD_PIDFIELDS(p_header)); 
 		}
@@ -929,7 +929,7 @@ int  ps_start_serving(void)
 				if ( (p_header->c_cmd  == CMD_SEND_MSG) 
 					||(p_header->c_cmd == CMD_SNDREC_MSG)
 					||(p_header->c_cmd == CMD_REPLY_MSG)){
-					m_ptr = &p_header->c_u.cu_msg;
+					m_ptr = &p_header->c_msg;
 					PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				}			
 				// store original header into batched header 
@@ -1178,6 +1178,9 @@ void usage(void)
    	fprintf(stderr,"/t T: Add Timestamp on command\n");
    	fprintf(stderr,"/t n: Proxy name\n");
    	fprintf(stderr,"/t i: Proxy ID\n");
+   	fprintf(stderr,"sizeof(cmd_t)= %d\n", sizeof(cmd_t) );
+   	fprintf(stderr,"sizeof(message)= %d\n", sizeof(message) );
+	
 	exit(1);
 }
 

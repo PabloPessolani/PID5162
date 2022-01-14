@@ -1,14 +1,18 @@
+
+#define  USRDBG 1
 #include "dvs_run.h"
 
 #define	 USE_WAIT4BIND	0
 
 #define  MIGR_TEST 	16077022
 #define  MAXRETRIES	10
+#define  KBYTES 	1024
+#define  RANDOM_PATERN 1 
 
 int loops, maxbuf;
 message *m_ptr;
 char *buffer;
-int svr_ep, dcid;
+int svr_ep, dcid, mem_alloc;
 dvs_usr_t dvs, *dvs_ptr;
 proc_usr_t proc_usr, *proc_ptr;
 int old_nodeid;
@@ -24,9 +28,10 @@ double dwalltime()
 }
   
 void print_usage(char *argv0){
-fprintf(stderr,"Usage: %s <dcid> <svr_ep> \n", argv0 );
+fprintf(stderr,"Usage: %s <dcid> <svr_ep> [<mem_allocKB>]\n", argv0 );
 	fprintf(stderr,"<dcid>: DC ID (%d-%d)\n", 0, NR_DCS);
 	fprintf(stderr,"<svr_ep>: server endpoint (%d-%d)\n", (-NR_TASKS), (NR_PROCS-NR_TASKS));
+	fprintf(stderr,"<mem_allocKB>: allocate mem_alloc Kbytes dynamically\n");
 	ERROR_EXIT(EDVSINVAL);	
 }
    
@@ -51,7 +56,8 @@ int migr_restart(void)
 		old_nodeid = local_nodeid;
 		// try to BIND the process 
 		USRDEBUG("dcid=%d svr_ep=%d\n", dcid, svr_ep);
-		rcode = dvk_bind(dcid, svr_ep);
+		rcode = dvk_lclbind(dcid,getpid(),svr_ep);
+	//	rcode = dvk_bind(dcid, svr_ep);
 		USRDEBUG("rcode=%d\n", rcode);
 		if( rcode == EDVSSLOTUSED) {
 			proc_ptr = &proc_usr;
@@ -77,7 +83,8 @@ int migr_restart(void)
 		}
 	}else {
 		USRDEBUG("dcid=%d svr_ep=%d\n", dcid, svr_ep);
-		rcode = dvk_bind(dcid, svr_ep);
+		rcode = dvk_bind(dcid,svr_ep);
+		//rcode = dvk_bind(dcid, svr_ep);
 		USRDEBUG("rcode=%d\n", rcode);
 		if( rcode != svr_ep) ERROR_EXIT(rcode);
 	}
@@ -108,7 +115,7 @@ int  main ( int argc, char *argv[] )
 	proc_usr_t *proc_ptr;
 	
 	/*---------------- SERVER binding ---------------*/
-		
+	
 	ret = dvk_open();
 	USRDEBUG("dvk_open rcode=%d\n", rcode);
 	if (ret < 0)  ERROR_EXIT(ret);
@@ -132,12 +139,15 @@ int  main ( int argc, char *argv[] )
 		}
 	}while(rcode == EDVSTIMEDOUT);
 #else //  USE_WAIT4BIND
-    if( argc != 3) {
+    if( argc == 3) {
+		mem_alloc = 0;
+	} else if( argc == 4) {
+		mem_alloc = atoi(argv[3]);
+	} else {
 		print_usage(argv[0]);
 	}
-	dcid 	= atoi(argv[1]);
-	svr_ep= atoi(argv[2]);
-
+	dcid   = atoi(argv[1]);
+	svr_ep = atoi(argv[2]);
 	rcode = migr_restart(); 
 
 #endif //  USE_WAIT4BIND	
@@ -163,15 +173,21 @@ int  main ( int argc, char *argv[] )
 	}
 	
 	/*---------------- Allocate memory for DATA BUFFER ---------------*/
-	posix_memalign( (void**) &buffer, getpagesize(), MAXCOPYLEN);
+	if( mem_alloc == 0) mem_alloc = MAXCOPYLEN;
+	else				mem_alloc *= KBYTES;
+	
+	USRDEBUG("SERVER: mem_alloc=%d \n", mem_alloc)
+	posix_memalign( (void**) &buffer, getpagesize(), mem_alloc);
 	if (buffer== NULL) {
    		fprintf(stderr, "SERVER buffer posix_memalign errno=%d\n", errno);
    		exit(1);
   	}
+
+	USRDEBUG("SERVER buffer size %d bytes\n", mem_alloc);
 	
 	/*---------------- Fill with characters the DATA BUFFER ---------------*/
 	srandom( getpid());
-	for(i = 0; i < MAXCOPYLEN-2; i++){
+	for(i = 0; i < mem_alloc-2; i++){
 #define MAX_ALPHABET ('z' - '0')
 #if RANDOM_PATERN
 		buffer[i] =  (random()/(RAND_MAX/MAX_ALPHABET)) + '0';
@@ -179,7 +195,7 @@ int  main ( int argc, char *argv[] )
 		buffer[i] = ((i%25) + 'a');	
 #endif
 	}
-	buffer[MAXCOPYLEN-1] = 0;
+	buffer[mem_alloc-1] = 0;
 	buffer[30] = 0;	
 	USRDEBUG("SERVER buffer %s\n", buffer);
 		
@@ -208,8 +224,13 @@ int  main ( int argc, char *argv[] )
 		}
 		
 		////////////////////////// COPYING //////////////////////////////////
+		maxbuf = m_ptr->m1_i1;
+		buffer[maxbuf-1] = 0;
+		if( maxbuf > 30) buffer[30] = 0;
+		USRDEBUG("SERVER buffer BEFORE [%s]\n", buffer);
+
 		do {
-			ret = dvk_vcopy(svr_ep, buffer, m_ptr->m_source, m_ptr->m1_p1, m_ptr->m1_i1);
+			ret = dvk_vcopy(m_ptr->m_source, m_ptr->m1_p1, svr_ep, buffer, m_ptr->m1_i1);
 			if( ret == EDVSNOTBIND) {
 				rcode =  migr_restart();
 				continue;
@@ -237,7 +258,11 @@ int  main ( int argc, char *argv[] )
 			|| ret == EDVSAGAIN
 			|| ret == EDVSINTR) continue;
 		if( ret < 0) ERROR_EXIT(ret);
-			
+		
+		buffer[maxbuf-1] = 0;
+		if( maxbuf > 30) buffer[30] = 0;
+		USRDEBUG("SERVER buffer AFTER [%s]\n", buffer);
+		
 		loops++;		
 	}
 	

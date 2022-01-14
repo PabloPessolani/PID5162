@@ -45,3 +45,5 @@
 #include "macros.h"
 
 extern int	dvk_fd;
+
+#define USRDBG 1

@@ -1,18 +1,20 @@
 DVSD: Es un servidor distribuido que permite la gestion integral del cluster DVSD
 
-Es un servidor constituido por 2 hilos:
-	1- Servidor de requerimientos (UDP port 7000)
-		ofrece servicios a los clientes (gestores del DVS) para ejecutar comandos 
-		en todos o en algunos nodos del DVS.
-	2- Servidor de replicación (usa spread) : Es el responsable de realizar el multicast 
-		de las peticiones hacia los diferentes nodos y de recibir los resultados.
-		Ademas recibe las peticiones de otros DVSD con lo cual ejecuta en los 
-		comandos en forma local.
-	
-Ambos hilos comparten datos comunes y se encuentran sincronizados utilizando mutexes.
+El sistema esta constituido por 3 tipos de procesos:
+	1- MONITOR (WEBMIN) Permite ejecutar comandos en todos o en algunos nodos del DVS.
+	2- PROXY (usa spread) : Es el responsable de realizar el multicast 
+		de las peticiones recibidas desde el MONITOR hacia los diferentes nodos 
+		y de recibir los resultados.
+		El Proxy se comunica con NAMED PIPES con el MONITOR y por SPREAD con los AGENTS.
+		Para esto utiliza 2 hilos: El hilo principal que recibe los comandos desde 
+		el MONITOR y hace el multicast por spread, y el hilo receptor de spread que 
+		recibe los resultados y los devuelve al monitor por NAMED PIPE.
+	3- AGENT: se ejecutan en los nodos a controlar (usa spread). Recibe por spread el 
+		requerimiento y devuelve por spread el resultado.
+		
+Las peticiones (CMDIN) y las respuestas (CMDOUT) son atomicas en spread, 
+es decir solo hace falta un unico mensaje para contenerlos.
 
-Las peticiones (RQST) y las respuestas (RPLY) son atomicas, es decir solo hace falta un unico mensaje
-para contenerlos.
 
 Cada peticion RQST_XXXXXX tiene asociado:
 	- nodo peticionante

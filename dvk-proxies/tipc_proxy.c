@@ -159,7 +159,7 @@ int pr_process_message(void) {
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:
@@ -472,7 +472,7 @@ int  ps_start_serving(void)
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:

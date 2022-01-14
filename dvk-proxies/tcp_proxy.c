@@ -156,7 +156,7 @@ int pr_process_message(void) {
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("RPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:
@@ -202,12 +202,12 @@ int pr_process_message(void) {
   	p_pseudo->c_snd_seq = 0;
   	p_pseudo->c_ack_seq = 0;
 	p_pseudo->c_timestamp=  p_header->c_timestamp;
-		p_pseudo->c_u.cu_msg.m_source 	= PM_PROC_NR;
-		p_pseudo->c_u.cu_msg.m_type 	= SYS_BINDPROC;
-		p_pseudo->c_u.cu_msg.M3_ENDPT 	= p_header->c_src;
-		p_pseudo->c_u.cu_msg.M3_NODEID 	= p_header->c_snode;
-		p_pseudo->c_u.cu_msg.M3_OPER 	= RMT_BIND;
-		sprintf(&p_pseudo->c_u.cu_msg.m3_ca1,"RClient%d", p_header->c_snode);
+		p_pseudo->c_msg.m_source 	= PM_PROC_NR;
+		p_pseudo->c_msg.m_type 	= SYS_BINDPROC;
+		p_pseudo->c_msg.M3_ENDPT 	= p_header->c_src;
+		p_pseudo->c_msg.M3_NODEID 	= p_header->c_snode;
+		p_pseudo->c_msg.M3_OPER 	= RMT_BIND;
+		sprintf(&p_pseudo->c_msg.m3_ca1,"RClient%d", p_header->c_snode);
 		
 	/* send PSEUDO message to local SYSTASK */	
 	ret = dvk_put2lcl(p_pseudo, p_payload);
@@ -472,7 +472,7 @@ int  ps_start_serving(void)
 			case CMD_SEND_MSG:
 			case CMD_SNDREC_MSG:
 			case CMD_REPLY_MSG:
-				m_ptr = &p_header->c_u.cu_msg;
+				m_ptr = &p_header->c_msg;
 				PXYDEBUG("SPROXY: " MSG1_FORMAT,  MSG1_FIELDS(m_ptr));
 				break;
 			case CMD_COPYIN_DATA:

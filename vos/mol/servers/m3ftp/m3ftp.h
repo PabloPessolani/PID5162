@@ -35,11 +35,15 @@
 #include <sched.h>
 #define cpumask_t cpu_set_t
 
+#include "../../../../include/com/com.h"
 #include "../../../../include/com/dvs_config.h"
 #include "../../include/sys_config.h"
 #include "../../../../include/com/config.h"
 #include "../../../../include/com/const.h"
 #include "../../include/const.h"
+
+#include "../../../../include/com/kipc.h"
+
 #include "../../../../include/com/types.h"
 #include "../../include/types.h"
 #include "../../include/type.h"

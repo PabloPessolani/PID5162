@@ -81,12 +81,12 @@ void init_proc_desc(struct proc *proc_ptr, int dcid, int index)
 	proc_ptr->p_rmtcmd.c_len	= 0;
 	proc_ptr->p_rmtcmd.c_rcode	= OK;
 
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_src	= NONE;
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_dst	= NONE;
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr	= NONE;
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_saddr	= NULL;
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_daddr	= NULL;
-	proc_ptr->p_rmtcmd.c_u.cu_vcopy.v_bytes	= 0;
+	proc_ptr->p_rmtcmd.c_vcopy.v_src	= NONE;
+	proc_ptr->p_rmtcmd.c_vcopy.v_dst	= NONE;
+	proc_ptr->p_rmtcmd.c_vcopy.v_rqtr	= NONE;
+	proc_ptr->p_rmtcmd.c_vcopy.v_saddr	= NULL;
+	proc_ptr->p_rmtcmd.c_vcopy.v_daddr	= NULL;
+	proc_ptr->p_rmtcmd.c_vcopy.v_bytes	= 0;
 
 	proc_ptr->p_usr.p_lclsent		= 0;			/* counter of LOCAL sent messages	*/
 	proc_ptr->p_usr.p_rmtsent		= 0;			/* counter of REMOTE sent messages	*/
@@ -178,7 +178,7 @@ DVKDEBUG(INTERNAL,"RPROXY search for process of all DCs waiting an action from a
 			/* A local process has sent a COPY CMD to a remote process and waiting for the acknowledge but the node dead */
 			do {
 				if( test_bit(BIT_ONCOPY, &tmp_ptr->p_usr.p_rts_flags)) {
-					if(tmp_ptr->p_usr.p_endpoint == tmp_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr) {
+					if(tmp_ptr->p_usr.p_endpoint == tmp_ptr->p_rmtcmd.c_vcopy.v_rqtr) {
 						if( nodeid == tmp_ptr->p_rmtcmd.c_dnode) {
 							pu_ptr = &tmp_ptr->p_usr;
 							DVKDEBUG(DBGPROC,"Clean oncopy " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
@@ -518,7 +518,7 @@ DVKDEBUG(INTERNAL,"Wakeup SENDER with error ep=%d  pid=%d\n",src_ptr->p_usr.p_en
 				case CMD_COPYRMT_RQST:
 					if(test_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags)){
 						/* Only the requester of a VCOPY CMD must be waked up */
-						if( src_ptr->p_usr.p_endpoint == src_ptr->p_rmtcmd.c_u.cu_vcopy.v_rqtr) 
+						if( src_ptr->p_usr.p_endpoint == src_ptr->p_rmtcmd.c_vcopy.v_rqtr) 
 							clear_bit(BIT_ONCOPY, &src_ptr->p_usr.p_rts_flags);
 					}
 					break;

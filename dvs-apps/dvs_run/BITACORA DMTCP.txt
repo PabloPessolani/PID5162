@@ -237,5 +237,43 @@ DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
  0  11    11   753/2      1    8 2020    10 27342 27342 27342 migr_client   
 
  
+================================================================================================
+ESCENARIO3:
+#	BEFORE:		NODE0: Client
+#				NODE1: Server
+#				NODE2: Void
+#	AFTER:		NODE0: Client
+#				NODE1: Void 
+#				NODE2: Server
+
+	Una vez ejecutado en NODE1 el script node1_test3.sh La migracion hacia NODE2 del server termina correctamente.
+	
+	EN EL NODE0 FINALIZA 
+			root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10    -1/-1     2 1000 1000 27342 27342 27342 27342 migr_server    
+		 0  11    11 28443/17     0    8 2020    10 27342 27342 27342 migr_client    <<<<<<<<<<<2020  
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/stats 
+		DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+		 0  10    10    -1/-1     2        0        0        0        0 migr_server    
+		 0  11    11 28443/17     0        0       12        0        0 migr_client     
+		root@node0:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10    -1/-1     2 1000 1000 27342 27342 27342 27342 migr_server    
+		 0  11    11 28443/17     0    8 2020    10 27342 27342 27342 migr_client
+		 
+		LUEGO EL CLIENT TERMINA (hay veces que no deja log nod0_test3_client.log 
+		
+	EL NODE1 FINALIZA 
+		root@node1:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10 28481/28481  2 1000   30 27342 27342 27342 27342 migr_server    
+		 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client   
+
+	EL NODE2 FINALIZA 
+		root@node2:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs 
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  10    10 28245/-1     2    8    0 31438 27342 27342 27342 DMTCP:migr_serv
+		 0  11    11    -1/-1     0 1000    0 27342 27342 27342 27342 migr_client  	
  
  
