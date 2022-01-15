@@ -22,6 +22,7 @@ server_t *select_server(client_t *clt_ptr,
 /*----------------------------------------------*/
 /*----------------------------------------------*/
 /*----------------------------------------------*/
+
 /*===========================================================================*
  *				   clt_Rproxy 				    					 *
  *===========================================================================*/
@@ -264,19 +265,18 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 			// Search for an Active Session 
 			if( (sess_ptr->se_clt_nodeid == hdr_ptr->c_snode)
 			&&  (sess_ptr->se_lbclt_ep	 == hdr_ptr->c_dst)
-	//		&&  (sess_ptr->se_clt_PID	 == hdr_ptr->c_src_pid)
-	//		&&  (sess_ptr->se_svr_PID	 == hdr_ptr->c_dst_pid)
 			&&  (lb.lb_nodeid			 == hdr_ptr->c_dnode)){
 				// ACTIVE SESSION FOUND 
 				svr_ptr = &server_tab[sess_ptr->se_svr_nodeid];
 				MTX_LOCK(svr_ptr->svr_mutex);
 				// the CLIENT PID must be the same 
-				if(sess_ptr->se_clt_PID != hdr_ptr->c_src_pid) {
-					USRDEBUG("CLIENT_RPROXY(%s): Expired Session Found se_clt_PID=%d c_src_pid=%d\n", 
-						clt_ptr->clt_name, sess_ptr->se_clt_PID, hdr_ptr->c_src_pid);
+				if(sess_ptr->se_clt_PID != hdr_ptr->c_pid) {
+					USRDEBUG("CLIENT_RPROXY(%s): Expired Session Found se_clt_PID=%d c_pid=%d\n", 
+						clt_ptr->clt_name, sess_ptr->se_clt_PID, hdr_ptr->c_pid);
 					// Create a new Session 	
 					if( svc_ptr->svc_bind != PROG_BIND ){
-						sprintf(sess_ptr->se_sshpass,	
+#ifdef USE_SSHPASS								
+						sprintf(sess_ptr->se_rmtcmd,	
 							"sshpass -p \'root\' ssh root@%s "
 							"-o UserKnownHostsFile=/dev/null "
 							"-o StrictHostKeyChecking=no "
@@ -287,9 +287,26 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 							svr_ptr->svr_name,								
 							svr_ptr->svr_name							
 						);
-						USRDEBUG("CLIENT_RPROXY(%s): se_sshpass=%s\n", 		
-								clt_ptr->clt_name, sess_ptr->se_sshpass);
-						rcode = system(sess_ptr->se_sshpass);		
+						rcode = system(sess_ptr->se_rmtcmd);	
+						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
+								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
+						if(rcode < 0){
+							ERROR_PRINT(rcode);
+							ERROR_PRINT(-errno);				
+						}
+#else // USE_SSHPASS								
+						sprintf(sess_ptr->se_rmtcmd,	
+							" kill -9 %d >> /tmp/%s.out 2>> /tmp/%s.err",
+							sess_ptr->se_svr_PID,
+							svr_ptr->svr_name,								
+							svr_ptr->svr_name							
+						);
+						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
+								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
+						rcode = unicast_cmd(svr_ptr->svr_nodeid, 
+											svr_ptr->svr_name, sess_ptr->se_rmtcmd);
+						if( rcode < 0) ERROR_PRINT(rcode);					
+#endif // USE_SSHPASS								
 					}
 					// Delete Session 
 					sess_ptr->se_clt_nodeid = LB_INVALID;
@@ -375,7 +392,7 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 	sess_ptr->se_dcid 		= hdr_ptr->c_dcid;
 	sess_ptr->se_clt_nodeid	= hdr_ptr->c_snode;
 	sess_ptr->se_clt_ep		= hdr_ptr->c_src;
-	sess_ptr->se_clt_PID	= hdr_ptr->c_src_pid;
+	sess_ptr->se_clt_PID	= hdr_ptr->c_pid;
 	
 	sess_ptr->se_lbclt_ep	= hdr_ptr->c_dst;
 	sess_ptr->se_lbsvr_ep	= hdr_ptr->c_src; 	// could be different
@@ -431,11 +448,12 @@ server_t *select_server(client_t *clt_ptr,
 						// sshpass [-ffilename|-dnum|-ppassword|-e] [options] command arguments
 						// run_server.sh <dcid> <svr_ep> <clt_node> <clt_ep>"
 						// sshpass -p 'root' ssh root@node1 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR "bash -c \"
-						sprintf(sess_ptr->se_sshpass, "sshpass -p \'root\' ssh root@%s "
+#ifdef USE_SSHPASS						
+						sprintf(sess_ptr->se_rmtcmd, "sshpass -p \'root\' ssh root@%s "
 													  "-o UserKnownHostsFile=/dev/null "
 													  "-o StrictHostKeyChecking=no "
 													  "-o LogLevel=ERROR "
-													  " %s %d %d %d %d > /tmp/%s.out 2> /tmp/%s.err",
+													  " %s %d %d %d %d >> /tmp/%s.out 2>> /tmp/%s.err",
 									svr_ptr->svr_name,				  
 									svc_ptr->svc_prog, 								
 									svc_ptr->svc_dcid, 
@@ -445,13 +463,33 @@ server_t *select_server(client_t *clt_ptr,
 									svr_ptr->svr_name,				  
 									svr_ptr->svr_name				  
 									);
-						USRDEBUG("CLIENT_RPROXY(%s): se_sshpass=%s\n", 		
-								clt_ptr->clt_name, sess_ptr->se_sshpass);
-						rcode = system(sess_ptr->se_sshpass);
-						if( rcode != 0) {
+						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
+								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
+						rcode = system(sess_ptr->se_rmtcmd);
+						if(rcode < 0){
 							CLR_BIT(svr_ptr->svr_bm_svc, new_ep);
 							ERROR_PRINT(rcode);
+							ERROR_PRINT(-errno);				
 						}
+#else //  USE_SSHPASS	
+						sprintf(sess_ptr->se_rmtcmd, "%s %d %d %d %d >> /tmp/%s.out 2>> /tmp/%s.err", 
+									svc_ptr->svc_prog, 								
+									svc_ptr->svc_dcid, 
+									new_ep,
+									lb.lb_nodeid, 
+									hdr_ptr->c_src,
+									svr_ptr->svr_name,				  
+									svr_ptr->svr_name				  
+									);
+						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
+								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
+						rcode = unicast_cmd(svr_ptr->svr_nodeid, 
+											svr_ptr->svr_name, sess_ptr->se_rmtcmd);			
+						if( rcode < 0) {
+							CLR_BIT(svr_ptr->svr_bm_svc, new_ep);
+							ERROR_PRINT(rcode);
+						}	
+#endif  //  USE_SSHPASS										
 					}
 					break;
 				}

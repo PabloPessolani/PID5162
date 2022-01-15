@@ -578,6 +578,24 @@ int lbm_network(lb_t* lb_ptr)
 }
 
 /*===========================================================================*
+*				unicast_cmd								     *
+* Unicast a command to a node 
+*===========================================================================*/
+int  unicast_cmd(int agent_id, char *agent_name, char *cmd)
+{
+	int rcode;
+	lb_t *lb_ptr;
+	char priv_name[MAX_MEMBER_NAME];
+	
+	lb_ptr = &lb; 
+	sprintf(priv_name,"#LBA.%02d#%s",agent_id, agent_name);
+	USRDEBUG("priv_name=%s\n", priv_name);		  
+	rcode = SP_multicast(lb_ptr->lb_mbox, FIFO_MESS, priv_name,
+					MT_RUN_COMMAND , strlen(cmd)+1, cmd);
+	return(rcode);
+}
+
+/*===========================================================================*
 *				mcast_thresholds				     *
 * Multilcast the thresholds to new agent
 *===========================================================================*/

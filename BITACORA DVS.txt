@@ -4699,6 +4699,18 @@ Oct 31 20:04:45 node0 kernel: [ 1378.652663] do_exit: local_nodeid:0
 DURANTE JULIO Y AGOSTO: Para LOAD BALANCER se tuvieron que modificar los codigos 
 del modulo DVK para lo referente a proxies y acknowledges. Habia errores no detectados.
 
+
+TODO: Se puede probar migrar a una nueva version de kernel 
+En DEBIAN esta este paquete 
+	Package linux-headers-5.10.0-10-686
+Se deberia instalar un DEBIAN Pristino
+	Modificar el kernel 
+	Instalar el DVK y probar
+	Instalalar las herramientas requeridas.
+ La última versión es Debian 11.2, también conocida (actualmente) como «estable» (stable) o por su nombre en clave «Stretch».	
+ 
+	
+
 ULTIMO_LOG
 ==============================================================================================================
 ==============================================================================================================

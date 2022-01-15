@@ -140,7 +140,7 @@ typedef struct {
     int				se_svr_nodeid;
 	int				se_svr_ep;
 	int				se_svr_PID;	
-	char 			*se_sshpass;
+	char 			*se_rmtcmd;
 	service_t		*se_service;
 	
 } sess_entry_t;
@@ -200,10 +200,8 @@ typedef struct lbpx_desc_s lbpx_desc_t;
 
 #define CMD_TSFORMAT 		"c_timestamp=%lld.%.9ld\n" 
 #define CMD_TSFIELDS(p) 	(long long) p->c_timestamp.tv_sec, p->c_timestamp.tv_nsec
-#define c_src_pid c_snd_seq		// rename the field 
-#define c_dst_pid c_ack_seq		// rename the field 
-#define CMD_PIDFORMAT 		"c_flags=0x%lX c_src_pid=%ld c_dst_pid=%ld\n" 
-#define CMD_PIDFIELDS(p) 	p->c_flags, p->c_src_pid, p->c_dst_pid
+#define CMD_PIDFORMAT 		"c_flags=0x%lX c_pid=%ld\n" 
+#define CMD_PIDFIELDS(p) 	p->c_flags, p->c_pid
 
 typedef struct {
 	char *svr_name;				// server name from configuration file 
@@ -326,6 +324,7 @@ void *clt_Sproxy(void *arg);
 void *lb_monitor(void *arg);
 
 int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,	sess_entry_t *sess_ptr);
+int  unicast_cmd(int agent_id, char *agent_name, char *cmd);
 
 
 

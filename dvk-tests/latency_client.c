@@ -48,7 +48,15 @@ int run_client(int server_ep, int client_ep, int loops, int cpu_secs)
 		
 		USRDEBUG("CLIENT SEND MSG AT: %.2f \n",t_partial_i);
 		t_partial_i= dwalltime();
-		ret = dvk_sendrec(server_ep, (long) m_ptr);
+		ret = dvk_sendrec_T(server_ep, (long) m_ptr , WAIT_30SECS);
+		if( ret < 0) {
+			if( ret == EDVSTIMEDOUT){
+				ERROR_PRINT(ret);
+				continue;
+			}else{
+				ERROR_EXIT(ret);
+			}
+		}	
 		t_partial_f= dwalltime();
 		USRDEBUG("CLIENT RECEIVE server MSG AT: %.2f \n",t_partial_f);
 		USRDEBUG("CLIENT RECEIVE REPLY msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));

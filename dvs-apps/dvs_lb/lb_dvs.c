@@ -68,8 +68,8 @@ int main (int argc, char *argv[] )
 			sess_ptr->se_svr_ep		= LB_INVALID;
 			sess_ptr->se_svr_PID	= LB_INVALID;
 			sess_ptr->se_service	= NULL; 
-			sess_ptr->se_sshpass    = malloc(sizeof(MAXCMDLEN));
-			if(sess_ptr->se_sshpass == NULL) ERROR_EXIT(errno);
+			sess_ptr->se_rmtcmd    = malloc(sizeof(MAXCMDLEN));
+			if(sess_ptr->se_rmtcmd == NULL) ERROR_EXIT(errno);
 			sess_ptr++;
 		}
     }
@@ -194,6 +194,11 @@ int main (int argc, char *argv[] )
     rcode = pthread_create( &lb.lb_thread, NULL, lb_monitor, (void * restrict)lb.lb_nodeid);
     if( rcode) ERROR_EXIT(rcode);
 
+#ifdef ONLY4TESTING
+	sleep(10);
+	rcode = unicast_cmd(1, "node1", "ls -l ");
+	if( rcode != 0) ERROR_PRINT(rcode);
+#endif // ONLY4TESTING
 
     // JOIN LB monitor
     rcode = pthread_join(lb.lb_thread, NULL);	
@@ -216,7 +221,6 @@ int main (int argc, char *argv[] )
 		rcode = pthread_join(svr_ptr->svr_spx.lbp_thread, NULL);
         USRDEBUG("Server[%d] proxies exiting..\n",i);
 	}
-
 	stop_compression();
  
 	return(OK);				

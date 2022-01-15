@@ -3750,6 +3750,98 @@ TODO:	Modificar el tests.sh como test_lb.sh
 TODO:	Hacer las copias de las VMs NODE1 => NODE2
 		Y de CLIENT11 => {CLIENT12, CLIENT13, CLIENT14} 
 	
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:3002      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.137.100:3011    0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.137.100:3012    0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.137.100:3013    0.0.0.0:*               LISTEN     
+tcp        0      1 192.168.0.100:55092     192.168.0.101:3000      SYN_SENT   
+tcp        0      1 192.168.137.100:45380   192.168.137.111:3000    SYN_SENT   
+tcp        0      1 192.168.0.100:44378     192.168.0.102:3000      SYN_SENT   
+tcp        0      1 192.168.137.100:48466   192.168.137.112:3000    SYN_SENT   
+tcp        0      1 192.168.137.100:55036   192.168.137.113:3000    SYN_SENT   
+	
+===================================================================================
+20220115:
+		Se creo un script test_lb.sh para arrancar en los 3 tipos de nodos
+		que segun el nombre realiza la inicializacion correspondiente
+		- Load Balancer
+		- Server
+		- Client
+		Tambien se hicieron dos scripts run_latency.sh y run_m3ftpd.sh para que 
+		sean invocados desde sshpass, pero esto producen un fallo en NODE1
+		En NODE0 da el siguiente error /tmp/node1.err 
+			ssh: connect to host node1 port 22: Connection refused
+	
+Se implemento unicast_cmd para enviar un comando remoto al agente del server 
+		via spread 
+
+PROBLEMAS:
+	Supongamos que se arranca un cliente, se arranca automaticamente el server y es atendido por el server
+	una vez finalizado el cliente, el server permanece vivo.
+	Si arranca nuevamente el cliente con los mismos endpoints en la sesion no coincide el clt_PID
+	entonces, antes de arrancar un nuevo server, hay que matar al existente.
+
+EL AGENTE RECIBE 	
+ 647:lb_agent.c:lba_reg_msg:393:MT_RUN_COMMAND= kill -s SIGKILL -1 >> /tmp/node1.out 2>> /tmp/node1.err
+	RESUELTO, El problema es que el LB no usaba el campo c_pid del header y el PID del server estaba mal  
+	EL PROBLEMA ESTA EN MULTIPROXY QUE ESTA PONIENDO NROS DE SECUENCIA EN LUGAR DE LOS PIDS
+
+Cuando se reitera el mismo comando con los mismos endpoints, deberia matar al server existente y crear uno nuevo
+EL LB ENVIA AL AGENTE EL COMANDO CORRECTO 
+ 675:lb_cltpxy.c:clt_Rproxy_2server:275:CLIENT_RPROXY(client11): Expired Session Found se_clt_PID=626 c_pid=627
+ 675:lb_cltpxy.c:clt_Rproxy_2server:305:CLIENT_RPROXY(client11): se_rmtcmd= kill -s SIGKILL 641 >> /tmp/node1.out 2>> /tmp/node1.err
+EN EL SERVER 
+	root       641     1  0 19:15 pts/0    00:00:00 ./latency_server 0 10
+EN EL AGENTE
+	632:lb_agent.c:lba_reg_msg:393:MT_RUN_COMMAND= kill -s SIGKILL 641 >> /tmp/node1.out 2>> /tmp/node1.err
+	sh: 1: kill: invalid signal number or name: SIGKILL
+
+RESUELTO
+	root@node1:/usr/src/dvs/dvk-tests# ps -ef | grep latency
+	root       652     1  0 19:48 pts/0    00:00:00 ./latency_server 0 10 <<<<<<<<<<<  652
+	root       655   597  0 19:48 pts/0    00:00:00 grep latency
+	root@node1:/usr/src/dvs/dvk-tests# ps -ef | grep latency
+	root       662     1  0 19:49 pts/0    00:00:00 ./latency_server 0 10 <<<<<<<<<<< 662
+	root       665   597  0 19:49 pts/0    00:00:00 grep latency
+
+
+PROBLEMA:
+		Cuando se arranca el comando remoto, el LB le envia al proxy del SERVER el primer SENDREC 
+		Como todavia no fue arrancado y bindeado, este puede que lo rechace 
+			- verificar que no vuelve ningun codigo de error
+			- como hacer para que el paquete del SENDREC no se envie al SERVER hasta tanto este bindeado ??
+		ADEMAS EL KILL TAMBIEN RETRASA entonces el primer mensaje que se envia desde el LB al PROXY 
+			Lo atiende el SERVER VIEJO 
+			root@node1:/usr/src/dvs/dvk-tests# ps -ef | grep latency
+			root       706     1  0 19:51 pts/0    00:00:00 ./latency_server 0 10
+			Los mensajes siguientes los atiende el SERVER NUEVO 
+			root@node1:/usr/src/dvs/dvk-tests# ps -ef | grep latency
+			root       729     1  0 19:52 pts/0    00:00:00 ./latency_server 0 10
+
+			ES POR ESO QUE EL CLIENTE NO EXPERIMENTA LATENCIA EN EL PRIMER MENSAJE
+			PERO SI EN EL SEGUNDO Y LUEGO EL RESTO FUNCIONAN BIEN 
+			root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 4
+			Time total elapsed in loop 0: 0.0040431023 
+			ERROR: 639:dvk_sendrec_T:948: rcode=-61
+			ERROR: 639:dvk_sendrec_T:957: rcode=-61
+			ERROR: latency_client.c:run_client:54: rcode=-61
+			Time total elapsed in loop 2: 0.0027468204 
+			Time total elapsed in loop 3: 0.0092267990 
+			*********************************************************************
+			Total average latency in 4 loops: 0.0040041804 [s] 
+			Message throughput in 4 loops: 499.48 [msg/s]
+			*********************************************************************		
+			
+			
+TODO:	Cambiar para que el agente utilice 
+			- fork y exec para ejecutar el comando remoto
+			- kill en lugar de system(KILL)
+	
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
