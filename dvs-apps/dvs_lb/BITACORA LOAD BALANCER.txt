@@ -3777,7 +3777,7 @@ tcp        0      1 192.168.137.100:55036   192.168.137.113:3000    SYN_SENT
 		En NODE0 da el siguiente error /tmp/node1.err 
 			ssh: connect to host node1 port 22: Connection refused
 	
-Se implemento unicast_cmd para enviar un comando remoto al agente del server 
+Se implemento ucast_cmd para enviar un comando remoto al agente del server 
 		via spread 
 
 PROBLEMAS:
@@ -3809,6 +3809,215 @@ RESUELTO
 	root       662     1  0 19:49 pts/0    00:00:00 ./latency_server 0 10 <<<<<<<<<<< 662
 	root       665   597  0 19:49 pts/0    00:00:00 grep latency
 
+===================================================================================
+20220117:
+		Se creo startup script que arranca el test_lb 
+		
+		Se creo el archivo /etc/init.d/dvs 
+				#! /bin/bash
+				### BEGIN INIT INFO
+				# Provides:       dvs 
+				# Required-Start:    \$local_fs \$syslog
+				# Required-Stop:     \$local_fs \$syslog
+				# Default-Start:     2 3 4 5
+				# Default-Stop:      0 1 6
+				# Short-Description: starts dvs
+				# Description:       starts dvs using start-stop-daemon
+				### END INIT INFO
+
+				# put your script here
+				/usr/src/dvs/dvk-tests/test_lb.sh   
+				exit 0
+				
+				chmod 755 /etc/init.d/dvs 
+				update-rc.d dvs defaults
+
+		RESULTADO EN NODE0 /var/log/syslog
+		syslog:Jan 17 12:24:49 node0 systemd[1]: Starting LSB: starts dvs...
+		syslog:Jan 17 12:24:49 node0 dvs[396]: eth0=xx
+		syslog:Jan 17 12:24:50 node0 dvs[396]: node_name=node0 svr=0 clt=node0 dcid=0 lb=0 base_port=3000
+		syslog:Jan 17 12:24:50 node0 dvs[396]: eth1=xx
+		syslog:Jan 17 12:24:51 node0 dvs[396]: Running Load Balancer in Background
+		syslog:Jan 17 12:24:52 node0 kernel: [    8.219436] Hello, DVS! dbglvl=FFFFFFFF dvs.d_dbglvl=FFFFFFFF
+		syslog:Jan 17 12:24:52 node0 dvs[396]: dvk                   167936  0
+		syslog:Jan 17 12:24:52 node0 dvs[396]: root       662   413  0 12:24 ?        00:00:00 ./lb_dvs lb_dvs.cfg
+		syslog:Jan 17 12:24:52 node0 dvs[396]: root       664   413  0 12:24 ?        00:00:00 grep lb_dvs
+		syslog:Jan 17 12:24:52 node0 systemd[1]: Started LSB: starts dvs.
+
+		RESULTADO EN NODE1 
+		Jan 17 12:36:05 node1 kernel: [    7.351314] Hello, DVS! dbglvl=FFFFFFFF dvs.d_dbglvl=FFFFFFFF
+		Jan 17 12:36:05 node1 dvs[305]: dvk                   167936  0
+		Jan 17 12:36:05 node1 dvs[305]: partition 5
+		Jan 17 12:36:05 node1 dvs[305]: Initializing DVS. Local node ID 1...
+		Jan 17 12:36:05 node1 dvs[305]: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		Jan 17 12:36:05 node1 dvs[305]: d_max_copybuf=65536 d_max_copylen=1048576
+		Jan 17 12:36:05 node1 dvs[305]: d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+		Jan 17 12:36:05 node1 dvs[305]: Get DVS info
+		Jan 17 12:36:05 node1 dvs[305]: local node ID 1...
+		Jan 17 12:36:05 node1 dvs[305]: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		Jan 17 12:36:05 node1 dvs[305]: d_max_copybuf=65536 d_max_copylen=1048576
+		Jan 17 12:36:05 node1 dvs[305]: d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512
+		Jan 17 12:36:10 node1 dvs[305]: Active Internet connections (servers and established)
+		Jan 17 12:36:10 node1 dvs[305]: Proto Recv-Q Send-Q Local Address           Foreign Address         State
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 0.0.0.0:16385           0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 0.0.0.0:4803            0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 0.0.0.0:873             0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 0.0.0.0:10000           0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 192.168.0.101:3000      0.0.0.0:*               LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 192.168.0.101:22        192.168.0.196:55236     ESTABLISHED
+		Jan 17 12:36:10 node1 dvs[305]: tcp        0      0 192.168.0.101:41488     192.168.0.100:3001      ESTABLISHED
+		Jan 17 12:36:10 node1 dvs[305]: tcp6       0      0 :::873                  :::*                    LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp6       0      0 :::80                   :::*                    LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: tcp6       0      0 :::22                   :::*                    LISTEN
+		Jan 17 12:36:10 node1 dvs[305]: ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		Jan 17 12:36:10 node1 dvs[305]:  0     6       0        0        0 -------------------------------- node0
+		Jan 17 12:36:10 node1 dvs[305]:  1     6      -1        0        0 -------------------------------X node1
+		Jan 17 12:36:10 node1 dvs[305]: Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210
+		Jan 17 12:36:10 node1 dvs[305]:       0     3    587      586           node0 -------------------------------X
+		Jan 17 12:36:10 node1 dvs[305]: ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+		Jan 17 12:36:10 node1 dvs[305]:  0 send    587      8      3        0        0  31438  27342  27342 multi_proxy
+		Jan 17 12:36:10 node1 dvs[305]:  0 recv    586      0      1        0        0  27342  27342  27342 multi_proxy
+		Jan 17 12:36:10 node1 dvs[305]: dcid=0
+		Jan 17 12:36:10 node1 dvs[305]: flags=0
+		Jan 17 12:36:10 node1 dvs[305]: nr_procs=221
+		Jan 17 12:36:10 node1 dvs[305]: nr_tasks=34
+		Jan 17 12:36:10 node1 dvs[305]: nr_sysprocs=64
+		Jan 17 12:36:10 node1 dvs[305]: nr_nodes=32
+		Jan 17 12:36:10 node1 dvs[305]: dc_nodes=2
+		Jan 17 12:36:10 node1 dvs[305]: dc_pid=582
+		Jan 17 12:36:10 node1 dvs[305]: warn2proc=27342
+		Jan 17 12:36:10 node1 dvs[305]: warnmsg=-1
+		Jan 17 12:36:10 node1 dvs[305]: dc_name=DC0
+		Jan 17 12:36:10 node1 dvs[305]: nodes 33222222222211111111110000000000
+		Jan 17 12:36:10 node1 dvs[305]:       10987654321098765432109876543210
+		Jan 17 12:36:10 node1 dvs[305]:       ------------------------------X-
+		Jan 17 12:36:10 node1 dvs[305]: cpumask=1
+		Jan 17 12:36:10 node1 dvs[305]: Adding node 0 to DC 0...
+		Jan 17 12:36:11 node1 dvs[305]: ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		Jan 17 12:36:11 node1 dvs[305]:  0     E       0        0        0 -------------------------------X node0
+		Jan 17 12:36:11 node1 dvs[305]:  1     6      -1        0        0 -------------------------------X node1
+		Jan 17 12:36:11 node1 dvs[305]: dcid=0
+		Jan 17 12:36:11 node1 dvs[305]: flags=0
+		Jan 17 12:36:11 node1 dvs[305]: nr_procs=221
+		Jan 17 12:36:11 node1 dvs[305]: nr_tasks=34
+		Jan 17 12:36:11 node1 dvs[305]: nr_sysprocs=64
+		Jan 17 12:36:11 node1 dvs[305]: nr_nodes=32
+		Jan 17 12:36:11 node1 dvs[305]: dc_nodes=3
+		Jan 17 12:36:11 node1 dvs[305]: dc_pid=582
+		Jan 17 12:36:11 node1 dvs[305]: warn2proc=27342
+		Jan 17 12:36:11 node1 dvs[305]: warnmsg=-1
+		Jan 17 12:36:11 node1 dvs[305]: dc_name=DC0
+		Jan 17 12:36:11 node1 dvs[305]: nodes 33222222222211111111110000000000
+		Jan 17 12:36:11 node1 dvs[305]:       10987654321098765432109876543210
+		Jan 17 12:36:11 node1 dvs[305]:       ------------------------------XX
+		Jan 17 12:36:11 node1 dvs[305]: cpumask=1
+		Jan 17 12:36:11 node1 dvs[305]: DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		Jan 17 12:36:11 node1 dvs[305]: run # . /dev/shm/DC0.sh
+		Jan 17 12:36:11 node1 dvs[305]: Running lb_agent on server node1
+		Jan 17 12:36:11 node1 systemd[1]: Started LSB: starts dvs.
+
+		RESULTADO EN CLIENT11 
+		root@client11:~# grep dvs /var/log/syslog
+		Jan 17 12:40:28 client11 kernel: [    7.327284] Hello, DVS! dbglvl=FFFFFFFF dvs.d_dbglvl=FFFFFFFF
+		Jan 17 12:40:28 client11 dvs[346]: dvk                   167936  0
+		Jan 17 12:40:28 client11 dvs[346]: partition 5
+		Jan 17 12:40:28 client11 dvs[346]: Initializing DVS. Local node ID 11...
+		Jan 17 12:40:28 client11 dvs[346]: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		Jan 17 12:40:28 client11 dvs[346]: d_max_copybuf=65536 d_max_copylen=1048576
+		Jan 17 12:40:28 client11 dvs[346]: d_dbglvl=FFFFFF version=5 flags=0 sizeof(proc)=0
+		Jan 17 12:40:28 client11 dvs[346]: Get DVS info
+		Jan 17 12:40:28 client11 dvs[346]: local node ID 11...
+		Jan 17 12:40:28 client11 dvs[346]: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64
+		Jan 17 12:40:28 client11 dvs[346]: d_max_copybuf=65536 d_max_copylen=1048576
+		Jan 17 12:40:28 client11 dvs[346]: d_dbglvl=FFFFFF version=5 flags=101 sizeof(proc)=512
+		Jan 17 12:40:33 client11 dvs[346]: Active Internet connections (servers and established)
+		Jan 17 12:40:33 client11 dvs[346]: Proto Recv-Q Send-Q Local Address           Foreign Address         State
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 0.0.0.0:16385           0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 0.0.0.0:4803            0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 0.0.0.0:873             0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 0.0.0.0:10000           0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 192.168.137.111:3000    0.0.0.0:*               LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp        0      0 192.168.137.111:43266   192.168.137.100:3011    ESTABLISHED
+		Jan 17 12:40:33 client11 dvs[346]: tcp6       0      0 :::873                  :::*                    LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp6       0      0 :::80                   :::*                    LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: tcp6       0      0 :::22                   :::*                    LISTEN
+		Jan 17 12:40:33 client11 dvs[346]: ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		Jan 17 12:40:33 client11 dvs[346]:  0     6       0        0        0 -------------------------------- client0
+		Jan 17 12:40:33 client11 dvs[346]: 11     6      -1        0        0 -------------------------------X node11
+		Jan 17 12:40:33 client11 dvs[346]: Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210
+		Jan 17 12:40:33 client11 dvs[346]:       0     3    597      596         client0 -------------------------------X
+		Jan 17 12:40:33 client11 dvs[346]: ID Type -lpid- -flag- -misc- -pxsent- -pxrcvd- -getf- -sendt -wmig- name
+		Jan 17 12:40:33 client11 dvs[346]:  0 send    597      8      3        0        0  31438  27342  27342 multi_proxy
+		Jan 17 12:40:33 client11 dvs[346]:  0 recv    596      0      1        0        0  27342  27342  27342 multi_proxy
+		Jan 17 12:40:33 client11 dvs[346]: dcid=0
+		Jan 17 12:40:33 client11 dvs[346]: flags=0
+		Jan 17 12:40:33 client11 dvs[346]: nr_procs=221
+		Jan 17 12:40:33 client11 dvs[346]: nr_tasks=34
+		Jan 17 12:40:33 client11 dvs[346]: nr_sysprocs=64
+		Jan 17 12:40:33 client11 dvs[346]: nr_nodes=32
+		Jan 17 12:40:33 client11 dvs[346]: dc_nodes=800
+		Jan 17 12:40:33 client11 dvs[346]: dc_pid=592
+		Jan 17 12:40:33 client11 dvs[346]: warn2proc=27342
+		Jan 17 12:40:33 client11 dvs[346]: warnmsg=-1
+		Jan 17 12:40:33 client11 dvs[346]: dc_name=DC0
+		Jan 17 12:40:33 client11 dvs[346]: nodes 33222222222211111111110000000000
+		Jan 17 12:40:33 client11 dvs[346]:       10987654321098765432109876543210
+		Jan 17 12:40:33 client11 dvs[346]:       --------------------X-----------
+		Jan 17 12:40:33 client11 dvs[346]: cpumask=1
+		Jan 17 12:40:33 client11 dvs[346]: Adding node 0 to DC 0...
+		Jan 17 12:40:34 client11 dvs[346]: ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+		Jan 17 12:40:34 client11 dvs[346]:  0     6       0        0        0 -------------------------------X client0
+		Jan 17 12:40:34 client11 dvs[346]: 11     6      -1        0        0 -------------------------------X node11
+		Jan 17 12:40:34 client11 dvs[346]: dcid=0
+		Jan 17 12:40:34 client11 dvs[346]: flags=0
+		Jan 17 12:40:34 client11 dvs[346]: nr_procs=221
+		Jan 17 12:40:34 client11 dvs[346]: nr_tasks=34
+		Jan 17 12:40:34 client11 dvs[346]: nr_sysprocs=64
+		Jan 17 12:40:34 client11 dvs[346]: nr_nodes=32
+		Jan 17 12:40:34 client11 dvs[346]: dc_nodes=801
+		Jan 17 12:40:34 client11 dvs[346]: dc_pid=592
+		Jan 17 12:40:34 client11 dvs[346]: warn2proc=27342
+		Jan 17 12:40:34 client11 dvs[346]: warnmsg=-1
+		Jan 17 12:40:34 client11 dvs[346]: dc_name=DC0
+		Jan 17 12:40:34 client11 dvs[346]: nodes 33222222222211111111110000000000
+		Jan 17 12:40:34 client11 dvs[346]:       10987654321098765432109876543210
+		Jan 17 12:40:34 client11 dvs[346]:       --------------------X----------X
+		Jan 17 12:40:34 client11 dvs[346]: cpumask=1
+		Jan 17 12:40:34 client11 dvs[346]: DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		Jan 17 12:40:34 client11 dvs[346]: run # . /dev/shm/DC0.sh
+		Jan 17 12:40:34 client11 systemd[1]: Started LSB: starts dvs.
+		
+		HASTA QUE NO ESTE ARRANCADA LA INTERFACE CORRESPONDIENTE NO DEBERIA ARRANCAR NI SPREAD, LB, AGENT 
+		
+
+PROBLEMA: MULTIPROXY 
+			Al enviar el CLIENT el 1er mensaje al LB, este se lo pasa al SERVER 
+			como todavia no se arranco el programa server ni hizo el bind, entonces 
+			da -310 EDVSNOTBIND 	(_SIGN 310)  /* The process has not BINDed */
+			Luego, no le envia el resultado al LB y este al CLIENT
+			
+		 multi_proxy.c:pr_receive_header:224:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
+		 multi_proxy.c:pr_receive_header:227:RPROXY(0): cmd=0x3 dcid=0 src=50 dst=10 snode=0 dnode=1 rcode=0 len=0 PID=647
+		 multi_proxy.c:pr_receive_header:229:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+		 multi_proxy.c:pr_process_message:258:RPROXY(0):cmd=0x3 dcid=0 src=50 dst=10 snode=0 dnode=1 rcode=0 len=0 PID=647
+		 multi_proxy.c:pr_process_message:260:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+		 multi_proxy.c:pr_process_message:262:RPROXY(0): 622 c_timestamp=1642385962.420001185
+		 multi_proxy.c:pr_process_message:264:RPROXY(0): 622 c_flags=0x0 c_src_pid=0 c_dst_pid=0
+		 multi_proxy.c:pr_process_message:277:RPROXY(0): source=50 type=10 m1i1=0 m1i2=0 m1i3=3 m1p1=0x4 m1p2=(nil) m1p3=(nil) 
+		 multi_proxy.c:pr_process_message:329:RPROXY(0): put2lcl
+		 multi_proxy.c:pr_start_serving:523:RPROXY(0): Message processing failure [-310]
+		 multi_proxy.c:pr_process_message:252:RPROXY(0): About to receive header
+		 multi_proxy.c:pr_receive_header:218:RPROXY(0): socket=5
+		 multi_proxy.c:ps_start_serving:909:SPROXY(0): Sending HELLO 
+		 multi_proxy.c:ps_send_remote:831:SPROXY(0):cmd=0x0 dcid=0 src=0 dst=0 snode=0 dnode=0 rcode=0 len=0 PID=0
+		 multi_proxy.c:ps_send_remote:832:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+		 multi_proxy.c:ps_send_header:707:SPROXY(0): send header=120 
+		 multi_proxy.c:ps_send_header:710:SPROXY(0):cmd=0x0 dcid=0 src=0 dst=0 snode=0 dnode=0 rcode=0 len=0 PID=0
+		 multi_proxy.c:ps_send_header:711:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+		 multi_proxy.c:ps_send_header:732:SPROXY(0): socket=6 sent header=120 	
+
 
 PROBLEMA:
 		Cuando se arranca el comando remoto, el LB le envia al proxy del SERVER el primer SENDREC 
@@ -3837,10 +4046,40 @@ PROBLEMA:
 			Message throughput in 4 loops: 499.48 [msg/s]
 			*********************************************************************		
 			
-			
+	SOLUCION 1: Que el thread del SERVER_SENDER no envie el mensaje al CLIENT 
+				hasta que el AGENT no le avise mediante un mensaje spread 
+				El problema es que el AGENT no sabe ni el endpoint ni el DCID
+				como para hacer un wait4bind
+				Hay que modificar el mensaje de tal forma de que envie un mensaje minix 
+				en el que indica MT_RUN_COMMAND y a continuacion va el comando 
+				En los campos del mensaje minix, va el endpoint y DCID y el comando WAIT4BIND 
+				Luego el SERVER_SENDER se queda bloqueado en una variable de condicion+mutex 
+				por un timeout dado.
+				De igual forma, para el KILL, va el endpoint y DCID y el comando WAIT4UNBIND 
+	SOLUCION 2 (IMPLEMENTADA)
+				Idem anterior pero en lugar de enviar un solo unicast, envia 2 unicast
+				uno con el comando (string)
+				y otro con la operacion a realizar WAIT4BIND O WAIT4UNBIND
+
+ARRANCAR UNA VM EN VMWARE PLAYER 
+	Se deberia incluir en el archivo de configuracion:
+		node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start"
+		node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop "
+		node_img    "D:\PAP\Virtual Machines\Debian 9.4\Debian 9.4.vmx"
+	Como verificar si ya arrancó una VM?
+		Cuando el AGENT hizo el JOIN!! 
+ATENCION: Para LISTA DOBLEMENTE ENLAZADA (TAILQ) se utiliza 
+	https://linux.die.net/man/3/queue
+
+	
+	
+	
 TODO:	Cambiar para que el agente utilice 
 			- fork y exec para ejecutar el comando remoto
 			- kill en lugar de system(KILL)
+	
+
+
 	
 ==========================================================================================
 ==========================================================================================

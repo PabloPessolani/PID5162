@@ -427,6 +427,7 @@ int pr_process_message(proxy_t *px_ptr)
 			rcode = 0;
 		}
 	}
+	if( rcode < 0) ERROR_RETURN(rcode);
 	
 	PXYDEBUG("RPROXY(%d):" CMD_FORMAT, px_ptr->px_proxyid, 
 		CMD_FIELDS(px_ptr->px_rdesc.td_header));

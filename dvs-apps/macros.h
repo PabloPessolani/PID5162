@@ -40,6 +40,11 @@
 		pthread_cond_wait(&x, &y);\
 		}while(0)	
  
+#define COND_WAIT_T(r,x,y,t) do{ \
+		USRDEBUG("COND_WAIT_T %s %s\n", #x,#y);\
+		r = pthread_cond_timedwait(&x, &y, t);\
+		}while(0)
+			
 #define COND_SIGNAL(x) do{ \
 		pthread_cond_signal(&x);\
 		USRDEBUG("COND_SIGNAL %s\n", #x);\

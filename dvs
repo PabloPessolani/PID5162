@@ -1,0 +1,14 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:       dvs 
+# Required-Start:    \$local_fs \$syslog
+# Required-Stop:     \$local_fs \$syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts dvs
+# Description:       starts dvs using start-stop-daemon
+### END INIT INFO
+
+# put your script here
+/usr/src/dvs/dvk-tests/test_lb.sh   
+exit 0

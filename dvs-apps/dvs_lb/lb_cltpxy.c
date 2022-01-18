@@ -239,6 +239,8 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 	proxy_hdr_t *hdr_ptr;
 	server_t *svr_ptr;
 	sess_entry_t *sess_ptr;
+	int raw_time;
+    struct timespec cmd_ts = {0, 0};
 
 	cpx_ptr = &clt_ptr->clt_rpx;
 	assert(cpx_ptr->lbp_header != NULL);
@@ -303,9 +305,40 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 						);
 						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
 								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
-						rcode = unicast_cmd(svr_ptr->svr_nodeid, 
+						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-						if( rcode < 0) ERROR_PRINT(rcode);					
+						if( rcode < 0) ERROR_PRINT(rcode);	
+						// Send to AGENT to wait until server process is unbound									
+						rcode = ucast_wait4bind(WAIT_UNBIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
+						if( rcode < 0) ERROR_PRINT(rcode);
+						
+						// Wait for AGENT Notification or timeout 
+						MTX_LOCK(svr_ptr->svr_tail_mtx);
+						MTX_LOCK(clt_ptr->clt_agent_mtx);
+						// insert the client proxy descriptor into server list 
+						TAILQ_INSERT_TAIL(&svr_ptr->svr_tail_head,
+										clt_ptr,
+										clt_tail_entry);
+
+						SET_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_START);	// set bit in status bitmap that a client is waiting for start 
+						raw_time = clock_gettime(CLOCK_REALTIME, &cmd_ts);
+						if (raw_time) ERROR_PRINT(raw_time);
+						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;				// wait start notification from agent
+						COND_WAIT_T(rcode, clt_ptr->clt_agent_cond, clt_ptr->clt_agent_mtx, &cmd_ts);
+						if(rcode != 0 ) ERROR_PRINT(rcode);
+						
+						if (svr_ptr->svr_tail_head.tqh_first != NULL){
+							TAILQ_REMOVE(&svr_ptr->svr_tail_head, 
+								svr_ptr->svr_tail_head.tqh_first, 
+								clt_tail_entry);
+							// only remove the bit from the bitmap if it was the last waiting client
+							if (svr_ptr->svr_tail_head.tqh_first == NULL)
+								CLR_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_START);								
+						}
+						MTX_UNLOCK(clt_ptr->clt_agent_mtx);	
+						MTX_UNLOCK(svr_ptr->svr_tail_mtx);
+						
 #endif // USE_SSHPASS								
 					}
 					// Delete Session 
@@ -427,6 +460,8 @@ server_t *select_server(client_t *clt_ptr,
 {
 	int i, new_ep, rcode;
 	server_t *svr_ptr;
+	int raw_time;
+    struct timespec cmd_ts = {0, 0};
 
 	for( i = 0; i < NR_NODES; i++){
 		svr_ptr = &server_tab[i]; 
@@ -483,12 +518,24 @@ server_t *select_server(client_t *clt_ptr,
 									);
 						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
 								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
-						rcode = unicast_cmd(svr_ptr->svr_nodeid, 
+						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);			
 						if( rcode < 0) {
 							CLR_BIT(svr_ptr->svr_bm_svc, new_ep);
 							ERROR_PRINT(rcode);
-						}	
+						}
+						// Send to AGENT to wait until server process is bound									
+						rcode = ucast_wait4bind(WAIT_BIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
+						if( rcode < 0) ERROR_PRINT(rcode);
+						// Wait for AGENT Notification or timeout 
+						MTX_LOCK(clt_ptr->clt_agent_mtx);
+						raw_time = clock_gettime(CLOCK_REALTIME, &cmd_ts);
+						if (raw_time) ERROR_PRINT(raw_time);
+						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;
+						COND_WAIT_T(rcode, clt_ptr->clt_agent_cond, clt_ptr->clt_agent_mtx, &cmd_ts);
+						if(rcode < 0 ) ERROR_PRINT(rcode); 
+						MTX_UNLOCK(clt_ptr->clt_agent_mtx);						
 #endif  //  USE_SSHPASS										
 					}
 					break;

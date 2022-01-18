@@ -34,6 +34,9 @@ server node1 {
 	svrRport		3000; // Client Receiver port 
 	compress	YES; 
 	batch		YES;
+	node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start"
+	node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop "
+	node_img    "D:\PAP\Virtual Machines\Debian 9.4\Debian 9.4.vmx"
 };
 		
 #this service is started on demand 
@@ -73,7 +76,10 @@ extern char *ctl_socket;
 #define	TKN_SVR_SVRRPORT 2
 #define TKN_SVR_COMPRESS 3
 #define TKN_SVR_BATCH	4
-#define TKN_SVR_MAX 	5 // MUST be the last
+#define TKN_SVR_START	5
+#define TKN_SVR_STOP	6
+#define TKN_SVR_IMAGE	7
+#define TKN_SVR_MAX 	8 // MUST be the last
 
 #define TKN_CLT_NODEID	0
 #define TKN_CLT_LBRPORT	1
@@ -114,6 +120,9 @@ char *cfg_svr_ident[] = {
 	"svrRport",
 	"compress",
 	"batch",	
+	"node_start",
+	"node_stop",
+	"node_image",	
 };
 
 char *cfg_clt_ident[] = {
@@ -131,6 +140,7 @@ char *cfg_svc_ident[] = {
     "max_ep",
 	"bind",
     "prog",
+
 };
 
 char *cfg_lb_ident[] = {
@@ -420,7 +430,7 @@ int search_svr_ident(config_t *cfg)
 							}
 							USRDEBUG("svr_compress=%d\n", svr_ptr->svr_compress);
 							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_COMPRESS);							
-							break;							
+							break;
                         case TKN_SVR_BATCH:
 							if( svr_ptr->svr_nodeid == LB_INVALID){
 								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
@@ -443,7 +453,46 @@ int search_svr_ident(config_t *cfg)
 							USRDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
 							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_BATCH);							
 							break;							
-                        default:
+                        case TKN_SVR_START:
+							if( svr_ptr->svr_nodeid == LB_INVALID){
+								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}						
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							svr_ptr->svr_start = cfg->word;		
+							USRDEBUG("svr_start=%s\n", svr_ptr->svr_start);
+							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_START);							
+							break;							
+                        case TKN_SVR_STOP:
+							if( svr_ptr->svr_nodeid == LB_INVALID){
+								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}						
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							svr_ptr->svr_stop = cfg->word;		
+							USRDEBUG("svr_stop=%s\n", svr_ptr->svr_stop);
+							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_STOP);							
+							break;
+                        case TKN_SVR_IMAGE:
+							if( svr_ptr->svr_nodeid == LB_INVALID){
+								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							svr_ptr->svr_image = cfg->word;		
+							USRDEBUG("svr_image=%s\n", svr_ptr->svr_image);
+							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_IMAGE);							
+							break;
+						default:
 							fprintf(stderr, "Programming Error\n");
 							exit(1);
                     }
@@ -1116,7 +1165,14 @@ void lb_config(char *f_conf)	/* config file name. */
         USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
         USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
 		if( i == NR_NODES-1) break;
-		
+
+		if( (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_START) == 0) 
+		&&  (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_STOP) == 0)
+		&&  (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_IMAGE) != 0) ){
+			fprintf(stderr, "Server %s: node_start or node_stop must be defined with node_image\n", svr1_ptr->svr_name);
+			exit(1);
+		}
+							
 		if( svr1_ptr->svr_nodeid == lb.lb_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:Server %s have the same nodeid as load balancer\n",
 				svr1_ptr->svr_name);

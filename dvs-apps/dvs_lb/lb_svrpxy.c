@@ -173,6 +173,8 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 	client_t *clt_ptr;
 	sess_entry_t *sess_ptr;
 	service_t *svc_ptr;
+	int raw_time;
+    struct timespec cmd_ts = {0, 0};
 
 	spx_ptr = &svr_ptr->svr_rpx;
 	assert(spx_ptr->lbp_header != NULL);
@@ -292,9 +294,23 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 						);
 						USRDEBUG("SERVER_RPROXY(%s): se_rmtcmd=%s\n", 		
 								svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-						rcode = unicast_cmd(svr_ptr->svr_nodeid, 
+						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);								
-						if( rcode < 0) ERROR_PRINT(rcode);					
+						if( rcode < 0) ERROR_PRINT(rcode);
+
+						// Send to AGENT to wait until server process is unbound									
+						rcode = ucast_wait4bind(WAIT_UNBIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
+						if( rcode < 0) ERROR_PRINT(rcode);
+						// Wait for AGENT Notification or timeout 
+						MTX_LOCK(svr_ptr->svr_agent_mtx);
+						raw_time = clock_gettime(CLOCK_REALTIME, &cmd_ts);
+						if (raw_time) ERROR_PRINT(raw_time);
+						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;
+						COND_WAIT_T(rcode, svr_ptr->svr_agent_cond, svr_ptr->svr_agent_mtx, &cmd_ts);
+						if(rcode < 0 ) ERROR_PRINT(rcode); 
+						MTX_UNLOCK(svr_ptr->svr_agent_mtx);	
+						
 #endif// USE_SSHPASS								
 					}					
 					// Delete Session 

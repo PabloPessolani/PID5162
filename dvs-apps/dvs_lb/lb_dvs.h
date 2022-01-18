@@ -21,12 +21,15 @@
 #include <sys/socket.h>
 #include <sys/syscall.h>    /* For SYS_xxx definitions */
 #include <sys/msg.h>
+#include <sys/queue.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
 #include <net/if.h>
 #include <net/if_arp.h>   
 #include <arpa/inet.h>
+
+#include "lb_spread.h"
 
 #define DVS_USERSPACE	1
 #define USRDBG 			1	
@@ -203,37 +206,7 @@ typedef struct lbpx_desc_s lbpx_desc_t;
 #define CMD_PIDFORMAT 		"c_flags=0x%lX c_pid=%ld\n" 
 #define CMD_PIDFIELDS(p) 	p->c_flags, p->c_pid
 
-typedef struct {
-	char *svr_name;				// server name from configuration file 
-	int	svr_nodeid;				// server nodeid
-	int svr_lbRport;			// LB Receiver port 
-	int svr_svrRport;			// Server Receiver port 
-	int	svr_level;				// Load LEVEL 		
-    int	svr_load;				// CPU Load (0-100) . Value (-1) implies INVALID
-	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
-	int	svr_batch;			// Enable message batching 0:NO 1:YES
-	
-	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
-
-	lbpx_desc_t svr_spx;		// Server sender proxy 
-	lbpx_desc_t svr_rpx;		// Server receiver proxy	
-
-	LZ4F_errorCode_t svr_lz4err;
-	size_t			svr_offset;
-	size_t			svr_maxCsize;		/* Maximum Compressed size */
-	size_t			svr_maxRsize;		/* Maximum Raw size		 */
-	__attribute__((packed, aligned(4)))
-	LZ4F_compressionContext_t 	svr_lz4Cctx __attribute__((aligned(8))); /* Compression context */
-	LZ4F_decompressionContext_t svr_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
-		
-	pthread_mutex_t svr_mutex; // protect on change of status and load level.
-}server_t;
-#define SERVER_FORMAT 	"svr_name=%s svr_nodeid=%d svr_lbRport=%d svr_svrRport=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
-#define SERVER_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_lbRport, p->svr_svrRport, p->svr_level, p->svr_load,  p->svr_bm_svc 
-#define SERVER1_FORMAT 	"svr_name=%s svr_nodeid=%d svr_compress=%d svr_batch=%d\n"
-#define SERVER1_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_compress, p->svr_batch 
-
-typedef struct {
+struct client_s {
 	char *clt_name;
 	int	clt_nodeid;
 	int	clt_lbRport;			// LB Receiver port 
@@ -251,10 +224,67 @@ typedef struct {
 	
 	lbpx_desc_t clt_spx;
 	lbpx_desc_t clt_rpx;
-} client_t;
+
+	pthread_mutex_t clt_agent_mtx; // controls when a server process is started or killed  
+	pthread_cond_t  clt_agent_cond;  
+
+	pthread_mutex_t clt_node_mtx;  // controls when a complete server node VM is started or stopped 
+	pthread_cond_t  clt_node_cond;  
+
+    TAILQ_ENTRY(client_s) clt_tail_entry;         /* Tail queue. */
+
+} ;
+typedef struct client_s client_t;
 
 #define CLIENT_FORMAT 	"clt_name=%s clt_nodeid=%d clt_lbRport=%d clt_cltRport=%d clt_compress=%d clt_batch=%d\n"
 #define CLIENT_FIELDS(p)  p->clt_name, p->clt_nodeid, p->clt_lbRport, p->clt_cltRport,  p->clt_compress, p->clt_batch 
+
+typedef struct {
+	char *svr_name;			// server name from configuration file 
+	int	svr_nodeid;			// server nodeid
+	int svr_lbRport;		// LB Receiver port 
+	int svr_svrRport;		// Server Receiver port 
+	int	svr_level;			// Load LEVEL 		
+    int	svr_load;			// CPU Load (0-100) . Value (-1) implies INVALID
+	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
+	int	svr_batch;			// Enable message batching 0:NO 1:YES
+
+	char *svr_start;		// string to command which START the server NODE 
+	char *svr_stop;			// string to command which STOP the server NODE 
+	char *svr_image;		// string to command which START the server NODE 
+	
+	unsigned long int svr_bm_sts; 	
+	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
+
+	lbpx_desc_t svr_spx;		// Server sender proxy 
+	lbpx_desc_t svr_rpx;		// Server receiver proxy	
+
+	LZ4F_errorCode_t svr_lz4err;
+	size_t			svr_offset;
+	size_t			svr_maxCsize;		/* Maximum Compressed size */
+	size_t			svr_maxRsize;		/* Maximum Raw size		 */
+	__attribute__((packed, aligned(4)))
+	LZ4F_compressionContext_t 	svr_lz4Cctx __attribute__((aligned(8))); /* Compression context */
+	LZ4F_decompressionContext_t svr_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
+		
+	pthread_mutex_t svr_mutex; // protect on change of status and load level.
+
+	pthread_mutex_t svr_agent_mtx;  // controls when a server process is started or killed 
+	pthread_cond_t  svr_agent_cond;  
+
+	pthread_mutex_t svr_node_mtx;  // controls when a complete server node VM is started or stopped 
+	pthread_cond_t  svr_node_cond;  
+	
+	TAILQ_HEAD(svr_tailhead,client_s) svr_tail_head;
+	pthread_mutex_t svr_tail_mtx;  		// to protect the linked list
+	
+}server_t;
+#define SERVER_FORMAT 	"svr_name=%s svr_nodeid=%d svr_lbRport=%d svr_svrRport=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
+#define SERVER_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_lbRport, p->svr_svrRport, p->svr_level, p->svr_load,  p->svr_bm_svc 
+#define SERVER1_FORMAT 	"svr_name=%s svr_nodeid=%d svr_compress=%d svr_batch=%d\n"
+#define SERVER1_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_compress, p->svr_batch 
+
+
 
 #define	MAX_MEMBER_NAME		64
 
@@ -324,7 +354,7 @@ void *clt_Sproxy(void *arg);
 void *lb_monitor(void *arg);
 
 int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,	sess_entry_t *sess_ptr);
-int  unicast_cmd(int agent_id, char *agent_name, char *cmd);
+int  ucast_cmd(int agent_id, char *agent_name, char *cmd);
 
 
 

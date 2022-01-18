@@ -83,6 +83,13 @@ int main (int argc, char *argv[] )
 		server_tab[i].svr_batch = LB_INVALID;
 		client_tab[i].clt_batch = LB_INVALID;
 		
+		server_tab[i].svr_bm_sts= 0;
+		server_tab[i].svr_start = NULL;
+		server_tab[i].svr_stop 	= NULL;
+		server_tab[i].svr_image = NULL;
+
+		TAILQ_INIT(&server_tab[i].svr_tail_head);                      /* Initialize the queue. */
+	
 	}
 
 	// Clear service table  
@@ -113,6 +120,14 @@ int main (int argc, char *argv[] )
 		svr_ptr->svr_bm_svc = 0;
 		
 		pthread_mutex_init(&svr_ptr->svr_mutex, NULL);
+		
+		pthread_mutex_init(&svr_ptr->svr_agent_mtx, NULL);
+		pthread_cond_init(&svr_ptr->svr_agent_cond, NULL);
+		
+		pthread_mutex_init(&svr_ptr->svr_node_mtx, NULL);
+		pthread_cond_init(&svr_ptr->svr_node_cond, NULL);
+
+		pthread_mutex_init(&svr_ptr->svr_tail_mtx, NULL);
 
 		svr_ptr->svr_level  = LVL_NOTINIT;
 		svr_ptr->svr_load   = LVL_NOTINIT;
@@ -157,6 +172,12 @@ int main (int argc, char *argv[] )
 		clt_ptr = &client_tab[i];
 		if( clt_ptr->clt_nodeid == (-1)) continue;
         USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
+
+		pthread_mutex_init(&clt_ptr->clt_agent_mtx, NULL);
+		pthread_cond_init(&clt_ptr->clt_agent_cond, NULL);
+
+		pthread_mutex_init(&clt_ptr->clt_node_mtx, NULL);
+		pthread_cond_init(&clt_ptr->clt_node_cond, NULL);
 
 		cpx_ptr = &clt_ptr->clt_spx;		
 		// Creates Proxy Sender Message Queue

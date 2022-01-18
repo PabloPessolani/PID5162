@@ -2,7 +2,6 @@
 #define _MULTI_THREADED
 #include "lb_dvs.h"
 #include "lb_agent.h"
-#include "lb_spread.h"
 
 char Spread_name[80];
 sp_time lba_timeout;

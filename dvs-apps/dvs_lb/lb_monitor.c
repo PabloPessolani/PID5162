@@ -6,7 +6,6 @@
 #define _GNU_SOURCE     
 #define _MULTI_THREADED
 #include "lb_dvs.h"
-#include "lb_spread.h"
 
 int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type);
 
@@ -578,10 +577,36 @@ int lbm_network(lb_t* lb_ptr)
 }
 
 /*===========================================================================*
-*				unicast_cmd								     *
+*				ucast_wait4bind							     *
+*===========================================================================*/
+int  ucast_wait4bind(int cmd, int agent_id, char *agent_name, 
+					int dcid, int ep, unsigned long timeout)
+{
+	int rcode;
+	message m, *m_ptr;
+	lb_t *lb_ptr;
+	char priv_name[MAX_MEMBER_NAME];
+	
+	m_ptr 	= &m;
+	m_ptr->m_type = cmd;
+	m_ptr->m1_i1  = dcid;
+	m_ptr->m1_i2  = ep;
+	USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
+	
+	lb_ptr 	= &lb; 
+	sprintf(priv_name,"#LBA.%02d#%s",agent_id, agent_name);
+	USRDEBUG("priv_name=%s\n", priv_name);	
+	
+	rcode = SP_multicast(lb_ptr->lb_mbox, FIFO_MESS, priv_name,
+					cmd , sizeof(message), m_ptr);
+	return(rcode);
+}
+
+/*===========================================================================*
+*				ucast_cmd									     *
 * Unicast a command to a node 
 *===========================================================================*/
-int  unicast_cmd(int agent_id, char *agent_name, char *cmd)
+int  ucast_cmd(int agent_id, char *agent_name, char *cmd)
 {
 	int rcode;
 	lb_t *lb_ptr;
@@ -623,7 +648,13 @@ void mcast_thresholds(lb_t *lb_ptr)
 void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME],
                     int num_groups)
 {	
-	int nodeid;
+	int nodeid, i;
+	unsigned int	bm_nodes;
+	server_t *svr_ptr;
+	client_t *clt_ptr;
+	
+	// save old node's bitmap
+	bm_nodes = lb_ptr->lb_bm_nodes;
 	
 	lb_ptr->lb_bm_nodes = 0;
 	lb_ptr->lb_nr_nodes = 0;
@@ -632,10 +663,31 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
     for(int i=0; i < lb_ptr->lb_sp_nr_mbrs; i++ ){
 		nodeid = get_nodeid(&lb_ptr->lb_sp_members[i][0]);
         USRDEBUG("\t%s nodeid=%d\n", &lb_ptr->lb_sp_members[i][0], nodeid);
+		if( TEST_BIT(bm_nodes, nodeid) == 0){
+			// NEW NODE 
+			USRDEBUG("NEW %s nodeid=%d\n", &lb_ptr->lb_sp_members[i][0], nodeid);
+			for( i = 0;  i < NR_NODES; i++ ){
+				svr_ptr = &server_tab[i];
+				if(svr_ptr->svr_nodeid == LB_INVALID) continue;
+				if(svr_ptr->svr_nodeid == nodeid){
+					MTX_LOCK(svr_ptr->svr_tail_mtx);
+					if( TEST_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_START)){
+						assert(svr_ptr->svr_tail_head.tqh_first != NULL);
+						clt_ptr = svr_ptr->svr_tail_head.tqh_first;
+						MTX_LOCK(clt_ptr->clt_agent_mtx);
+						COND_SIGNAL(clt_ptr->clt_agent_cond);
+						MTX_UNLOCK(clt_ptr->clt_agent_mtx);	
+					}
+					MTX_UNLOCK(svr_ptr->svr_tail_mtx);
+				}
+			}
+		}
 		SET_BIT(lb_ptr->lb_bm_nodes, nodeid);
 		lb_ptr->lb_nr_nodes++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     }
+	
+	
 }
 
 
