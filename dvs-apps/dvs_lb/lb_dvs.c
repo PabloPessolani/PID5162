@@ -88,7 +88,8 @@ int main (int argc, char *argv[] )
 		server_tab[i].svr_stop 	= NULL;
 		server_tab[i].svr_image = NULL;
 
-		TAILQ_INIT(&server_tab[i].svr_tail_head);                      /* Initialize the queue. */
+		TAILQ_INIT(&server_tab[i].svr_clt_head);                      /* Initialize the queue. */
+		TAILQ_INIT(&server_tab[i].svr_svr_head);                      /* Initialize the queue. */
 	
 	}
 

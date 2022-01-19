@@ -297,19 +297,38 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);								
 						if( rcode < 0) ERROR_PRINT(rcode);
-
+						
 						// Send to AGENT to wait until server process is unbound									
-						rcode = ucast_wait4bind(WAIT_UNBIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+						rcode = ucast_wait4bind(MT_WAIT_UNBIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
 						if( rcode < 0) ERROR_PRINT(rcode);
+						
 						// Wait for AGENT Notification or timeout 
+						MTX_LOCK(svr_ptr->svr_tail_mtx);
 						MTX_LOCK(svr_ptr->svr_agent_mtx);
+						// insert the client proxy descriptor into server list 
+						TAILQ_INSERT_TAIL(&svr_ptr->svr_svr_head,
+										svr_ptr,
+										svr_tail_entry);
+
+						SET_BIT(svr_ptr->svr_bm_sts, SVR_WAIT_STOP);		// set bit in status bitmap that a client is waiting for stop  
 						raw_time = clock_gettime(CLOCK_REALTIME, &cmd_ts);
 						if (raw_time) ERROR_PRINT(raw_time);
-						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;
+						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;				// wait start notification from agent
 						COND_WAIT_T(rcode, svr_ptr->svr_agent_cond, svr_ptr->svr_agent_mtx, &cmd_ts);
-						if(rcode < 0 ) ERROR_PRINT(rcode); 
+						if(rcode != 0 ) ERROR_PRINT(rcode);
+						
+						if (svr_ptr->svr_svr_head.tqh_first != NULL){
+							TAILQ_REMOVE(&svr_ptr->svr_svr_head, 
+								svr_ptr->svr_svr_head.tqh_first, 
+								svr_tail_entry);
+							// only remove the bit from the bitmap if it was the last waiting client
+							if (svr_ptr->svr_svr_head.tqh_first == NULL)
+								CLR_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_STOP);								
+						}
 						MTX_UNLOCK(svr_ptr->svr_agent_mtx);	
+						MTX_UNLOCK(svr_ptr->svr_tail_mtx);
+							
 						
 #endif// USE_SSHPASS								
 					}					

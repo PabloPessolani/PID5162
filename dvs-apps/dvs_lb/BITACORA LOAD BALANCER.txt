@@ -4071,8 +4071,54 @@ ARRANCAR UNA VM EN VMWARE PLAYER
 ATENCION: Para LISTA DOBLEMENTE ENLAZADA (TAILQ) se utiliza 
 	https://linux.die.net/man/3/queue
 
+===================================================================================
+20220118:
+	El agente del NODE1 recibe del LB la orden de ejecutar un comando 
+		 613:lb_agent.c:lba_SP_receive:184:ret=91
+		 613:lb_agent.c:lba_SP_receive:206:LBA.01: sender=#LBM.00#node0 Private_group=#LBA.01#node1 service_type=4
+		 613:lb_agent.c:lba_SP_receive:213:LBA.01: FIFO message from #LBM.00#node0, of type 1004, (endian 0) to 1 groups (91 bytes)
+		 613:lb_agent.c:get_nodeid:293:mbr_string=#LBM.00#node0
+		 613:lb_agent.c:get_nodeid:305:mbr_string=#LBM.00#node0 nid=0
+		 613:lb_agent.c:lba_reg_msg:323:sender_ptr=#LBM.00#node0 node_id=0 msg_type=1004
+		 613:lb_agent.c:lba_reg_msg:392:MT_RUN_COMMAND=/usr/src/dvs/dvs-apps/dvs_lb/run_latency.sh 0 10 0 50 >> /tmp/node1.out 2>> /tmp/node1.err
+	Luego recibe la orden de MT_WAIT_BIND=1000
+		 613:lb_agent.c:lba_SP_receive:176:LBA.01
+		 613:lb_agent.c:lba_SP_receive:184:ret=36
+		 613:lb_agent.c:lba_SP_receive:206:LBA.01: sender=#LBM.00#node0 Private_group=#LBA.01#node1 service_type=4
+		 613:lb_agent.c:lba_SP_receive:213:LBA.01: FIFO message from #LBM.00#node0, of type 1000, (endian 0) to 1 groups (36 bytes)
+		 613:lb_agent.c:get_nodeid:293:mbr_string=#LBM.00#node0
+		 613:lb_agent.c:get_nodeid:305:mbr_string=#LBM.00#node0 nid=0
+		 613:lb_agent.c:lba_reg_msg:323:sender_ptr=#LBM.00#node0 node_id=0 msg_type=1000	
+	
+TODO:   Falta modificar el AGENT para que reciba los MT_WAIT_BIND y MT_WAIT_UNBIND
+		Y envie una notificación al MONITOR 
+		LB						AGENT
+		------>MT_RUN_COMMAND---->
+		------>MT_WAIT_BIND------>
+		<------MT_WAIT_BIND+ACK---
+		
+		
+ 678:lb_monitor.c:ucast_cmd:617:priv_name=#LBA.01#node1
+ 678:lb_monitor.c:ucast_wait4bind:594:source=-1217647264 type=1000 m1i1=0 m1i2=-1 m1i3=1701080942 m1p1=0x10a0031 m1p2=0xb75762f9 m1p3=0xb76c0960 
+ 678:lb_monitor.c:ucast_wait4bind:598:priv_name=#LBA.01#node1
+type=1000 		MT_WAIT_BIND
+m1i1=0 			dcid 
+m1i2=-1			ENDPOINT!! 
+						rcode = ucast_wait4bind(MT_WAIT_BIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
+										
 	
 	
+TODO:  Esta todo mal. Se esta fijando si el agent esta levantado y por default el agent esta levantado
+		Eso se usaria solo si se levanta la VM.
+	ADEMAS el wait4bind generico no contiene el DCID, con lo cual no lo puedo usar 
+	long dvk_wait4bindep_X(int cmd, int endpoint, unsigned long timeout);
+	SOLUCION TRUCHA: Hacer un bind del agent con endpoint=-2 
+	Cuando sale hacer unbind()
+	
+	
+TODO_: Modificar test_lb.sh para que soporte parametros
+		start y stop y restart 
 	
 TODO:	Cambiar para que el agente utilice 
 			- fork y exec para ejecutar el comando remoto

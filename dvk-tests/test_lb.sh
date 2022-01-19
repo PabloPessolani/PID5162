@@ -2,6 +2,7 @@
 #######################################
 # this script is launched by /etc/init.d/dvs 
 #######################################
+echo TEST_LB_ARGS: $# , $0, $1, $2
 cd /usr/src/dvs/dvk-tests/
 #if [ $# -ne 0 ]
 #then 

@@ -320,7 +320,7 @@ int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type)
 	server_t *svr_ptr;
 
 	node_id = get_nodeid(sender_ptr);
-    USRDEBUG("sender_ptr=%s node_id=%d\n", sender_ptr,  node_id );
+    USRDEBUG("sender_ptr=%s node_id=%d msg_type=%d\n", sender_ptr,  node_id, msg_type );
 
 	// ignore other self sent messages 
 	if( node_id == local_nodeid) return(OK);
@@ -395,6 +395,46 @@ int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type)
 				ERROR_PRINT(rcode);
 				ERROR_PRINT(-errno);				
 			}
+			break;
+		case MT_WAIT_BIND:
+		case MT_WAIT_UNBIND:
+			if( strncmp(sender_ptr, LBM_SHARP, strlen(LBM_SHARP)) != 0){
+				fprintf( stderr,"lba_reg_msg: MT_WAIT_BIND message sent by %s\n",
+					 sender_ptr);
+				return(OK);					
+			}
+			USRDEBUG("MT_WAIT_BIND=%s\n", lba_ptr->lba_mess_in);
+			m_ptr = lba_ptr->lba_mess_in;
+			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
+			// check message source 
+			if( m_ptr->m_source != node_id){
+				fprintf( stderr,"lba_reg_msg: m_source(%d) != sender node_id(%d)\n",
+					 m_ptr->m_source, node_id);
+				return(OK);		
+			}
+			// check if current monitor has changed 
+			if(lba_ptr->lba_monitor != LB_INVALID){
+				if( lba_ptr->lba_monitor != node_id){
+					fprintf( stderr,"lba_reg_msg: WARNING monitor has changed old(%d), new(%d)\n",
+						 lba_ptr->lba_monitor, node_id);
+					strncpy(lba_ptr->lba_name, sender_ptr, MAX_GROUP_NAME-1);	 
+				}
+			}
+			// check correct message type 
+			if( m_ptr->m_type != msg_type){
+				fprintf( stderr,"lba_reg_msg: m_type(%d) != msg_type(%d)\n",
+					 m_ptr->m_type, msg_type);
+				return(OK);		
+			}
+			
+			/////////////////// AQUI HACER EL WAIT4BIND ///////////////////////////////
+			// Hacer un bind del agent con endpoint=SYSTASK
+			// Hacer el WAIT4BIND
+			// Hacer un unbind del agent 
+			// if timeout, return (no hace nada, el LB no espera)
+			// unicast_lb( WAIT4BIND | ACKNOWLEDGE 
+			
+			
 			break;
 		default:
 			fprintf( stderr,"lba_reg_msg: invalid regular message type=%d\n",

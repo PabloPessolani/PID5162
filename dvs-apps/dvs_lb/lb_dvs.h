@@ -239,7 +239,7 @@ typedef struct client_s client_t;
 #define CLIENT_FORMAT 	"clt_name=%s clt_nodeid=%d clt_lbRport=%d clt_cltRport=%d clt_compress=%d clt_batch=%d\n"
 #define CLIENT_FIELDS(p)  p->clt_name, p->clt_nodeid, p->clt_lbRport, p->clt_cltRport,  p->clt_compress, p->clt_batch 
 
-typedef struct {
+struct server_s{
 	char *svr_name;			// server name from configuration file 
 	int	svr_nodeid;			// server nodeid
 	int svr_lbRport;		// LB Receiver port 
@@ -275,10 +275,16 @@ typedef struct {
 	pthread_mutex_t svr_node_mtx;  // controls when a complete server node VM is started or stopped 
 	pthread_cond_t  svr_node_cond;  
 	
-	TAILQ_HEAD(svr_tailhead,client_s) svr_tail_head;
+    TAILQ_ENTRY(server_s) svr_tail_entry;         /* Tail queue. */
+
+	TAILQ_HEAD(svr_clthead,client_s) svr_clt_head;
+	TAILQ_HEAD(svr_svrhead,server_s) svr_svr_head;
+	
 	pthread_mutex_t svr_tail_mtx;  		// to protect the linked list
 	
-}server_t;
+};
+typedef struct server_s server_t;
+
 #define SERVER_FORMAT 	"svr_name=%s svr_nodeid=%d svr_lbRport=%d svr_svrRport=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
 #define SERVER_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_lbRport, p->svr_svrRport, p->svr_level, p->svr_load,  p->svr_bm_svc 
 #define SERVER1_FORMAT 	"svr_name=%s svr_nodeid=%d svr_compress=%d svr_batch=%d\n"

@@ -672,8 +672,8 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 				if(svr_ptr->svr_nodeid == nodeid){
 					MTX_LOCK(svr_ptr->svr_tail_mtx);
 					if( TEST_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_START)){
-						assert(svr_ptr->svr_tail_head.tqh_first != NULL);
-						clt_ptr = svr_ptr->svr_tail_head.tqh_first;
+						assert(svr_ptr->svr_clt_head.tqh_first != NULL);
+						clt_ptr = svr_ptr->svr_clt_head.tqh_first;
 						MTX_LOCK(clt_ptr->clt_agent_mtx);
 						COND_SIGNAL(clt_ptr->clt_agent_cond);
 						MTX_UNLOCK(clt_ptr->clt_agent_mtx);	
@@ -686,8 +686,6 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 		lb_ptr->lb_nr_nodes++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     }
-	
-	
 }
 
 
