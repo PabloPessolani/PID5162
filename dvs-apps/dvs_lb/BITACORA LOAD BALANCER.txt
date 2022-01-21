@@ -4081,7 +4081,7 @@ ATENCION: Para LISTA DOBLEMENTE ENLAZADA (TAILQ) se utiliza
 		 613:lb_agent.c:get_nodeid:305:mbr_string=#LBM.00#node0 nid=0
 		 613:lb_agent.c:lba_reg_msg:323:sender_ptr=#LBM.00#node0 node_id=0 msg_type=1004
 		 613:lb_agent.c:lba_reg_msg:392:MT_RUN_COMMAND=/usr/src/dvs/dvs-apps/dvs_lb/run_latency.sh 0 10 0 50 >> /tmp/node1.out 2>> /tmp/node1.err
-	Luego recibe la orden de MT_WAIT_BIND=1000
+	Luego recibe la orden de MT_CLT_WAIT_BIND=1000
 		 613:lb_agent.c:lba_SP_receive:176:LBA.01
 		 613:lb_agent.c:lba_SP_receive:184:ret=36
 		 613:lb_agent.c:lba_SP_receive:206:LBA.01: sender=#LBM.00#node0 Private_group=#LBA.01#node1 service_type=4
@@ -4090,25 +4090,406 @@ ATENCION: Para LISTA DOBLEMENTE ENLAZADA (TAILQ) se utiliza
 		 613:lb_agent.c:get_nodeid:305:mbr_string=#LBM.00#node0 nid=0
 		 613:lb_agent.c:lba_reg_msg:323:sender_ptr=#LBM.00#node0 node_id=0 msg_type=1000	
 	
-TODO:   Falta modificar el AGENT para que reciba los MT_WAIT_BIND y MT_WAIT_UNBIND
+TODO:   Falta modificar el AGENT para que reciba los MT_CLT_WAIT_BIND y MT_CLT_WAIT_UNBIND
 		Y envie una notificación al MONITOR 
 		LB						AGENT
 		------>MT_RUN_COMMAND---->
-		------>MT_WAIT_BIND------>
-		<------MT_WAIT_BIND+ACK---
+		------>MT_CLT_WAIT_BIND------>
+		<------MT_CLT_WAIT_BIND+ACK---
+		
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	ERROR EN EL DVK WAIT4BIND
+	ENTRA EN LOOP
+	[   96.128765] DEBUG 638:new_wait4bind:2616: Other process bind waiting
+	[   96.128766] DEBUG 638:new_wait4bind:2627: RLOCK_PROC ep=-2 count=0
+	[   96.128766] DEBUG 638:new_wait4bind:2629: RUNLOCK_PROC ep=-2 count=0
+	[   96.128766] DEBUG 638:new_wait4bind:2632: ret=-2
+	[   96.128767] DEBUG 638:new_wait4bind:2634: pending: sig[0]:0x00000000, sig[1]:0x00000000
+	[   96.128768] DEBUG 638:new_wait4bind:2637: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+SOLUCIONADO: ERROR en new_wait4bind
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+EL PROXY CLIENT PREPARA EL COMANDO REMOTO A EJECUTAR EN EL SERVER 
+ 661:lb_cltpxy.c:select_server:520:CLIENT_RPROXY(client11): se_rmtcmd=/usr/src/dvs/dvs-apps/dvs_lb/run_latency.sh 0 10 0 50 >> /tmp/node1.out 2>> /tmp/node1.err
+ENVIA EL COMANDO AL SERVER MEDIANTE UN UNICAST AL AGENT  
+ 661:lb_monitor.c:ucast_cmd:665:priv_name=#LBA.01#node1
+ENVIA UN WAIT4BIND REMOTO CON  m1p1=0x56fdf8 DONDE ESTA clt_ptr
+ 661:lb_monitor.c:ucast_wait4bind:643:source=0 type=1 m1i1=0 m1i2=10 m1i3=1701080942 m1p1=0x56fdf8 m1p2=0xb75ba2f9 m1p3=0xb7704960 
+ 661:lb_monitor.c:ucast_wait4bind:646:priv_name=#LBA.01#node1
+SE BLOQUEA CON TIMEOUT ESPERANDO LA NOTIFICACION DEL AGENT  
+ 661:lb_cltpxy.c:select_server:534:MTX_LOCK clt_ptr->clt_agent_mtx 
+ 661:lb_cltpxy.c:select_server:538:COND_WAIT_T clt_ptr->clt_agent_cond clt_ptr->clt_agent_mtx
+ 
+EL AGENT RECIBE LA PETICION DESDE EL LB DE WAIT4BIND
+ 639:lb_agent.c:lba_SP_receive:226:LBA.01: sender=#LBM.00#node0 Private_group=#LBA.01#node1 service_type=4
+ 639:lb_agent.c:lba_SP_receive:233:LBA.01: FIFO message from #LBM.00#node0, of type 1, (endian 0) to 1 groups (36 bytes)
+ 639:lb_agent.c:get_nodeid:313:mbr_string=#LBM.00#node0
+ 639:lb_agent.c:get_nodeid:325:mbr_string=#LBM.00#node0 nid=0
+ 639:lb_agent.c:lba_reg_msg:343:sender_ptr=#LBM.00#node0 node_id=0 msg_type=1
+EL AGENT HACE SU BIND, WAIT4BIND Y UNBIND. EN m1p1=0x56fdf8 ESTA clt_ptr
+ 639:lb_agent.c:lba_reg_msg:429:source=0 type=1 m1i1=0 m1i2=10 m1i3=1701080942 m1p1=0x56fdf8 m1p2=0xb75ba2f9 m1p3=0xb7704960 
+ 639:lb_agent.c:lba_reg_msg:458:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+ 639:lb_agent.c:lba_reg_msg:461:dvk_bind rcode=-2
+ 639:lb_agent.c:lba_reg_msg:467:msg_type=1
+ 639:lb_agent.c:lba_reg_msg:473:dvk_wait4bindep_T ret=10
+ 639:lb_agent.c:lba_reg_msg:481:dvk_unbind rcode=0
+ENVIA UN UNICAST AL LB 
+ 639:lb_agent.c:ucast_lb_ack:31:source=1 type=4097 m1i1=0 m1i2=10 m1i3=10 m1p1=0x56fdf8 m1p2=0xb75ba2f9 m1p3=0xb7704960 
+ 
+LUEGO, EL LB RECIBE EL RESULTADO DEL WAIT4BIND + ACKNOWLEDGE
+ 666:lb_monitor.c:lbm_SP_receive:142:ret=36
+ 666:lb_monitor.c:lbm_SP_receive:164:node0: sender=#LBA.01#node1 Private_group=#LBM.00#node0 service_type=4
+ 666:lb_monitor.c:lbm_SP_receive:171:node0: FIFO message from #LBA.01#node1, of type 4097, (endian 0) to 1 groups (36 bytes)
+ 666:lb_monitor.c:get_nodeid:251:mbr_string=#LBA.01#node1
+ 666:lb_monitor.c:get_nodeid:263:mbr_string=#LBA.01#node1 nid=1
+ 666:lb_monitor.c:lbm_reg_msg:284:sender_ptr=#LBA.01#node1 agent_id=1 msg_type=4097
+ 666:lb_monitor.c:lbm_reg_msg:303:lb_name=node0 lb_nodeid=0 lb_nr_nodes=1 lb_nr_init=1 lb_bm_nodes=1 lb_bm_init=2
+ 666:lb_monitor.c:lbm_reg_msg:306:msg_type=1001
+ 666:lb_monitor.c:lbm_reg_msg:359:source=1 type=4097 m1i1=0 m1i2=10 m1i3=10 m1p1=0x56fdf8 m1p2=0xb75ba2f9 m1p3=0xb7704960 
+COMO EL RESULTADO ES > CERO, EN ESTE CASO m1i3=10 OBTIENE EL clt_ptr QUE LO ENVIO EN m1p1
+ 666:lb_monitor.c:lbm_reg_msg:376:MTX_LOCK clt_ptr->clt_agent_mtx 
+ 666:lb_monitor.c:lbm_reg_msg:377:COND_SIGNAL clt_ptr->clt_agent_cond
+ 666:lb_monitor.c:lbm_reg_msg:378:MTX_UNLOCK clt_ptr->clt_agent_mtx 
+
+===================================================================================
+20220120:
+		Cual es la razon para poner en colas las peticiones de KILL ??
+		Por ahora las remuevo dejandolas como comentarios.
+	
+ANTE 2 PRUEBAS SUCESIVAS EL PID DEL SERVER CAMBIA 
+	root@node1:~# ps -ef | grep latency
+	root       636     1  0 11:42 ?        00:00:00 ./latency_server 0 10
+	root@node1:~# ps -ef | grep latency
+	root       663     1  0 11:43 ?        00:00:00 ./latency_server 0 10
+
+	EL LB DETECTA UNA SESION EXPIRADA Y ENVIA UNCAST DE KILL AL AGENT DEL NODE1   
+	 669:lb_cltpxy.c:clt_Rproxy_2server:277:CLIENT_RPROXY(client11): Expired Session Found se_clt_PID=642 c_pid=645
+	 669:lb_cltpxy.c:clt_Rproxy_2server:307:CLIENT_RPROXY(client11): se_rmtcmd= kill -9 636 >> /tmp/node1.out 2>> /tmp/node1.err
+	 669:lb_monitor.c:ucast_cmd:665:priv_name=#LBA.01#node1
+	LUEGO ENVIA UN WAIT4UNBIND
+	 669:lb_monitor.c:ucast_wait4bind:643:source=0 type=2 m1i1=0 m1i2=10 m1i3=1701080942 m1p1=0x4f6df8 m1p2=0xb74e92f9 m1p3=0xb7633960 
+	 669:lb_monitor.c:ucast_wait4bind:646:priv_name=#LBA.01#node1
+	EL AGENT DEL NODE1 HACE EL KILL
+	 624:lb_agent.c:lba_reg_msg:343:sender_ptr=#LBM.00#node0 node_id=0 msg_type=6
+	 624:lb_agent.c:lba_reg_msg:412:MT_RUN_COMMAND= kill -9 636 >> /tmp/node1.out 2>> /tmp/node1.err
+	 624:lb_agent.c:lba_reg_msg:418:system rcode=0
+	LUEGO HACE UN WAIT4UNBIND
+	624:lb_agent.c:lba_reg_msg:343:sender_ptr=#LBM.00#node0 node_id=0 msg_type=2
+	 624:lb_agent.c:lba_reg_msg:429:source=0 type=2 m1i1=0 m1i2=10 m1i3=1701080942 m1p1=0x4f6df8 m1p2=0xb74e92f9 m1p3=0xb7633960 
+	 624:lb_agent.c:lba_reg_msg:458:dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 624:lb_agent.c:lba_reg_msg:461:dvk_bind rcode=-337
+	 624:lb_agent.c:lba_reg_msg:463:SYSTEM=-2
+	ERROR: lb_agent.c:lba_reg_msg:464: rcode=-337
+
+	AQUI EL AGENT HACE EL UNBIND 
+	Jan 20 12:09:07 node1 kernel: [   49.879725] DEBUG 618:dvk_ioctl:349: cmd=4004E30A arg=BF97FDD0
+	Jan 20 12:09:07 node1 kernel: [   49.879726] DEBUG 618:dvk_ioctl:369: DVK_CALL=10 (io_unbind) 
+	Jan 20 12:09:07 node1 kernel: [   49.879727] DEBUG 618:io_unbind:109: 
+	Jan 20 12:09:07 node1 kernel: [   49.879727] DEBUG 618:new_unbind:1910: dcid=0 proc_ep=0
+	Jan 20 12:09:07 node1 kernel: [   49.879728] DEBUG 618:check_caller:616: caller_pid=618 caller_tgid=618
+	Jan 20 12:09:07 node1 kernel: [   49.879729] DEBUG 618:check_caller:657: WLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879730] DEBUG 618:check_caller:662: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=618 vpid=618 nodeid=1 name=lb_agent 
+	Jan 20 12:09:07 node1 kernel: [   49.879731] DEBUG 618:check_caller:722: WUNLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879731] DEBUG 618:check_caller:725: dcid=0
+	Jan 20 12:09:07 node1 kernel: [   49.879732] DEBUG 618:check_caller:729: RLOCK_DC dc=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879732] DEBUG 618:check_caller:733: RUNLOCK_DC dc=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879733] DEBUG 618:check_caller:739: caller_pid=618 
+	Jan 20 12:09:07 node1 kernel: [   49.879733] DEBUG 618:check_caller:742: RLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879734] DEBUG 618:check_caller:746: RUNLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879734] DEBUG 618:new_unbind:1926: RLOCK_DC dc=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879735] DEBUG 618:new_unbind:1938: RUNLOCK_DC dc=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879735] DEBUG 618:new_unbind:1940: RLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879736] DEBUG 618:new_unbind:1957: RUNLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879736] DEBUG 618:new_unbind:1960: RLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879737] DEBUG 618:new_unbind:1965: RUNLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879738] DEBUG 618:new_unbind:1967: WLOCK_TASK pid=618 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879738] DEBUG 618:new_unbind:1984: WLOCK_DC dc=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879739] DEBUG 618:new_unbind:1988: WLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.879740] DEBUG 618:do_unbind:733: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=618 vpid=618 nodeid=1 name=lb_agent 
+	Jan 20 12:09:07 node1 kernel: [   49.879741] DEBUG 618:do_unbind:762: Caller nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=618 vpid=618 nodeid=1 name=lb_agent 
+	Jan 20 12:09:07 node1 kernel: [   49.879742] DEBUG 618:do_unbind:826: wakeup with error those processes trying to send a message to the proc
+	Jan 20 12:09:07 node1 kernel: [   49.879742] DEBUG 618:do_unbind:864: delete notify messages bits sent by the proc
+	Jan 20 12:09:07 node1 kernel: [   49.880130] DEBUG 618:do_unbind:968: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=618 vpid=618 nodeid=1 name=lb_agent 
+	Jan 20 12:09:07 node1 kernel: [   49.880131] DEBUG 618:do_unbind:1027: wakeup with error those processes waiting this process MIGRATION
+	Jan 20 12:09:07 node1 kernel: [   49.880132] DEBUG 618:do_unbind:1078: wakeup those processes waiting this process UNBINDING
+	Jan 20 12:09:07 node1 kernel: [   49.880133] DEBUG 618:do_unbind:1112: nr=0 endp=0 dcid=0 flags=0 misc=20 lpid=618 vpid=618 nodeid=1 name=lb_agent 
+	Jan 20 12:09:07 node1 kernel: [   49.880134] DEBUG 618:init_proc_desc:16: p_name=lb_agent dcid=0
+	Jan 20 12:09:07 node1 kernel: [   49.880134] DEBUG 618:init_proc_desc:27: Clearing Privileges
+	Jan 20 12:09:07 node1 kernel: [   49.880134] DEBUG 618:init_proc_desc:35: Setting Default DVK calls privileges
+	Jan 20 12:09:07 node1 kernel: [   49.880135] DEBUG 618:init_proc_desc:41: Clearing Process fields
+	Jan 20 12:09:07 node1 kernel: [   49.880135] DEBUG 618:do_unbind:1114: initialized 
+	Jan 20 12:09:07 node1 kernel: [   49.880136] DEBUG 618:do_unbind:1115: DC_DECREF counter=3
+	Jan 20 12:09:07 node1 kernel: [   49.880137] DEBUG 618:new_unbind:2021: WUNLOCK_TASK pid=618 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.880137] DEBUG 618:new_unbind:2047: WUNLOCK_PROC ep=0 count=0
+	Jan 20 12:09:07 node1 kernel: [   49.880138] DEBUG 618:new_unbind:2050: WUNLOCK_DC dc=0 count=0
+
+	AQUI HACE EL BIND Y DA ERROR : QUIERE DECIR QUE EL UNBIND DEJO ALGO MAL?
+	Luego intente hacer un bind en el mismo DCID y ENDPOINT con el comando test_bind y funciono sin problemas.
+		Jan 20 12:22:21 node1 kernel: [  843.639479] DEBUG 618:dvk_ioctl:349: cmd=4004E309 arg=BF97FDB8
+		Jan 20 12:22:21 node1 kernel: [  843.639480] DEBUG 618:dvk_ioctl:369: DVK_CALL=9 (io_bind) 
+		Jan 20 12:22:21 node1 kernel: [  843.639480] DEBUG 618:io_bind:97: 
+		Jan 20 12:22:21 node1 kernel: [  843.639482] DEBUG 618:new_bind:1605: oper=0 dcid=0 param_pid=-1 endpoint=0 nodeid=-1
+		Jan 20 12:22:21 node1 kernel: [  843.639483] DEBUG 618:new_bind:1628: dc_ptr=f8ea4000
+		Jan 20 12:22:21 node1 kernel: [  843.639483] DEBUG 618:new_bind:1630: RLOCK_DC dc=0 count=0
+		Jan 20 12:22:21 node1 kernel: [  843.639484] DEBUG 618:new_bind:1643: proc_ptr=edf24400
+		Jan 20 12:22:21 node1 kernel: [  843.639484] DEBUG 618:new_bind:1644: WLOCK_PROC ep=0 count=0
+		Jan 20 12:22:21 node1 kernel: [  843.639485] DEBUG 618:new_bind:1674: WUNLOCK_PROC ep=0 count=0
+		Jan 20 12:22:21 node1 kernel: [  843.639486] DEBUG 618:new_bind:1675: RUNLOCK_DC dc=0 count=0
+		Jan 20 12:22:21 node1 kernel: [  843.639486] ERROR: 618:new_bind:1675: rcode=-337
+		Jan 20 12:22:21 node1 kernel: [  843.639487] ERROR: 618:dvk_ioctl:373: rcode=-337 
+
+	AQUI ESTA DANDO EL ERROR  
+			// IS the task already bound ?
+			if (task_ptr->task_proc != NULL){
+					UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
+					WUNLOCK_PROC(proc_ptr);
+					ERROR_RUNLOCK_DC(dc_ptr, EDVSSLOTUSED);
+			}	
+RESUELTO!!!! modificacion del DVK 
+
+....................................................
+ESTO NO ME CIERRA 
+			
+			// Same destination endpoint from the same source node ??
+			if( (sess_ptr->se_clt_nodeid == hdr_ptr->c_snode)
+			&&  (sess_ptr->se_lbclt_ep	 == hdr_ptr->c_dst) ){
+				rcode = clt_Rproxy_error(clt_ptr, EDVSRSCBUSY);
+				MTX_UNLOCK(sess_table[dcid].st_mutex);
+			}
+SI SE HACE LA PRIMER SESION DESDE CLIENT(50)->LB(10) FUNCIONA 
+	root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+	Time total elapsed in loop 0: 0.0389900208 
+	Time total elapsed in loop 1: 0.0027911663 
+	Time total elapsed in loop 2: 0.0031378269 
+	Time total elapsed in loop 3: 0.0024330616 
+	Time total elapsed in loop 4: 0.0030939579 
+	*********************************************************************
+	Total average latency in 5 loops: 0.0100892067 [s] 
+	Message throughput in 5 loops: 198.23 [msg/s]
+	*********************************************************************
+
+SI SE HACE OTRA SESION DESDE CLIENT(51)->LB(10) NO ANDA 
+	root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 51 10 5
+Y EL ERROR SE PRESENTA -342 EDVSRSCBUSY
+ 657:lb_cltpxy.c:clt_Rproxy_loop:151:CLIENT_RPROXY(client11):Message succesfully processed.
+ 657:lb_cltpxy.c:clt_Rproxy_loop:157:CLIENT_RPROXY(client11): svc_name=latency svc_dcid=0 svc_extep=10 svc_minep=10 svc_maxep=19 svc_bind=4 svc_prog=/usr/src/dvs/dvs-apps/dvs_lb/run_latency.sh
+ 657:lb_cltpxy.c:clt_Rproxy_loop:167:CLIENT_RPROXY(client11): minep=10  maxep=19
+ 657:lb_cltpxy.c:clt_Rproxy_loop:169:CLIENT_RPROXY(client11): ep=10
+ 657:lb_cltpxy.c:clt_Rproxy_loop:173:CLIENT_RPROXY(client11): service endpoint found ep=10
+ 657:lb_cltpxy.c:clt_Rproxy_2server:257:CLIENT_RPROXY(client11): 
+ 657:lb_cltpxy.c:clt_Rproxy_2server:259:MTX_LOCK sess_table[dcid].st_mutex 
+ 657:lb_cltpxy.c:clt_Rproxy_error:220:CLIENT_RPROXY(client11): Replying -342	
+LUEGO
+ 657:lb_cltpxy.c:clt_Rproxy_2server:371:MTX_UNLOCK sess_table[dcid].st_mutex 
+ 657:lb_cltpxy.c:clt_Rproxy_2server:375:MTX_UNLOCK sess_table[dcid].st_mutex 
+ 657:lb_cltpxy.c:clt_Rproxy_error:220:CLIENT_RPROXY(client11): Replying -306
+ERROR: lb_cltpxy.c:clt_Rproxy_loop:188: rcode=-11	
+
+
+ multi_proxy.c:pr_receive_header:224:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
+ multi_proxy.c:pr_receive_header:227:RPROXY(0): cmd=0x2003 dcid=0 src=10 dst=51 snode=0 dnode=11 rcode=-342 len=0 PID=646
+ multi_proxy.c:pr_receive_header:229:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=21 c_ack_seq=10
+ multi_proxy.c:pr_process_message:258:RPROXY(0):cmd=0x2003 dcid=0 src=10 dst=51 snode=0 dnode=11 rcode=-342 len=0 PID=646
+ multi_proxy.c:pr_process_message:260:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=21 c_ack_seq=10
+ multi_proxy.c:pr_process_message:262:RPROXY(0): 585 c_timestamp=1642703974.608853132
+ multi_proxy.c:pr_process_message:264:RPROXY(0): 585 c_flags=0x0 c_src_pid=21 c_dst_pid=10
+ multi_proxy.c:pr_process_message:329:RPROXY(0): put2lcl
+ multi_proxy.c:pr_start_serving:523:RPROXY(0): Message processing failure [-313] EDVSACKSRC 	(_SIGN 313)  /* The IPC proxy sent local process a BAD source ACK  */
+ 
+ SE MODIFICO EL DVK Y AHORA FUNCIONA 
+		 root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+		Time total elapsed in loop 0: 0.0259270668 
+		Time total elapsed in loop 1: 0.0039730072 
+		Time total elapsed in loop 2: 0.0024201870 
+		Time total elapsed in loop 3: 0.0019888878 
+		Time total elapsed in loop 4: 0.0031499863 
+		*********************************************************************
+		Total average latency in 5 loops: 0.0074918270 [s] 
+		Message throughput in 5 loops: 266.96 [msg/s]
+		*********************************************************************
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+		Time total elapsed in loop 0: 0.0308279991 
+		Time total elapsed in loop 1: 0.0023150444 
+		Time total elapsed in loop 2: 0.0028979778 
+		Time total elapsed in loop 3: 0.0020070076 
+		Time total elapsed in loop 4: 0.0028760433 
+		*********************************************************************
+		Total average latency in 5 loops: 0.0081848145 [s] 
+		Message throughput in 5 loops: 244.35 [msg/s]
+		*********************************************************************
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 51 10 5
+		ERROR: 634:dvk_sendrec_T:948: rcode=-342
+		ERROR: 634:dvk_sendrec_T:957: rcode=-342
+		ERROR: latency_client.c:run_client:57: rcode=-342
+
+DE TODOS MODOS HAY QUE ANALIZAR PORQUE NO CREAR OTRA SESION 
+EN REALIDAD EL PROBLEMA ESTA EN LA APLICACION SERVER 
+CUANDO RECIBE UN PEDIDO, LE RESPONDE AL CLIENTE QUE LO PIDIO Y LISTO.
+EL TEMA ES COMO MANEJAR MULTIPLES SESIONES. POR EJEMPLO MULTIPLES FTP 
+POSIBLE SOLUCION 
+		EL SERVER ATIENDE EN UN ENDPOINT CONOCIDO, PERO TIENE UN RANGO DE ENDPOINTS PARA USAR-
+		ESCUCHA EN EL ENDPOINT CONOCIDO 
+		CUANDO RECIBE EL PRIMER PUT O GET SE FIJA SI TIENEN ENDPOINS AUXILIARES LIBRE
+		SI TIENE, TOMA UNO Y LO DEVUELVE EN LA RESPUESTA
+		EL CLIENTE, 
+			SI ES REMOTO HACE EL BIND DE ESE ENDPOINT
+			Y A PARTIR DE ALLI COMIENZA A DIALOGAR CON EL ENDPOINT AUXILIAR
+		EL SERVER
+			CREA UN HILO PARA ATENDER AL CLIENTE 
+			HACE EL BIND LOCAL DEL ENDPOINT AUXILIAR
+			SI EN UN TIEMPO DADO NO HAY TRAFICO
+				HACE EL UNBIND DEL ENDPOINT
+				LIBERAR REGISTRO DEL ENDPOINT AUXILIAR 
+PARA RESOLVER ESTO 				
+			// Same destination endpoint from the same source node ??
+			if( (sess_ptr->se_clt_nodeid == hdr_ptr->c_snode)
+			&&  (sess_ptr->se_lbclt_ep	 == hdr_ptr->c_dst) ){
+				rcode = clt_Rproxy_error(clt_ptr, EDVSRSCBUSY);
+				MTX_UNLOCK(sess_table[dcid].st_mutex);
+			}				
+NO DEBERIA CREAR UN SERVER EN UNO DE LOS ENDPOINTS DEL RANGO?
+RESUELTO !!!!! SE ANULO ESE CODIGO 
+	PRIMER SESSION 50->10
+		root@client11:/usr/src/dvs/dvk-tests# ./test_rmtbind 0 10 0 latency_server
+		 dvk_rmtbind latency_server with p_nr=10 to DC0 on node=0
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+		Time total elapsed in loop 0: 0.0338058472 
+		Time total elapsed in loop 1: 0.0056469440 
+		Time total elapsed in loop 2: 0.0027279854 
+		Time total elapsed in loop 3: 0.0018939972 
+		Time total elapsed in loop 4: 0.0035340786 
+		*********************************************************************
+		Total average latency in 5 loops: 0.0095217705 [s] 
+		Message throughput in 5 loops: 210.04 [msg/s]
+		*********************************************************************
+	SEGUNDA SESSION 50->10
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+		Time total elapsed in loop 0: 0.0292849541 
+		Time total elapsed in loop 1: 0.0020060539 
+		Time total elapsed in loop 2: 0.0054659843 
+		Time total elapsed in loop 3: 0.0018899441 
+		Time total elapsed in loop 4: 0.0020580292 
+		*********************************************************************
+		Total average latency in 5 loops: 0.0081409931 [s] 
+		Message throughput in 5 loops: 245.67 [msg/s]
+		*********************************************************************
+	PRIMER SESSION AL 51->10
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 51 10 5
+		Time total elapsed in loop 0: 0.0139069557 
+		Time total elapsed in loop 1: 0.0060021877 
+		Time total elapsed in loop 2: 0.0029740334 
+		Time total elapsed in loop 3: 0.0034370422 
+		Time total elapsed in loop 4: 0.0023839474 
+		*********************************************************************
+		Total average latency in 5 loops: 0.0057408333 [s] 
+		Message throughput in 5 loops: 348.38 [msg/s]
+		*********************************************************************
+	PRIMER SESSION AL 51->2(FUERA DE RANGO)
+		root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 51 2 5
+		ERROR: 641:dvk_sendrec_T:948: rcode=-105
+		ERROR: 641:dvk_sendrec_T:957: rcode=-105
+		ERROR: latency_client.c:run_client:57: rcode=-105
+
+LUEGO SE CREARON MULTIPLES INSTANCIAS AUTOMATICAMENTE CAMBIANDO EL ENDPOINT DEL CLIENTE
+	EN EL CLIENTE
+	./latency_client 0 50 10 5
+	./latency_client 0 51 10 5
+	./latency_client 0 52 10 5
+	./latency_client 0 53 10 5
+	./latency_client 0 54 10 5
+	./latency_client 0 55 10 5
+	./latency_client 0 56 10 5
+	./latency_client 0 57 10 5
+	./latency_client 0 58 10 5
+
+	EN EL SERVER 
+	root       642     1  0 16:27 ?        00:00:00 ./latency_server 0 10
+	root       648     1  0 16:27 ?        00:00:00 ./latency_server 0 11
+	root       695     1  0 16:33 ?        00:00:00 ./latency_server 0 12
+	root       700     1  0 16:33 ?        00:00:00 ./latency_server 0 13
+	root       706     1  0 16:33 ?        00:00:00 ./latency_server 0 14
+	root       713     1  0 16:33 ?        00:00:00 ./latency_server 0 15
+	root       719     1  0 16:33 ?        00:00:00 ./latency_server 0 16
+	root       724     1  0 16:33 ?        00:00:00 ./latency_server 0 17
+	root       730     1  0 16:33 ?        00:00:00 ./latency_server 0 18
+
+TODO: FTP CLIENT/SERVER CONCURRENTE 
+TODO: CUANDO SE QUEDA SIN PODER LEVANTAR MAS SESIONES EN EL SERVER NODE1 
+		DEBERIA PODER LEVANTAR SERVER EN NODE2 PREVIAMENTE AL ARRANCAR LA VM
+		LA PREGUNTA ES: 
+			Donde definir los limites de NODOS a arrancar? en el LB o en el Servicio?
+		Deberia ser en el servicio.
+		La cantidad de servers se define en el archivo de configuracion al mencionar "server"
+		En el servicio deberia haber un parametro "max_nodes" que limitaria la cantidad de nodos que darian soporte al servicio
+		Si la cantidad de nodos definida en el archivo de configuracion es menor que max_nodes, ese sera obviamente el limite 
+		Por otro lado hay que definir en cada nodo que programa ejecutar y el nombre del archivo para arrancar una VM.
+		En el archivo de configuracion 
+			server node1 {
+				nodeid 		1;
+				compress	NO;
+				batch		NO;	
+				node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start";
+				node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop ";
+				node_image  "E:\NODE1\Debian 9.4.vmx";
+			};
+		PROBLEMA: Estos comandos se DEBEN ejecutar en el prompt de WINDOWS, no en LINUX!!!
+			Como hacer para ejecutarlos desde Linux ?????
+					
+		SOLUCION UTILIZAR WINEXE
+		BAJE winexe_4.13.0.1-1_i386.deb de 
+		https://software.opensuse.org/package/winexe
+		https://software.opensuse.org/download/package?package=winexe&project=home%3Auibmz%3Awinexe
+		
+			root@node0:/usr/src# dpkg --install winexe_4.13.0.1-1_i386.deb 
+			Seleccionando el paquete winexe previamente no seleccionado.
+			(Leyendo la base de datos ... 319020 ficheros o directorios instalados actualmente.)
+			Preparando para desempaquetar winexe_4.13.0.1-1_i386.deb ...
+			Desempaquetando winexe (4.13.0.1-1) ...
+			dpkg: problemas de dependencias impiden la configuraciÃ³n de winexe:
+			 winexe depende de libjansson4 (>= 2.0.1); sin embargo:
+			  El paquete `libjansson4' no estÃ¡ instalado.
+
+			dpkg: error al procesar el paquete winexe (--install):
+			 problemas de dependencias - se deja sin configurar
+			Se encontraron errores al procesar:
+			 winexe
+			root@node0:/usr/src# apt-get install libjansson4
+			Leyendo lista de paquetes... Hecho
+			Creando Ã¡rbol de dependencias       
+			Leyendo la informaciÃ³n de estado... Hecho
+			Se instalarÃ¡n los siguientes paquetes NUEVOS:
+			  libjansson4
+			0 actualizados, 1 nuevos se instalarÃ¡n, 0 para eliminar y 67 no actualizados.
+			1 no instalados del todo o eliminados.
+			Se necesita descargar 30,3 kB de archivos.
+			Se utilizarÃ¡n 79,9 kB de espacio de disco adicional despuÃ©s de esta operaciÃ³n.
+			Des:1 http://ftp.us.debian.org/debian stretch/main i386 libjansson4 i386 2.9-1 [30,3 kB]
+			Descargados 30,3 kB en 10s (2.850 B/s)
+			Seleccionando el paquete libjansson4:i386 previamente no seleccionado.
+			(Leyendo la base de datos ... 319023 ficheros o directorios instalados actualmente.)
+			Preparando para desempaquetar .../libjansson4_2.9-1_i386.deb ...
+			Desempaquetando libjansson4:i386 (2.9-1) ...
+			Configurando libjansson4:i386 (2.9-1) ...
+			Configurando winexe (4.13.0.1-1) ...
+			Procesando disparadores para libc-bin (2.24-11+deb9u4) ...
+			root@node0:/usr/src# dpkg --install winexe_4.13.0.1-1_i386.deb 
+			(Leyendo la base de datos ... 319032 ficheros o directorios instalados actualmente.)
+			Preparando para desempaquetar winexe_4.13.0.1-1_i386.deb ...
+			Desempaquetando winexe (4.13.0.1-1) sobre (4.13.0.1-1) ...
+			Configurando winexe (4.13.0.1-1) ...
+	RESULTADO: HAY QUE TENER INSTALADO UN WINEXESVC.EXE EN WINDOWS QUE PUEDE RESULTAR PELIGROSO 
+	USAR SSH 	Se instalo segun 
+		https://virtualizationreview.com/articles/2020/05/21/ssh-server-on-windows-10.aspx
+	    luego active el servicio OpenSSH Server 
+		desde el linux 
+				root@node0:~# ssh Admin@192.168.0.196
+				Admin@192.168.0.196's password: 
+				
+
 		
 		
- 678:lb_monitor.c:ucast_cmd:617:priv_name=#LBA.01#node1
- 678:lb_monitor.c:ucast_wait4bind:594:source=-1217647264 type=1000 m1i1=0 m1i2=-1 m1i3=1701080942 m1p1=0x10a0031 m1p2=0xb75762f9 m1p3=0xb76c0960 
- 678:lb_monitor.c:ucast_wait4bind:598:priv_name=#LBA.01#node1
-type=1000 		MT_WAIT_BIND
-m1i1=0 			dcid 
-m1i2=-1			ENDPOINT!! 
-						rcode = ucast_wait4bind(MT_WAIT_BIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
-										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
-										
-	
-	
+		
+		
 TODO:  Esta todo mal. Se esta fijando si el agent esta levantado y por default el agent esta levantado
 		Eso se usaria solo si se levanta la VM.
 	ADEMAS el wait4bind generico no contiene el DCID, con lo cual no lo puedo usar 
@@ -4116,6 +4497,53 @@ TODO:  Esta todo mal. Se esta fijando si el agent esta levantado y por default e
 	SOLUCION TRUCHA: Hacer un bind del agent con endpoint=-2 
 	Cuando sale hacer unbind()
 	
+	CREE EL BATCH EN WINDOWS C:\Users\Usuario>startvm.bat
+		cd C:\Program Files (x86)\VMware\VMware Workstation\
+		vmrun -T ws start  "E:\NODE2\Debian 9.4.vmx" nogui 
+	PERO SUCEDE LO SIGUIENTE DESDE LINUX 
+	
+		root@node0:~# sshpass -p 'mendieta' ssh Admin@192.168.0.196 "startvm.bat"
+		admin@USUARIO-PC C:\Users\Usuario>cd C:\Program Files (x86)\VMware\VMware Workstation\ 
+		admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun -T ws  start "E:\NODE1\Debian 9.4.vmx" nogui 
+	DICE QUE EJECUTAN 3 VMS 
+		admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun list  
+		Total running VMs: 3
+		J:\Virtual Machines\Debian 9.4 NODE0\Debian 9.4.vmx
+		E:\CLIENT11\Debian 9.4.vmx
+		E:\NODE1\Debian 9.4.vmx
+	PERO LUEGO DICE QUE EJECUTAN 2 VMS 
+		root@node0:~# sshpass -p 'mendieta' ssh Admin@192.168.0.196 "vmlist.bat"
+		admin@USUARIO-PC C:\Users\Usuario>cd C:\Program Files (x86)\VMware\VMware Workstation\ 
+		admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun list  
+		Total running VMs: 2
+		J:\Virtual Machines\Debian 9.4 NODE0\Debian 9.4.vmx
+		E:\CLIENT11\Debian 9.4.vmx
+
+EN SESION DE Administrador 
+Microsoft Windows [Versión 10.0.19044.1466]
+(c) Microsoft Corporation. Todos los derechos reservados.
+C:\WINDOWS\system32>ssh-keygen -A
+C:\WINDOWS\system32>C:\WINDOWS\System32\OpenSSH\sshd.exe -D
+
+C:\WINDOWS\System32\OpenSSH\sshd.exe -D 
+DEPENDIENDO DEL USUARIO DE WINDOWS UTILIZADO Admin o Administrador, da diferentes errores
+	root@node0:~# sshpass -p 'mendieta' ssh Admin@192.168.0.196 "vmlist.bat"
+	Authentication failed.
+	root@node0:~# sshpass -p 'mendieta' ssh Administrador@192.168.0.196 "vmlist.bat"
+	packet_write_wait: Connection to 192.168.0.196 port 22: Broken pipe
+
+https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement
+https://stackoverflow.com/questions/16212816/setting-up-openssh-for-windows-using-public-key-authentication
+
+
+TODO:	
+		Cuando levantar una VM?
+			Cuando todos los activos servers ya estan saturados 
+		
+		Cuando bajar una VM 
+			Cuando la sesion no se usa hace mucho tiempo
+			Cuando no tiene sesiones activas 
+			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
 	
 TODO_: Modificar test_lb.sh para que soporte parametros
 		start y stop y restart 

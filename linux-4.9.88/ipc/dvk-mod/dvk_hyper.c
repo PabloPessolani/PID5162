@@ -1669,7 +1669,7 @@ asmlinkage long new_bind(int oper, int dcid, int param_pid, int endpoint, int no
 		}
 		
 		// IS the task already bound ?
-		if (task_ptr->task_proc != NULL){
+		if (!test_bit(BIT_SLOT_FREE, &proc_ptr->p_usr.p_rts_flags)){
 				UNLOCK_TASK_LIST; //read_unlock(&tasklist_ptr);
 				WUNLOCK_PROC(proc_ptr);
 				ERROR_RUNLOCK_DC(dc_ptr, EDVSSLOTUSED);
@@ -2624,9 +2624,12 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 							msecs_to_jiffies(timeout_ms));
 				}
 				if (ret > 0){
-					RLOCK_PROC(caller_ptr);
-					ret = caller_ptr->p_usr.p_endpoint;
-					RUNLOCK_PROC(caller_ptr);					
+//					RLOCK_PROC(caller_ptr);
+//					ret = caller_ptr->p_usr.p_endpoint;
+//					RUNLOCK_PROC(caller_ptr);					
+					RLOCK_PROC(other_ptr);
+					ret = other_ptr->p_usr.p_endpoint;
+					RUNLOCK_PROC(other_ptr);					
 				}
 			}
 			DVKDEBUG(INTERNAL,"ret=%d\n",ret);

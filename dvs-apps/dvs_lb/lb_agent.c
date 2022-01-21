@@ -1,7 +1,10 @@
 #define _GNU_SOURCE     
 #define _MULTI_THREADED
+#define _TABLE
 #include "lb_dvs.h"
 #include "lb_agent.h"
+
+#define AGENT_EP		0
 
 char Spread_name[80];
 sp_time lba_timeout;
@@ -15,6 +18,25 @@ int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type);
 void *get_metrics(void *arg);
 
 lba_t lba;
+
+/*===========================================================================*
+*				ucast_lb_ack								     *
+*===========================================================================*/
+int  ucast_lb_ack(int rcode, int node_id,  message *m_ptr, char *lb_name)
+{
+	lba_t *lba_ptr;
+	
+	lba_ptr = &lba;
+	m_ptr->m_source = local_nodeid;
+	m_ptr->m_type = m_ptr->m_type | MT_ACKNOWLEDGE;
+	m_ptr->m1_i3  = rcode;
+	USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
+	
+	rcode = SP_multicast(lba_ptr->lba_mbox, FIFO_MESS, lb_name,
+					m_ptr->m_type, sizeof(message), m_ptr);
+	return(rcode);
+}
+
 
 /*===========================================================================*
  *				   main 				    					 *
@@ -314,11 +336,11 @@ int get_nodeid(char *mbr_string)
 *===========================================================================*/
 int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type)
 {
-	int node_id;
-	int rcode;
+	int node_id, dcid;
+	int rcode, ret;
 	message *m_ptr;
 	server_t *svr_ptr;
-
+	
 	node_id = get_nodeid(sender_ptr);
     USRDEBUG("sender_ptr=%s node_id=%d msg_type=%d\n", sender_ptr,  node_id, msg_type );
 
@@ -395,15 +417,16 @@ int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type)
 				ERROR_PRINT(rcode);
 				ERROR_PRINT(-errno);				
 			}
+			USRDEBUG("system rcode=%d\n", rcode);
 			break;
-		case MT_WAIT_BIND:
-		case MT_WAIT_UNBIND:
+		case MT_CLT_WAIT_BIND:
+		case MT_CLT_WAIT_UNBIND:
+		case MT_SVR_WAIT_UNBIND:
 			if( strncmp(sender_ptr, LBM_SHARP, strlen(LBM_SHARP)) != 0){
-				fprintf( stderr,"lba_reg_msg: MT_WAIT_BIND message sent by %s\n",
+				fprintf( stderr,"lba_reg_msg: MT_CLT_WAIT_BIND message sent by %s\n",
 					 sender_ptr);
 				return(OK);					
 			}
-			USRDEBUG("MT_WAIT_BIND=%s\n", lba_ptr->lba_mess_in);
 			m_ptr = lba_ptr->lba_mess_in;
 			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
 			// check message source 
@@ -427,14 +450,38 @@ int lba_reg_msg(char *sender_ptr, lba_t *lba_ptr, int16 msg_type)
 				return(OK);		
 			}
 			
-			/////////////////// AQUI HACER EL WAIT4BIND ///////////////////////////////
-			// Hacer un bind del agent con endpoint=SYSTASK
-			// Hacer el WAIT4BIND
-			// Hacer un unbind del agent 
-			// if timeout, return (no hace nada, el LB no espera)
-			// unicast_lb( WAIT4BIND | ACKNOWLEDGE 
-			
-			
+			dcid  = m_ptr->m1_i1;
+			dc_ptr[dcid]  = &dcu[dcid];
+			rcode = dvk_getdcinfo(dcid, dc_ptr[dcid]);
+			if(rcode < 0) {
+				ERROR_PRINT(rcode);
+				break;
+			}
+			USRDEBUG(DC_USR1_FORMAT, DC_USR1_FIELDS(dc_ptr[dcid]) );
+			//  AGENT temporary bind 
+			rcode = dvk_bind(dcid,AGENT_EP);
+	USRDEBUG("dvk_bind rcode=%d\n", rcode);
+			if(rcode != AGENT_EP) {
+	USRDEBUG("AGENT_EP=%d\n", AGENT_EP);
+				ERROR_PRINT(rcode);
+				break;
+			}
+	USRDEBUG("msg_type=%d\n", msg_type);
+			if( msg_type == MT_CLT_WAIT_BIND) {
+				ret = dvk_wait4bindep_T(m_ptr->m1_i2, LB_TIMEOUT_5SEC);
+			}else {
+				ret = dvk_wait4unbind_T(m_ptr->m1_i2, LB_TIMEOUT_5SEC);
+			}
+	USRDEBUG("dvk_wait4bindep_T ret=%d\n", ret);
+			if(ret < 0) {
+				ERROR_PRINT(ret);
+				if(rcode < 0) ERROR_PRINT(rcode);
+			}
+			rcode = dvk_unbind(dcid,AGENT_EP);
+	USRDEBUG("dvk_unbind rcode=%d\n", rcode);	
+			if(rcode < 0) ERROR_PRINT(rcode);
+			rcode = ucast_lb_ack(ret, node_id, m_ptr, sender_ptr);
+			if(rcode < 0) ERROR_PRINT(rcode);
 			break;
 		default:
 			fprintf( stderr,"lba_reg_msg: invalid regular message type=%d\n",

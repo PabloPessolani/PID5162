@@ -308,38 +308,36 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);
 						if( rcode < 0) ERROR_PRINT(rcode);	
+#endif // USE_SSHPASS								
 						// Send to AGENT to wait until server process is unbound									
-						rcode = ucast_wait4bind(MT_WAIT_UNBIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+						rcode = ucast_wait4bind(MT_CLT_WAIT_UNBIND, (char *) clt_ptr, 
+										svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
 						if( rcode < 0) ERROR_PRINT(rcode);
 						
 						// Wait for AGENT Notification or timeout 
-						MTX_LOCK(svr_ptr->svr_tail_mtx);
+//						MTX_LOCK(svr_ptr->svr_tail_mtx);
 						MTX_LOCK(clt_ptr->clt_agent_mtx);
 						// insert the client proxy descriptor into server list 
-						TAILQ_INSERT_TAIL(&svr_ptr->svr_clt_head,
-										clt_ptr,
-										clt_tail_entry);
-
-						SET_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_STOP);		// set bit in status bitmap that a client is waiting for stop  
+//						TAILQ_INSERT_TAIL(&svr_ptr->svr_clt_head,
+//										clt_ptr,
+//										clt_tail_entry);
+//						SET_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_STOP);		// set bit in status bitmap that a client is waiting for stop  
 						raw_time = clock_gettime(CLOCK_REALTIME, &cmd_ts);
 						if (raw_time) ERROR_PRINT(raw_time);
 						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;				// wait start notification from agent
 						COND_WAIT_T(rcode, clt_ptr->clt_agent_cond, clt_ptr->clt_agent_mtx, &cmd_ts);
 						if(rcode != 0 ) ERROR_PRINT(rcode);
-						
-						if (svr_ptr->svr_clt_head.tqh_first != NULL){
-							TAILQ_REMOVE(&svr_ptr->svr_clt_head, 
-								svr_ptr->svr_clt_head.tqh_first, 
-								clt_tail_entry);
+//						if (svr_ptr->svr_clt_head.tqh_first != NULL){
+//							TAILQ_REMOVE(&svr_ptr->svr_clt_head, 
+//								svr_ptr->svr_clt_head.tqh_first, 
+//								clt_tail_entry);
 							// only remove the bit from the bitmap if it was the last waiting client
-							if (svr_ptr->svr_clt_head.tqh_first == NULL)
-								CLR_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_STOP);								
-						}
+//							if (svr_ptr->svr_clt_head.tqh_first == NULL)
+//								CLR_BIT(svr_ptr->svr_bm_sts, CLT_WAIT_STOP);								
+//						}
 						MTX_UNLOCK(clt_ptr->clt_agent_mtx);	
-						MTX_UNLOCK(svr_ptr->svr_tail_mtx);
-						
-#endif // USE_SSHPASS								
+//						MTX_UNLOCK(svr_ptr->svr_tail_mtx);			
 					}
 					// Delete Session 
 					sess_ptr->se_clt_nodeid = LB_INVALID;
@@ -365,14 +363,19 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 				return(sess_ptr);
 			}
 //			MTX_UNLOCK(sess_table[dcid].st_mutex);
-		} else {
+		} 
+#ifdef ANULADO
+		else {
+
 			// Same destination endpoint from the same source node ??
 			if( (sess_ptr->se_clt_nodeid == hdr_ptr->c_snode)
 			&&  (sess_ptr->se_lbclt_ep	 == hdr_ptr->c_dst) ){
 				rcode = clt_Rproxy_error(clt_ptr, EDVSRSCBUSY);
 				MTX_UNLOCK(sess_table[dcid].st_mutex);
+				return(NULL);
 			}
 		}
+#endif // ANULADO
 	}
 	MTX_UNLOCK(sess_table[dcid].st_mutex);
 
@@ -474,7 +477,7 @@ server_t *select_server(client_t *clt_ptr,
 				continue;
 			}
 			for ( new_ep = svc_ptr->svc_minep; 
-				  new_ep < svc_ptr->svc_maxep; new_ep++){
+				  new_ep <= svc_ptr->svc_maxep; new_ep++){
 				if( TEST_BIT(svr_ptr->svr_bm_svc, new_ep) == 0) {
 					// ALLOCATE FREE SERVER ENDPOINT
 					SET_BIT(svr_ptr->svr_bm_svc, new_ep);
@@ -524,8 +527,10 @@ server_t *select_server(client_t *clt_ptr,
 							CLR_BIT(svr_ptr->svr_bm_svc, new_ep);
 							ERROR_PRINT(rcode);
 						}
+#endif  //  USE_SSHPASS													
 						// Send to AGENT to wait until server process is bound									
-						rcode = ucast_wait4bind(MT_WAIT_BIND, svr_ptr->svr_nodeid, svr_ptr->svr_name,
+						rcode = ucast_wait4bind(MT_CLT_WAIT_BIND, (char *) clt_ptr, 
+										svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, new_ep, LB_TIMEOUT_5SEC);
 						if( rcode < 0) ERROR_PRINT(rcode);
 						// Wait for AGENT Notification or timeout 
@@ -534,9 +539,11 @@ server_t *select_server(client_t *clt_ptr,
 						if (raw_time) ERROR_PRINT(raw_time);
 						cmd_ts.tv_sec += LB_TIMEOUT_5SEC;
 						COND_WAIT_T(rcode, clt_ptr->clt_agent_cond, clt_ptr->clt_agent_mtx, &cmd_ts);
-						if(rcode < 0 ) ERROR_PRINT(rcode); 
 						MTX_UNLOCK(clt_ptr->clt_agent_mtx);						
-#endif  //  USE_SSHPASS										
+						if(rcode < 0 ){
+							ERROR_PRINT(rcode); 
+							return(NULL);
+						}
 					}
 					break;
 				}
@@ -549,7 +556,15 @@ server_t *select_server(client_t *clt_ptr,
 		}
 		MTX_UNLOCK(svr_ptr->svr_mutex);
 	}
-	if ( i == NR_NODES){ // not free server found 
+	if ( i == NR_NODES){ // not free RUNNING server found
+		// Are there any defined node to start ??
+		if( lb.lb_nr_nodes < lb.lb_nr_nodes) {
+			///////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////
+			// HERE, START A VM WITH A NEW NODE 
+			///////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////
+		}
 		ERROR_PRINT(EDVSNOSPC);
 		return(NULL);	
 	} 

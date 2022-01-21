@@ -16,8 +16,6 @@ echo run_latency.sh $dcid $svr_ep $clt_node $clt_ep $clt_name
 cd /usr/src/dvs/dvk-tests/
 ./test_rmtbind $dcid $clt_ep $clt_node $clt_name
 ./latency_server  $dcid $svr_ep > /tmp/latency$svr_ep.out 2> /tmp/latency$svr_ep.err &
-cd /usr/src/dvs/dvs-apps/dvs_run/
-./wait4bind $dcid 0 $svr_ep
 exit 
 
 

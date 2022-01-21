@@ -248,6 +248,8 @@ struct server_s{
     int	svr_load;			// CPU Load (0-100) . Value (-1) implies INVALID
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
+	
+	int	svr_idle_count;		// Number o Idle cycles that the server has  // NOT USED YET  
 
 	char *svr_start;		// string to command which START the server NODE 
 	char *svr_stop;			// string to command which STOP the server NODE 
@@ -316,12 +318,12 @@ typedef struct {
     unsigned int	lb_bm_nodes;	// bitmap of Connected nodes
     unsigned int	lb_bm_init;		// bitmap  initialized/active nodes 
 	
-	int				lb_nr_nodes;
-	int				lb_nr_init;
+	int				lb_nr_nodes;	// number of Connected server nodes 
+	int				lb_nr_init;		// number of   initialized/active  server nodes 
 	
-	int				lb_nr_cltpxy;	// # of Client Proxies (from configuration file)
-	int				lb_nr_svrpxy;    // # of Server Proxies (from configuration file)
-	int				lb_nr_services;	// # of Services (from configuration file)
+	int				lb_nr_cltpxy;	// # of defined Client Proxies (from configuration file)
+	int				lb_nr_svrpxy;    // # of defined Server Proxies (from configuration file)
+	int				lb_nr_services;	// # of defined Services (from configuration file)
 
     mailbox			lb_mbox;
 	int				lb_len;

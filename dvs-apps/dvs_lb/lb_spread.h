@@ -10,13 +10,13 @@
 #define LBA_NAME 	"LBA"
 #define LBA_SHARP  	"#LBA"
 
-#define MT_BASE				1000	// From MONITOR to AGENTS
-#define MT_WAIT_BIND		1000
-#define MT_WAIT_UNBIND		1001
-#define MT_LOAD_THRESHOLDS	1002	// From MONITOR to AGENTS
-#define MT_LOAD_LEVEL		1003 	// From AGENTS to MONITOR 
-#define MT_RUN_COMMAND 	 	1004	// From LB to AGENT (unicast)
-#define MT_ACKNOWLEDGE 	 	2000	
+#define MT_CLT_WAIT_BIND	1	// Client proxy waits for BIND
+#define MT_CLT_WAIT_UNBIND	2	// Client proxy waits for UNBIND
+#define MT_SVR_WAIT_UNBIND	3   // Server proxy waits for UNBIND
+#define MT_LOAD_THRESHOLDS	4	// From MONITOR to AGENTS
+#define MT_LOAD_LEVEL		5 	// From AGENTS to MONITOR 
+#define MT_RUN_COMMAND 	 	6	// From LB to AGENT (unicast)
+#define MT_ACKNOWLEDGE 	 	0x1000	
 
 // FLAGS of svr_status 
 #define CLT_WAIT_START		0 // At list a Client Proxy is waiting to the server node starts

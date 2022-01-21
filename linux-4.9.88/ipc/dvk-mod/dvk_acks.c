@@ -135,10 +135,11 @@ asmlinkage long sendrec_ack_rmt2lcl(struct proc *rmt_ptr, struct proc *lcl_ptr, 
 	if(!test_bit(BIT_RECEIVING, &lcl_ptr->p_usr.p_rts_flags))  	ERROR_RETURN(EDVSACKDST);
 	
 	/* verify if the local ack destination is waiting the ack from the remote source */
-	if(lcl_ptr->p_usr.p_sendto != rmt_ptr->p_usr.p_endpoint) 	ERROR_RETURN(EDVSACKSRC);
+	if(lcl_ptr->p_usr.p_getfrom != rmt_ptr->p_usr.p_endpoint) 	ERROR_RETURN(EDVSACKSRC);
 
 	clear_bit(BIT_RECEIVING, &lcl_ptr->p_usr.p_rts_flags);
-	lcl_ptr->p_usr.p_sendto = NONE;
+//	lcl_ptr->p_usr.p_sendto  = NONE;
+	lcl_ptr->p_usr.p_getfrom = NONE;
 
 	/* Wakes up the local ack destinantion */
 	if( lcl_ptr->p_usr.p_rts_flags == 0)

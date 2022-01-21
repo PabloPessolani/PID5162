@@ -276,7 +276,8 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 	int rcode;
 	message *m_ptr;
 	server_t *svr_ptr;
-
+	client_t *clt_ptr;
+	
 	m_ptr = lb_ptr->lb_mess_in;
 	agent_id = get_nodeid(sender_ptr);
     USRDEBUG("sender_ptr=%s agent_id=%d msg_type=%d\n", 
@@ -302,10 +303,10 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
 	}
 
-    USRDEBUG("msg_type=%d\n",m_ptr->m_type);
+    USRDEBUG("msg_type=%0X\n",msg_type);
 	switch (msg_type){
 		case MT_LOAD_LEVEL:
-					// check that sender's name be an AGENT name 
+			// check that sender's name be an AGENT name 
 			if( strncmp(sender_ptr, LBA_SHARP, strlen(LBA_SHARP)) != 0){
 				fprintf( stderr,"lba_reg_msg: MT_LOAD_LEVEL message sent by %s\n",
 					 sender_ptr);
@@ -339,6 +340,49 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			assert(m_ptr->m_source == agent_id);
 			lbm_lvlchg_msg(m_ptr);
 			break;
+		case MT_CLT_WAIT_BIND | MT_ACKNOWLEDGE:
+		case MT_CLT_WAIT_UNBIND | MT_ACKNOWLEDGE:
+		case MT_SVR_WAIT_UNBIND | MT_ACKNOWLEDGE:
+			// check that sender's name be an AGENT name 
+			if( strncmp(sender_ptr, LBA_SHARP, strlen(LBA_SHARP)) != 0){
+				fprintf( stderr,"lba_reg_msg: MT_ACKNOWLEDGE message sent by %s\n",
+					 sender_ptr);
+				return(OK);					
+			}
+			// check message len 
+			if( lb_ptr->lb_len < sizeof(message)){
+				fprintf( stderr,"lb_reg_msg: bad MT_ACKNOWLEDGE message size=%d (must be %d)\n",
+					 lb_ptr->lb_len, sizeof(message));
+				return(OK);		
+			}
+			m_ptr = lb_ptr->lb_mess_in;
+			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
+			// check message source 
+			if( m_ptr->m_source != agent_id){
+				fprintf( stderr,"lb_reg_msg: MT_ACKNOWLEDGE m_source(%d) != sender agent_id(%d)\n",
+					 m_ptr->m_source, agent_id);
+				return(OK);		
+			}
+			// check correct message type 
+			if( m_ptr->m_type != msg_type){
+				fprintf( stderr,"lb_reg_msg: MT_ACKNOWLEDGE m_type(%d) != msg_type(%d)\n",
+					 m_ptr->m_type, msg_type);
+				return(OK);		
+			}
+			assert(m_ptr->m_source == agent_id);
+			if( (msg_type == (MT_CLT_WAIT_BIND | MT_ACKNOWLEDGE))
+			|| ( msg_type == (MT_CLT_WAIT_UNBIND | MT_ACKNOWLEDGE))){
+				clt_ptr = (client_t*) m_ptr->m1_p1;
+				MTX_LOCK(clt_ptr->clt_agent_mtx);
+				COND_SIGNAL(clt_ptr->clt_agent_cond);
+				MTX_UNLOCK(clt_ptr->clt_agent_mtx);	
+			}else{ // MT_SVR_WAIT_UNBIND | MT_ACKNOWLEDGE
+				svr_ptr = (server_t*) m_ptr->m1_p1;
+				MTX_LOCK(svr_ptr->svr_agent_mtx);
+				COND_SIGNAL(svr_ptr->svr_agent_cond);
+				MTX_UNLOCK(svr_ptr->svr_agent_mtx);					
+			}
+			break;			
 		default:
 			fprintf( stderr,"lbm_reg_msg: Invalid msg_type %d\n", msg_type);
 			assert(FALSE);
@@ -393,7 +437,7 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 	
 	if( agent_id == lb_ptr->lb_nodeid) {
 		if( lb_ptr->lb_nr_nodes > 1) {
-			mcast_thresholds(lb_ptr);
+			mcast_thresholds();
 		}
 		return(OK);
 	}
@@ -405,7 +449,7 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 			fprintf( stderr,"WARNING:Agent of node %d is no a configured Server\n", agent_id);
 			return(OK);
 		}	
-		mcast_thresholds(lb_ptr);
+		mcast_thresholds();
     }
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
 
@@ -570,16 +614,18 @@ int lbm_network(lb_t* lb_ptr)
 	lb_ptr->lb_nr_init   = nr_init;
 	lb_ptr->lb_nr_nodes  = nr_nodes;
 	
-	mcast_thresholds(lb_ptr);
+	mcast_thresholds();
 
     USRDEBUG("NEW " LB2_FORMAT, LB2_FIELDS(lb_ptr));	
     return(OK);
 }
 
+
 /*===========================================================================*
 *				ucast_wait4bind							     *
 *===========================================================================*/
-int  ucast_wait4bind(int cmd, int agent_id, char *agent_name, 
+int  ucast_wait4bind( int cmd, char *ptr, 
+					int agent_id, char *agent_name, 
 					int dcid, int ep, unsigned long timeout)
 {
 	int rcode;
@@ -587,13 +633,15 @@ int  ucast_wait4bind(int cmd, int agent_id, char *agent_name,
 	lb_t *lb_ptr;
 	char priv_name[MAX_MEMBER_NAME];
 	
+	lb_ptr 	= &lb; 
 	m_ptr 	= &m;
+	m_ptr->m_source = lb_ptr->lb_nodeid;
 	m_ptr->m_type = cmd;
 	m_ptr->m1_i1  = dcid;
 	m_ptr->m1_i2  = ep;
+	m_ptr->m1_p1  = ptr;
 	USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
 	
-	lb_ptr 	= &lb; 
 	sprintf(priv_name,"#LBA.%02d#%s",agent_id, agent_name);
 	USRDEBUG("priv_name=%s\n", priv_name);	
 	
@@ -624,12 +672,15 @@ int  ucast_cmd(int agent_id, char *agent_name, char *cmd)
 *				mcast_thresholds				     *
 * Multilcast the thresholds to new agent
 *===========================================================================*/
-void mcast_thresholds(lb_t *lb_ptr)
+void mcast_thresholds(void)
 {
 	message m;
 	message *m_ptr;
+	lb_t *lb_ptr;
 	
+	lb_ptr = &lb; 
 	m_ptr = &m;
+	
 	m_ptr->m_source = lb_ptr->lb_nodeid;
 	m_ptr->m_type   = MT_LOAD_THRESHOLDS;
 	m_ptr->m1_i1	= lb_ptr->lb_lowwater;

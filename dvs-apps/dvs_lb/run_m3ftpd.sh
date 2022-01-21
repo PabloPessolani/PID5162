@@ -17,8 +17,6 @@ cd /usr/src/dvs/dvk-tests/
 ./test_rmtbind $dcid $clt_ep $clt_node $clt_name
 cd /usr/src/dvs/dvs-apps/m3ftp/
 ./m3ftpd $dcid $svr_ep > /tmp/m3ftpd$svr_ep.out 2> /tmp/m3ftpd$svr_ep.err &
-cd /usr/src/dvs/dvs-apps/dvs_run/
-./wait4bind $dcid 0 $svr_ep
 exit 
 
 
