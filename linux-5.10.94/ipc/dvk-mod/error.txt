@@ -1,0 +1,225 @@
+In file included from ./include/linux/ptrace.h:5:0,
+                 from ./include/linux/ftrace.h:13,
+                 from ./include/linux/kprobes.h:42,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:6,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:5:
+./include/linux/sched.h:1951:10: note: #pragma message: USE_TASK_MUTEX
+  #pragma message ("USE_TASK_MUTEX")
+          ^~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:40:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:5:
+/usr/src/dvs/include/com/proc.h:84:0: warning: "PCOPY_FIELDS" redefined
+ #define PCOPY_FIELDS(p) p->p_tramp.t_src->p_usr.p_endpoint, \
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:33:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:5:
+/usr/src/dvs/include/com/cmd.h:84:0: note: this is the location of the previous definition
+ #define PCOPY_FIELDS(p) p->p_vcopy.v_src, p->p_vcopy.v_dst, p->p_vcopy.v_rqtr,\
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:51:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:5:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:50:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:56:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:62:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:68:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c: In function ‘send_rmt2lcl’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 5 has type ‘message * {aka struct <anonymous> *}’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:57:4: note: in expansion of macro ‘DVKDEBUG’
+    DVKDEBUG(GENERIC,"src cu_msg=%X\n", &usr_h_ptr->c_u.cu_msg);
+    ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c: In function ‘notify_rmt2lcl’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:129:2: note: in expansion of macro ‘DVKDEBUG’
+  DVKDEBUG(DBGMESSAGE,MSG9_FORMAT,MSG9_FIELDS(m_ptr));
+  ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:179:3: note: in expansion of macro ‘DVKDEBUG’
+   DVKDEBUG(DBGMESSAGE,MSG9_FORMAT,MSG9_FIELDS(m_ptr));
+   ^~~~~~~~
+In file included from ./include/linux/bitops.h:36:0,
+                 from ./include/linux/kernel.h:10,
+                 from ./include/linux/list.h:8,
+                 from ./include/linux/module.h:9,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:3,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:5:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c: In function ‘new_put2lcl’:
+./arch/x86/include/asm/bitops.h:311:8: warning: ‘rqtr_ptr’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   (addr[nr >> _BITOPS_LONG_SHIFT])) != 0;
+   ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_rproxy.c:533:35: note: ‘rqtr_ptr’ was declared here
+  struct proc *rmt_ptr, *lcl_ptr, *rqtr_ptr, *rproxy_ptr, *sproxy_ptr;
+                                   ^~~~~~~~
+In file included from ./include/linux/ptrace.h:5:0,
+                 from ./include/linux/ftrace.h:13,
+                 from ./include/linux/kprobes.h:42,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:6,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debugfs.c:5:
+./include/linux/sched.h:1951:10: note: #pragma message: USE_TASK_MUTEX
+  #pragma message ("USE_TASK_MUTEX")
+          ^~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:40:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debugfs.c:5:
+/usr/src/dvs/include/com/proc.h:84:0: warning: "PCOPY_FIELDS" redefined
+ #define PCOPY_FIELDS(p) p->p_tramp.t_src->p_usr.p_endpoint, \
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:33:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debugfs.c:5:
+/usr/src/dvs/include/com/cmd.h:84:0: note: this is the location of the previous definition
+ #define PCOPY_FIELDS(p) p->p_vcopy.v_src, p->p_vcopy.v_dst, p->p_vcopy.v_rqtr,\
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:51:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debugfs.c:5:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:50:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:56:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:62:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:68:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+In file included from ./include/linux/ptrace.h:5:0,
+                 from ./include/linux/ftrace.h:13,
+                 from ./include/linux/kprobes.h:42,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:6,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+./include/linux/sched.h:1951:10: note: #pragma message: USE_TASK_MUTEX
+  #pragma message ("USE_TASK_MUTEX")
+          ^~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:40:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+/usr/src/dvs/include/com/proc.h:84:0: warning: "PCOPY_FIELDS" redefined
+ #define PCOPY_FIELDS(p) p->p_tramp.t_src->p_usr.p_endpoint, \
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:33:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+/usr/src/dvs/include/com/cmd.h:84:0: note: this is the location of the previous definition
+ #define PCOPY_FIELDS(p) p->p_vcopy.v_src, p->p_vcopy.v_dst, p->p_vcopy.v_rqtr,\
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:51:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:50:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:56:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:62:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:68:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_mini_receive’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:502:4: note: in expansion of macro ‘DVKDEBUG’
+    DVKDEBUG(DBGMESSAGE, MSG9_FORMAT, MSG9_FIELDS(mptr));
+    ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_mini_notify’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:1064:4: note: in expansion of macro ‘DVKDEBUG’
+    DVKDEBUG(DBGMESSAGE, MSG9_FORMAT, MSG9_FIELDS(mptr));
+    ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_vcopy’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:1131:40: warning: unused variable ‘dc_max_nr_nodes’ [-Wunused-variable]
+  int dc_max_sysprocs, dc_max_nr_tasks, dc_max_nr_nodes;
+                                        ^~~~~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:1124:26: warning: unused variable ‘nr_tasks’ [-Wunused-variable]
+  int dst_pid , dst_tgid, nr_tasks;
+                          ^~~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:51:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_hdw_notify’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 8 has type ‘int’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:2115:3: note: in expansion of macro ‘DVKDEBUG’
+   DVKDEBUG(DBGMESSAGE, MSG9_FORMAT, MSG9_FIELDS(mptr));
+   ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 5 has type ‘ipc_map_t {aka struct <anonymous>}’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:2126:4: note: in expansion of macro ‘DVKDEBUG’
+    DVKDEBUG(GENERIC,"get_sys_bit priv_notify_pending=%X priv_id=%d\n",
+    ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:38:13: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 5 has type ‘ipc_map_t {aka struct <anonymous>}’ [-Wformat=]
+      printk("DEBUG %d:%s:%u: " \
+             ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:2132:3: note: in expansion of macro ‘DVKDEBUG’
+   DVKDEBUG(GENERIC,"set_sys_bit priv_notify_pending=%X priv_id=%d\n",
+   ^~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:2134:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+   int i;
+   ^~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:2134:7: warning: unused variable ‘i’ [-Wunused-variable]
+   int i;
+       ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_mini_sendrec’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:577:16: warning: ‘dc_max_nr_tasks’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if( (srcdst_nr+dc_max_nr_tasks) < dc_max_sysprocs ) {
+      ~~~~~~~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:52:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:12:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_macros.h:113:17: warning: ‘ret1’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   proc->p_rcode = rcode; \
+                 ^
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:521:24: note: ‘ret1’ was declared here
+  int ret, retry, dcid, ret1;
+                        ^~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c: In function ‘new_mini_notify’:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_ipc.c:905:13: warning: ‘dc_max_nr_tasks’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if( (dst_nr+dc_max_nr_tasks) < dc_max_sysprocs) {
+      ~~~~~~~^~~~~~~~~~~~~~~~~
+In file included from ./include/linux/ptrace.h:5:0,
+                 from ./include/linux/ftrace.h:13,
+                 from ./include/linux/kprobes.h:42,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:6,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_migrate.c:14:
+./include/linux/sched.h:1951:10: note: #pragma message: USE_TASK_MUTEX
+  #pragma message ("USE_TASK_MUTEX")
+          ^~~~~~~
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:40:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_migrate.c:14:
+/usr/src/dvs/include/com/proc.h:84:0: warning: "PCOPY_FIELDS" redefined
+ #define PCOPY_FIELDS(p) p->p_tramp.t_src->p_usr.p_endpoint, \
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:33:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_migrate.c:14:
+/usr/src/dvs/include/com/cmd.h:84:0: note: this is the location of the previous definition
+ #define PCOPY_FIELDS(p) p->p_vcopy.v_src, p->p_vcopy.v_dst, p->p_vcopy.v_rqtr,\
+ 
+In file included from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_mod.h:51:0,
+                 from /usr/src/linux-4.9.88/ipc/dvk-mod/dvk_migrate.c:14:
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:50:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:56:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:62:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~
+/usr/src/linux-4.9.88/ipc/dvk-mod/dvk_debug.h:68:5: warning: "DVKPROFILING" is not defined [-Wundef]
+ #if DVKPROFILING != 0
+     ^~~~~~~~~~~~

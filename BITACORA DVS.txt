@@ -4699,17 +4699,45 @@ Oct 31 20:04:45 node0 kernel: [ 1378.652663] do_exit: local_nodeid:0
 DURANTE JULIO Y AGOSTO: Para LOAD BALANCER se tuvieron que modificar los codigos 
 del modulo DVK para lo referente a proxies y acknowledges. Habia errores no detectados.
 
+==============================================================================================================
+20220128: MIGRACION A KERNEL 5.10.94
 
-TODO: Se puede probar migrar a una nueva version de kernel 
-En DEBIAN esta este paquete 
-	Package linux-headers-5.10.0-10-686
-Se deberia instalar un DEBIAN Pristino
-	Modificar el kernel 
-	Instalar el DVK y probar
-	Instalalar las herramientas requeridas.
- La última versión es Debian 11.2, también conocida (actualmente) como «estable» (stable) o por su nombre en clave «Stretch».	
- 
-	
+	Se creo la VM => DVS NODE0 kernel 5.10.94 (Debian 11)
+	Se cargo Package linux-headers-5.10.0-10-686
+	Se cargo Linux 
+	https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.10.94.tar.xz
+	Se copio el .config 
+	root@node0a:~# make menuconfig
+	root@node0a:~# sudo make -j 4 && sudo make modules_install -j 4 && sudo make install -j 4
+	root@node0a:~# update-initramfs -c -k 5.10.94
+	root@node0a:~# update-grub  
+	root@node0a:~# update-grub2
+
+	root@node0a:~# lsb_release -a
+		No LSB modules are available.
+		Distributor ID: Debian
+		Description:    Debian GNU/Linux 11 (bullseye)
+		Release:        11
+		Codename:       bullseye
+	root@node0a:~# uname -a
+		Linux node0a 5.10.94 #1 SMP Fri Jan 28 12:23:15 -03 2022 i686 GNU/Linux
+
+PROBLEMA:	No conservar lo relacionado al DVK en el .config !!! 
+		# Linux/x86 4.9.88-DVK Kernel Configuration
+		# CONFIG_DVKIPC is not set
+		CONFIG_DVKIOCTL=y
+		 
+
+make menuconfig
+sudo make -j 4 && sudo make modules_install -j 4 && sudo make install -j 4
+update-initramfs -c -k 5.10.94-DVKIPC
+update-grub  
+update-grub2
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+HAY PROBLEMAS CON LOS DISPOSITIVOS Y LOS FILESYSTEMS
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 ULTIMO_LOG
 ==============================================================================================================

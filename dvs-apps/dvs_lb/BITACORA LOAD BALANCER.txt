@@ -4413,7 +4413,44 @@ LUEGO SE CREARON MULTIPLES INSTANCIAS AUTOMATICAMENTE CAMBIANDO EL ENDPOINT DEL 
 	root       724     1  0 16:33 ?        00:00:00 ./latency_server 0 17
 	root       730     1  0 16:33 ?        00:00:00 ./latency_server 0 18
 
+===================================================================================
+20220128:	Se configuro SSH CLIENT FOR WINDOWS para conectarse con KEY PAIR 
+			contra NODE0, NODE1, NODE2 Y CLIENT11
+			El instructivo esta en pdf en BOOKS
+				ARCHIVED: Using SSH Secure Shell for Windows,
+				how do I set up public key authentication?
+			https://kb.iu.edu/d/amzx
+			NO SE REALIZARON CAMBIOS en el archivo de configuracion de los HOSTS
+			/etc/ssh/sshd_config << SIN CAMBIOS 
+			
+			
+===================================================================================
 TODO: FTP CLIENT/SERVER CONCURRENTE 
+		En este caso hay que configurar el LB para que no arranque automaticamente el proceso SERVER 
+		CLIENT(>50) ---->PUT/GET ------>> SERVER(10) 
+											Crea un thread en un endpoint libre (ej: 11)
+											le pasa como parametros 
+												- el mensaje (para que sepa el endpoint client)
+											y hace el bind de su propio thread 
+											lock
+											marca el endpoint 11 como ocupado 
+											unlock
+											el cual al arrancar hace un wait4bind
+											de donde obtiene su propio endpoint 
+											luego vuelve a seguir escuchando
+	
+		CLIENT(>50)	<---- TRY IN 11 ---- SERVER(10) El server le envia al client el endpoint del cliente
+		
+		CLIENT(>50) ---->PUT/GET ------>> SERVER(11) El server compara ambos mensajes y si son identicos responde
+													Cuando la transferencia termina 
+													el server hace 
+													lock
+													marca el endpoint 11 como libre  
+													unlock
+													finaliza 
+													
+											
+											
 TODO: CUANDO SE QUEDA SIN PODER LEVANTAR MAS SESIONES EN EL SERVER NODE1 
 		DEBERIA PODER LEVANTAR SERVER EN NODE2 PREVIAMENTE AL ARRANCAR LA VM
 		LA PREGUNTA ES: 
@@ -4535,7 +4572,98 @@ DEPENDIENDO DEL USUARIO DE WINDOWS UTILIZADO Admin o Administrador, da diferente
 https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement
 https://stackoverflow.com/questions/16212816/setting-up-openssh-for-windows-using-public-key-authentication
 
+================================================================================================
 
+SIGUIENDO EL INSTRUCTIVO 
+https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement
+
+C:\Users\Usuario>ssh-add .ssh\id_ed25519
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions for '.ssh\\id_ed25519' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+
+C:\Users\Usuario>icacls .\private.key /inheritance:r
+.\private.key: El sistema no puede encontrar el archivo especificado.
+Se procesaron correctamente 0 archivos; error al procesar 1 archivos
+
+C:\Users\Usuario>icacls .ssh\id_ed25519 /inheritance:r
+archivo procesado: .ssh\id_ed25519
+Se procesaron correctamente 1 archivos; error al procesar 0 archivos
+
+C:\Users\Usuario>icacls .ssh\id_ed25519 /grant:r "%username%":"(R)"
+archivo procesado: .ssh\id_ed25519
+Se procesaron correctamente 1 archivos; error al procesar 0 archivos
+
+C:\Users\Usuario>ssh-add .ssh\id_ed25519
+Identity added: .ssh\id_ed25519 (Admin@Usuario-PC)
+
+============================================================================
+RESUELTO : NO SE UTILIZO LOGIN POR INTERCAMBIO DE CLAVES 
+Hacer en Windows en el directorio siguiente  
+	C:\Users\Usuario>dir *.bat
+	 El volumen de la unidad C es DISCO C
+	 El número de serie del volumen es: A295-0210
+	 Directorio de C:\Users\Usuario
+	31/01/2022  23:00               222 startvm.bat <<<<<<<<<<
+	20/01/2022  19:10                65 vmlist.bat
+				   2 archivos            287 bytes
+el siguiente script			   
+	cd C:\Program Files (x86)\VMware\VMware Workstation\
+	rem vmrun -T ws  start "E:\NODE2\Debian 9.4.vmx" 
+	vmrun -T ws -u Admin -p mendieta start "E:\NODE2\Debian 9.4.vmx" nogui
+	:loop1
+		vmrun list 
+		sleep 60
+	goto loop1
+LA VM DURA MIENTRAS ESTE SCRIPT ESTE VIVO!!
+
+Para invocarlo desde LINUX a través de SSH
+	root@node0:~#  sshpass -p 'mendieta' ssh Admin@192.168.0.196 "startvm.bat" > /tmp/node2.out 2> /tmp/node2.err &
+============================================================================
+
+
+
+vmrun -u username -p password start c:\vm\machine1.vmx
+
+TODO:	Tanto SERVER como CLIENTs pueden activarse via SPREAD 
+		SERVER:
+			Hacen un Multicast 
+			Actualment deberia ser 
+			sprintf( lba_ptr->lba_mbr_name, "LBA.%s", hostname);
+			Despues del JOIN le envia al LBM los LBA_CONFIG_NEW parametros de configuracion 
+			cada LBA tiene su propio archivo de configuracion 
+			server node1 {
+				nodeid 		1;
+				compress	NO;
+				batch		NO;	
+				node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start";
+				node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop ";
+				node_image  "E:\NODE1\Debian 9.4.vmx";
+			};
+			El LBM verifica todos los parámetros y arranca el par de PROXIES correspondientes
+			Dando de alta en la base de datos y enviando un UNICAST LBA_CONFIG_ACK 
+		CLIENT 
+			client client11 {
+				nodeid 		11;
+				compress	NO;
+				batch		NO;	
+			};
+		El LBM verifica todos los parámetros y arranca el par de PROXIES correspondientes
+			Dando de alta en la base de datos y enviando un UNICAST LBA_CONFIG_ACK 
+
+TODO:
+	When the load level of all active servers is LVL_SATURATED during 
+	a specified START_PERIOD, the LBM commands the hypervisor to start 
+	a new node (scale up). If a server node has no active sessions during 
+	a specified SHUTDOWN_PERIOD, it will be shut down (scale down).
+	IMPLEMENTAR EN CONFIGURACION START_PERIOD SHUTDOWN_PERIOD como parametro del LB 
+	
+	
+TODO:	Ver como activo claves entre LINUX y WINDOWS OPENSSH 
+	
 TODO:	
 		Cuando levantar una VM?
 			Cuando todos los activos servers ya estan saturados 
