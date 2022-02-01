@@ -24,6 +24,48 @@ server_t *select_server(client_t *clt_ptr,
 /*----------------------------------------------*/
 
 /*===========================================================================*
+ *				   start_new_node		    					 *
+ *===========================================================================*/
+void start_new_node(sess_entry_t *sess_ptr, client_t *clt_ptr)
+{
+	int n, rcode;
+	server_t *svr_ptr;
+	lb_t *lb_ptr;
+
+	lb_ptr = &lb;
+	USRDEBUG("CLIENT_RPROXY(%s): \n", clt_ptr->clt_name);
+						
+	for( n = 0; n < NR_NODES ; n++){
+		// the agent was on the old bitmap 
+		if(TEST_BIT(lb_ptr->lb_bm_init, n) == 0) { // Need a server not initialized  
+			svr_ptr = &server_tab[n];
+			if(svr_ptr-> svr_image != NULL) { 		// but configured with a VM image 
+//				nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta \"E:\\NODE2\\Debian 9.4.vmx\" > /tmp/node2.out 2>/tmp/node2.err  &
+			
+				sprintf(sess_ptr->se_rmtcmd, "nohup sshpass -p %s ssh %s@%s startvm.bat %s %s \"%s\" > /tmp/vm_%s.out 2> /tmp/vm_%s.err &",
+							lb_ptr->lb_ssh_pass,				  
+							lb_ptr->lb_ssh_user,
+							lb_ptr->lb_ssh_host,
+							
+							lb_ptr->lb_ssh_user,
+							lb_ptr->lb_ssh_pass,				  
+							svr_ptr->svr_image,
+							
+							svr_ptr->svr_name,
+							svr_ptr->svr_name									
+							);
+				USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
+						clt_ptr->clt_name, sess_ptr->se_rmtcmd);
+				rcode = system(sess_ptr->se_rmtcmd);
+				if(rcode == OK) break; 
+				// try anothed configured server 
+				ERROR_PRINT(rcode);
+			}		
+		}
+	}
+}
+
+/*===========================================================================*
  *				   clt_Rproxy 				    					 *
  *===========================================================================*/
 void *clt_Rproxy(void *arg)
@@ -469,17 +511,23 @@ server_t *select_server(client_t *clt_ptr,
 	for( i = 0; i < NR_NODES; i++){
 		svr_ptr = &server_tab[i]; 
 		MTX_LOCK(svr_ptr->svr_mutex);
-		// TEMPORARY : CHOOSE THE FIRST
+		// TEMPORARY : CHOOSE THE FIRST INITIALIZED SERVER 
 		if( svr_ptr->svr_nodeid != LB_INVALID) {
 			// If server is SATURATED get the next
 			if( svr_ptr->svr_level == LVL_SATURATED) {
 				MTX_UNLOCK(svr_ptr->svr_mutex);
 				continue;
 			}
+			// If server is not Initialized 
+			if( TEST_BIT(lb.lb_bm_init, i) == 0) {
+				MTX_UNLOCK(svr_ptr->svr_mutex);
+				continue;
+			}
+			
+			// ALLOCATE FREE SERVER ENDPOINT
 			for ( new_ep = svc_ptr->svc_minep; 
 				  new_ep <= svc_ptr->svc_maxep; new_ep++){
 				if( TEST_BIT(svr_ptr->svr_bm_svc, new_ep) == 0) {
-					// ALLOCATE FREE SERVER ENDPOINT
 					SET_BIT(svr_ptr->svr_bm_svc, new_ep);
 					if( svc_ptr->svc_bind != PROG_BIND 
 					&&	svc_ptr->svc_prog != nonprog ){
@@ -556,14 +604,15 @@ server_t *select_server(client_t *clt_ptr,
 		}
 		MTX_UNLOCK(svr_ptr->svr_mutex);
 	}
-	if ( i == NR_NODES){ // not free RUNNING server found
+	if ( i == NR_NODES){ // not UNLOADED SERVER RUNNING server found
 		// Are there any defined node to start ??
-		if( lb.lb_nr_nodes < lb.lb_nr_nodes) {
-			///////////////////////////////////////////////////////////////////
+		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_nodes=%d\n", 		
+								clt_ptr->clt_name, lb.lb_nr_init, lb.lb_nr_nodes);
+		if( lb.lb_nr_init < lb.lb_nr_nodes) {
 			///////////////////////////////////////////////////////////////////
 			// HERE, START A VM WITH A NEW NODE 
 			///////////////////////////////////////////////////////////////////
-			///////////////////////////////////////////////////////////////////
+			start_new_node(sess_ptr, clt_ptr);
 		}
 		ERROR_PRINT(EDVSNOSPC);
 		return(NULL);	

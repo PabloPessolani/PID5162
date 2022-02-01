@@ -110,9 +110,9 @@ void connect_to_spread(lb_t *lb_ptr)
  *===========================================================================*/
 void init_control_vars(lb_t *lb_ptr)
 {	
-    lb_ptr->lb_bm_nodes 	= 0;
+//    lb_ptr->lb_bm_nodes 	= 0;
     lb_ptr->lb_bm_init		= 0;	
-    lb_ptr->lb_nr_nodes 	= 0;
+//    lb_ptr->lb_nr_nodes 	= 0;
     lb_ptr->lb_nr_init		= 0;
 }
 
@@ -285,8 +285,8 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 
 	// self sent message 
 	if ( msg_type == MT_LOAD_THRESHOLDS){
-		lb_ptr->lb_nr_init = lb_ptr->lb_nr_nodes;
-		lb_ptr->lb_bm_init = lb_ptr->lb_bm_nodes;
+//		lb_ptr->lb_nr_init = lb_ptr->lb_nr_nodes;
+//		lb_ptr->lb_bm_init = lb_ptr->lb_bm_nodes;
 		return(OK);
 	}
 	
@@ -448,7 +448,7 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 		if( svr_ptr->svr_nodeid == LB_INVALID){
 			fprintf( stderr,"WARNING:Agent of node %d is no a configured Server\n", agent_id);
 			return(OK);
-		}	
+		}		
 		mcast_thresholds();
     }
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
@@ -593,7 +593,7 @@ int lbm_network(lb_t* lb_ptr)
 	
     USRDEBUG("OLD " LB2_FORMAT, LB2_FIELDS(lb_ptr));	
 
-	if( lb_ptr->lb_nr_nodes > nr_nodes){
+	if( lb_ptr->lb_nr_init > nr_nodes){
 	    USRDEBUG("NETWORK PARTITION \n");		
 	}else{
 	    USRDEBUG("NETWORK MERGE \n");		
@@ -610,9 +610,9 @@ int lbm_network(lb_t* lb_ptr)
 	}
 	
 	lb_ptr->lb_bm_init   = bm_init;
-	lb_ptr->lb_bm_nodes  = bm_nodes;
+//	lb_ptr->lb_bm_nodes  = bm_nodes;
 	lb_ptr->lb_nr_init   = nr_init;
-	lb_ptr->lb_nr_nodes  = nr_nodes;
+//	lb_ptr->lb_nr_nodes  = nr_nodes;
 	
 	mcast_thresholds();
 
@@ -708,7 +708,7 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 	bm_nodes = lb_ptr->lb_bm_nodes;
 	
 	lb_ptr->lb_bm_nodes = 0;
-	lb_ptr->lb_nr_nodes = 0;
+//	lb_ptr->lb_nr_nodes = 0;
     lb_ptr->lb_sp_nr_mbrs = num_groups;
     memcpy((void*) lb_ptr->lb_sp_members, (void *) target_groups, lb_ptr->lb_sp_nr_mbrs*MAX_GROUP_NAME);
     for(int i=0; i < lb_ptr->lb_sp_nr_mbrs; i++ ){
@@ -734,7 +734,7 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 			}
 		}
 		SET_BIT(lb_ptr->lb_bm_nodes, nodeid);
-		lb_ptr->lb_nr_nodes++;
+//		lb_ptr->lb_nr_nodes++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     }
 }

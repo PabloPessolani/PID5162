@@ -8,6 +8,12 @@ lb LB_NAME {
 	lowwater	30;
 	highwater	70;
 	period	45;
+	start		60; <<=== START_VM_PERIOD
+	stop 	60; <<=== SHUTDOWN_VM_PERIOD
+	ssh_user	Admin;
+	ssh_pass	mendienta
+	vm_start  "C:\Users\Usuario\start_vm.bat";
+	vm_stop   "C:\Users\Usuario\stop_vm.bat";
 	cltname	client0;
 	svrname      node0;
 	cltdev	eth1;
@@ -34,8 +40,6 @@ server node1 {
 	svrRport		3000; // Client Receiver port 
 	compress	YES; 
 	batch		YES;
-	node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start"
-	node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop "
 	node_img    "D:\PAP\Virtual Machines\Debian 9.4\Debian 9.4.vmx"
 };
 		
@@ -76,10 +80,8 @@ extern char *ctl_socket;
 #define	TKN_SVR_SVRRPORT 2
 #define TKN_SVR_COMPRESS 3
 #define TKN_SVR_BATCH	4
-#define TKN_SVR_START	5
-#define TKN_SVR_STOP	6
-#define TKN_SVR_IMAGE	7
-#define TKN_SVR_MAX 	8 // MUST be the last
+#define TKN_SVR_IMAGE	5
+#define TKN_SVR_MAX 	6 // MUST be the last
 
 #define TKN_CLT_NODEID	0
 #define TKN_CLT_LBRPORT	1
@@ -100,11 +102,18 @@ extern char *ctl_socket;
 #define TKN_LB_LOWWATER  1
 #define TKN_LB_HIGHWATER 2
 #define TKN_LB_PERIOD	 3
-#define TKN_LB_CLTNAME   4
-#define TKN_LB_SVRNAME   5
-#define TKN_LB_CLTDEV    6
-#define TKN_LB_SVRDEV    7
-#define TKN_LB_MAX 		 8	// MUST be the last
+#define TKN_LB_START	 4
+#define TKN_LB_STOP	 	 5
+#define TKN_LB_VM_START	 6
+#define TKN_LB_VM_STOP 	 7
+#define TKN_LB_CLTNAME   8
+#define TKN_LB_SVRNAME   9
+#define TKN_LB_CLTDEV    10
+#define TKN_LB_SVRDEV    11
+#define TKN_LB_SSH_HOST  12
+#define TKN_LB_SSH_USER  13
+#define TKN_LB_SSH_PASS  14
+#define TKN_LB_MAX 		 15	// MUST be the last
 
 #define nil ((void*)0)
 
@@ -119,9 +128,7 @@ char *cfg_svr_ident[] = {
 	"lbRport",
 	"svrRport",
 	"compress",
-	"batch",	
-	"node_start",
-	"node_stop",
+	"batch",
 	"node_image",	
 };
 
@@ -148,10 +155,17 @@ char *cfg_lb_ident[] = {
     "lowwater",
     "highwater",
     "period",
+    "start",
+    "stop",
+    "vm_start",
+    "vm_stop",
     "cltname",
     "svrname",
     "cltdev",
     "svrdev",	
+    "ssh_host",
+    "ssh_user",
+    "ssh_pass",	
 };
 
 char nonprog[] = "none";
@@ -453,32 +467,6 @@ int search_svr_ident(config_t *cfg)
 							USRDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
 							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_BATCH);							
 							break;							
-                        case TKN_SVR_START:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
-							if (!config_isatom(cfg)) {
-								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}
-							svr_ptr->svr_start = cfg->word;		
-							USRDEBUG("svr_start=%s\n", svr_ptr->svr_start);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_START);							
-							break;							
-                        case TKN_SVR_STOP:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
-							if (!config_isatom(cfg)) {
-								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}
-							svr_ptr->svr_stop = cfg->word;		
-							USRDEBUG("svr_stop=%s\n", svr_ptr->svr_stop);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_STOP);							
-							break;
                         case TKN_SVR_IMAGE:
 							if( svr_ptr->svr_nodeid == LB_INVALID){
 								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
@@ -589,13 +577,75 @@ int search_lb_ident(config_t *cfg)
 							}
 							lb.lb_period = atoi(cfg->word);
 							USRDEBUG("lb_period=%d\n", lb.lb_period);
-							if ((lb.lb_period < 1) || (lb.lb_period > 3600)) {
+							if ((lb.lb_period < 1) || (lb.lb_period > SECS_BY_HOUR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_period);
 								return(EXIT_CODE);
 							}
 							SET_BIT(lb.lb_bm_lbparms, TKN_LB_PERIOD);							
 							break;
+                        case TKN_LB_START:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_start = atoi(cfg->word);
+							USRDEBUG("lb_start=%d\n", lb.lb_start);
+							if ((lb.lb_start < 1) || (lb.lb_start > SECS_BY_HOUR)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_start);
+								return(EXIT_CODE);
+							}
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_START);							
+							break;
+                        case TKN_LB_STOP:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_stop = atoi(cfg->word);
+							USRDEBUG("lb_stop=%d\n", lb.lb_stop);
+							if ((lb.lb_stop < 1) || (lb.lb_stop > SECS_BY_HOUR)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_stop);
+								return(EXIT_CODE);
+							}
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_STOP);							
+							break;
+                        case TKN_LB_VM_START:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_vm_start = cfg->word;
+							USRDEBUG("lb_vm_start=%s\n", lb.lb_vm_start);
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_VM_START);							
+							break;
+                        case TKN_LB_VM_STOP:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_vm_stop = cfg->word;
+							USRDEBUG("lb_vm_stop=%s\n", lb.lb_vm_stop);
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_VM_STOP);							
+							break;							
                         case TKN_LB_CLTNAME:
 							if( lb.lb_nodeid == LB_INVALID){
 								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
@@ -650,7 +700,7 @@ int search_lb_ident(config_t *cfg)
 							lb.lb_cltdev = cfg->word;
 							USRDEBUG("lb_cltdev=%s\n", lb.lb_cltdev);
 							SET_BIT(lb.lb_bm_lbparms, TKN_LB_CLTDEV);							
-							break;							
+							break;
                         case TKN_LB_SVRDEV:
 							if( lb.lb_nodeid == LB_INVALID){
 								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
@@ -663,6 +713,45 @@ int search_lb_ident(config_t *cfg)
 							lb.lb_svrdev = cfg->word;
 							USRDEBUG("lb_svrdev=%s\n", lb.lb_svrdev);
 							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SVRDEV);							
+							break;
+                        case TKN_LB_SSH_HOST:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_ssh_host = cfg->word;
+							USRDEBUG("lb_ssh_host=%s\n", lb.lb_ssh_host);
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_HOST);							
+							break;
+						case TKN_LB_SSH_USER:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_ssh_user = cfg->word;
+							USRDEBUG("lb_ssh_user=%s\n", lb.lb_ssh_user);
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_USER);							
+							break;
+                        case TKN_LB_SSH_PASS:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_ssh_pass = cfg->word;
+							USRDEBUG("lb_ssh_pass=%s\n", lb.lb_ssh_pass);
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_PASS);							
 							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -1056,13 +1145,19 @@ void lb_config(char *f_conf)	/* config file name. */
 	lb.lb_nr_services 	= 0;
 	lb.lb_lowwater 	= LB_INVALID;	
 	lb.lb_highwater	= LB_INVALID;
-	lb.lb_period   	= 30;	
-	
+	lb.lb_period   	= LB_PERIOD_DEFAULT;	
+	lb.lb_start   	= LB_START_DEFAULT;	
+	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
 	
 	lb.lb_cltname   = NULL;		
 	lb.lb_svrname   = NULL;		
 	lb.lb_cltdev    = NULL;		
 	lb.lb_svrdev    = NULL;		
+	lb.lb_ssh_host  = NULL;	
+	lb.lb_ssh_user  = NULL;	
+	lb.lb_ssh_pass  = NULL;		
+	lb.lb_vm_start  = NULL;	
+	lb.lb_vm_stop   = NULL;		
 	
 	lb.lb_bm_lbparms	= 0;	
 	lb.lb_bm_svcparms	= 0;
@@ -1138,12 +1233,26 @@ void lb_config(char *f_conf)	/* config file name. */
     }
 
 	if(lb.lb_period < 1 
-	|| lb.lb_period > 3600
+	|| lb.lb_period > SECS_BY_HOUR
 	) {
         fprintf( stderr,"CONFIGURATION ERROR: load measurement period must be (1-3600)\n");
         exit(1);
     }
 
+	if(lb.lb_start < 1 
+	|| lb.lb_start > SECS_BY_HOUR
+	) {
+        fprintf( stderr,"CONFIGURATION ERROR: start server VM period must be (1-3600)\n");
+        exit(1);
+    }
+	
+	if(lb.lb_stop < 1 
+	|| lb.lb_stop > SECS_BY_HOUR
+	) {
+        fprintf( stderr,"CONFIGURATION ERROR: stop server VM period must be (1-3600)\n");
+        exit(1);
+    }
+	
 	if(lb.lb_cltname == NULL 
 	|| lb.lb_svrname == NULL
 	) {
@@ -1157,21 +1266,29 @@ void lb_config(char *f_conf)	/* config file name. */
         fprintf( stderr,"CONFIGURATION ERROR: cltdev and svrdev must be defined\n");
         exit(1);
     }
+		
+	if( (TEST_BIT(lb.lb_bm_lbparms, TKN_LB_VM_START) != 0) 
+	&&  (TEST_BIT(lb.lb_bm_lbparms, TKN_LB_VM_STOP) != 0)) {
+		if( !(lb.lb_ssh_pass != NULL && lb.lb_ssh_user != NULL && lb.lb_ssh_host != NULL )) {
+			fprintf( stderr,"CONFIGURATION ERROR: if ssh will be use, ssh_host, ssh_pass and ssh_user must be defined\n");
+			exit(1);
+		}
+	} else {
+        fprintf( stderr,"CONFIGURATION ERROR: if VMs will be started/stopped automatically both, vm_start and vm_stop must be defined\n");
+        exit(1);
+    }
 	
 	// check SERVER same NODEID
+	lb.lb_nr_nodes = 0;
+	lb.lb_bm_nodes = 0;
 	for( i = 0; i < NR_NODES; i++){
 		svr1_ptr = &server_tab[i];
 		if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
+		lb.lb_nr_nodes++;
+		SET_BIT(lb.lb_bm_nodes,i);
         USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
         USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
 		if( i == NR_NODES-1) break;
-
-		if( (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_START) == 0) 
-		&&  (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_STOP) == 0)
-		&&  (TEST_BIT(lb.lb_bm_svrparms, TKN_SVR_IMAGE) != 0) ){
-			fprintf(stderr, "Server %s: node_start or node_stop must be defined with node_image\n", svr1_ptr->svr_name);
-			exit(1);
-		}
 							
 		if( svr1_ptr->svr_nodeid == lb.lb_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:Server %s have the same nodeid as load balancer\n",
@@ -1291,6 +1408,11 @@ void lb_config(char *f_conf)	/* config file name. */
     USRDEBUG(LB1_FORMAT, LB1_FIELDS(lb_ptr));
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     USRDEBUG(LB3_FORMAT, LB3_FIELDS(lb_ptr));
-	
+	if( lb.lb_ssh_pass != NULL && lb.lb_ssh_user != NULL && lb.lb_ssh_host != NULL ) {
+		USRDEBUG(LB4_FORMAT, LB4_FIELDS(lb_ptr));
+	}
+	if( lb.lb_vm_start != NULL && lb.lb_vm_stop != NULL) {
+		USRDEBUG(LB5_FORMAT, LB5_FIELDS(lb_ptr));
+	}
 }
 

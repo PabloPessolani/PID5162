@@ -4612,7 +4612,7 @@ Hacer en Windows en el directorio siguiente
 				   2 archivos            287 bytes
 el siguiente script			   
 	cd C:\Program Files (x86)\VMware\VMware Workstation\
-	rem vmrun -T ws  start "E:\NODE2\Debian 9.4.vmx" 
+	rem vmrun -T ws  start "E:\\NODE2\\Debian 9.4.vmx" 
 	vmrun -T ws -u Admin -p mendieta start "E:\NODE2\Debian 9.4.vmx" nogui
 	:loop1
 		vmrun list 
@@ -4623,12 +4623,36 @@ LA VM DURA MIENTRAS ESTE SCRIPT ESTE VIVO!!
 Para invocarlo desde LINUX a través de SSH
 	root@node0:~#  sshpass -p 'mendieta' ssh Admin@192.168.0.196 "startvm.bat" > /tmp/node2.out 2> /tmp/node2.err &
 ============================================================================
+20220201: 
+
+		LISTA la incorporacion en el archivo de configuracion :
+			When the load level of all active servers is LVL_SATURATED during 
+			a specified START_VM_PERIOD, the LBM commands the hypervisor to start 
+			a new node (scale up). If a server node has no active sessions during 
+			a specified SHUTDOWN_PERIOD, it will be shut down (scale down).
+			IMPLEMENTAR EN CONFIGURACION START_PERIOD SHUTDOWN_PERIOD como parametro del LB 
+			ARCHIVO DE CONFIGURACION DEL LB 
+			lb node0 {
+				nodeid 		0;
+				lowwater	30;
+				highwater	70;
+				period		30;
+				start		60; <<=== START_VM_PERIOD
+				shutdown 	60; <<=== SHUTDOWN_VM_PERIOD
+				ssh_user	Admin;
+				ssh_pass	mendienta;
+				cltname		client0;
+				svrname     node0;	
+				cltdev		eth1;
+				svrdev   	eth0;
+			};
 
 
+PARA DLB:   Pensar si conviene automatizar que al levantar los SERVERS se registran automaticamente en el LB 
+		O dejarlos fijos segun archivo de configuracion y levantarlos a demanda???
+		POR AHORA NO CONVIENE AUTOMATIZAR !! SERVERS CONFIGURADOS EN CONFIG  
 
-vmrun -u username -p password start c:\vm\machine1.vmx
-
-TODO:	Tanto SERVER como CLIENTs pueden activarse via SPREAD 
+		Tanto SERVER como CLIENTs pueden activarse via SPREAD 
 		SERVER:
 			Hacen un Multicast 
 			Actualment deberia ser 
@@ -4639,8 +4663,8 @@ TODO:	Tanto SERVER como CLIENTs pueden activarse via SPREAD
 				nodeid 		1;
 				compress	NO;
 				batch		NO;	
-				node_start  "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe start";
-				node_stop   "C:\Program Files (x86)\VMware\VMware Player\vmplayer.exe stop ";
+				vm_start  "C:\Users\Usuario\start_vm.bat";
+				vm_stop   "C:\Users\Usuario\stop_vm.bat"
 				node_image  "E:\NODE1\Debian 9.4.vmx";
 			};
 			El LBM verifica todos los parámetros y arranca el par de PROXIES correspondientes
@@ -4652,34 +4676,67 @@ TODO:	Tanto SERVER como CLIENTs pueden activarse via SPREAD
 				batch		NO;	
 			};
 		El LBM verifica todos los parámetros y arranca el par de PROXIES correspondientes
-			Dando de alta en la base de datos y enviando un UNICAST LBA_CONFIG_ACK 
+			Dando de alta en la base de datos y enviando un UNICAST LBA_CONFIG_ACK
+	
 
-TODO:
-	When the load level of all active servers is LVL_SATURATED during 
-	a specified START_PERIOD, the LBM commands the hypervisor to start 
-	a new node (scale up). If a server node has no active sessions during 
-	a specified SHUTDOWN_PERIOD, it will be shut down (scale down).
-	IMPLEMENTAR EN CONFIGURACION START_PERIOD SHUTDOWN_PERIOD como parametro del LB 
+ATENCION!!!! 
+	NO SOPORTA ESPACIOS EN EL NOMBRE DEL ARCHIVO VMX
+	NO SOPORTA EL NOMBRE DE WINDOWS SINO LA IP 	
+	Asi que se renombro a "node1.vmx"
+nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta 'E:\\NODE1\\node1.vmx' > /tmp/vm_node1.out 2> /tmp/vm_node1.err &
+
+EN WINDOWS 
+	admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun -T ws start "E:\\NODE1\\node1.vmx" nogui 
+	admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun list  
+	Total running VMs: 3
+	J:\Virtual Machines\Debian 9.4 NODE0\Debian 9.4.vmx
+	E:\CLIENT11\Debian 9.4.vmx
+	E:\NODE1\node1.vmx
+	admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>sleep 60 
+
+EN CLIENT11 
+	PRIMERO EL SERVER NODE1 NO ESTA ARRANCADO Y SE FUERZA EL ARRANQUE 
+	root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+	ERROR: 650:dvk_sendrec_T:948: rcode=-109
+	ERROR: 650:dvk_sendrec_T:957: rcode=-109
+	ERROR: latency_client.c:run_client:57: rcode=-109
+
+	YA ARRANCO EL NODO, PERO TODAVIA NO ARRACO EL SERVER 
+	root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+	ERROR: 652:dvk_sendrec_T:948: rcode=-61
+	ERROR: 652:dvk_sendrec_T:957: rcode=-61
+	ERROR: latency_client.c:run_client:54: rcode=-61
+	Time total elapsed in loop 1: 25.2820310593 
+	Time total elapsed in loop 2: 31.1201808453 
+	Time total elapsed in loop 3: 0.0199480057  <<<<<<<<<<< AQUI ARRANCO 
+	Time total elapsed in loop 4: 0.0019891262 
+	*********************************************************************
+	Total average latency in 5 loops: 11.2848298073 [s] 
+	Message throughput in 5 loops: 0.18 [msg/s]
+	*********************************************************************
+
+	AQUI YA ESTA ARRANCADO
+	root@client11:/usr/src/dvs/dvk-tests# ./latency_client 0 50 10 5
+	Time total elapsed in loop 0: 0.0404770374 
+	Time total elapsed in loop 1: 0.0020840168 
+	Time total elapsed in loop 2: 0.0031449795 
+	Time total elapsed in loop 3: 0.0023260117 
+	Time total elapsed in loop 4: 0.0037779808 
+	*********************************************************************
+	Total average latency in 5 loops: 0.0103620052 [s] 
+	Message throughput in 5 loops: 193.01 [msg/s]
 	
+EN NODE1: SE VE EL AGENT Y EL SERVER 
+	root       625     1  0 18:34 ?        00:00:00 ./lb_agent
+	root       636     1  0 18:34 ?        00:00:00 ./latency_server 0 10
 	
-TODO:	Ver como activo claves entre LINUX y WINDOWS OPENSSH 
-	
-TODO:	
+
+LISTO:	
 		Cuando levantar una VM?
-			Cuando todos los activos servers ya estan saturados 
-		
-		Cuando bajar una VM 
-			Cuando la sesion no se usa hace mucho tiempo
-			Cuando no tiene sesiones activas 
-			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
-	
-TODO_: Modificar test_lb.sh para que soporte parametros
-		start y stop y restart 
-	
-TODO:	Cambiar para que el agente utilice 
-			- fork y exec para ejecutar el comando remoto
-			- kill en lugar de system(KILL)
-	
+			Cuando todos los activos servers ya estan saturados 		LISTO! 
+					o bien porque estan LVL_SATURATED
+					o bien porque tienen ENDPOINTS LIBRES 
+			Solo se levantan si quedan servidores configurados pero no arrancados LISTO 
 
 
 	
@@ -4687,6 +4744,20 @@ TODO:	Cambiar para que el agente utilice
 ==========================================================================================
 ==========================================================================================
 ULTIMO_LOG 
+
+			
+TODO:	
+		Cuando bajar una VM 
+			Cuando la sesion no se usa hace mucho tiempo
+			Cuando no tiene sesiones activas 
+			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
+			
+TODO_: Modificar test_lb.sh para que soporte parametros
+		start y stop y restart 
+	
+TODO:	Cambiar para que el agente utilice 
+			- fork y exec para ejecutar el comando remoto
+			- kill en lugar de system(KILL)
 
 ERROR EN DVK 
 	Cuando mato a los procesos, lo procesos remotos bindeados quedan iguales 

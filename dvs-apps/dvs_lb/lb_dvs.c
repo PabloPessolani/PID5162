@@ -84,8 +84,6 @@ int main (int argc, char *argv[] )
 		client_tab[i].clt_batch = LB_INVALID;
 		
 		server_tab[i].svr_bm_sts= 0;
-		server_tab[i].svr_start = NULL;
-		server_tab[i].svr_stop 	= NULL;
 		server_tab[i].svr_image = NULL;
 
 		TAILQ_INIT(&server_tab[i].svr_clt_head);                      /* Initialize the queue. */

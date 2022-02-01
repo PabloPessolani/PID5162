@@ -76,6 +76,11 @@
 #define MAX_RANDOM_RETRIES	sizeof(unsigned int)
 #define MAXCMDLEN 		1024
 
+#define LB_PERIOD_DEFAULT	30	
+#define LB_START_DEFAULT	60	
+#define LB_SHUTDOWN_DEFAULT	60
+#define SECS_BY_HOUR		3600
+
 #define LVL_NOTINIT		(-1) 
 #define	LVL_UNLOADED	0
 #define	LVL_LOADED		1
@@ -251,8 +256,6 @@ struct server_s{
 	
 	int	svr_idle_count;		// Number o Idle cycles that the server has  // NOT USED YET  
 
-	char *svr_start;		// string to command which START the server NODE 
-	char *svr_stop;			// string to command which STOP the server NODE 
 	char *svr_image;		// string to command which START the server NODE 
 	
 	unsigned long int svr_bm_sts; 	
@@ -302,11 +305,20 @@ typedef struct {
 	int		lb_lowwater; 		// low water load (0-100)
 	int		lb_highwater;		// low water load (0-100)
 	int		lb_period;			// load measurement period in seconds (1-3600)
+	int		lb_start;			// period to wait to start a server node VM in seconds (1-3600)
+	int		lb_stop;		//  period to wait to shutdown  a server node VM in seconds (1-3600)
+
+	char 	*lb_vm_start;		// string to command which START the server VM 
+	char 	*lb_vm_stop;		// string to command which STOP the server VM 
 
 	char 	*lb_cltname;		// hostname of this LB inside CLIENT NETWORK
 	char 	*lb_svrname;		// hostname of this LB inside SERVER NETWORK
 	char 	*lb_cltdev;			// device name of this LB inside CLIENT NETWORK i.e eth1
 	char 	*lb_svrdev;			// device name of this LB inside SERVER NETWORK  i.e eth0
+
+	char 	*lb_ssh_host;		// Hostname of the Hypervisor 
+	char 	*lb_ssh_user;		// User to use in SSH session with the Hypervisor 
+	char 	*lb_ssh_pass;		// Password to use in SSH session with the Hypervisor 
 
     pthread_t 		lb_thread;
 
@@ -315,10 +327,10 @@ typedef struct {
     unsigned int	lb_bm_cltparms;	// bitmap of Config Client Parameters
     unsigned int	lb_bm_svrparms;	// bitmap of Config Server Parameters
 
-    unsigned int	lb_bm_nodes;	// bitmap of Connected nodes
+    unsigned int	lb_bm_nodes;	// bitmap of Configured nodes
     unsigned int	lb_bm_init;		// bitmap  initialized/active nodes 
 	
-	int				lb_nr_nodes;	// number of Connected server nodes 
+	int				lb_nr_nodes;	// number of Configured server nodes 
 	int				lb_nr_init;		// number of   initialized/active  server nodes 
 	
 	int				lb_nr_cltpxy;	// # of defined Client Proxies (from configuration file)
@@ -341,12 +353,16 @@ typedef struct {
 	
 } lb_t;
 
-#define LB1_FORMAT 	"lb_name=%s lb_nodeid=%d lb_lowwater=%d lb_highwater=%d lb_period=%d\n"
+#define LB1_FORMAT 	"lb_name=%s lb_nodeid=%d lb_lowwater=%d lb_highwater=%d lb_period=%d \n"
 #define LB1_FIELDS(p)  p->lb_name, p->lb_nodeid, p->lb_lowwater, p->lb_highwater, p->lb_period
 #define LB2_FORMAT 	"lb_name=%s lb_nodeid=%d lb_nr_nodes=%d lb_nr_init=%d lb_bm_nodes=%0lX lb_bm_init=%0lX\n"
 #define LB2_FIELDS(p)  p->lb_name, p->lb_nodeid, p->lb_nr_nodes, p->lb_nr_init, p->lb_bm_nodes, p->lb_bm_init
 #define LB3_FORMAT 	"lb_name=%s lb_cltname=%s lb_svrname=%s lb_cltdev=%s lb_svrdev=%s\n"
 #define LB3_FIELDS(p)  p->lb_name, p->lb_cltname, p->lb_svrname, p->lb_cltdev, p->lb_svrdev 
+#define LB4_FORMAT 	"lb_name=%s lb_ssh_host=%s lb_ssh_user=%s lb_ssh_pass=%s\n"
+#define LB4_FIELDS(p)  p->lb_name, p->lb_ssh_host, p->lb_ssh_user, p->lb_ssh_pass
+#define LB5_FORMAT 	"lb_name=%s lb_start=%d lb_stop=%d lb_vm_start=%s lb_vm_stop=%s\n"
+#define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_vm_start, p->lb_vm_stop
 
 #include "lb_glo.h"
 #include "../debug.h"
