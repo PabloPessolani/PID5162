@@ -22,7 +22,7 @@ double dwalltime()
 }
 
 
-int run_client(int server_ep, int client_ep, int loops, int cpu_secs)
+int run_client(int server_ep, int client_ep, int loops, int secs, int cpu_secs)
 {
 	int i, ret; 
 	message *m_ptr;
@@ -50,20 +50,17 @@ int run_client(int server_ep, int client_ep, int loops, int cpu_secs)
 		t_partial_i= dwalltime();
 		ret = dvk_sendrec_T(server_ep, (long) m_ptr , WAIT_30SECS);
 		if( ret < 0) {
-			if( ret == EDVSTIMEDOUT){
 				ERROR_PRINT(ret);
+				sleep(secs);
 				continue;
-			}else{
-				ERROR_EXIT(ret);
-			}
-		}	
+		}
 		t_partial_f= dwalltime();
 		USRDEBUG("CLIENT RECEIVE server MSG AT: %.2f \n",t_partial_f);
 		USRDEBUG("CLIENT RECEIVE REPLY msg:" MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 		t_partial_consumed = t_partial_f - t_partial_i;
 		printf("Time total elapsed in loop %d: %.10f \n",i,t_partial_consumed);
 		t_total = t_total + t_partial_consumed;
-		
+		sleep(secs);
 		if( ret != 0 ) ERROR_RETURN(ret);
 	}
 	
@@ -79,7 +76,7 @@ int run_client(int server_ep, int client_ep, int loops, int cpu_secs)
 int  main ( int argc, char *argv[] )
 {
 	int dcid, parent_pid, parent_ep, parent_nr, ret;
-	int server_ep, server_nr, loops, cpu_secs;
+	int server_ep, server_nr, loops, cpu_secs, secs;
 	int client_pid, client_ep, client_nr;
 	char rmt_name[16]="latency_server";
 	
@@ -87,21 +84,26 @@ int  main ( int argc, char *argv[] )
 	
 	p_usr = &usr_info;
 	
-	if ( argc != 5 && argc != 6 ) {
-		fprintf(stderr,  "Usage: %s <dcid> <client_nr> <server_nr> <loops> [<cpu_secs>]	\n", argv[0] );
-		fprintf(stderr,  "  if cpu_secs > 0, it is the fixed time CPU usage in server\n", argv[0] );
-		fprintf(stderr,  "  if cpu_secs < 0, it is a random time from 0 < t < abs(cpu_secs) of CPU usage in server\n", argv[0] );
+	if ( argc != 5 && argc != 7 ) {
+		fprintf(stderr,  "Usage: %s <dcid> <client_nr> <server_nr> <loops> [<secs> <cpu_secs>] \n", argv[0] );
+		fprintf(stderr,  "  <secs> is the interval between tests\n");
+		fprintf(stderr,  "  if cpu_secs > 0, it is the fixed time CPU usage in server\n");
+		fprintf(stderr,  "  if cpu_secs < 0, it is a random time from 0 < t < abs(cpu_secs) of CPU usage in server\n");
 		exit(EXIT_FAILURE);
 	}
 	
-	if( argc == 6){
-		cpu_secs = atoi(argv[5]);
+	secs=1;
+	cpu_secs = 0;
+	if( argc == 7){
+		secs = atoi(argv[5]);
+		if(secs < 0){
+			secs=1;
+		}		
+		cpu_secs = atoi(argv[6]);
 		if(cpu_secs < 0){
 			srand(time(NULL));   // Initialization, should only be called once.
 		}	
-	} else {
-		cpu_secs = 0;
-	}
+	} 
 	
 	dcid = atoi(argv[1]);
 	if ( dcid < 0 || dcid >= NR_DCS) {
@@ -121,7 +123,7 @@ int  main ( int argc, char *argv[] )
 
 	USRDEBUG("CLIENT: Ready to call run_client() with server_ep=%d client_ep=%d\n", 
 				 server_ep, client_ep);
-		ret = run_client(server_ep, client_ep, loops, cpu_secs);		
+		ret = run_client(server_ep, client_ep, loops, secs, cpu_secs);		
 
 	USRDEBUG("CLIENT exiting\n");
 	exit(0);

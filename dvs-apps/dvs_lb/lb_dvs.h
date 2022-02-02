@@ -254,6 +254,8 @@ struct server_s{
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
+	struct timespec svr_idle_ts;	/* last timestamp	with the server not UNLOADED 											*/
+
 	int	svr_idle_count;		// Number o Idle cycles that the server has  // NOT USED YET  
 
 	char *svr_image;		// string to command which START the server NODE 
@@ -306,7 +308,7 @@ typedef struct {
 	int		lb_highwater;		// low water load (0-100)
 	int		lb_period;			// load measurement period in seconds (1-3600)
 	int		lb_start;			// period to wait to start a server node VM in seconds (1-3600)
-	int		lb_stop;		//  period to wait to shutdown  a server node VM in seconds (1-3600)
+	int		lb_stop;			//  period to wait to shutdown  a server node VM in seconds (1-3600)
 
 	char 	*lb_vm_start;		// string to command which START the server VM 
 	char 	*lb_vm_stop;		// string to command which STOP the server VM 

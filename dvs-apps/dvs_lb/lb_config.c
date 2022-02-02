@@ -1182,12 +1182,12 @@ void lb_config(char *f_conf)	/* config file name. */
     USRDEBUG("AFTER config_read\n");  
     rcode = scan_config(cfg);
 	
-//    USRDEBUG("lb.lb_nodeid=%d\n",lb.lb_nodeid);  
-//    USRDEBUG("lb.lb_nr_svrpxy=%d\n",lb.lb_nr_svrpxy);  
-//    USRDEBUG("lb.lb_nr_cltpxy=%d\n",lb.lb_nr_cltpxy);  
-//    USRDEBUG("lb.lb_nr_services=%d\n",lb.lb_nr_services);  
-//    USRDEBUG("lb.lb_lowwater=%d\n",lb.lb_lowwater);  
-//    USRDEBUG("lb.lb_highwater=%d\n",lb.lb_highwater);  
+    USRDEBUG("lb.lb_nodeid=%d\n",lb.lb_nodeid);  
+    USRDEBUG("lb.lb_nr_svrpxy=%d\n",lb.lb_nr_svrpxy);  
+    USRDEBUG("lb.lb_nr_cltpxy=%d\n",lb.lb_nr_cltpxy);  
+    USRDEBUG("lb.lb_nr_services=%d\n",lb.lb_nr_services);  
+    USRDEBUG("lb.lb_lowwater=%d\n",lb.lb_lowwater);  
+    USRDEBUG("lb.lb_highwater=%d\n",lb.lb_highwater);  
 
 	// check for mandatory parameters
     USRDEBUG("Check for mandatory parameters=%d\n", TKN_LB_MAX);  

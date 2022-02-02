@@ -4684,6 +4684,8 @@ ATENCION!!!!
 	NO SOPORTA EL NOMBRE DE WINDOWS SINO LA IP 	
 	Asi que se renombro a "node1.vmx"
 nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta 'E:\\NODE1\\node1.vmx' > /tmp/vm_node1.out 2> /tmp/vm_node1.err &
+nohup sshpass -p mendieta ssh Admin@192.168.0.196 stopvm.bat Admin mendieta 'E:\\NODE1\\node1.vmx' > /tmp/vm_node1.out 2> /tmp/vm_node1.err &
+sshpass -p 'mendieta' ssh Admin@192.168.0.196 "vmlist.bat"
 
 EN WINDOWS 
 	admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun -T ws start "E:\\NODE1\\node1.vmx" nogui 
@@ -4739,11 +4741,99 @@ LISTO:
 			Solo se levantan si quedan servidores configurados pero no arrancados LISTO 
 
 
+TODO:	Cuando el cliente hace un sendrec() fuerza al arranque de la VM con el NODE1
+		Cuando vuelve a intentar, otra vez vuelve a hacer lo mismo y asi lo hace 100 veces
+
+		1) Para ello, hay que marcar al server como que está arrancando. LISTO 
+		2) Como hacer para que se ignore al cliente que ya forzó el arranque de otro server?
+				si hay un server arrancando, no arrancar otro.			LISTO
+
+
+EL CLIENTE ENVIO EL 2DO MENSAJE (SEPARADOS 1 SEGUNDO) 
+	latency_client.c:run_client:49:CLIENT SEND MSG AT: 1643804396.15 
+EL CLIENTE RECIBE LA RESPUESTA EN EL MENSAJE NRO 30
+	latency_client.c:run_client:58:CLIENT RECEIVE server MSG AT: 1643804425.28 
+TIEMPO DE ARRANQUE = 29 SEGUNDOS !!!!!!
+
+EN EL SERVER 
+	root       712     1  0 09:20 ?        00:00:00 ./lb_agent
+	root       720     1  0 09:20 ?        00:00:00 ./latency_server 0 10
 	
+	root@node1:~# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  10    10   720/720    1    8   20 31438 27342 27342 27342 latency_server 
+	 0  50    50    -1/-1     0 1000    0 27342 27342 27342 27342 clt_0_0_50  
+ 
+	 root@node1:~# cat /proc/dvs/DC0/stats 
+	DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+	 0  10    10   720/720    1        0       10        0        0 latency_server 
+	 0  50    50    -1/-1     0        0        0        0        0 clt_0_0_50 
+		
+	admin@USUARIO-PC C:\Program Files (x86)\VMware\VMware Workstation>vmrun list  
+	Total running VMs: 3
+	J:\Virtual Machines\Debian 9.4 NODE0\Debian 9.4.vmx
+	E:\CLIENT11\Debian 9.4.vmx
+	E:\NODE1\node1.vmx
+
+
+	
+
+PARA SABER SI UN SERVER NO SE USA SE PUEDE UTILIZA EL SERVER_RPROXY 	
+ 1395:lb_svrpxy.c:svr_Rproxy_rcvhdr:486:SERVER_RPROXY (node1): n:120 | received:120 | HEADER_SIZE:120
+ 1395:lb_svrpxy.c:svr_Rproxy_rcvhdr:489:SERVER_RPROXY (node1): cmd=0x0 dcid=0 src=10 dst=50 snode=1 dnode=0 rcode=0 len=0 PID=720
+ 1395:lb_svrpxy.c:svr_Rproxy_rcvhdr:491:SERVER_RPROXY (node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=10 c_ack_seq=20
+ 1395:lb_svrpxy.c:svr_Rproxy_getcmd:428:SERVER_RPROXY(node1): NONE
+ 1395:lb_svrpxy.c:svr_Rproxy_getcmd:433:SERVER_RPROXY(node1): Replying NONE
+ 1395:lb_svrpxy.c:svr_Rproxy_getcmd:414:SERVER_RPROXY(node1): About to receive header
+	UN SERVER NO SE USA SI:
+		- Cuando el SERVER hace el JOIN se guarda su timestamp en un campo del server svr_idle_ts
+		- El SERVER_RPROXY cuando recibe un header != NONE actualiza su timestamp en un campo del server svr_idle_ts
+		- El SERVER_RPROXY cuando recibe un header == NONE y su estado es !UNLOAD actualiza su timestamp en un campo del server svr_idle_ts		
+		- El SERVER_RPROXY cuando recibe un header == NONE y su estado es UNLOAD resta el diff = timestamp-svr_idle_ts
+			- Si diff > lb.lb_stop entonces puede hacer SHUTDOWN de la VM 
+	
+FUNCIONO!!!	
+		root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep IDLE lb_dvs.out 
+		 1776:lb_svrpxy.c:svr_Rproxy_getcmd:446:SERVER_RPROXY(node1): Server IDLE diff_secs=27
+		 1776:lb_svrpxy.c:svr_Rproxy_getcmd:446:SERVER_RPROXY(node1): Server IDLE diff_secs=31
+		 1776:lb_svrpxy.c:svr_Rproxy_getcmd:446:SERVER_RPROXY(node1): Server IDLE diff_secs=31
+		 1776:lb_svrpxy.c:svr_Rproxy_getcmd:446:SERVER_RPROXY(node1): Server IDLE diff_secs=62 <<<<< DISPARA EL STOP 
+		root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "STOP THE VM" lb_dvs.out
+		 1776:lb_svrpxy.c:svr_Rproxy_getcmd:448:SERVER_RPROXY(node1): STOP THE VM!!!
+
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# sshpass -p mendieta ssh Admin@192.168.0.196 stopvm.bat Admin mendieta 'E:\\NODE1\\node1.vmx' 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# killall sshpass
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# killall ssh
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# killall lb_dvs
+REVISAR LOS ARCHIVO LCK DE LA VM 
+sshpass -p 'mendieta' ssh Admin@192.168.0.196 "vmlist.bat"
+LISTAR VMS 	
+		
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
 ULTIMO_LOG 
+
+TODO: 
+	Hacer una  funcion de INIT para cada una de las estructuras de datos 
+	De esa forma cuando se cae un SERVER por ejemplo, hay que inicializar sus datos 
+
+SEGURAMENTE, cuando se termine una VM hay que dejar el server en estado STOPPING 
+El cual finaliza no bien se hace el DISCONNECT de spread 
+Pero tambien cuando termina la VM!! 
+Y tambien hay que terminar el ssh y sshpass
+
+Que controle:
+	Si falla el arranque de la VM y el server queda marcado como arrancando!!
+		Tomar un tiempo para que arranque. Si se vence ese tiempo, borrar el flag de STARTING 	
+	Se puede utilizar el timestamp para saber cuanto tiempo hace q se arranco.
+	Si hace el join se borra el STARTING 
+	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
+		lo borra.
+			
+			
+			
 
 			
 TODO:	

@@ -117,6 +117,7 @@ int main (int argc, char *argv[] )
 		
 		// Initialize Server Service Endpoints in use bitmap 
 		svr_ptr->svr_bm_svc = 0;
+		svr_ptr->svr_idle_ts.tv_sec = 0;
 		
 		pthread_mutex_init(&svr_ptr->svr_mutex, NULL);
 		

@@ -40,8 +40,10 @@ void start_new_node(sess_entry_t *sess_ptr, client_t *clt_ptr)
 		if(TEST_BIT(lb_ptr->lb_bm_init, n) == 0) { // Need a server not initialized  
 			svr_ptr = &server_tab[n];
 			if(svr_ptr-> svr_image != NULL) { 		// but configured with a VM image 
-//				nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta \"E:\\NODE2\\Debian 9.4.vmx\" > /tmp/node2.out 2>/tmp/node2.err  &
+				// check if the server is just starting
+				if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING) ) return;
 			
+//				nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta \"E:\\NODE2\\Debian 9.4.vmx\" > /tmp/node2.out 2>/tmp/node2.err  &
 				sprintf(sess_ptr->se_rmtcmd, "nohup sshpass -p %s ssh %s@%s startvm.bat %s %s \"%s\" > /tmp/vm_%s.out 2> /tmp/vm_%s.err &",
 							lb_ptr->lb_ssh_pass,				  
 							lb_ptr->lb_ssh_user,
@@ -57,7 +59,11 @@ void start_new_node(sess_entry_t *sess_ptr, client_t *clt_ptr)
 				USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
 						clt_ptr->clt_name, sess_ptr->se_rmtcmd);
 				rcode = system(sess_ptr->se_rmtcmd);
-				if(rcode == OK) break; 
+				if(rcode == OK){
+					// Set a flag that the server is starting 
+					SET_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
+					break; 
+				}
 				// try anothed configured server 
 				ERROR_PRINT(rcode);
 			}		
@@ -448,8 +454,8 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 	// sess_ptr LOCKED 
 	svr_ptr = select_server(clt_ptr, sess_ptr, svc_ptr, hdr_ptr);
 	if( svr_ptr == NULL) {
-		rcode = clt_Rproxy_error(clt_ptr, EDVSDSTDIED);
-		if( rcode < 0) 	ERROR_PRINT(EDVSNOSPC);
+		rcode = clt_Rproxy_error(clt_ptr, EDVSAGAIN);
+		if( rcode < 0) 	ERROR_PRINT(rcode);
 		MTX_UNLOCK(sess_table[dcid].st_mutex);		
 		return(NULL);
 	}
@@ -606,15 +612,17 @@ server_t *select_server(client_t *clt_ptr,
 	}
 	if ( i == NR_NODES){ // not UNLOADED SERVER RUNNING server found
 		// Are there any defined node to start ??
-		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_nodes=%d\n", 		
-								clt_ptr->clt_name, lb.lb_nr_init, lb.lb_nr_nodes);
-		if( lb.lb_nr_init < lb.lb_nr_nodes) {
+		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_svrpxy=%d\n", 		
+								clt_ptr->clt_name, lb.lb_nr_init, lb.lb_nr_svrpxy);
+		if( lb.lb_nr_init < lb.lb_nr_svrpxy) {
 			///////////////////////////////////////////////////////////////////
 			// HERE, START A VM WITH A NEW NODE 
 			///////////////////////////////////////////////////////////////////
 			start_new_node(sess_ptr, clt_ptr);
-		}
-		ERROR_PRINT(EDVSNOSPC);
+			ERROR_PRINT(EDVSAGAIN);
+		}else {
+			ERROR_PRINT(EDVSNOSPC);
+		} 
 		return(NULL);	
 	} 
 	USRDEBUG("CLIENT_RPROXY(%s): server name=%s new_ep=%d\n", 		

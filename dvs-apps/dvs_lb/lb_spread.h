@@ -19,7 +19,8 @@
 #define MT_ACKNOWLEDGE 	 	0x1000	
 
 // FLAGS of svr_status 
-#define CLT_WAIT_START		0 // At list a Client Proxy is waiting to the server node starts
-#define CLT_WAIT_STOP		1 // At list a Client Proxy is waiting to the server node stops
+#define CLT_WAIT_START		0 // At least a Client Proxy is waiting to the server node starts
+#define CLT_WAIT_STOP		1 // At least a Client Proxy is waiting to the server node stops
 #define SVR_WAIT_STOP		2 // The Server Proxy is waiting to the server node stops
+#define SVR_STARTING 		3 // The server is starting
  		 		

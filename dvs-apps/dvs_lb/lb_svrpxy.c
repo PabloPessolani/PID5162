@@ -402,6 +402,8 @@ int svr_Rproxy_error(server_t *svr_ptr, int errcode)
 int svr_Rproxy_getcmd(server_t *svr_ptr) 
 {
     int rcode, pl_size, i, ret, raw_len;
+	time_t  diff_secs;	
+	
 	lbpx_desc_t *spx_ptr, *svr_send_ptr;
 	
 	spx_ptr = &svr_ptr->svr_rpx;
@@ -415,6 +417,7 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
     	rcode = svr_Rproxy_rcvhdr(svr_ptr);
     	if (rcode != 0) ERROR_RETURN(rcode);
 
+		clock_gettime(clk_id, &spx_ptr->lbp_header->c_timestamp);
 		if( spx_ptr->lbp_header->c_cmd != CMD_NONE) {
 			USRDEBUG("SERVER_RPROXY(%s): " CMD_FORMAT,
 				svr_ptr->svr_name, CMD_FIELDS(spx_ptr->lbp_header));
@@ -424,19 +427,31 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 				svr_ptr->svr_name, CMD_TSFIELDS(spx_ptr->lbp_header)); 
 			USRDEBUG("SERVER_RPROXY(%s): "CMD_PIDFORMAT, 
 				svr_ptr->svr_name, CMD_PIDFIELDS(spx_ptr->lbp_header)); 
+			// Save the timestamp 
+			svr_ptr->svr_idle_ts = spx_ptr->lbp_header->c_timestamp;				
 		} else {
-				USRDEBUG("SERVER_RPROXY(%s): NONE\n", svr_ptr->svr_name); 
-				// reverse the node fields 
-				//	spx_ptr->lbp_header->c_dnode = spx_ptr->lbp_header->c_snode;
-				//	spx_ptr->lbp_header->c_snode = lb.lb_nodeid;
-				clock_gettime(clk_id, &spx_ptr->lbp_header->c_timestamp);
-				USRDEBUG("SERVER_RPROXY(%s): Replying NONE\n",svr_ptr->svr_name);
-				spx_ptr->lbp_mqbuf->mb_type = LBP_SVR2SVR;
-				svr_send_ptr = &svr_ptr->svr_spx; 						
-				rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
-								sizeof(proxy_hdr_t), 0); 
-				if( rcode < 0) ERROR_PRINT(-errno);
-				continue;
+			USRDEBUG("SERVER_RPROXY(%s): NONE\n", svr_ptr->svr_name); 
+			// reverse the node fields 
+			//	spx_ptr->lbp_header->c_dnode = spx_ptr->lbp_header->c_snode;
+			//	spx_ptr->lbp_header->c_snode = lb.lb_nodeid;
+			USRDEBUG("SERVER_RPROXY(%s): Replying NONE\n",svr_ptr->svr_name);
+			spx_ptr->lbp_mqbuf->mb_type = LBP_SVR2SVR;
+			svr_send_ptr = &svr_ptr->svr_spx; 						
+			rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
+							sizeof(proxy_hdr_t), 0); 
+			if( rcode < 0) ERROR_PRINT(-errno);
+			// check if the server is IDLE for a specified time	
+			if(svr_ptr->svr_level == LVL_UNLOADED){
+				diff_secs = spx_ptr->lbp_header->c_timestamp.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
+				USRDEBUG("SERVER_RPROXY(%s): Server IDLE diff_secs=%ld\n",svr_ptr->svr_name, diff_secs);
+				if( (int) diff_secs > lb.lb_stop){
+					USRDEBUG("SERVER_RPROXY(%s): STOP THE VM!!!\n",svr_ptr->svr_name);
+				}
+			} else {
+				svr_ptr->svr_idle_ts = spx_ptr->lbp_header->c_timestamp;
+				diff_secs = 0; // force to not STOP the VM 
+			}
+			continue;
 		}
 		
 		switch(spx_ptr->lbp_header->c_cmd){
@@ -775,6 +790,11 @@ void  svr_Sproxy_send(server_t *svr_ptr)
 		if( spx_ptr->lbp_header->c_len > 0)
 			FREE(p_ptr);		
 		ERROR_RETURN(rcode);
+	}
+	
+	// The SERVER NODE has activity , update the IDLE timestamp 
+	if( spx_ptr->lbp_header->c_cmd != CMD_NONE) {
+		clock_gettime(clk_id, &svr_ptr->svr_idle_ts);
 	}
 	
 	if( spx_ptr->lbp_header->c_len > 0) {
