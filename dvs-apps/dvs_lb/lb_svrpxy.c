@@ -402,11 +402,11 @@ int svr_Rproxy_error(server_t *svr_ptr, int errcode)
 int svr_Rproxy_getcmd(server_t *svr_ptr) 
 {
     int rcode, pl_size, i, ret, raw_len;
-	time_t  diff_secs;	
-	
+	lb_t	*lb_ptr;
 	lbpx_desc_t *spx_ptr, *svr_send_ptr;
 	
 	spx_ptr = &svr_ptr->svr_rpx;
+	lb_ptr =&lb;
 	
 	USRDEBUG("SERVER_RPROXY(%s): \n", svr_ptr->svr_name);
 	assert(spx_ptr->lbp_header != NULL);
@@ -440,18 +440,6 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 			rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
 							sizeof(proxy_hdr_t), 0); 
 			if( rcode < 0) ERROR_PRINT(-errno);
-			// check if the server is IDLE for a specified time
-			if( (lb_ptr->lb_nr_init-1) <= lb_ptr->lb_min_servers) continue;
-			if(svr_ptr->svr_level == LVL_UNLOADED){
-				diff_secs = spx_ptr->lbp_header->c_timestamp.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
-				USRDEBUG("SERVER_RPROXY(%s): Server IDLE diff_secs=%ld\n",svr_ptr->svr_name, diff_secs);
-				if( (int) diff_secs > lb.lb_stop){
-					USRDEBUG("SERVER_RPROXY(%s): STOP THE VM!!!\n",svr_ptr->svr_name);
-				}
-			} else {
-				svr_ptr->svr_idle_ts = spx_ptr->lbp_header->c_timestamp;
-				diff_secs = 0; // force to not STOP the VM 
-			}
 			continue;
 		}
 		

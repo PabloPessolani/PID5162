@@ -23,4 +23,5 @@
 #define CLT_WAIT_STOP		1 // At least a Client Proxy is waiting to the server node stops
 #define SVR_WAIT_STOP		2 // The Server Proxy is waiting to the server node stops
 #define SVR_STARTING 		3 // The server is starting
+#define SVR_STOPPING  		4 // The server is stopping 
  		 		

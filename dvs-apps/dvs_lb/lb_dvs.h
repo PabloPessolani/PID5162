@@ -391,6 +391,9 @@ void *lb_monitor(void *arg);
 
 int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,	sess_entry_t *sess_ptr);
 int  ucast_cmd(int agent_id, char *agent_name, char *cmd);
+void check_server_idle(server_t *svr_ptr);
+void start_new_node(char *rmt_cmd);
+
 
 
 

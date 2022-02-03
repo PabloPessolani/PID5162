@@ -9,6 +9,7 @@
 
 int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type);
 
+
 /*===========================================================================*
  *				   lb_monitor 				    					 *
  *===========================================================================*/
@@ -277,7 +278,6 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 	message *m_ptr;
 	server_t *svr_ptr;
 	client_t *clt_ptr;
-static	char rmt_cmd[MAXCMDLEN];
 	
 	MTX_LOCK(lb_ptr->lb_mtx);
 	m_ptr = lb_ptr->lb_mess_in;
@@ -289,12 +289,6 @@ static	char rmt_cmd[MAXCMDLEN];
 	if ( msg_type == MT_LOAD_THRESHOLDS){
 		lb_ptr->lb_nr_init = lb_ptr->lb_nr_nodes;
 		lb_ptr->lb_bm_init = lb_ptr->lb_bm_nodes;
-		// check if is time to start a new server VM
-		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
-				lb_ptr->lb_nr_init, lb_ptr->lb_min_servers);
-		if( (lb_ptr->lb_nr_init-1) < lb_ptr->lb_min_servers){
-			start_new_node(rmt_cmd); 
-		}
 		goto unlock_ok;		
 	}
 	
@@ -349,6 +343,8 @@ static	char rmt_cmd[MAXCMDLEN];
 			}	
 			assert(m_ptr->m_source == agent_id);
 			lbm_lvlchg_msg(m_ptr);
+			svr_ptr = &server_tab[agent_id];
+			goto unlock_ok;
 			break;
 		case MT_CLT_WAIT_BIND | MT_ACKNOWLEDGE:
 		case MT_CLT_WAIT_UNBIND | MT_ACKNOWLEDGE:
@@ -392,13 +388,14 @@ static	char rmt_cmd[MAXCMDLEN];
 				COND_SIGNAL(svr_ptr->svr_agent_cond);
 				MTX_UNLOCK(svr_ptr->svr_agent_mtx);					
 			}
+			goto unlock_ok;
 			break;			
 		default:
 			fprintf( stderr,"lbm_reg_msg: Invalid msg_type %d\n", msg_type);
 			assert(FALSE);
 			break;
 	}
-unlock_ok:
+unlock_ok:	
 	MTX_UNLOCK(lb_ptr->lb_mtx);
 	return(OK);
 }
@@ -460,9 +457,11 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 			return(OK);
 		}
 		// The node is just started 
+		MTX_LOCK(svr_ptr->svr_mutex);
 		CLR_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
 		// initialize timestamp of idle time 
 		clock_gettime(clk_id, &svr_ptr->svr_idle_ts);
+		MTX_UNLOCK(svr_ptr->svr_mutex);
 		mcast_thresholds();
     }
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
@@ -477,6 +476,7 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 int  lbm_leave(lb_t *lb_ptr,int num_groups)
 {
 	int agent_id;
+	server_t *svr_ptr;
 	
     USRDEBUG("member=%s\n",lb_ptr->lb_memb_info.changed_member);
     agent_id  = get_nodeid((char *)lb_ptr->lb_memb_info.changed_member);
@@ -491,11 +491,11 @@ int  lbm_leave(lb_t *lb_ptr,int num_groups)
 			return(OK);
 		}
 		clear_session(agent_id);
-        CLR_BIT(lb_ptr->lb_bm_init, agent_id);
-		lb_ptr->lb_nr_init--;
+	    USRDEBUG("AGENT DEAD! STOP THE VM member=%s\n",lb_ptr->lb_memb_info.changed_member);
 		MTX_UNLOCK(lb_ptr->lb_mtx);
     }
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
+
 	return(OK);
 }
 
@@ -551,6 +551,7 @@ int lbm_network(lb_t* lb_ptr)
 	int	nr_nodes;
 	int	bm_init;
 	int	nr_init;
+	server_t *svr_ptr;
 	
     USRDEBUG("\n");
 	
@@ -627,6 +628,10 @@ int lbm_network(lb_t* lb_ptr)
 			// but it is not in the current bitmap 
 			if(TEST_BIT(bm_init, i) == 0) {
 				clear_session(i);
+				svr_ptr = &server_tab[i];
+				MTX_LOCK(svr_ptr->svr_mutex);
+				SET_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING);
+				MTX_LOCK(svr_ptr->svr_mutex);
 			}
 		}
 	}
@@ -635,9 +640,9 @@ int lbm_network(lb_t* lb_ptr)
 	lb_ptr->lb_bm_nodes  = bm_nodes;
 	lb_ptr->lb_nr_init   = nr_init;
 	lb_ptr->lb_nr_nodes  = nr_nodes;
-	
-	mcast_thresholds();
 
+	mcast_thresholds();
+	
     USRDEBUG("NEW " LB2_FORMAT, LB2_FIELDS(lb_ptr));
 	MTX_UNLOCK(lb_ptr->lb_mtx);				
 	
@@ -765,4 +770,34 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 	MTX_UNLOCK(lb_ptr->lb_mtx);				
 }
 
+#ifdef ANULADO 
+/*===========================================================================*
+ *				   check_server_idle 							 *
+ *!!!!!!!!!!!!!!!!!!!!!!!! svr_ptr must be protected by MUTEX 
+ *!!!!!!!!!!!!!!!!!!!!!!!! lb_ptr must be protected by MUTEX 
+ *===========================================================================*/
+void check_server_idle(server_t *svr_ptr)
+{
+	lb_t *lb_ptr;
+	time_t  diff_secs;
+	struct timespec ts;
+	
+	lb_ptr = &lb;
+	USRDEBUG("Server %s\n",svr_ptr->svr_name);
 
+	// there is a minimal amount of servers 
+	if( (lb_ptr->lb_nr_init-1) <= lb_ptr->lb_min_servers) return;
+	
+	if(svr_ptr->svr_level == LVL_UNLOADED){
+		clock_gettime(clk_id, &ts);
+		diff_secs = ts.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
+		USRDEBUG("Server %s: Server IDLE diff_secs=%ld\n",svr_ptr->svr_name, diff_secs);
+		if( (int) diff_secs > lb.lb_stop){
+			USRDEBUG("Server %s: STOP THE VM!!!\n",svr_ptr->svr_name);
+		}
+	} else {
+		svr_ptr->svr_idle_ts = ts;
+	}
+}
+#endif // ANULADO 
+			

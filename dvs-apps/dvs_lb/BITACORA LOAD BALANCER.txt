@@ -4822,23 +4822,55 @@ LISTO:  En el monitor, al hacer el JOIN de si mismo
 		- ver cuantos agentes hay conectados 
 		- si lb_nr_init < min_servers, entonces arrancar las VMs de los nuevos servers.
 		(es BEST EFFORT)
+
+ERROR: PORQUE TRATA DE LEVANTAR 2 VECES DESDE EL MONITOR 
+root     29476   977  0 13:09 pts/0    00:00:00 ./lb_dvs lb_dvs.cfg
+root     29489     1  0 13:09 pts/0    00:00:00 sshpass -p zzzzzzzz ssh Admin@192.168.0.196 
+root     29490 29489  0 13:09 pts/1    00:00:00 ssh Admin@192.168.0.196 startvm.bat Admin me
+root     29499     1  0 13:10 pts/0    00:00:00 sshpass -p zzzzzzzz ssh Admin@192.168.0.196 
+root     29500 29499  0 13:10 pts/2    00:00:00 ssh Admin@192.168.0.196 startvm.bat Admin me
+
+LISTO : 	Antes de TERMINAR un NODO o VM fijarse si lb_nr_init > min_servers
+
+LISTO:	El chequeo del servidor IDLE lo hace el MONITOR al recibir el LOAD_LEVEL del server 
+	ERROR !!!!!! El server SOLO envia mensajes si cambio el LEVEL!! por lo tanto
+			si el level no cambia, no va a chequear nada !!
+			
+LISTO: El chequeo si ya termino de STARTING o STOPPING se hace start_new_node.
+
+LISTO: En el main thread, hacer un loop the 30 segundos  para verificar 
+	1) Ver si los servers estan IDLE 
+	2) Ver si los servers terminaron de STARTING o STOPPING 
+FUNCIONO !!!	
+	root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep IDLE lb_dvs.out
+	 30114:lb_dvs.c:main:280:Server node1: Server IDLE diff=30
+	 30114:lb_dvs.c:main:280:Server node1: Server IDLE diff=60
+	 30114:lb_dvs.c:main:280:Server node1: Server IDLE diff=90
+	root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep STOP lb_dvs.out
+	 30114:lb_dvs.c:main:282:Server node1: STOP THE VM!!!
+	
+Que controle:
+LISTO	Si falla el arranque de la VM y el server queda marcado como arrancando!!
+LISTO 	Tomar un tiempo para que arranque. Si se vence ese tiempo, borrar el flag de STARTING 	
+LISTO 	Se puede utilizar el timestamp para saber cuanto tiempo hace q se arranco.
+LISTO	Si hace el join se borra el STARTING 
+LISTO 	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
+		lo borra.
+
 		
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
 ULTIMO_LOG 
 
-Que controle:
-	Si falla el arranque de la VM y el server queda marcado como arrancando!!
-		Tomar un tiempo para que arranque. Si se vence ese tiempo, borrar el flag de STARTING 	
-	Se puede utilizar el timestamp para saber cuanto tiempo hace q se arranco.
-	Si hace el join se borra el STARTING 
-	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
-		lo borra.
-		
+TODO:	
+		Cuando bajar una VM 
+			Cuando la sesion no se usa hace mucho tiempo (agregar un campo a la session de timestamp)
+					cuando el LB recibe del server un mensaje, pega el timestamp del cmd_t en la sesion 
+			Cuando no tiene sesiones activas 
+			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
 
-TODO: 	Antes de TERMINAR un NODO o VM fijarse si lb_nr_init > min_servers
-		
+			
 TODO:	Reemplazar NR_NODES por el valor del DVS.  		
 TODO: 
 	Hacer una  funcion de INIT para cada una de las estructuras de datos 
@@ -4848,18 +4880,9 @@ SEGURAMENTE, cuando se termine una VM hay que dejar el server en estado STOPPING
 El cual finaliza no bien se hace el DISCONNECT de spread 
 Pero tambien cuando termina la VM!! 
 Y tambien hay que terminar el ssh y sshpass
-
-
-			
-			
 			
 
 			
-TODO:	
-		Cuando bajar una VM 
-			Cuando la sesion no se usa hace mucho tiempo
-			Cuando no tiene sesiones activas 
-			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
 			
 TODO_: Modificar test_lb.sh para que soporte parametros
 		start y stop y restart 
