@@ -79,6 +79,7 @@
 #define LB_PERIOD_DEFAULT	30	
 #define LB_START_DEFAULT	60	
 #define LB_SHUTDOWN_DEFAULT	60
+#define LB_VMSTART_TIME 	(2*60)	
 #define SECS_BY_HOUR		3600
 
 #define LVL_NOTINIT		(-1) 
@@ -254,7 +255,8 @@ struct server_s{
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
-	struct timespec svr_idle_ts;	/* last timestamp	with the server not UNLOADED 											*/
+	struct timespec svr_idle_ts; /* last timestamp	with the server not UNLOADED 											*/
+	struct timespec svr_ss_ts;	 /* Start/Stop VM timestamp */
 
 	int	svr_idle_count;		// Number o Idle cycles that the server has  // NOT USED YET  
 
@@ -309,6 +311,8 @@ typedef struct {
 	int		lb_period;			// load measurement period in seconds (1-3600)
 	int		lb_start;			// period to wait to start a server node VM in seconds (1-3600)
 	int		lb_stop;			//  period to wait to shutdown  a server node VM in seconds (1-3600)
+	int		lb_min_servers; 	// low water load (0-NR_NODES)
+	int		lb_max_servers;		// low water load (0-NR_NODES)
 
 	char 	*lb_vm_start;		// string to command which START the server VM 
 	char 	*lb_vm_stop;		// string to command which STOP the server VM 
@@ -329,15 +333,17 @@ typedef struct {
     unsigned int	lb_bm_cltparms;	// bitmap of Config Client Parameters
     unsigned int	lb_bm_svrparms;	// bitmap of Config Server Parameters
 
-    unsigned int	lb_bm_nodes;	// bitmap of Configured nodes
-    unsigned int	lb_bm_init;		// bitmap  initialized/active nodes 
-	
-	int				lb_nr_nodes;	// number of Configured server nodes 
-	int				lb_nr_init;		// number of   initialized/active  server nodes 
+// START MULTIPLE ACCESS FIELDS 
+    unsigned int	lb_bm_nodes;	// bitmap of Connected nodes
+    unsigned int	lb_bm_init;		// bitmap  initialized nodes 
+	int				lb_nr_nodes;	// number of Connected server nodes 
+	int				lb_nr_init;		// number of   initialized  server nodes 
+// END MULTIPLE ACCESS FIELDS 
 	
 	int				lb_nr_cltpxy;	// # of defined Client Proxies (from configuration file)
 	int				lb_nr_svrpxy;    // # of defined Server Proxies (from configuration file)
 	int				lb_nr_services;	// # of defined Services (from configuration file)
+    unsigned int	lb_bm_svrpxy;	// bitmap of defined Server Proxies
 
     mailbox			lb_mbox;
 	int				lb_len;
@@ -353,6 +359,8 @@ typedef struct {
     int		   		lb_sp_nr_mbrs;
     char		 	lb_mess_in[MAX_MESSLEN];
 	
+	pthread_mutex_t lb_mtx;  		// to protect the this structure
+
 } lb_t;
 
 #define LB1_FORMAT 	"lb_name=%s lb_nodeid=%d lb_lowwater=%d lb_highwater=%d lb_period=%d \n"
@@ -363,8 +371,10 @@ typedef struct {
 #define LB3_FIELDS(p)  p->lb_name, p->lb_cltname, p->lb_svrname, p->lb_cltdev, p->lb_svrdev 
 #define LB4_FORMAT 	"lb_name=%s lb_ssh_host=%s lb_ssh_user=%s lb_ssh_pass=%s\n"
 #define LB4_FIELDS(p)  p->lb_name, p->lb_ssh_host, p->lb_ssh_user, p->lb_ssh_pass
-#define LB5_FORMAT 	"lb_name=%s lb_start=%d lb_stop=%d lb_vm_start=%s lb_vm_stop=%s\n"
-#define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_vm_start, p->lb_vm_stop
+#define LB5_FORMAT 	"lb_name=%s lb_start=%d lb_stop=%d lb_min_servers=%d lb_max_servers=%d\n"
+#define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_vm_start, p->lb_max_servers
+#define LB6_FORMAT 	"lb_name=%s lb_vm_start=%s lb_vm_stop=%s\n"
+#define LB6_FIELDS(p)  p->lb_name, p->lb_vm_start, p->lb_vm_stop
 
 #include "lb_glo.h"
 #include "../debug.h"

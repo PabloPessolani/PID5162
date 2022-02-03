@@ -440,7 +440,8 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 			rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
 							sizeof(proxy_hdr_t), 0); 
 			if( rcode < 0) ERROR_PRINT(-errno);
-			// check if the server is IDLE for a specified time	
+			// check if the server is IDLE for a specified time
+			if( (lb_ptr->lb_nr_init-1) <= lb_ptr->lb_min_servers) continue;
 			if(svr_ptr->svr_level == LVL_UNLOADED){
 				diff_secs = spx_ptr->lbp_header->c_timestamp.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
 				USRDEBUG("SERVER_RPROXY(%s): Server IDLE diff_secs=%ld\n",svr_ptr->svr_name, diff_secs);

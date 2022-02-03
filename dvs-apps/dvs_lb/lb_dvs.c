@@ -102,6 +102,8 @@ int main (int argc, char *argv[] )
 	
     lb_config(argv[1]);  //Reads Config File
 
+	pthread_mutex_init(&lb.lb_mtx, NULL);
+
 	if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
 		fprintf(stderr, "MAXCOPYBUF(%d) must be greater than (BLOCK_16K <<"
 			"lz4_preferences.frameInfo.blockSizeID)(%d)\n",MAXCOPYBUF,

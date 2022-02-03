@@ -4741,7 +4741,7 @@ LISTO:
 			Solo se levantan si quedan servidores configurados pero no arrancados LISTO 
 
 
-TODO:	Cuando el cliente hace un sendrec() fuerza al arranque de la VM con el NODE1
+LISTO:	Cuando el cliente hace un sendrec() fuerza al arranque de la VM con el NODE1
 		Cuando vuelve a intentar, otra vez vuelve a hacer lo mismo y asi lo hace 100 veces
 
 		1) Para ello, hay que marcar al server como que está arrancando. LISTO 
@@ -4775,9 +4775,6 @@ EN EL SERVER
 	E:\CLIENT11\Debian 9.4.vmx
 	E:\NODE1\node1.vmx
 
-
-	
-
 PARA SABER SI UN SERVER NO SE USA SE PUEDE UTILIZA EL SERVER_RPROXY 	
  1395:lb_svrpxy.c:svr_Rproxy_rcvhdr:486:SERVER_RPROXY (node1): n:120 | received:120 | HEADER_SIZE:120
  1395:lb_svrpxy.c:svr_Rproxy_rcvhdr:489:SERVER_RPROXY (node1): cmd=0x0 dcid=0 src=10 dst=50 snode=1 dnode=0 rcode=0 len=0 PID=720
@@ -4809,12 +4806,40 @@ root@node0:/usr/src/dvs/dvs-apps/dvs_lb# killall lb_dvs
 REVISAR LOS ARCHIVO LCK DE LA VM 
 sshpass -p 'mendieta' ssh Admin@192.168.0.196 "vmlist.bat"
 LISTAR VMS 	
+
+============================================================================
+20220203: 
+LISTO:	ATENCION CON LA MANIPULACION DE SERVERS!! HAY QUE PROTEGER CON MUTEXES
+		ATENCION PUEDE SER NECESARIO MANIPULAR LOS DATOS DEL LB CON MUTEXES 
+
+
+LISTO:	Agregar max_servers y min_servers a la estructura LB para limitar la cantidad de servers
+		esto se contrasta con lb_nr_init.
+		
+LISTO:	Antes de levantar una nueva VM se tiene que fijar que no llego al max_servers
+		
+LISTO:  En el monitor, al hacer el JOIN de si mismo 
+		- ver cuantos agentes hay conectados 
+		- si lb_nr_init < min_servers, entonces arrancar las VMs de los nuevos servers.
+		(es BEST EFFORT)
 		
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
 ULTIMO_LOG 
 
+Que controle:
+	Si falla el arranque de la VM y el server queda marcado como arrancando!!
+		Tomar un tiempo para que arranque. Si se vence ese tiempo, borrar el flag de STARTING 	
+	Se puede utilizar el timestamp para saber cuanto tiempo hace q se arranco.
+	Si hace el join se borra el STARTING 
+	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
+		lo borra.
+		
+
+TODO: 	Antes de TERMINAR un NODO o VM fijarse si lb_nr_init > min_servers
+		
+TODO:	Reemplazar NR_NODES por el valor del DVS.  		
 TODO: 
 	Hacer una  funcion de INIT para cada una de las estructuras de datos 
 	De esa forma cuando se cae un SERVER por ejemplo, hay que inicializar sus datos 
@@ -4824,13 +4849,7 @@ El cual finaliza no bien se hace el DISCONNECT de spread
 Pero tambien cuando termina la VM!! 
 Y tambien hay que terminar el ssh y sshpass
 
-Que controle:
-	Si falla el arranque de la VM y el server queda marcado como arrancando!!
-		Tomar un tiempo para que arranque. Si se vence ese tiempo, borrar el flag de STARTING 	
-	Se puede utilizar el timestamp para saber cuanto tiempo hace q se arranco.
-	Si hace el join se borra el STARTING 
-	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
-		lo borra.
+
 			
 			
 			

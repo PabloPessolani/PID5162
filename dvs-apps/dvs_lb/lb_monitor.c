@@ -277,7 +277,9 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 	message *m_ptr;
 	server_t *svr_ptr;
 	client_t *clt_ptr;
+static	char rmt_cmd[MAXCMDLEN];
 	
+	MTX_LOCK(lb_ptr->lb_mtx);
 	m_ptr = lb_ptr->lb_mess_in;
 	agent_id = get_nodeid(sender_ptr);
     USRDEBUG("sender_ptr=%s agent_id=%d msg_type=%d\n", 
@@ -287,12 +289,20 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 	if ( msg_type == MT_LOAD_THRESHOLDS){
 		lb_ptr->lb_nr_init = lb_ptr->lb_nr_nodes;
 		lb_ptr->lb_bm_init = lb_ptr->lb_bm_nodes;
-		return(OK);
+		// check if is time to start a new server VM
+		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
+				lb_ptr->lb_nr_init, lb_ptr->lb_min_servers);
+		if( (lb_ptr->lb_nr_init-1) < lb_ptr->lb_min_servers){
+			start_new_node(rmt_cmd); 
+		}
+		goto unlock_ok;		
 	}
 	
 	// ignore other self sent messages 
-	if( agent_id == lb_ptr->lb_nodeid) return(OK);
-
+	if( agent_id == lb_ptr->lb_nodeid) {
+		goto unlock_ok;		
+	}
+	
 	// check that the sender is an initialized agent 
 	if (TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0 ){
 		fprintf( stderr,"lbm_reg_msg: agent_id %d is not initialized !\n",
@@ -310,13 +320,13 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			if( strncmp(sender_ptr, LBA_SHARP, strlen(LBA_SHARP)) != 0){
 				fprintf( stderr,"lba_reg_msg: MT_LOAD_LEVEL message sent by %s\n",
 					 sender_ptr);
-				return(OK);					
+				goto unlock_ok;		
 			}
 			// check message len 
 			if( lb_ptr->lb_len < sizeof(message)){
 				fprintf( stderr,"lb_reg_msg: bad message size=%d (must be %d)\n",
 					 lb_ptr->lb_len, sizeof(message));
-				return(OK);		
+				goto unlock_ok;		
 			}
 			m_ptr = lb_ptr->lb_mess_in;
 			USRDEBUG(MSG9_FORMAT, MSG9_FIELDS(m_ptr) );	
@@ -324,13 +334,13 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			if( m_ptr->m_source != agent_id){
 				fprintf( stderr,"lb_reg_msg: m_source(%d) != sender agent_id(%d)\n",
 					 m_ptr->m_source, agent_id);
-				return(OK);		
+				goto unlock_ok;		
 			}
 			// check correct message type 
 			if( m_ptr->m_type != msg_type){
 				fprintf( stderr,"lb_reg_msg: m_type(%d) != msg_type(%d)\n",
 					 m_ptr->m_type, msg_type);
-				return(OK);		
+				goto unlock_ok;		
 			}
 			if(TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0){	
 				SET_BIT(lb_ptr->lb_bm_init, agent_id);
@@ -347,13 +357,13 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			if( strncmp(sender_ptr, LBA_SHARP, strlen(LBA_SHARP)) != 0){
 				fprintf( stderr,"lba_reg_msg: MT_ACKNOWLEDGE message sent by %s\n",
 					 sender_ptr);
-				return(OK);					
+				goto unlock_ok;		
 			}
 			// check message len 
 			if( lb_ptr->lb_len < sizeof(message)){
 				fprintf( stderr,"lb_reg_msg: bad MT_ACKNOWLEDGE message size=%d (must be %d)\n",
 					 lb_ptr->lb_len, sizeof(message));
-				return(OK);		
+				goto unlock_ok;		
 			}
 			m_ptr = lb_ptr->lb_mess_in;
 			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
@@ -361,13 +371,13 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			if( m_ptr->m_source != agent_id){
 				fprintf( stderr,"lb_reg_msg: MT_ACKNOWLEDGE m_source(%d) != sender agent_id(%d)\n",
 					 m_ptr->m_source, agent_id);
-				return(OK);		
+				goto unlock_ok;		
 			}
 			// check correct message type 
 			if( m_ptr->m_type != msg_type){
 				fprintf( stderr,"lb_reg_msg: MT_ACKNOWLEDGE m_type(%d) != msg_type(%d)\n",
 					 m_ptr->m_type, msg_type);
-				return(OK);		
+				goto unlock_ok;		
 			}
 			assert(m_ptr->m_source == agent_id);
 			if( (msg_type == (MT_CLT_WAIT_BIND | MT_ACKNOWLEDGE))
@@ -388,6 +398,8 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 			assert(FALSE);
 			break;
 	}
+unlock_ok:
+	MTX_UNLOCK(lb_ptr->lb_mtx);
 	return(OK);
 }
 
@@ -436,9 +448,7 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
     agent_id  = get_nodeid((char *)lb_ptr->lb_memb_info.changed_member);
 	
 	if( agent_id == lb_ptr->lb_nodeid) {
-		if( lb_ptr->lb_nr_nodes > 1) {
-			mcast_thresholds();
-		}
+		mcast_thresholds();
 		return(OK);
 	}
 	
@@ -475,10 +485,15 @@ int  lbm_leave(lb_t *lb_ptr,int num_groups)
 		// ignore self messages
 		if( agent_id == lb_ptr->lb_nodeid) return(OK);
 		// uninitialized agent 
-		if( TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0) return(OK);
+		MTX_LOCK(lb_ptr->lb_mtx);
+		if( TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0){
+			MTX_UNLOCK(lb_ptr->lb_mtx);
+			return(OK);
+		}
 		clear_session(agent_id);
         CLR_BIT(lb_ptr->lb_bm_init, agent_id);
 		lb_ptr->lb_nr_init--;
+		MTX_UNLOCK(lb_ptr->lb_mtx);
     }
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
 	return(OK);
@@ -587,16 +602,19 @@ int lbm_network(lb_t* lb_ptr)
                 agent_id = get_nodeid(lb_ptr->lb_members[j]);
                 SET_BIT(bm_nodes, agent_id);
                 nr_nodes++;
+				MTX_LOCK(lb_ptr->lb_mtx);				
                 if(TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0) {
 					SET_BIT(bm_init, agent_id);
 					nr_init++;
 				}
+				MTX_UNLOCK(lb_ptr->lb_mtx);				
 			}
 		}
     }
 	
     USRDEBUG("OLD " LB2_FORMAT, LB2_FIELDS(lb_ptr));	
 
+	MTX_LOCK(lb_ptr->lb_mtx);				
 	if( lb_ptr->lb_nr_init > nr_nodes){
 	    USRDEBUG("NETWORK PARTITION \n");		
 	}else{
@@ -620,7 +638,9 @@ int lbm_network(lb_t* lb_ptr)
 	
 	mcast_thresholds();
 
-    USRDEBUG("NEW " LB2_FORMAT, LB2_FIELDS(lb_ptr));	
+    USRDEBUG("NEW " LB2_FORMAT, LB2_FIELDS(lb_ptr));
+	MTX_UNLOCK(lb_ptr->lb_mtx);				
+	
     return(OK);
 }
 
@@ -709,6 +729,7 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 	client_t *clt_ptr;
 	
 	// save old node's bitmap
+	MTX_LOCK(lb_ptr->lb_mtx);				
 	bm_nodes = lb_ptr->lb_bm_nodes;
 	
 	lb_ptr->lb_bm_nodes = 0;
@@ -741,6 +762,7 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 		lb_ptr->lb_nr_nodes++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     }
+	MTX_UNLOCK(lb_ptr->lb_mtx);				
 }
 
 

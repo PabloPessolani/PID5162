@@ -113,7 +113,9 @@ extern char *ctl_socket;
 #define TKN_LB_SSH_HOST  12
 #define TKN_LB_SSH_USER  13
 #define TKN_LB_SSH_PASS  14
-#define TKN_LB_MAX 		 15	// MUST be the last
+#define TKN_LB_MINSERVERS 15
+#define TKN_LB_MAXSERVERS 16
+#define TKN_LB_MAX 		 17	// MUST be the last
 
 #define nil ((void*)0)
 
@@ -166,6 +168,8 @@ char *cfg_lb_ident[] = {
     "ssh_host",
     "ssh_user",
     "ssh_pass",	
+    "min_servers",
+    "max_servers",
 };
 
 char nonprog[] = "none";
@@ -753,6 +757,42 @@ int search_lb_ident(config_t *cfg)
 							USRDEBUG("lb_ssh_pass=%s\n", lb.lb_ssh_pass);
 							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_PASS);							
 							break;
+                        case TKN_LB_MINSERVERS:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}						
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_min_servers = atoi(cfg->word);
+							USRDEBUG("lb.lb_min_servers=%d\n", lb.lb_min_servers);
+							if ((lb.lb_min_servers < 0) || (lb.lb_min_servers > NR_NODES)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "lb_min_servers:%d, must be (0-NR_NODES)\n", lb.lb_min_servers);
+								return(EXIT_CODE);
+							}
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_MINSERVERS);							
+							break;
+                        case TKN_LB_MAXSERVERS:
+							if( lb.lb_nodeid == LB_INVALID){
+								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}							
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_max_servers = atoi(cfg->word);
+							USRDEBUG("lb.lb_max_servers=%d\n", lb.lb_max_servers);
+							if ((lb.lb_max_servers < 1) || (lb.lb_max_servers > NR_NODES)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "max_servers:%d, must be (1-NR_NODES)\n", lb.lb_max_servers);
+								return(EXIT_CODE);
+							}		
+							SET_BIT(lb.lb_bm_lbparms, TKN_LB_MAXSERVERS);							
+							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
 							exit(1);
@@ -1008,6 +1048,7 @@ int search_main_token(config_t *cfg)
 			        USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
 			        USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
 					lb.lb_nr_svrpxy++;
+					SET_BIT(lb.lb_bm_svrpxy, nodeid);
 					for( i = 0; i < TKN_SVR_MAX; i++){
 						if( !TEST_BIT(lb.lb_bm_svrparms, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: server %s parameter %s not configured\n", 
@@ -1142,9 +1183,12 @@ void lb_config(char *f_conf)	/* config file name. */
 	lb.lb_nodeid 	= LOCALNODE;		
 	lb.lb_nr_cltpxy	= 0;	
 	lb.lb_nr_svrpxy	= 0;	
+	lb.lb_bm_svrpxy	= 0;	
 	lb.lb_nr_services 	= 0;
 	lb.lb_lowwater 	= LB_INVALID;	
 	lb.lb_highwater	= LB_INVALID;
+	lb.lb_min_servers = 0;	
+	lb.lb_max_servers = NR_NODES;
 	lb.lb_period   	= LB_PERIOD_DEFAULT;	
 	lb.lb_start   	= LB_START_DEFAULT;	
 	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
@@ -1188,6 +1232,8 @@ void lb_config(char *f_conf)	/* config file name. */
     USRDEBUG("lb.lb_nr_services=%d\n",lb.lb_nr_services);  
     USRDEBUG("lb.lb_lowwater=%d\n",lb.lb_lowwater);  
     USRDEBUG("lb.lb_highwater=%d\n",lb.lb_highwater);  
+    USRDEBUG("lb.lb_min_servers=%d\n",lb.lb_min_servers);  
+    USRDEBUG("lb.lb_max_servers=%d\n",lb.lb_min_servers);  
 
 	// check for mandatory parameters
     USRDEBUG("Check for mandatory parameters=%d\n", TKN_LB_MAX);  
@@ -1231,6 +1277,22 @@ void lb_config(char *f_conf)	/* config file name. */
         fprintf( stderr,"CONFIGURATION ERROR: highwater must be (0-100)\n");
         exit(1);
     }
+
+	if(lb.lb_min_servers < 0 
+	|| lb.lb_min_servers > NR_NODES
+	|| lb.lb_min_servers > lb.lb_max_servers
+	) {
+        fprintf( stderr,"CONFIGURATION ERROR: min_servers must be (0-NR_NODES) and lower or equal than max_servers\n");
+        exit(1);
+    }
+
+	if(lb.lb_lowwater < 1 
+	|| lb.lb_lowwater > NR_NODES
+	) {
+        fprintf( stderr,"CONFIGURATION ERROR: max_servers must be (1-NR_NODES)\n");
+        exit(1);
+    }
+
 
 	if(lb.lb_period < 1 
 	|| lb.lb_period > SECS_BY_HOUR
@@ -1413,6 +1475,7 @@ void lb_config(char *f_conf)	/* config file name. */
 	}
 	if( lb.lb_vm_start != NULL && lb.lb_vm_stop != NULL) {
 		USRDEBUG(LB5_FORMAT, LB5_FIELDS(lb_ptr));
+		USRDEBUG(LB6_FORMAT, LB6_FIELDS(lb_ptr));
 	}
 }
 

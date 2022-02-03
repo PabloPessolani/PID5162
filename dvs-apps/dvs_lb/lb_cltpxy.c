@@ -25,50 +25,96 @@ server_t *select_server(client_t *clt_ptr,
 
 /*===========================================================================*
  *				   start_new_node		    					 *
+ * !!!!!!!!!!!!!!!!!  lb_mtx MUST BE LOCKED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *===========================================================================*/
-void start_new_node(sess_entry_t *sess_ptr, client_t *clt_ptr)
+void start_new_node(char *rmt_cmd)
 {
-	int n, rcode;
+	int n, rcode, found;
+	unsigned int bm_not_init;
 	server_t *svr_ptr;
 	lb_t *lb_ptr;
+	struct timespec ts;
+	time_t diff; 
 
 	lb_ptr = &lb;
-	USRDEBUG("CLIENT_RPROXY(%s): \n", clt_ptr->clt_name);
-						
+	USRDEBUG("\n");
+	
+	// If there enought servers continue  
+	if( (lb_ptr->lb_nr_init-1) >= lb_ptr->lb_max_servers){		
+		USRDEBUG("There enought servers: lb_nr_init=%d lb_max_servers=%d\n",
+				lb_ptr->lb_nr_init, lb_ptr->lb_max_servers);
+		return;
+	}
+	
+	bm_not_init = ~lb_ptr->lb_bm_init;
+	bm_not_init &= lb_ptr->lb_bm_svrpxy;
+	CLR_BIT(bm_not_init, lb_ptr->lb_nodeid);
+	USRDEBUG("lb_bm_init=%0X lb_bm_svrpxy=%0X bm_not_init=%0X\n",
+		lb_ptr->lb_bm_init, lb_ptr->lb_bm_svrpxy, bm_not_init);
+
+	if( bm_not_init == 0){
+		USRDEBUG("Not Server found to start\n");
+		return; 
+	}
+		
+	found = LB_INVALID;
 	for( n = 0; n < NR_NODES ; n++){
-		// the agent was on the old bitmap 
-		if(TEST_BIT(lb_ptr->lb_bm_init, n) == 0) { // Need a server not initialized  
+		// Need a server NOT initialized  
+		if( bm_not_init == 0) break; 
+		if(TEST_BIT(bm_not_init, n)){ 
 			svr_ptr = &server_tab[n];
-			if(svr_ptr-> svr_image != NULL) { 		// but configured with a VM image 
+			MTX_LOCK(svr_ptr->svr_mutex);
+			if(svr_ptr->svr_image != NULL) { 		// but configured with a VM image 
+				found = n;
 				// check if the server is just starting
-				if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING) ) return;
-			
-//				nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta \"E:\\NODE2\\Debian 9.4.vmx\" > /tmp/node2.out 2>/tmp/node2.err  &
-				sprintf(sess_ptr->se_rmtcmd, "nohup sshpass -p %s ssh %s@%s startvm.bat %s %s \"%s\" > /tmp/vm_%s.out 2> /tmp/vm_%s.err &",
-							lb_ptr->lb_ssh_pass,				  
-							lb_ptr->lb_ssh_user,
-							lb_ptr->lb_ssh_host,
-							
-							lb_ptr->lb_ssh_user,
-							lb_ptr->lb_ssh_pass,				  
-							svr_ptr->svr_image,
-							
-							svr_ptr->svr_name,
-							svr_ptr->svr_name									
-							);
-				USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
-						clt_ptr->clt_name, sess_ptr->se_rmtcmd);
-				rcode = system(sess_ptr->se_rmtcmd);
-				if(rcode == OK){
-					// Set a flag that the server is starting 
-					SET_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
-					break; 
+				if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING) ){
+					// At least ONE server is just starting 
+					clock_gettime(clk_id, &ts);
+					diff = ts.tv_sec - svr_ptr->svr_ss_ts.tv_sec;
+					USRDEBUG("At least ONE server is just starting: nodeid=%d diff=%ld\n",n, diff);
+					if( diff < LB_VMSTART_TIME)	{
+						MTX_UNLOCK(svr_ptr->svr_mutex);		
+						return;
+					}
+					CLR_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
 				}
-				// try anothed configured server 
-				ERROR_PRINT(rcode);
+				MTX_UNLOCK(svr_ptr->svr_mutex);		
+				break;
 			}		
+			// try anothed configured server 
+			MTX_UNLOCK(svr_ptr->svr_mutex);		
+			CLR_BIT(bm_not_init, n);
 		}
 	}
+	
+	if( found == LB_INVALID){
+		USRDEBUG("Not Server found to start\n");
+		return; // NOT NEED UNLOCK SERVER 
+	}
+
+	svr_ptr = &server_tab[found];
+	MTX_LOCK(svr_ptr->svr_mutex);
+//				nohup sshpass -p mendieta ssh Admin@192.168.0.196 startvm.bat Admin mendieta \"E:\\NODE2\\Debian 9.4.vmx\" > /tmp/node2.out 2>/tmp/node2.err  &
+	sprintf(rmt_cmd, "nohup sshpass -p %s ssh %s@%s startvm.bat %s %s \"%s\" > /tmp/vm_%s.out 2> /tmp/vm_%s.err &",
+				lb_ptr->lb_ssh_pass,				  
+				lb_ptr->lb_ssh_user,
+				lb_ptr->lb_ssh_host,
+				
+				lb_ptr->lb_ssh_user,
+				lb_ptr->lb_ssh_pass,				  
+				svr_ptr->svr_image,
+				
+				svr_ptr->svr_name,
+				svr_ptr->svr_name									
+				);
+	USRDEBUG("rmt_cmd=%s\n", rmt_cmd);
+	rcode = system(rmt_cmd);
+	if(rcode == OK){
+		// Set a flag that the server is starting 
+		SET_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
+		clock_gettime(clk_id, &svr_ptr->svr_ss_ts);
+	}
+	MTX_UNLOCK(svr_ptr->svr_mutex);
 }
 
 /*===========================================================================*
@@ -512,8 +558,11 @@ server_t *select_server(client_t *clt_ptr,
 	int i, new_ep, rcode;
 	server_t *svr_ptr;
 	int raw_time;
+	lb_t* lb_ptr;
     struct timespec cmd_ts = {0, 0};
 
+	lb_ptr = &lb;
+	MTX_LOCK(lb_ptr->lb_mtx);				
 	for( i = 0; i < NR_NODES; i++){
 		svr_ptr = &server_tab[i]; 
 		MTX_LOCK(svr_ptr->svr_mutex);
@@ -525,7 +574,7 @@ server_t *select_server(client_t *clt_ptr,
 				continue;
 			}
 			// If server is not Initialized 
-			if( TEST_BIT(lb.lb_bm_init, i) == 0) {
+			if( TEST_BIT(lb_ptr->lb_bm_init, i) == 0) {
 				MTX_UNLOCK(svr_ptr->svr_mutex);
 				continue;
 			}
@@ -550,7 +599,7 @@ server_t *select_server(client_t *clt_ptr,
 									svc_ptr->svc_prog, 								
 									svc_ptr->svc_dcid, 
 									new_ep,
-									lb.lb_nodeid, 
+									lb_ptr->lb_nodeid, 
 									hdr_ptr->c_src,
 									svr_ptr->svr_name,				  
 									svr_ptr->svr_name				  
@@ -568,7 +617,7 @@ server_t *select_server(client_t *clt_ptr,
 									svc_ptr->svc_prog, 								
 									svc_ptr->svc_dcid, 
 									new_ep,
-									lb.lb_nodeid, 
+									lb_ptr->lb_nodeid, 
 									hdr_ptr->c_src,
 									svr_ptr->svr_name,				  
 									svr_ptr->svr_name				  
@@ -595,7 +644,8 @@ server_t *select_server(client_t *clt_ptr,
 						COND_WAIT_T(rcode, clt_ptr->clt_agent_cond, clt_ptr->clt_agent_mtx, &cmd_ts);
 						MTX_UNLOCK(clt_ptr->clt_agent_mtx);						
 						if(rcode < 0 ){
-							ERROR_PRINT(rcode); 
+							ERROR_PRINT(rcode);
+							MTX_UNLOCK(lb_ptr->lb_mtx);				
 							return(NULL);
 						}
 					}
@@ -613,21 +663,24 @@ server_t *select_server(client_t *clt_ptr,
 	if ( i == NR_NODES){ // not UNLOADED SERVER RUNNING server found
 		// Are there any defined node to start ??
 		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_svrpxy=%d\n", 		
-								clt_ptr->clt_name, lb.lb_nr_init, lb.lb_nr_svrpxy);
-		if( lb.lb_nr_init < lb.lb_nr_svrpxy) {
+								clt_ptr->clt_name, lb_ptr->lb_nr_init,lb_ptr->lb_nr_svrpxy);
+		if( lb_ptr->lb_nr_init < lb_ptr->lb_nr_svrpxy) {
 			///////////////////////////////////////////////////////////////////
 			// HERE, START A VM WITH A NEW NODE 
 			///////////////////////////////////////////////////////////////////
-			start_new_node(sess_ptr, clt_ptr);
+			start_new_node(sess_ptr->se_rmtcmd);
 			ERROR_PRINT(EDVSAGAIN);
 		}else {
 			ERROR_PRINT(EDVSNOSPC);
-		} 
+		}
+		MTX_UNLOCK(lb_ptr->lb_mtx);				
 		return(NULL);	
 	} 
+	MTX_LOCK(lb_ptr->lb_mtx);				
+
 	USRDEBUG("CLIENT_RPROXY(%s): server name=%s new_ep=%d\n", 		
 								clt_ptr->clt_name, svr_ptr->svr_name, new_ep);
-	sess_ptr->se_svr_ep	= new_ep; 
+	sess_ptr->se_svr_ep	= new_ep;
 	return(svr_ptr);
 }
 
@@ -771,7 +824,9 @@ int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,
 	lbpx_desc_t *spx_ptr; 
 	proxy_hdr_t *hdr_ptr;
 	proxy_payload_t *pay_ptr;
+	lb_t* lb_ptr;
 	
+	lb_ptr = &lb;	
 	cpx_ptr = &clt_ptr->clt_rpx;
 	spx_ptr = &svr_ptr->svr_spx;
 	USRDEBUG("CLIENT_RPROXY(%s) BEFORE: " CMD_FORMAT, clt_ptr->clt_name, CMD_FIELDS(hdr_ptr));
@@ -779,7 +834,7 @@ int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,
 	
 	// Modify CLIENT RECEIVER header 
 	hdr_ptr = cpx_ptr->lbp_header;
-	hdr_ptr->c_snode = lb.lb_nodeid;
+	hdr_ptr->c_snode = lb_ptr->lb_nodeid;
 	m_ptr   = &hdr_ptr->c_msg;
 	dcid = spx_ptr->lbp_header->c_dcid;
 	MTX_LOCK(sess_table[dcid].st_mutex);
