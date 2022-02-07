@@ -1,4 +1,4 @@
-all: m3ftpd m3ftp 
+all: m3ftpd m3ftp mm3ftpd
 # Which compiler
 CC = gcc
 
@@ -10,6 +10,7 @@ INCLUDE = ..
 
 OBJ1 =  m3ftpd.o 
 OBJ2 =  m3ftp.o 
+OBJ3 =  mm3ftpd.o 
 
 LIBS = 	/usr/src/dvs/vos/mol/lib/syslib/libsyslib.so \
 		/usr/src/dvs/vos/mol/lib/timers/libtimers.so \
@@ -21,9 +22,12 @@ m3ftpd: $(OBJ1)  m3ftp.h
 
 m3ftp: $(OBJ2)  m3ftp.h 
 	$(CC)  $(CFLAGS) -MMD -MP -ldl -lm -lrt -lnsl  -pthread -rdynamic -o m3ftp $(OBJ2) $(LIBS) -I$(INCLUDE)
+
+mm3ftpd: $(OBJ3)  m3ftp.h 
+	$(CC)  $(CFLAGS) -MMD -MP -ldl -lm -lrt -lnsl  -pthread -rdynamic -o mm3ftpd $(OBJ3) $(LIBS) -I$(INCLUDE)	
 	
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE) -Wall
 
 clean:
-	rm m3ftpd m3ftp *.o
+	rm m3ftpd m3ftp mm3ftpd *.o

@@ -1,0 +1,21 @@
+BITACORA M3FTP
+=====================================
+
+AQUI EXPLICAR EL FUNCIONAMIENTO DEL PROTOCOLO DE FTP
+TIPOS DE MENSAJES
+QUE ESPERA EL CLIENTE Y QUE ESPERA EL SERVIDOR
+
+=====================================================================
+20220206:
+
+root@node0:/usr/src/dvs/dvs-apps/m3ftp# nsenter -p -t$DC0 ./mm3ftpd  0 20 21 29 > mm3ftpd.out 2> mm3ftpd.err
+
+EL THREAD ENVIA UNA DOBLE RESPUESTA EN EL GET 
+48:mm3ftpd.c:ftpd_reply:168:MM3FTPD[1]: dst_ep=50 rcode=0
+ 48:mm3ftpd.c:ftpd_reply:170:MM3FTPD[1]: reply source=50 type=0 m1i1=13 m1i2=0 m1i3=10485760 m1p1=0xbff2ae4e m1p2=0x40f580 m1p3=(nil) 
+ 48:mm3ftpd.c:ftpd_reply:168:MM3FTPD[1]: dst_ep=22 rcode=0
+ 48:mm3ftpd.c:ftpd_reply:170:MM3FTPD[1]: reply source=22 type=0 m1i1=13 m1i2=0 m1i3=10485760 m1p1=0xbff2ae4e m1p2=0x40f580 m1p3=(nil) 
+ERROR: mm3ftpd.c:ftpd_reply:175: rcode=-55
+
+EN EL PUT FUNCIONA BIEN 
+

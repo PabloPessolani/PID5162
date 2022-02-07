@@ -4870,6 +4870,9 @@ TODO:
 			Cuando no tiene sesiones activas 
 			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
 
+TODO:	Como controlar el estado de una VM desde el punto de vista del HYPERVISOR
+		Crear un script que permita saber si la VM está arrancada o finalizada 
+		Poner en ECHO OFF los scripts 
 			
 TODO:	Reemplazar NR_NODES por el valor del DVS.  		
 TODO: 

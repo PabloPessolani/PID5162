@@ -35,7 +35,6 @@ int ftpd_reply(int rcode)
 	int ret, retry;
 
 	USRDEBUG("ftpd_reply=%d\n", rcode);
-
 	m_ptr->m_type = rcode;
 	USRDEBUG("M3FTPD: reply " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
 	for( retry = 0; retry < MAX_RETRIES; retry++) {
@@ -206,7 +205,8 @@ int  main ( int argc, char *argv[] )
 		path_ptr[m_ptr->FTPPLEN] = 0;
 		USRDEBUG("M3FTPD: path >%s<\n", path_ptr);
 		
-		ftpd_reply(OK);
+		// reply with its endpoint means OK and that for the next communications will use this endpoint
+		ftpd_reply(ftpd_ep);
 		
 		switch(oper){
 			case FTP_GET:

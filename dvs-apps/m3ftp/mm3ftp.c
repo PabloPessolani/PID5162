@@ -31,16 +31,12 @@ int ftp_request(int oper)
 	for( retry = 0; retry < MAX_RETRIES; retry++) {
 //		ret = dvk_sendrec(ftpd_ep, m_ptr);
 		ret = dvk_sendrec_T(ftpd_ep, m_ptr, SEND_RECV_MS);
-		if(ret >= OK) break;
+		if(ret == OK) break;
 		if(ret == EDVSTIMEDOUT) {ERROR_PRINT(ret); continue;}
-		if( ret < 0) ERROR_RETURN(ret);
+		if ( ret < 0) {ERROR_PRINT(ret); break;}		
 	}
 	if( ret < 0) ERROR_RETURN(ret);
 	USRDEBUG("M3FTP: reply " MSG1_FORMAT, MSG1_FIELDS(m_ptr));
-	if (oper == FTP_GET || oper == FTP_PUT){
-		// change the server endpoint 
-		ftpd_ep = m_ptr->m_type;
-	}
 	return(OK);
 }
 
@@ -194,7 +190,6 @@ int main ( int argc, char *argv[] )
 	
 	rcode = ftp_request(oper);
 	if( rcode < 0) ERROR_EXIT(rcode);
-	USRDEBUG("NEW ftpd_ep=%d\n", ftpd_ep);
 	
 	switch(oper){
 		case FTP_PUT:

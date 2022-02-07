@@ -34,7 +34,7 @@
 #define _GNU_SOURCE
 #include <sched.h>
 #define cpumask_t cpu_set_t
-//#define USRDBG 1
+#define USRDBG 1
 
 #include "/usr/src/dvs/include/com/com.h"
 
@@ -70,10 +70,12 @@
 extern int	dvk_fd;
 extern int local_nodeid;
 
-#define MNX_PATH_MAX      4096
-#define MAXBUFLEN			MAXCOPYLEN // MAXCOPYBUF
-#define	MAX_RETRIES			3
+#define MNX_PATH_MAX    1024
+#define MAXBUFLEN		MAXCOPYLEN // MAXCOPYBUF
+#define	MAX_RETRIES		3
 #define SEND_RECV_MS 	30000
+#define	BIND_TIMEOUT	1000
+
 
 // REQUESTS
 #define FTP_NONE	0

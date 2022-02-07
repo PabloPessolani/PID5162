@@ -4739,6 +4739,27 @@ HAY PROBLEMAS CON LOS DISPOSITIVOS Y LOS FILESYSTEMS
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+==============================================================================================================
+20220206: 
+	ESTA FALLANDO EL BIND DE UN THREAD DONDE 1178 ES EL THREAD Y 1175 ES EL MAIN 
+		Feb  6 19:53:45 node0 kernel: [ 3186.053625] DEBUG 1178:dvk_ioctl:349: cmd=4004E309 arg=B73F02A8
+		Feb  6 19:53:45 node0 kernel: [ 3186.053626] DEBUG 1178:dvk_ioctl:369: DVK_CALL=9 (io_bind) 
+		Feb  6 19:53:45 node0 kernel: [ 3186.053626] DEBUG 1178:io_bind:97: 
+		Feb  6 19:53:45 node0 kernel: [ 3186.053627] DEBUG 1178:new_bind:1605: oper=1 dcid=0 param_pid=1178 endpoint=21 nodeid=-1
+		Feb  6 19:53:45 node0 kernel: [ 3186.053628] DEBUG 1178:new_bind:1628: dc_ptr=f8a0b000
+		Feb  6 19:53:45 node0 kernel: [ 3186.053628] DEBUG 1178:new_bind:1630: RLOCK_DC dc=0 count=0
+		Feb  6 19:53:45 node0 kernel: [ 3186.053629] DEBUG 1178:new_bind:1643: proc_ptr=ef826e00
+		Feb  6 19:53:45 node0 kernel: [ 3186.053629] DEBUG 1178:new_bind:1644: WLOCK_PROC ep=21 count=0
+		Feb  6 19:53:45 node0 kernel: [ 3186.053630] DEBUG 1178:new_bind:1664: WUNLOCK_PROC ep=21 count=0
+		Feb  6 19:53:45 node0 kernel: [ 3186.053631] DEBUG 1178:new_bind:1665: RUNLOCK_DC dc=0 count=0
+		Feb  6 19:53:45 node0 kernel: [ 3186.053631] ERROR: 1178:new_bind:1665: rcode=-305
+		Feb  6 19:53:45 node0 kernel: [ 3186.053632] ERROR: 1178:dvk_ioctl:373: rcode=-305
+		Feb  6 19:53:45 node0 kernel: [ 3186.062339] DEBUG 1175:new_wait4bind:2635: ret=-512
+		Feb  6 19:53:45 node0 kernel: [ 3186.062340] DEBUG 1175:new_wait4bind:2637: pending: sig[0]:0x00000100, sig[1]:0x00000000
+		Feb  6 19:53:45 node0 kernel: [ 3186.062341] DEBUG 1175:new_wait4bind:2640: shared_pending sig[0]:0x00000000, sig[1]:0x00000000
+		Feb  6 19:53:45 node0 kernel: [ 3186.062341] ERROR: 1175:new_wait4bind:2653: rcode=-4
+		Feb  6 19:53:45 node0 kernel: [ 3186.062342] ERROR: 1175:dvk_ioctl:373: rcode=-4
+
 ULTIMO_LOG
 ==============================================================================================================
 ==============================================================================================================
