@@ -133,6 +133,8 @@ typedef struct {
 	int svc_maxep;				// server higher endpoint when execute the server 
 	int svc_bind;				// Which kind of bind must be done on server creation
 	char *svc_prog;				// Program to execute on server
+    unsigned int svc_bm_params;	// bitmap of Config Service Parameters
+
 }service_t;
 #define SERVICE_FORMAT 	   "svc_name=%s svc_dcid=%d svc_extep=%d svc_minep=%d svc_maxep=%d svc_bind=%X svc_prog=%s\n"
 #define SERVICE_FIELDS(p)  p->svc_name, p->svc_dcid, p->svc_extep, p->svc_minep, p->svc_maxep, p->svc_bind, p->svc_prog
@@ -220,6 +222,8 @@ struct client_s {
 	int	clt_compress;			// Enable LZ4 Compression 0:NO 1:YES
 	int	clt_batch;				// Enable message batching 0:NO 1:YES
 	
+    unsigned int	clt_bm_params;	// bitmap of Config Client Parameters
+
 	LZ4F_errorCode_t clt_lz4err;
 	size_t			clt_offset;
 	size_t			clt_maxCsize;		/* Maximum Compressed size */
@@ -255,6 +259,8 @@ struct server_s{
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
+    unsigned int svr_bm_params;	// bitmap of Config Server Parameters
+
 	struct timespec svr_idle_ts; /* last timestamp	with the server not UNLOADED 											*/
 	struct timespec svr_ss_ts;	 /* Start/Stop VM timestamp */
 
@@ -316,7 +322,8 @@ typedef struct {
 
 	char 	*lb_vm_start;		// string to command which START the server VM 
 	char 	*lb_vm_stop;		// string to command which STOP the server VM 
-
+	char 	*lb_vm_status;		// string to command which get the server's VM STATUS
+	
 	char 	*lb_cltname;		// hostname of this LB inside CLIENT NETWORK
 	char 	*lb_svrname;		// hostname of this LB inside SERVER NETWORK
 	char 	*lb_cltdev;			// device name of this LB inside CLIENT NETWORK i.e eth1
@@ -328,10 +335,7 @@ typedef struct {
 
     pthread_t 		lb_thread;
 
-    unsigned int	lb_bm_lbparms;	// bitmap of Config Load Balancer Parameters
-    unsigned int	lb_bm_svcparms;	// bitmap of Config Service Parameters
-    unsigned int	lb_bm_cltparms;	// bitmap of Config Client Parameters
-    unsigned int	lb_bm_svrparms;	// bitmap of Config Server Parameters
+    unsigned int	lb_bm_params;	// bitmap of Config Load Balancer Parameters
 
 // START MULTIPLE ACCESS FIELDS 
     unsigned int	lb_bm_nodes;	// bitmap of Connected nodes
@@ -372,9 +376,9 @@ typedef struct {
 #define LB4_FORMAT 	"lb_name=%s lb_ssh_host=%s lb_ssh_user=%s lb_ssh_pass=%s\n"
 #define LB4_FIELDS(p)  p->lb_name, p->lb_ssh_host, p->lb_ssh_user, p->lb_ssh_pass
 #define LB5_FORMAT 	"lb_name=%s lb_start=%d lb_stop=%d lb_min_servers=%d lb_max_servers=%d\n"
-#define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_vm_start, p->lb_max_servers
-#define LB6_FORMAT 	"lb_name=%s lb_vm_start=%s lb_vm_stop=%s\n"
-#define LB6_FIELDS(p)  p->lb_name, p->lb_vm_start, p->lb_vm_stop
+#define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_min_servers, p->lb_max_servers
+#define LB6_FORMAT 	"lb_name=%s lb_vm_start=%s lb_vm_stop=%s lb_vm_status=%s\n"
+#define LB6_FIELDS(p)  p->lb_name, p->lb_vm_start, p->lb_vm_stop, p->lb_vm_status  
 
 #include "lb_glo.h"
 #include "../debug.h"
@@ -393,6 +397,17 @@ int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,	sess_entry_t *sess_pt
 int  ucast_cmd(int agent_id, char *agent_name, char *cmd);
 void check_server_idle(server_t *svr_ptr);
 void start_new_node(char *rmt_cmd);
+int check_node_status(server_t *svr_ptr);
+int stop_idle_node(server_t *svr_ptr);
+void init_session( sess_entry_t *sess_ptr);
+void init_service(service_t *svc_ptr);
+void init_client(client_t *clt_ptr);
+void init_server(server_t *svr_ptr);
+void init_lb(void );
+
+
+
+
 
 
 

@@ -326,7 +326,7 @@ int get_nodeid(char *mbr_string)
     *s_ptr = '#';
     USRDEBUG("mbr_string=%s nid=%d\n", mbr_string,  nid );
     
-	assert( nid >= 0 && nid < NR_NODES);
+	assert( nid >= 0 && nid < dvs_ptr->d_nr_nodes);
     return(nid);
 }
 

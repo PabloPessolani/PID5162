@@ -131,7 +131,7 @@ root@node2:/usr/src/dvs/dvs-apps/dvs_run# nsenter -p -t$DC0  ./migr_client 0 11 
 NODE0 
 root@node0:/usr/src/dvs/dvs-apps/lb_dvs# ./lb_dvs lb_dvs.cfg > salida.out 2> salida.err
 
-root@node0:/usr/src/dvs/dvs-apps/lb_dvs# ./lb_dvs lb_dvs.cfg > salida.out 2> salida.err
+root@node0:/usr/src/dvs/dvs-apps/lb_dvs# ./lb_dvs lb_dvs.cfg > lb_dvs.out 2> lb_dvs.err
 ViolaciÃ³n de segmento
 
  922:lb_cltpxy.c:clt_Rproxy_loop:119:CLIENT_RPROXY(node2): [192.168.0.102]. Getting remote command.
@@ -4857,7 +4857,48 @@ LISTO	Si hace el join se borra el STARTING
 LISTO 	Si hay un cliente que pide acceder a un server y esta en STARTING hace demasiado tiempo
 		lo borra.
 
+==========================================================================================
+20220207: 		
+		LISTO, SIN PROBAR:	Reemplazar NR_NODES por el valor del DVS dvs_ptr->d_nr_nodes.  		
+
+TODO:	INCORPORAR parametro vm_status y cambiar el path continuo por solo el nombre del archivo
+		que estará en el directorio HOME del usuario.
 		
+	vm_start 	"start_vm.bat";
+	vm_stop   	"stop_vm.bat";
+	vm_status  	"list_vm.bat";
+	
+LISTO:	Como controlar el estado de una VM desde el punto de vista del HYPERVISOR
+		Crear un script que permita saber si la VM está arrancada o finalizada 
+		Poner en ECHO OFF los scripts 
+FALTA PROBAR !!!!!!!
+		
+		SCRIPTS EN WINDOWS PARA START, STOP Y LIST DE VMS 
+		startvm.bat <pass> <user> <file.vmx>
+		stopvm.bat 	<pass> <user> <file.vmx>
+		listvm.bat <vmname>
+		
+		EJEMPLOS 
+		startvm.bat Admin mendieta E:\\NODE1\\node1.vmx
+		stopvm.bat  Admin mendieta E:\\NODE1\\node1.vmx
+		listvm.bat node1.vmx <<<<<<<<<<<<<<<<<<<<<<<<<<<<< DEJA UN ARCHIVO EN C:\Users\Usuario\%1.lb
+							CON LA SALIDA DE UN FIND 
+		
+		sshpass -p mendieta scp Admin@192.168.0.196:C\:\\Users\\Usuario\\%s.out /tmp
+
+LISTO:	OPTIMIZAR EL CODIGO DEL SWITCH 
+			ESTO ESTA EN CASI TODOS LOS PARAMETROS EXCEPTO EL nodeid;
+			case TKN_LB_STATUS:
+				if( lb.lb_nodeid == LB_INVALID){
+					fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+					return(EXIT_CODE);
+				}
+	
+		
+LISTO: 
+	Hacer una  funcion de INIT para cada una de las estructuras de datos 
+	De esa forma cuando se cae un SERVER por ejemplo, hay que inicializar sus datos 
+	
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
@@ -4870,22 +4911,13 @@ TODO:
 			Cuando no tiene sesiones activas 
 			Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
 
-TODO:	Como controlar el estado de una VM desde el punto de vista del HYPERVISOR
-		Crear un script que permita saber si la VM está arrancada o finalizada 
-		Poner en ECHO OFF los scripts 
-			
-TODO:	Reemplazar NR_NODES por el valor del DVS.  		
-TODO: 
-	Hacer una  funcion de INIT para cada una de las estructuras de datos 
-	De esa forma cuando se cae un SERVER por ejemplo, hay que inicializar sus datos 
 
 SEGURAMENTE, cuando se termine una VM hay que dejar el server en estado STOPPING 
 El cual finaliza no bien se hace el DISCONNECT de spread 
 Pero tambien cuando termina la VM!! 
 Y tambien hay que terminar el ssh y sshpass
 			
-
-			
+	
 			
 TODO_: Modificar test_lb.sh para que soporte parametros
 		start y stop y restart 

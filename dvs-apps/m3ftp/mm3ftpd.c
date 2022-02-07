@@ -151,7 +151,7 @@ int main_reply(int rcode)
 		if(ret == EDVSTIMEDOUT) {ERROR_PRINT(ret); continue;}
 		if ( ret < 0) {ERROR_PRINT(ret); break;}		
 	}
-	if( rcode < 0) ERROR_PRINT(rcode);
+	if( ret < 0) ERROR_PRINT(ret);
 	return(OK);
 }
 
@@ -174,7 +174,7 @@ int ftpd_reply(int svr_id, int rcode)
 		if(ret == EDVSTIMEDOUT) {ERROR_PRINT(ret); continue;}
 		if ( ret < 0) {ERROR_PRINT(ret); break;}		
 	}
-	if( rcode < 0) ERROR_PRINT(rcode);
+	if( ret < 0) ERROR_PRINT(ret);
 	return(OK);
 }
 

@@ -471,7 +471,7 @@ server_t *select_server(client_t *clt_ptr,
 
 	lb_ptr = &lb;
 	MTX_LOCK(lb_ptr->lb_mtx);				
-	for( i = 0; i < NR_NODES; i++){
+	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
 		svr_ptr = &server_tab[i]; 
 		MTX_LOCK(svr_ptr->svr_mutex);
 		// TEMPORARY : CHOOSE THE FIRST INITIALIZED SERVER 
@@ -568,7 +568,7 @@ server_t *select_server(client_t *clt_ptr,
 		}
 		MTX_UNLOCK(svr_ptr->svr_mutex);
 	}
-	if ( i == NR_NODES){ // not UNLOADED SERVER RUNNING server found
+	if ( i == dvs_ptr->d_nr_nodes){ // not UNLOADED SERVER RUNNING server found
 		// Are there any defined node to start ??
 		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_svrpxy=%d\n", 		
 								clt_ptr->clt_name, lb_ptr->lb_nr_init,lb_ptr->lb_nr_svrpxy);
@@ -732,6 +732,7 @@ int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,
 	lbpx_desc_t *spx_ptr; 
 	proxy_hdr_t *hdr_ptr;
 	proxy_payload_t *pay_ptr;
+	message *m_ptr;
 	lb_t* lb_ptr;
 	
 	lb_ptr = &lb;	

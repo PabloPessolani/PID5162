@@ -12,10 +12,11 @@
 #endif
 
 /* The parameters of the call are kept here. */
-EXTERN message m_in;		/* the input message itself */
-EXTERN message m_out;		/* the output message used for reply */
-EXTERN message *m_ptr;		/* pointer to message */
+//EXTERN message m_in;		/* the input message itself */
+//EXTERN message m_out;		/* the output message used for reply */
+//EXTERN message *m_ptr;		/* pointer to message */
 
+EXTERN int local_nodeid;
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN dc_usr_t  dcu[NR_DCS], *dc_ptr[NR_DCS];
 
@@ -38,5 +39,4 @@ EXTERN clockid_t clk_id;
 
 EXTERN lb_t  lb;
 extern char nonprog[];
-
 

@@ -8,14 +8,24 @@ QUE ESPERA EL CLIENTE Y QUE ESPERA EL SERVIDOR
 =====================================================================
 20220206:
 
-root@node0:/usr/src/dvs/dvs-apps/m3ftp# nsenter -p -t$DC0 ./mm3ftpd  0 20 21 29 > mm3ftpd.out 2> mm3ftpd.err
+EL SERVER 0 TERMINO BIEN
+15:mm3ftpd.c:free_memory:115:MM3FTPD[0]
+15:mm3ftpd.c:server_ftp:496:MTX_LOCK ftpd_mutex 
+15:mm3ftpd.c:server_ftp:499:MTX_UNLOCK ftpd_mutex 
+ 
+EL SERVER 1 TERMINO BIEN
+16:mm3ftpd.c:free_memory:115:MM3FTPD[1]
+16:mm3ftpd.c:server_ftp:496:MTX_LOCK ftpd_mutex 
+16:mm3ftpd.c:server_ftp:499:MTX_UNLOCK ftpd_mutex 
 
-EL THREAD ENVIA UNA DOBLE RESPUESTA EN EL GET 
-48:mm3ftpd.c:ftpd_reply:168:MM3FTPD[1]: dst_ep=50 rcode=0
- 48:mm3ftpd.c:ftpd_reply:170:MM3FTPD[1]: reply source=50 type=0 m1i1=13 m1i2=0 m1i3=10485760 m1p1=0xbff2ae4e m1p2=0x40f580 m1p3=(nil) 
- 48:mm3ftpd.c:ftpd_reply:168:MM3FTPD[1]: dst_ep=22 rcode=0
- 48:mm3ftpd.c:ftpd_reply:170:MM3FTPD[1]: reply source=22 type=0 m1i1=13 m1i2=0 m1i3=10485760 m1p1=0xbff2ae4e m1p2=0x40f580 m1p3=(nil) 
+REPLY AL 52
+ 14:mm3ftpd.c:ftpd_reply:168:MM3FTPD[2]: dst_ep=52 rcode=0
+ 14:mm3ftpd.c:ftpd_reply:170:MM3FTPD[2]: reply source=52 type=0 m1i1=12 m1i2=1048576 m1i3=6291456 m1p1=0xbfea9e3b m1p2=0x437580 m1p3=(nil) 
+
+ERROR: mm3ftpd.c:ftpd_reply:174: rcode=-61
 ERROR: mm3ftpd.c:ftpd_reply:175: rcode=-55
 
-EN EL PUT FUNCIONA BIEN 
+ERROR: 2:dvk_send_T:881: rcode=-55
+ERROR: 2:dvk_send_T:890: rcode=-55
+ERROR: mm3ftpd.c:ftpd_reply:175: rcode=-55  EDVSBADDEST
 

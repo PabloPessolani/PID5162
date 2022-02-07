@@ -263,7 +263,7 @@ int get_nodeid(char *mbr_string)
     *s_ptr = '#';
     USRDEBUG("mbr_string=%s nid=%d\n", mbr_string,  nid );
     
-	assert( nid >= 0 && nid < NR_NODES);
+	assert( nid >= 0 && nid < dvs_ptr->d_nr_nodes);
     return(nid);
 }
 
@@ -747,7 +747,7 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 		if( TEST_BIT(bm_nodes, nodeid) == 0){
 			// NEW NODE 
 			USRDEBUG("NEW %s nodeid=%d\n", &lb_ptr->lb_sp_members[i][0], nodeid);
-			for( i = 0;  i < NR_NODES; i++ ){
+			for( i = 0;  i < dvs_ptr->d_nr_nodes; i++ ){
 				svr_ptr = &server_tab[i];
 				if(svr_ptr->svr_nodeid == LB_INVALID) continue;
 				if(svr_ptr->svr_nodeid == nodeid){

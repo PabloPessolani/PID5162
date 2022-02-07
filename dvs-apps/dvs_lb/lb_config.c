@@ -106,16 +106,17 @@ extern char *ctl_socket;
 #define TKN_LB_STOP	 	 5
 #define TKN_LB_VM_START	 6
 #define TKN_LB_VM_STOP 	 7
-#define TKN_LB_CLTNAME   8
-#define TKN_LB_SVRNAME   9
-#define TKN_LB_CLTDEV    10
-#define TKN_LB_SVRDEV    11
-#define TKN_LB_SSH_HOST  12
-#define TKN_LB_SSH_USER  13
-#define TKN_LB_SSH_PASS  14
-#define TKN_LB_MINSERVERS 15
-#define TKN_LB_MAXSERVERS 16
-#define TKN_LB_MAX 		 17	// MUST be the last
+#define TKN_LB_VM_STATUS 8
+#define TKN_LB_CLTNAME   9
+#define TKN_LB_SVRNAME   10
+#define TKN_LB_CLTDEV    11
+#define TKN_LB_SVRDEV    12
+#define TKN_LB_SSH_HOST  13
+#define TKN_LB_SSH_USER  14
+#define TKN_LB_SSH_PASS  15
+#define TKN_LB_MINSERVERS 16
+#define TKN_LB_MAXSERVERS 17
+#define TKN_LB_MAX 		 18	// MUST be the last
 
 #define nil ((void*)0)
 
@@ -161,6 +162,7 @@ char *cfg_lb_ident[] = {
     "stop",
     "vm_start",
     "vm_stop",
+    "vm_status",	
     "cltname",
     "svrname",
     "cltdev",
@@ -243,7 +245,7 @@ int search_svc_ident(config_t *cfg)
 							USRDEBUG("prog=%s\n", cfg->word);
 							svc_ptr->svc_prog=(cfg->word);
 							USRDEBUG("svc_prog=%s\n", svc_ptr->svc_prog);
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_PROG);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_PROG);
 							break;
                         case TKN_SVC_DCID:
 							if (!config_isatom(cfg)) {
@@ -258,7 +260,7 @@ int search_svc_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("svr_dcid=%d\n", svc_ptr->svc_dcid);
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_DCID);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_DCID);
 							break;
                         case TKN_SVC_EXTEP:
 							if (!config_isatom(cfg)) {
@@ -273,7 +275,7 @@ int search_svc_ident(config_t *cfg)
 										svc_ptr->svc_extep,MAX_SVC_NR);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_EXTEP);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_EXTEP);
 							break;
                         case TKN_SVC_MINEP:
 							if (!config_isatom(cfg)) {
@@ -288,7 +290,7 @@ int search_svc_ident(config_t *cfg)
 										svc_ptr->svc_minep,MAX_SVC_NR);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_MINEP);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_MINEP);
 							break;
                         case TKN_SVC_MAXEP:
 							if (!config_isatom(cfg)) {
@@ -303,7 +305,7 @@ int search_svc_ident(config_t *cfg)
 										svc_ptr->svc_maxep,MAX_SVC_NR);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_MAXEP);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_MAXEP);
 							break;
 						case TKN_SVC_BIND:
 							if (!config_isatom(cfg)) {
@@ -323,7 +325,7 @@ int search_svc_ident(config_t *cfg)
 								exit(1);
 							}		
 							USRDEBUG("svc_bind=%X\n", svc_ptr->svc_bind);
-							SET_BIT(lb.lb_bm_svcparms, TKN_SVC_BIND);
+							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_BIND);
 							break;
                         default:
 							fprintf(stderr, "Programming Error\n");
@@ -357,6 +359,12 @@ int search_svr_ident(config_t *cfg)
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;	
+					if( j != TKN_SVR_NODEID){
+						if( svr_ptr->svr_nodeid == LB_INVALID){
+							fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
+							return(EXIT_CODE);
+						}						
+					}
                     switch(j){		
                         case TKN_SVR_NODEID:
 							if (!config_isatom(cfg)) {
@@ -369,9 +377,9 @@ int search_svr_ident(config_t *cfg)
 							}
 							USRDEBUG("nodeid=%d\n", atoi(cfg->word));
 							nodeid = atoi(cfg->word);							
-							if ((nodeid < 0) || (nodeid >= NR_NODES)) {
+							if ((nodeid < 0) || (nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "nodeid:%d, must be > 0 and < NR_NODES(%d)\n", nodeid,NR_NODES);
+								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", nodeid,dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}
 							svr_ptr = &server_tab[nodeid];
@@ -382,14 +390,9 @@ int search_svr_ident(config_t *cfg)
 							}
 							svr_ptr->svr_name = server_name;
 							USRDEBUG("svr_nodeid=%d\n", svr_ptr->svr_nodeid);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_NODEID);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_NODEID);
 							break;
-                        case TKN_SVR_LBRPORT:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}
-								
+                        case TKN_SVR_LBRPORT:						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -403,13 +406,9 @@ int search_svr_ident(config_t *cfg)
 										svr_ptr->svr_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_LBRPORT);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_LBRPORT);
 							break;
-                        case TKN_SVR_SVRRPORT:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
+                        case TKN_SVR_SVRRPORT:		
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -423,13 +422,9 @@ int search_svr_ident(config_t *cfg)
 										svr_ptr->svr_svrRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_SVRRPORT);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_SVRRPORT);
 							break;
                         case TKN_SVR_COMPRESS:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -447,13 +442,9 @@ int search_svr_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("svr_compress=%d\n", svr_ptr->svr_compress);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_COMPRESS);							
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_COMPRESS);							
 							break;
                         case TKN_SVR_BATCH:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -469,20 +460,16 @@ int search_svr_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_BATCH);							
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_BATCH);							
 							break;							
                         case TKN_SVR_IMAGE:
-							if( svr_ptr->svr_nodeid == LB_INVALID){
-								fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							svr_ptr->svr_image = cfg->word;		
 							USRDEBUG("svr_image=%s\n", svr_ptr->svr_image);
-							SET_BIT(lb.lb_bm_svrparms, TKN_SVR_IMAGE);							
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_IMAGE);							
 							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -512,7 +499,13 @@ int search_lb_ident(config_t *cfg)
                     USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
-                    cfg = cfg->next;	
+                    cfg = cfg->next;
+					if( j != TKN_LB_NODEID) {
+						if( lb.lb_nodeid == LB_INVALID){
+							fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
+							return(EXIT_CODE);
+						}						
+					}
                     switch(j){	
                         case TKN_LB_NODEID:
 							if (!config_isatom(cfg)) {
@@ -527,18 +520,14 @@ int search_lb_ident(config_t *cfg)
 							lb.lb_nodeid = atoi(cfg->word);
 							lb.lb_name   = lb_name;
 							USRDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
-							if ((lb.lb_nodeid < 0) || (lb.lb_nodeid >= NR_NODES)) {
+							if ((lb.lb_nodeid < 0) || (lb.lb_nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "nodeid:%d, must be > 0 and < NR_NODES(%d)\n", lb.lb_nodeid,NR_NODES);
+								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", lb.lb_nodeid,dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}	
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_NODEID);
+							SET_BIT(lb.lb_bm_params, TKN_LB_NODEID);
 							break;
                         case TKN_LB_LOWWATER:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -550,13 +539,9 @@ int search_lb_ident(config_t *cfg)
 								fprintf(stderr, "lowwater:%d, must be (0-100)\n", lb.lb_lowwater);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_LOWWATER);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_LOWWATER);							
 							break;
                         case TKN_LB_HIGHWATER:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -568,13 +553,9 @@ int search_lb_ident(config_t *cfg)
 								fprintf(stderr, "highwater:%d, must be (0-100)\n", lb.lb_highwater);
 								return(EXIT_CODE);
 							}		
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_HIGHWATER);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_HIGHWATER);							
 							break;
                         case TKN_LB_PERIOD:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -586,13 +567,9 @@ int search_lb_ident(config_t *cfg)
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_period);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_PERIOD);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_PERIOD);							
 							break;
                         case TKN_LB_START:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -604,13 +581,9 @@ int search_lb_ident(config_t *cfg)
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_start);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_START);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_START);							
 							break;
                         case TKN_LB_STOP:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -622,39 +595,36 @@ int search_lb_ident(config_t *cfg)
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_stop);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_STOP);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_STOP);							
 							break;
                         case TKN_LB_VM_START:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_vm_start = cfg->word;
 							USRDEBUG("lb_vm_start=%s\n", lb.lb_vm_start);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_VM_START);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_VM_START);							
 							break;
                         case TKN_LB_VM_STOP:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_vm_stop = cfg->word;
 							USRDEBUG("lb_vm_stop=%s\n", lb.lb_vm_stop);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_VM_STOP);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_VM_STOP);							
+							break;							
+                        case TKN_LB_VM_STATUS:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							lb.lb_vm_status = cfg->word;
+							USRDEBUG("lb_vm_status=%s\n", lb.lb_vm_status);
+							SET_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS);							
 							break;							
                         case TKN_LB_CLTNAME:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -669,13 +639,9 @@ int search_lb_ident(config_t *cfg)
 									return(EXIT_CODE);
 								} 
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_CLTNAME);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_CLTNAME);							
 							break;
                         case TKN_LB_SVRNAME:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -690,108 +656,80 @@ int search_lb_ident(config_t *cfg)
 									return(EXIT_CODE);
 								} 
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SVRNAME);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_SVRNAME);							
 							break;							
                         case TKN_LB_CLTDEV:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_cltdev = cfg->word;
 							USRDEBUG("lb_cltdev=%s\n", lb.lb_cltdev);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_CLTDEV);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_CLTDEV);							
 							break;
                         case TKN_LB_SVRDEV:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_svrdev = cfg->word;
 							USRDEBUG("lb_svrdev=%s\n", lb.lb_svrdev);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SVRDEV);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_SVRDEV);							
 							break;
                         case TKN_LB_SSH_HOST:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_host = cfg->word;
 							USRDEBUG("lb_ssh_host=%s\n", lb.lb_ssh_host);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_HOST);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_HOST);							
 							break;
 						case TKN_LB_SSH_USER:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_user = cfg->word;
 							USRDEBUG("lb_ssh_user=%s\n", lb.lb_ssh_user);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_USER);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_USER);							
 							break;
                         case TKN_LB_SSH_PASS:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_pass = cfg->word;
 							USRDEBUG("lb_ssh_pass=%s\n", lb.lb_ssh_pass);
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_SSH_PASS);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_PASS);							
 							break;
                         case TKN_LB_MINSERVERS:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_min_servers = atoi(cfg->word);
 							USRDEBUG("lb.lb_min_servers=%d\n", lb.lb_min_servers);
-							if ((lb.lb_min_servers < 0) || (lb.lb_min_servers > NR_NODES)) {
+							if ((lb.lb_min_servers < 0) || (lb.lb_min_servers > dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "lb_min_servers:%d, must be (0-NR_NODES)\n", lb.lb_min_servers);
+								fprintf(stderr, "lb_min_servers:%d, must be (0-%d)\n", lb.lb_min_servers, dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_MINSERVERS);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_MINSERVERS);							
 							break;
                         case TKN_LB_MAXSERVERS:
-							if( lb.lb_nodeid == LB_INVALID){
-								fprintf(stderr, "lb nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}							
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
 							lb.lb_max_servers = atoi(cfg->word);
 							USRDEBUG("lb.lb_max_servers=%d\n", lb.lb_max_servers);
-							if ((lb.lb_max_servers < 1) || (lb.lb_max_servers > NR_NODES)) {
+							if ((lb.lb_max_servers < 1) || (lb.lb_max_servers > dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "max_servers:%d, must be (1-NR_NODES)\n", lb.lb_max_servers);
+								fprintf(stderr, "max_servers:%d, must be (1-%d)\n", lb.lb_max_servers, dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}		
-							SET_BIT(lb.lb_bm_lbparms, TKN_LB_MAXSERVERS);							
+							SET_BIT(lb.lb_bm_params, TKN_LB_MAXSERVERS);							
 							break;
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -824,22 +762,28 @@ int search_clt_ident(config_t *cfg)
                     USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
-                    cfg = cfg->next;	
+                    cfg = cfg->next;
+					if( j != TKN_CLT_NODEID){
+						if( clt_ptr->clt_nodeid == LB_INVALID){
+							fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
+							return(EXIT_CODE);
+						}						
+					}
                     switch(j){	
                         case TKN_CLT_NODEID:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							if( nodeid != (-1)){
+							if( nodeid != LB_INVALID){
 								fprintf(stderr, "nodeid previously defined %d: line %d\n", nodeid, cfg->line);
 								return(EXIT_CODE);
 							}
 							nodeid = atoi(cfg->word);
 							USRDEBUG("nodeid=%d\n", nodeid);
-							if ((nodeid < 0) || (nodeid >= NR_NODES)) {
+							if ((nodeid < 0) || (nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "nodeid:%d, must be > 0 and < NR_NODES(%d)\n", nodeid,NR_NODES);
+								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", nodeid,dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}
 							clt_ptr = &client_tab[nodeid];
@@ -850,13 +794,9 @@ int search_clt_ident(config_t *cfg)
 							}
 							clt_ptr->clt_name = client_name;
 							USRDEBUG("clt_nodeid=%d\n", clt_ptr->clt_nodeid);
-							SET_BIT(lb.lb_bm_cltparms, TKN_CLT_NODEID);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_NODEID);
 							break;
                         case TKN_CLT_LBRPORT:
-							if( clt_ptr->clt_nodeid == LB_INVALID){
-								fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -871,12 +811,8 @@ int search_clt_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							break;
-							SET_BIT(lb.lb_bm_cltparms, TKN_CLT_LBRPORT);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_LBRPORT);
                         case TKN_CLT_CLTRPORT:
-							if( clt_ptr->clt_nodeid == LB_INVALID){
-								fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -890,13 +826,9 @@ int search_clt_ident(config_t *cfg)
 										clt_ptr->clt_cltRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
-							SET_BIT(lb.lb_bm_cltparms, TKN_CLT_CLTRPORT);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_CLTRPORT);
 							break;
                         case TKN_CLT_COMPRESS:
-							if( clt_ptr->clt_nodeid == LB_INVALID){
-								fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -912,13 +844,9 @@ int search_clt_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("clt_compress=%d\n", clt_ptr->clt_compress);
-							SET_BIT(lb.lb_bm_cltparms, TKN_CLT_COMPRESS);							
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_COMPRESS);							
 							break;							
                         case TKN_CLT_BATCH:
-							if( clt_ptr->clt_nodeid == LB_INVALID){
-								fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
@@ -934,7 +862,7 @@ int search_clt_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							USRDEBUG("clt_batch=%d\n", clt_ptr->clt_batch);
-							SET_BIT(lb.lb_bm_cltparms, TKN_CLT_BATCH);							
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_BATCH);							
 							break;							
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -1050,7 +978,7 @@ int search_main_token(config_t *cfg)
 					lb.lb_nr_svrpxy++;
 					SET_BIT(lb.lb_bm_svrpxy, nodeid);
 					for( i = 0; i < TKN_SVR_MAX; i++){
-						if( !TEST_BIT(lb.lb_bm_svrparms, i)){
+						if( !TEST_BIT(svr_ptr->svr_bm_params, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: server %s parameter %s not configured\n", 
 								server_name, cfg_svr_ident[i]);
 						}else{
@@ -1078,7 +1006,7 @@ int search_main_token(config_t *cfg)
 			        USRDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc_ptr));
 					lb.lb_nr_services++;
 					for( i = 0; i < TKN_SVC_MAX; i++){
-						if( !TEST_BIT(lb.lb_bm_svcparms, i)){
+						if( !TEST_BIT(svc_ptr->svc_bm_params, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: service %s parameter %s not configured\n", 
 								service_name, cfg_svc_ident[i]);
 						}else{
@@ -1105,7 +1033,7 @@ int search_main_token(config_t *cfg)
 			        USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
 					lb.lb_nr_cltpxy++;
 					for( i = 0; i < TKN_CLT_MAX; i++){
-						if( !TEST_BIT(lb.lb_bm_cltparms, i)){
+						if( !TEST_BIT(clt_ptr->clt_bm_params, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: client %s parameter %s not configured\n", 
 								client_name, cfg_clt_ident[i]);
 						}else{
@@ -1180,36 +1108,10 @@ void lb_config(char *f_conf)	/* config file name. */
     cfg = nil;
     rcode  = OK;
 
-	lb.lb_nodeid 	= LOCALNODE;		
-	lb.lb_nr_cltpxy	= 0;	
-	lb.lb_nr_svrpxy	= 0;	
-	lb.lb_bm_svrpxy	= 0;	
-	lb.lb_nr_services 	= 0;
-	lb.lb_lowwater 	= LB_INVALID;	
-	lb.lb_highwater	= LB_INVALID;
-	lb.lb_min_servers = 0;	
-	lb.lb_max_servers = NR_NODES;
-	lb.lb_period   	= LB_PERIOD_DEFAULT;	
-	lb.lb_start   	= LB_START_DEFAULT;	
-	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
-	
-	lb.lb_cltname   = NULL;		
-	lb.lb_svrname   = NULL;		
-	lb.lb_cltdev    = NULL;		
-	lb.lb_svrdev    = NULL;		
-	lb.lb_ssh_host  = NULL;	
-	lb.lb_ssh_user  = NULL;	
-	lb.lb_ssh_pass  = NULL;		
-	lb.lb_vm_start  = NULL;	
-	lb.lb_vm_stop   = NULL;		
-	
-	lb.lb_bm_lbparms	= 0;	
-	lb.lb_bm_svcparms	= 0;
-	lb.lb_bm_cltparms	= 0;
-	lb.lb_bm_svrparms	= 0;
+	init_lb();
 	
 //////////////////////////////////////////////////////////////////////////////////
-	for( i = 0; i < NR_NODES; i++){
+	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
 		svr1_ptr = &server_tab[i];
 		clt1_ptr = &client_tab[i];
 		clt1_ptr->clt_compress = LB_INVALID;	
@@ -1238,7 +1140,7 @@ void lb_config(char *f_conf)	/* config file name. */
 	// check for mandatory parameters
     USRDEBUG("Check for mandatory parameters=%d\n", TKN_LB_MAX);  
 	for( i = 0; i < TKN_LB_MAX; i++){
-		if( !TEST_BIT(lb.lb_bm_lbparms, i)){
+		if( !TEST_BIT(lb.lb_bm_params, i)){
 			fprintf( stderr,"CONFIGURATION WARNING: lb parameter %s not configured\n", 
 				cfg_lb_ident[i]);
 		}else{
@@ -1279,17 +1181,17 @@ void lb_config(char *f_conf)	/* config file name. */
     }
 
 	if(lb.lb_min_servers < 0 
-	|| lb.lb_min_servers > NR_NODES
+	|| lb.lb_min_servers > dvs_ptr->d_nr_nodes
 	|| lb.lb_min_servers > lb.lb_max_servers
 	) {
-        fprintf( stderr,"CONFIGURATION ERROR: min_servers must be (0-NR_NODES) and lower or equal than max_servers\n");
+        fprintf( stderr,"CONFIGURATION ERROR: min_servers must be (0-%d) and lower or equal than max_servers\n", dvs_ptr->d_nr_nodes);
         exit(1);
     }
 
 	if(lb.lb_lowwater < 1 
-	|| lb.lb_lowwater > NR_NODES
+	|| lb.lb_lowwater > dvs_ptr->d_nr_nodes
 	) {
-        fprintf( stderr,"CONFIGURATION ERROR: max_servers must be (1-NR_NODES)\n");
+        fprintf( stderr,"CONFIGURATION ERROR: max_servers must be (1-%d)\n", dvs_ptr->d_nr_nodes);
         exit(1);
     }
 
@@ -1329,35 +1231,36 @@ void lb_config(char *f_conf)	/* config file name. */
         exit(1);
     }
 		
-	if( (TEST_BIT(lb.lb_bm_lbparms, TKN_LB_VM_START) != 0) 
-	&&  (TEST_BIT(lb.lb_bm_lbparms, TKN_LB_VM_STOP) != 0)) {
+	if( (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_START) != 0) 
+	&&  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STOP) != 0)
+	&&  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS) != 0) ) {
 		if( !(lb.lb_ssh_pass != NULL && lb.lb_ssh_user != NULL && lb.lb_ssh_host != NULL )) {
 			fprintf( stderr,"CONFIGURATION ERROR: if ssh will be use, ssh_host, ssh_pass and ssh_user must be defined\n");
 			exit(1);
 		}
 	} else {
-        fprintf( stderr,"CONFIGURATION ERROR: if VMs will be started/stopped automatically both, vm_start and vm_stop must be defined\n");
+        fprintf( stderr,"CONFIGURATION ERROR: if VMs will be started/stopped automatically lb parameters vm_start/vm_stop/vm_status must be defined\n");
         exit(1);
     }
 	
 	// check SERVER same NODEID
 	lb.lb_nr_nodes = 0;
 	lb.lb_bm_nodes = 0;
-	for( i = 0; i < NR_NODES; i++){
+	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
 		svr1_ptr = &server_tab[i];
 		if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
 		lb.lb_nr_nodes++;
 		SET_BIT(lb.lb_bm_nodes,i);
         USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
         USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
-		if( i == NR_NODES-1) break;
+		if( i == dvs_ptr->d_nr_nodes-1) break;
 							
 		if( svr1_ptr->svr_nodeid == lb.lb_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:Server %s have the same nodeid as load balancer\n",
 				svr1_ptr->svr_name);
 			exit(1);
 		}
-		for( j = i+1; j < NR_NODES; j++){
+		for( j = i+1; j < dvs_ptr->d_nr_nodes; j++){
 			svr2_ptr = &server_tab[j];
 			if( svr2_ptr->svr_nodeid == LB_INVALID) continue;
 			if( svr1_ptr->svr_nodeid == svr2_ptr->svr_nodeid ){
@@ -1366,7 +1269,7 @@ void lb_config(char *f_conf)	/* config file name. */
 				exit(1);
 			}
 		}
-		for( j = 0; j < NR_NODES; j++){
+		for( j = 0; j < dvs_ptr->d_nr_nodes; j++){
 			clt1_ptr = &client_tab[j];
 			if( clt1_ptr->clt_nodeid == LB_INVALID) continue;
 			if( svr1_ptr->svr_nodeid == clt1_ptr->clt_nodeid ){
@@ -1374,22 +1277,32 @@ void lb_config(char *f_conf)	/* config file name. */
 					svr1_ptr->svr_name, clt1_ptr->clt_name);
 				exit(1);
 			}
+		}
+		// check for a dynamic server node 
+		if( svr1_ptr->svr_image != NULL){
+			if( (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_START) == 0) 	
+			||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STOP) == 0)
+			||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS) == 0) ) {
+				fprintf( stderr,"CONFIGURATION ERROR: server %s can't be started dynamically.", svr1_ptr->svr_name);
+				fprintf( stderr,"Configure lb parameters: vm_start/vm_stop/vm_status \n");
+				exit(1);
+			}
 		}		
 	}
-
+	
 	// check CLIENT same NODEID
-	for( i = 0; i < NR_NODES-1; i++){
+	for( i = 0; i < dvs_ptr->d_nr_nodes-1; i++){
 		clt1_ptr = &client_tab[i];
 		if( clt1_ptr->clt_nodeid == LB_INVALID) continue;
         USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt1_ptr));
-		if( i == NR_NODES-1) break;
+		if( i == dvs_ptr->d_nr_nodes-1) break;
 
 		if( clt1_ptr->clt_nodeid == lb.lb_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:Client %s have the same nodeid as load balancer\n",
 				clt1_ptr->clt_name);
 			exit(1);
 		}
-		for( j = i+1; j < NR_NODES; j++){
+		for( j = i+1; j < dvs_ptr->d_nr_nodes; j++){
 			clt2_ptr = &client_tab[j];
 			if( clt2_ptr->clt_nodeid == (-1)) continue;
 			if( clt1_ptr->clt_nodeid == clt2_ptr->clt_nodeid ){
@@ -1398,7 +1311,7 @@ void lb_config(char *f_conf)	/* config file name. */
 				exit(1);
 			}
 		}
-		for( j = 0; j < NR_NODES; j++){
+		for( j = 0; j < dvs_ptr->d_nr_nodes; j++){
 			svr1_ptr = &server_tab[j];
 			if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
 			if( clt1_ptr->clt_nodeid == svr1_ptr->svr_nodeid ){
