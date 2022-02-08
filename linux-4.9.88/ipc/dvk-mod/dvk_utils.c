@@ -108,12 +108,12 @@ void init_proc_desc(struct proc *proc_ptr, int dcid, int index)
 }
 
 /*--------------------------------------------------------------*/
-/*			flush_receiving_procs			*/
+/*			flush_waiting_procs			*/
 /* A remote node is disconnected: wake up with error all 	*/
 /* processes waiting some operation from processes in that node	*/
 /* rproxy_ptr must be LOCKED	 				*/
 /*--------------------------------------------------------------*/
-long flush_receiving_procs(int nodeid, struct proc *rproxy_ptr)
+long flush_waiting_procs(int nodeid, struct proc *rproxy_ptr)
 {	
 	int v, i;
 	dc_desc_t *dc_ptr;
@@ -151,6 +151,9 @@ DVKDEBUG(INTERNAL,"RPROXY search for process of all DCs waiting an action from a
 							pu_ptr = &tmp_ptr->p_usr;
 							DVKDEBUG(DBGPROC,"Clean receiving " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
 							clear_bit(BIT_RECEIVING, &tmp_ptr->p_usr.p_rts_flags);
+							clear_bit(MIS_BIT_ATOMIC, &tmp_ptr->p_usr.p_misc_flags);
+							clear_bit(BIT_RMTOPER, &tmp_ptr->p_usr.p_rts_flags);
+							tmp_ptr->p_usr.p_getfrom = NONE;
 							if( tmp_ptr->p_usr.p_rts_flags == PROC_RUNNING)
 								LOCAL_PROC_UP(tmp_ptr, EDVSNOTCONN);
 						}
@@ -168,6 +171,8 @@ DVKDEBUG(INTERNAL,"RPROXY search for process of all DCs waiting an action from a
 							pu_ptr = &tmp_ptr->p_usr;
 							DVKDEBUG(DBGPROC,"Clean sending " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
 							clear_bit(BIT_SENDING, &tmp_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_RMTOPER, &tmp_ptr->p_usr.p_rts_flags);
+							tmp_ptr->p_usr.p_sendto = NONE;
 							if( tmp_ptr->p_usr.p_rts_flags == PROC_RUNNING)
 								LOCAL_PROC_UP(tmp_ptr, EDVSNOTCONN);	
 						}
@@ -183,12 +188,52 @@ DVKDEBUG(INTERNAL,"RPROXY search for process of all DCs waiting an action from a
 							pu_ptr = &tmp_ptr->p_usr;
 							DVKDEBUG(DBGPROC,"Clean oncopy " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
 							clear_bit(BIT_ONCOPY, &tmp_ptr->p_usr.p_rts_flags);
+							clear_bit(BIT_RMTOPER, &tmp_ptr->p_usr.p_rts_flags);							
 							if( tmp_ptr->p_usr.p_rts_flags == PROC_RUNNING) 
 								LOCAL_PROC_UP(tmp_ptr, EDVSNOTCONN);
 						}	
 					}	
 				}
-			}while(0);			
+			}while(0);	
+
+			// A LOCAL PROCESS IS WAITING A MIGRATING REMOTE PROCESS 
+			do {
+				if( test_bit(BIT_WAITMIGR, &tmp_ptr->p_usr.p_rts_flags)) {
+					if(tmp_ptr->p_usr.p_waitmigr != NONE ) {
+						dst_ptr = ENDPOINT2PTR(dc_ptr, tmp_ptr->p_usr.p_waitmigr);
+						pu_ptr = &dst_ptr->p_usr;
+						if( nodeid == pu_ptr->p_nodeid) {
+							DVKDEBUG(DBGPROC,"Do not wait for migration: " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
+							clear_bit(BIT_WAITMIGR, &tmp_ptr->p_usr.p_rts_flags);
+							tmp_ptr->p_usr.p_waitmigr = NONE; 							
+							if( tmp_ptr->p_usr.p_rts_flags == PROC_RUNNING) 
+								LOCAL_PROC_UP(tmp_ptr, EDVSNOTCONN);
+						}	
+					}else{
+						ERROR_PRINT(EDVSINVAL);
+					}	
+				}
+			}while(0);	
+			
+			// A LOCAL PROCESS IS WAITING A UNBIND OF A REMOTE PROCESS 
+			do {
+				if( test_bit(BIT_WAITUNBIND, &tmp_ptr->p_usr.p_rts_flags)) {
+					if(tmp_ptr->p_usr.p_waitunbind != NONE ) {
+						dst_ptr = ENDPOINT2PTR(dc_ptr, tmp_ptr->p_usr.p_waitunbind);
+						pu_ptr = &dst_ptr->p_usr;
+						if( nodeid == pu_ptr->p_nodeid) {
+							DVKDEBUG(DBGPROC,"Do not wait unbind: " PROC_USR_FORMAT, PROC_USR_FIELDS(pu_ptr));
+							clear_bit(BIT_WAITUNBIND, &tmp_ptr->p_usr.p_rts_flags);
+							tmp_ptr->p_usr.p_waitunbind = NONE; 							
+							if( tmp_ptr->p_usr.p_rts_flags == PROC_RUNNING) 
+								LOCAL_PROC_UP(tmp_ptr, EDVSNOTCONN);
+						}	
+					}else{
+						ERROR_PRINT(EDVSINVAL);
+					}	
+				}
+			}while(0);
+			
 		}
 
 		WUNLOCK_PROC(rproxy_ptr);

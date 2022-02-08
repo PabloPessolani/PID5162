@@ -336,7 +336,7 @@ asmlinkage long new_mini_receive(int src_ep, message* m_ptr, long timeout_ms)
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADDCID);
 	dc_ptr 	= &dc[dcid];
 	// Check if the caller has the priviledges to DVK_RECEIVE messages 
-	if( ! get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_RECEIVE )){
+	if( !get_sys_bit(caller_ptr->p_priv.priv_usr.priv_dvk_allowed, DVK_RECEIVE )){
 		ERROR_RUNLOCK_PROC(caller_ptr,EDVSBADCALL);
 	} 
 	RUNLOCK_PROC(caller_ptr);

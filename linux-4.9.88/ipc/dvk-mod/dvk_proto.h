@@ -61,7 +61,7 @@ void init_proxies(int pxid);
 long do_autobind(dc_desc_t *dc_ptr, struct proc *rmt_ptr, int endpoint, int nodeid);
 
 long flush_sending_procs(int nodeid, struct proc *sproxy_ptr);
-long flush_receiving_procs(int nodeid, struct proc *rproxy_ptr);
+long flush_waiting_procs(int nodeid, struct proc *rproxy_ptr);
 
 long copy_usr2usr(int source, struct proc *src_proc, char __user *src_addr, 
 				struct proc *dst_proc,  char __user *dst_addr, int bytes);

@@ -792,9 +792,13 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 		}
 	}else { /* REMOTE processes and BACKUP of a remote process  (stand by local processes) */
 		if (test_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags)) { /* it is a  BACKUP of a REMOTE  process */
+#ifdef PAP20220207		
 			init_proc_desc(proc_ptr, proc_ptr->p_usr.p_dcid, (proc_ptr->p_usr.p_nr+dc_ptr->dc_usr.dc_nr_tasks));
 			DC_DECREF(dc_ptr,dc_release);
 			return(OK);
+#endif // PAP20220207
+			// convert a RMTBACKUP into a REMOTE 
+			clear_bit(MIS_BIT_RMTBACKUP, &proc_ptr->p_usr.p_misc_flags);
 		}
 	}
 
@@ -1217,7 +1221,7 @@ int do_proxies_unbind(struct proc *proc_ptr, struct proc *sproxy_ptr, struct pro
 			if( test_bit( i ,  &rproxy_ptr->p_usr.p_nodemap)) {
 				clear_bit( i ,  &sproxy_ptr->p_usr.p_nodemap);
 				clear_bit( i ,  &rproxy_ptr->p_usr.p_nodemap);
-				flush_receiving_procs( i, rproxy_ptr);
+				flush_waiting_procs( i, rproxy_ptr);
 				n_ptr = &node[i];
 				WLOCK_NODE(n_ptr);
 				clear_bit(NODE_BIT_RCONNECTED, &n_ptr->n_usr.n_flags);
@@ -2540,7 +2544,6 @@ asmlinkage long new_wait4bind(int oper, int other_ep, long timeout_ms)
 		}
 	
 		/* here cames only WAIT_BIND */
-	
 		WLOCK_TASK(current);
 		if(other_ep == SELF){
 			if (current->task_proc != NULL){
@@ -3255,7 +3258,7 @@ asmlinkage long new_proxy_conn(int px_nr, int status)
 				clear_bit(MIS_BIT_CONNECTED, &rproxy_ptr->p_usr.p_misc_flags);
 				for( i = 0;  i < dvs_ptr->d_nr_nodes; i++) {
 					if( test_bit( i ,  &rproxy_ptr->p_usr.p_nodemap)) {
-						flush_receiving_procs( i, rproxy_ptr);
+						flush_waiting_procs( i, rproxy_ptr);
 						n_ptr = &node[i];
 						WLOCK_NODE(n_ptr);	
 						clear_bit(NODE_BIT_RCONNECTED, &n_ptr->n_usr.n_flags);
@@ -3967,7 +3970,7 @@ asmlinkage int k_proxy_conn(int px_nr, int status)
 				clear_bit(MIS_BIT_CONNECTED, &rproxy_ptr->p_usr.p_misc_flags);
 				for( i = 0;  i < dvs_ptr->d_nr_nodes; i++) {
 					if( test_bit( i ,  &rproxy_ptr->p_usr.p_nodemap)) {
-						flush_receiving_procs( i, rproxy_ptr);
+						flush_waiting_procs( i, rproxy_ptr);
 						n_ptr = &node[i];
 						WLOCK_NODE(n_ptr);	
 						clear_bit(NODE_BIT_RCONNECTED, &n_ptr->n_usr.n_flags);

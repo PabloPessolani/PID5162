@@ -4760,11 +4760,8 @@ HAY PROBLEMAS CON LOS DISPOSITIVOS Y LOS FILESYSTEMS
 		Feb  6 19:53:45 node0 kernel: [ 3186.062341] ERROR: 1175:new_wait4bind:2653: rcode=-4
 		Feb  6 19:53:45 node0 kernel: [ 3186.062342] ERROR: 1175:dvk_ioctl:373: rcode=-4
 
-ULTIMO_LOG
 ==============================================================================================================
-==============================================================================================================
-==============================================================================================================
-==============================================================================================================
+20220206: 
 TODO:
 		Cuando se migra desde un NODO1 a NODE2 y el cliente esta en NODE0 
 		root@node0:/usr/src/dvs/dvs-apps/dvs_run# cat /proc/dvs/DC0/procs 
@@ -4776,7 +4773,38 @@ TODO:
 		misc = 2020 = MIS_GRPLEADER | MIS_ENQUEUED
 		getf = 10 => Esta esperando respuesta del server.
 		flag = 8  => BIT_RECEIVING
-		
+
+LISTO ARREGLADO:		
+	EL PROCESO LOCAL test_receive ESTA ESPERANDO MENSAJE DEL ENDPOINT REMOTO 20
+	root@node1:~# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  20    20    -1/-1     0 1000    0 27342 27342 27342 27342 server         
+	 0  21    21   695/695    1    8   20    20 27342 27342 27342 test_receive   
+
+	CUANDO MATAMOS AL PROXY LOCAL 
+	root@node1:~# killall multi_proxy
+	
+	SE RESTITUYE EL FLAG A 0 Y EL GETF A NONE 
+	root@node1:~# cat /proc/dvs/DC0/procs 
+	DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+	 0  20    20    -1/-1     0 1000    0 27342 27342 27342 27342 server         
+	 0  21    21   695/695    1    0   20 27342 27342 27342 27342 test_receive
+
+
+ULTIMO_LOG
+==============================================================================================================
+==============================================================================================================
+==============================================================================================================
+==============================================================================================================
+
+TODO:	ES NECESARIO QUE EL WAIT4BIND O WAIT4UNBIND SIEMPRE ESPEREN POR UN PROCESO LOCAL ¿¿¿??
+
+
+ 
+
+
+
+ 
 		El migration COMMIT deberia finalizar con EDVSAGAIN O EDVSINTR 
 		
 TODO: Las estadisticas solo consideran a los procesos LOCALES, habria que extender a los procesos remotos. 

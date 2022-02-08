@@ -1,6 +1,6 @@
 CC=gcc
 BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
-		test_sendrcv test_sendrec test_ntfyrcv test_rr_rply  test_rmtbind \
+		test_sendrcv test_sendrec test_receive test_ntfyrcv test_rr_rply  test_rmtbind \
 		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
 		uml_test test_priv_info test_set_priv test_umbind client_server \
@@ -52,6 +52,9 @@ test_sendrcv: test_sendrcv.c
 test_sendrec: test_sendrec.c 
 	$(CC)  $(CFLAGS) -o test_sendrec test_sendrec.c  $(LIBS) -I$(INCLUDE)
 
+test_receive: test_receive.c 
+	$(CC)  $(CFLAGS) -o test_receive test_receive.c  $(LIBS) -I$(INCLUDE)
+	
 test_ntfyrcv: test_ntfyrcv.c 
 	$(CC)  $(CFLAGS) -o test_ntfyrcv test_ntfyrcv.c  $(LIBS) -I$(INCLUDE)
 
