@@ -412,11 +412,11 @@ int lbm_lvlchg_msg(message *m_ptr)
 	USRDEBUG(MSG9_FORMAT, MSG9_FIELDS(m_ptr) );	
 	
 	switch(m_ptr->m1_i1) {
-		case LVL_UNLOADED:
+		case LVL_IDLE:
 		case LVL_LOADED:
 		case LVL_SATURATED:
 			// check received LOAD VALUES  
-			assert(m_ptr->m9_i1 >= LVL_UNLOADED && m_ptr->m9_i1<= LVL_SATURATED);
+			assert(m_ptr->m9_i1 >= LVL_IDLE && m_ptr->m9_i1<= LVL_SATURATED);
 			assert(m_ptr->m9_l1 >= 0 && m_ptr->m9_l1 <= 100);
 			svr_ptr = &server_tab[m_ptr->m_source];
 			MTX_LOCK(svr_ptr->svr_mutex);
@@ -788,7 +788,7 @@ void check_server_idle(server_t *svr_ptr)
 	// there is a minimal amount of servers 
 	if( (lb_ptr->lb_nr_init-1) <= lb_ptr->lb_min_servers) return;
 	
-	if(svr_ptr->svr_level == LVL_UNLOADED){
+	if(svr_ptr->svr_level == LVL_IDLE){
 		clock_gettime(clk_id, &ts);
 		diff_secs = ts.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
 		USRDEBUG("Server %s: Server IDLE diff_secs=%ld\n",svr_ptr->svr_name, diff_secs);

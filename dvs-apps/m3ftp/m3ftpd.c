@@ -189,7 +189,7 @@ int  main ( int argc, char *argv[] )
 			continue;			
 		}
 		
-		if (m_ptr->FTPDLEN < 0 || m_ptr->FTPDLEN > (MAXBUFLEN)){
+		if (m_ptr->FTPDLEN < 0 || m_ptr->FTPDLEN > (MAXCOPYLEN)){
 			fprintf(stderr,"M3FTPD: FTDPLEN=%d\n",  m_ptr->FTPDLEN);
 			ftpd_reply(EDVSMSGSIZE);
 			continue;			

@@ -724,7 +724,7 @@ void *get_metrics(void *arg)
 			
 			assert( cpu_usage >= 0 && cpu_usage <= 100);
 			if( cpu_usage < lba_ptr->lba_lowwater){
-				load_lvl = LVL_UNLOADED;
+				load_lvl = LVL_IDLE;
 			} else	if( cpu_usage >= lba_ptr->lba_highwater){
 				load_lvl = LVL_SATURATED;
 			} else {

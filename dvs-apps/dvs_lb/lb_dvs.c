@@ -268,7 +268,7 @@ int main (int argc, char *argv[] )
 					USRDEBUG("Server %s: lb_nr_init=%d lb_min_servers=%d svr_level=%d\n",
 						svr_ptr->svr_name,lb_ptr->lb_nr_init, lb_ptr->lb_min_servers, svr_ptr->svr_level);
 					if( (lb_ptr->lb_nr_init-1) >= lb_ptr->lb_min_servers) {
-						if(svr_ptr->svr_level == LVL_UNLOADED){
+						if(svr_ptr->svr_level == LVL_IDLE){
 							diff = ts.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
 							USRDEBUG("Server %s: Server IDLE diff=%ld\n",svr_ptr->svr_name, diff);
 							if( (int) diff > lb_ptr->lb_stop){
@@ -496,6 +496,17 @@ int stop_idle_node(server_t *svr_ptr)
 		return;
 	}
 	
+	// SHUTDOWN THE OS
+	sprintf(rmt_cmd, "shutdown now >> /tmp/%s.out 2>> /tmp/%s.err",
+		svr_ptr->svr_name,								
+		svr_ptr->svr_name
+	);
+	USRDEBUG("rmt_cmd=%s\n", rmt_cmd);
+	rcode = ucast_cmd(svr_ptr->svr_nodeid, 
+						svr_ptr->svr_name, rmt_cmd);								
+	if( rcode < 0) ERROR_PRINT(rcode);
+	
+	// SHUTDOWN THE VM
 	sprintf(rmt_cmd, "nohup sshpass -p %s ssh %s@%s %s %s %s \"%s\" > /tmp/vm_%s.out 2> /tmp/vm_%s.err &",
 				lb_ptr->lb_ssh_pass,				  
 				lb_ptr->lb_ssh_user,

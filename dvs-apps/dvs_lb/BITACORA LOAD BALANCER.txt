@@ -1370,7 +1370,7 @@ softirq: servicing softirqs
  1025:lb_monitor.c:lbm_reg_msg:283:sender_ptr=#LBA.01#node1 agent_id=1 msg_type=8738
  1025:lb_monitor.c:lbm_reg_msg:307:source=1 type=8738 m1i1=0 m1i2=9 m1i3=0 m1p1=0xe19008 m1p2=0x6f m1p3=0x43d000 
  
- UTILIZACION 9% - LVL_UNLOADED
+ UTILIZACION 9% - LVL_IDLE
  1025:lb_monitor.c:lbm_lvlchg_msg:331:source=1 type=8738 m1i1=0 m1i2=9 m1i3=0 m1p1=0xe19008 m1p2=0x6f m1p3=0x43d000 
  
  1025:lb_monitor.c:lb_monitor:33:rcode=0
@@ -4904,13 +4904,78 @@ LISTO:
 	LISTO	Cuando la sesion no se usa hace mucho tiempo (agregar un campo a la session de timestamp)
 					cuando el LB recibe del server un mensaje, pega el timestamp del cmd_t en la sesion
 					siempre y cuando el header se CMD_NODE
-	LISTO	Cuando el uso de CPU tiene varios ciclos LVL_UNLOADED
+	LISTO	Cuando el uso de CPU tiene varios ciclos LVL_IDLE
+
+LISTO:		Hacer un shutdown del OS antes de STOPEAR la VM 
 	
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
 ULTIMO_LOG 
 
+==========================================================================================
+==========================================================================================
+
+TODO:	No esta funcionando bien con multiples m3ftp y m3ftpd 
+		LA PROBE SIN LB DIRECTA ENTRE NODE0 Y NODE1 Y FUNCIONA PERFECTAMENTE !!!!
+		
+		
+TODO:   Cuando se hace una transferencia multiple solo la primer transferencia se realiza
+	[1]-  Hecho                   ./m3ftp -g 0 60 20 file-100M.dat file0-100M.dat > gftp0.out
+	[2]+  Hecho                   ./m3ftp -g 0 61 21 file-100M.dat file1-100M.dat > gftp1.out
+	root@client11:/usr/src/dvs/dvs-apps/m3ftp# ls -l *.dat
+	-rw-r--r-- 1 root root 104857600 feb 13 16:56 file0-100M.dat
+	-rw-r--r-- 1 root root         0 feb 13 16:56 file1-100M.dat
+
+	root@client11:/usr/src/dvs/dvs-apps/m3ftp# ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: m3ftp.c:ftp_request:39: rcode=-11
+	ERROR: m3ftp.c:main:257: rcode=-11
+
+TODO:	DOCUMENTAR TIPO MAN EL LB_DVS Y SU ARCHIVO DE CONFIGURACION
+		Porque la verdad no me acuerdo de como hacer ciertas cosas
+		
+TODO:
+	MEJORAR EL SCRIPT DE STARTUP 
+	init.d/dvs 
+	que invoca a 
+	/usr/src/dvs/dvk-tests/test_lb.sh   
+		Este script es valido tanto para el LB, CLIENT y SERVERS ya que los distingue por su nombre
+	Luego hay que correr 
+		sudo update-rc.d dvs defaults
+	https://unix.stackexchange.com/questions/20357/how-can-i-make-a-script-in-etc-init-d-start-at-boot
+	1- Hacer un kill de todos los procesos
+	2- hace un kill de los proxies 
+	3- terminar todos los DCs
+	4- terminar el DVS 
+	
+	
+
+CUANDO MUERE EL AGENTE EN EL SERVER se lo quita del lb_bm_init pero no del lb_bm_nodes
+que hacemos con un SERVER que esta arrancado pero que el agente murio ??
+- se lo trata de arrancar ? es el mas sencillo, habria que monitorear el tiempo
+- se rearranca la VM? Es bastante drástico x q puede haber servicios corriendo
+	Posible solucion:
+		- se trata de arrancar el AGENT
+		- si despues de un tiempo dado no hizo el JOIN 
+			Se mata la VM 
+			
+En el mensaje HELLO o en el CMD_T en general se podría acarrear info sobre el nodo 
+		- uso de CPU
+		- uso de memoria 
+También se puede utilizar el proxy de cada NODO como failure detector.
+De esta forma no se utiliza el agente para colectar la info ni como detector de fallos 
+==========================================================================================
+==========================================================================================
+
+		
 SEGURAMENTE, cuando se termine una VM hay que dejar el server en estado STOPPING 
 El cual finaliza no bien se hace el DISCONNECT de spread 
 Pero tambien cuando termina la VM!! 

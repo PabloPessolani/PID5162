@@ -32,6 +32,7 @@ int ftp_request(int oper)
 //		ret = dvk_sendrec(ftpd_ep, m_ptr);
 		ret = dvk_sendrec_T(ftpd_ep, m_ptr, SEND_RECV_MS);
 		if(ret >= OK) break;
+		if(ret == EDVSAGAIN) {sleep(1); ERROR_PRINT(ret); continue;}
 		if(ret == EDVSTIMEDOUT) {ERROR_PRINT(ret); continue;}
 		if( ret < 0) ERROR_RETURN(ret);
 	}
@@ -189,7 +190,7 @@ int main ( int argc, char *argv[] )
 	m_ptr->FTPPATH = argv[5];
 	m_ptr->FTPPLEN = strlen(argv[5]);
 	m_ptr->FTPDATA = data_ptr;
-	m_ptr->FTPDLEN = MAXBUFLEN;	
+	m_ptr->FTPDLEN = MAXCOPYLEN;	
 	m_ptr->FTPPOS  = pos;	
 	
 	rcode = ftp_request(oper);
@@ -202,7 +203,7 @@ int main ( int argc, char *argv[] )
 			fp = fopen(argv[6], "r");
 			if(fp == NULL) ERROR_EXIT(-errno);
 			do { 
-				rlen = fread(data_ptr, 1, MAXBUFLEN, fp);
+				rlen = fread(data_ptr, 1, MAXCOPYLEN, fp);
 				m_ptr->FTPDATA = data_ptr;
 				m_ptr->FTPDLEN = rlen;
 				m_ptr->FTPPOS  = pos;	
@@ -215,11 +216,12 @@ int main ( int argc, char *argv[] )
 				}
 				pos += rlen;
 				m_ptr->FTPOPER = FTP_PNEXT;
-				m_ptr->FTPDLEN = MAXBUFLEN;	
+				m_ptr->FTPDLEN = MAXCOPYLEN;	
 			}while(rlen > 0);
 			break;
 		case FTP_GET:
 			USRDEBUG("M3FTP FTP_GET %s->%s\n", argv[5], argv[6]);
+			USRDEBUG("M3FTP FTP_GET %s->%s\n", m_ptr->FTPPATH, argv[6]);
 			fp = fopen(argv[6], "w");
 			if(fp == NULL){
 				ERROR_PRINT(-errno);
@@ -228,7 +230,7 @@ int main ( int argc, char *argv[] )
 			}
 			do {
 				m_ptr->FTPDATA = data_ptr;
-				m_ptr->FTPDLEN = MAXBUFLEN;
+				m_ptr->FTPDLEN = MAXCOPYLEN;
 				m_ptr->FTPPOS  = pos;	
 				rcode = ftp_request(FTP_GNEXT);
 				if(rcode < 0) break;
@@ -236,13 +238,13 @@ int main ( int argc, char *argv[] )
 					rcode = m_ptr->m_type;
 					ERROR_EXIT(rcode); 
 				}
-				if( m_ptr->FTPDLEN < 0 || m_ptr->FTPDLEN > MAXBUFLEN)
+				if( m_ptr->FTPDLEN < 0 || m_ptr->FTPDLEN > MAXCOPYLEN)
 					ERROR_EXIT(EDVSMSGSIZE);
 				pos += m_ptr->FTPDLEN;
 				m_ptr->FTPOPER = FTP_GNEXT;
 				rcode = fwrite(data_ptr, 1, m_ptr->FTPDLEN, fp);
 				if(rcode < 0 ) {ERROR_EXIT(rcode);}
-				if( m_ptr->FTPDLEN < MAXBUFLEN ) break; // EOF 				
+				if( m_ptr->FTPDLEN < MAXCOPYLEN ) break; // EOF 				
 			}while(TRUE);
 			break;
 		default:

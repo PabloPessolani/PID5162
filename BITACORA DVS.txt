@@ -4790,12 +4790,70 @@ LISTO ARREGLADO:
 	 0  20    20    -1/-1     0 1000    0 27342 27342 27342 27342 server         
 	 0  21    21   695/695    1    0   20 27342 27342 27342 27342 test_receive
 
+==============================================================================================================
+20220213:
+		SE CAMBIO LA VERSION A FORMATO YYYYMM (com/config.h DVS_VERSION)
 
+		root@node0:~# dmesg | grep dvs
+		[    7.106794] DEBUG 664:dvk_ioctl:369: DVK_CALL=24 (io_dvs_init) 
+		[    7.106795] DEBUG 664:io_dvs_init:261: 
+		[    7.106797] DEBUG 664:new_dvs_init:53: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		[    7.106798] DEBUG 664:new_dvs_init:54: d_max_copybuf=65536 d_max_copylen=1048576
+		[    7.106799] DEBUG 664:new_dvs_init:55: d_dbglvl=FFFFFFFF version=202202 flags=1 sizeof(proc)=0
+		[    7.106801] DEBUG 664:new_dvs_init:64: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+		[    7.106802] DEBUG 664:new_dvs_init:65: d_max_copybuf=65536 d_max_copylen=1048576
+		[    7.106803] DEBUG 664:new_dvs_init:66: d_dbglvl=0 version=0 flags=0 sizeof(proc)=0
+		root@node0:~# cat /proc/dvs/info 
+		name=TEST_CLUSTER
+		nodeid=0
+		nr_dcs=32
+		nr_nodes=32
+		max_nr_procs=221
+		max_nr_tasks=35
+		max_sys_procs=64
+		max_copy_buf=65536
+		max_copy_len=1048576
+		dbglvl=0
+		version=202202 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		flags=101
+		sizeof(proc)=452
+		sizeof(proc) aligned=512
+		sizeof(dc)=164
+		sizeof(node)=92
+
+
+		
+
+		
 ULTIMO_LOG
 ==============================================================================================================
 ==============================================================================================================
 ==============================================================================================================
 ==============================================================================================================
+
+TODO:  SIGUEN QUEDANDO EN LOS DESCRIPTORES REMOTOS 
+				LOS VALORES DE PROCESOS LOCALES DESPUES DE HABERLOS MATADO 
+				EN ESTE EJEMPLO 20 25 24  26 ETC 
+		root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/DC0/procs
+		DC pnr -endp -lpid/vpid- nd flag misc -getf -sndt -wmig -prxy name
+		 0  60    60    -1/-1     0 1000    0    20 27342 27342 27342 m3ftp0         
+		 0  61    61    -1/-1     0 1000    0    25 27342 27342 27342 m3ftp1         
+		 0  62    62    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp2         
+		 0  63    63    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp3         
+		 0  64    64    -1/-1     0 1000    0    24 27342 27342 27342 m3ftp4         
+		 0  65    65    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp5         
+		 0  66    66    -1/-1     0 1000    0    26 27342 27342 27342 m3ftp6         
+		 0  67    67    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp7         
+		 0  68    68    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp8         
+		 0  69    69    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp9 
+	SE MODIFICO, FALTA PROBAR 
+	
+
+
+TODO: Falta actualizar las estadisticas en los proceso REMOTOS 
+
+TODO:   HACER QUE CUANDO HAY BATCH EN LOS PROXIES NO HAYA COMPRESION.
+		COMPRESION SOLO DE DATOS 
 
 TODO:	ES NECESARIO QUE EL WAIT4BIND O WAIT4UNBIND SIEMPRE ESPEREN POR UN PROCESO LOCAL ¿¿¿??
 
@@ -4836,6 +4894,26 @@ KERNEL, LIBRERIA, aplicaciones y proxies
 
 ==============================================================================================================
 ==============================================================================================================
+CAMBIO SUSTANTIVO
+	Modificar los rastreos o scans de procesos por listas enlazadas
+		FOR_EACH_PROC(dc_ptr, i) {
+			rp = DC_PROC(dc_ptr,i);
+		
+	Por ejemplo, en el do_unbind hay que rastrea los procesos para ver si un proceso esta esperando:
+		- recibir un mensaje del que esta finalizando
+		- terminar una migracion
+		- un bind o unbind 
+		- realizando un vcopy
+		
+	Entonces, por ejemplo, cuando un proceso P1 de endpoint p1_ep hace un dvk_receive(p2_ep, msg)
+	En el p_getfrom de P1: p2_ep (!= ANY) se debería hacer add_list(p2_ptr->p_recv_list, p1_ptr)
+	Supongamos que P2 hace un dvk_receive(p3_ep, msg), P2 se coloca en la lista de P3 add_list(p3_ptr->p_recv_list, p2_ptr)	
+	Pero si P2 hace un dvk_send(p1_ep, ) y p1->p_getfrom=p2_ep esta en la lista, ya sabe que hubo rendesvous
+	y debe removerlo.
+	la ventaja es que en el do_unbind, simplemente hay que notificar a los procesos de la lista de receive que 
+	P2 ha muerto y no rastrear la lista completa para encontrar p->p_getfrom=p2_ep 
+	
+	
 ==============================================================================================================
 ==============================================================================================================
 

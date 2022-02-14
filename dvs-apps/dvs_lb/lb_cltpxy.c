@@ -584,7 +584,7 @@ server_t *select_server(client_t *clt_ptr,
 		MTX_UNLOCK(lb_ptr->lb_mtx);				
 		return(NULL);	
 	} 
-	MTX_LOCK(lb_ptr->lb_mtx);				
+	MTX_UNLOCK(lb_ptr->lb_mtx);				
 
 	USRDEBUG("CLIENT_RPROXY(%s): server name=%s new_ep=%d\n", 		
 								clt_ptr->clt_name, svr_ptr->svr_name, new_ep);

@@ -83,7 +83,7 @@
 #define SECS_BY_HOUR		3600
 
 #define LVL_NOTINIT		(-1) 
-#define	LVL_UNLOADED	0
+#define	LVL_IDLE	0
 #define	LVL_LOADED		1
 #define	LVL_SATURATED	2
 

@@ -594,8 +594,16 @@ int  main ( int argc, char *argv[] )
 			goto free_resources;
 			continue;			
 		}
+#ifdef ANULADO		
+static char fname[100];
+rcode = dvk_vcopy(m_ptr->m_source, m_ptr->FTPPATH,
+	ftpd_ep, fname, m_ptr->FTPPLEN);		
+USRDEBUG("MM3FTPD: fname=%s\n", fname);
+#endif // ANULADO		
 		
 		memcpy(svr_ptr->svr_msg, m_ptr, sizeof(message));
+		USRDEBUG("MM3FTPD: " MSG1_FORMAT, MSG1_FIELDS(svr_ptr->svr_msg));
+		
 		MTX_LOCK(svr_ptr->svr_mutex);
 		rcode = pthread_create( &svr_ptr->svr_thread, NULL, server_ftp, svr_id);
 		COND_WAIT(ftpd_cond, svr_ptr->svr_mutex);

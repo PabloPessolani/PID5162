@@ -6,14 +6,15 @@ DEBUG = y
 ifeq ($(DEBUG),y)
   DEBFLAGS = -O -g -DDVK_MODULE -DDVK_DEBUG -zmuldefs # "-O" is needed to expand inlines
 else
-  DEBFLAGS = -O2 -DDVK_MODULE
+  DEBFLAGS = -O2 -DDVK_MODULE 
 endif
 
 DVSINC=/usr/src/dvs/include
 
 EXTRA_CFLAGS += $(DEBFLAGS)
 EXTRA_CFLAGS += -I$(DVSINC)
-
+#EXTRA_CFLAGS += "-Wno-error=date-time "
+ 
 ifneq ($(KERNELRELEASE),)
 # call from kernel build system
 dvk-objs := main.o dvk_newcall.o dvk_decode.o reljmp_core.o \
@@ -38,7 +39,7 @@ install:
 	cp  dvk.ko  /usr/src/dvs/dvk-mod 
 	
 depend .depend dep:
-	$(CC) $(EXTRA_CFLAGS) -M *.c > .depend
+	$(CC) $(EXTRA_CFLAGS)  -M *.c > .depend
 ifeq (.depend,$(wildcard .depend))
 include .depend
 endif

@@ -5,7 +5,7 @@
 
 #define DVSPROFILING	0
 
-#define DVS_VERSION 5
+#define DVS_VERSION 202202
 
 #define MAXCOPYBUF	65536 
 #define MAXCOPYLEN	(16 * MAXCOPYBUF)

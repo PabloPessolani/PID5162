@@ -5,6 +5,25 @@
 #define DVK_GLOBAL_HERE 1
 #include "dvk_mod.h"
 
+#define YEAR ((((__DATE__ [7] - '0') * 10 + (__DATE__ [8] - '0')) * 10 \
++ (__DATE__ [9] - '0')) * 10 + (__DATE__ [10] - '0'))
+
+#define MONTH (__DATE__ [2] == 'n' ? 0 \
+: __DATE__ [2] == 'b' ? 1 \
+: __DATE__ [2] == 'r' ? (__DATE__ [0] == 'M' ? 2 : 3) \
+: __DATE__ [2] == 'y' ? 4 \
+: __DATE__ [2] == 'n' ? 5 \
+: __DATE__ [2] == 'l' ? 6 \
+: __DATE__ [2] == 'g' ? 7 \
+: __DATE__ [2] == 'p' ? 8 \
+: __DATE__ [2] == 't' ? 9 \
+: __DATE__ [2] == 'v' ? 10 : 11)
+
+#define DAY ((__DATE__ [4] == ' ' ? 0 : __DATE__ [4] - '0') * 10 \
++ (__DATE__ [5] - '0'))
+
+#define DATE_AS_INT (((YEAR - 2000) * 12 + MONTH) * 31 + DAY)
+
 asmlinkage long (*sys_wait4_ptr)(pid_t pid, int __user *stat_addr, int options, struct rusage __user *ru);
 //size_t bitmap_scnprintf(unsigned long *bitmap, int nbits,char *buf, size_t size);
 
@@ -83,11 +102,15 @@ asmlinkage long new_dvs_init(int nodeid, dvs_usr_t *du_addr)
 			WUNLOCK_DVS;
 			ERROR_RETURN(ret);
 		}
-		d_ptr->d_flags &= (DVK_IPC|DVK_IOCTL|DVK_USERMODE);
+		d_ptr->d_flags 	 &= (DVK_IPC|DVK_IOCTL|DVK_USERMODE);
 		my_flags = dvs_ptr->d_flags;
 		memcpy(dvs_ptr, d_ptr, sizeof(dvs_usr_t));
 		dvs_ptr->d_flags |= my_flags;
 	}
+
+	dvs_ptr->d_version = DVS_VERSION;
+//	#define DATE_as_int_str useD(__DATE__)
+//	dvs_ptr->d_version = DATE_as_int_str;
 	
 	DVKDEBUG(DBGPARAMS,DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
 	DVKDEBUG(DBGPARAMS,DVS_MAX_FORMAT, DVS_MAX_FIELDS(dvs_ptr));
@@ -855,10 +878,14 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			// check if it is a SENDREC 
 			if( test_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags) ) {
 				clear_bit(BIT_RECEIVING, &src_ptr->p_usr.p_rts_flags);
-				clear_bit(MIS_BIT_ATOMIC, &src_ptr->p_usr.p_misc_flags);
+				src_ptr->p_usr.p_getfrom = NONE;
+				rcode = EDVSDEADSRCDST;
+			}else{
+				rcode = EDVSDSTDIED;				
 			}
-			/* REMOTE process descriptor are used for ACKNOWLEDGES 							 */
-			send_ack_lcl2rmt(src_ptr,proc_ptr,EDVSDSTDIED);
+			clear_bit(MIS_BIT_ATOMIC, &src_ptr->p_usr.p_misc_flags);
+			/* REMOTE process descriptor are used for ACKNOWLEDGES 			 */
+			send_ack_lcl2rmt(src_ptr,proc_ptr,rcode);
 		}
 		WUNLOCK_PROC(src_ptr);
 	}
@@ -941,7 +968,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 			continue;
 		}
 
-		/* IF another LOCAL process is waiting to receive  		*/
+		/* IF another process is waiting to receive  		*/
 		/* a message from the unbound process,  because it has 	*/
 		/* done a dvk_sendrec(), inform that it exits.			*/ 
 		if( (!test_bit(BIT_SENDING, &rp->p_usr.p_rts_flags) 
@@ -951,6 +978,7 @@ asmlinkage long do_unbind(dc_desc_t *dc_ptr, struct proc *proc_ptr)
 				rp->p_usr.p_endpoint, proc_ptr->p_usr.p_endpoint);
 			DVKDEBUG(INTERNAL,PROC_USR_FORMAT,PROC_USR_FIELDS(uproc_ptr));
 			clear_bit(BIT_RECEIVING, &rp->p_usr.p_rts_flags);
+			rp->p_usr.p_getfrom = NONE;
 			if( test_bit(MIS_BIT_ATOMIC, &rp->p_usr.p_misc_flags))
 				clear_bit(MIS_BIT_ATOMIC, &rp->p_usr.p_misc_flags);
 			uproc_ptr = &rp->p_usr;
