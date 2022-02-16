@@ -214,12 +214,12 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 					svr_ptr->svr_name, SESE_SVR_FIELDS(sess_ptr));
 			USRDEBUG("XXX_SERVER_RPROXY(%s):" SESE_LB_FORMAT, 
 					svr_ptr->svr_name, SESE_LB_FIELDS(sess_ptr));
+#endif // TEMPORARY					
 
 			USRDEBUG("XXX_SERVER_RPROXY(%s):" CMD_FORMAT, 
 					svr_ptr->svr_name, CMD_FIELDS(hdr_ptr));
 			USRDEBUG("XXX_SERVER_RPROXY(%s):" CMD_PIDFORMAT, 
 					svr_ptr->svr_name, CMD_PIDFIELDS(hdr_ptr));
-#endif // TEMPORARY					
  
 		// Search for an Active Session 
 		if( (sess_ptr->se_svr_nodeid == hdr_ptr->c_snode) 

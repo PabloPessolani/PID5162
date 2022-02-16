@@ -153,6 +153,7 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 					clt_ptr->clt_name);
 				cpx_ptr->lbp_msg_ok++;
 				
+				// Search for a valid service 
 				for(i = 0; i < lb.lb_nr_services; i++){
 					svc_ptr = &service_tab[i];
 					USRDEBUG("CLIENT_RPROXY(%s): " SERVICE_FORMAT, 
@@ -161,12 +162,24 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 					if( (svc_ptr->svc_dcid == LB_INVALID) // It means all DCIDs 
 					||  (svc_ptr->svc_dcid == cpx_ptr->lbp_header->c_dcid)) { 
 						// check if there is a service which listen in the destination endpoint
-#ifdef SINGLE_ENDPOINT
-						if(svc_ptr->svc_extep == cpx_ptr->lbp_header->c_dst)
-							break;
-#else // SINGLE_ENDPOINT
-						USRDEBUG("CLIENT_RPROXY(%s): minep=%d  maxep=%d\n",
-							clt_ptr->clt_name, svc_ptr->svc_minep, svc_ptr->svc_maxep);						
+						
+						USRDEBUG("CLIENT_RPROXY(%s): extep=%d minep=%d  maxep=%d c_dst=%d\n",
+							clt_ptr->clt_name, svc_ptr->svc_extep, 
+							svc_ptr->svc_minep, svc_ptr->svc_maxep,
+							cpx_ptr->lbp_header->c_dst);	
+#define SINGLE_ENDPOINT												
+#ifdef SINGLE_ENDPOINT						
+
+				
+						// Service NOT configured endpoint
+//						if( TEST_BIT(svr_ptr->svr_bm_svc, cpx_ptr->lbp_header->c_dst) == 0) continue;
+						if(cpx_ptr->lbp_header->c_dst == svc_ptr->svc_extep) break;
+						
+						// OUT of Service endpoint range ?	
+						if( (cpx_ptr->lbp_header->c_dst >= svc_ptr->svc_minep)
+						&&  (cpx_ptr->lbp_header->c_dst <= svc_ptr->svc_maxep)) break;
+#else // SINGLE_ENDPOINT								
+						// Search a free endpoint inside Service endpont range 
 						for( ep = svc_ptr->svc_minep; ep <= svc_ptr->svc_maxep; ep++){
 							USRDEBUG("CLIENT_RPROXY(%s): ep=%d\n", clt_ptr->clt_name, ep);	
 							if(ep == cpx_ptr->lbp_header->c_dst) break;
@@ -174,7 +187,7 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 						if( ep > svc_ptr->svc_maxep) continue;
 						USRDEBUG("CLIENT_RPROXY(%s): service endpoint found ep=%d\n",clt_ptr->clt_name,ep);						
 						break;		
-#endif // SINGLE_ENDPOINT
+#endif // SINGLE_ENDPOINT						
 					}
 				}
 				// invalid destination endpoint -> send EDVSDSTDIED
@@ -190,6 +203,7 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 					ERROR_PRINT(EDVSAGAIN);
 					continue;
 				}
+
 				dcid = cpx_ptr->lbp_header->c_dcid;
 				MTX_LOCK(sess_table[dcid].st_mutex);
 				svr_ptr = &server_tab[sess_ptr->se_svr_nodeid];
@@ -265,12 +279,18 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 //			MTX_UNLOCK(sess_table[dcid].st_mutex);
 			continue;
 		}
+		USRDEBUG("CLIENT_RPROXY(%s) se_clt_ep=%d c_src=%d\n", 
+				clt_ptr->clt_name, sess_ptr->se_clt_ep, hdr_ptr->c_src);
 		if (sess_ptr->se_clt_ep == hdr_ptr->c_src) {
+			USRDEBUG("CLIENT_RPROXY(%s): ACTIVE CLIENT ENDPOINT FOUND se_clt_ep=%d \n", 
+				clt_ptr->clt_name, sess_ptr->se_clt_ep);
 			// Search for an Active Session 
 			if( (sess_ptr->se_clt_nodeid == hdr_ptr->c_snode)
 			&&  (sess_ptr->se_lbclt_ep	 == hdr_ptr->c_dst)
 			&&  (lb.lb_nodeid			 == hdr_ptr->c_dnode)){
 				// ACTIVE SESSION FOUND 
+				USRDEBUG("CLIENT_RPROXY(%s): SESSION FOUND se_clt_ep=%d \n",
+					clt_ptr->clt_name, sess_ptr->se_clt_ep);
 				svr_ptr = &server_tab[sess_ptr->se_svr_nodeid];
 				MTX_LOCK(svr_ptr->svr_mutex);
 				// the CLIENT PID must be the same 
@@ -414,18 +434,7 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 		return(NULL);
 	}
 	
-	// check COMPRESSION and BATCHING in both ends
-	USRDEBUG("CLIENT_RPROXY(%s): " SERVER1_FORMAT, 
-					clt_ptr->clt_name, SERVER1_FIELDS(svr_ptr));
-	USRDEBUG("CLIENT_RPROXY(%s): " CLIENT_FORMAT, 
-					clt_ptr->clt_name, CLIENT_FIELDS(clt_ptr));
-	if( svr_ptr->svr_compress != clt_ptr->clt_compress 
-	||  svr_ptr->svr_batch    != clt_ptr->clt_batch) {
-		rcode = clt_Rproxy_error(clt_ptr, EDVSBADPROXY);
-		if( rcode < 0) 	ERROR_PRINT(EDVSBADPROXY);
-		MTX_UNLOCK(sess_table[dcid].st_mutex);		
-		return(NULL);		
-	}
+
 		
 	sess_ptr->se_dcid 		= hdr_ptr->c_dcid;
 	sess_ptr->se_clt_nodeid	= hdr_ptr->c_snode;
@@ -472,28 +481,53 @@ server_t *select_server(client_t *clt_ptr,
 	lb_ptr = &lb;
 	MTX_LOCK(lb_ptr->lb_mtx);				
 	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
-		svr_ptr = &server_tab[i]; 
-		MTX_LOCK(svr_ptr->svr_mutex);
 		// TEMPORARY : CHOOSE THE FIRST INITIALIZED SERVER 
-		if( svr_ptr->svr_nodeid != LB_INVALID) {
+		if( i == lb_ptr->lb_nodeid) continue;
+		if( TEST_BIT(lb_ptr->lb_bm_init,i) ) {
+//		if( svr_ptr->svr_nodeid != LB_INVALID) {
+			svr_ptr = &server_tab[i]; 
+			MTX_LOCK(svr_ptr->svr_mutex);
 			// If server is SATURATED get the next
 			if( svr_ptr->svr_level == LVL_SATURATED) {
 				MTX_UNLOCK(svr_ptr->svr_mutex);
+				ERROR_PRINT(EDVSBUSY);
 				continue;
 			}
 			// If server is not Initialized 
-			if( TEST_BIT(lb_ptr->lb_bm_init, i) == 0) {
-				MTX_UNLOCK(svr_ptr->svr_mutex);
+//			if( TEST_BIT(lb_ptr->lb_bm_init, i) == 0) {
+//				MTX_UNLOCK(svr_ptr->svr_mutex);
+//				continue;
+//			}
+			
+			// check COMPRESSION and BATCHING in both ends
+			USRDEBUG("CLIENT_RPROXY(%s): " SERVER1_FORMAT, 
+							clt_ptr->clt_name, SERVER1_FIELDS(svr_ptr));
+			USRDEBUG("CLIENT_RPROXY(%s): " CLIENT_FORMAT, 
+							clt_ptr->clt_name, CLIENT_FIELDS(clt_ptr));
+			if( svr_ptr->svr_compress != clt_ptr->clt_compress 
+			||  svr_ptr->svr_batch    != clt_ptr->clt_batch) {
+				rcode = clt_Rproxy_error(clt_ptr, EDVSBADPROXY);
+				if( rcode < 0) 	ERROR_PRINT(EDVSBADPROXY);
 				continue;
 			}
-			
-			// ALLOCATE FREE SERVER ENDPOINT
+	
+			if( svc_ptr->svc_bind == PROG_BIND) {
+				MTX_UNLOCK(svr_ptr->svr_mutex);
+				new_ep = hdr_ptr->c_dst; 
+				break;
+			}
+
+			// ALLOCATE FREE SERVER ENDPOINT		
 			for ( new_ep = svc_ptr->svc_minep; 
 				  new_ep <= svc_ptr->svc_maxep; new_ep++){
+
+				USRDEBUG("CLIENT_RPROXY(%s): svr_bm_svc=%0lX bit=%d\n", 	
+						clt_ptr->clt_name, svr_ptr->svr_bm_svc, new_ep);					  
+					  
 				if( TEST_BIT(svr_ptr->svr_bm_svc, new_ep) == 0) {
 					SET_BIT(svr_ptr->svr_bm_svc, new_ep);
 					if( svc_ptr->svc_bind != PROG_BIND 
-					&&	svc_ptr->svc_prog != nonprog ){
+					&&	strncmp(svc_ptr->svc_prog,nonprog, strlen(nonprog)) != 0 ){
 						// sshpass [-ffilename|-dnum|-ppassword|-e] [options] command arguments
 						// run_server.sh <dcid> <svr_ep> <clt_node> <clt_ep>"
 						// sshpass -p 'root' ssh root@node1 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR "bash -c \"
@@ -553,6 +587,7 @@ server_t *select_server(client_t *clt_ptr,
 						MTX_UNLOCK(clt_ptr->clt_agent_mtx);						
 						if(rcode < 0 ){
 							ERROR_PRINT(rcode);
+							MTX_UNLOCK(svr_ptr->svr_mutex);
 							MTX_UNLOCK(lb_ptr->lb_mtx);				
 							return(NULL);
 						}
@@ -560,15 +595,19 @@ server_t *select_server(client_t *clt_ptr,
 					break;
 				}
 			}
-			if( new_ep < svc_ptr->svc_maxep){
+			if( new_ep <= svc_ptr->svc_maxep){
 				MTX_UNLOCK(svr_ptr->svr_mutex);
 				break;
-				// choose another server 
 			}
+			MTX_UNLOCK(svr_ptr->svr_mutex);
 		}
-		MTX_UNLOCK(svr_ptr->svr_mutex);
 	}
-	if ( i == dvs_ptr->d_nr_nodes){ // not UNLOADED SERVER RUNNING server found
+	USRDEBUG("CLIENT_RPROXY(%s): i=%d d_nr_nodes=%d new_ep=%d\n", 		
+				clt_ptr->clt_name, i,  dvs_ptr->d_nr_nodes, new_ep);
+								
+	// Is a non SATURATED SERVER RUNNING server found?
+	if ((i == dvs_ptr->d_nr_nodes)
+	&&  (new_ep > svc_ptr->svc_maxep)) { 
 		// Are there any defined node to start ??
 		USRDEBUG("CLIENT_RPROXY(%s): lb_nr_init=%d lb_nr_svrpxy=%d\n", 		
 								clt_ptr->clt_name, lb_ptr->lb_nr_init,lb_ptr->lb_nr_svrpxy);
@@ -738,12 +777,14 @@ int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,
 	lb_ptr = &lb;	
 	cpx_ptr = &clt_ptr->clt_rpx;
 	spx_ptr = &svr_ptr->svr_spx;
-	USRDEBUG("CLIENT_RPROXY(%s) BEFORE: " CMD_FORMAT, clt_ptr->clt_name, CMD_FIELDS(hdr_ptr));
-	USRDEBUG("CLIENT_RPROXY(%s) BEFORE: " CMD_XFORMAT, clt_ptr->clt_name, CMD_XFIELDS(hdr_ptr));
+
 	
 	// Modify CLIENT RECEIVER header 
 	hdr_ptr = cpx_ptr->lbp_header;
 	hdr_ptr->c_snode = lb_ptr->lb_nodeid;
+	USRDEBUG("CLIENT_RPROXY(%s) BEFORE: " CMD_FORMAT, clt_ptr->clt_name, CMD_FIELDS(hdr_ptr));
+	USRDEBUG("CLIENT_RPROXY(%s) BEFORE: " CMD_XFORMAT, clt_ptr->clt_name, CMD_XFIELDS(hdr_ptr));
+	
 	m_ptr   = &hdr_ptr->c_msg;
 	dcid = spx_ptr->lbp_header->c_dcid;
 	MTX_LOCK(sess_table[dcid].st_mutex);

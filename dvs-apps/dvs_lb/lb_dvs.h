@@ -83,8 +83,8 @@
 #define SECS_BY_HOUR		3600
 
 #define LVL_NOTINIT		(-1) 
-#define	LVL_IDLE	0
-#define	LVL_LOADED		1
+#define	LVL_IDLE		0
+#define	LVL_BUSY		1
 #define	LVL_SATURATED	2
 
 #define	NO		0
@@ -127,6 +127,7 @@ typedef struct {
 
 typedef struct {
 	char *svc_name;				// server name from configuration file 
+	int	svc_index;				// service array index
 	int	svc_dcid;				// server dcid
 	int svc_extep;				// server external endpoint 
 	int svc_minep;				// server lower endpoint when execute the server 
@@ -216,6 +217,7 @@ typedef struct lbpx_desc_s lbpx_desc_t;
 
 struct client_s {
 	char *clt_name;
+	int	clt_index;			// client  array index
 	int	clt_nodeid;
 	int	clt_lbRport;			// LB Receiver port 
 	int clt_cltRport;			// Client Receiver port 
@@ -251,6 +253,7 @@ typedef struct client_s client_t;
 
 struct server_s{
 	char *svr_name;			// server name from configuration file 
+	int	svr_index;			// server  array index
 	int	svr_nodeid;			// server nodeid
 	int svr_lbRport;		// LB Receiver port 
 	int svr_svrRport;		// Server Receiver port 
@@ -317,8 +320,8 @@ typedef struct {
 	int		lb_period;			// load measurement period in seconds (1-3600)
 	int		lb_start;			// period to wait to start a server node VM in seconds (1-3600)
 	int		lb_stop;			//  period to wait to shutdown  a server node VM in seconds (1-3600)
-	int		lb_min_servers; 	// low water load (0-NR_NODES)
-	int		lb_max_servers;		// low water load (0-NR_NODES)
+	int		lb_min_servers; 	// minimum count of nodes  (0-NR_NODES)
+	int		lb_max_servers;		// maximum count of nodes (0-NR_NODES)
 
 	char 	*lb_vm_start;		// string to command which START the server VM 
 	char 	*lb_vm_stop;		// string to command which STOP the server VM 

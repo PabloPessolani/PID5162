@@ -4821,15 +4821,45 @@ LISTO ARREGLADO:
 		sizeof(dc)=164
 		sizeof(node)=92
 
-
-		
-
-		
+==============================================================================================================
+20220214:
+LISTO:   Hacer que cuando hay batch en los proxies no haya compresion.
+		Esto quiere decir que puede haber batch y puede haber compresion
+		pero no puede comprimirse batched commands
+		compresion solo de datos 
+		buscar texto: NO_BATCH_COMPRESSION
+	FALTA PROBAR 
+	
+	
+	
 ULTIMO_LOG
 ==============================================================================================================
 ==============================================================================================================
 ==============================================================================================================
 ==============================================================================================================
+
+NO SE ESTA ACTUALIZANDO LAS TRANSFERENCIA REMOTA DE DATOS rcopy
+	root@client11:/usr/src/dvs/dvs-apps/m3ftp# cat /proc/dvs/DC0/stats
+	DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+	 0  20    20    -1/-1     0        0        0        0        0 m3ftpd0        
+	 0  21    21    -1/-1     0        0        0        0        0 m3ftpd1        
+	 0  22    22    -1/-1     0        0        0        0        0 m3ftpd2        
+	 0  23    23    -1/-1     0        0        0        0        0 m3ftpd3        
+	 0  24    24    -1/-1     0        0        0        0        0 m3ftpd4        
+	 0  25    25    -1/-1     0        0        0        0        0 m3ftpd5        
+	 0  26    26    -1/-1     0        0        0        0        0 m3ftpd6        
+	 0  27    27    -1/-1     0        0        0        0        0 m3ftpd7        
+	 0  28    28    -1/-1     0        0        0        0        0 m3ftpd8        
+	 0  29    29    -1/-1     0        0        0        0        0 m3ftpd9        
+	 0  60    60   665/665   11        0       75        0        0 m3ftp          
+	 0  61    61   666/666   11        0       75        0        0 m3ftp          
+	 0  62    62   667/667   11        0       75        0        0 m3ftp          
+	 0  63    63   668/668   11        0       75        0        0 m3ftp          
+	 0  64    64   669/669   11        0       75        0        0 m3ftp          
+	 0  65    65   670/670   11        0       75        0        0 m3ftp          
+	 0  66    66   671/671   11        0       75        0        0 m3ftp          
+	 0  67    67   672/672   11        0       75        0        0 m3ftp          
+	 0  68    68   673/673   11        0       75        0        0 m3ftp 
 
 TODO:  SIGUEN QUEDANDO EN LOS DESCRIPTORES REMOTOS 
 				LOS VALORES DE PROCESOS LOCALES DESPUES DE HABERLOS MATADO 
@@ -4848,15 +4878,37 @@ TODO:  SIGUEN QUEDANDO EN LOS DESCRIPTORES REMOTOS
 		 0  69    69    -1/-1     0 1000    0 27342 27342 27342 27342 m3ftp9 
 	SE MODIFICO, FALTA PROBAR 
 	
-
+TODO 
+		CUANDO UN PROXY ENVIA UN MENSAJE A UN ENDPOINT DE UN NODO Y ESTO DA ERROR DE DSTDEAD O ALGO POR EL ESTILO
+		EL PROXY DEBE HACER EL UNBIND LOCAL 
 
 TODO: Falta actualizar las estadisticas en los proceso REMOTOS 
 
-TODO:   HACER QUE CUANDO HAY BATCH EN LOS PROXIES NO HAYA COMPRESION.
-		COMPRESION SOLO DE DATOS 
-
+		
 TODO:	ES NECESARIO QUE EL WAIT4BIND O WAIT4UNBIND SIEMPRE ESPEREN POR UN PROCESO LOCAL ¿¿¿??
 
+TODO:   COMO HACER UN BIND AUTOMATICO ???
+		HACER UN GRUPO SPREAD POR CADA DOMINIO 
+		CADA SERVER QUE SE LEVANTA REGISTRA SU ENDPOINT, TIPO DE ENDPOINT Y NODO 
+		Y SE BROADCASTEA A TODOS 
+		LOS CLIENTES REGISTRAN ESOS ENDPOINTS EN EL DVK 
+		SI SE CAE ALGUN ENDPOINT (DISCONNECT) LO UNBINDEA
+		SI SE CAE UN HOST (NETWORK PARTTION) TODOS LOS ENDPOINTS DE UN NODO LOS DESCONECTA 
+		QUIZAS ESTO SE PUEDA EMBEBER EN EL DVK ALGO ASI COMO EL PROXY PROPIO 
+		
+		OTRA FORMA ES QUE SI EL CLIENTE HACE UN SENDREC( SVR_EP, MSG), ESTE ENVIA UN MULTICAST PARA SABER
+		DONDE ESTA ES ENDPOINT 
+		
+		OTRA FORMA ES QUE SI EL CLIENTE HACE UN SENDREC( SVR_EP, MSG) Y ESTE DA ERROR EDVSUNBIND 
+		ENVIA UN MENSAJE TIPO CMD_PROCINFO POR TODOS LOS PROXIES
+		SOLO EL PROXY QUE TIENE EL ENDPOINT COMO LOCAL PERMITE QUE EL PROXY HAGA EL RMTBIND 
+
+		
+		
+	
+		
+		
+		
 
  
 

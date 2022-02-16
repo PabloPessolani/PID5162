@@ -728,7 +728,7 @@ void *get_metrics(void *arg)
 			} else	if( cpu_usage >= lba_ptr->lba_highwater){
 				load_lvl = LVL_SATURATED;
 			} else {
-				load_lvl = LVL_LOADED;
+				load_lvl = LVL_BUSY;
 			}
 			
 			// update agent values 

@@ -7,7 +7,7 @@
 #define _MULTI_THREADED
 #define _TABLE
 #include "lb_dvs.h"
-
+ 
 #define MNX_PATH_MAX    1024
 
 char line[MNX_PATH_MAX];
@@ -99,8 +99,10 @@ int main (int argc, char *argv[] )
     USRDEBUG("Clear server and client tables \n");
 	for( i = 0;  i < dvs_ptr->d_nr_nodes; i++ ){
 		svr_ptr = &server_tab[i];
+		svr_ptr->svr_index = i;
 		init_server(svr_ptr);
 		clt_ptr = &client_tab[i];
+		clt_ptr->clt_index = i;
 		init_client(clt_ptr);
 	}
 
@@ -108,6 +110,7 @@ int main (int argc, char *argv[] )
     USRDEBUG("Clear service table\n");	
 	for( i = 0;  i < MAX_SVC_NR; i++ ){
 		svc_ptr = &service_tab[i];
+		svc_ptr->svc_index = i;
 		init_service(svc_ptr);
 	}
 	
@@ -542,7 +545,7 @@ void init_session( sess_entry_t *sess_ptr)
 	
 void init_server(server_t *svr_ptr)
 {
-	USRDEBUG("\n");
+	USRDEBUG("svr_index=%d\n", svr_ptr->svr_index);
 
 	svr_ptr->svr_nodeid 	= LB_INVALID;
 	svr_ptr->svr_compress 	= LB_INVALID;
@@ -559,7 +562,7 @@ void init_server(server_t *svr_ptr)
 
 void init_client(client_t *clt_ptr)
 {
-	USRDEBUG("\n");
+	USRDEBUG("clt_index=%d\n", clt_ptr->clt_index);
 
 	clt_ptr->clt_nodeid 	= LB_INVALID;
 	clt_ptr->clt_compress 	= LB_INVALID;
@@ -570,7 +573,8 @@ void init_client(client_t *clt_ptr)
 
 void init_service(service_t *svc_ptr)
 {
-	USRDEBUG("\n");
+	USRDEBUG("svc_index=%d\n", svc_ptr->svc_index);
+
 	svc_ptr->svc_extep 	= HARDWARE;
 	svc_ptr->svc_minep 	= HARDWARE;
 	svc_ptr->svc_maxep 	= HARDWARE;

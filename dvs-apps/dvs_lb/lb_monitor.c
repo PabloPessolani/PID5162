@@ -9,6 +9,43 @@
 
 int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type);
 
+/*===========================================================================*
+ *				bm32ascii		 			   				     *
+ *===========================================================================*/
+void bm32ascii(char *buf, unsigned long int bitmap)
+{
+	int i;
+	unsigned long int mask;
+
+	mask = 0x80000000; 
+	for( i = 0; i < (sizeof(unsigned long) * 8) ; i++) {
+//		*buf++ = (bitmap & mask)?'X':'-';
+		*buf++ = (bitmap & mask)?'x': (((31-i)%10)+'0');
+		mask =  (mask >> 1);		
+	}
+	*buf = '\0';
+}
+
+/*===========================================================================*
+ *				   set_server_bm 				    					 *
+ *===========================================================================*/
+void set_server_bm(server_t *svr_ptr)
+{
+	int i, j; 
+	service_t *svc_ptr;
+	static char bmbuf[(sizeof(unsigned long)*8)+1];
+
+	for( i = 0; i < lb.lb_nr_services; i++){
+		svc_ptr = &service_tab[i];
+		if( svc_ptr->svc_extep == LB_INVALID) 	continue;
+		SET_BIT(svr_ptr->svr_bm_svc, svc_ptr->svc_extep);
+		for(j = svc_ptr->svc_minep; j < svc_ptr->svc_maxep; j++)
+			SET_BIT(svr_ptr->svr_bm_svc, j);
+		bm32ascii(bmbuf, svr_ptr->svr_bm_svc);
+		USRDEBUG("svr_nodeid=%d svr_bm_svc=%08X [%-32s]\n",
+			svr_ptr->svr_nodeid, svr_ptr->svr_bm_svc, bmbuf);
+	}
+}		
 
 /*===========================================================================*
  *				   lb_monitor 				    					 *
@@ -305,6 +342,12 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 		SET_BIT(lb_ptr->lb_bm_init, agent_id);
 		lb_ptr->lb_nr_init++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
+#ifdef NOT_USED		
+		svr_ptr = &server_tab[agent_id];	
+		MTX_LOCK(svr_ptr->svr_mutex);
+		set_server_bm(svr_ptr);
+		MTX_UNLOCK(svr_ptr->svr_mutex);
+#endif // NOT_USED		
 	}
 
     USRDEBUG("msg_type=%0X\n",msg_type);
@@ -336,14 +379,20 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 					 m_ptr->m_type, msg_type);
 				goto unlock_ok;		
 			}
+			assert(m_ptr->m_source == agent_id);
+			lbm_lvlchg_msg(m_ptr);
+			svr_ptr = &server_tab[agent_id];
 			if(TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0){	
 				SET_BIT(lb_ptr->lb_bm_init, agent_id);
 				lb_ptr->lb_nr_init++;
 				USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
-			}	
-			assert(m_ptr->m_source == agent_id);
-			lbm_lvlchg_msg(m_ptr);
-			svr_ptr = &server_tab[agent_id];
+#ifdef NOT_USED					
+				MTX_LOCK(svr_ptr->svr_mutex);
+				set_server_bm(svr_ptr);
+				MTX_UNLOCK(svr_ptr->svr_mutex);	
+#endif // NOT_USED		
+				
+			}
 			goto unlock_ok;
 			break;
 		case MT_CLT_WAIT_BIND | MT_ACKNOWLEDGE:
@@ -413,7 +462,7 @@ int lbm_lvlchg_msg(message *m_ptr)
 	
 	switch(m_ptr->m1_i1) {
 		case LVL_IDLE:
-		case LVL_LOADED:
+		case LVL_BUSY:
 		case LVL_SATURATED:
 			// check received LOAD VALUES  
 			assert(m_ptr->m9_i1 >= LVL_IDLE && m_ptr->m9_i1<= LVL_SATURATED);
@@ -438,9 +487,10 @@ int lbm_lvlchg_msg(message *m_ptr)
 *===========================================================================*/
 int lbm_join(lb_t *lb_ptr,int num_groups)
 {
-	int agent_id;
+	int agent_id, i, j;
     server_t *svr_ptr;
 
+	 
     USRDEBUG("member=%s\n",lb_ptr->lb_memb_info.changed_member);
     agent_id  = get_nodeid((char *)lb_ptr->lb_memb_info.changed_member);
 	
@@ -461,6 +511,10 @@ int lbm_join(lb_t *lb_ptr,int num_groups)
 		CLR_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
 		// initialize timestamp of idle time 
 		clock_gettime(clk_id, &svr_ptr->svr_idle_ts);
+#ifdef NOT_USED		
+		set_server_bm(svr_ptr);
+#endif // NOT_USED		
+				
 		MTX_UNLOCK(svr_ptr->svr_mutex);
 		mcast_thresholds();
     }
@@ -491,6 +545,7 @@ int  lbm_leave(lb_t *lb_ptr,int num_groups)
 			return(OK);
 		}
 		clear_session(agent_id);
+		clear_server(agent_id);
 	    USRDEBUG("AGENT DEAD! STOP THE VM member=%s\n",lb_ptr->lb_memb_info.changed_member);
 		MTX_UNLOCK(lb_ptr->lb_mtx);
     }
@@ -530,14 +585,37 @@ void  clear_session(int agent_id)
 				sess_table[i].st_nr_sess--;
 				MTX_UNLOCK(sess_table[i].st_mutex);
 				MTX_LOCK(svr_ptr->svr_mutex);				
-				CLR_BIT(svr_ptr->svr_bm_svc, sess_ptr->se_svr_ep);
+				CLR_BIT(svr_ptr->svr_bm_svc, j);
 				MTX_UNLOCK(svr_ptr->svr_mutex);				
 			}
 			sess_ptr++;
 		}
 	}
 }
-		
+	
+/*===========================================================================*
+*				clear_server 				     *
+*===========================================================================*/
+void  clear_server(int nodeid)
+{
+	server_t *svr_ptr;
+	
+    USRDEBUG("nodeid=%d\n",nodeid);
+
+	svr_ptr = &server_tab[nodeid];
+	assert(svr_ptr->svr_nodeid != LB_INVALID);
+
+	MTX_LOCK(svr_ptr->svr_mutex);
+	svr_ptr->svr_idle_count = 0;
+	svr_ptr->svr_bm_sts		= 0;
+	svr_ptr->svr_bm_svc 	= 0;
+	MTX_UNLOCK(svr_ptr->svr_mutex);
+	USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
+	USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
+	
+	return;
+}
+	
 /*===========================================================================*
 *				lbm_network				     *
 * Handle NETWORK event
@@ -606,6 +684,7 @@ int lbm_network(lb_t* lb_ptr)
 				MTX_LOCK(lb_ptr->lb_mtx);				
                 if(TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0) {
 					SET_BIT(bm_init, agent_id);
+					
 					nr_init++;
 				}
 				MTX_UNLOCK(lb_ptr->lb_mtx);				
@@ -628,6 +707,7 @@ int lbm_network(lb_t* lb_ptr)
 			// but it is not in the current bitmap 
 			if(TEST_BIT(bm_init, i) == 0) {
 				clear_session(i);
+				clear_server(i);
 				svr_ptr = &server_tab[i];
 				MTX_LOCK(svr_ptr->svr_mutex);
 				SET_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING);

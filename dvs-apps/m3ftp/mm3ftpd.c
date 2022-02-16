@@ -325,15 +325,6 @@ void *server_ftp(void *arg)
 
 	ftp_ep = m_ptr->m_source;
 	oper   = m_ptr->FTPOPER;
-	rcode = dvk_vcopy(ftp_ep, m_ptr->FTPPATH,
-						svr_ptr->svr_ep, svr_ptr->svr_fname, m_ptr->FTPPLEN);
-	if( rcode < 0){
-		ERROR_PRINT(rcode);
-		ftpd_reply(svr_id, rcode);
-		goto svr_free_resources;
-	}
-	svr_ptr->svr_fname[m_ptr->FTPPLEN] = 0;
-	USRDEBUG("MM3FTPD[%d]: svr_fname >%s<\n", svr_id, svr_ptr->svr_fname);
 	
 //	ftpd_reply(svr_id, OK);
 			
@@ -343,7 +334,7 @@ void *server_ftp(void *arg)
 	
 	switch(oper){
 		case FTP_GET:
-			USRDEBUG("MM3FTPD[%d]: FTP_GET\n", svr_id);
+			USRDEBUG("MM3FTPD[%d]: FTP_GET fname=%s \n", svr_id, svr_ptr->svr_fname);
 			fp = fopen(svr_ptr->svr_fname, "r");
 			if (fp == NULL){
 				rcode = (-errno);
@@ -412,7 +403,7 @@ void *server_ftp(void *arg)
 			m_ptr->FTPDLEN = 0;
 			break;
 		case FTP_PUT:
-			USRDEBUG("MM3FTPD[%d]: FTP_PUT\n", svr_id);
+			USRDEBUG("MM3FTPD[%d]: FTP_PUT fname=%s \n", svr_id, svr_ptr->svr_fname);
 			fp = fopen(svr_ptr->svr_fname, "w");					
 			if (fp == NULL){
 				rcode = -errno;
@@ -601,13 +592,27 @@ rcode = dvk_vcopy(m_ptr->m_source, m_ptr->FTPPATH,
 USRDEBUG("MM3FTPD: fname=%s\n", fname);
 #endif // ANULADO		
 		
+		MTX_LOCK(svr_ptr->svr_mutex);
 		memcpy(svr_ptr->svr_msg, m_ptr, sizeof(message));
 		USRDEBUG("MM3FTPD: " MSG1_FORMAT, MSG1_FIELDS(svr_ptr->svr_msg));
-		
-		MTX_LOCK(svr_ptr->svr_mutex);
+		rcode = dvk_vcopy(m_ptr->m_source, m_ptr->FTPPATH,
+							ftpd_ep, svr_ptr->svr_fname, m_ptr->FTPPLEN);
+		ERROR_PRINT(rcode);
+		if( rcode < 0){
+			ERROR_PRINT(rcode);
+			main_reply(rcode);
+			MTX_UNLOCK(svr_ptr->svr_mutex);
+			goto free_resources;
+			continue;
+		}
+		svr_ptr->svr_fname[m_ptr->FTPPLEN] = 0;
+		USRDEBUG("MM3FTPD[%d]: svr_fname >%s<\n", svr_id, svr_ptr->svr_fname);
+	
 		rcode = pthread_create( &svr_ptr->svr_thread, NULL, server_ftp, svr_id);
 		COND_WAIT(ftpd_cond, svr_ptr->svr_mutex);
 		USRDEBUG("MM3FTPD: rcode=%d svr_id=%d\n", rcode, svr_id);
+		COND_SIGNAL(svr_ptr->svr_cond);
+		MTX_UNLOCK(svr_ptr->svr_mutex);
 		if(rcode < 0) {
 			ERROR_PRINT(rcode);
 			main_reply(rcode);
@@ -615,8 +620,6 @@ USRDEBUG("MM3FTPD: fname=%s\n", fname);
 			// reply with the server endpoint means OK and that for the next communications will use this endpoint
 			main_reply(svr_id+min_ep);
 		}
-		COND_SIGNAL(svr_ptr->svr_cond);
-		MTX_UNLOCK(svr_ptr->svr_mutex);
 		continue;
 		
 free_resources:

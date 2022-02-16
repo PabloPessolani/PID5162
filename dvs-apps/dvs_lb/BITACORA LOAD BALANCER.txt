@@ -4907,7 +4907,133 @@ LISTO:
 	LISTO	Cuando el uso de CPU tiene varios ciclos LVL_IDLE
 
 LISTO:		Hacer un shutdown del OS antes de STOPEAR la VM 
+
+==========================================================================================
+20220214:
+
+	LISTO:   Ver si hay problemas de COMPRESION+BATCH al anularlo en el Proxy
+		SIN PROBAR 
 	
+ATENCION:	Cuando llegan a un proxy receiver multiples comandos BATCH , estos podrian ir a 
+		diferentes endpoints destinos que pueden estar redirigidos a diferentes nodos 
+		por lo que hay que desbatchearlos y volverlos a batchear individualmente. 
+		POR LO TANTO, POR AHORA, CONVIENE TRABAJAR
+				COMPRESS	YES 
+				BATCH		NO 	
+		
+		
+root@client11:/usr/src/dvs/dvs-apps/m3ftp# ./m3ftp -g 0 61 20 file-100M.dat file1-100M.dat > gftp1.out &[1] 649
+root@client11:/usr/src/dvs/dvs-apps/m3ftp# ./m3ftp -g 0 62 20 file-100M.dat file2-100M.dat > gftp2.out &[2] 650
+root@client11:/usr/src/dvs/dvs-apps/m3ftp# ERROR: 650:dvk_sendrec_T:948: rcode=-109
+ERROR: 650:dvk_sendrec_T:957: rcode=-109
+ERROR: m3ftp.c:ftp_request:37: rcode=-109
+ERROR: m3ftp.c:main:257: rcode=-109
+
+EL PROBLEMA ES EL SIGUIENTE
+	Cuando se modifico el m3ftp para ser utilizado con el mm3ftpd, en el 1er mensaje que envia
+	le dice a que endpoint apuntar los siguientes mensajes
+	Esto no es visto por el PROXY por lo que falla 
+		CLIENT(61->20)======LB========SERVER(20)			FUNCIONA OK 
+		CLIENT(62->20)======LB========SERVER(21)			FALLA, PORQUE EL SERVER RETORNA 21 EN EL MENSAJE DE PRIMER REPLY
+	
+SI EN LUGAR DEL m3ftpd uso el mm3ftpd el problema es otro
+	El mm3ftpd utiliza para recibir solo el endpoint 20 quiere decir que:
+		CLIENT(61->20)======LB========SERVER(20)			FUNCIONA OK 
+		CLIENT(62->20)======LB========SERVER(21)			FALLA PORQUE AQUI NO ESTA ESCUCHANDO EL MM3FTPD !!
+
+EN CLIENT 	
+	./m3ftp -g 0 61 20 file-1M.dat file1-1M.dat 		FUNCIONA OK
+	./m3ftp -g 0 61 20 file-10M.dat file1-10M.dat		FUNCIONA OK
+	./m3ftp -g 0 61 21 file-10M.dat file1-10M.dat		FALLA
+	
+==========================================================================================
+20220215:
+
+EN CLIENT 	
+
+root@client11:/usr/src/dvs/dvs-apps/m3ftp# ./m3ftp -g 0 61 21 file-1M.dat file1-1M.
+
+EL LB 
+ 662:lb_cltpxy.c:clt_Rproxy_rcvhdr:721:CLIENT_RPROXY (client11): n:120 | received:120 | HEADER_SIZE:120
+ 662:lb_cltpxy.c:clt_Rproxy_rcvhdr:724:CLIENT_RPROXY (client11): cmd=0x3 dcid=0 src=61 dst=21 snode=11 dnode=0 rcode=0 len=0 PID=655
+ 662:lb_cltpxy.c:clt_Rproxy_rcvhdr:726:CLIENT_RPROXY (client11): c_batch_nr=0 c_flags=0x0 c_snd_seq=27 c_ack_seq=22
+ 662:lb_cltpxy.c:clt_Rproxy_getcmd:642:CLIENT_RPROXY(client11): header bytes=120
+ 662:lb_cltpxy.c:clt_Rproxy_getcmd:650:CLIENT_RPROXY(client11): cmd=0x3 dcid=0 src=61 dst=21 snode=11 dnode=0 rcode=0 len=0 PID=655
+ 662:lb_cltpxy.c:clt_Rproxy_getcmd:652:CLIENT_RPROXY(client11): c_batch_nr=0 c_flags=0x0 c_snd_seq=27 c_ack_seq=22
+ 662:lb_cltpxy.c:clt_Rproxy_getcmd:654:CLIENT_RPROXY(client11): c_timestamp=1644943385.932002416
+ 662:lb_cltpxy.c:clt_Rproxy_getcmd:656:CLIENT_RPROXY(client11): c_flags=0x0 c_pid=655
+ 662:lb_cltpxy.c:clt_Rproxy_loop:153:CLIENT_RPROXY(client11):Message succesfully processed.
+ 662:lb_cltpxy.c:clt_Rproxy_loop:160:CLIENT_RPROXY(client11): svc_name=latency svc_dcid=0 svc_extep=10 svc_minep=10 svc_maxep=19 svc_bind=5 svc_prog=none
+ 662:lb_cltpxy.c:clt_Rproxy_loop:169:CLIENT_RPROXY(client11): extep=10 minep=10  maxep=19 c_dst=21
+ 662:lb_cltpxy.c:clt_Rproxy_loop:160:CLIENT_RPROXY(client11): svc_name=m3ftp0 svc_dcid=0 svc_extep=20 svc_minep=20 svc_maxep=20 svc_bind=5 svc_prog=none
+ 662:lb_cltpxy.c:clt_Rproxy_loop:169:CLIENT_RPROXY(client11): extep=20 minep=20  maxep=20 c_dst=21
+ 662:lb_cltpxy.c:clt_Rproxy_loop:160:CLIENT_RPROXY(client11): svc_name=m3ftp1 svc_dcid=0 svc_extep=21 svc_minep=21 svc_maxep=21 svc_bind=5 svc_prog=none
+ 662:lb_cltpxy.c:clt_Rproxy_loop:169:CLIENT_RPROXY(client11): extep=21 minep=21  maxep=21 c_dst=21
+ 662:lb_cltpxy.c:clt_Rproxy_2server:268:CLIENT_RPROXY(client11): 
+ 662:lb_cltpxy.c:clt_Rproxy_2server:270:MTX_LOCK sess_table[dcid].st_mutex 
+ 662:lb_cltpxy.c:clt_Rproxy_2server:278:CLIENT_RPROXY(client11) se_clt_ep=60 c_src=61
+ 662:lb_cltpxy.c:clt_Rproxy_2server:397:MTX_UNLOCK sess_table[dcid].st_mutex 
+ 662:lb_cltpxy.c:clt_Rproxy_2server:412:MTX_LOCK sess_table[dcid].st_mutex 
+ 662:lb_cltpxy.c:select_server:488:MTX_LOCK lb_ptr->lb_mtx 
+ 662:lb_cltpxy.c:select_server:495:MTX_LOCK svr_ptr->svr_mutex 
+ 662:lb_cltpxy.c:select_server:519:CLIENT_RPROXY(client11): svr_bm_svc=1 bit=0
+ 662:lb_cltpxy.c:select_server:596:MTX_UNLOCK svr_ptr->svr_mutex 
+ 662:lb_cltpxy.c:select_server:600:CLIENT_RPROXY(client11): i=32 d_nr_nodes=32 new_ep=22 <<<<<<<<<<<<
+ 662:lb_cltpxy.c:select_server:607:CLIENT_RPROXY(client11): lb_nr_init=2 lb_nr_svrpxy=1
+ERROR: lb_cltpxy.c:select_server:615: rcode=-28
+ 662:lb_cltpxy.c:select_server:617:MTX_UNLOCK lb_ptr->lb_mtx 
+ 662:lb_cltpxy.c:clt_Rproxy_error:231:CLIENT_RPROXY(client11): Replying -11
+ 662:lb_cltpxy.c:clt_Rproxy_2server:428:MTX_UNLOCK sess_table[dcid].st_mutex 
+ERROR: lb_cltpxy.c:clt_Rproxy_loop:199: rcode=-11
+
+EL PROBLEMA ESTA AQUI:
+	Busca un endpoint libre pero si no tiene  
+			// ALLOCATE FREE SERVER ENDPOINT
+			for ( new_ep = svc_ptr->svc_minep; 
+				  new_ep <= svc_ptr->svc_maxep; new_ep++){
+				if( TEST_BIT(svr_ptr->svr_bm_svc, new_ep-svc_ptr->svc_minep) == 0) {
+					SET_BIT(svr_ptr->svr_bm_svc, new_ep-svc_ptr->svc_minep);
+		
+ 668:lb_cltpxy.c:select_server:513:CLIENT_RPROXY(client11): svr_bm_svc=1 bit=0
+				EFECTIVAMENT EL TEST_BIT(svr_ptr->svr_bm_svc, new_ep-svc_ptr->svc_minep) da FALSO 
+				Por lo que va a buscar otro endpoint!! 
+				EL PUNTO ES QUE ESE 
+
+
+LISTO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los servers 
+			que esos servicios estan habilitados 
+			Se hizo en el monitor al momento del JOIN del agente 
+			
+==========================================================================================
+20220215:
+			3 transferencias simultaneas 
+			cd /usr/src/dvs/dvs-apps/m3ftp
+			./m3ftp -g 0 60 10 file-100M.dat file0-100M.dat > gftp0.out &
+			./m3ftp -g 0 61 10 file-100M.dat file1-100M.dat > gftp1.out &
+			./m3ftp -g 0 62 10 file-100M.dat file2-100M.dat > gftp2.out &
+	
+			EN LB 
+			# service started by hand !!
+			service mm3ftpd10 {
+				dcid	0;
+				ext_ep	10;
+				min_ep	11;
+				max_ep	29;	
+				bind	external;
+				bind	replica;
+			};
+
+			EN SERVER 
+			nsenter -p -t$DC0 ./mm3ftpd 0 10 11 29 > mm3ftpd0.out 2> mm3ftpd0.err &
+
+			DURANTE LAS TRANSFERENCIAS EN SERVER 
+			root@node1:/usr/src/dvs/dvs-apps/m3ftp# cat /proc/dvs/DC0/stats
+			DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name
+			 0  10    10  1268/12     1        0        7        0        0 mm3ftpd  << MAIN        
+			 0  11    11  1286/17     1        0       20        0       20 mm3ftpd  << THREAD 1   
+			 0  12    12  1287/18     1        0       20        0       20 mm3ftpd  << THREAD 2      
+			 0  13    13  1288/19     1        0       19        0       19 mm3ftpd  << THREAD 3
+ 
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
@@ -4916,10 +5042,102 @@ ULTIMO_LOG
 ==========================================================================================
 ==========================================================================================
 
-TODO:	No esta funcionando bien con multiples m3ftp y m3ftpd 
-		LA PROBE SIN LB DIRECTA ENTRE NODE0 Y NODE1 Y FUNCIONA PERFECTAMENTE !!!!
+TODO:		PROBAR EL ARRANQUE AUTOMATICO DE SERVERS POR PARTE DEL LB 
+			# service started by hand !!
+			service m3ftpd10 {
+				dcid	0;
+				ext_ep	10;
+				min_ep	10;
+				max_ep  29;
+				bind	replica;
+				prog	"/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh";
+			};
+
+
+
+TODO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los servers 
+			que esos servicios estan habilitados 
+			Se hizo en el monitor al momento del JOIN del agente 
+			HACER LO MISMO CON LOS DE RANGO DE SERVICIOS 
+			
+#define SINGLE_ENDPOINT												
+#ifdef SINGLE_ENDPOINT						
+						dcid = cpx_ptr->lbp_header->c_dcid;
+						MTX_LOCK(sess_table[dcid].st_mutex);
+						svr_ptr = &server_tab[sess_ptr->se_svr_nodeid];
+						MTX_UNLOCK(sess_table[dcid].st_mutex);
+				
+						// Service NOT configured endpoint
+//						if( TEST_BIT(svr_ptr->svr_bm_svc, cpx_ptr->lbp_header->c_dst) == 0) continue;
+						if(svc_ptr->svc_extep == cpx_ptr->lbp_header->c_dst) break;
+						
+						// OUT of Service endpoint range ?	
+						if( (cpx_ptr->lbp_header->c_dst < svc_ptr->svc_minep)
+						||  (cpx_ptr->lbp_header->c_dst > svc_ptr->svc_maxep)) continue;
+						// Search a free endpoint inside Service endpont range 
+						for( ep = svc_ptr->svc_minep; ep <= svc_ptr->svc_maxep; ep++){
+							USRDEBUG("CLIENT_RPROXY(%s): ep=%d\n", clt_ptr->clt_name, ep);	
+							if(ep == cpx_ptr->lbp_header->c_dst) break;
+						}
+						if( ep > svc_ptr->svc_maxep) continue;
+						USRDEBUG("CLIENT_RPROXY(%s): service endpoint found ep=%d\n",clt_ptr->clt_name,ep);						
+						break;		
+#endif // SINGLE_ENDPOINT	
+			
+			
+TODO: PROBAR MMFTP3 
+		LOS CLIENTES SIEMPRE VAN AL MISMO ENDPOINT EXTEP
+		LUEGO Q RECIBEN LA RESPUESTA AL 1ER MENSAJE 
+		ENVIAN SUS MENSAJES AL ENDPOINT QUE SE LE INDICO
 		
-		
+TODO:	DESCRIBIR LOS DIFERENTES TIPOS DE TRANSFERENCIAS 
+
+		SERVER TYPE 
+			type	[P2P,MP-P-MP,MP-P-P2P]
+					P2P: Peer to peer 
+					MP-P-MP: 	Multipoint Point Multipoint 
+					MP-P-P2P: Multipoint Point - Peer to peer  
+
+	TIPO PEER2PEER
+		CLIENT0-------------------------->SERVER0							Configurar solo extep		
+		CLIENT1-------------------------->SERVER1							min_ep = extep 
+		CLIENT2-------------------------->SERVER2							max_ep = extep 
+	
+	TIPO UNO PARA TODOS FIJO (UN ENDPOINT PARA TODOS LOS CLIENTES)
+		LOS CLIENTES SIEMPRE VAN AL MISMO ENDPOINT EXTEP
+		PERO EL PROXY LE ASIGNA UN ENDPOINT ENTRE MINEP Y MAXEP 
+		EL CLIENTE SIGUE ENVIANDO SUS MENSAJES A EXTEP 
+		CLIENT0----------SERVER0---------------->SERVER1					Configurar  min_ep <= ext_ep <= max_ep
+		CLIENT1----------SERVER0---------------->SERVER2
+		CLIENT2----------SERVER0---------------->SERVER0
+
+	TIPO PRIMERO PARA TODOS LUEGO PEER2PEER (MMFTP3) 
+		LOS CLIENTES EN SU PRIMER MENSAJE VAN AL MISMO ENDPOINT EXTEP
+		LUEGO Q RECIBEN LA RESPUESTA AL 1ER MENSAJE 
+		ENVIAN SUS MENSAJES AL ENDPOINT QUE SE LE INDICO					Configurar ext_ep fuera de rango de [min_ep, max_ep]
+	PRIMER MENSAJE 
+		CLIENT1----------SERVER0---------------->SERVER0
+		CLIENT2----------SERVER0
+		CLIENT3----------SERVER0
+
+	SIGUIENTES MENSAJE 
+		CLIENT1-------------------------->SERVER1
+		CLIENT2-------------------------->SERVER2
+		CLIENT3-------------------------->SERVER3
+
+TODO:  MODIFICAR PARA QUE REFERENCIE A dvs_ptr->d_nr_sysprocs y d_nr_tasks
+	if( hdr_ptr->c_src < (NR_SYS_PROCS-NR_TASKS)
+	||  hdr_ptr->c_dst < 0  
+	||  hdr_ptr->c_dst >= (NR_SYS_PROCS-NR_TASKS)) {
+	
+TODO:	Cuando se CAE un SERVER habria que verificar si estan levantada la cantidad minima de servers necesarios
+		lb_min_servers
+		ver algo parecido si la cantidad de servers es mayor a la maxima 
+
+TODO:	Cuando llegan a un proxy receiver multiples comandos BATCH , estos podrian ir a 
+		diferentes endpoints destinos que pueden estar redirigidos a diferentes nodos 
+		por lo que hay que desbatchearlos y volverlos a batchear individualmente. 
+				
 TODO:   Cuando se hace una transferencia multiple solo la primer transferencia se realiza
 	[1]-  Hecho                   ./m3ftp -g 0 60 20 file-100M.dat file0-100M.dat > gftp0.out
 	[2]+  Hecho                   ./m3ftp -g 0 61 21 file-100M.dat file1-100M.dat > gftp1.out

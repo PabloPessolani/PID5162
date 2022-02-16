@@ -309,6 +309,7 @@ int pr_process_message(proxy_t *px_ptr)
 
 	if( px_ptr->px_compress == YES) {
 		if( TEST_BIT(px_ptr->px_rdesc.td_header->c_flags, FLAG_LZ4_BIT)) {
+#ifdef NO_BATCH_COMPRESSION
 			if( px_ptr->px_batch == YES) { 
 				if(!TEST_BIT(px_ptr->px_rdesc.td_header->c_flags, FLAG_BATCH_BIT)) {
 					PXYDEBUG("RPROXY(%d): put2lcl raw_len=%d\n",px_ptr->px_proxyid, raw_len);
@@ -321,7 +322,11 @@ int pr_process_message(proxy_t *px_ptr)
 				PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
 				rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_decomp_pl);
 			}
+#else // NO_BATCH_COMPRESSION
+				PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
+				rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_decomp_pl);
 		} else{
+#endif // NO_BATCH_COMPRESSION
 			PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
 			rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_payload);
 		}
@@ -399,6 +404,7 @@ int pr_process_message(proxy_t *px_ptr)
 			PXYDEBUG("RPROXY(%d): retry put2lcl (autobind)\n",px_ptr->px_proxyid);
 			if( px_ptr->px_compress == YES) {
 				if( TEST_BIT(px_ptr->px_rdesc.td_header->c_flags, FLAG_LZ4_BIT)) {
+#ifdef NO_BATCH_COMPRESSION					
 					if( px_ptr->px_batch == YES) { 
 						if(!TEST_BIT(px_ptr->px_rdesc.td_header->c_flags, FLAG_BATCH_BIT)) {
 							PXYDEBUG("RPROXY(%d): put2lcl raw_len=%d\n",px_ptr->px_proxyid, raw_len);
@@ -411,10 +417,14 @@ int pr_process_message(proxy_t *px_ptr)
 						PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
 						rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_decomp_pl);
 					}
+#else // NO_BATCH_COMPRESSION					
+					PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
+					rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_decomp_pl);
 				} else{
 					PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
 					rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_payload);
 				}
+#endif // NO_BATCH_COMPRESSION					
 			}else {
 				PXYDEBUG("RPROXY(%d): put2lcl\n",px_ptr->px_proxyid);
 				rcode = dvk_put2lcl(px_ptr->px_rdesc.td_header, px_ptr->px_rdesc.td_payload);
@@ -832,9 +842,12 @@ int  ps_send_remote(proxy_t *px_ptr, proxy_hdr_t *hd_ptr, proxy_payload_t *pl_pt
 	PXYDEBUG("SPROXY(%d):" CMD_XFORMAT, px_ptr->px_proxyid, CMD_XFIELDS(hd_ptr));
 
 	if( px_ptr->px_compress == YES ) {
-		if( (hd_ptr->c_cmd == CMD_COPYIN_DATA) || 
-			(hd_ptr->c_cmd == CMD_COPYOUT_DATA) || 
-			TEST_BIT(hd_ptr->c_flags, FLAG_BATCH_BIT) ){
+		if( (hd_ptr->c_cmd == CMD_COPYIN_DATA) 
+		 || (hd_ptr->c_cmd == CMD_COPYOUT_DATA) 
+#ifdef NO_BATCH_COMPRESSION	
+		 || TEST_BIT(hd_ptr->c_flags, FLAG_BATCH_BIT)  // do not compress BATCHED commands 
+#endif // NO_BATCH_COMPRESSION	
+		 ){
 
 			PXYDEBUG("SPROXY(%d): c_len=%d\n", px_ptr->px_proxyid, hd_ptr->c_len);
 			assert( hd_ptr->c_len > 0);	

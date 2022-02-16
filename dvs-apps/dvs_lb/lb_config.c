@@ -1152,10 +1152,17 @@ void lb_config(char *f_conf)	/* config file name. */
         fprintf( stderr,"CONFIGURATION ERROR: at least one CLIENT must be defined in configuration file\n");
         exit(1);
     }
+	
 	if(lb.lb_nr_svrpxy == 0) {
         fprintf( stderr,"CONFIGURATION ERROR: at least one SERVER must be defined in configuration file\n");
         exit(1);
     }
+	
+	if(lb.lb_nr_svrpxy > dvs_ptr->d_nr_nodes) {
+        fprintf( stderr,"CONFIGURATION ERROR: the number of definde servers must <= %d\n", dvs_ptr->d_nr_nodes );
+        exit(1);
+    }
+
 	if(lb.lb_nr_services == 0) {
         fprintf( stderr,"CONFIGURATION ERROR: at least one SERVICE must be defined in configuration file\n");
         exit(1);
@@ -1180,21 +1187,27 @@ void lb_config(char *f_conf)	/* config file name. */
         exit(1);
     }
 
-	if(lb.lb_min_servers < 0 
-	|| lb.lb_min_servers > dvs_ptr->d_nr_nodes
+	if(lb.lb_min_servers <= 0 
 	|| lb.lb_min_servers > lb.lb_max_servers
+	|| lb.lb_min_servers > lb.lb_nr_svrpxy	
 	) {
-        fprintf( stderr,"CONFIGURATION ERROR: min_servers must be (0-%d) and lower or equal than max_servers\n", dvs_ptr->d_nr_nodes);
+        fprintf( stderr,"CONFIGURATION ERROR: min_servers must be (1-%d) and lower or equal than max_servers\n", lb.lb_nr_svrpxy);
+        exit(1);
+    }
+
+	if(lb.lb_max_servers <= 0 
+	|| lb.lb_max_servers > lb.lb_nr_svrpxy
+	) {
+        fprintf( stderr,"CONFIGURATION ERROR: max_servers=%d must be (1-%d) \n", lb.lb_max_servers, dvs.d_nr_nodes);
         exit(1);
     }
 
 	if(lb.lb_lowwater < 1 
-	|| lb.lb_lowwater > dvs_ptr->d_nr_nodes
+	|| lb.lb_lowwater > dvs.d_nr_nodes
 	) {
-        fprintf( stderr,"CONFIGURATION ERROR: max_servers must be (1-%d)\n", dvs_ptr->d_nr_nodes);
+        fprintf( stderr,"CONFIGURATION ERROR: max_servers must be (1-%d)\n", dvs.d_nr_nodes);
         exit(1);
     }
-
 
 	if(lb.lb_period < 1 
 	|| lb.lb_period > SECS_BY_HOUR
@@ -1242,7 +1255,7 @@ void lb_config(char *f_conf)	/* config file name. */
         fprintf( stderr,"CONFIGURATION ERROR: if VMs will be started/stopped automatically lb parameters vm_start/vm_stop/vm_status must be defined\n");
         exit(1);
     }
-	
+
 	// check SERVER same NODEID
 	lb.lb_nr_nodes = 0;
 	lb.lb_bm_nodes = 0;
@@ -1289,7 +1302,7 @@ void lb_config(char *f_conf)	/* config file name. */
 			}
 		}		
 	}
-	
+
 	// check CLIENT same NODEID
 	for( i = 0; i < dvs_ptr->d_nr_nodes-1; i++){
 		clt1_ptr = &client_tab[i];
@@ -1331,7 +1344,7 @@ void lb_config(char *f_conf)	/* config file name. */
 					svc1_ptr->svc_name);
 				exit(1);
 		}
-	
+#ifdef NO_MINMAX	
 		if( svc1_ptr->svc_minep == LB_INVALID){
 				fprintf( stderr,"CONFIGURATION ERROR:Service %s: min_ep must be defined\n",
 					svc1_ptr->svc_name);
@@ -1343,6 +1356,7 @@ void lb_config(char *f_conf)	/* config file name. */
 					svc1_ptr->svc_name);
 				exit(1);
 		}
+#endif // NO_MINMAX	
 
 		if( svc1_ptr->svc_bind == LB_INVALID){
 				svc1_ptr->svc_bind  = PROG_BIND;
@@ -1354,31 +1368,40 @@ void lb_config(char *f_conf)	/* config file name. */
 				svc1_ptr->svc_bind  = PROG_BIND;				
 		}
 		
-        USRDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc1_ptr));
-				
-		if( i == lb.lb_nr_services-1) break;
-		
-		for( j = i+1; j < lb.lb_nr_services; j++){
-			svc2_ptr = &service_tab[j];
-			assert(svc2_ptr != NULL);
-			if( !strcasecmp(svc1_ptr->svc_name,svc2_ptr->svc_name)){
-				fprintf( stderr,"CONFIGURATION ERROR:Service %s repeated\n",
-					svc1_ptr->svc_name);
-				exit(1);
+		if( i < lb.lb_nr_services) {
+			for( j = i+1; j < lb.lb_nr_services; j++){
+				svc2_ptr = &service_tab[j];
+				assert(svc2_ptr != NULL);
+				if( !strcasecmp(svc1_ptr->svc_name,svc2_ptr->svc_name)){
+					fprintf( stderr,"CONFIGURATION ERROR:Service %s repeated\n",
+						svc1_ptr->svc_name);
+					exit(1);
+				}
+				if( svc1_ptr->svc_extep == svc2_ptr->svc_extep ){
+					fprintf( stderr,"CONFIGURATION ERROR:Service %s same external endpoint as %s\n",
+						svc1_ptr->svc_name, svc2_ptr->svc_name);
+					exit(1);
+				}
 			}
-			if( svc1_ptr->svc_extep == svc2_ptr->svc_extep ){
-				fprintf( stderr,"CONFIGURATION ERROR:Service %s same external endpoint as %s\n",
-					svc1_ptr->svc_name, svc2_ptr->svc_name);
-				exit(1);
-			}
+			if( (svc1_ptr->svc_minep == HARDWARE &&  svc1_ptr->svc_maxep != HARDWARE)
+			||  (svc1_ptr->svc_minep != HARDWARE &&  svc1_ptr->svc_maxep == HARDWARE)){
+				fprintf( stderr,"CONFIGURATION ERROR:Service %s must have maxep and minep defined or none\n",
+						svc1_ptr->svc_name);
+					exit(1);			
+			} 
 		}
+		if(svc1_ptr->svc_minep == HARDWARE) 
+			svc1_ptr->svc_minep = svc1_ptr->svc_extep;
+		if(svc1_ptr->svc_maxep == HARDWARE) 
+			svc1_ptr->svc_maxep = svc1_ptr->svc_extep;
+        USRDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc1_ptr));
 	}
 
 //    USRDEBUG("lb.lb_cltname=%s\n",lb.lb_cltname);
 //    USRDEBUG("lb.lb_svrname=%s\n",lb.lb_svrname);
 //    USRDEBUG("lb.lb_cltdev=%s\n",lb.lb_cltdev);
 //    USRDEBUG("lb.lb_svrdev=%s\n",lb.lb_svrdev);
-	
+
 	lb_ptr = &lb;
     USRDEBUG(LB1_FORMAT, LB1_FIELDS(lb_ptr));
     USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
