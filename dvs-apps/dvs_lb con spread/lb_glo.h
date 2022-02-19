@@ -38,7 +38,5 @@ EXTERN pthread_t 	lbm_thread;	// Load Balancer Monitor thread
 EXTERN clockid_t clk_id;
 
 EXTERN lb_t  lb;
-EXTERN lb_t *lb_ptr;
-
 extern char nonprog[];
 

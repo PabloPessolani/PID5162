@@ -76,8 +76,8 @@ typedef struct cmd_s cmd_t;
 #define CMD_FIELDS(p) 	p->c_cmd, p->c_dcid, p->c_src, p->c_dst, p->c_snode \
 	, p->c_dnode, p->c_rcode, p->c_len, p->c_pid 
 
-#define CMD_XFORMAT "c_batch_nr=%d c_flags=0x%lX c_snd_seq=%ld c_ack_seq=%ld\n" 
-#define CMD_XFIELDS(p) 	p->c_batch_nr, p->c_flags, p->c_snd_seq, p->c_ack_seq
+#define CMD_XFORMAT "c_batch_nr=%d c_flags=0x%lX c_snd_seq=%ld c_ack_seq=%ld c_timestamp.tv_sec=%ld\n" 
+#define CMD_XFIELDS(p) 	p->c_batch_nr, p->c_flags, p->c_snd_seq, p->c_ack_seq, p->c_timestamp.tv_sec 
 	
 #define VCOPY_FORMAT "src=%d dst=%d rqtr=%d saddr=%p daddr=%p bytes=%d \n"
 #define VCOPY_FIELDS(p) p->c_vcopy.v_src, p->c_vcopy.v_dst, p->c_vcopy.v_rqtr,\
@@ -89,6 +89,7 @@ typedef struct cmd_s cmd_t;
 
 #define HDR_FORMAT 		CMD_FORMAT
 #define HDR_FIELDS(p)	CMD_FIELDS(p)
+
 
 #endif // _COM_CMD_H
 

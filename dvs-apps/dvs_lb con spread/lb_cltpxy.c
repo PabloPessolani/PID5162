@@ -59,7 +59,7 @@ void clt_Rproxy_init(client_t *clt_ptr)
 	if (rcode != 0) ERROR_EXIT(rcode);
 	USRDEBUG("CLIENT_RPROXY(%s): Payload address=%p\n", clt_ptr->clt_name, cpx_ptr->lbp_payload);
 	
-    if( clt_Rproxy_setup(clt_ptr) != OK) ERROR_EXIT(-errno);
+    if( clt_Rproxy_setup(clt_ptr) != OK) ERROR_EXIT(errno);
 	return(OK);
 }
 
@@ -78,11 +78,11 @@ int clt_Rproxy_setup(client_t *clt_ptr)
 
     // Create server socket.
     if ( (cpx_ptr->lbp_lsd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-        ERROR_EXIT(-errno);
+        ERROR_EXIT(errno);
 
     if( (rcode = setsockopt(cpx_ptr->lbp_lsd, SOL_SOCKET, SO_REUSEADDR, 
 							&optval, sizeof(optval))) < 0)
-        	ERROR_EXIT(-errno);
+        	ERROR_EXIT(errno);
 
     // Bind (attach) this process to the server socket.
     cpx_ptr->lbp_rmtclt_addr.sin_family = AF_INET;
@@ -106,14 +106,14 @@ int clt_Rproxy_setup(client_t *clt_ptr)
     cpx_ptr->lbp_rmtclt_addr.sin_port = htons(cpx_ptr->lbp_port);
 	rcode = bind(cpx_ptr->lbp_lsd, (struct sockaddr *) &cpx_ptr->lbp_rmtclt_addr, 
 					sizeof(cpx_ptr->lbp_rmtclt_addr));
-    if(rcode < 0) ERROR_EXIT(-errno);
+    if(rcode < 0) ERROR_EXIT(errno);
 
 	USRDEBUG("CLIENT_RPROXY(%s): is bound to port=%d socket=%d\n", 
 		clt_ptr->clt_name, cpx_ptr->lbp_port, cpx_ptr->lbp_lsd);
 		
 // Turn 'rproxy_sd' to a listening socket. Listen queue size is 1.
 	rcode = listen(cpx_ptr->lbp_lsd, 0);
-    if(rcode < 0) ERROR_EXIT(-errno);
+    if(rcode < 0) ERROR_EXIT(errno);
 
     return(OK);
    
@@ -139,7 +139,7 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 			USRDEBUG("CLIENT_RPROXY(%s): Waiting for connection.\n",
 				clt_ptr->clt_name);
     		cpx_ptr->lbp_csd = accept(cpx_ptr->lbp_lsd, (struct sockaddr *) &sa, &sender_addrlen);
-    		if(cpx_ptr->lbp_csd < 0) ERROR_PRINT(-errno);
+    		if(cpx_ptr->lbp_csd < 0) ERROR_PRINT(errno);
 		}while(cpx_ptr->lbp_csd < 0);
 
     	/* Serve Forever */
@@ -263,12 +263,12 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 
 	hdr_ptr = cpx_ptr->lbp_header;
 	dcid	= hdr_ptr->c_dcid;
-	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs){
+	if( dcid < 0 || dcid >= NR_DCS){
 		ERROR_PRINT(EDVSBADDCID);
 		return(NULL);
 	}
 	
-	max_sessions =(dvs_ptr->d_nr_procs-dvs_ptr->d_nr_sysprocs);
+	max_sessions =(NR_PROCS-NR_SYS_PROCS);
 	
 	USRDEBUG("CLIENT_RPROXY(%s): \n", clt_ptr->clt_name);
 	sess_ptr = (sess_entry_t *)sess_table[dcid].st_tab_ptr;
@@ -327,26 +327,14 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 						);
 						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
 								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
-#ifdef SPREAD_MONITOR 							
 						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
 											svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-#else // SPREAD_MONITOR 							
-					//	rcode = send_cmd(svr_ptr->svr_nodeid, 
-					//						svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-#endif // SPREAD_MONITOR 							
 						if( rcode < 0) ERROR_PRINT(rcode);	
 #endif // USE_SSHPASS								
-						// Send to AGENT to wait until server process is unbound	
-						
-#ifdef SPREAD_MONITOR 							
+						// Send to AGENT to wait until server process is unbound									
 						rcode = ucast_wait4bind(MT_CLT_WAIT_UNBIND, (char *) clt_ptr, 
 										svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
-#else // SPREAD_MONITOR 							
-					//	rcode = send_wait4bind(MT_CLT_WAIT_UNBIND, (char *) clt_ptr, 
-					//					svr_ptr->svr_nodeid, svr_ptr->svr_name,
-					//					sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
-#endif // SPREAD_MONITOR 							
 						if( rcode < 0) ERROR_PRINT(rcode);
 						
 						// Wait for AGENT Notification or timeout 
@@ -414,9 +402,9 @@ sess_entry_t *clt_Rproxy_2server(client_t *clt_ptr, service_t *svc_ptr)
 	MTX_UNLOCK(sess_table[dcid].st_mutex);
 
 	// check that src endpoint be a CLIENT ENDPOINT
-	if( hdr_ptr->c_src < (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)
+	if( hdr_ptr->c_src < (NR_SYS_PROCS-NR_TASKS)
 	||  hdr_ptr->c_dst < 0  
-	||  hdr_ptr->c_dst >= (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)) {
+	||  hdr_ptr->c_dst >= (NR_SYS_PROCS-NR_TASKS)) {
 		rcode = clt_Rproxy_error(clt_ptr, EDVSENDPOINT);
 		if( rcode < 0) ERROR_PRINT(EDVSENDPOINT);
 		return(NULL);
@@ -578,32 +566,17 @@ server_t *select_server(client_t *clt_ptr,
 									);
 						USRDEBUG("CLIENT_RPROXY(%s): se_rmtcmd=%s\n", 		
 								clt_ptr->clt_name, sess_ptr->se_rmtcmd);
-#ifdef SPREAD_MONITOR 													
 						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
-											svr_ptr->svr_name, sess_ptr->se_rmtcmd);	
-#else //SPREAD_MONITOR 							
-				//		rcode = send_cmd(svr_ptr->svr_nodeid, 
-				//							svr_ptr->svr_name, sess_ptr->se_rmtcmd);	
-#endif // SPREAD_MONITOR 							
-											
+											svr_ptr->svr_name, sess_ptr->se_rmtcmd);			
 						if( rcode < 0) {
 							CLR_BIT(svr_ptr->svr_bm_svc, new_ep);
 							ERROR_PRINT(rcode);
 						}
-#endif  //  USE_SSHPASS	
-
-#ifdef SPREAD_MONITOR 																							
+#endif  //  USE_SSHPASS													
 						// Send to AGENT to wait until server process is bound									
 						rcode = ucast_wait4bind(MT_CLT_WAIT_BIND, (char *) clt_ptr, 
 										svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, new_ep, LB_TIMEOUT_5SEC);
-#else //SPREAD_MONITOR 							
-						// Send to AGENT to wait until server process is bound									
-					//	rcode = ucast_wait4bind(MT_CLT_WAIT_BIND, (char *) clt_ptr, 
-					//					svr_ptr->svr_nodeid, svr_ptr->svr_name,
-					//					sess_ptr->se_dcid, new_ep, LB_TIMEOUT_5SEC);
-#endif // SPREAD_MONITOR 							
-
 						if( rcode < 0) ERROR_PRINT(rcode);
 						// Wait for AGENT Notification or timeout 
 						MTX_LOCK(clt_ptr->clt_agent_mtx);
@@ -916,17 +889,17 @@ void  clt_Sproxy_init(	client_t *clt_ptr)
 
     // Create server socket.
     if ( (cpx_ptr->lbp_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-       	ERROR_EXIT(-errno);
+       	ERROR_EXIT(errno);
     }
 	
 	// set SO_REUSEADDR on a socket to true (1):
 	optval = 1;
 	rcode = setsockopt(cpx_ptr->lbp_sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-	if (rcode < 0) ERROR_EXIT(-errno);
+	if (rcode < 0) ERROR_EXIT(errno);
 
 	// bind a socket to a device name (might not work on all systems):
 	rcode = setsockopt(cpx_ptr->lbp_sd, SOL_SOCKET, SO_BINDTODEVICE, lb.lb_cltdev, strlen(lb.lb_cltdev));
-	if (rcode < 0) ERROR_EXIT(-errno);
+	if (rcode < 0) ERROR_EXIT(errno);
 
 }
 
@@ -943,7 +916,6 @@ void  clt_Sproxy_loop(client_t *clt_ptr)
                     			"Sleeping for a while...\n",clt_ptr->clt_name);
 			sleep(LB_TIMEOUT_5SEC);
 			rcode = clt_Sproxy_connect(clt_ptr);
-			if(rcode != 0) ERROR_PRINT(rcode);
 		} while (rcode != 0);
 		
 		rcode = clt_Sproxy_serving(clt_ptr);
@@ -953,7 +925,7 @@ void  clt_Sproxy_loop(client_t *clt_ptr)
    /* code never reaches here */
 }
 
-int  clt_Sproxy_connect(client_t *clt_ptr)  
+void  clt_Sproxy_connect(client_t *clt_ptr)  
 {
     int rcode, i;
     char rmt_ipaddr[INET_ADDRSTRLEN+1];
@@ -1091,7 +1063,7 @@ void  clt_Sproxy_sndhdr(client_t *clt_ptr)
         if (n < 0) {
 			ERROR_PRINT(n);
 			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
 			}else{
@@ -1141,7 +1113,7 @@ void  clt_Sproxy_sndpay(client_t *clt_ptr)
 		USRDEBUG("CLIENT_SPROXY(%s): payload sent=%d \n",clt_ptr->clt_name, n);
         if (n < 0) {
 			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
 			}else{

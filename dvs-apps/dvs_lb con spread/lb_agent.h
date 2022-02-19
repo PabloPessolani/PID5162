@@ -3,7 +3,10 @@
 *Este archivo debe estar en LBAgent
 */
 #include <sys/syscall.h>
-
+//Representacion numerica de los Estados
+#define LVL_IDLE 0
+#define LVL_LOADED 1
+#define LVL_SATURATED 2
 //Estos son los valores techo que se van a pasar a los agentes
 
 typedef struct {
@@ -41,9 +44,9 @@ typedef struct {
 } lba_t;
 #define LBA1_FORMAT 	"lba_mbr_name=%s lba_monitor=%d lba_lowwater=%d lba_highwater=%d lba_period=%d\n"
 #define LBA1_FIELDS(p)  p->lba_mbr_name, p->lba_monitor, p->lba_lowwater, p->lba_highwater, p->lba_period
-#define LBA2_FORMAT 	"lba_mbr_name=%s lba_monitor=%d lba_nr_nodes=%d lba_nr_init=%d lba_bm_nodes=%0X lba_bm_init=%08X\n"
+#define LBA2_FORMAT 	"lba_mbr_name=%s lba_monitor=%d lba_nr_nodes=%d lba_nr_init=%d lba_bm_nodes=%0X lba_bm_init=%0X\n"
 #define LBA2_FIELDS(p)  p->lba_mbr_name, p->lba_monitor, p->lba_nr_nodes, p->lba_nr_init, p->lba_bm_nodes, p->lba_bm_init
-#define LBA3_FORMAT 	"lba_mbr_name=%s lba_monitor=%d lba_load_lvl=%d lba_cpu_usage=%d lba_bm_eps=%08X\n"
+#define LBA3_FORMAT 	"lba_mbr_name=%s lba_monitor=%d lba_load_lvl=%d lba_cpu_usage=%d lba_bm_eps=%0X\n"
 #define LBA3_FIELDS(p)  p->lba_mbr_name, p->lba_monitor, p->lba_load_lvl, p->lba_cpu_usage, p->lba_bm_eps
 
 

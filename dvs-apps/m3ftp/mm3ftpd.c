@@ -33,7 +33,7 @@ struct server_s{
 };
 typedef struct server_s server_t;
 
-server_t server_tab[NR_SYS_PROCS-NR_TASKS];
+server_t server_tab[dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks];
 
 double dwalltime()
 {
@@ -517,8 +517,8 @@ int  main ( int argc, char *argv[] )
 	}
 	
 	dcid = atoi(argv[1]);
-	if ( dcid < 0 || dcid >= NR_DCS) {
-		fprintf(stderr,  "Invalid dcid [0-%d]\n", NR_DCS-1 );
+	if ( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs) {
+		fprintf(stderr,  "Invalid dcid [0-%d]\n", dvs_ptr->d_nr_dcs-1 );
 		exit(EXIT_FAILURE);
 	}
 	

@@ -18,7 +18,7 @@
 #define MT_RUN_COMMAND 	 	6	// From LB to AGENT (unicast)
 #define MT_ACKNOWLEDGE 	 	0x1000	
 
-// FLAGS of svr_bm_sts 
+// FLAGS of svr_status 
 #define CLT_WAIT_START		0 // At least a Client Proxy is waiting to the server node starts
 #define CLT_WAIT_STOP		1 // At least a Client Proxy is waiting to the server node stops
 #define SVR_WAIT_STOP		2 // The Server Proxy is waiting to the server node stops
@@ -26,12 +26,5 @@
 #define SVR_STOPPING  		4 // The server is stopping 
 #define SVR_RUNNING			5 // The server is running
 #define SVR_STOPPED  		6 // The server is stopped
-
-// FLAGS of xxx_px_sts 
-#define PX_CONNECTED 		0 // At least a Client Proxy is waiting to the server node starts
-#define PX_SEND_CONNECTED 	1 // The remote proxy SENDER   is connected 
-#define PX_RECV_CONNECTED 	2 // The remote proxy RECEIVER is connected 
-
-
 
  		 		

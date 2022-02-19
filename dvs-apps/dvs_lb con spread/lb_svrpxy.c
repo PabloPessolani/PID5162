@@ -49,7 +49,7 @@ void svr_Rproxy_init(server_t *svr_ptr)
 	if (rcode != 0) ERROR_EXIT(rcode);
 	USRDEBUG("SERVER_RPROXY(%s): Payload address=%p\n", svr_ptr->svr_name, spx_ptr->lbp_payload);
 
-    if( svr_Rproxy_setup(svr_ptr) != OK) ERROR_EXIT(-errno);
+    if( svr_Rproxy_setup(svr_ptr) != OK) ERROR_EXIT(errno);
 
 	return(OK);
 }
@@ -69,10 +69,10 @@ int svr_Rproxy_setup(server_t *svr_ptr)
 
     // Create server socket.
     if ( (spx_ptr->lbp_lsd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-        ERROR_EXIT(-errno);
+        ERROR_EXIT(errno);
 
     if( (rcode = setsockopt(spx_ptr->lbp_lsd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) < 0)
-        	ERROR_EXIT(-errno);
+        	ERROR_EXIT(errno);
 
     // Bind (attach) this process to the server socket.
     spx_ptr->lbp_lclsvr_addr.sin_family = AF_INET;
@@ -96,14 +96,14 @@ int svr_Rproxy_setup(server_t *svr_ptr)
     spx_ptr->lbp_lclsvr_addr.sin_port = htons(spx_ptr->lbp_port);
 	rcode = bind(spx_ptr->lbp_lsd, (struct sockaddr *) &spx_ptr->lbp_lclsvr_addr, 
 					sizeof(spx_ptr->lbp_lclsvr_addr));
-    if(rcode < 0) ERROR_EXIT(-errno);
+    if(rcode < 0) ERROR_EXIT(errno);
 
 	USRDEBUG("SERVER_RPROXY(%s): is bound to port=%d socket=%d\n", 
 		svr_ptr->svr_name, spx_ptr->lbp_port, spx_ptr->lbp_lsd);
 		
 // Turn 'rproxy_sd' to a listening socket. Listen queue size is 1.
 	rcode = listen(spx_ptr->lbp_lsd, 0);
-    if(rcode < 0) ERROR_EXIT(-errno);
+    if(rcode < 0) ERROR_EXIT(errno);
 
     return(OK);
    
@@ -127,7 +127,7 @@ void svr_Rproxy_loop(server_t *svr_ptr)
 			USRDEBUG("SERVER_RPROXY(%s): Waiting for connection.\n",
 				svr_ptr->svr_name);
     		spx_ptr->lbp_csd = accept(spx_ptr->lbp_lsd, (struct sockaddr *) &sa, &sender_addrlen);
-    		if(spx_ptr->lbp_csd < 0) ERROR_PRINT(-errno);
+    		if(spx_ptr->lbp_csd < 0) ERROR_PRINT(errno);
 		}while(spx_ptr->lbp_csd < 0);
 
 		USRDEBUG("SERVER_RPROXY(%s): [%s]. Getting remote command.\n",
@@ -181,21 +181,21 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 
 	hdr_ptr = spx_ptr->lbp_header;
 	dcid	= hdr_ptr->c_dcid;
-	if( dcid < 0 || dcid >= dvs_ptr->d_nr_dcs){
+	if( dcid < 0 || dcid >= NR_DCS){
 		ERROR_PRINT(EDVSBADDCID);
 		return(NULL);
 	}
 	
-	max_sessions =(dvs_ptr->d_nr_procs-dvs_ptr->d_nr_sysprocs);
+	max_sessions =(NR_PROCS-NR_SYS_PROCS);
 	
 	USRDEBUG("SERVER_RPROXY(%s): \n", svr_ptr->svr_name);
 	sess_ptr = (sess_entry_t *)sess_table[dcid].st_tab_ptr;
 	
 	// check that src endpoint be a CLIENT ENDPOINT
 	// and dst endpoint be a SERVER  ENDPOINT
-	if(hdr_ptr->c_dst < (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)
+	if(hdr_ptr->c_dst < (NR_SYS_PROCS-NR_TASKS)
 	|| hdr_ptr->c_src < 0  
-	|| hdr_ptr->c_src >= (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)) {
+	|| hdr_ptr->c_src >= (NR_SYS_PROCS-NR_TASKS)) {
 		rcode = svr_Rproxy_error(svr_ptr, EDVSENDPOINT);
 		if( rcode < 0) ERROR_PRINT(rcode);
 		return(NULL);
@@ -294,27 +294,15 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 						);
 						USRDEBUG("SERVER_RPROXY(%s): se_rmtcmd=%s\n", 		
 								svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-#ifdef SPREAD_MONITOR 							
 						rcode = ucast_cmd(svr_ptr->svr_nodeid, 
-											svr_ptr->svr_name, sess_ptr->se_rmtcmd);	
-#else // SPREAD_MONITOR 
-					//	rcode = send_cmd(svr_ptr->svr_nodeid, 
-					//						svr_ptr->svr_name, sess_ptr->se_rmtcmd);
-#endif // SPREAD_MONITOR 
-											
+											svr_ptr->svr_name, sess_ptr->se_rmtcmd);								
 						if( rcode < 0) ERROR_PRINT(rcode);
 #endif// USE_SSHPASS								
 						
 						// Send to AGENT to wait until server process is unbound									
-#ifdef SPREAD_MONITOR 							
 						rcode = ucast_wait4bind(MT_SVR_WAIT_UNBIND, svr_ptr,
 										svr_ptr->svr_nodeid, svr_ptr->svr_name,
 										sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
-#else // SPREAD_MONITOR 
-					//	rcode = send_wait4bind(MT_SVR_WAIT_UNBIND, svr_ptr,
-					//					svr_ptr->svr_nodeid, svr_ptr->svr_name,
-					//					sess_ptr->se_dcid, sess_ptr->se_svr_ep, LB_TIMEOUT_5SEC);
-#endif // SPREAD_MONITOR 
 						if( rcode < 0) ERROR_PRINT(rcode);
 						
 						// Wait for AGENT Notification or timeout 
@@ -416,7 +404,6 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
     int rcode, pl_size, i, ret, raw_len;
 	lb_t	*lb_ptr;
 	lbpx_desc_t *spx_ptr, *svr_send_ptr;
-	message *m_ptr;
 	
 	spx_ptr = &svr_ptr->svr_rpx;
 	lb_ptr =&lb;
@@ -443,19 +430,16 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 			// Save the timestamp 
 			svr_ptr->svr_idle_ts = spx_ptr->lbp_header->c_timestamp;				
 		} else {
-			USRDEBUG("SERVER_RPROXY(%s): NONE\n", svr_ptr->svr_name);
-			m_ptr = &spx_ptr->lbp_header->c_msg;
-			USRDEBUG("SERVER_RPROXY(%s):" MSG1_FORMAT, 
-					svr_ptr->svr_name, MSG1_FIELDS(m_ptr))
+			USRDEBUG("SERVER_RPROXY(%s): NONE\n", svr_ptr->svr_name); 
 			// reverse the node fields 
 			//	spx_ptr->lbp_header->c_dnode = spx_ptr->lbp_header->c_snode;
 			//	spx_ptr->lbp_header->c_snode = lb.lb_nodeid;
-		//	USRDEBUG("SERVER_RPROXY(%s): Replying NONE\n",svr_ptr->svr_name);
-		//	spx_ptr->lbp_mqbuf->mb_type = LBP_SVR2SVR;
-		//	svr_send_ptr = &svr_ptr->svr_spx; 						
-		//	rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
-		//					sizeof(proxy_hdr_t), 0); 
-		//	if( rcode < 0) ERROR_PRINT(-errno);
+			USRDEBUG("SERVER_RPROXY(%s): Replying NONE\n",svr_ptr->svr_name);
+			spx_ptr->lbp_mqbuf->mb_type = LBP_SVR2SVR;
+			svr_send_ptr = &svr_ptr->svr_spx; 						
+			rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
+							sizeof(proxy_hdr_t), 0); 
+			if( rcode < 0) ERROR_PRINT(-errno);
 			continue;
 		}
 		
@@ -667,17 +651,17 @@ void  svr_Sproxy_init(	server_t *svr_ptr)
 
     // Create server socket.
     if ( (spx_ptr->lbp_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-       	ERROR_EXIT(-errno);
+       	ERROR_EXIT(errno);
     }
 
 	// set SO_REUSEADDR on a socket to true (1):
 	optval = 1;
 	rcode = setsockopt(spx_ptr->lbp_sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-	if (rcode < 0) ERROR_EXIT(-errno);
+	if (rcode < 0) ERROR_EXIT(errno);
 
 	// bind a socket to a device name (might not work on all systems):
 	rcode = setsockopt(spx_ptr->lbp_sd, SOL_SOCKET, SO_BINDTODEVICE, lb.lb_svrdev, strlen(lb.lb_svrdev));
-	if (rcode < 0) ERROR_EXIT(-errno);	
+	if (rcode < 0) ERROR_EXIT(errno);	
 }
 
 void  svr_Sproxy_loop(server_t *svr_ptr)  
@@ -685,7 +669,7 @@ void  svr_Sproxy_loop(server_t *svr_ptr)
     int rcode = 0;
 	lbpx_desc_t *spx_ptr; 
 	spx_ptr = &svr_ptr->svr_spx;
-	
+
 	while(1) {
 		do {
 			if (rcode < 0)
@@ -693,7 +677,6 @@ void  svr_Sproxy_loop(server_t *svr_ptr)
                     			"Sleeping for a while...\n",svr_ptr->svr_name);
 			sleep(LB_TIMEOUT_5SEC);
 			rcode = svr_Sproxy_connect(svr_ptr);
-			if(rcode != 0) ERROR_PRINT(rcode);
 		} while (rcode != 0);
 		
 		rcode = svr_Sproxy_serving(svr_ptr);
@@ -703,7 +686,7 @@ void  svr_Sproxy_loop(server_t *svr_ptr)
    /* code never reaches here */
 }
 
-int  svr_Sproxy_connect(server_t *svr_ptr)  
+void  svr_Sproxy_connect(server_t *svr_ptr)  
 {
     int rcode, i;
     char rmt_ipaddr[INET_ADDRSTRLEN+1];
@@ -747,27 +730,13 @@ int  svr_Sproxy_connect(server_t *svr_ptr)
     return(OK);
 }
 
-int  svr_Sproxy_serving(server_t *svr_ptr) 
+void  svr_Sproxy_serving(server_t *svr_ptr) 
 {
     int rcode = 0;
-	int retry; 
-
 	lbpx_desc_t *spx_ptr; 
 
-	for( retry = 0; retry < MAX_RETRIES; retry++){
-		rcode = send_load_threadholds(svr_ptr);
-		if(rcode >= 0) break; 	
-		ERROR_PRINT(rcode);
-		sleep(LB_TIMEOUT_5SEC); 
-	}
-	if(rcode < 0) ERROR_RETURN(rcode);
-	
-	//// ONLY FOR TEST 
-	rcode = send_rmtbind(svr_ptr, 0, 1, 0, "FS");
-	if(rcode < 0) ERROR_RETURN(rcode);
-
 	spx_ptr = &svr_ptr->svr_spx;
-	
+
     while(1) {
 		USRDEBUG("SERVER_SPROXY(%s): Reading message queue..\n", svr_ptr->svr_name);
 		
@@ -855,7 +824,7 @@ void  svr_Sproxy_sndhdr(server_t *svr_ptr)
         if (n < 0) {
 			ERROR_PRINT(n);
 			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
 			}else{
@@ -900,7 +869,7 @@ int  svr_Sproxy_sndpay(server_t *svr_ptr)
 		USRDEBUG("SERVER_SPROXY(%s): payload sent=%d \n",svr_ptr->svr_name, n);
         if (n < 0) {
 			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
 			}else{

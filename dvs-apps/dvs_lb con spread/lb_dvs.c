@@ -47,6 +47,7 @@ int main (int argc, char *argv[] )
 	service_t *svc_ptr;
 	lbpx_desc_t *spx_ptr;
 	lbpx_desc_t *cpx_ptr;
+	lb_t *lb_ptr;
 	time_t  diff;
 	struct timespec ts;
     const mode_t START_UMASK = S_IWOTH; /* Initial umask setting */
@@ -71,14 +72,12 @@ int main (int argc, char *argv[] )
     USRDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
 	
 	clk_id = CLOCK_REALTIME;
-#ifdef SPREAD_MONITOR 
     init_spread( );
-#endif // SPREAD_MONITOR 
-
+	
     // one session table for each DC 
     USRDEBUG("Building Session Tables\n");
-	nr_sess_entries = dvs_ptr->d_nr_procs - dvs_ptr->d_nr_sysprocs;
-	for (int i = 0;i < dvs_ptr->d_nr_dcs; i++){ 
+	nr_sess_entries = NR_PROCS - NR_SYS_PROCS;
+	for (int i = 0;i < NR_DCS; i++){ 
         sess_table[i].st_tab_ptr = (void*) 
 			malloc(	sizeof(sess_entry_t) * nr_sess_entries ); 
         if( sess_table[i].st_tab_ptr == NULL) ERROR_EXIT(EDVSNOMEM);
@@ -91,7 +90,7 @@ int main (int argc, char *argv[] )
 			sess_ptr->se_dcid = i;
 			init_session(sess_ptr);
 			sess_ptr->se_rmtcmd    = malloc(sizeof(MAXCMDLEN));
-			if(sess_ptr->se_rmtcmd == NULL) ERROR_EXIT(-errno);
+			if(sess_ptr->se_rmtcmd == NULL) ERROR_EXIT(errno);
 			sess_ptr++;
 		}
     }
@@ -117,11 +116,6 @@ int main (int argc, char *argv[] )
 	
     lb_config(argv[1]);  //Reads Config File
 
-	lb_ptr->lb_pid = getpid();
-	// Allocate memory for the Proxy Sender message queue buffer
-	lb_ptr->lb_mqbuf = malloc(sizeof(msgq_buf_t));
-	if(lb_ptr->lb_mqbuf == NULL) ERROR_EXIT(-errno);
-		
 	pthread_mutex_init(&lb_ptr->lb_mtx, NULL);
 
 	if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
@@ -137,8 +131,9 @@ int main (int argc, char *argv[] )
 		svr_ptr = &server_tab[i];
 		if( svr_ptr->svr_nodeid == (-1)) continue;
 		
-
-
+		// Initialize Server Service Endpoints in use bitmap 
+		svr_ptr->svr_bm_svc = 0;
+		svr_ptr->svr_idle_ts.tv_sec = 0;
 		
 		pthread_mutex_init(&svr_ptr->svr_mutex, NULL);
 		
@@ -161,7 +156,7 @@ int main (int argc, char *argv[] )
 		spx_ptr->lbp_mqid   = msgget(spx_ptr->lbp_mqkey, IPC_CREAT | 0x660);
 		if ( spx_ptr->lbp_mqid < 0) {
 			if ( errno != EEXIST) {
-				ERROR_EXIT(-errno);
+				ERROR_EXIT(errno);
 			}
 			printf( "The queue with key=%d already exists\n",spx_ptr->lbp_mqkey);
 			spx_ptr->lbp_mqid = msgget(spx_ptr->lbp_mqkey, 0);
@@ -169,14 +164,14 @@ int main (int argc, char *argv[] )
 		}
 		msgctl(spx_ptr->lbp_mqid , IPC_STAT, &spx_ptr->lbp_mqds);
         USRDEBUG("BEFORE " LBPX_MSGQ_FORMAT, LBPX_MSGQ_FIELDS(spx_ptr));
-		spx_ptr->lbp_mqds.msg_qbytes =  (sizeof(msgq_buf_t) * dvs_ptr->d_nr_nodes);
+		spx_ptr->lbp_mqds.msg_qbytes =  (sizeof(msgq_buf_t) * NR_NODES);
 		msgctl(spx_ptr->lbp_mqid, IPC_SET, &spx_ptr->lbp_mqds);
 		msgctl(spx_ptr->lbp_mqid, IPC_STAT, &spx_ptr->lbp_mqds);
         USRDEBUG("AFTER  " LBPX_MSGQ_FORMAT, LBPX_MSGQ_FIELDS(spx_ptr));
 
 		// Allocate memory for the Proxy Sender message queue buffer
 		spx_ptr->lbp_mqbuf = malloc(sizeof(msgq_buf_t));
-		if( spx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(-errno);
+		if( spx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(errno);
 		
 		// SERVER PROXY Sender Thread 
 		rcode = pthread_create( &svr_ptr->svr_spx.lbp_thread, NULL, svr_Sproxy, i);
@@ -206,7 +201,7 @@ int main (int argc, char *argv[] )
 		cpx_ptr->lbp_mqid   = msgget(cpx_ptr->lbp_mqkey, IPC_CREAT | 0x660);
 		if ( cpx_ptr->lbp_mqid  < 0) {
 			if ( errno != EEXIST) {
-				ERROR_EXIT(-errno);
+				ERROR_EXIT(errno);
 			}
 			printf( "The queue with key=%d already exists\n",cpx_ptr->lbp_mqkey);
 			cpx_ptr->lbp_mqid = msgget( cpx_ptr->lbp_mqkey, 0);
@@ -214,14 +209,14 @@ int main (int argc, char *argv[] )
 		}
 		msgctl(cpx_ptr->lbp_mqid , IPC_STAT, &cpx_ptr->lbp_mqds);
         USRDEBUG("BEFORE " LBPX_MSGQ_FORMAT, LBPX_MSGQ_FIELDS(cpx_ptr));
-		cpx_ptr->lbp_mqds.msg_qbytes =  (sizeof(msgq_buf_t) * dvs_ptr->d_nr_nodes);
+		cpx_ptr->lbp_mqds.msg_qbytes =  (sizeof(msgq_buf_t) * NR_NODES);
 		msgctl(cpx_ptr->lbp_mqid, IPC_SET, &cpx_ptr->lbp_mqds);
 		msgctl(cpx_ptr->lbp_mqid, IPC_STAT, &cpx_ptr->lbp_mqds);
         USRDEBUG("AFTER  " LBPX_MSGQ_FORMAT, LBPX_MSGQ_FIELDS(cpx_ptr));
 		
 		// Allocate memory for the Proxy Sender message queue buffer
 		cpx_ptr->lbp_mqbuf = malloc(sizeof(msgq_buf_t));
-		if( cpx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(-errno);
+		if( cpx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(errno);
 
 		// CLIENT PROXY Sender Thread 
 		rcode = pthread_create( &clt_ptr->clt_spx.lbp_thread, NULL, clt_Sproxy, (void * restrict) i);
@@ -232,28 +227,22 @@ int main (int argc, char *argv[] )
 		if( rcode) ERROR_EXIT(rcode);
 	}
 
-#ifdef SPREAD_MONITOR 
 	// Creates LB Monitor thread 
     rcode = pthread_create( &lb_ptr->lb_thread, NULL, lb_monitor, (void * restrict)lb_ptr->lb_nodeid);
     if( rcode) ERROR_EXIT(rcode);
-#endif // SPREAD_MONITOR 
 
 	// MAIN LOOP to control periodic contitions
 	sa.sa_handler 	= sig_usr1;
 	sa.sa_flags 	= SA_RESTART;
 	if(sigaction(SIGUSR1, &sa, NULL) < 0){
-		ERROR_EXIT(-errno);
+		ERROR_EXIT(errno);
 	}	
 	
-	//--------------------------------------------------------------------------------------------
-	//					MAIN LOOP 
-	//--------------------------------------------------------------------------------------------
 	lb_retry = 1;	
 	USRDEBUG("LB Control loop: start\n"); 
 	while( lb_retry == 1){
-		
-		sleep(lb_ptr->lb_hellotime);
-		
+		sleep(lb_ptr->lb_period);
+
 		MTX_LOCK(lb_ptr->lb_mtx);
 		// check if is time to start a new server VM
 		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
@@ -264,83 +253,64 @@ int main (int argc, char *argv[] )
 
 		if( (lb_ptr->lb_nr_init-1) <= 0){
 			MTX_UNLOCK(lb_ptr->lb_mtx);
-//			sleep(lb_ptr->lb_hellotime);
 			continue;
 		}
 		
 		clock_gettime(clk_id, &ts);
 		for( i = 0; i < dvs_ptr->d_nr_nodes ; i++){
-			USRDEBUG("lb_bm_init=%X\n", lb_ptr->lb_bm_init);
 			// check if are server nodes initialized 
-			if( (TEST_BIT(lb_ptr->lb_bm_init, i) == 0)		// Only compute initialized nodes   
-			||  ( i == lb_ptr->lb_nodeid)					// jump lb node itself 
-//			||  ((ts.tv_sec%lb_ptr->lb_period) != 0) 
-			){					//  Divide the period in seconds an nodes with  
-																		//  nodeid with 
-				sleep(1);
-				continue; 
-			} 
-			svr_ptr = &server_tab[i];
-			MTX_LOCK(svr_ptr->svr_mutex);
-
-#ifndef SPREAD_MONITOR 
-			// check if it is time to send a HELLO message to the server 
-			diff = ts.tv_sec - svr_ptr->svr_last_cmd.tv_sec;
-			if( (int) diff > lb_ptr->lb_hellotime){
-				svr_ptr->svr_last_cmd = ts;
-				rcode = send_load_threadholds(svr_ptr);
-				// update timestamp 
-			}
-#endif // SPREAD_MONITOR 
-			
-			
-			// it must be an automatic starting server (they have VM images)
-			if(svr_ptr->svr_image != NULL) {
-				//................................................................................................
-				// check if servers are idle 
-				//................................................................................................
-				USRDEBUG("Server %s: lb_nr_init=%d lb_min_servers=%d svr_level=%d\n",
-					svr_ptr->svr_name,lb_ptr->lb_nr_init, lb_ptr->lb_min_servers, svr_ptr->svr_level);
-				if( (lb_ptr->lb_nr_init-1) >= lb_ptr->lb_min_servers) {
-					if(svr_ptr->svr_level == LVL_IDLE){
-						diff = ts.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
-						USRDEBUG("Server %s: Server IDLE diff=%ld\n",svr_ptr->svr_name, diff);
-						if( (int) diff > lb_ptr->lb_stop){
-							USRDEBUG("Server %s: STOP THE VM!!!\n",svr_ptr->svr_name);
-							rcode = stop_idle_node(svr_ptr);
+			if(TEST_BIT(lb_ptr->lb_bm_init, i)){ 
+				svr_ptr = &server_tab[i];
+				MTX_LOCK(svr_ptr->svr_mutex);
+				
+				// it must be an automatic starting server (they have VM images)
+				if(svr_ptr->svr_image != NULL) {
+					//................................................................................................
+					// check if servers are idle 
+					//................................................................................................
+					USRDEBUG("Server %s: lb_nr_init=%d lb_min_servers=%d svr_level=%d\n",
+						svr_ptr->svr_name,lb_ptr->lb_nr_init, lb_ptr->lb_min_servers, svr_ptr->svr_level);
+					if( (lb_ptr->lb_nr_init-1) >= lb_ptr->lb_min_servers) {
+						if(svr_ptr->svr_level == LVL_IDLE){
+							diff = ts.tv_sec - svr_ptr->svr_idle_ts.tv_sec;
+							USRDEBUG("Server %s: Server IDLE diff=%ld\n",svr_ptr->svr_name, diff);
+							if( (int) diff > lb_ptr->lb_stop){
+								USRDEBUG("Server %s: STOP THE VM!!!\n",svr_ptr->svr_name);
+								rcode = stop_idle_node(svr_ptr);
+							}
+						} else {
+							svr_ptr->svr_idle_ts = ts;
 						}
-					} else {
-						svr_ptr->svr_idle_ts = ts;
 					}
-				}
-				//................................................................................................
-				// check if servers have finished the STARTING and STOPPING waiting period
-				//................................................................................................
-				USRDEBUG("Server %s: svr_bm_sts=%0X\n",
-					svr_ptr->svr_name,svr_ptr->svr_bm_sts);
-				if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING) ||
-					TEST_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING)	){
-					// At least ONE server is just starting 
-					diff = ts.tv_sec - svr_ptr->svr_ss_ts.tv_sec;
-					if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING)){
-						USRDEBUG("This server is just starting: nodeid=%d diff=%ld\n",i, diff);
-					}else{
-						USRDEBUG("This server is just stopping: nodeid=%d diff=%ld\n",i, diff);						
-					}
-					if( diff >= LB_VMSTART_TIME)	{
+					//................................................................................................
+					// check if servers have finished the STARTING and STOPPING waiting period
+					//................................................................................................
+					USRDEBUG("Server %s: svr_bm_sts=%0X\n",
+						svr_ptr->svr_name,svr_ptr->svr_bm_sts);
+					if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING) ||
+						TEST_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING)	){
+						// At least ONE server is just starting 
+						diff = ts.tv_sec - svr_ptr->svr_ss_ts.tv_sec;
 						if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING)){
-							rcode = check_node_status(svr_ptr);
-							if( rcode == SVR_RUNNING)
-								CLR_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
+							USRDEBUG("This server is just starting: nodeid=%d diff=%ld\n",i, diff);
 						}else{
-							rcode = check_node_status(svr_ptr);
-							if( rcode == SVR_STOPPED)
-								CLR_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING);
+							USRDEBUG("This server is just stopping: nodeid=%d diff=%ld\n",i, diff);						
+						}
+						if( diff >= LB_VMSTART_TIME)	{
+							if(	TEST_BIT(svr_ptr->svr_bm_sts, SVR_STARTING)){
+								rcode = check_node_status(svr_ptr);
+								if( rcode == SVR_RUNNING)
+									CLR_BIT(svr_ptr->svr_bm_sts, SVR_STARTING);
+							}else{
+								rcode = check_node_status(svr_ptr);
+								if( rcode == SVR_STOPPED)
+									CLR_BIT(svr_ptr->svr_bm_sts, SVR_STOPPING);
+							}
 						}
 					}
 				}
+				MTX_UNLOCK(svr_ptr->svr_mutex);					
 			}
-			MTX_UNLOCK(svr_ptr->svr_mutex);					
 		}
 		MTX_UNLOCK(lb_ptr->lb_mtx);
 	}
@@ -535,14 +505,8 @@ int stop_idle_node(server_t *svr_ptr)
 		svr_ptr->svr_name
 	);
 	USRDEBUG("rmt_cmd=%s\n", rmt_cmd);
-#ifdef SPREAD_MONITOR 
 	rcode = ucast_cmd(svr_ptr->svr_nodeid, 
-						svr_ptr->svr_name, rmt_cmd);
-#else // SPREAD_MONITOR 
-			//////////////  rcode =send_cmd(svr_ptr->svr_nodeid, 
-		//				svr_ptr->svr_name, rmt_cmd);
-#endif // SPREAD_MONITOR 
-						
+						svr_ptr->svr_name, rmt_cmd);								
 	if( rcode < 0) ERROR_PRINT(rcode);
 	
 	// SHUTDOWN THE VM
@@ -583,19 +547,11 @@ void init_server(server_t *svr_ptr)
 {
 	USRDEBUG("svr_index=%d\n", svr_ptr->svr_index);
 
-	// Initialize Server Service Endpoints in use bitmap 
-	svr_ptr->svr_bm_svc = 0;
-	svr_ptr->svr_idle_ts.tv_sec = 0;
-	clock_gettime(clk_id, &svr_ptr->svr_last_cmd);
-		
 	svr_ptr->svr_nodeid 	= LB_INVALID;
 	svr_ptr->svr_compress 	= LB_INVALID;
 	svr_ptr->svr_batch 		= LB_INVALID;
 	
-	svr_ptr->svr_idle_count = 0;
-	svr_ptr->svr_px_sts		= 0;
 	svr_ptr->svr_bm_sts		= 0;
-	svr_ptr->svr_bm_svc 	= 0;
 	svr_ptr->svr_image 		= NULL;
 
 	svr_ptr->svr_bm_params 	= 0;
@@ -608,11 +564,9 @@ void init_client(client_t *clt_ptr)
 {
 	USRDEBUG("clt_index=%d\n", clt_ptr->clt_index);
 
-	clock_gettime(clk_id, &clt_ptr->clt_last_cmd);
 	clt_ptr->clt_nodeid 	= LB_INVALID;
 	clt_ptr->clt_compress 	= LB_INVALID;
 	clt_ptr->clt_batch	 	= LB_INVALID;
-	clt_ptr->clt_px_sts		= 0;
 	clt_ptr->clt_bm_params	= 0;
 	
 }
@@ -644,7 +598,6 @@ void init_lb(void )
 	lb.lb_period   	= LB_PERIOD_DEFAULT;	
 	lb.lb_start   	= LB_START_DEFAULT;	
 	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
-	lb.lb_hellotime = LB_PERIOD_DEFAULT;	
 	
 	lb.lb_cltname   = NULL;		
 	lb.lb_svrname   = NULL;		
@@ -659,81 +612,3 @@ void init_lb(void )
 	
 	lb.lb_bm_params	= 0;	
 }
-
-#ifndef SPREAD_MONITOR 
-
-int send_rmtbind(server_t *svr_ptr, int dcid, int endpoint, int nodeid, char *pname)
-{
-	int rcode; 
-	message *m_ptr; 
-	proxy_hdr_t *hdr_ptr;
-
-	hdr_ptr = &lb_ptr->lb_mqbuf->mb_header;
-	m_ptr =  &hdr_ptr->c_msg;
-
-	m_ptr->m_type	=  MT_RMTBIND;
-	m_ptr->m_source	=  lb_ptr->lb_nodeid;
-	m_ptr->m3_i1	=  dcid;
-	m_ptr->m3_i2	=  endpoint; 
-	m_ptr->m3_p1	= (char *) nodeid;
-	strncpy(m_ptr->m3_ca1, pname, M3_STRING-1);
-	USRDEBUG("Server %s: " MSG3_FORMAT, svr_ptr->svr_name, MSG3_FIELDS(m_ptr));
-	rcode = send_hello_msg (svr_ptr); 	
-	if( rcode < 0 ) ERROR_RETURN(rcode);
-}
-
-int send_load_threadholds(server_t *svr_ptr)
-{
-	int rcode; 
-	message *m_ptr; 
-	proxy_hdr_t *hdr_ptr;
-
-	hdr_ptr = &lb_ptr->lb_mqbuf->mb_header;
-	m_ptr =  &hdr_ptr->c_msg;
-
-	m_ptr->m_type	=  MT_LOAD_THRESHOLDS;
-	m_ptr->m_source	=  lb_ptr->lb_nodeid;
-	m_ptr->m1_i1	=  lb_ptr->lb_lowwater;
-	m_ptr->m1_i2	=  lb_ptr->lb_highwater; 
-	m_ptr->m1_i3	=  lb_ptr->lb_period;
-	
-	USRDEBUG("Server %s: " MSG1_FORMAT, svr_ptr->svr_name, MSG1_FIELDS(m_ptr));
-	rcode = send_hello_msg (svr_ptr); 	
-	if( rcode < 0 ) ERROR_RETURN(rcode);
-}
-
-int send_hello_msg(server_t *svr_ptr)
-{
-	int rcode; 
-	lbpx_desc_t *spx_ptr; 
-	proxy_hdr_t *hdr_ptr;
-
-	spx_ptr = &svr_ptr->svr_spx;
-	hdr_ptr = &lb_ptr->lb_mqbuf->mb_header;
-	
-	USRDEBUG("Server %s: send a HELLO message to server\n",svr_ptr->svr_name);
-	lb_ptr->lb_mqbuf->mb_type = LBP_LB2SVR;
-
-	hdr_ptr->c_cmd 	= CMD_NONE;
-	hdr_ptr->c_dcid = LB_INVALID;
-	hdr_ptr->c_src 	= NONE;
-	hdr_ptr->c_dst 	= NONE;
-	hdr_ptr->c_snode= lb_ptr->lb_nodeid;
-	hdr_ptr->c_dnode= svr_ptr->svr_nodeid;
-	hdr_ptr->c_len	= 0;
-	hdr_ptr->c_pid	= lb_ptr->lb_pid;
-	hdr_ptr->c_batch_nr	= 0;
-	hdr_ptr->c_flags	= 0;
-	hdr_ptr->c_snd_seq	= 0;
-	hdr_ptr->c_ack_seq	= 0;
-	hdr_ptr->c_timestamp=svr_ptr->svr_last_cmd;
-	
-	USRDEBUG("Server %s: " CMD_FORMAT, svr_ptr->svr_name, CMD_FIELDS(hdr_ptr));
-	USRDEBUG("Server %s: " CMD_XFORMAT, svr_ptr->svr_name, CMD_XFIELDS(hdr_ptr));
-	
-	rcode = msgsnd(spx_ptr->lbp_mqid, (char*) lb_ptr->lb_mqbuf, sizeof(proxy_hdr_t), 0); 
-	if( rcode < 0 ) ERROR_RETURN(rcode);
-	return(rcode);
-}	
-#endif // SPREAD_MONITOR 
-

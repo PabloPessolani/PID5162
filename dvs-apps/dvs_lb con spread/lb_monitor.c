@@ -7,8 +7,6 @@
 #define _MULTI_THREADED
 #include "lb_dvs.h"
 
-#ifdef SPREAD_MONITOR 
-
 int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type);
 
 /*===========================================================================*
@@ -568,7 +566,7 @@ void  clear_session(int agent_id)
     USRDEBUG("agent_id=%d\n",agent_id);
 
 	// CLEAR all sessions with this agent_id as server node 
-	for (int i = 0;i < dvs_ptr->d_nr_dcs; i++){ 
+	for (int i = 0;i < NR_DCS; i++){ 
 		for( int j = 0; j < nr_sess_entries; j++){
 			sess_ptr = (sess_entry_t *)sess_table[i].st_tab_ptr;
 			if ( sess_ptr->se_clt_nodeid == LB_INVALID) continue;
@@ -609,7 +607,6 @@ void  clear_server(int nodeid)
 
 	MTX_LOCK(svr_ptr->svr_mutex);
 	svr_ptr->svr_idle_count = 0;
-	svr_ptr->svr_px_sts		= 0;
 	svr_ptr->svr_bm_sts		= 0;
 	svr_ptr->svr_bm_svc 	= 0;
 	MTX_UNLOCK(svr_ptr->svr_mutex);
@@ -800,9 +797,9 @@ void mcast_thresholds(void)
 	m_ptr->m1_i3	= lb_ptr->lb_period;
 
     USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
+				  
 	SP_multicast(lb_ptr->lb_mbox, FIFO_MESS, SPREAD_GROUP,
 					MT_LOAD_THRESHOLDS , sizeof(message), (char *) m_ptr);
-
 }
 
 /*===========================================================================*
@@ -852,7 +849,6 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
     }
 	MTX_UNLOCK(lb_ptr->lb_mtx);				
 }
-#endif // SPREAD_MONITOR 
 
 #ifdef ANULADO 
 /*===========================================================================*

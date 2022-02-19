@@ -21,7 +21,7 @@ lb LB_NAME {
 
 };
 
-#dcid puede ser un numero 0-(dvs_ptr->d_nr_dcs-1)
+#dcid puede ser un numero 0-(NR_DCS-1)
 #si no se menciona dcid, entonces es ANY
 #ext_ep es el endpoint presentado a los clientes.
 #min_ep y max_ep es el rango de endpoints en los que se pueden arrancar los services  
@@ -116,12 +116,11 @@ extern char *ctl_socket;
 #define TKN_LB_SSH_PASS  15
 #define TKN_LB_MINSERVERS 16
 #define TKN_LB_MAXSERVERS 17
-#define TKN_LB_HELLOTIME  18
-#define TKN_LB_MAX 		 19	// MUST be the last
+#define TKN_LB_MAX 		 18	// MUST be the last
 
 #define nil ((void*)0)
 
-char *loadb_name;
+char *lb_name;
 char *server_name;
 char *client_name;
 char *service_name;
@@ -173,7 +172,6 @@ char *cfg_lb_ident[] = {
     "ssh_pass",	
     "min_servers",
     "max_servers",
-	"hello_time"
 };
 
 char nonprog[] = "none";
@@ -255,10 +253,10 @@ int search_svc_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}		
 							svc_ptr->svc_dcid =atoi(cfg->word);							
-							if ((svc_ptr->svc_dcid < 0) || (svc_ptr->svc_dcid >= dvs_ptr->d_nr_dcs)) {
+							if ((svc_ptr->svc_dcid < 0) || (svc_ptr->svc_dcid >= NR_DCS)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "DCID:%d, must be > 0 and < dvs_ptr->d_nr_dcs(%d)\n", 
-									svc_ptr->svc_dcid,dvs_ptr->d_nr_dcs);
+								fprintf(stderr, "DCID:%d, must be > 0 and < NR_DCS(%d)\n", 
+									svc_ptr->svc_dcid,NR_DCS);
 								return(EXIT_CODE);
 							}
 							USRDEBUG("svr_dcid=%d\n", svc_ptr->svc_dcid);
@@ -402,10 +400,10 @@ int search_svr_ident(config_t *cfg)
 							svr_ptr->svr_lbRport = atoi(cfg->word);
 							USRDEBUG("svr_lbRport=%d\n", svr_ptr->svr_lbRport);
 
-							if ((svr_ptr->svr_lbRport < LBP_BASE_PORT) || (svr_ptr->svr_lbRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((svr_ptr->svr_lbRport < LBP_BASE_PORT) || (svr_ptr->svr_lbRport >= (LBP_BASE_PORT+NR_NODES))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "svr_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "svr_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+NR_NODES)(%d)\n", 
+										svr_ptr->svr_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_LBRPORT);
@@ -418,10 +416,10 @@ int search_svr_ident(config_t *cfg)
 							svr_ptr->svr_svrRport = atoi(cfg->word);
 							USRDEBUG("svr_svrRport=%d\n", svr_ptr->svr_svrRport);
 
-							if ((svr_ptr->svr_svrRport < LBP_BASE_PORT) || (svr_ptr->svr_svrRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((svr_ptr->svr_svrRport < LBP_BASE_PORT) || (svr_ptr->svr_svrRport >= (LBP_BASE_PORT+NR_NODES))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "svr_svrRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_svrRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "svr_svrRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+NR_NODES)(%d)\n", 
+										svr_ptr->svr_svrRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_SVRRPORT);
@@ -520,6 +518,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_nodeid = atoi(cfg->word);
+							lb.lb_name   = lb_name;
 							USRDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
 							if ((lb.lb_nodeid < 0) || (lb.lb_nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
@@ -732,21 +731,6 @@ int search_lb_ident(config_t *cfg)
 							}		
 							SET_BIT(lb.lb_bm_params, TKN_LB_MAXSERVERS);							
 							break;
-                        case TKN_LB_HELLOTIME:
-							if (!config_isatom(cfg)) {
-								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								return(EXIT_CODE);
-							}
-							lb.lb_hellotime = atoi(cfg->word);
-							USRDEBUG("lb_hellotime=%d\n", lb.lb_hellotime);
-							if ((lb.lb_hellotime < 1) || (lb.lb_hellotime > SECS_BY_HOUR)) {
-								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "hello_time:%d, must be (1-3600)\n", lb.lb_hellotime);
-								return(EXIT_CODE);
-							}
-							SET_BIT(lb.lb_bm_params, TKN_LB_HELLOTIME);							
-							break;
-							
 						default:
 							fprintf(stderr, "Programming Error\n");
 							exit(1);
@@ -820,10 +804,10 @@ int search_clt_ident(config_t *cfg)
 							clt_ptr->clt_lbRport = atoi(cfg->word);
 							USRDEBUG("clt_lbRport=%d\n", clt_ptr->clt_lbRport);
 
-							if ((clt_ptr->clt_lbRport < LBP_BASE_PORT) || (clt_ptr->clt_lbRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((clt_ptr->clt_lbRport < LBP_BASE_PORT) || (clt_ptr->clt_lbRport >= (LBP_BASE_PORT+NR_NODES))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "clt_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+NR_NODES)(%d)\n", 
+										clt_ptr->clt_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
 							break;
@@ -836,10 +820,10 @@ int search_clt_ident(config_t *cfg)
 							clt_ptr->clt_cltRport = atoi(cfg->word);
 							USRDEBUG("clt_cltRport=%d\n", clt_ptr->clt_cltRport);
 
-							if ((clt_ptr->clt_cltRport < LBP_BASE_PORT) || (clt_ptr->clt_cltRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((clt_ptr->clt_cltRport < LBP_BASE_PORT) || (clt_ptr->clt_cltRport >= (LBP_BASE_PORT+NR_NODES))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_cltRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_cltRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "clt_cltRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+NR_NODES)(%d)\n", 
+										clt_ptr->clt_cltRport,LBP_BASE_PORT,(LBP_BASE_PORT+NR_NODES));
 								return(EXIT_CODE);
 							}
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_CLTRPORT);
@@ -965,7 +949,7 @@ int search_main_token(config_t *cfg)
     client_t *clt_ptr;
 	service_t *svc_ptr;
 	
-	loadb_name = NULL;
+	lb_name = NULL;
 	server_name = NULL;
 	client_name = NULL;
 	nodeid = (-1);
@@ -988,7 +972,7 @@ int search_main_token(config_t *cfg)
 					}
 					rcode = read_svr_lines(cfg->list);
 					if(rcode) return(EXIT_CODE);
-					svr_ptr = &server_tab[nodeid];	
+					svr_ptr = &server_tab[nodeid];						
 			        USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
 			        USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
 					lb.lb_nr_svrpxy++;
@@ -1046,7 +1030,6 @@ int search_main_token(config_t *cfg)
 					rcode = read_clt_lines(cfg->list);
 					if(rcode) return(EXIT_CODE);
 					clt_ptr = &client_tab[nodeid];
-					clt_ptr->clt_name = client_name;
 			        USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
 					lb.lb_nr_cltpxy++;
 					for( i = 0; i < TKN_CLT_MAX; i++){
@@ -1063,14 +1046,13 @@ int search_main_token(config_t *cfg)
                 cfg = cfg->next;
                 USRDEBUG("lb: \n");
                 if (cfg != nil) {
-					loadb_name = cfg->word; 
-					USRDEBUG("%s\n", loadb_name);
+					lb_name = cfg->word; 
+					USRDEBUG("%s\n", lb_name);
 					cfg = cfg->next;
 					if (!config_issub(cfg)) {
 						fprintf(stderr, "Cell at \"%s\", line %u is not a sublist\n",cfg->word, cfg->line);
 						return(EXIT_CODE);
 					}
-					lb.lb_name = loadb_name;
 					rcode = read_lb_lines(cfg->list);
 					if(rcode) ERROR_RETURN(EXIT_CODE);
 					return(OK);
@@ -1234,18 +1216,6 @@ void lb_config(char *f_conf)	/* config file name. */
         exit(1);
     }
 
-	if(lb.lb_hellotime < 1 
-	|| lb.lb_hellotime > SECS_BY_HOUR
-	) {
-        fprintf( stderr,"CONFIGURATION ERROR: HELLO time must be (1-3600)\n");
-        exit(1);
-    }
-
-	if(lb.lb_hellotime > lb.lb_period) {
-        fprintf( stderr,"CONFIGURATION ERROR: HELLO time must be > then period=%d)\n",lb.lb_period);
-        exit(1);
-    }
-	
 	if(lb.lb_start < 1 
 	|| lb.lb_start > SECS_BY_HOUR
 	) {
@@ -1443,6 +1413,5 @@ void lb_config(char *f_conf)	/* config file name. */
 		USRDEBUG(LB5_FORMAT, LB5_FIELDS(lb_ptr));
 		USRDEBUG(LB6_FORMAT, LB6_FIELDS(lb_ptr));
 	}
-	USRDEBUG(LB7_FORMAT, LB7_FIELDS(lb_ptr));		
 }
 

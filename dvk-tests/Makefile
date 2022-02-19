@@ -4,7 +4,7 @@ BINS= 	test_dvs_init test_dc_init test_bind test_tbind test_unbind vm_read \
 		test_lclvcopy test_wait4bind test_add_node test_priv test_dvs_info\
 		test_wakeup test_proxy_bind test_node_up test_node_down test_lclvcopy3 \
 		uml_test test_priv_info test_set_priv test_umbind client_server \
-		latency_client latency_server
+		latency_client latency_server test_dc_info
 	
 INCLUDE = ..
 LIBS = ../dvk-lib//stub_dvkcall.o
@@ -30,6 +30,10 @@ test_set_priv: test_set_priv.c
 	
 test_dc_init: test_dc_init.c 
 	$(CC)  $(CFLAGS) -o test_dc_init test_dc_init.c  $(LIBS) -I$(INCLUDE)
+
+test_dc_info: test_dc_info.c 
+	$(CC)  $(CFLAGS) -o test_dc_info test_dc_info.c  $(LIBS) -I$(INCLUDE)
+
 	
 test_bind: test_bind.c 
 	$(CC)  $(CFLAGS) -o test_bind test_bind.c  $(LIBS) -I$(INCLUDE)

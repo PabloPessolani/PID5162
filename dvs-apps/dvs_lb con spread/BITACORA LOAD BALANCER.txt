@@ -710,7 +710,7 @@ server node1 {
 	nodeid 		1;
 };
 
-#dcid puede ser un numero 0-(dvs_ptr->d_nr_dcs-1)
+#dcid puede ser un numero 0-(NR_DCS-1)
 #si no se menciona dcid, entonces es ANY
 #ext_ep es el endpoint presentado a los clientes.
 #min_ep y max_ep es el rango de endpoints en los que se pueden arrancar los services  
@@ -882,7 +882,7 @@ CUANDO EL SERVER NUEVO RESPONDE ENCUENTRA LA SESION CREADA
  
 
  EN LZ4 TCP PROXY HABIA UN ERROR 
-  lz4tcp_proxy_bat.c:pr_process_message:391:RPROXY: src=50 <= dvs_ptr->d_nr_sysprocs
+  lz4tcp_proxy_bat.c:pr_process_message:391:RPROXY: src=50 <= NR_SYS_PROCS
 			
 ------------------------------------------------------------------------
 	PROBAR 2 SESIONES 
@@ -1082,7 +1082,7 @@ DEBUG 770:dvk_put2lcl:478:
 DEBUG 770:dvk_put2lcl:490: ioctl ret=-1 errno=310
 DEBUG 770:dvk_put2lcl:495: ioctl ret=-310
  lz4tcp_proxy_bat.c:pr_process_message:388:RPROXY: REMOTE CLIENT BINDING rcode=-310
- lz4tcp_proxy_bat.c:pr_process_message:391:RPROXY: src=11 <= dvs_ptr->d_nr_sysprocs
+ lz4tcp_proxy_bat.c:pr_process_message:391:RPROXY: src=11 <= NR_SYS_PROCS
  lz4tcp_proxy_bat.c:pr_start_serving:540:RPROXY: Message processing failure [-310]
  
  
@@ -4859,7 +4859,7 @@ LISTO 	Si hay un cliente que pide acceder a un server y esta en STARTING hace de
 
 ==========================================================================================
 20220207: 		
-		LISTO, SIN PROBAR:	Reemplazar dvs_ptr->d_nr_nodes por el valor del DVS dvs_ptr->d_nr_nodes.  		
+		LISTO, SIN PROBAR:	Reemplazar NR_NODES por el valor del DVS dvs_ptr->d_nr_nodes.  		
 
 TODO:	INCORPORAR parametro vm_status y cambiar el path continuo por solo el nombre del archivo
 		que estará en el directorio HOME del usuario.
@@ -5005,7 +5005,7 @@ LISTO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los ser
 			Se hizo en el monitor al momento del JOIN del agente 
 			
 ==========================================================================================
-20220216:
+20220215:
 			3 transferencias simultaneas 
 			cd /usr/src/dvs/dvs-apps/m3ftp
 			./m3ftp -g 0 60 10 file-100M.dat file0-100M.dat > gftp0.out &
@@ -5034,7 +5034,15 @@ LISTO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los ser
 			 0  12    12  1287/18     1        0       20        0       20 mm3ftpd  << THREAD 2      
 			 0  13    13  1288/19     1        0       19        0       19 mm3ftpd  << THREAD 3
  
- LISTO:		FUNCIONO EL ARRANQUE AUTOMATICO DE SERVERS POR PARTE DEL LB 
+==========================================================================================
+==========================================================================================
+==========================================================================================
+ULTIMO_LOG 
+
+==========================================================================================
+==========================================================================================
+
+TODO:		PROBAR EL ARRANQUE AUTOMATICO DE SERVERS POR PARTE DEL LB 
 			# service started by hand !!
 			service m3ftpd10 {
 				dcid	0;
@@ -5044,350 +5052,44 @@ LISTO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los ser
 				bind	replica;
 				prog	"/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh";
 			};
+
+
+
+TODO:		SI LOS svc son PROG_BIND entonces hay que marcar en el bitmap de los servers 
+			que esos servicios estan habilitados 
+			Se hizo en el monitor al momento del JOIN del agente 
+			HACER LO MISMO CON LOS DE RANGO DE SERVICIOS 
 			
-			EN CLIENTE
-			cd /usr/src/dvs/dvs-apps/m3ftp
-			./m3ftp -g 0 60 10 file-100M.dat file0-100M.dat > gftp0.out &
-			./m3ftp -g 0 61 10 file-100M.dat file1-100M.dat > gftp1.out &
-			./m3ftp -g 0 62 10 file-100M.dat file2-100M.dat > gftp2.out &
+#define SINGLE_ENDPOINT												
+#ifdef SINGLE_ENDPOINT						
+						dcid = cpx_ptr->lbp_header->c_dcid;
+						MTX_LOCK(sess_table[dcid].st_mutex);
+						svr_ptr = &server_tab[sess_ptr->se_svr_nodeid];
+						MTX_UNLOCK(sess_table[dcid].st_mutex);
+				
+						// Service NOT configured endpoint
+//						if( TEST_BIT(svr_ptr->svr_bm_svc, cpx_ptr->lbp_header->c_dst) == 0) continue;
+						if(svc_ptr->svc_extep == cpx_ptr->lbp_header->c_dst) break;
+						
+						// OUT of Service endpoint range ?	
+						if( (cpx_ptr->lbp_header->c_dst < svc_ptr->svc_minep)
+						||  (cpx_ptr->lbp_header->c_dst > svc_ptr->svc_maxep)) continue;
+						// Search a free endpoint inside Service endpont range 
+						for( ep = svc_ptr->svc_minep; ep <= svc_ptr->svc_maxep; ep++){
+							USRDEBUG("CLIENT_RPROXY(%s): ep=%d\n", clt_ptr->clt_name, ep);	
+							if(ep == cpx_ptr->lbp_header->c_dst) break;
+						}
+						if( ep > svc_ptr->svc_maxep) continue;
+						USRDEBUG("CLIENT_RPROXY(%s): service endpoint found ep=%d\n",clt_ptr->clt_name,ep);						
+						break;		
+#endif // SINGLE_ENDPOINT	
 			
-LISTO: PROBAR MMFTP3 
+			
+TODO: PROBAR MMFTP3 
 		LOS CLIENTES SIEMPRE VAN AL MISMO ENDPOINT EXTEP
 		LUEGO Q RECIBEN LA RESPUESTA AL 1ER MENSAJE 
 		ENVIAN SUS MENSAJES AL ENDPOINT QUE SE LE INDICO
 		
-==========================================================================================
-20220217:
-		
-LISTO:		 MODIFICAR PARA QUE REFERENCIE A NR_PROCS, NR_TASKS, NR_SYS_PROCS, NR_DCS
-	
-
-
-
-		
-	EN EL LB SE ENVIAN MT_LOAD_THRESHOLDS en el mensaje NONE 
-	688:lb_dvs.c:send_load_threadholds:653:Server node1: source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
-	 688:lb_dvs.c:send_hello_msg:667:Server node1: send a HELLO message to server
-	 688:lb_dvs.c:send_hello_msg:684:Server node1: cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=685
-	 688:lb_dvs.c:send_hello_msg:685:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1645127517
-	 688:lb_svrpxy.c:svr_Sproxy_serving:752:SERVER_SPROXY(node1): Reading message queue..
-	 688:lb_svrpxy.c:svr_Sproxy_mqrcv:905:SERVER_SPROXY(node1): reading from mqid=0
-	 688:lb_svrpxy.c:svr_Sproxy_mqrcv:909:SERVER_SPROXY(node1): 120 bytes received
-	 688:lb_svrpxy.c:svr_Sproxy_serving:759:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=685
-	 688:lb_svrpxy.c:svr_Sproxy_serving:761:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1645127517
-	 688:lb_svrpxy.c:svr_Sproxy_send:784:SERVER_SPROXY(node1): 
-	 688:lb_svrpxy.c:svr_Sproxy_sndhdr:825:SERVER_SPROXY(node1): send header=120 
-	 688:lb_svrpxy.c:svr_Sproxy_sndhdr:829:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=685
-	 688:lb_svrpxy.c:svr_Sproxy_sndhdr:831:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1645127517
-	 688:lb_svrpxy.c:svr_Sproxy_sndhdr:849:SERVER_SPROXY(node1): sent header=120 
- 
- 
-	EL MULTIPROXY LO RECIBE 
-	 multi_proxy.c:pr_start_serving:526:RPROXY(0): Remote sender [192.168.0.100] connected on sd [5]. Getting remote command.
-	 multi_proxy.c:pr_process_message:254:RPROXY(0): About to receive header
-	 multi_proxy.c:pr_receive_header:220:RPROXY(0): socket=5
-	 multi_proxy.c:pr_receive_header:226:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-	 multi_proxy.c:pr_receive_header:229:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=685
-	 multi_proxy.c:pr_receive_header:231:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:pr_process_message:268:RPROXY(0): 585 NONE
-	 multi_proxy.c:pr_process_message:270:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=685
-	 multi_proxy.c:pr_process_message:273:RPROXY(0): source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
-
-==========================================================================================
-20220218:
-		Como forzar el envio de HELLO por parte del multiproxy cuando el LB le pide algo?
-		
-		El sender del multiproxy esta en dvk_get2rmt() 
-		habria q probar enviandole una signal
-		y ver que reporta, y en funcion de eso deberia enviar un paquete prearmado
-		por el receiver proxy
-		
-		1- RPROXY: recibe un HELLO con un comando 
-		2- RPROXY: Ejecuta el comando y el resultado lo arma un comando de respuesta
-		3- RPROXY: Envia un signal al SPROXY 
-		4- SPROXY: En funcion de la salida del dvk_get2rmt, envia la respuesta como HELLO al LB 
-		5- SPROXY: Si es TIMEOUT entonces envia un HELLO con MT_LOAD_LEVEL
-	
-		SERVER 
-			RECIBE EL MENSAJE MT_LOAD_THRESHOLDS m1i1=30 m1i2=70 m1i3=30
-		multi_proxy.c:pr_process_message:263:RPROXY(0): About to receive header
-		 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
-		 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-		 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=648
-		 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-		 multi_proxy.c:pr_process_message:277:RPROXY(0): 576 NONE
-		 multi_proxy.c:pr_process_message:279:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=648
-		 multi_proxy.c:pr_process_message:282:RPROXY(0): source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
-		 multi_proxy.c:pr_process_message:284:RPROXY(0): MT_LOAD_THRESHOLDS
-			ENVIA EL MENSAJE  MT_LOAD_LEVEL m1i1=0 m1i2=0 m1i3=30
-		 multi_proxy.c:pr_process_message:285:MTX_LOCK mpa_ptr->mpa_mutex 
-		 multi_proxy.c:pr_process_message:290:MTX_UNLOCK mpa_ptr->mpa_mutex 
-		 multi_proxy.c:pr_process_message:291:MTX_LOCK px_ptr->px_sdesc.td_mtx 
-		 multi_proxy.c:build_load_level:1743:SPROXY(0):
-		 multi_proxy.c:build_load_level:1754:SPROXY(0): source=1 type=5 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
-		 multi_proxy.c:pr_process_message:294:MTX_UNLOCK px_ptr->px_sdesc.td_mtx 
-		 multi_proxy.c:pr_process_message:263:RPROXY(0): About to receive header
-		 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
- 
-SE CUELGA MULTIPROXY PORQUE AL HACER EL SIGNAL MUERE !!
-
-OTRA POSIBILIDAD
-SENDER 
-	UNLOCK 
-		DVK_GET2RMT
-	LOCK 
-	
-RECEIVER
-	LOCK 
-		SEND TCP 
-	UNLOCK 
-
-ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR 
-ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR 
-ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR 
-
-[   72.671868] multi_proxy[578]: segfault at 3c ip 0040b219 sp b6c76250 error 4 in multi_proxy[404000+30000]
-
- 
-  // SPROXY ENVIA UN HELLO NORMAL 
- multi_proxy.c:ps_start_serving:956:MTX_LOCK px_ptr->px_sdesc.td_mtx 
- multi_proxy.c:ps_start_serving:966:SPROXY(0): Sending HELLO 
- multi_proxy.c:build_load_level:1755:SPROXY(0):
- multi_proxy.c:build_load_level:1766:SPROXY(0): source=1 type=5 m1i1=1 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
- multi_proxy.c:send_hello_msg:1781:SPROXY(0): send a HELLO message
- multi_proxy.c:send_hello_msg:1797:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 len=0 PID=578
- multi_proxy.c:send_hello_msg:1798:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
- multi_proxy.c:ps_send_remote:881:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 len=0 PID=578
- multi_proxy.c:ps_send_remote:882:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
- multi_proxy.c:ps_send_header:757:SPROXY(0): send bytesleft=120 px_sproxy_sd=6
- multi_proxy.c:ps_send_header:760:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 len=0 PID=578
- multi_proxy.c:ps_send_header:761:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
- multi_proxy.c:ps_send_header:782:SPROXY(0): socket=6 sent header=120 
- multi_proxy.c:ps_start_serving:953:SPROXY(0): Waiting a message
- multi_proxy.c:ps_start_serving:954:MTX_UNLOCK px_ptr->px_sdesc.td_mtx
- 
- // ESTO LO HACE MAIN LOOP 
- multi_proxy.c:get_metrics:1640:mpa_lowwater=30 mpa_highwater=70 mpa_period=30
- multi_proxy.c:get_metrics:1643:Check initialization... 
- multi_proxy.c:get_metrics:1644:MTX_LOCK mpa_ptr->mpa_mutex 
- multi_proxy.c:get_metrics:1654:MTX_UNLOCK mpa_ptr->mpa_mutex 
- multi_proxy.c:get_CPU_usage:1685:
- multi_proxy.c:get_CPU_usage:1707:cpu  129 0 439 6083 19 0 3 0
- multi_proxy.c:get_CPU_usage:1725:didl=2987 Div=2993
- multi_proxy.c:get_CPU_usage:1733:cpu_usage=1 cpu_idle=99
- multi_proxy.c:get_metrics:1660:MTX_LOCK mpa_ptr->mpa_mutex 
- multi_proxy.c:get_metrics:1670:mpa_load_lvl=0 mpa_cpu_usage=1
- multi_proxy.c:get_metrics:1672:MTX_UNLOCK mpa_ptr->mpa_mutex 
- 
-  // SPROXY ENVIA UN HELLO NORMAL 
- multi_proxy.c:ps_start_serving:956:MTX_LOCK px_ptr->px_sdesc.td_mtx 
- multi_proxy.c:ps_start_serving:966:SPROXY(0): Sending HELLO 
-
-==========================================================================================
-20220219:
-
-	 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
-	 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-	 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:pr_process_message:282:RPROXY(0): 526 NONE
-	 multi_proxy.c:pr_process_message:284:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_process_message:286:RPROXY(0): m_type=4
-	 multi_proxy.c:pr_process_message:289:RPROXY(0): MT_LOAD_THRESHOLDS
-	 multi_proxy.c:pr_process_message:290:RPROXY(0):
-	source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
-	 multi_proxy.c:pr_process_message:291:MTX_LOCK mpa_ptr->mpa_mutex 
-	 multi_proxy.c:pr_process_message:296:MTX_UNLOCK mpa_ptr->mpa_mutex 
-	 multi_proxy.c:pr_process_message:297:MTX_LOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:build_load_level:1815:SPROXY(0): mtype=1004
-	 multi_proxy.c:build_load_level:1826:SPROXY(0): source=1 type=4100 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x
-	1 m1p3=(nil) 
-	 multi_proxy.c:send_hello_msg:1841:SPROXY(0): send a HELLO message
-	 multi_proxy.c:send_hello_msg:1857:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0
-	 len=0 PID=527
-	 multi_proxy.c:send_hello_msg:1858:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_remote:927:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_remote:928:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:803:SPROXY(0): send bytesleft=120 px_sproxy_sd=6
-	 multi_proxy.c:ps_send_header:806:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_header:807:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:828:SPROXY(0): socket=6 sent header=120 
-	 multi_proxy.c:pr_process_message:305:MTX_UNLOCK px_ptr->px_send_mtx 
- 
-	 multi_proxy.c:pr_process_message:268:RPROXY(0): About to receive header
-	 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
-	 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-	 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:pr_process_message:282:RPROXY(0): 526 NONE
-	 multi_proxy.c:pr_process_message:284:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_process_message:286:RPROXY(0): m_type=7
-	 multi_proxy.c:pr_process_message:308:RPROXY(0): MT_RMTBIND
-	 multi_proxy.c:pr_process_message:318:RPROXY(0):source=0 type=7 m3i1=0 m3i2=1 m3p1=(nil) m3ca1=[FS]
-	 multi_proxy.c:pr_process_message:320:RPROXY(0): MT_RMTBIND rcode=1
-	 multi_proxy.c:pr_process_message:324:MTX_LOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:send_hello_msg:1841:SPROXY(0): send a HELLO message
-	 multi_proxy.c:send_hello_msg:1857:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0
-	 len=0 PID=527
-	 multi_proxy.c:send_hello_msg:1858:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_remote:927:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_remote:928:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:803:SPROXY(0): send bytesleft=120 px_sproxy_sd=6
-	 multi_proxy.c:ps_send_header:806:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_header:807:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:828:SPROXY(0): socket=6 sent header=120 
-	 multi_proxy.c:pr_process_message:333:MTX_UNLOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:pr_start_serving:580:RPROXY(0): Message succesfully processed.
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-
- 		
-	
-==========================================================================================
-==========================================================================================
-==========================================================================================
-ULTIMO_LOG 
-
-==========================================================================================
-==========================================================================================
-		
-TODO: MULTI_PROXY
-	Deberia tener un mpa_px_mtx y un mpa_scond y un mpa_rcond
-	Esto permite sincronizar al SPROXY y RPROXY para saber que ambos 
-	estan en modo CONNECTED 
-	
-	Que hacer cuando uno de los proxies SALE de estado de CONNECTED ?
-	El otro proxy deberia salir de estado CONNECTED haciendo un close
-		SOLUCION: Se deberia hacer con un SIGNAL 
-				En el SPROXY antes del GET2RMT 
-				En el RPROXY antes de leer del socket 
-				
-	Esto permite detectar el estado del nodo remoto, que para el nodo local seria NOT_CONNECTED 
-	Luego, el ping periodico setea el estado de los nodos 
-
-	
-TODO:		FUNCIONES REMOTAS A IMPLEMENTAR 
-			MT_RMTBIND	 		(dcid, endpoint, nodeid, name)
-								typedef struct {int m3i1, m3i2; char *m3p1; char m3ca1[M3_STRING];} mess_3;
-								m3_i1 = dcid 
-								m3_i2 = endpoint 
-								m3_p1 = (char *) nodeid
-								strncpy(m3_ca1,name, M3_STRING-1) 
-			MT_GET_DVSINFO
-			MT_GET_DCINFO
-			MT_GET_PROCINFO
-			MT_RUN_COMMAND
-			MT_MIGR_START
-			MT_MIGR_COMMIT
-			MT_MIGR_ROLLBACK
-					
-TODO:		Hacer que el main loop no haga un sleep por un tiempo fijo sino de 1 segundo 
-			e ir rotando un bitmap tanto de clientes como de servers 
-			lb_bm_nodes = lb_bm_servers | lb_bm_clients
-			como trabaja un planificador FIJO de tiempo real
-			
-			while(TRUE){
-				for( j = 0; j < lb_ptr->lb_period; j++){
-					for( i = 0; i < nr_nodes; i ++){
-						if( j%i == 0){ // aplica a todos los nodos multiplos del periodo en curso 
-							if( TEST_BIT(lb_bm_nodes, i) != 0){ // Aplica solo a los nodos CONFIGURADOS 
-								do_ping(i);	
-							}
-							if( TEST_BIT(lb_bm_init, i) != 0){	// Aplica solo a los nodos INICIALIZADOS  
-								/// AQUI HACER LAS TAREAS PERIODICAS SOBRE EL NODO 
-							}					
-						}
-					}
-				}
-				sleep(1);
-			}
-			
-			SI HACE FALTA MAS PRECISION, ENTONCES SE TIENE QUE TRABAJAR CON DIFERENCIAS DE TIEMPOS
-			Y SI UN NODO NO PUDO SER ATENTIDO EN SU CICLO CORRESPONDIENTE,POR EJEMPLO
-			gettime(ts0)
-			bm_zero= lb_bm_nodes		// nodos esperando ser atendidos 
-			
-			//////// SIN TERMINAR !!!!!!!!! 
-			
-			for( j = 0; j < lb_ptr->lb_period; j++){
-				sleep(1)
-				gettime(ts)
-				diff = ts.sec - ts0.sec		
-				// La idea es que si la diff corresponde 5, todos los nodos no atendidos de 0-4 se atienden 
-				for( i = 0; i < diff; i++){
-					if( j%diff){
-						if( TEST_BIT(lb_bm_nodes, i) != 0){ // Aplica solo a los nodos CONFIGURADOS 
-						do_ping(j);	
-					}
-					
-					bm_zero &= lb_bm_nodes;
-					if( TEST_BIT(bm_zero, i) != 0){	// Aplica solo a los nodos INICIALIZADOS  
-						/// AQUI HACER LAS TAREAS PERIODICAS SOBRE EL NODO 
-						CLR_BIT(bm_zero, i);
-					}					
-				}
-			}
-			
-			
-			
-			
-			
-			
-				
-			
-			
-			
-TODO:		
-En el mensaje HELLO se podría acarrear info sobre el nodo y comandos  
-		- uso de CPU
-		- uso de memoria 
-También se puede utilizar el estado proxy de cada NODO como failure detector.
-De esta forma no se utiliza el agente para colectar la info ni como detector de fallos
-Habria que ver la forma en que desde el LB se le mandan ordenes a los proxies 
-El multiproxy tiene un thread que captura la info de CPU cada 30 segundos 
-y es la que los proxies individuales reportan en los HELLO
-PROBLEMA: Que pasa si los proxies estan saturados??? no va a haber HELLO!! 
-	SOLUCION: Como insertar HELLO en los proxies 
-				Hacer una cuenta de tiempo, si pasaron 30 segundos 
-				Enviar HELLO 
-VER EN LOS PROXIES DEL LB QUE DIFERENCIAS TIENE EL SOCKET 
-	EN TIPO DE ERROR PARA CUANDO
-		1- EL EQUIPO REMOTO ESTA APAGADO
-			ERROR: lb_cltpxy.c:clt_Sproxy_connect:968: rcode=-110		Connection timed out
-			ERROR: lb_svrpxy.c:svr_Sproxy_connect:728: rcode=-110		Connection timed out
-		2- EL EQUIPO REMOTO ESTA ENCENDIDO PERO EL SU PROXY NO ARRANCO 
-		3- EL EQUIPO REMOTO Y PROXY ESTAN ARRANCADOS
-		4- SE CAE EL PROXY
-			EL LB NO DETECTO NADA!!!
-				EL LB MAIN DEBERIA ENVIAR PERIODICAMENTE PAQUETES HELLO POR CADA PROXY 
-				DEBERIA TENER UN TIEMPO DE LAST_HELLO.
-				PARA QUE SALTE EL ERROR.
-		5- SE CAE EL NODO 
-		
-TODO:	HACER UNA MACRO CON UN BITMAP QUE INDIQUE CUALES SON LOS SERVIDORES 
-		QUE SE TESTEARON DE A CICLOS DE UN SEGUNDO 
-		LA IDEA ES QUE CADA SEGUNDO SE TESTEA 1 NODO (O MAS DE UNO)
-		Y SINO ESTA ACTIVO SE SLEEP 1 
-		SI, EL LB ESTA SOBRECARGADO, PUEDE QUE SE SALTEE EN EL TIEMPO MAS DE UN SEGUNDO
-		DEJANDO A SERVIDORES SIN TESTEAR 
-		POR ESO EN EL CICLO CORRESPONDIENTE AL PROXIMO A TESTEAR, SE DEBE VERIFICAR 
-		QUE NO HAYA NODOS PREVIOS SIN TESTEAR CUYOS CICLOS FUERON SALTEADOS 
-				
 TODO:	DESCRIBIR LOS DIFERENTES TIPOS DE TRANSFERENCIAS 
 
 		SERVER TYPE 
@@ -5423,7 +5125,11 @@ TODO:	DESCRIBIR LOS DIFERENTES TIPOS DE TRANSFERENCIAS
 		CLIENT2-------------------------->SERVER2
 		CLIENT3-------------------------->SERVER3
 
-
+TODO:  MODIFICAR PARA QUE REFERENCIE A dvs_ptr->d_nr_sysprocs y d_nr_tasks
+	if( hdr_ptr->c_src < (NR_SYS_PROCS-NR_TASKS)
+	||  hdr_ptr->c_dst < 0  
+	||  hdr_ptr->c_dst >= (NR_SYS_PROCS-NR_TASKS)) {
+	
 TODO:	Cuando se CAE un SERVER habria que verificar si estan levantada la cantidad minima de servers necesarios
 		lb_min_servers
 		ver algo parecido si la cantidad de servers es mayor a la maxima 
@@ -5431,8 +5137,26 @@ TODO:	Cuando se CAE un SERVER habria que verificar si estan levantada la cantida
 TODO:	Cuando llegan a un proxy receiver multiples comandos BATCH , estos podrian ir a 
 		diferentes endpoints destinos que pueden estar redirigidos a diferentes nodos 
 		por lo que hay que desbatchearlos y volverlos a batchear individualmente. 
-		POR AHORA NO USAR BATCH 
 				
+TODO:   Cuando se hace una transferencia multiple solo la primer transferencia se realiza
+	[1]-  Hecho                   ./m3ftp -g 0 60 20 file-100M.dat file0-100M.dat > gftp0.out
+	[2]+  Hecho                   ./m3ftp -g 0 61 21 file-100M.dat file1-100M.dat > gftp1.out
+	root@client11:/usr/src/dvs/dvs-apps/m3ftp# ls -l *.dat
+	-rw-r--r-- 1 root root 104857600 feb 13 16:56 file0-100M.dat
+	-rw-r--r-- 1 root root         0 feb 13 16:56 file1-100M.dat
+
+	root@client11:/usr/src/dvs/dvs-apps/m3ftp# ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: 693:dvk_sendrec_T:948: rcode=-11
+	ERROR: 693:dvk_sendrec_T:957: rcode=-11
+	ERROR: m3ftp.c:ftp_request:35: rcode=-11
+	ERROR: m3ftp.c:ftp_request:39: rcode=-11
+	ERROR: m3ftp.c:main:257: rcode=-11
+
 TODO:	DOCUMENTAR TIPO MAN EL LB_DVS Y SU ARCHIVO DE CONFIGURACION
 		Porque la verdad no me acuerdo de como hacer ciertas cosas
 		
@@ -5445,12 +5169,11 @@ TODO:
 	Luego hay que correr 
 		sudo update-rc.d dvs defaults
 	https://unix.stackexchange.com/questions/20357/how-can-i-make-a-script-in-etc-init-d-start-at-boot
-	- terminar todos los DCs
-		- Terminar todos los procesos dentro del DC 
-			a) leyendo la info del /proc
-			b) utilizando un programa que rastree todos los procesos del DC 
+	1- Hacer un kill de todos los procesos
 	2- hace un kill de los proxies 
+	3- terminar todos los DCs
 	4- terminar el DVS 
+	
 	
 
 CUANDO MUERE EL AGENTE EN EL SERVER se lo quita del lb_bm_init pero no del lb_bm_nodes
@@ -5465,31 +5188,8 @@ que hacemos con un SERVER que esta arrancado pero que el agente murio ??
 En el mensaje HELLO o en el CMD_T en general se podría acarrear info sobre el nodo 
 		- uso de CPU
 		- uso de memoria 
-También se puede utilizar el estado proxy de cada NODO como failure detector.
-De esta forma no se utiliza el agente para colectar la info ni como detector de fallos
-Habria que ver la forma en que desde el LB se le mandan ordenes a los proxies 
-El multiproxy tiene un thread que captura la info de CPU cada 30 segundos 
-y es la que los proxies individuales reportan en los HELLO
-PROBLEMA: Que pasa si los proxies estan saturados??? no va a haber HELLO!! 
-	SOLUCION: Como insertar HELLO en los proxies 
-				Hacer una cuenta de tiempo, si pasaron 30 segundos 
-				Enviar HELLO 
-VER EN LOS PROXIES DEL LB QUE DIFERENCIAS TIENE EL SOCKET 
-	EN TIPO DE ERROR PARA CUANDO
-		1- EL EQUIPO REMOTO ESTA APAGADO
-			ERROR: lb_cltpxy.c:clt_Sproxy_connect:968: rcode=-110		Connection timed out
-			ERROR: lb_svrpxy.c:svr_Sproxy_connect:728: rcode=-110		Connection timed out
-		2- EL EQUIPO REMOTO ESTA ENCENDIDO PERO EL SU PROXY NO ARRANCO 
-		3- EL EQUIPO REMOTO Y PROXY ESTAN ARRANCADOS
-		4- SE CAE EL PROXY
-			EL LB NO DETECTO NADA!!!
-				EL LB MAIN DEBERIA ENVIAR PERIODICAMENTE PAQUETES HELLO POR CADA PROXY 
-				DEBERIA TENER UN TIEMPO DE LAST_HELLO.
-				PARA QUE SALTE EL ERROR.
-		5- SE CAE EL NODO 
-		
-		
-				
+También se puede utilizar el proxy de cada NODO como failure detector.
+De esta forma no se utiliza el agente para colectar la info ni como detector de fallos 
 ==========================================================================================
 ==========================================================================================
 
@@ -5550,9 +5250,9 @@ TODO: EL LB se deberia lanzar a ejecutar con el SPREAD y el modulo DVK arrancado
 	ATENCION HAY QUE CORRER EL AGENT EN LOS NODOS SERVER 
 
 	// check that src endpoint be a CLIENT ENDPOINT
-	if( hdr_ptr->c_src < (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)
+	if( hdr_ptr->c_src < (NR_SYS_PROCS-NR_TASKS)
 	||  hdr_ptr->c_dst < 0  
-	||  hdr_ptr->c_dst >= (dvs_ptr->d_nr_sysprocs-dvs_ptr->d_nr_tasks)) {
+	||  hdr_ptr->c_dst >= (NR_SYS_PROCS-NR_TASKS)) {
 		rcode = clt_Rproxy_error(clt_ptr, EDVSENDPOINT);
 		if( rcode < 0) ERROR_PRINT(-errno);
 		return(NULL);

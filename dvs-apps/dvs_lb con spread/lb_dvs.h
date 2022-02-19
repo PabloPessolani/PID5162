@@ -59,7 +59,6 @@
 #include "../include/com/dvs_errno.h"
 #include "../include/dvk/dvk_ioparm.h"
 #include "../include/com/stub_dvkcall.h"
-#include "../include/generic/hello.h"
 
 #define BUFF_SIZE		MAXCOPYBUF
 #define MAX_MESSLEN     (BUFF_SIZE+1024)
@@ -70,7 +69,6 @@
 #define LB_MSGTYPE		1234		
 #define LB_TIMEOUT_5SEC	5
 #define LB_TIMEOUT_MSEC	0
-#define MAX_RETRIES		3
 #define LB_ERROR_SPEEP	5
 #define MC_LB_INFO 		0xDA
 #define	NR_MAX_CONTROL	32
@@ -98,7 +96,6 @@
 #define	LBP_SVR2CLT				2222
 #define	LBP_SVR2SVR				3333
 #define	LBP_CLT2CLT				4444
-#define	LBP_LB2SVR				5555
 #define	PROG_BIND 				MAX_BIND_TYPE
 
 #include <sp.h>
@@ -227,9 +224,7 @@ struct client_s {
 	int	clt_compress;			// Enable LZ4 Compression 0:NO 1:YES
 	int	clt_batch;				// Enable message batching 0:NO 1:YES
 	
-	unsigned long int clt_px_sts; 	
-    unsigned int	  clt_bm_params;	// bitmap of Config Client Parameters
-	struct timespec   clt_last_cmd; 	// timestamp of the last cmd received from the client
+    unsigned int	clt_bm_params;	// bitmap of Config Client Parameters
 
 	LZ4F_errorCode_t clt_lz4err;
 	size_t			clt_offset;
@@ -271,13 +266,11 @@ struct server_s{
 
 	struct timespec svr_idle_ts; /* last timestamp	with the server not UNLOADED 											*/
 	struct timespec svr_ss_ts;	 /* Start/Stop VM timestamp */
-	struct timespec svr_last_cmd; /* timestamp of the last cmd received from the server */
 
 	int	svr_idle_count;		// Number o Idle cycles that the server has  // NOT USED YET  
 
 	char *svr_image;		// string to command which START the server NODE 
 	
-	unsigned long int svr_px_sts;	// server proxy status  	
 	unsigned long int svr_bm_sts; 	
 	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
 
@@ -322,17 +315,13 @@ typedef struct server_s server_t;
 typedef struct {
 	char 	*lb_name;
 	int		lb_nodeid;
-	int		lb_pid;
-	
 	int		lb_lowwater; 		// low water load (0-100)
 	int		lb_highwater;		// low water load (0-100)
 	int		lb_period;			// load measurement period in seconds (1-3600)
 	int		lb_start;			// period to wait to start a server node VM in seconds (1-3600)
 	int		lb_stop;			//  period to wait to shutdown  a server node VM in seconds (1-3600)
-	int		lb_min_servers; 	// minimum count of nodes  (0-dvs_ptr->d_nr_nodes)
-	int		lb_max_servers;		// maximum count of nodes (0-dvs_ptr->d_nr_nodes)
-
-	int		lb_hellotime;		// time between HELLO
+	int		lb_min_servers; 	// minimum count of nodes  (0-NR_NODES)
+	int		lb_max_servers;		// maximum count of nodes (0-NR_NODES)
 
 	char 	*lb_vm_start;		// string to command which START the server VM 
 	char 	*lb_vm_stop;		// string to command which STOP the server VM 
@@ -377,17 +366,12 @@ typedef struct {
     int		   		lb_sp_nr_mbrs;
     char		 	lb_mess_in[MAX_MESSLEN];
 	
-	msgq_buf_t	   *lb_mqbuf;		// Server proxy sender message queue 
-	int				lb_mqid;
-	int				lb_mqkey;
-	struct msqid_ds lb_mqds;
-	
 	pthread_mutex_t lb_mtx;  		// to protect the this structure
 
 } lb_t;
 
-#define LB1_FORMAT 	"lb_name=%s lb_nodeid=%d lb_lowwater=%d lb_highwater=%d lb_period=%d lb_hellotime=%d\n"
-#define LB1_FIELDS(p)  p->lb_name, p->lb_nodeid, p->lb_lowwater, p->lb_highwater, p->lb_period, p->lb_hellotime
+#define LB1_FORMAT 	"lb_name=%s lb_nodeid=%d lb_lowwater=%d lb_highwater=%d lb_period=%d \n"
+#define LB1_FIELDS(p)  p->lb_name, p->lb_nodeid, p->lb_lowwater, p->lb_highwater, p->lb_period
 #define LB2_FORMAT 	"lb_name=%s lb_nodeid=%d lb_nr_nodes=%d lb_nr_init=%d lb_bm_nodes=%0lX lb_bm_init=%0lX\n"
 #define LB2_FIELDS(p)  p->lb_name, p->lb_nodeid, p->lb_nr_nodes, p->lb_nr_init, p->lb_bm_nodes, p->lb_bm_init
 #define LB3_FORMAT 	"lb_name=%s lb_cltname=%s lb_svrname=%s lb_cltdev=%s lb_svrdev=%s\n"
@@ -398,8 +382,6 @@ typedef struct {
 #define LB5_FIELDS(p)  p->lb_name, p->lb_start, p->lb_stop, p->lb_min_servers, p->lb_max_servers
 #define LB6_FORMAT 	"lb_name=%s lb_vm_start=%s lb_vm_stop=%s lb_vm_status=%s\n"
 #define LB6_FIELDS(p)  p->lb_name, p->lb_vm_start, p->lb_vm_stop, p->lb_vm_status  
-#define LB7_FORMAT 	"lb_name=%s lb_nr_cltpxy=%d lb_nr_svrpxy=%d lb_nr_services=%d lb_bm_svrpxy=%08X\n"
-#define LB7_FIELDS(p)  p->lb_name, p->lb_nr_cltpxy, p->lb_nr_svrpxy, p->lb_nr_services, p->lb_bm_svrpxy
 
 #include "lb_glo.h"
 #include "../debug.h"
@@ -425,11 +407,6 @@ void init_service(service_t *svc_ptr);
 void init_client(client_t *clt_ptr);
 void init_server(server_t *svr_ptr);
 void init_lb(void );
-int send_hello_msg(server_t *svr_ptr);
-int send_load_threadholds(server_t *svr_ptr);
-int send_rmtbind(server_t *svr_ptr, int dcid, int endpoint, int nodeid, char *pname);
-
-
 
 
 

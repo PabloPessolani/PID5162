@@ -14,9 +14,8 @@
 /* The parameters of the call are kept here. */
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN proxy_t 	proxy_tab[NR_NODES-1];
-EXTERN int nr_proxies;
-EXTERN int param_bm;
-EXTERN int compress_opt;
+
+EXTERN mpa_t mpa, *mpa_ptr;
 extern  local_nodeid;
 extern char nonprog[];
 

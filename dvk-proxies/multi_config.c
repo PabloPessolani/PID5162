@@ -115,7 +115,7 @@ int search_proxy_ident(config_t *cfg)
     int i, j, rcode;
     proxy_t *px_ptr;
 	
-	px_ptr = &proxy_tab[nr_proxies];				
+	px_ptr = &proxy_tab[mpa_ptr->mpa_nr_proxies];				
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
             PXYDEBUG("search_proxy_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
@@ -133,7 +133,7 @@ int search_proxy_ident(config_t *cfg)
 							}	
 							px_ptr->px_proxyid =atoi(cfg->word);		
 							PXYDEBUG("px_proxyid=%d\n", px_ptr->px_proxyid);
-							SET_BIT(param_bm, TKN_PXY_PROXYID);
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_PROXYID);
 							break;
                         case TKN_PXY_PROTO:
 							if (!config_isatom(cfg)) {
@@ -152,10 +152,10 @@ int search_proxy_ident(config_t *cfg)
 								exit(1);
 							}		
 							PXYDEBUG("px_proto=%X\n", px_ptr->px_proto);
-							SET_BIT(param_bm, TKN_PXY_PROTO);
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_PROTO);
 							break;
                         case TKN_PXY_RPORT:
-							if( TEST_BIT(param_bm, TKN_PXY_PROTO) == 0){
+							if( TEST_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_PROTO) == 0){
 								fprintf(stderr, "rport: \"proto\" must be defined before \"rport\"\n");
 								return(EXIT_CODE);								
 							}
@@ -176,10 +176,10 @@ int search_proxy_ident(config_t *cfg)
 										px_ptr->px_rport,BASE_PORT,(BASE_PORT+dvs.d_nr_nodes));
 								return(EXIT_CODE);
 							}
-							SET_BIT(param_bm, TKN_PXY_RPORT);
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_RPORT);
 							break;
                         case TKN_PXY_SPORT:
-							if( TEST_BIT(param_bm, TKN_PXY_PROTO) == 0){
+							if( TEST_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_PROTO) == 0){
 								fprintf(stderr, "sport: \"proto\" must be defined before \"sport\"\n");
 								return(EXIT_CODE);								
 							}	
@@ -199,7 +199,7 @@ int search_proxy_ident(config_t *cfg)
 										px_ptr->px_sport,BASE_PORT,(BASE_PORT+dvs.d_nr_nodes));
 								return(EXIT_CODE);
 							}
-							SET_BIT(param_bm, TKN_PXY_SPORT);
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_SPORT);
 							break;
                         case TKN_PXY_COMPRESS:
 							if (!config_isatom(cfg)) {
@@ -217,7 +217,7 @@ int search_proxy_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							PXYDEBUG("px_compress=%d\n", px_ptr->px_compress);
-							SET_BIT(param_bm, TKN_PXY_COMPRESS);							
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_COMPRESS);							
 							break;
 						case TKN_PXY_BATCH:
 							if (!config_isatom(cfg)) {
@@ -235,7 +235,7 @@ int search_proxy_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							PXYDEBUG("px_batch=%d\n", px_ptr->px_batch);
-							SET_BIT(param_bm, TKN_PXY_BATCH);														
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_BATCH);														
 							break;
 						case TKN_PXY_AUTOBIND:
 							if (!config_isatom(cfg)) {
@@ -252,10 +252,10 @@ int search_proxy_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							PXYDEBUG("px_autobind=%d\n", px_ptr->px_autobind);
-							SET_BIT(param_bm, TKN_PXY_AUTOBIND);														
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_AUTOBIND);														
 							break;
                         case TKN_PXY_RNAME:
-							if( TEST_BIT(param_bm, TKN_PXY_PROTO) == 0){
+							if( TEST_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_PROTO) == 0){
 								fprintf(stderr, "rname: \"proto\" must be defined before \"rname\"\n");
 								return(EXIT_CODE);								
 							}
@@ -278,7 +278,7 @@ int search_proxy_ident(config_t *cfg)
 									return(EXIT_CODE);
 								} 
 							}
-							SET_BIT(param_bm, TKN_PXY_RNAME);
+							SET_BIT(mpa_ptr->mpa_param_bm, TKN_PXY_RNAME);
 							break;							
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -318,8 +318,8 @@ int search_main_token(config_t *cfg)
 	proxy_t *px_ptr;
 	char *proxy_name;
 
-    PXYDEBUG("line=%d nr_proxies=%d\n", cfg->line, nr_proxies);
-	px_ptr = &proxy_tab[nr_proxies];
+    PXYDEBUG("line=%d mpa_ptr->mpa_nr_proxies=%d\n", cfg->line, mpa_ptr->mpa_nr_proxies);
+	px_ptr = &proxy_tab[mpa_ptr->mpa_nr_proxies];
     if (cfg != nil) {
         if (config_isatom(cfg)) {
             PXYDEBUG("word=%s\n", cfg->word);
@@ -335,11 +335,11 @@ int search_main_token(config_t *cfg)
 						fprintf(stderr, "Cell at \"%s\", line %u is not a sublist\n",cfg->word, cfg->line);
 						return(EXIT_CODE);
 					}
-					param_bm = 0;
+					mpa_ptr->mpa_param_bm = 0;
 					rcode = read_proxy_lines(cfg->list);
-					nr_proxies++;
-					if (nr_proxies > (dvs.d_nr_nodes-1)) {
-						fprintf(stderr, "Config error: Number of proxies %d > (dvs.d_nr_nodes-1)\n",nr_proxies);
+					mpa_ptr->mpa_nr_proxies++;
+					if (mpa_ptr->mpa_nr_proxies > (dvs.d_nr_nodes-1)) {
+						fprintf(stderr, "Config error: Number of proxies %d > (dvs.d_nr_nodes-1)\n",mpa_ptr->mpa_nr_proxies);
 						return(EXIT_CODE);
 					}
 					if(rcode) return(EXIT_CODE);
@@ -392,9 +392,12 @@ void multi_config(char *f_conf)	/* config file name. */
     rcode  = OK;
 
     PXYDEBUG("BEFORE config_read\n");
-	nr_proxies = 0;
-	compress_opt = NO;
-	
+	mpa_ptr->mpa_nr_proxies = 0;
+	mpa_ptr->mpa_compress_opt = NO;
+	mpa_ptr->mpa_lowwater	= PX_INVALID;
+	mpa_ptr->mpa_highwater	= PX_INVALID;
+	mpa_ptr->mpa_period		= MP_DFT_PERIOD;
+				
 	for( i = 0; i < (dvs.d_nr_nodes-1); i++){
 		px_ptr = &proxy_tab[i];
 		px_ptr->px_proxyid  = PX_INVALID;
@@ -405,6 +408,7 @@ void multi_config(char *f_conf)	/* config file name. */
 		px_ptr->px_batch    = PX_INVALID; 
 		px_ptr->px_autobind = PX_INVALID; 
 		px_ptr->px_rname    = NULL; 
+		
 	}
 	
     cfg = config_read(f_conf, CFG_ESCAPED, cfg);
@@ -417,9 +421,9 @@ void multi_config(char *f_conf)	/* config file name. */
 		if( px_ptr->px_proxyid == PX_INVALID) continue;
         PXYDEBUG(PROXY_FORMAT, PROXY_FIELDS(px_ptr));
 		
-		if( px_ptr->px_proxyid == local_nodeid){
+		if( px_ptr->px_proxyid == mpa_ptr->mpa_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:ProxyID %s have the same nodeid as local node %d\n",
-				px_ptr->px_name, local_nodeid);
+				px_ptr->px_name, mpa_ptr->mpa_nodeid);
 			exit(1);
 		}
 
@@ -473,7 +477,7 @@ void multi_config(char *f_conf)	/* config file name. */
 		}
 		
 		if( px_ptr->px_compress  == YES)
-			compress_opt = YES;
+			mpa_ptr->mpa_compress_opt = YES;
 	
 		if( i == (dvs.d_nr_nodes-2)) break;
 		
@@ -491,6 +495,11 @@ void multi_config(char *f_conf)	/* config file name. */
 			}
 		}		
 	}
+	
+    PXYDEBUG(MPA0_FORMAT, MPA0_FIELDS(mpa_ptr));
+    PXYDEBUG(MPA1_FORMAT, MPA1_FIELDS(mpa_ptr));
+    PXYDEBUG(MPA1_FORMAT, MPA2_FIELDS(mpa_ptr));
+    PXYDEBUG(MPA2_FORMAT, MPA3_FIELDS(mpa_ptr));
 
 }
 
