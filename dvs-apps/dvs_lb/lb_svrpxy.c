@@ -317,6 +317,7 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 #endif // SPREAD_MONITOR 
 						if( rcode < 0) ERROR_PRINT(rcode);
 						
+#ifdef SPREAD_MONITOR 							
 						// Wait for AGENT Notification or timeout 
 //						MTX_LOCK(svr_ptr->svr_tail_mtx);
 						MTX_LOCK(svr_ptr->svr_agent_mtx);
@@ -340,7 +341,10 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 //						}
 						MTX_UNLOCK(svr_ptr->svr_agent_mtx);	
 //						MTX_UNLOCK(svr_ptr->svr_tail_mtx);										
-					}					
+#endif // SPREAD_MONITOR 							
+
+					}		
+				
 					// Delete Session 
 					sess_ptr->se_clt_nodeid = LB_INVALID;
 					sess_ptr->se_clt_PID	= LB_INVALID;
@@ -754,6 +758,7 @@ int  svr_Sproxy_serving(server_t *svr_ptr)
 
 	lbpx_desc_t *spx_ptr; 
 
+	sleep(LB_TIMEOUT_5SEC); 
 	for( retry = 0; retry < MAX_RETRIES; retry++){
 		rcode = send_load_threadholds(svr_ptr);
 		if(rcode >= 0) break; 	

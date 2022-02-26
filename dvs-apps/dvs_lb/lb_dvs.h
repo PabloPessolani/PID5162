@@ -25,6 +25,7 @@
 
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
+#include <netinet/ip_icmp.h>
 #include <net/if.h>
 #include <net/if_arp.h>   
 #include <arpa/inet.h>
@@ -54,6 +55,7 @@
 #include "../include/com/proxy_sts.h"
 #include "../include/com/proxy_usr.h"
 #include "../include/com/dvs_usr.h"
+#include "../include/com/ipc.h"
 #include "../include/com/dvk_calls.h"
 #include "../include/com/dvk_ioctl.h"
 #include "../include/com/dvs_errno.h"
@@ -77,6 +79,10 @@
 #define LB_INVALID		(-1) 
 #define MAX_RANDOM_RETRIES	sizeof(unsigned int)
 #define MAXCMDLEN 		1024
+
+#define PING_PACKET_SIZE     4096
+#define PING_WAIT_TIME   5
+#define PING_NR_PACKETS  3
 
 #define LB_PERIOD_DEFAULT	30	
 #define LB_START_DEFAULT	60	
@@ -267,6 +273,14 @@ struct server_s{
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
+	int svr_icmp_fd;			// used by FD
+	int svr_icmp_sent;		// used by FD
+	int svr_icmp_rcvd;		// used by FD
+	int svr_icmp_seq; 		// used by FD
+	struct timeval svr_icmp_ts;	// used by FD 
+	struct sockaddr_in svr_dstaddr; // used by FD
+	struct sockaddr_in svr_from;
+	
     unsigned int svr_bm_params;	// bitmap of Config Server Parameters
 
 	struct timespec svr_idle_ts; /* last timestamp	with the server not UNLOADED 											*/
@@ -294,8 +308,10 @@ struct server_s{
 		
 	pthread_mutex_t svr_mutex; // protect on change of status and load level.
 
+#ifdef SPREAD_MONITOR
 	pthread_mutex_t svr_agent_mtx;  // controls when a server process is started or killed 
 	pthread_cond_t  svr_agent_cond;  
+#endif // SPREAD_MONITOR
 
 	pthread_mutex_t svr_node_mtx;  // controls when a complete server node VM is started or stopped 
 	pthread_cond_t  svr_node_cond;  
@@ -347,7 +363,6 @@ typedef struct {
 	char 	*lb_ssh_user;		// User to use in SSH session with the Hypervisor 
 	char 	*lb_ssh_pass;		// Password to use in SSH session with the Hypervisor 
 
-    pthread_t 		lb_thread;
 
     unsigned int	lb_bm_params;	// bitmap of Config Load Balancer Parameters
 
@@ -356,6 +371,7 @@ typedef struct {
     unsigned int	lb_bm_init;		// bitmap  initialized nodes 
 	int				lb_nr_nodes;	// number of Connected server nodes 
 	int				lb_nr_init;		// number of   initialized  server nodes 
+
 // END MULTIPLE ACCESS FIELDS 
 	
 	int				lb_nr_cltpxy;	// # of defined Client Proxies (from configuration file)
@@ -363,6 +379,8 @@ typedef struct {
 	int				lb_nr_services;	// # of defined Services (from configuration file)
     unsigned int	lb_bm_svrpxy;	// bitmap of defined Server Proxies
 
+#ifdef SPREAD_MONITOR 
+    pthread_t 		lb_thread;
     mailbox			lb_mbox;
 	int				lb_len;
     char 			lb_sp_group[MAXNODENAME];
@@ -376,11 +394,25 @@ typedef struct {
     char		   	lb_sp_members[MAX_MEMBERS][MAX_GROUP_NAME];
     int		   		lb_sp_nr_mbrs;
     char		 	lb_mess_in[MAX_MESSLEN];
+
+#else // SPREAD_MONITOR 
+    unsigned int	lb_bm_suspect;	// bitmap of first chance suspected  nodes
+    unsigned int	lb_bm_suspect2;	//  bitmap of first chance suspected  nodes	
+	int				lb_node_test;
+	
+    pthread_t 		lb_fds_thread;
+    pthread_t 		lb_fdr_thread;
+	pthread_mutex_t lb_fd_mtx;  
+	pthread_cond_t  lb_fd_scond;  
+	pthread_cond_t  lb_fd_rcond;  
+
+#endif // SPREAD_MONITOR 
 	
 	msgq_buf_t	   *lb_mqbuf;		// Server proxy sender message queue 
 	int				lb_mqid;
 	int				lb_mqkey;
 	struct msqid_ds lb_mqds;
+	
 	
 	pthread_mutex_t lb_mtx;  		// to protect the this structure
 
@@ -413,6 +445,7 @@ void *svr_Sproxy(void *arg);
 void *clt_Rproxy(void *arg);
 void *clt_Sproxy(void *arg);
 void *lb_monitor(void *arg);
+void *lb_fd(void *arg);
 
 int clt_Rproxy_svrmq(client_t *clt_ptr, server_t *svr_ptr,	sess_entry_t *sess_ptr);
 int  ucast_cmd(int agent_id, char *agent_name, char *cmd);
@@ -428,6 +461,8 @@ void init_lb(void );
 int send_hello_msg(server_t *svr_ptr);
 int send_load_threadholds(server_t *svr_ptr);
 int send_rmtbind(server_t *svr_ptr, int dcid, int endpoint, int nodeid, char *pname);
+void *lb_fd_sender(void *arg);
+void *lb_fd_receiver(void *arg);
 
 
 

@@ -264,31 +264,31 @@ int pr_process_message(proxy_t *px_ptr)
     	rcode = pr_receive_header(px_ptr);
     	if (rcode != 0) ERROR_RETURN(rcode);
 
-		if( px_ptr->px_rdesc.td_header->c_cmd != CMD_NONE) {
-			PXYDEBUG("RPROXY(%d):" CMD_FORMAT,px_ptr->px_proxyid,
-				CMD_FIELDS(px_ptr->px_rdesc.td_header));
-			PXYDEBUG("RPROXY(%d):" CMD_XFORMAT,px_ptr->px_proxyid,
-				CMD_XFIELDS(px_ptr->px_rdesc.td_header));
-			PXYDEBUG("RPROXY(%d): %d "CMD_TSFORMAT,px_ptr->px_proxyid, 
-				px_ptr->px_rdesc.td_tid, CMD_TSFIELDS(px_ptr->px_rdesc.td_header)); 
-			PXYDEBUG("RPROXY(%d): %d "CMD_PIDFORMAT,px_ptr->px_proxyid, 
+		PXYDEBUG("RPROXY(%d):" CMD_FORMAT,px_ptr->px_proxyid,
+			CMD_FIELDS(px_ptr->px_rdesc.td_header));
+		PXYDEBUG("RPROXY(%d):" CMD_XFORMAT,px_ptr->px_proxyid,
+			CMD_XFIELDS(px_ptr->px_rdesc.td_header));
+		PXYDEBUG("RPROXY(%d):" CMD_TSFORMAT,px_ptr->px_proxyid, 
+			px_ptr->px_rdesc.td_tid, CMD_TSFIELDS(px_ptr->px_rdesc.td_header)); 
+		PXYDEBUG("RPROXY(%d):" CMD_PIDFORMAT,px_ptr->px_proxyid, 
 				px_ptr->px_rdesc.td_tid, CMD_PIDFIELDS(px_ptr->px_rdesc.td_header)); 
-		} else {
+				
+		if( px_ptr->px_rdesc.td_header->c_cmd == CMD_NONE) {
 			PXYDEBUG("RPROXY(%d): %d NONE\n",px_ptr->px_proxyid, px_ptr->px_rdesc.td_tid); 			
-			PXYDEBUG("RPROXY(%d):" CMD_FORMAT,px_ptr->px_proxyid,
-				CMD_FIELDS(px_ptr->px_rdesc.td_header));
 			m_ptr = &px_ptr->px_rdesc.td_header->c_msg;
 			PXYDEBUG("RPROXY(%d): m_type=%d\n", px_ptr->px_proxyid, m_ptr->m_type);
 			switch(m_ptr->m_type){
 				case MT_LOAD_THRESHOLDS:
 					PXYDEBUG("RPROXY(%d): MT_LOAD_THRESHOLDS\n", px_ptr->px_proxyid);
 					PXYDEBUG("RPROXY(%d):\n" MSG1_FORMAT, px_ptr->px_proxyid, MSG1_FIELDS(m_ptr));
+					
 					MTX_LOCK(mpa_ptr->mpa_mutex);
 					assert( mpa_ptr->mpa_period	> 0);
 					mpa_ptr->mpa_lowwater	= m_ptr->m1_i1;
 					mpa_ptr->mpa_highwater	= m_ptr->m1_i2;
 					mpa_ptr->mpa_period		= m_ptr->m1_i3;
 					MTX_UNLOCK(mpa_ptr->mpa_mutex);
+					
 					MTX_LOCK(px_ptr->px_send_mtx);
 					build_load_level(px_ptr, MT_LOAD_THRESHOLDS | MT_ACKNOWLEDGE);
 					rcode = send_hello_msg(px_ptr);
@@ -298,18 +298,20 @@ int pr_process_message(proxy_t *px_ptr)
 						px_ptr->px_sdesc.td_msg_ok++;
 					}
 					MTX_UNLOCK(px_ptr->px_send_mtx);
+					
 					break;
 				case MT_RMTBIND:			
 					PXYDEBUG("RPROXY(%d): MT_RMTBIND\n", px_ptr->px_proxyid);
 ////////////////// TEMPORARIO 		
 					dcid = m_ptr->m3_i1;
-					while( TEST_BIT( dcu_ptr->dc_nodes, dcid ) ==0){
+					dcu_ptr = &dcu;
+					do {
 						ret = dvk_getdcinfo( m_ptr->m3_i1, dcu_ptr);
 						if(ret < 0) ERROR_PRINT(ret);
 						PXYDEBUG("RPROXY(%d): " DC_USR1_FORMAT, px_ptr->px_proxyid, DC_USR1_FIELDS(dcu_ptr));
 						PXYDEBUG("RPROXY(%d): " DC_USR2_FORMAT, px_ptr->px_proxyid, DC_USR2_FIELDS(dcu_ptr));
 						sleep(1);
-					}
+					} while( TEST_BIT( dcu_ptr->dc_nodes, dcid ) ==0);
 ////////////////// TEMPORARIO 									
 					PXYDEBUG("RPROXY(%d):" MSG3_FORMAT, px_ptr->px_proxyid, MSG3_FIELDS(m_ptr));
 					rcode = dvk_rmtbind(m_ptr->m3_i1,m_ptr->m3_ca1,m_ptr->m3_i2, (int) m_ptr->m3_p1);
@@ -318,8 +320,7 @@ int pr_process_message(proxy_t *px_ptr)
 						ERROR_PRINT(rcode);
 					
 					MTX_LOCK(px_ptr->px_send_mtx);
-					m_ptr->m_type = MT_RMTBIND | MT_ACKNOWLEDGE;
-					m_ptr->m3_i1  = rcode;
+					build_reply_msg(px_ptr, (MT_RMTBIND | MT_ACKNOWLEDGE), rcode); 
 					rcode = send_hello_msg(px_ptr);
 					if( rcode < 0 ) {
 						ERROR_PRINT(rcode);
@@ -1805,6 +1806,25 @@ to_popen:
 }
 #endif // GET_METRICS
 
+int build_reply_msg(proxy_t *px_ptr, int mtype, int ret)
+{
+	int rcode; 
+	message *m_ptr; 
+	proxy_hdr_t *hdr_ptr;
+
+	PXYDEBUG("SPROXY(%d): mtype=%X\n", px_ptr->px_proxyid, mtype);
+
+	hdr_ptr = &px_ptr->px_sdesc.td_header;
+	m_ptr =  &hdr_ptr->c_msg;
+
+	m_ptr->m_type	=  mtype;
+	m_ptr->m_source	=  mpa_ptr->mpa_nodeid;
+	m_ptr->m1_i1	=  ret;
+	
+	PXYDEBUG("SPROXY(%d): " MSG1_FORMAT, px_ptr->px_proxyid , MSG1_FIELDS(m_ptr));
+	return(OK);
+}
+
 int build_load_level(proxy_t *px_ptr, int mtype)
 {
 	int rcode; 
@@ -1831,13 +1851,25 @@ int send_hello_msg(proxy_t *px_ptr)
 	int rcode; 
 	proxy_hdr_t *hdr_ptr;
 	proxy_payload_t *pl_ptr;
+	message *m_ptr;
 
 	hdr_ptr = &px_ptr->px_sdesc.td_header;
 	pl_ptr  = &px_ptr->px_sdesc.td_payload;
-	
+	m_ptr   = &hdr_ptr->c_msg;
 	clock_gettime(clk_id, &ts);
 
-	PXYDEBUG("SPROXY(%d): send a HELLO message\n",px_ptr->px_proxyid);
+	PXYDEBUG("SPROXY(%d): send a HELLO message. m_type=%d\n",px_ptr->px_proxyid, m_ptr->m_type);
+	switch(m_ptr->m_type){
+		case MT_LOAD_LEVEL:
+			PXYDEBUG("SPROXY(%d):" MSG1_FORMAT,px_ptr->px_proxyid, MSG1_FIELDS(m_ptr));
+			break;
+		case MT_RMTBIND | MT_ACKNOWLEDGE:
+			PXYDEBUG("SPROXY(%d):" MSG3_FORMAT,px_ptr->px_proxyid, MSG3_FIELDS(m_ptr));
+			break;
+		default:
+			PXYDEBUG("SPROXY(%d):" MSG1_FORMAT,px_ptr->px_proxyid, MSG1_FIELDS(m_ptr));
+			break;
+	}
 
 	hdr_ptr->c_cmd 		= CMD_NONE;
 	hdr_ptr->c_dcid 	= PX_INVALID;

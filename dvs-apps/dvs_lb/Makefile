@@ -8,7 +8,7 @@ INCLUDE = ..
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
 
-LBMOBJ =  lb_dvs.o lb_config.o lb_svrpxy.o lb_cltpxy.o lb_monitor.o
+LBMOBJ =  lb_dvs.o lb_config.o lb_svrpxy.o lb_cltpxy.o lb_monitor.o lb_fd.o
 LBAOBJ =  lb_agent.o
  
 #LIBS = ../../lib/syslib/libsyslib.so ../../lib/timers/libtimers.so

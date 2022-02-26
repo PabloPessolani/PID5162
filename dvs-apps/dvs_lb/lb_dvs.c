@@ -40,7 +40,9 @@ static void sig_usr1(int sig)
  *===========================================================================*/
 int main (int argc, char *argv[] )
 {
-    int i, rcode;
+    int i, j, rcode;
+	unsigned int	LB_bm_init;
+	int				LB_min_servers;
     sess_entry_t *sess_ptr;
 	client_t *clt_ptr;
 	server_t *svr_ptr;
@@ -71,6 +73,7 @@ int main (int argc, char *argv[] )
     USRDEBUG(DVS_USR_FORMAT, DVS_USR_FIELDS(dvs_ptr));
 	
 	clk_id = CLOCK_REALTIME;
+	signal(SIGPIPE, SIG_IGN);
 #ifdef SPREAD_MONITOR 
     init_spread( );
 #endif // SPREAD_MONITOR 
@@ -136,14 +139,13 @@ int main (int argc, char *argv[] )
 	for( i = 0;  i < dvs_ptr->d_nr_nodes; i++ ){
 		svr_ptr = &server_tab[i];
 		if( svr_ptr->svr_nodeid == (-1)) continue;
-		
-
-
-		
+				
 		pthread_mutex_init(&svr_ptr->svr_mutex, NULL);
-		
+
+#ifdef SPREAD_MONITOR		
 		pthread_mutex_init(&svr_ptr->svr_agent_mtx, NULL);
 		pthread_cond_init(&svr_ptr->svr_agent_cond, NULL);
+#endif // SPREAD_MONITOR		
 		
 		pthread_mutex_init(&svr_ptr->svr_node_mtx, NULL);
 		pthread_cond_init(&svr_ptr->svr_node_cond, NULL);
@@ -178,6 +180,9 @@ int main (int argc, char *argv[] )
 		spx_ptr->lbp_mqbuf = malloc(sizeof(msgq_buf_t));
 		if( spx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(-errno);
 		
+		// initialize de FAILURE DETECTOR 
+		rcode = init_node_FD(svr_ptr);
+
 		// SERVER PROXY Sender Thread 
 		rcode = pthread_create( &svr_ptr->svr_spx.lbp_thread, NULL, svr_Sproxy, i);
 		if( rcode) ERROR_EXIT(rcode);
@@ -236,6 +241,16 @@ int main (int argc, char *argv[] )
 	// Creates LB Monitor thread 
     rcode = pthread_create( &lb_ptr->lb_thread, NULL, lb_monitor, (void * restrict)lb_ptr->lb_nodeid);
     if( rcode) ERROR_EXIT(rcode);
+#else // SPREAD_MONITOR 
+	pthread_mutex_init(&lb_ptr->lb_fd_mtx, NULL);
+	pthread_cond_init(&lb_ptr->lb_fd_scond, NULL);
+	pthread_cond_init(&lb_ptr->lb_fd_rcond, NULL);
+	// Creates LB FAILURE DETECTOR SENDER thread 
+    rcode = pthread_create( &lb_ptr->lb_fds_thread, NULL, lb_fd_sender, (void * restrict)lb_ptr->lb_nodeid);
+    if( rcode) ERROR_EXIT(rcode);
+	// Creates LB FAILURE DETECTOR SENDER thread 
+    rcode = pthread_create( &lb_ptr->lb_fdr_thread, NULL, lb_fd_receiver, (void * restrict)lb_ptr->lb_nodeid);
+    if( rcode) ERROR_EXIT(rcode);
 #endif // SPREAD_MONITOR 
 
 	// MAIN LOOP to control periodic contitions
@@ -248,41 +263,35 @@ int main (int argc, char *argv[] )
 	//--------------------------------------------------------------------------------------------
 	//					MAIN LOOP 
 	//--------------------------------------------------------------------------------------------
+
+	
 	lb_retry = 1;	
 	USRDEBUG("LB Control loop: start\n"); 
 	while( lb_retry == 1){
 		
-		sleep(lb_ptr->lb_hellotime);
-		
-		MTX_LOCK(lb_ptr->lb_mtx);
-		// check if is time to start a new server VM
-		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
-				lb_ptr->lb_nr_init, lb_ptr->lb_min_servers);
-		if( (lb_ptr->lb_nr_init-1) < lb_ptr->lb_min_servers){
-			start_new_node(rmt_cmd); 
-		}
+//		sleep(lb_ptr->lb_hellotime);
 
-		if( (lb_ptr->lb_nr_init-1) <= 0){
-			MTX_UNLOCK(lb_ptr->lb_mtx);
-//			sleep(lb_ptr->lb_hellotime);
-			continue;
-		}
+		MTX_LOCK(lb_ptr->lb_mtx);
+		LB_bm_init = lb_ptr->lb_bm_init;
+		LB_min_servers = lb_ptr->lb_min_servers;
+		MTX_UNLOCK(lb_ptr->lb_mtx);
 		
 		clock_gettime(clk_id, &ts);
+
 		for( i = 0; i < dvs_ptr->d_nr_nodes ; i++){
-			USRDEBUG("lb_bm_init=%X\n", lb_ptr->lb_bm_init);
+
 			// check if are server nodes initialized 
-			if( (TEST_BIT(lb_ptr->lb_bm_init, i) == 0)		// Only compute initialized nodes   
-			||  ( i == lb_ptr->lb_nodeid)					// jump lb node itself 
-//			||  ((ts.tv_sec%lb_ptr->lb_period) != 0) 
-			){					//  Divide the period in seconds an nodes with  
-																		//  nodeid with 
+			if( (TEST_BIT(lb_ptr->lb_bm_init, i) == 0)	
+			|| ( i == lb_ptr->lb_nodeid)) {	
+				//  Divide the period in seconds an nodes with
 				sleep(1);
 				continue; 
 			} 
+
+			USRDEBUG("lb_bm_init=%X i=%d\n", lb_ptr->lb_bm_init, i);
 			svr_ptr = &server_tab[i];
 			MTX_LOCK(svr_ptr->svr_mutex);
-
+			
 #ifndef SPREAD_MONITOR 
 			// check if it is time to send a HELLO message to the server 
 			diff = ts.tv_sec - svr_ptr->svr_last_cmd.tv_sec;
@@ -342,12 +351,19 @@ int main (int argc, char *argv[] )
 			}
 			MTX_UNLOCK(svr_ptr->svr_mutex);					
 		}
-		MTX_UNLOCK(lb_ptr->lb_mtx);
+
+		// check if is time to start a new server VM
+		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
+				lb_ptr->lb_nr_init, lb_ptr->lb_min_servers);
+		if( (lb_ptr->lb_nr_init-1) < lb_ptr->lb_min_servers){
+			start_new_node(rmt_cmd); 
+		}
 	}
 	
-    // JOIN LB monitor
-    rcode = pthread_join(lb_ptr->lb_thread, NULL);	
-    USRDEBUG("LB Monitor exiting..\n");
+    // JOIN FAILURE DETECTOR Threads 
+    rcode = pthread_join(lb_ptr->lb_fds_thread, NULL);	
+    rcode = pthread_join(lb_ptr->lb_fdr_thread, NULL);	
+    USRDEBUG(" FAILURE DETECTOR Threads exiting..\n");
 	
 	// A join for each pair of Client proxies  
 	for( i = 0;  i < dvs_ptr->d_nr_nodes; i++){

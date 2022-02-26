@@ -5186,78 +5186,136 @@ ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ER
 ==========================================================================================
 20220219:
 
-	 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
-	 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-	 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:pr_process_message:282:RPROXY(0): 526 NONE
-	 multi_proxy.c:pr_process_message:284:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_process_message:286:RPROXY(0): m_type=4
-	 multi_proxy.c:pr_process_message:289:RPROXY(0): MT_LOAD_THRESHOLDS
-	 multi_proxy.c:pr_process_message:290:RPROXY(0):
-	source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
-	 multi_proxy.c:pr_process_message:291:MTX_LOCK mpa_ptr->mpa_mutex 
-	 multi_proxy.c:pr_process_message:296:MTX_UNLOCK mpa_ptr->mpa_mutex 
-	 multi_proxy.c:pr_process_message:297:MTX_LOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:build_load_level:1815:SPROXY(0): mtype=1004
-	 multi_proxy.c:build_load_level:1826:SPROXY(0): source=1 type=4100 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x
-	1 m1p3=(nil) 
-	 multi_proxy.c:send_hello_msg:1841:SPROXY(0): send a HELLO message
-	 multi_proxy.c:send_hello_msg:1857:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0
-	 len=0 PID=527
-	 multi_proxy.c:send_hello_msg:1858:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_remote:927:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_remote:928:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:803:SPROXY(0): send bytesleft=120 px_sproxy_sd=6
-	 multi_proxy.c:ps_send_header:806:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_header:807:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:828:SPROXY(0): socket=6 sent header=120 
-	 multi_proxy.c:pr_process_message:305:MTX_UNLOCK px_ptr->px_send_mtx 
- 
-	 multi_proxy.c:pr_process_message:268:RPROXY(0): About to receive header
-	 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
-	 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
-	 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:pr_process_message:282:RPROXY(0): 526 NONE
-	 multi_proxy.c:pr_process_message:284:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode
-	=0 len=0 PID=662
-	 multi_proxy.c:pr_process_message:286:RPROXY(0): m_type=7
-	 multi_proxy.c:pr_process_message:308:RPROXY(0): MT_RMTBIND
-	 multi_proxy.c:pr_process_message:318:RPROXY(0):source=0 type=7 m3i1=0 m3i2=1 m3p1=(nil) m3ca1=[FS]
-	 multi_proxy.c:pr_process_message:320:RPROXY(0): MT_RMTBIND rcode=1
-	 multi_proxy.c:pr_process_message:324:MTX_LOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:send_hello_msg:1841:SPROXY(0): send a HELLO message
-	 multi_proxy.c:send_hello_msg:1857:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0
-	 len=0 PID=527
-	 multi_proxy.c:send_hello_msg:1858:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_remote:927:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_remote:928:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:803:SPROXY(0): send bytesleft=120 px_sproxy_sd=6
-	 multi_proxy.c:ps_send_header:806:SPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 l
-	en=0 PID=527
-	 multi_proxy.c:ps_send_header:807:SPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 multi_proxy.c:ps_send_header:828:SPROXY(0): socket=6 sent header=120 
-	 multi_proxy.c:pr_process_message:333:MTX_UNLOCK px_ptr->px_send_mtx 
-	 multi_proxy.c:pr_start_serving:580:RPROXY(0): Message succesfully processed.
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
-	 multi_proxy.c:pr_start_serving:584:RPROXY(0): Message processing failure [-302]
+ multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
+ multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=651
+ multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+ multi_proxy.c:pr_process_message:277:RPROXY(0): 588 NONE
+ multi_proxy.c:pr_process_message:279:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=651
+ multi_proxy.c:pr_process_message:281:RPROXY(0): m_type=7
+ multi_proxy.c:pr_process_message:303:RPROXY(0): MT_RMTBIND
 
+root       583   335  0 19:55 ?        00:00:00 /usr/src/dvs/dvk-proxies/multi_proxy /dev/shm/multi_proxy
+root       591   477  0 19:55 ?        00:00:00 -bash
+root       597     1  0 19:55 ?        00:00:00 /usr/bin/perl /usr/share/webmin/miniserv.pl /etc/webmin/m
+root       625   335  0 19:55 ?        00:00:00 cat /proc/dvs/proxies/procs
+root       633   474  0 19:57 ?        00:00:00 sshd: root@pts/0
+root       639   633  0 19:57 pts/0    00:00:00 -bash
+root       645   639  0 19:57 pts/0    00:00:00 ps -ef
+root@node1:~# dmesg | grep fault
+[   12.016754] multi_proxy[588]: segfault at 0 ip b75bdbc4 sp b754ec20 error 6 in libc-2.24.so[b7552000+1b1000]
  		
-	
+
+==========================================================================================
+20220219:
+	LB:
+	 668:lb_dvs.c:send_rmtbind:680:Server node1: source=0 type=7 m3i1=0 m3i2=1 m3p1=(nil) m3ca1=[FS]
+	668:lb_dvs.c:send_hello_msg:714:Server node1: send a HELLO message to server
+	668:lb_dvs.c:send_hello_msg:731:Server node1: cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=665
+	668:lb_dvs.c:send_hello_msg:732:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1645398779
+
+	SERVER1:
+	multi_proxy.c:pr_process_message:263:RPROXY(0): About to receive header
+	 multi_proxy.c:pr_receive_header:229:RPROXY(0): socket=5
+	 multi_proxy.c:pr_receive_header:235:RPROXY(0): n:120 | received:120 | HEADER_SIZE:120
+	 multi_proxy.c:pr_receive_header:238:RPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=665
+	 multi_proxy.c:pr_receive_header:240:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 multi_proxy.c:pr_process_message:268:RPROXY(0):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=665
+	 multi_proxy.c:pr_process_message:270:RPROXY(0):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 multi_proxy.c:pr_process_message:272:RPROXY(0): 585 c_timestamp=1645398779.807741910
+	 multi_proxy.c:pr_process_message:274:RPROXY(0): 585 c_flags=0x0 c_src_pid=0 c_dst_pid=0
+	 multi_proxy.c:pr_process_message:277:RPROXY(0): 585 NONE
+	 multi_proxy.c:pr_process_message:279:RPROXY(0): m_type=7
+	 multi_proxy.c:pr_process_message:301:RPROXY(0): MT_RMTBIND
+	 multi_proxy.c:pr_process_message:308:RPROXY(0): dc_dcid=0 dc_nr_procs=221 dc_nr_tasks=34 dc_nr_sysprocs=64 dc_nr_nodes=32
+	 multi_proxy.c:pr_process_message:309:RPROXY(0): flags=0 dc_nodes=3 dc_pid=581 dc_name=DC0
+	 multi_proxy.c:pr_process_message:313:RPROXY(0):source=0 type=7 m3i1=0 m3i2=1 m3p1=(nil) m3ca1=[FS]
+	 multi_proxy.c:pr_process_message:315:RPROXY(0): MT_RMTBIND rcode=1
+	 multi_proxy.c:pr_process_message:319:MTX_LOCK px_ptr->px_send_mtx 
+	 multi_proxy.c:build_reply_msg:1812:SPROXY(0): mtype=1007
+	 multi_proxy.c:build_reply_msg:1821:SPROXY(0): source=1 type=4103 m1i1=1 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+	 multi_proxy.c:send_hello_msg:1858:SPROXY(0): send a HELLO message. m_type=4103
+	 multi_proxy.c:send_hello_msg:1864:SPROXY(0):source=1 type=4103 m3i1=1 m3i2=0 m3p1=0x1e m3ca1=[]
+	 multi_proxy.c:send_hello_msg:1885:SPROXY(0): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 len=0 PID=586
+	 multi_proxy.c:send_hello_msg:1886:SPROXY(0): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+ 
+	LB:
+	 669:lb_svrpxy.c:svr_Rproxy_rcvhdr:506:SERVER_RPROXY (node1): n:120 | received:120 | HEADER_SIZE:120
+	 669:lb_svrpxy.c:svr_Rproxy_rcvhdr:509:SERVER_RPROXY (node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=0 rcode=0 len=0 PID=586
+	 669:lb_svrpxy.c:svr_Rproxy_rcvhdr:511:SERVER_RPROXY (node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1645398807
+	 669:lb_svrpxy.c:svr_Rproxy_getcmd:446:SERVER_RPROXY(node1): NONE
+	 669:lb_svrpxy.c:svr_Rproxy_getcmd:449:SERVER_RPROXY(node1):source=1 type=4103 m1i1=1 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+	 669:lb_svrpxy.c:svr_Rproxy_getcmd:429:SERVER_RPROXY(node1): About to receive header
+ 
+==========================================================================================
+20220225:
+	HAY ALGUN PROBLEMA AL HACER LOS recv_packet_FD  
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "recvfrom" lb_dvs.out
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=84
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=84
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=84
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "oper" lb_dvs.out
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=1 oper=0
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=2 oper=0
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=3 oper=0
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=4 oper=0
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "lb_bm_suspect" lb_dvs.out
+ 1784:lb_fd.c:recv_packet_FD:180:Server node1(1): INPUT lb_bm_init=0 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:246:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:180:Server node1(1): INPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:246:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:180:Server node1(1): INPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:246:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:180:Server node1(1): INPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:246:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:180:Server node1(1): INPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1784:lb_fd.c:recv_packet_FD:246:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+AHORA LAS SEQUENCIAS SE LEEN CORRECTAMENTE 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "recv_packet_FD:197:Server node1:" lb_dvs.out
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=1 svr_icmp_seq=1
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=2 svr_icmp_seq=2
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=3 svr_icmp_seq=3
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=4 svr_icmp_seq=4
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=5 svr_icmp_seq=5
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=6 svr_icmp_seq=6
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=7 svr_icmp_seq=7
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=8 svr_icmp_seq=8
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=9 svr_icmp_seq=9
+ 1784:lb_fd.c:recv_packet_FD:197:Server node1: seq=10 svr_icmp_seq=10
+
+LUEGO BAJO NODE1 DESCONECTANDO SU ETH0 
+
+ 1784:lb_fd.c:unpack:106:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1779
+ERROR: lb_fd.c:unpack:118: rcode=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:unpack:93:Server node1
+ 1784:lb_fd.c:unpack:106:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1779
+ERROR: lb_fd.c:unpack:118: rcode=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:unpack:93:Server node1
+ 1784:lb_fd.c:unpack:106:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1779
+ERROR: lb_fd.c:unpack:118: rcode=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 1784:lb_fd.c:recv_packet_FD:188:Server node1: recvfrom n=88
+ 1784:lb_fd.c:unpack:93:Server node1
+ 1784:lb_fd.c:unpack:106:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1779
+ERROR: lb_fd.c:unpack:118: rcode=-2
+ 1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
+ 
+ 
+TODO:		UNA POSIBILIDAD ES HACER UN THREAD EMISOR DE PING Y OTRO RECEPTOR 
+			sincronizados con VARIABLES DE CONDICION 
+			
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
@@ -5265,6 +5323,77 @@ ULTIMO_LOG
 
 ==========================================================================================
 ==========================================================================================
+		
+NIVELES DE DETECCION DE FALLO:
+		ping:		NODO 
+		proxy:		DVS 
+		getprocsts:	PROCESO/ENDPOINT 
+				
+TODO:
+	Hacer un thread solo para el FAILURE DETECTOR 
+	
+	 1891:lb_dvs.c:main:269:MTX_LOCK svr_ptr->svr_mutex 
+	 1891:lb_fd.c:recv_packet_FD:171:Server node1
+	 1891:lb_fd.c:unpack:95:Server node1 len=84
+	64 byte from 192.168.0.101: icmp_seq=1 ttl=64 rtt=1002.000 ms <<<<  RECIBIO EL PAQUETE ECHO_REPLY
+	 1891:lb_dvs.c:main:271:MTX_UNLOCK svr_ptr->svr_mutex 
+ 
+https://sites.uclouvain.be/SystInfo/usr/include/netinet/ip_icmp.h.html
+
+#define ICMP_ECHOREPLY                0        /* Echo Reply                        */
+#define ICMP_DEST_UNREACH        3        /* Destination Unreachable        */
+#define ICMP_SOURCE_QUENCH        4        /* Source Quench                */
+#define ICMP_REDIRECT                5        /* Redirect (change route)        */
+#define ICMP_ECHO                8        /* Echo Request                        */
+#define ICMP_TIME_EXCEEDED        11        /* Time Exceeded                */
+#define ICMP_PARAMETERPROB        12        /* Parameter Problem                */
+#define ICMP_TIMESTAMP                13        /* Timestamp Request                */
+#define ICMP_TIMESTAMPREPLY        14        /* Timestamp Reply                */
+#define ICMP_INFO_REQUEST        15        /* Information Request                */
+#define ICMP_INFO_REPLY                16        /* Information Reply                */
+#define ICMP_ADDRESS                17        /* Address Mask Request                */
+#define ICMP_ADDRESSREPLY        18        /* Address Mask Reply                */
+#define NR_ICMP_TYPES                18
+
+
+/* Codes for UNREACH. */
+#define ICMP_NET_UNREACH        0        /* Network Unreachable                */
+#define ICMP_HOST_UNREACH        1        /* Host Unreachable                */
+#define ICMP_PROT_UNREACH        2        /* Protocol Unreachable                */
+#define ICMP_PORT_UNREACH        3        /* Port Unreachable                */
+#define ICMP_FRAG_NEEDED        4        /* Fragmentation Needed/DF set        */
+#define ICMP_SR_FAILED                5        /* Source Route failed                */
+#define ICMP_NET_UNKNOWN        6
+#define ICMP_HOST_UNKNOWN        7
+#define ICMP_HOST_ISOLATED        8
+#define ICMP_NET_ANO                9
+#define ICMP_HOST_ANO                10
+#define ICMP_NET_UNR_TOS        11
+#define ICMP_HOST_UNR_TOS        12
+#define ICMP_PKT_FILTERED        13        /* Packet filtered */
+#define ICMP_PREC_VIOLATION        14        /* Precedence violation */
+#define ICMP_PREC_CUTOFF        15        /* Precedence cut off */
+#define NR_ICMP_UNREACH                15        /* instead of hardcoding immediate value */
+
+/* Codes for REDIRECT. */
+#define ICMP_REDIR_NET                0        /* Redirect Net                        */
+#define ICMP_REDIR_HOST                1        /* Redirect Host                */
+#define ICMP_REDIR_NETTOS        2        /* Redirect Net for TOS                */
+#define ICMP_REDIR_HOSTTOS        3        /* Redirect Host for TOS        */
+
+/* Codes for TIME_EXCEEDED. */
+#define ICMP_EXC_TTL                0        /* TTL count exceeded                */
+#define ICMP_EXC_FRAGTIME        1        /* Fragment Reass time exceeded        */
+
+
+
+ root@node0:/usr/src/dvs/dvs-apps/dvs_lb# tcpdump -i eth0 icmp
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+22:44:27.990131 IP node0 > node1: ICMP echo request, id 43786, seq 256, length 64
+22:44:27.990366 IP node1 > node0: ICMP echo reply, id 43786, seq 256, length 64
+
+Pablo Pessolani, Marcelo Taborda, Franco Perino
 		
 TODO: MULTI_PROXY
 	Deberia tener un mpa_px_mtx y un mpa_scond y un mpa_rcond
@@ -5280,7 +5409,14 @@ TODO: MULTI_PROXY
 	Esto permite detectar el estado del nodo remoto, que para el nodo local seria NOT_CONNECTED 
 	Luego, el ping periodico setea el estado de los nodos 
 
-	
+		
+TODO: MULTI_PROXY
+		Cambiar la forma de operar.
+		Solo deben exitir los receiver proxies
+		El main thread abre los sockets emisor con los distintos nodos 
+		Al recibir un mensaje el RPROXY, una vez seleccionado el destino
+		hace un write sobre el socket emisor correspondiente al nodo 
+			
 TODO:		FUNCIONES REMOTAS A IMPLEMENTAR 
 			MT_RMTBIND	 		(dcid, endpoint, nodeid, name)
 								typedef struct {int m3i1, m3i2; char *m3p1; char m3ca1[M3_STRING];} mess_3;
