@@ -150,9 +150,9 @@ void connect_to_spread(lb_t *lb_ptr)
  *===========================================================================*/
 void init_control_vars(lb_t *lb_ptr)
 {	
-    lb_ptr->lb_bm_nodes 	= 0;
+    lb_ptr->lb_bm_active 	= 0;
     lb_ptr->lb_bm_init		= 0;	
-    lb_ptr->lb_nr_nodes 	= 0;
+    lb_ptr->lb_nr_active 	= 0;
     lb_ptr->lb_nr_init		= 0;
 }
 
@@ -326,8 +326,8 @@ int lbm_reg_msg(char *sender_ptr, lb_t *lb_ptr, int16 msg_type)
 
 	// self sent message 
 	if ( msg_type == MT_LOAD_THRESHOLDS){
-		lb_ptr->lb_nr_init = lb_ptr->lb_nr_nodes;
-		lb_ptr->lb_bm_init = lb_ptr->lb_bm_nodes;
+		lb_ptr->lb_nr_init = lb_ptr->lb_nr_active;
+		lb_ptr->lb_bm_init = lb_ptr->lb_bm_active;
 		goto unlock_ok;		
 	}
 	
@@ -628,8 +628,8 @@ int lbm_network(lb_t* lb_ptr)
 	int i, j;
     int ret = 0;
 	int agent_id;
-	int	bm_nodes;
-	int	nr_nodes;
+	int	bm_active;
+	int	nr_active;
 	int	bm_init;
 	int	nr_init;
 	server_t *svr_ptr;
@@ -656,11 +656,11 @@ int lbm_network(lb_t* lb_ptr)
         ERROR_EXIT( EDVSGENERIC );
     }
         
-	nr_nodes = 1; // the monitor 
+	nr_active = 1; // the monitor 
 	nr_init  = 1; // the monitor 
-	bm_nodes = 0;
+	bm_active = 0;
 	bm_init  = 0;
-	SET_BIT(bm_nodes, lb_ptr->lb_nodeid); // the monitor 
+	SET_BIT(bm_active, lb_ptr->lb_nodeid); // the monitor 
 	SET_BIT(bm_init,  lb_ptr->lb_nodeid); // the monitor
 		
     for(i = 0; i < lb_ptr->lb_num_vs_sets; i++ )  {
@@ -682,8 +682,8 @@ int lbm_network(lb_t* lb_ptr)
 			// only get the AGENTS
             if ( strncmp(lb_ptr->lb_members[j], LBA_SHARP, strlen(LBA_SHARP)) == 0) {	
                 agent_id = get_nodeid(lb_ptr->lb_members[j]);
-                SET_BIT(bm_nodes, agent_id);
-                nr_nodes++;
+                SET_BIT(bm_active, agent_id);
+                nr_active++;
 				MTX_LOCK(lb_ptr->lb_mtx);				
                 if(TEST_BIT(lb_ptr->lb_bm_init, agent_id) == 0) {
 					SET_BIT(bm_init, agent_id);
@@ -698,7 +698,7 @@ int lbm_network(lb_t* lb_ptr)
     USRDEBUG("OLD " LB2_FORMAT, LB2_FIELDS(lb_ptr));	
 
 	MTX_LOCK(lb_ptr->lb_mtx);				
-	if( lb_ptr->lb_nr_init > nr_nodes){
+	if( lb_ptr->lb_nr_init > nr_active){
 	    USRDEBUG("NETWORK PARTITION \n");		
 	}else{
 	    USRDEBUG("NETWORK MERGE \n");		
@@ -720,9 +720,9 @@ int lbm_network(lb_t* lb_ptr)
 	}
 	
 	lb_ptr->lb_bm_init   = bm_init;
-	lb_ptr->lb_bm_nodes  = bm_nodes;
+	lb_ptr->lb_bm_active = bm_active;
 	lb_ptr->lb_nr_init   = nr_init;
-	lb_ptr->lb_nr_nodes  = nr_nodes;
+	lb_ptr->lb_nr_active = nr_active;
 
 	mcast_thresholds();
 	
@@ -812,22 +812,22 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
                     int num_groups)
 {	
 	int nodeid, i;
-	unsigned int	bm_nodes;
+	unsigned int	bm_active;
 	server_t *svr_ptr;
 	client_t *clt_ptr;
 	
 	// save old node's bitmap
 	MTX_LOCK(lb_ptr->lb_mtx);				
-	bm_nodes = lb_ptr->lb_bm_nodes;
+	bm_active = lb_ptr->lb_bm_active;
 	
-	lb_ptr->lb_bm_nodes = 0;
-	lb_ptr->lb_nr_nodes = 0;
+	lb_ptr->lb_bm_active = 0;
+	lb_ptr->lb_nr_active = 0;
     lb_ptr->lb_sp_nr_mbrs = num_groups;
     memcpy((void*) lb_ptr->lb_sp_members, (void *) target_groups, lb_ptr->lb_sp_nr_mbrs*MAX_GROUP_NAME);
     for(int i=0; i < lb_ptr->lb_sp_nr_mbrs; i++ ){
 		nodeid = get_nodeid(&lb_ptr->lb_sp_members[i][0]);
         USRDEBUG("\t%s nodeid=%d\n", &lb_ptr->lb_sp_members[i][0], nodeid);
-		if( TEST_BIT(bm_nodes, nodeid) == 0){
+		if( TEST_BIT(bm_active, nodeid) == 0){
 			// NEW NODE 
 			USRDEBUG("NEW %s nodeid=%d\n", &lb_ptr->lb_sp_members[i][0], nodeid);
 			for( i = 0;  i < dvs_ptr->d_nr_nodes; i++ ){
@@ -846,8 +846,8 @@ void lbm_udt_members(lb_t* lb_ptr,char target_groups[MAX_MEMBERS][MAX_GROUP_NAME
 				}
 			}
 		}
-		SET_BIT(lb_ptr->lb_bm_nodes, nodeid);
-		lb_ptr->lb_nr_nodes++;
+		SET_BIT(lb_ptr->lb_bm_active, nodeid);
+		lb_ptr->lb_nr_active++;
         USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
     }
 	MTX_UNLOCK(lb_ptr->lb_mtx);				

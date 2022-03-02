@@ -120,7 +120,6 @@ int main (int argc, char *argv[] )
 	
     lb_config(argv[1]);  //Reads Config File
 
-	lb_ptr->lb_pid = getpid();
 	// Allocate memory for the Proxy Sender message queue buffer
 	lb_ptr->lb_mqbuf = malloc(sizeof(msgq_buf_t));
 	if(lb_ptr->lb_mqbuf == NULL) ERROR_EXIT(-errno);
@@ -275,14 +274,16 @@ int main (int argc, char *argv[] )
 		LB_bm_init = lb_ptr->lb_bm_init;
 		LB_min_servers = lb_ptr->lb_min_servers;
 		MTX_UNLOCK(lb_ptr->lb_mtx);
-		
+
 		clock_gettime(clk_id, &ts);
 
 		for( i = 0; i < dvs_ptr->d_nr_nodes ; i++){
 
 			// check if are server nodes initialized 
+			MTX_LOCK(lb_ptr->lb_mtx);
 			if( (TEST_BIT(lb_ptr->lb_bm_init, i) == 0)	
 			|| ( i == lb_ptr->lb_nodeid)) {	
+				MTX_UNLOCK(lb_ptr->lb_mtx);
 				//  Divide the period in seconds an nodes with
 				sleep(1);
 				continue; 
@@ -349,15 +350,18 @@ int main (int argc, char *argv[] )
 					}
 				}
 			}
-			MTX_UNLOCK(svr_ptr->svr_mutex);					
+			MTX_UNLOCK(svr_ptr->svr_mutex);
+			MTX_UNLOCK(lb_ptr->lb_mtx);
 		}
 
 		// check if is time to start a new server VM
+		MTX_LOCK(lb_ptr->lb_mtx);
 		USRDEBUG("lb_nr_init=%d lb_min_servers=%d\n", 
 				lb_ptr->lb_nr_init, lb_ptr->lb_min_servers);
 		if( (lb_ptr->lb_nr_init-1) < lb_ptr->lb_min_servers){
 			start_new_node(rmt_cmd); 
 		}
+		MTX_UNLOCK(lb_ptr->lb_mtx);
 	}
 	
     // JOIN FAILURE DETECTOR Threads 
@@ -614,7 +618,8 @@ void init_server(server_t *svr_ptr)
 	svr_ptr->svr_bm_svc 	= 0;
 	svr_ptr->svr_image 		= NULL;
 
-	svr_ptr->svr_bm_params 	= 0;
+	svr_ptr->svr_bm_params 		= 0;
+	svr_ptr->svr_icmp_retry 	= FD_MAXRETRIES;
 
 	TAILQ_INIT(&svr_ptr->svr_clt_head);                      /* Initialize the queue. */
 	TAILQ_INIT(&svr_ptr->svr_svr_head);                      /* Initialize the queue. */
@@ -661,7 +666,13 @@ void init_lb(void )
 	lb.lb_start   	= LB_START_DEFAULT;	
 	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
 	lb.lb_hellotime = LB_PERIOD_DEFAULT;	
-	
+		
+	lb.lb_pid = getpid();
+	lb.lb_nr_active = 0;
+	lb.lb_bm_active = 0;
+	lb.lb_nr_init   = 0;
+	lb.lb_bm_init   = 0;
+		
 	lb.lb_cltname   = NULL;		
 	lb.lb_svrname   = NULL;		
 	lb.lb_cltdev    = NULL;		

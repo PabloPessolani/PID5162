@@ -140,6 +140,7 @@ void svr_Rproxy_loop(server_t *svr_ptr)
        		if (rcode == OK) {
 				USRDEBUG("SERVER_RPROXY(%s):Message succesfully processed.\n",
 					svr_ptr->svr_name);
+
 				spx_ptr->lbp_msg_ok++;
 				sess_ptr = svr_Rproxy_2server(svr_ptr);
 				if( sess_ptr == NULL) {
@@ -432,8 +433,33 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 		USRDEBUG("SERVER_RPROXY(%s): About to receive header\n",
 			svr_ptr->svr_name);
     	rcode = svr_Rproxy_rcvhdr(svr_ptr);
-    	if (rcode != 0) ERROR_RETURN(rcode);
-
+		
+		MTX_LOCK(lb_ptr->lb_mtx);
+    	if (rcode != 0) {
+			if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0) {
+				if ( TEST_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid) != 0) {
+					// FAULTY PROXY !!
+					CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid); 				
+				}else{
+					// Second chance 
+					SET_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid);
+				}
+			} else {
+				// First chance 
+				SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);			
+			}		
+			MTX_UNLOCK(lb_ptr->lb_mtx); 	
+			ERROR_RETURN(rcode);
+		}else {				
+			// THE SERVER IS ALIVE 	
+			USRDEBUG("SERVER_RPROXY(%s): THE SERVER IS ALIVE\n",svr_ptr->svr_name);
+			SET_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 	// NODE ALIVE 	
+			SET_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid); 		// PROXY ALIVE 
+			CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid); 
+			CLR_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid);
+			MTX_UNLOCK(lb_ptr->lb_mtx); 				
+		}
+				
 		clock_gettime(clk_id, &spx_ptr->lbp_header->c_timestamp);
 		if( spx_ptr->lbp_header->c_cmd != CMD_NONE) {
 			USRDEBUG("SERVER_RPROXY(%s): " CMD_FORMAT,

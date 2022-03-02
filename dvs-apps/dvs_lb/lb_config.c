@@ -1287,13 +1287,13 @@ void lb_config(char *f_conf)	/* config file name. */
     }
 
 	// check SERVER same NODEID
-	lb.lb_nr_nodes = 0;
-	lb.lb_bm_nodes = 0;
+	lb.lb_nr_svrpxy = 0;
+	lb.lb_bm_svrpxy = 0;
 	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
 		svr1_ptr = &server_tab[i];
 		if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
-		lb.lb_nr_nodes++;
-		SET_BIT(lb.lb_bm_nodes,i);
+		lb.lb_nr_svrpxy++;
+		SET_BIT(lb.lb_bm_svrpxy,i);
         USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
         USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
 		if( i == dvs_ptr->d_nr_nodes-1) break;

@@ -72,13 +72,14 @@
 #define LB_MSGTYPE		1234		
 #define LB_TIMEOUT_5SEC	5
 #define LB_TIMEOUT_MSEC	0
-#define MAX_RETRIES		3
 #define LB_ERROR_SPEEP	5
 #define MC_LB_INFO 		0xDA
 #define	NR_MAX_CONTROL	32
 #define LB_INVALID		(-1) 
-#define MAX_RANDOM_RETRIES	sizeof(unsigned int)
 #define MAXCMDLEN 		1024
+#define MAX_RETRIES		3
+#define FD_MAXRETRIES 	5
+#define MAX_RANDOM_RETRIES	sizeof(unsigned int)
 
 #define PING_PACKET_SIZE     4096
 #define PING_WAIT_TIME   5
@@ -273,10 +274,11 @@ struct server_s{
 	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
 	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
-	int svr_icmp_fd;			// used by FD
+	int svr_icmp_fd;		// used by FD
 	int svr_icmp_sent;		// used by FD
 	int svr_icmp_rcvd;		// used by FD
 	int svr_icmp_seq; 		// used by FD
+	int svr_icmp_retry;		// used by FD
 	struct timeval svr_icmp_ts;	// used by FD 
 	struct sockaddr_in svr_dstaddr; // used by FD
 	struct sockaddr_in svr_from;
@@ -365,11 +367,13 @@ typedef struct {
 
 
     unsigned int	lb_bm_params;	// bitmap of Config Load Balancer Parameters
+    unsigned int	lb_bm_nodes;	// NOT USED bitmap of Configured nodes
+	int				lb_nr_nodes;	// NOT USED number of configured nodes 
 
 // START MULTIPLE ACCESS FIELDS 
-    unsigned int	lb_bm_nodes;	// bitmap of Connected nodes
+    unsigned int	lb_bm_active;	// bitmap of Connected nodes
     unsigned int	lb_bm_init;		// bitmap  initialized nodes 
-	int				lb_nr_nodes;	// number of Connected server nodes 
+	int				lb_nr_active;	// number of Connected server nodes 
 	int				lb_nr_init;		// number of   initialized  server nodes 
 
 // END MULTIPLE ACCESS FIELDS 
@@ -397,8 +401,8 @@ typedef struct {
 
 #else // SPREAD_MONITOR 
     unsigned int	lb_bm_suspect;	// bitmap of first chance suspected  nodes
-    unsigned int	lb_bm_suspect2;	//  bitmap of first chance suspected  nodes	
-	int				lb_node_test;
+    unsigned int	lb_bm_suspect2;	//  bitmap of second chance suspected  nodes	
+	unsigned int 	lb_bm_echo;		// bitmap of nodes to test in each cycle 
 	
     pthread_t 		lb_fds_thread;
     pthread_t 		lb_fdr_thread;

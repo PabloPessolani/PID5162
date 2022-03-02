@@ -5312,10 +5312,419 @@ ERROR: lb_fd.c:unpack:118: rcode=-2
 ERROR: lb_fd.c:unpack:118: rcode=-2
  1784:lb_fd.c:recv_packet_FD:192:Server node1: seq=-2 oper=-2
  
- 
-TODO:		UNA POSIBILIDAD ES HACER UN THREAD EMISOR DE PING Y OTRO RECEPTOR 
+
+==========================================================================================
+20220225: 
+LISTO:		UNA POSIBILIDAD ES HACER UN THREAD EMISOR DE PING Y OTRO RECEPTOR 
 			sincronizados con VARIABLES DE CONDICION 
-			
+
+ESTA FUNCIONANDO RELATIVAMENTE BIEN PERO NO ES CONFIABLE 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT lb_bm_init" lb_dvs.out
+NODO1 CAIDO => SOSPECHOSO 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=0 lb_bm_suspect=2 lb_bm_suspect2=0 
+NODO1 CONECTADO 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+NODO1 CAIDO => SOSPECHOSO 
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=2 lb_bm_suspect2=0 
+NODO1 CAIDO => SOSPECHOSO SEGUNDA VEZ  
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=2 lb_bm_suspect=2 lb_bm_suspect2=2
+NODO1 CAIDO => PASA A NO CONECTADO  
+ 1337:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_init=0 lb_bm_suspect=2 lb_bm_suspect2=2 
+
+
+ 1337:lb_fd.c:unpack:117:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1331				ICMP_DEST_UNREACH ICMP_HOST_UNREACH
+ 1337:lb_fd.c:unpack:117:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=1331 lb_pid=1331			OK
+ 1337:lb_fd.c:unpack:117:Server node1: len=16 icmp_type=9 icmp_code=0 icmp_id=513 lb_pid=1331			ICMP_ROUTERADVERT  ICMP_UNREACH_NET 
+ 1337:lb_fd.c:unpack:117:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=1331 lb_pid=1331			OK 
+ 1337:lb_fd.c:unpack:117:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=1331				ICMP_DEST_UNREACH ICMP_HOST_UNREACH
+ 1337:lb_fd.c:unpack:117:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=1331 lb_pid=1331			OK 
+
+
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=2 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=0 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=2 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=2 lb_bm_suspect2=0 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=2 lb_bm_suspect=2 lb_bm_suspect2=2 
+ 1429:lb_fd.c:lb_fd_receiver:287:Server node1(1): INPUT lb_bm_nodes=2 lb_bm_suspect=2 lb_bm_suspect2=2 
+ 1429:lb_fd.c:lb_fd_receiver:353:Server node1(1): OUTPUT lb_bm_nodes=0 lb_bm_suspect=2 lb_bm_suspect2=2 
+
+LISTO: 	SI HAY PAQUETES QUE LLEGAN AL PROXY ENTONCES 
+			AUTOMATICAMENTE EL NODO ESTA ACTIVO lb_bm_active
+			y el PROXY esta activo lb_bm_init 
+
+==========================================================================================
+20220227:
+LISTO : MODIFICAR EL FD PARA QUE SE ESTABLEZCA EL PERIODO DE MONITOREO DE UN NODO 
+		Y QUE EL NODO SE MONITOREE SI:
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=0 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=1 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:250:CHECK n=1 lb_period=2 i=1 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=2 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=3 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=4 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=5 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=6 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=7 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=8 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=9 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=10 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=11 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=12 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=13 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=14 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=15 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=16 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=17 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=18 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=19 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=20 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=21 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=22 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=23 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=24 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=25 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=26 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=27 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=28 remainder=1
+ 1403:lb_fd.c:lb_fd_sender:246:n=1 lb_period=2 i=29 remainder=1
+
+
+
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "tv_sec" lb_dvs.out 
+ 2201:lb_fd.c:lb_echo_request:228:Server node1 (1): tv_sec=1646014279
+ 2202:lb_fd.c:lb_echo_reply:305:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646014279
+ 2202:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646014279
+ 2197:lb_dvs.c:send_hello_msg:753:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2197:lb_dvs.c:send_hello_msg:753:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2197:lb_svrpxy.c:svr_Sproxy_serving:811:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2197:lb_svrpxy.c:svr_Sproxy_sndhdr:881:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2197:lb_svrpxy.c:svr_Sproxy_serving:811:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2197:lb_svrpxy.c:svr_Sproxy_sndhdr:881:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646014278
+ 2201:lb_fd.c:lb_echo_request:228:Server node1 (1): tv_sec=1646014310
+ 2202:lb_fd.c:lb_echo_reply:305:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646014310
+ 2202:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646014310
+ 2201:lb_fd.c:lb_echo_request:228:Server node1 (1): tv_sec=1646014340
+ 
+ hay 96 SEGUNDOS DE DIFERENCIA !!!
+ 2202:lb_fd.c:lb_echo_reply:305:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646014340   <<<< 340
+ 2202:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646014436  <<<< 436 
+ 
+
+ hay 126 SEGUNDOS DE DIFERENCIA !!!
+ 2201:lb_fd.c:lb_echo_request:228:Server node1 (1): tv_sec=1646014437
+ 2202:lb_fd.c:lb_echo_reply:305:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646014437    <<<< 437
+ 2202:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646014563    <<< 563
+ 
+ hay 127 SEGUNDOS DE DIFERENCIA !!!
+ 2201:lb_fd.c:lb_echo_request:228:Server node1 (1): tv_sec=1646014564
+ 2202:lb_fd.c:lb_echo_reply:305:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646014564	<<<< 564	
+ 2202:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646014691	<<<<<681 
+
+
+==========================================================================================
+20220228:
+		root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+CON NODE1 CONECTADO LO DETECTA BIEN
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077177
+ 
+ AQUI HAY ALGUNOS ECHO_REPLY QUE NO LLEGAN Y LO MANTIENEN COMO SOSPECHOSO TESTEANDO CADA 1 SEGUNDO HASTA TENERLO CONECTADO OTRA VEZ 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077207
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077208
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077209
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077210
+ 
+ AQUI HAY ALGUNOS ECHO_REPLY QUE NO LLEGAN Y LO MANTIENEN COMO SOSPECHOSO TESTEANDO CADA 1 SEGUNDO HASTA TENERLO CONECTADO OTRA VEZ 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077237
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077238
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077239
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077240
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077241
+ 
+ AQUI HAY ALGUNOS ECHO_REPLY QUE NO LLEGAN Y LO MANTIENEN COMO SOSPECHOSO TESTEANDO CADA 1 SEGUNDO HASTA TENERLO CONECTADO OTRA VEZ 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077267
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077268
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077269
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077270
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077271
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077272
+ 
+ AQUI HAY ALGUNOS ECHO_REPLY QUE NO LLEGAN Y LO MANTIENEN COMO SOSPECHOSO TESTEANDO CADA 1 SEGUNDO HASTA TENERLO CONECTADO OTRA VEZ 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077297
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077298
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077299
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077300
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077301
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077302
+ 
+ AQUI SE DESCONECTA NODE1
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077327
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077328
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077329
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077330
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077331
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077333
+ PASA A SUSPECTED2 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646077334
+ LO MARCA COMO DESCONECTADO 
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646077335
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646077358
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646077388
+ 
+CUANDO SE CONECTA NODE1 NUEVAMENTE, TODO VUELVE A LA NORMALIDAD  
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077418
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646077449
+ 2096:lb_fd.c:lb_echo_reply:374:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646077450
+
+------------------------------------------------------------------------------------------------------------------------
+FUNCIONA BIEN PERO ES INESTABLE 
+	CON NODE1 CONECTADO EN VARIAS OPORTUNIDADES SE PONE EN SUSPECTED Y UNA VEZ EN SUSPECTED2 !!! 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078840
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078870
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078871
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078872
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078873
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078901
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078902
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078903
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078904
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078905
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078931
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078932
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078933
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078934
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078935
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078936
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078961
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078962
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078963
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078964
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078965
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078966
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078991
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078992
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078993
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078994
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078995
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646078996
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646078997 <<<<<<<< SUSPECTED2 
+ 2227:lb_fd.c:lb_echo_reply:378:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646078998
+
+----------------------------------------------------------------------------------------------------------------------------
+CON NODE1 CONECTADO 
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "send_packet_FD" lb_dvs.out | grep  svr_icmp_seq
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=1
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=2
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=3
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=4
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=5
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=6
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=7
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=8
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=9
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=10
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=11
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=12
+ 2499:lb_fd.c:send_packet_FD:179:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=13
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "recv_packet_FD" lb_dvs.out | grep  svr_icmp_rcvd
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=1 svr_icmp_rcvd+1=1
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=2 svr_icmp_rcvd+1=2
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=3 svr_icmp_rcvd+1=3
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=4 svr_icmp_rcvd+1=4
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=5 svr_icmp_rcvd+1=5
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=6 svr_icmp_rcvd+1=6
+ 2500:lb_fd.c:recv_packet_FD:206:Server node1: seq=7 svr_icmp_rcvd+1=7
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082336
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082366
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082367
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082368
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082369
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082396
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082426
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082456
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082486
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082487
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082517
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082518
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082547
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082577
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646082578
+ 2500:lb_fd.c:lb_echo_reply:381:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646082579
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DESDE QUE SE DESCONECTA PASA DEMASIADO TIEMPO 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646083767
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083797
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083798
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083799
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646083800
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083828
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646083829
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083858
+ 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646083859 <<< NODE1 DISCONNECT 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083908 <<< SUSPECTED 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083915
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083924
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083927
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083930
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646083933
+ 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646083940 <<<< SUSPECTED2 
+ 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646083973 <<<< DISCONNECTED 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646083998
+
+EL PROBLEMA DEL TIEMPO ESTA EN EL RECVFROM 
+ 2700:lb_fd.c:lb_echo_reply:324:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646083941   <<< INGRESA 41
+ 2700:lb_fd.c:lb_echo_reply:326:MTX_LOCK svr_ptr->svr_mutex 
+ 2694:lb_dvs.c:main:283:MTX_LOCK lb_ptr->lb_mtx 
+ 2700:lb_fd.c:recv_packet_FD:200:Server node1: recvfrom n=88 tv_sec=1646083973											<<<<<< SALE 73
+ 2700:lb_fd.c:unpack:103:Server node1
+ 2700:lb_fd.c:unpack:116:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2694
+ERROR: lb_fd.c:unpack:132: rcode=-515
+ 2700:lb_fd.c:recv_packet_FD:202:Server node1: seq=-515 
+ERROR: lb_fd.c:recv_packet_FD:214: rcode=-515
+ 2700:lb_fd.c:lb_echo_reply:350:Server node1(1): FAULTY 
+ 2700:lb_fd.c:lb_echo_reply:374:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2700:lb_fd.c:lb_echo_reply:380:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646083973
+
+PARA NO ESPERAR 
+fnctl
+If no messages are available at the socket, the receive calls wait for a message to arrive, 
+unless the socket is nonblocking (see fcntl(2)), 
+in which case the value -1 is returned and the external variable errno is set to EAGAIN or EWOULDBLOCK. 
+The receive calls normally return any data available, up to the requested amount, 
+rather than waiting for receipt of the full amount requested.
+
+setsockopt 
+SO_KEEPALIVE
+Enable sending of keep-alive messages on connection-oriented sockets. Expects an integer boolean flag.
+
+SO_RCVTIMEO and SO_SNDTIMEO
+Specify the receiving or sending timeouts until reporting an error. The argument is a struct timeval. If an input or output function blocks for this period of time, and data has been sent or received, the return value of that function will be the amount of data transferred; if no data has been transferred and the timeout has been reached then -1 is returned with errno set to EAGAIN or EWOULDBLOCK, or EINPROGRESS (for connect(2)) just as if the socket was specified to be nonblocking. If the timeout is set to zero (the default) then the operation will never timeout. Timeouts only have effect for system calls that perform socket I/O (e.g., read(2), recvmsg(2), send(2), sendmsg(2)); timeouts have no effect for select(2), poll(2), epoll_wait(2), and so on
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+NODE1 DESCONECTADO 
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646091869
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646091899
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646091929
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646091959
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646091990
+
+NODE1 CONECTADO 
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092020
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092050
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092080
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092081
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092082
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092083
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092084
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092085
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646092086 <<< SUSPECTED2 ZAFO
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092087
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092110
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092140
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092170
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092171
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092172
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 lb_bm_suspect2=0 tv_sec=1646092173
+ 
+ NODE1 DESCONECTADO 
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092200
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092202
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092204
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092206
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092208
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=0 tv_sec=1646092210
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646092212
+ 2782:lb_fd.c:lb_echo_reply:386:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=2 lb_bm_suspect2=2 tv_sec=1646092214 <<< DETECTADA DESCONECCION
+ 
+ SI APARECE 515 ENTONCES NO DEBERIA DESCONTAR 
+ 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+TODO: CUANDO EL SENDER VA A ENVIAR UN PAQUETE, BORRAR EL BUFFER ACTUAL DEL RECEPTOR !!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
+
+TODO: CREO QUE NO HACE FALTA suspected2, simplemente contando los retries ya estaria.
+
+
+PROBLEMA CON LOS TIEMPOS 
+	CADA VEZ QUE SE LLAMA A 
+		rcode = lb_echo_request(n);
+	HAY UN sleep(1) implicito que retrasa el testeo.
+	
+	Esto se puede hacer varias veces:
+		a) multiples servers son monitoreados en el mismo periodo => multiples sleep
+		b) servers sospechosos son monitoreados en el mismo periodo 
+	
+	SOLUCION:
+		Contar cuantos SEND se hicieron y pasarselos al receiver en una variable del LB.
+		Luego del sleep(1)
+		recien alli se hace el WAKEUP del receiver.
+		El receiver hara un loop recibiendo todos los mensajes que le envio el sender 
+		
+
+TODO: SI EL NODO ESTA ACTIVO PERO ESTA SOSPECHOSO, VOLVER A TESTEAR EN UN SEGUNDO 
+
+		for(i = 0; i < dvs_ptr->d_nr_nodes;  i++){
+			if(TEST_BIT(lb_ptr->lb_bm_svrpxy, i) == 0)	continue;
+			if( i == lb_ptr->lb_nodeid) 				continue;
+			if( i == lb_ptr->lb_node_test) 				continue;
+			if(TEST_BIT(lb_ptr->lb_bm_suspect, i) == 0)	continue;
+			rcode = lb_test_node(svr_ptr);
+		}
+		
+TODO: PONERLE TIME PARA SABER CUANTO TARDA EN DETECTAR CAIA 
+    struct timeval *tval;
+    gettimeofday(tval, NULL); 
+
+
+TODO: EN LUGAR DE QUE EL SENDER LE PASE 
+		i = lb_ptr->lb_node_test;
+	AL RECEIVER, LO MARCA EN UN BITMAP ENTRE ELLOS 
+	DE TAL FORMA QUE SI EL RECEIVER NO PUDO TESTEAR EN LA VUELTA CORRESPONDIENTE
+	AL NODO DADO, LO HARA EN LA PROXIMA .
+	
+
+TODO:
+CUANDO SE CAE EL NODE1, EL SERVER PROXY (RECEIVER) NO ES NOTICADO DE ESTO!!
+sigue en el recv() sin salir por error 
+
 ==========================================================================================
 ==========================================================================================
 ==========================================================================================
@@ -5323,20 +5732,21 @@ ULTIMO_LOG
 
 ==========================================================================================
 ==========================================================================================
-		
+
+TODO: MODIFICAR EL FD PARA QUE SE ESTABLEZCA EL PERIODO DE MONITOREO DE UN NODO 
+		Y QUE EL NODO SE MONITOREE SI:
+
+				
+TODO: CLOSE-WAIT 
+https://support.hpe.com/hpesc/public/docDisplay?docId=ns10.0.7791273.2540675en_us&docLocale=en_US
+	
+	
+	
 NIVELES DE DETECCION DE FALLO:
-		ping:		NODO 
-		proxy:		DVS 
+		ping:		NODO 			lb_bm_nodes
+		proxy:		AGENTE 			lb_bm_init	
 		getprocsts:	PROCESO/ENDPOINT 
 				
-TODO:
-	Hacer un thread solo para el FAILURE DETECTOR 
-	
-	 1891:lb_dvs.c:main:269:MTX_LOCK svr_ptr->svr_mutex 
-	 1891:lb_fd.c:recv_packet_FD:171:Server node1
-	 1891:lb_fd.c:unpack:95:Server node1 len=84
-	64 byte from 192.168.0.101: icmp_seq=1 ttl=64 rtt=1002.000 ms <<<<  RECIBIO EL PAQUETE ECHO_REPLY
-	 1891:lb_dvs.c:main:271:MTX_UNLOCK svr_ptr->svr_mutex 
  
 https://sites.uclouvain.be/SystInfo/usr/include/netinet/ip_icmp.h.html
 
