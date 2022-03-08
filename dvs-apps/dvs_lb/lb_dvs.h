@@ -297,6 +297,9 @@ struct server_s{
 	unsigned long int svr_bm_sts; 	
 	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
 
+	char svr_sendpkt[PING_PACKET_SIZE];
+	char svr_recvpkt[PING_PACKET_SIZE];
+
 	lbpx_desc_t svr_spx;		// Server sender proxy 
 	lbpx_desc_t svr_rpx;		// Server receiver proxy	
 
@@ -401,14 +404,9 @@ typedef struct {
 
 #else // SPREAD_MONITOR 
     unsigned int	lb_bm_suspect;	// bitmap of first chance suspected  nodes
-    unsigned int	lb_bm_suspect2;	//  bitmap of second chance suspected  nodes	
 	unsigned int 	lb_bm_echo;		// bitmap of nodes to test in each cycle 
 	
-    pthread_t 		lb_fds_thread;
-    pthread_t 		lb_fdr_thread;
-	pthread_mutex_t lb_fd_mtx;  
-	pthread_cond_t  lb_fd_scond;  
-	pthread_cond_t  lb_fd_rcond;  
+    pthread_t 		lb_fd_thread;
 
 #endif // SPREAD_MONITOR 
 	
@@ -465,8 +463,7 @@ void init_lb(void );
 int send_hello_msg(server_t *svr_ptr);
 int send_load_threadholds(server_t *svr_ptr);
 int send_rmtbind(server_t *svr_ptr, int dcid, int endpoint, int nodeid, char *pname);
-void *lb_fd_sender(void *arg);
-void *lb_fd_receiver(void *arg);
+void *lb_fd_monitor(void *arg);
 
 
 

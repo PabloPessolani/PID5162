@@ -241,15 +241,11 @@ int main (int argc, char *argv[] )
     rcode = pthread_create( &lb_ptr->lb_thread, NULL, lb_monitor, (void * restrict)lb_ptr->lb_nodeid);
     if( rcode) ERROR_EXIT(rcode);
 #else // SPREAD_MONITOR 
-	pthread_mutex_init(&lb_ptr->lb_fd_mtx, NULL);
-	pthread_cond_init(&lb_ptr->lb_fd_scond, NULL);
-	pthread_cond_init(&lb_ptr->lb_fd_rcond, NULL);
-	// Creates LB FAILURE DETECTOR SENDER thread 
-    rcode = pthread_create( &lb_ptr->lb_fds_thread, NULL, lb_fd_sender, (void * restrict)lb_ptr->lb_nodeid);
+
+	// Creates LB FAILURE DETECTOR MONITOR thread 
+    rcode = pthread_create( &lb_ptr->lb_fd_thread, NULL, lb_fd_monitor, (void * restrict)lb_ptr->lb_nodeid);
     if( rcode) ERROR_EXIT(rcode);
-	// Creates LB FAILURE DETECTOR SENDER thread 
-    rcode = pthread_create( &lb_ptr->lb_fdr_thread, NULL, lb_fd_receiver, (void * restrict)lb_ptr->lb_nodeid);
-    if( rcode) ERROR_EXIT(rcode);
+
 #endif // SPREAD_MONITOR 
 
 	// MAIN LOOP to control periodic contitions
@@ -269,7 +265,6 @@ int main (int argc, char *argv[] )
 	while( lb_retry == 1){
 		
 //		sleep(lb_ptr->lb_hellotime);
-
 		MTX_LOCK(lb_ptr->lb_mtx);
 		LB_bm_init = lb_ptr->lb_bm_init;
 		LB_min_servers = lb_ptr->lb_min_servers;
@@ -362,12 +357,12 @@ int main (int argc, char *argv[] )
 			start_new_node(rmt_cmd); 
 		}
 		MTX_UNLOCK(lb_ptr->lb_mtx);
+
 	}
 	
     // JOIN FAILURE DETECTOR Threads 
-    rcode = pthread_join(lb_ptr->lb_fds_thread, NULL);	
-    rcode = pthread_join(lb_ptr->lb_fdr_thread, NULL);	
-    USRDEBUG(" FAILURE DETECTOR Threads exiting..\n");
+    rcode = pthread_join(lb_ptr->lb_fd_thread, NULL);	
+    USRDEBUG(" FAILURE DETECTOR Thread exiting..\n");
 	
 	// A join for each pair of Client proxies  
 	for( i = 0;  i < dvs_ptr->d_nr_nodes; i++){
@@ -683,8 +678,11 @@ void init_lb(void )
 	lb.lb_vm_start  = NULL;	
 	lb.lb_vm_stop   = NULL;		
 	lb.lb_vm_status = NULL;		
-	
+		
 	lb.lb_bm_params	= 0;	
+
+	lb.lb_bm_suspect= 0;	
+	
 }
 
 #ifndef SPREAD_MONITOR 

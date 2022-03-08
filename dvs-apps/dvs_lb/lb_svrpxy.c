@@ -437,16 +437,14 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 		MTX_LOCK(lb_ptr->lb_mtx);
     	if (rcode != 0) {
 			if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0) {
-				if ( TEST_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid) != 0) {
+				if ( svr_ptr->svr_icmp_retry <= 0) {
 					// FAULTY PROXY !!
-					CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid); 				
-				}else{
-					// Second chance 
-					SET_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid);
+					CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid);					
 				}
 			} else {
 				// First chance 
-				SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);			
+				SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
+				svr_ptr->svr_icmp_retry--;			
 			}		
 			MTX_UNLOCK(lb_ptr->lb_mtx); 	
 			ERROR_RETURN(rcode);
@@ -456,8 +454,8 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 			SET_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 	// NODE ALIVE 	
 			SET_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid); 		// PROXY ALIVE 
 			CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid); 
-			CLR_BIT(lb_ptr->lb_bm_suspect2, svr_ptr->svr_nodeid);
-			MTX_UNLOCK(lb_ptr->lb_mtx); 				
+			MTX_UNLOCK(lb_ptr->lb_mtx); 	
+			svr_ptr->svr_icmp_retry = FD_MAXRETRIES;
 		}
 				
 		clock_gettime(clk_id, &spx_ptr->lbp_header->c_timestamp);

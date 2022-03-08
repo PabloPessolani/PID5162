@@ -1,0 +1,3111 @@
+ 2061:lb_dvs.c:main:69:local_nodeid=0
+ 2061:lb_dvs.c:main:73:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ 2061:lb_dvs.c:main:82:Building Session Tables
+ 2061:lb_dvs.c:main:103:Clear server and client tables 
+ 2061:lb_dvs.c:init_server:599:svr_index=0
+ 2061:lb_dvs.c:init_client:625:clt_index=0
+ 2061:lb_dvs.c:init_server:599:svr_index=1
+ 2061:lb_dvs.c:init_client:625:clt_index=1
+ 2061:lb_dvs.c:init_server:599:svr_index=2
+ 2061:lb_dvs.c:init_client:625:clt_index=2
+ 2061:lb_dvs.c:init_server:599:svr_index=3
+ 2061:lb_dvs.c:init_client:625:clt_index=3
+ 2061:lb_dvs.c:init_server:599:svr_index=4
+ 2061:lb_dvs.c:init_client:625:clt_index=4
+ 2061:lb_dvs.c:init_server:599:svr_index=5
+ 2061:lb_dvs.c:init_client:625:clt_index=5
+ 2061:lb_dvs.c:init_server:599:svr_index=6
+ 2061:lb_dvs.c:init_client:625:clt_index=6
+ 2061:lb_dvs.c:init_server:599:svr_index=7
+ 2061:lb_dvs.c:init_client:625:clt_index=7
+ 2061:lb_dvs.c:init_server:599:svr_index=8
+ 2061:lb_dvs.c:init_client:625:clt_index=8
+ 2061:lb_dvs.c:init_server:599:svr_index=9
+ 2061:lb_dvs.c:init_client:625:clt_index=9
+ 2061:lb_dvs.c:init_server:599:svr_index=10
+ 2061:lb_dvs.c:init_client:625:clt_index=10
+ 2061:lb_dvs.c:init_server:599:svr_index=11
+ 2061:lb_dvs.c:init_client:625:clt_index=11
+ 2061:lb_dvs.c:init_server:599:svr_index=12
+ 2061:lb_dvs.c:init_client:625:clt_index=12
+ 2061:lb_dvs.c:init_server:599:svr_index=13
+ 2061:lb_dvs.c:init_client:625:clt_index=13
+ 2061:lb_dvs.c:init_server:599:svr_index=14
+ 2061:lb_dvs.c:init_client:625:clt_index=14
+ 2061:lb_dvs.c:init_server:599:svr_index=15
+ 2061:lb_dvs.c:init_client:625:clt_index=15
+ 2061:lb_dvs.c:init_server:599:svr_index=16
+ 2061:lb_dvs.c:init_client:625:clt_index=16
+ 2061:lb_dvs.c:init_server:599:svr_index=17
+ 2061:lb_dvs.c:init_client:625:clt_index=17
+ 2061:lb_dvs.c:init_server:599:svr_index=18
+ 2061:lb_dvs.c:init_client:625:clt_index=18
+ 2061:lb_dvs.c:init_server:599:svr_index=19
+ 2061:lb_dvs.c:init_client:625:clt_index=19
+ 2061:lb_dvs.c:init_server:599:svr_index=20
+ 2061:lb_dvs.c:init_client:625:clt_index=20
+ 2061:lb_dvs.c:init_server:599:svr_index=21
+ 2061:lb_dvs.c:init_client:625:clt_index=21
+ 2061:lb_dvs.c:init_server:599:svr_index=22
+ 2061:lb_dvs.c:init_client:625:clt_index=22
+ 2061:lb_dvs.c:init_server:599:svr_index=23
+ 2061:lb_dvs.c:init_client:625:clt_index=23
+ 2061:lb_dvs.c:init_server:599:svr_index=24
+ 2061:lb_dvs.c:init_client:625:clt_index=24
+ 2061:lb_dvs.c:init_server:599:svr_index=25
+ 2061:lb_dvs.c:init_client:625:clt_index=25
+ 2061:lb_dvs.c:init_server:599:svr_index=26
+ 2061:lb_dvs.c:init_client:625:clt_index=26
+ 2061:lb_dvs.c:init_server:599:svr_index=27
+ 2061:lb_dvs.c:init_client:625:clt_index=27
+ 2061:lb_dvs.c:init_server:599:svr_index=28
+ 2061:lb_dvs.c:init_client:625:clt_index=28
+ 2061:lb_dvs.c:init_server:599:svr_index=29
+ 2061:lb_dvs.c:init_client:625:clt_index=29
+ 2061:lb_dvs.c:init_server:599:svr_index=30
+ 2061:lb_dvs.c:init_client:625:clt_index=30
+ 2061:lb_dvs.c:init_server:599:svr_index=31
+ 2061:lb_dvs.c:init_client:625:clt_index=31
+ 2061:lb_dvs.c:main:114:Clear service table
+ 2061:lb_dvs.c:init_service:638:svc_index=0
+ 2061:lb_dvs.c:init_service:638:svc_index=1
+ 2061:lb_dvs.c:init_service:638:svc_index=2
+ 2061:lb_dvs.c:init_service:638:svc_index=3
+ 2061:lb_dvs.c:init_service:638:svc_index=4
+ 2061:lb_dvs.c:init_service:638:svc_index=5
+ 2061:lb_dvs.c:init_service:638:svc_index=6
+ 2061:lb_dvs.c:init_service:638:svc_index=7
+ 2061:lb_dvs.c:init_service:638:svc_index=8
+ 2061:lb_dvs.c:init_service:638:svc_index=9
+ 2061:lb_dvs.c:init_service:638:svc_index=10
+ 2061:lb_dvs.c:init_service:638:svc_index=11
+ 2061:lb_dvs.c:init_service:638:svc_index=12
+ 2061:lb_dvs.c:init_service:638:svc_index=13
+ 2061:lb_dvs.c:init_service:638:svc_index=14
+ 2061:lb_dvs.c:init_service:638:svc_index=15
+ 2061:lb_dvs.c:init_service:638:svc_index=16
+ 2061:lb_dvs.c:init_service:638:svc_index=17
+ 2061:lb_dvs.c:init_service:638:svc_index=18
+ 2061:lb_dvs.c:init_service:638:svc_index=19
+ 2061:lb_dvs.c:init_service:638:svc_index=20
+ 2061:lb_dvs.c:init_service:638:svc_index=21
+ 2061:lb_dvs.c:init_service:638:svc_index=22
+ 2061:lb_dvs.c:init_service:638:svc_index=23
+ 2061:lb_dvs.c:init_service:638:svc_index=24
+ 2061:lb_dvs.c:init_service:638:svc_index=25
+ 2061:lb_dvs.c:init_service:638:svc_index=26
+ 2061:lb_dvs.c:init_service:638:svc_index=27
+ 2061:lb_dvs.c:init_service:638:svc_index=28
+ 2061:lb_dvs.c:init_service:638:svc_index=29
+ 2061:lb_dvs.c:init_service:638:svc_index=30
+ 2061:lb_dvs.c:init_service:638:svc_index=31
+ 2061:lb_config.c:lb_config:1144:BEFORE config_read
+ configfile.c:config_read:459:file=lb_dvs.cfg flags=400
+ configfile.c:read_file:412:file=lb_dvs.cfg
+ configfile.c:allocate:65:size=19
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=34
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=33
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=30
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=85
+ configfile.c:allocate:65:size=63
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=30
+ 2061:lb_config.c:lb_config:1146:AFTER config_read
+ 2061:lb_config.c:scan_config:1093:
+ 2061:lb_config.c:scan_config:1099:scan_config[0] line=3
+ 2061:lb_config.c:search_main_token:973:line=3
+ 2061:lb_config.c:search_main_token:976:word=lb
+ 2061:lb_config.c:search_main_token:1064:lb: 
+ 2061:lb_config.c:search_main_token:1067:node0
+ 2061:lb_config.c:read_lb_lines:933:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=-1
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=4 word=nodeid
+ 2061:lb_config.c:search_lb_ident:501:line[4] MATCH identifier nodeid
+ 2061:lb_config.c:search_lb_ident:523:lb.lb_nodeid=0
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=5 word=lowwater
+ 2061:lb_config.c:search_lb_ident:501:line[5] MATCH identifier lowwater
+ 2061:lb_config.c:search_lb_ident:537:lb.lb_lowwater=30
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=6 word=highwater
+ 2061:lb_config.c:search_lb_ident:501:line[6] MATCH identifier highwater
+ 2061:lb_config.c:search_lb_ident:551:lb.lb_highwater=70
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=7 word=period
+ 2061:lb_config.c:search_lb_ident:501:line[7] MATCH identifier period
+ 2061:lb_config.c:search_lb_ident:565:lb_period=30
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=8 word=start
+ 2061:lb_config.c:search_lb_ident:501:line[8] MATCH identifier start
+ 2061:lb_config.c:search_lb_ident:579:lb_start=60
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=9 word=stop
+ 2061:lb_config.c:search_lb_ident:501:line[9] MATCH identifier stop
+ 2061:lb_config.c:search_lb_ident:593:lb_stop=60
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=10 word=min_servers
+ 2061:lb_config.c:search_lb_ident:501:line[10] MATCH identifier min_servers
+ 2061:lb_config.c:search_lb_ident:713:lb.lb_min_servers=1
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=11 word=max_servers
+ 2061:lb_config.c:search_lb_ident:501:line[11] MATCH identifier max_servers
+ 2061:lb_config.c:search_lb_ident:727:lb.lb_max_servers=1
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=12 word=cltname
+ 2061:lb_config.c:search_lb_ident:501:line[12] MATCH identifier cltname
+ 2061:lb_config.c:search_lb_ident:634:lb_cltname=client0
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=13 word=svrname
+ 2061:lb_config.c:search_lb_ident:501:line[13] MATCH identifier svrname
+ 2061:lb_config.c:search_lb_ident:651:lb_svrname=node0
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=14 word=cltdev
+ 2061:lb_config.c:search_lb_ident:501:line[14] MATCH identifier cltdev
+ 2061:lb_config.c:search_lb_ident:668:lb_cltdev=eth1
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=15 word=svrdev
+ 2061:lb_config.c:search_lb_ident:501:line[15] MATCH identifier svrdev
+ 2061:lb_config.c:search_lb_ident:677:lb_svrdev=eth0
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=16 word=ssh_host
+ 2061:lb_config.c:search_lb_ident:501:line[16] MATCH identifier ssh_host
+ 2061:lb_config.c:search_lb_ident:686:lb_ssh_host=192.168.0.196
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=17 word=ssh_user
+ 2061:lb_config.c:search_lb_ident:501:line[17] MATCH identifier ssh_user
+ 2061:lb_config.c:search_lb_ident:695:lb_ssh_user=Admin
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=18 word=ssh_pass
+ 2061:lb_config.c:search_lb_ident:501:line[18] MATCH identifier ssh_pass
+ 2061:lb_config.c:search_lb_ident:704:lb_ssh_pass=mendieta
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=19 word=vm_start
+ 2061:lb_config.c:search_lb_ident:501:line[19] MATCH identifier vm_start
+ 2061:lb_config.c:search_lb_ident:607:lb_vm_start=start_vm.bat
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=20 word=vm_stop
+ 2061:lb_config.c:search_lb_ident:501:line[20] MATCH identifier vm_stop
+ 2061:lb_config.c:search_lb_ident:616:lb_vm_stop=stop_vm.bat
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:read_lb_lines:935:read_lb_lines type=200
+ 2061:lb_config.c:search_lb_ident:495:lb.lb_nodeid=0
+ 2061:lb_config.c:search_lb_ident:498:search_lb_ident[0] line=21 word=vm_status
+ 2061:lb_config.c:search_lb_ident:501:line[21] MATCH identifier vm_status
+ 2061:lb_config.c:search_lb_ident:625:lb_vm_status=list_vm.bat
+ 2061:lb_config.c:read_lb_lines:937:
+ 2061:lb_config.c:scan_config:1099:scan_config[1] line=24
+ 2061:lb_config.c:search_main_token:973:line=24
+ 2061:lb_config.c:search_main_token:976:word=server
+ 2061:lb_config.c:search_main_token:979:server: 
+ 2061:lb_config.c:search_main_token:982:node1
+ 2061:lb_config.c:read_svr_lines:903:
+ 2061:lb_config.c:read_svr_lines:905:read_svr_lines type=200
+ 2061:lb_config.c:search_svr_ident:352:nodeid=-1
+ 2061:lb_config.c:search_svr_ident:357:search_svr_ident[0] line=25 word=nodeid
+ 2061:lb_config.c:search_svr_ident:360:line[25] MATCH identifier nodeid
+ 2061:lb_config.c:search_svr_ident:380:nodeid=1
+ 2061:lb_config.c:search_svr_ident:394:svr_nodeid=1
+ 2061:lb_config.c:read_svr_lines:905:read_svr_lines type=200
+ 2061:lb_config.c:search_svr_ident:352:nodeid=1
+ 2061:lb_config.c:search_svr_ident:357:search_svr_ident[0] line=26 word=compress
+ 2061:lb_config.c:search_svr_ident:360:line[26] MATCH identifier compress
+ 2061:lb_config.c:search_svr_ident:434:compress=YES
+ 2061:lb_config.c:search_svr_ident:446:svr_compress=1
+ 2061:lb_config.c:read_svr_lines:905:read_svr_lines type=200
+ 2061:lb_config.c:search_svr_ident:352:nodeid=1
+ 2061:lb_config.c:search_svr_ident:357:search_svr_ident[0] line=27 word=batch
+ 2061:lb_config.c:search_svr_ident:360:line[27] MATCH identifier batch
+ 2061:lb_config.c:search_svr_ident:454:batch=NO
+ 2061:lb_config.c:search_svr_ident:464:svr_batch=0
+ 2061:lb_config.c:search_main_token:992:svr_name=node1 svr_nodeid=1 svr_lbRport=3001 svr_svrRport=3001 svr_level=0 svr_load=0 svr_bm_svc=0
+ 2061:lb_config.c:search_main_token:993:svr_name=node1 svr_nodeid=1 svr_compress=1 svr_batch=0
+ 2061:lb_config.c:search_main_token:1001:server node1: nodeid configured 
+ 2061:lb_config.c:search_main_token:1001:server node1: compress configured 
+ 2061:lb_config.c:search_main_token:1001:server node1: batch configured 
+ 2061:lb_config.c:scan_config:1099:scan_config[2] line=31
+ 2061:lb_config.c:search_main_token:973:line=31
+ 2061:lb_config.c:search_main_token:976:word=client
+ 2061:lb_config.c:search_main_token:1036:client: 
+ 2061:lb_config.c:search_main_token:1039:client11
+ 2061:lb_config.c:read_clt_lines:948:
+ 2061:lb_config.c:read_clt_lines:950:read_clt_lines type=200
+ 2061:lb_config.c:search_clt_ident:770:nodeid=-1
+ 2061:lb_config.c:search_clt_ident:775:search_clt_ident[0] line=32 word=nodeid
+ 2061:lb_config.c:search_clt_ident:778:line[32] MATCH identifier nodeid
+ 2061:lb_config.c:search_clt_ident:799:nodeid=11
+ 2061:lb_config.c:search_clt_ident:812:clt_nodeid=11
+ 2061:lb_config.c:read_clt_lines:952:
+ 2061:lb_config.c:read_clt_lines:950:read_clt_lines type=200
+ 2061:lb_config.c:search_clt_ident:770:nodeid=11
+ 2061:lb_config.c:search_clt_ident:775:search_clt_ident[0] line=33 word=compress
+ 2061:lb_config.c:search_clt_ident:778:line[33] MATCH identifier compress
+ 2061:lb_config.c:search_clt_ident:852:compress=YES
+ 2061:lb_config.c:search_clt_ident:862:clt_compress=1
+ 2061:lb_config.c:read_clt_lines:952:
+ 2061:lb_config.c:read_clt_lines:950:read_clt_lines type=200
+ 2061:lb_config.c:search_clt_ident:770:nodeid=11
+ 2061:lb_config.c:search_clt_ident:775:search_clt_ident[0] line=34 word=batch
+ 2061:lb_config.c:search_clt_ident:778:line[34] MATCH identifier batch
+ 2061:lb_config.c:search_clt_ident:870:batch=NO
+ 2061:lb_config.c:search_clt_ident:880:clt_batch=0
+ 2061:lb_config.c:read_clt_lines:952:
+ 2061:lb_config.c:search_main_token:1050:clt_name=client11 clt_nodeid=11 clt_lbRport=3011 clt_cltRport=3011 clt_compress=1 clt_batch=0
+ 2061:lb_config.c:search_main_token:1057:client client11: nodeid configured 
+ 2061:lb_config.c:search_main_token:1057:client client11: compress configured 
+ 2061:lb_config.c:search_main_token:1057:client client11: batch configured 
+ 2061:lb_config.c:scan_config:1099:scan_config[3] line=37
+ 2061:lb_config.c:search_main_token:973:line=37
+ 2061:lb_config.c:search_main_token:976:word=service
+ 2061:lb_config.c:search_main_token:1008:service: 
+ 2061:lb_config.c:search_main_token:1011:m3ftpd10
+ 2061:lb_config.c:read_svc_lines:919:
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=38 word=dcid
+ 2061:lb_config.c:search_svc_ident:237:line[38] MATCH identifier dcid
+ 2061:lb_config.c:search_svc_ident:264:svr_dcid=0
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=39 word=ext_ep
+ 2061:lb_config.c:search_svc_ident:237:line[39] MATCH identifier ext_ep
+ 2061:lb_config.c:search_svc_ident:273:svc_extep=10
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=40 word=min_ep
+ 2061:lb_config.c:search_svc_ident:237:line[40] MATCH identifier min_ep
+ 2061:lb_config.c:search_svc_ident:288:svc_minep=10
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=41 word=max_ep
+ 2061:lb_config.c:search_svc_ident:237:line[41] MATCH identifier max_ep
+ 2061:lb_config.c:search_svc_ident:303:svc_maxep=29
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=42 word=bind
+ 2061:lb_config.c:search_svc_ident:237:line[42] MATCH identifier bind
+ 2061:lb_config.c:search_svc_ident:329:svc_bind=4
+ 2061:lb_config.c:read_svc_lines:921:read_svc_lines type=200
+ 2061:lb_config.c:search_svc_ident:234:search_svc_ident[0] line=43 word=prog
+ 2061:lb_config.c:search_svc_ident:237:line[43] MATCH identifier prog
+ 2061:lb_config.c:search_svc_ident:247:prog=/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh
+ 2061:lb_config.c:search_svc_ident:249:svc_prog=/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh
+ 2061:lb_config.c:search_main_token:1022:svc_name=m3ftpd10 svc_dcid=0 svc_extep=10 svc_minep=10 svc_maxep=29 svc_bind=4 svc_prog=/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: dcid configured 
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: ext_ep configured 
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: min_ep configured 
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: max_ep configured 
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: bind configured 
+ 2061:lb_config.c:search_main_token:1029:service m3ftpd10: prog configured 
+ 2061:lb_config.c:lb_config:1149:lb.lb_nodeid=0
+ 2061:lb_config.c:lb_config:1150:lb.lb_nr_svrpxy=1
+ 2061:lb_config.c:lb_config:1151:lb.lb_nr_cltpxy=1
+ 2061:lb_config.c:lb_config:1152:lb.lb_nr_services=1
+ 2061:lb_config.c:lb_config:1153:lb.lb_lowwater=30
+ 2061:lb_config.c:lb_config:1154:lb.lb_highwater=70
+ 2061:lb_config.c:lb_config:1155:lb.lb_min_servers=1
+ 2061:lb_config.c:lb_config:1156:lb.lb_max_servers=1
+ 2061:lb_config.c:lb_config:1159:Check for mandatory parameters=19
+ 2061:lb_config.c:lb_config:1165:lb: nodeid configured 
+ 2061:lb_config.c:lb_config:1165:lb: lowwater configured 
+ 2061:lb_config.c:lb_config:1165:lb: highwater configured 
+ 2061:lb_config.c:lb_config:1165:lb: period configured 
+ 2061:lb_config.c:lb_config:1165:lb: start configured 
+ 2061:lb_config.c:lb_config:1165:lb: stop configured 
+ 2061:lb_config.c:lb_config:1165:lb: vm_start configured 
+ 2061:lb_config.c:lb_config:1165:lb: vm_stop configured 
+ 2061:lb_config.c:lb_config:1165:lb: vm_status configured 
+ 2061:lb_config.c:lb_config:1165:lb: cltname configured 
+ 2061:lb_config.c:lb_config:1165:lb: svrname configured 
+ 2061:lb_config.c:lb_config:1165:lb: cltdev configured 
+ 2061:lb_config.c:lb_config:1165:lb: svrdev configured 
+ 2061:lb_config.c:lb_config:1165:lb: ssh_host configured 
+ 2061:lb_config.c:lb_config:1165:lb: ssh_user configured 
+ 2061:lb_config.c:lb_config:1165:lb: ssh_pass configured 
+ 2061:lb_config.c:lb_config:1165:lb: min_servers configured 
+ 2061:lb_config.c:lb_config:1165:lb: max_servers configured 
+ 2061:lb_config.c:lb_config:1297:svr_name=node1 svr_nodeid=1 svr_lbRport=3001 svr_svrRport=3001 svr_level=0 svr_load=0 svr_bm_svc=0
+ 2061:lb_config.c:lb_config:1298:svr_name=node1 svr_nodeid=1 svr_compress=1 svr_batch=0
+ 2061:lb_config.c:lb_config:1340:clt_name=client11 clt_nodeid=11 clt_lbRport=3011 clt_cltRport=3011 clt_compress=1 clt_batch=0
+ 2061:lb_config.c:lb_config:1427:svc_name=m3ftpd10 svc_dcid=0 svc_extep=10 svc_minep=10 svc_maxep=29 svc_bind=4 svc_prog=/usr/src/dvs/dvs-apps/dvs_lb/run_m3ftpd.sh
+ 2061:lb_config.c:lb_config:1436:lb_name=node0 lb_nodeid=0 lb_lowwater=30 lb_highwater=70 lb_period=30 lb_hellotime=30
+ 2061:lb_config.c:lb_config:1437:lb_name=node0 lb_nodeid=0 lb_nr_nodes=0 lb_nr_init=0 lb_bm_nodes=0 lb_bm_init=0
+ 2061:lb_config.c:lb_config:1438:lb_name=node0 lb_cltname=client0 lb_svrname=node0 lb_cltdev=eth1 lb_svrdev=eth0
+ 2061:lb_config.c:lb_config:1440:lb_name=node0 lb_ssh_host=192.168.0.196 lb_ssh_user=Admin lb_ssh_pass=mendieta
+ 2061:lb_config.c:lb_config:1443:lb_name=node0 lb_start=60 lb_stop=60 lb_min_servers=1 lb_max_servers=1
+ 2061:lb_config.c:lb_config:1444:lb_name=node0 lb_vm_start=start_vm.bat lb_vm_stop=stop_vm.bat lb_vm_status=list_vm.bat
+ 2061:lb_config.c:lb_config:1446:lb_name=node0 lb_nr_cltpxy=1 lb_nr_svrpxy=1 lb_nr_services=1 lb_bm_svrpxy=00000002
+ 2061:lb_dvs.c:main:156:svr_name=node1 svr_nodeid=1 svr_lbRport=3001 svr_svrRport=3001 svr_level=-1 svr_load=-1 svr_bm_svc=0
+ 2061:lb_dvs.c:main:157:svr_name=node1 svr_nodeid=1 svr_compress=1 svr_batch=0
+The queue with key=7001 already exists
+ 2061:lb_dvs.c:main:172:BEFORE lbp_mqid=0 lbp_mqkey=7001 lbp_mqds.msg_qbytes=3968
+ 2061:lb_dvs.c:main:176:AFTER  lbp_mqid=0 lbp_mqkey=7001 lbp_mqds.msg_qbytes=3968
+ 2061:lb_fd.c:init_node_FD:160:Server node1
+ 2061:lb_dvs.c:main:199:clt_name=client11 clt_nodeid=11 clt_lbRport=3011 clt_cltRport=3011 clt_compress=1 clt_batch=0
+The queue with key=7111 already exists
+ 2061:lb_dvs.c:main:220:BEFORE lbp_mqid=32769 lbp_mqkey=7111 lbp_mqds.msg_qbytes=3968
+ 2061:lb_dvs.c:main:224:AFTER  lbp_mqid=32769 lbp_mqkey=7111 lbp_mqds.msg_qbytes=3968
+ 2061:lb_dvs.c:main:264:LB Control loop: start
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:355:LB FAILURE DETECTOR MONITOR : Initializing... lb_bm_svrpxy=2
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=0 remainder=1
+ 2065:lb_cltpxy.c:clt_Rproxy:37:CLIENT_RPROXY[client11]: Initializing...
+ 2065:lb_cltpxy.c:clt_Rproxy_init:50:CLIENT_RPROXY(client11): Initializing proxy receiver
+ 2065:lb_cltpxy.c:clt_Rproxy_init:60:CLIENT_RPROXY(client11): Payload address=0xb4b02000
+ 2065:lb_cltpxy.c:clt_Rproxy_setup:77:CLIENT_RPROXY(client11): for node 11 running at port=3011
+ 2065:lb_cltpxy.c:clt_Rproxy_setup:98:CLIENT_RPROXY(client11): 192.168.137.100
+ 2065:lb_cltpxy.c:clt_Rproxy_setup:102:CLIENT_RPROXY(client11): cltname=client0 listening on IP address=192.168.137.100
+ 2065:lb_cltpxy.c:clt_Rproxy_setup:112:CLIENT_RPROXY(client11): is bound to port=3011 socket=5
+ 2065:lb_cltpxy.c:clt_Rproxy_loop:140:CLIENT_RPROXY(client11): Waiting for connection.
+ 2064:lb_cltpxy.c:clt_Sproxy:891:CLIENT_SPROXY[11]: Initializing...
+ 2064:lb_cltpxy.c:clt_Sproxy_init:906:CLIENT_SPROXY(client11): Initializing proxy sender
+ 2063:lb_svrpxy.c:svr_Rproxy:28:SERVER_RPROXY[node1]: Initializing...
+ 2063:lb_svrpxy.c:svr_Rproxy_init:41:SERVER_RPROXY(node1): Initializing proxy receiver
+ 2063:lb_svrpxy.c:svr_Rproxy_init:50:SERVER_RPROXY(node1): Payload address=0x2480000
+ 2063:lb_svrpxy.c:svr_Rproxy_setup:68:SERVER_RPROXY(node1): for node 1 running at port=3001
+ 2063:lb_svrpxy.c:svr_Rproxy_setup:88:SERVER_RPROXY(node1): 192.168.0.100
+ 2063:lb_svrpxy.c:svr_Rproxy_setup:92:SERVER_RPROXY(node1): svrname=node0 listening on IP address=192.168.0.100
+ 2063:lb_svrpxy.c:svr_Rproxy_setup:102:SERVER_RPROXY(node1): is bound to port=3001 socket=8
+ 2063:lb_svrpxy.c:svr_Rproxy_loop:128:SERVER_RPROXY(node1): Waiting for connection.
+ 2062:lb_svrpxy.c:svr_Sproxy:673:SERVER_SPROXY[1]: Initializing...
+ 2062:lb_svrpxy.c:svr_Sproxy_init:688:SERVER_SPROXY(node1): Initializing proxy sender
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755589
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=1
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=1
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755590
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755590
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=1 ttl=64 rtt=1001.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=1 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=1 svr_icmp_rcvd+1=1
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755590
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:965:CLIENT_SPROXY(client11): remote host port=3000
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:974:CLIENT_SPROXY(client11): rmthost client11 IP 192.168.137.111
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:991:CLIENT_SPROXY(client11): running at IP=192.168.137.111
+ 2062:lb_svrpxy.c:svr_Sproxy_connect:743:SERVER_SPROXY(node1): remote host port=3000
+ 2062:lb_svrpxy.c:svr_Sproxy_connect:751:SERVER_SPROXY(node1): rmthost node1 IP 192.168.0.101
+ 2062:lb_svrpxy.c:svr_Sproxy_connect:768:SERVER_SPROXY(node1): running at IP=192.168.0.101
+ 2062:lb_svrpxy.c:svr_Sproxy_connect:774:SERVER_SPROXY(node1): connected to IP=192.168.0.101 on socket=10
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2062:lb_dvs.c:send_load_threadholds:725:Server node1: source=0 type=4 m1i1=30 m1i2=70 m1i3=30 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+ 2062:lb_dvs.c:send_hello_msg:739:Server node1: send a HELLO message to server
+ 2062:lb_dvs.c:send_hello_msg:756:Server node1: cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_dvs.c:send_hello_msg:757:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_dvs.c:send_rmtbind:705:Server node1: source=0 type=7 m3i1=0 m3i2=1 m3p1=(nil) m3ca1=[FS]
+ 2062:lb_dvs.c:send_hello_msg:739:Server node1: send a HELLO message to server
+ 2062:lb_dvs.c:send_hello_msg:756:Server node1: cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_dvs.c:send_hello_msg:757:Server node1: c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:801:SERVER_SPROXY(node1): Reading message queue..
+ 2062:lb_svrpxy.c:svr_Sproxy_mqrcv:954:SERVER_SPROXY(node1): reading from mqid=0
+ 2062:lb_svrpxy.c:svr_Sproxy_mqrcv:958:SERVER_SPROXY(node1): 120 bytes received
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:808:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:810:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_svrpxy.c:svr_Sproxy_send:833:SERVER_SPROXY(node1): 
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:874:SERVER_SPROXY(node1): send header=120 
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:878:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:880:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:898:SERVER_SPROXY(node1): sent header=120 
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:801:SERVER_SPROXY(node1): Reading message queue..
+ 2062:lb_svrpxy.c:svr_Sproxy_mqrcv:954:SERVER_SPROXY(node1): reading from mqid=0
+ 2062:lb_svrpxy.c:svr_Sproxy_mqrcv:958:SERVER_SPROXY(node1): 120 bytes received
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:808:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:810:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_svrpxy.c:svr_Sproxy_send:833:SERVER_SPROXY(node1): 
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:874:SERVER_SPROXY(node1): send header=120 
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:878:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=2061
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:880:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1646755588
+ 2062:lb_svrpxy.c:svr_Sproxy_sndhdr:898:SERVER_SPROXY(node1): sent header=120 
+ 2062:lb_svrpxy.c:svr_Sproxy_serving:801:SERVER_SPROXY(node1): Reading message queue..
+ 2062:lb_svrpxy.c:svr_Sproxy_mqrcv:954:SERVER_SPROXY(node1): reading from mqid=0
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755619
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=2
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=2
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755620
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755620
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755620
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755621
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755621
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755621
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755622
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755622
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755622
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755623
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755623
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=2 ttl=64 rtt=4010.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=2 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=2 svr_icmp_rcvd+1=2
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755623
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755649
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=3
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=3
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755650
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755650
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755650
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755651
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755656
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755657
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755660
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755660
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755661
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1646755666
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1646755667
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1646755672
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1646755673
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:310:Server node1(1): FAULTY 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755678
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=7 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=9 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=13 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=18 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=20 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=29 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755703
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=3
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=3
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755704
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755709
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=2 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755710
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755715
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=3 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755716
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755721
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=4 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755722
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ERROR: lb_cltpxy.c:clt_Sproxy_connect:995: rcode=-110
+ERROR: lb_cltpxy.c:clt_Sproxy_loop:946: rcode=-110
+ 2064:lb_cltpxy.c:clt_Sproxy_loop:943:CLIENT_SPROXY(client11): Could not connect. Sleeping for a while...
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755727
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=5 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:965:CLIENT_SPROXY(client11): remote host port=3000
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:974:CLIENT_SPROXY(client11): rmthost client11 IP 192.168.137.111
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:991:CLIENT_SPROXY(client11): running at IP=192.168.137.111
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755728
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755731
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755731
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=6 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755732
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755737
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=7 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755738
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755738
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755738
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755739
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755744
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=9 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755745
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755746
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755746
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=10 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755747
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755752
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=11 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755753
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755758
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=12 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755759
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755762
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755762
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=13 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755763
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755768
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=14 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755769
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755774
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=15 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755775
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755781
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=16 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755782
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755787
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=17 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755788
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755793
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=18 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755794
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755795
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755795
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=19 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755796
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755801
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=20 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755802
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755807
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=21 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755808
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755814
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=22 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755815
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755820
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=23 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755821
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755826
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=24 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755827
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755832
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=25 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755833
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755838
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=26 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755839
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755844
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=27 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755845
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755850
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=28 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755851
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=36 tv_sec=1646755856
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=16 icmp_type=9 icmp_code=0 icmp_id=513 lb_pid=2061
+ERROR: lb_fd.c:unpack:144: rcode=-515
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-515 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-515
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755856
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-515
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=29 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755857
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_cltpxy.c:clt_Sproxy_connect:995: rcode=-110
+ERROR: lb_cltpxy.c:clt_Sproxy_loop:946: rcode=-110
+ 2064:lb_cltpxy.c:clt_Sproxy_loop:943:CLIENT_SPROXY(client11): Could not connect. Sleeping for a while...
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755862
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-11
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=0 remainder=1
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:965:CLIENT_SPROXY(client11): remote host port=3000
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:974:CLIENT_SPROXY(client11): rmthost client11 IP 192.168.137.111
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:991:CLIENT_SPROXY(client11): running at IP=192.168.137.111
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755863
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ERROR: lb_fd.c:recv_packet_FD:246: rcode=-11
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755866
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755866
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=0 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755866
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=3
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=3
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755867
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755867
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=3 ttl=64 rtt=1008.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=3 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=3 svr_icmp_rcvd+1=3
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755867
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755896
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=4
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=4
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755897
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755897
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755897
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755898
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755898
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755898
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755899
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755899
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=4 ttl=64 rtt=3033.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=4 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=4 svr_icmp_rcvd+1=4
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755899
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755926
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=5
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=5
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755927
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755927
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755927
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755928
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755928
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=5 ttl=64 rtt=2016.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=5 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=5 svr_icmp_rcvd+1=5
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755928
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755956
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=6
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=6
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755957
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646755957
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755957
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755958
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755958
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=6 ttl=64 rtt=2006.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=6 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=6 svr_icmp_rcvd+1=6
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755958
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646755987
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=7
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=7
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755988
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646755988
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=7 ttl=64 rtt=1012.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=7 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=7 svr_icmp_rcvd+1=7
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755988
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ERROR: lb_cltpxy.c:clt_Sproxy_connect:995: rcode=-110
+ERROR: lb_cltpxy.c:clt_Sproxy_loop:946: rcode=-110
+ 2064:lb_cltpxy.c:clt_Sproxy_loop:943:CLIENT_SPROXY(client11): Could not connect. Sleeping for a while...
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:965:CLIENT_SPROXY(client11): remote host port=3000
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:974:CLIENT_SPROXY(client11): rmthost client11 IP 192.168.137.111
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:991:CLIENT_SPROXY(client11): running at IP=192.168.137.111
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646756017
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=8
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=8
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756018
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756018
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756018
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756019
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756019
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646756019
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646756020
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756020
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646756020
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646756021
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646756021
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=8 ttl=64 rtt=4030.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=8 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=8 svr_icmp_rcvd+1=8
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756021
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646756047
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=9
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=9
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756048
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756048
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756048
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756049
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646756049
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=9 ttl=64 rtt=2014.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=9 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=9 svr_icmp_rcvd+1=9
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756049
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646756077
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=10
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=10
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756078
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756078
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756078
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756079
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646756079
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=10 ttl=64 rtt=2028.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=10 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=10 svr_icmp_rcvd+1=10
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756079
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646756108
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=11
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=11
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756109
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646756109
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=11 ttl=64 rtt=1007.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=11 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=11 svr_icmp_rcvd+1=11
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756109
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ERROR: lb_cltpxy.c:clt_Sproxy_connect:995: rcode=-110
+ERROR: lb_cltpxy.c:clt_Sproxy_loop:946: rcode=-110
+ 2064:lb_cltpxy.c:clt_Sproxy_loop:943:CLIENT_SPROXY(client11): Could not connect. Sleeping for a while...
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=26 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:965:CLIENT_SPROXY(client11): remote host port=3000
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:974:CLIENT_SPROXY(client11): rmthost client11 IP 192.168.137.111
+ 2064:lb_cltpxy.c:clt_Sproxy_connect:991:CLIENT_SPROXY(client11): running at IP=192.168.137.111
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=27 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=28 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=29 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=0 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:378:CHECK n=1 lb_period=2 i=1 remainder=1
+ 2066:lb_fd.c:lb_echo_request:256:Server node1 (1): tv_sec=1646756138
+ 2066:lb_fd.c:lb_echo_request:258:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_request:259:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:send_packet_FD:202:Server node1
+ 2066:lb_fd.c:pack:90:Server:node1 svr_icmp_seq=12
+ 2066:lb_fd.c:send_packet_FD:211:Server node1: packetsize=64 svr_dstaddr.sin_addr.s_addr=6500A8C0 svr_icmp_seq=12
+ 2066:lb_fd.c:lb_echo_request:264:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_request:265:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756139
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=88 tv_sec=1646756139
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=68 icmp_type=3 icmp_code=1 icmp_id=0 lb_pid=2061
+ERROR: lb_fd.c:unpack:142: rcode=-520
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=-520 
+ERROR: lb_fd.c:recv_packet_FD:244: rcode=-520
+ 2066:lb_fd.c:lb_echo_reply:325:Server node1(1): SUSPECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756139
+ERROR: lb_fd.c:lb_echo_reply:340: rcode=-520
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=2 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:279:Server node1(1): INPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646756140
+ 2066:lb_fd.c:lb_echo_reply:281:MTX_LOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:282:MTX_LOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:recv_packet_FD:230:Server node1: recvfrom n=84 tv_sec=1646756140
+ 2066:lb_fd.c:unpack:113:Server node1
+ 2066:lb_fd.c:unpack:126:Server node1: len=64 icmp_type=0 icmp_code=0 icmp_id=2061 lb_pid=2061
+ 2066:lb_fd.c:unpack:133:64 byte from 192.168.0.101: icmp_seq=12 ttl=64 rtt=2028.000 ms
+ 2066:lb_fd.c:recv_packet_FD:232:Server node1: seq=12 
+ 2066:lb_fd.c:recv_packet_FD:235:Server node1: seq=12 svr_icmp_rcvd+1=12
+ 2066:lb_fd.c:lb_echo_reply:294:Server node1(1): CONNECTED 
+ 2066:lb_fd.c:lb_echo_reply:332:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2066:lb_fd.c:lb_echo_reply:333:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646756140
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=3 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=4 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=5 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=6 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=7 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=8 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=9 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=10 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=11 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=12 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=13 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=14 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=15 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=16 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=17 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=18 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=19 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=20 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=21 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=22 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=23 remainder=1
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=24 remainder=1
+ 2066:lb_fd.c:lb_fd_monitor:374:n=1 lb_period=2 i=25 remainder=1
+ 2061:lb_dvs.c:main:353:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:355:lb_nr_init=0 lb_min_servers=1
+ 2061:lb_dvs.c:start_new_node:404:
+ 2061:lb_dvs.c:start_new_node:417:lb_bm_init=0 lb_bm_svrpxy=2 bm_not_init=2
+ 2061:lb_dvs.c:start_new_node:430:MTX_LOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:440:MTX_UNLOCK svr_ptr->svr_mutex 
+ 2061:lb_dvs.c:start_new_node:446:Not Server found to start
+ 2061:lb_dvs.c:main:359:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:268:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:271:MTX_UNLOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:278:MTX_LOCK lb_ptr->lb_mtx 
+ 2061:lb_dvs.c:main:281:MTX_UNLOCK lb_ptr->lb_mtx 
