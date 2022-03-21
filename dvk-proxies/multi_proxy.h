@@ -23,6 +23,7 @@
 
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
+#include <netinet/tcp.h>
 #include <netinet/ip_icmp.h>
 #include <net/if.h>
 #include <net/if_arp.h>   
@@ -81,6 +82,9 @@ typedef unsigned long long jiff;
 #define MP_TIMEOUT_5SEC	5
 #define MP_TIMEOUT_1SEC	1
 #define MP_DFT_PERIOD 	30
+
+#define MP_SEND_TIMEOUT 30
+#define MP_RECV_TIMEOUT 30
 
 #define BIND_RETRIES	3
 #define BIND_RETRIES	3

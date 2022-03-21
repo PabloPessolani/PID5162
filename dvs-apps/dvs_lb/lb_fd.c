@@ -38,15 +38,51 @@ void flush_socket_buffer(server_t *svr_ptr)
 	int cero; 
 	
 	free(svr_ptr->svr_recvpkt);
-	svr_ptr->svr_recvpkt = malloc(PING_PACKET_SIZE); 
-	if( svr_ptr->svr_recvpkt == NULL) ERROR_EXIT(-errno);
-	
+	svr_ptr->svr_recvpkt = malloc(SOCKET_BUFFER_SIZE); 
+	if( svr_ptr->svr_recvpkt == NULL) {
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	// Flush the receiver buffer: first set buffer size to 0, then set buffer size to 4096
 //	cero = 0;
 //    setsockopt(svr_ptr->svr_icmp_fd, SOL_SOCKET, SO_RCVBUF, &cero, sizeof(cero));
 //    setsockopt(svr_ptr->svr_icmp_fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize));	
 }
 #endif // ANULADO 
+
+int enable_keepalive(int sock) 
+{
+	int rcode;
+	
+    int yes = 1;
+    if(setsockopt(
+        sock, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(int)) != -1){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
+
+    int idle = LB_PERIOD_DEFAULT; // tiempo de espera despues de la actividad que debe empezar para comenzar con los keepalive
+    if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(int)) != -1){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
+	
+    int interval = 5;
+	if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(int)) != -1){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
+	
+    int maxpkt = 5;
+    if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPCNT, &maxpkt, sizeof(int)) != -1){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
+	return(OK);
+}
 
 void tv_sub(struct timeval *out, struct timeval *in)
 {
@@ -133,7 +169,6 @@ int unpack(server_t *svr_ptr, char *buf, int len)
 				inet_ntoa(svr_ptr->svr_from.sin_addr), icmp->icmp_seq, ip->ip_ttl, rtt);
 			// store the Timestamp of the last ECHO REPLY 
 			memcpy((void *)&svr_ptr->svr_icmp_ts, (void *) icmp->icmp_data, sizeof(struct timeval));
-			if(icmp->icmp_seq < 0) ERROR_PRINT(EFD_BADSEQ);
 			return(icmp->icmp_seq);
 		} else{
 			ERROR_RETURN(EFD_BADPID);
@@ -151,7 +186,7 @@ int init_node_FD(server_t *svr_ptr)
     struct protoent *protocol;
     unsigned long inaddr = 0l;
 	struct timeval tout;
-	int bufsize = PING_PACKET_SIZE;
+	int bufsize = SOCKET_BUFFER_SIZE;
 	
 	// DO NOT WAIT 
 	tout.tv_sec = 0;
@@ -163,14 +198,17 @@ int init_node_FD(server_t *svr_ptr)
     }
 	
 #ifdef ANULADO 	
-	svr_ptr->svr_sendpkt = malloc(PING_PACKET_SIZE);
+	svr_ptr->svr_sendpkt = malloc(SOCKET_BUFFER_SIZE);
 	if( svr_ptr->svr_sendpkt == NULL){
-		ERROR_EXIT(-errno);
+		rcode = -errno;
+		ERROR_EXIT(rcode);
 	}
-	svr_ptr->svr_recvpkt = malloc(PING_PACKET_SIZE); 
+	svr_ptr->svr_recvpkt = malloc(SOCKET_BUFFER_SIZE); 
 	if( svr_ptr->svr_recvpkt == NULL) {
-		ERROR_EXIT(-errno);
+		rcode = -errno;
+		ERROR_EXIT(rcode);
 	}
+	
 #endif // ANULADO 	
 	
     if ((svr_ptr->svr_icmp_fd = socket(AF_INET, SOCK_RAW, protocol->p_proto)) < 0){
@@ -183,7 +221,7 @@ int init_node_FD(server_t *svr_ptr)
     bzero(&svr_ptr->svr_dstaddr, sizeof(struct sockaddr_in));
     svr_ptr->svr_dstaddr.sin_family = AF_INET;
 
-    if (inaddr = inet_addr(svr_ptr->svr_name) == INADDR_NONE) {
+    if ((inaddr = inet_addr(svr_ptr->svr_name)) == INADDR_NONE) {
         if( (host = gethostbyname(svr_ptr->svr_name)) == NULL) {
 			ERROR_EXIT(EDVSADDRNOTAVAIL);
         }
@@ -197,11 +235,11 @@ int init_node_FD(server_t *svr_ptr)
 
 void send_packet_FD(server_t *svr_ptr)
 {
-    int packetsize;
+    int packetsize, rcode;
 	
 	USRDEBUG("Server %s\n", svr_ptr->svr_name);
 
-    svr_ptr->svr_icmp_sent	= svr_ptr->svr_icmp_rcvd + 1;
+    svr_ptr->svr_icmp_sent++;
     svr_ptr->svr_icmp_seq 	= svr_ptr->svr_icmp_sent;
     packetsize = pack(svr_ptr); 
 
@@ -210,8 +248,9 @@ void send_packet_FD(server_t *svr_ptr)
 	USRDEBUG("Server %s: packetsize=%d svr_dstaddr.sin_addr.s_addr=%X svr_icmp_seq=%d\n", 
 		svr_ptr->svr_name, packetsize, svr_ptr->svr_dstaddr.sin_addr.s_addr, svr_ptr->svr_icmp_seq);
     if (sendto(svr_ptr->svr_icmp_fd, svr_ptr->svr_sendpkt, packetsize, 0, (struct sockaddr*)
-          &svr_ptr->svr_dstaddr, sizeof(svr_ptr->svr_dstaddr)) < 0) {
-			ERROR_PRINT(-errno);
+         &svr_ptr->svr_dstaddr, sizeof(svr_ptr->svr_dstaddr)) < 0) {
+		rcode = -errno;
+		ERROR_PRINT(rcode);
     }
 }
 
@@ -224,18 +263,20 @@ int recv_packet_FD(server_t *svr_ptr)
     packsize = 8+datalen;
 	rcode = 0;
 
-	if ((n = recvfrom(svr_ptr->svr_icmp_fd, svr_ptr->svr_recvpkt, PING_PACKET_SIZE, 0, (struct
+recv_again:
+	if ((n = recvfrom(svr_ptr->svr_icmp_fd, svr_ptr->svr_recvpkt, SOCKET_BUFFER_SIZE, 0, (struct
 		sockaddr*) &svr_ptr->svr_from, &fromlen)) >=  0) {
 		gettimeofday(&tvrecv, NULL); 
 		USRDEBUG("Server %s: recvfrom n=%d tv_sec=%ld\n", svr_ptr->svr_name ,n, tvrecv.tv_sec);
 		seq = unpack(svr_ptr, svr_ptr->svr_recvpkt, n);
 		USRDEBUG("Server %s: seq=%d \n", svr_ptr->svr_name, seq);
 		if( seq > 0) {
-			USRDEBUG("Server %s: seq=%d svr_icmp_rcvd+1=%d\n", 
-				svr_ptr->svr_name,seq, svr_ptr->svr_icmp_rcvd+1 );
-			if( seq < svr_ptr->svr_icmp_rcvd+1){ // sequence do not macht
+			USRDEBUG("Server %s: seq=%d svr_icmp_sent=%d\n", 
+				svr_ptr->svr_name,seq, svr_ptr->svr_icmp_sent);
+			if( seq < svr_ptr->svr_icmp_sent){ // sequence do not macht
 				ERROR_RETURN(EFD_LOWERSEQ);
-			}else if( seq > svr_ptr->svr_icmp_rcvd+1){
+				goto recv_again;
+			}else if( seq > svr_ptr->svr_icmp_sent){
 //				flush_socket_buffer(svr_ptr);
 				ERROR_RETURN(EFD_LARGESEQ);
 			}	
@@ -243,7 +284,8 @@ int recv_packet_FD(server_t *svr_ptr)
 		}
 		ERROR_RETURN(seq);
 	} 
-	ERROR_RETURN(-errno);
+	rcode = -errno;
+	ERROR_RETURN(rcode);
 }
 
 int lb_echo_request(int n)
@@ -280,54 +322,71 @@ int lb_echo_reply(server_t *svr_ptr)
 			
 	MTX_LOCK(lb_ptr->lb_mtx);
 	MTX_LOCK(svr_ptr->svr_mutex);
-//	retries = FD_MAXRETRIES;
-//	while( retries > 0){
-		seq = recv_packet_FD(svr_ptr);
-//		if( seq != EDVSAGAIN) break;
-//		retries--;
-//	}
+	retries = svr_ptr->svr_max_retries;
+	
+	while( retries > 0){
 		
-	if( seq >= 0) {
-		//////////////////////////////////////////////////////////
-		//   ESTA VIVO,  SI ERA SOSPECHOSO DEJA DE SERLO 
-		//////////////////////////////////////////////////////////	
-		USRDEBUG("Server %s(%d): CONNECTED \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
-		SET_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 				
-		CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
-		svr_ptr->svr_icmp_seq = LB_INVALID;
-		svr_ptr->svr_icmp_retry = FD_MAXRETRIES;
-		svr_ptr->svr_icmp_rcvd++;		
-	}else{
-		/////////////////////////////////////////////////////////////
-		//			AQUI COMIENZA A SER SOSPECHOSO 
-		////////////////////////////////////////////////////////////
-		if( seq == EFD_LARGESEQ) 
-			svr_ptr->svr_icmp_seq = LB_INVALID;
-		if(  TEST_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid) != 0) {			// ACTIVE ??
-			if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0) {		// SUSPECTED??
-				if ( svr_ptr->svr_icmp_retry <= 0) { 
-					// FAULTY NODE !!!!!
-					USRDEBUG("Server %s(%d): FAULTY \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
-					CLR_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 	
-					CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid);
-					CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid); 
-					svr_ptr->svr_icmp_retry 	= FD_MAXRETRIES;
-					CLR_BIT(lb_ptr->lb_bm_echo,  svr_ptr->svr_nodeid);
-					//////////////////////////////////////////////
-					// HABRIA Q NOTIFICAR AL PROXY SI ES QUE NO LO DETECTO
-					//////////////////////////////////////////////
-				}else{															// SUSPECTED SEVERAL TIMES
-//					if( seq != EFD_UNREACH) 		
-						svr_ptr->svr_icmp_retry--;
+		seq = recv_packet_FD(svr_ptr);
+	
+		if( seq >= 0) {
+			//////////////////////////////////////////////////////////
+			//   ESTA VIVO,  SI ERA SOSPECHOSO DEJA DE SERLO 
+			//////////////////////////////////////////////////////////	
+			USRDEBUG("Server %s(%d): CONNECTED \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
+			if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0){
+				if( svr_ptr->svr_icmp_retry == 1) {// was the last opportunity? increase max retries
+					svr_ptr->svr_max_retries++;
+					USRDEBUG("Server %s(%d): svr_max_retries=%d\n", 
+						svr_ptr->svr_name, svr_ptr->svr_nodeid, svr_ptr->svr_icmp_retry);
 				}
-			} else {															// SUSPECTED FIRST TIME 
-				// First chance 
-				USRDEBUG("Server %s(%d): SUSPECTED \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
-				SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
-//				if( seq != EFD_UNREACH) 		
+			}			
+			SET_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 				
+			CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
+			svr_ptr->svr_icmp_seq = LB_INVALID;
+			svr_ptr->svr_icmp_retry =  svr_ptr->svr_max_retries;
+			svr_ptr->svr_icmp_rcvd++;
+			break;
+		}else{
+			/////////////////////////////////////////////////////////////
+			//			AQUI COMIENZA A SER SOSPECHOSO 
+			////////////////////////////////////////////////////////////
+			if( seq == EFD_LARGESEQ || seq == EFD_LOWERSEQ || seq == EFD_BADSEQ ) {
+				svr_ptr->svr_icmp_seq = LB_INVALID;
+				// new opportunity
+				retries++;
+			}
+			if(  TEST_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid) != 0) {			// ACTIVE ??
+				if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0) {		// SUSPECTED??
+					if ( svr_ptr->svr_icmp_retry <= 0) { 
+						// FAULTY NODE !!!!!
+						USRDEBUG("Server %s(%d): FAULTY \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
+						CLR_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 	
+					//	CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid);
+						CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid); 
+						svr_ptr->svr_icmp_retry 	=  svr_ptr->svr_max_retries;
+						CLR_BIT(lb_ptr->lb_bm_echo,  svr_ptr->svr_nodeid);
+						//////////////////////////////////////////////
+						// HABRIA Q NOTIFICAR AL PROXY SI ES QUE NO LO DETECTO Y QUE EL PROXY ACTUALICE lb_bm_init y lb_bm_proxy 
+						//////////////////////////////////////////////
+						break;
+					}else{															// SUSPECTED SEVERAL TIMES
+	//					if( seq != EFD_UNREACH) 		
+						svr_ptr->svr_icmp_retry--;
+						break;
+					}
+				} else {		// SUSPECTED FIRST TIME 
+					// First chance 
+					USRDEBUG("Server %s(%d): SUSPECTED \n", svr_ptr->svr_name, svr_ptr->svr_nodeid);
+					SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
+	//				if( seq != EFD_UNREACH) 		
 					svr_ptr->svr_icmp_retry--;
+					break;
+				}
+			} else {
+				CLR_BIT(lb_ptr->lb_bm_echo, svr_ptr->svr_nodeid);
 			}
 		}
+		retries--;
 	}
 	MTX_UNLOCK(svr_ptr->svr_mutex);
 	MTX_UNLOCK(lb_ptr->lb_mtx);
@@ -371,15 +430,20 @@ void *lb_fd_monitor(void *arg)
 					USRDEBUG("CHECK i=%d n=%d lb_bm_active=%0lX\n", i, n, lb_ptr->lb_bm_active);
 				}else{ 
 					USRDEBUG("n=%d lb_period=%d i=%d remainder=%d\n", 
-						n, lb_ptr->lb_bm_active, i, ((n)%(lb_ptr->lb_period)));
+						n, lb_ptr->lb_period, i, ((n)%(lb_ptr->lb_period)));
 						
-					if( ((n)%(lb_ptr->lb_period)) != i) continue;						
+					if( ((n)%(lb_ptr->lb_period)) != i) continue;
+					// Test if the proxy receiver received a message from the node, then it is not necessary to test it again 
+					if( TEST_BIT(lb_ptr->lb_bm_tested, svr_ptr->svr_nodeid) != 0) {
+						CLR_BIT(lb_ptr->lb_bm_tested, svr_ptr->svr_nodeid);
+						continue;
+					} 
 					USRDEBUG("CHECK n=%d lb_period=%d i=%d remainder=%d\n", 
-						n, lb_ptr->lb_bm_active, i, ((n)%(lb_ptr->lb_period)));
+						n, lb_ptr->lb_period, i, ((n)%(lb_ptr->lb_period)));
 				}
 				
 				rcode = lb_echo_request(n);
-				
+				// set the bit to signal that the ECHO REPLY need to be received 
 				SET_BIT(lb_ptr->lb_bm_echo, n);
 			}
 		

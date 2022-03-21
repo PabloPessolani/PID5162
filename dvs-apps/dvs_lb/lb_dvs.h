@@ -26,9 +26,11 @@
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
 #include <netinet/ip_icmp.h>
+#include <netinet/tcp.h>
 #include <net/if.h>
 #include <net/if_arp.h>   
 #include <arpa/inet.h>
+#include <sys/signal.h>
 
 #include "lb_spread.h"
 
@@ -81,10 +83,12 @@
 #define FD_MAXRETRIES 	5
 #define MAX_RANDOM_RETRIES	sizeof(unsigned int)
 
-#define PING_PACKET_SIZE     4096
+#define SOCKET_BUFFER_SIZE     65536
 #define PING_WAIT_TIME   5
 #define PING_NR_PACKETS  3
 
+#define LB_SEND_TIMEOUT		30	
+#define LB_RECV_TIMEOUT		30	
 #define LB_PERIOD_DEFAULT	30	
 #define LB_START_DEFAULT	60	
 #define LB_SHUTDOWN_DEFAULT	60
@@ -279,6 +283,7 @@ struct server_s{
 	int svr_icmp_rcvd;		// used by FD
 	int svr_icmp_seq; 		// used by FD
 	int svr_icmp_retry;		// used by FD
+	int svr_max_retries;
 	struct timeval svr_icmp_ts;	// used by FD 
 	struct sockaddr_in svr_dstaddr; // used by FD
 	struct sockaddr_in svr_from;
@@ -297,8 +302,8 @@ struct server_s{
 	unsigned long int svr_bm_sts; 	
 	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
 
-	char svr_sendpkt[PING_PACKET_SIZE];
-	char svr_recvpkt[PING_PACKET_SIZE];
+	char svr_sendpkt[SOCKET_BUFFER_SIZE];
+	char svr_recvpkt[SOCKET_BUFFER_SIZE];
 
 	lbpx_desc_t svr_spx;		// Server sender proxy 
 	lbpx_desc_t svr_rpx;		// Server receiver proxy	
@@ -317,6 +322,10 @@ struct server_s{
 	pthread_mutex_t svr_agent_mtx;  // controls when a server process is started or killed 
 	pthread_cond_t  svr_agent_cond;  
 #endif // SPREAD_MONITOR
+
+	pthread_mutex_t svr_conn_mtx;  
+	pthread_cond_t  svr_conn_scond;
+	pthread_cond_t  svr_conn_rcond;	
 
 	pthread_mutex_t svr_node_mtx;  // controls when a complete server node VM is started or stopped 
 	pthread_cond_t  svr_node_cond;  
@@ -374,9 +383,16 @@ typedef struct {
 	int				lb_nr_nodes;	// NOT USED number of configured nodes 
 
 // START MULTIPLE ACCESS FIELDS 
-    unsigned int	lb_bm_active;	// bitmap of Connected nodes
+    unsigned int	lb_bm_active;	// bitmap of Connected nodes (reacheable by ping)
+    unsigned int	lb_bm_proxy;	// bitmap of Connected proxies 
     unsigned int	lb_bm_init;		// bitmap  initialized nodes 
-	int				lb_nr_active;	// number of Connected server nodes 
+    unsigned int	lb_bm_tested;	// bitmap which denotes that the node not be tested by the Failure Detector. 
+	
+    unsigned int	lb_bm_sconn;	// bitmap of Connected Sender proxies   
+    unsigned int	lb_bm_rconn;	// bitmap of Connected Receiver proxies 
+	
+	int				lb_nr_active;	// number of Connected server nodes reacheable by ping) 
+	int				lb_nr_proxy;	// number of Connected proxies 
 	int				lb_nr_init;		// number of   initialized  server nodes 
 
 // END MULTIPLE ACCESS FIELDS 
@@ -464,6 +480,8 @@ int send_hello_msg(server_t *svr_ptr);
 int send_load_threadholds(server_t *svr_ptr);
 int send_rmtbind(server_t *svr_ptr, int dcid, int endpoint, int nodeid, char *pname);
 void *lb_fd_monitor(void *arg);
+int enable_keepalive(int sock);
+
 
 
 

@@ -49,8 +49,10 @@ void svr_Rproxy_init(server_t *svr_ptr)
 	if (rcode != 0) ERROR_EXIT(rcode);
 	USRDEBUG("SERVER_RPROXY(%s): Payload address=%p\n", svr_ptr->svr_name, spx_ptr->lbp_payload);
 
-    if( svr_Rproxy_setup(svr_ptr) != OK) ERROR_EXIT(-errno);
-
+    if( svr_Rproxy_setup(svr_ptr) != OK){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	return(OK);
 }
 
@@ -60,7 +62,10 @@ int svr_Rproxy_setup(server_t *svr_ptr)
     int optval = 1;
 	struct hostent *h_ptr;
 	lbpx_desc_t *spx_ptr; 
-
+    struct timeval timeout;      
+    timeout.tv_sec = LB_RECV_TIMEOUT;
+    timeout.tv_usec = 0;
+	
 	spx_ptr = &svr_ptr->svr_rpx;
 	
     spx_ptr->lbp_port = (LBP_BASE_PORT+svr_ptr->svr_nodeid);
@@ -68,11 +73,21 @@ int svr_Rproxy_setup(server_t *svr_ptr)
 		svr_ptr->svr_name, svr_ptr->svr_nodeid, spx_ptr->lbp_port);
 
     // Create server socket.
-    if ( (spx_ptr->lbp_lsd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-        ERROR_EXIT(-errno);
+    if ( (spx_ptr->lbp_lsd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+		rcode = -errno;
+        ERROR_EXIT(rcode);
+	}
 
-    if( (rcode = setsockopt(spx_ptr->lbp_lsd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) < 0)
-        	ERROR_EXIT(-errno);
+    if( (rcode = setsockopt(spx_ptr->lbp_lsd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) < 0){
+		rcode = -errno;
+        ERROR_EXIT(rcode);
+	}
+   
+    if (setsockopt (spx_ptr->lbp_lsd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0){
+		rcode = -errno;
+        ERROR_EXIT(rcode);
+	}
+//	enable_keepalive(spx_ptr->lbp_lsd);
 
     // Bind (attach) this process to the server socket.
     spx_ptr->lbp_lclsvr_addr.sin_family = AF_INET;
@@ -96,15 +111,19 @@ int svr_Rproxy_setup(server_t *svr_ptr)
     spx_ptr->lbp_lclsvr_addr.sin_port = htons(spx_ptr->lbp_port);
 	rcode = bind(spx_ptr->lbp_lsd, (struct sockaddr *) &spx_ptr->lbp_lclsvr_addr, 
 					sizeof(spx_ptr->lbp_lclsvr_addr));
-    if(rcode < 0) ERROR_EXIT(-errno);
-
+    if(rcode < 0) {
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	USRDEBUG("SERVER_RPROXY(%s): is bound to port=%d socket=%d\n", 
 		svr_ptr->svr_name, spx_ptr->lbp_port, spx_ptr->lbp_lsd);
 		
 // Turn 'rproxy_sd' to a listening socket. Listen queue size is 1.
 	rcode = listen(spx_ptr->lbp_lsd, 0);
-    if(rcode < 0) ERROR_EXIT(-errno);
-
+    if(rcode < 0){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
     return(OK);
    
 }
@@ -118,6 +137,7 @@ void svr_Rproxy_loop(server_t *svr_ptr)
 	client_t *clt_ptr;
 	lbpx_desc_t *spx_ptr; 
 	sess_entry_t *sess_ptr;
+    struct timeval tval;
 
 	spx_ptr = &svr_ptr->svr_rpx;
 	
@@ -127,12 +147,34 @@ void svr_Rproxy_loop(server_t *svr_ptr)
 			USRDEBUG("SERVER_RPROXY(%s): Waiting for connection.\n",
 				svr_ptr->svr_name);
     		spx_ptr->lbp_csd = accept(spx_ptr->lbp_lsd, (struct sockaddr *) &sa, &sender_addrlen);
-    		if(spx_ptr->lbp_csd < 0) ERROR_PRINT(-errno);
+    		if(spx_ptr->lbp_csd < 0) {
+				rcode = -errno;
+				ERROR_PRINT(rcode);
+			}
 		}while(spx_ptr->lbp_csd < 0);
 
 		USRDEBUG("SERVER_RPROXY(%s): [%s]. Getting remote command.\n",
            		svr_ptr->svr_name, inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN));
 
+		MTX_LOCK(svr_ptr->svr_conn_mtx);
+		SET_BIT(lb_ptr->lb_bm_rconn, svr_ptr->svr_nodeid);
+		COND_SIGNAL(svr_ptr->svr_conn_scond);
+		COND_WAIT(svr_ptr->svr_conn_rcond, svr_ptr->svr_conn_mtx);
+		MTX_UNLOCK(svr_ptr->svr_conn_mtx);
+
+		if( TEST_BIT(lb_ptr->lb_bm_sconn, svr_ptr->svr_nodeid) == 0){
+			USRDEBUG("SERVER_RPROXY(%s): lb_bm_sconn==%0lX lb_bm_rconn==%0lX\n",
+           		svr_ptr->svr_name, lb_ptr->lb_bm_sconn, lb_ptr->lb_bm_rconn);
+			close(spx_ptr->lbp_csd);
+			sleep(1);
+			continue;
+		}
+			
+		MTX_LOCK(lb_ptr->lb_mtx);
+		SET_BIT(lb_ptr->lb_bm_proxy, svr_ptr->svr_nodeid);
+		lb_ptr->lb_nr_proxy++;
+		MTX_UNLOCK(lb_ptr->lb_mtx);
+		
     	/* Serve Forever */
 		do { 
 	       	/* get a complete message and process it */
@@ -157,10 +199,21 @@ void svr_Rproxy_loop(server_t *svr_ptr)
 				USRDEBUG("SERVER_RPROXY(%s): Message processing failure [%d]\n",
 					svr_ptr->svr_name,rcode);
             	spx_ptr->lbp_msg_err++;
-				if( rcode == EDVSNOTCONN) break;
+//				if( rcode == EDVSNOTCONN) 
+					break;
 			}	
 		}while(1);
 		close(spx_ptr->lbp_csd);
+		CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid);
+		lb_ptr->lb_nr_init--;
+		CLR_BIT(lb_ptr->lb_bm_proxy, svr_ptr->svr_nodeid);
+		lb_ptr->lb_nr_proxy--;
+		SET_BIT(lb_ptr->lb_bm_suspect, 	svr_ptr->svr_nodeid);
+	    gettimeofday(&tval, NULL); 
+			USRDEBUG("SERVER_RPROXY(%s) DISCONNECTED: lb_bm_init=%0lX lb_bm_proxy=%0lX lb_bm_suspect=%0lX svr_icmp_retry=%d tv_sec=%ld\n", 
+			svr_ptr->svr_name, 
+			lb_ptr->lb_bm_init, lb_ptr->lb_bm_proxy, lb_ptr->lb_bm_suspect,
+			svr_ptr->svr_icmp_retry,  tval.tv_sec);	
    	}
     /* never reached */
 }
@@ -284,7 +337,8 @@ sess_entry_t *svr_Rproxy_2server(server_t *svr_ptr)
 						rcode = system(sess_ptr->se_rmtcmd);
 						if(rcode < 0){
 							ERROR_PRINT(rcode);
-							ERROR_PRINT(-errno);				
+							rcode = -errno;
+							ERROR_PRINT(rcode);				
 						}						
 #else // USE_SSHPASS								
 						sprintf(sess_ptr->se_rmtcmd,	
@@ -412,7 +466,10 @@ int svr_Rproxy_error(server_t *svr_ptr, int errcode)
 	spx_ptr->lbp_header->c_src   = dst;
 	rcode = msgsnd(svr_send_ptr->lbp_mqid, (char*) spx_ptr->lbp_mqbuf, 
 								sizeof(proxy_hdr_t), 0); 
-	if(rcode < 0) ERROR_RETURN(-errno);
+	if(rcode < 0) {
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
 	return(rcode);
 }
 
@@ -422,7 +479,8 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 	lb_t	*lb_ptr;
 	lbpx_desc_t *spx_ptr, *svr_send_ptr;
 	message *m_ptr;
-	
+    struct timeval tval;
+
 	spx_ptr = &svr_ptr->svr_rpx;
 	lb_ptr =&lb;
 	
@@ -436,26 +494,26 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 		
 		MTX_LOCK(lb_ptr->lb_mtx);
     	if (rcode != 0) {
-			if( TEST_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid) != 0) {
-				if ( svr_ptr->svr_icmp_retry <= 0) {
-					// FAULTY PROXY !!
-					CLR_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid);					
-				}
-			} else {
-				// First chance 
-				SET_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid);
-				svr_ptr->svr_icmp_retry--;			
-			}		
+			CLR_BIT(lb_ptr->lb_bm_init, 	svr_ptr->svr_nodeid);					
+			CLR_BIT(lb_ptr->lb_bm_proxy, 	svr_ptr->svr_nodeid);	
+			SET_BIT(lb_ptr->lb_bm_suspect, 	svr_ptr->svr_nodeid);
 			MTX_UNLOCK(lb_ptr->lb_mtx); 	
+			// if( svr_ptr->svr_icmp_retry > 0) svr_ptr->svr_icmp_retry--;		
+			gettimeofday(&tval, NULL); 
+			USRDEBUG("SERVER_RPROXY(%s): DISCONNECTED lb_bm_init=%0lX lb_bm_proxy=%0lX lb_bm_suspect=%0lX svr_icmp_retry=%d tv_sec=%ld\n", 
+			svr_ptr->svr_name, 
+			lb_ptr->lb_bm_init, lb_ptr->lb_bm_proxy, lb_ptr->lb_bm_suspect,
+			svr_ptr->svr_icmp_retry,  tval.tv_sec);			
 			ERROR_RETURN(rcode);
 		}else {				
 			// THE SERVER IS ALIVE 	
 			USRDEBUG("SERVER_RPROXY(%s): THE SERVER IS ALIVE\n",svr_ptr->svr_name);
 			SET_BIT(lb_ptr->lb_bm_active, svr_ptr->svr_nodeid); 	// NODE ALIVE 	
-			SET_BIT(lb_ptr->lb_bm_init, svr_ptr->svr_nodeid); 		// PROXY ALIVE 
+			SET_BIT(lb_ptr->lb_bm_proxy, svr_ptr->svr_nodeid); 		// PROXY ALIVE 
 			CLR_BIT(lb_ptr->lb_bm_suspect, svr_ptr->svr_nodeid); 
+			SET_BIT(lb_ptr->lb_bm_tested, svr_ptr->svr_nodeid); 
 			MTX_UNLOCK(lb_ptr->lb_mtx); 	
-			svr_ptr->svr_icmp_retry = FD_MAXRETRIES;
+			svr_ptr->svr_icmp_retry = svr_ptr->svr_max_retries;
 		}
 				
 		clock_gettime(clk_id, &spx_ptr->lbp_header->c_timestamp);
@@ -520,7 +578,7 @@ int svr_Rproxy_getcmd(server_t *svr_ptr)
 
 int svr_Rproxy_rcvhdr(server_t *svr_ptr)
 {
-    int n, total,  received = 0;
+    int n, total,  rcode, received = 0;
     char *p_ptr;
 	lbpx_desc_t *spx_ptr; 
 
@@ -544,13 +602,17 @@ int svr_Rproxy_rcvhdr(server_t *svr_ptr)
         	p_ptr += n;
         }
    	}
-    if( n < 0)  ERROR_RETURN(-errno);
+	if( n == 0) ERROR_RETURN(EDVSNOCONN);
+    if( n < 0) {
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
 	return(OK);
 }
 
 int svr_Rproxy_rcvpay(server_t *svr_ptr)
 {
-    int n, pl_size ,received = 0;
+    int n, pl_size, rcode, received = 0;
     char *p_ptr;
 	lbpx_desc_t *spx_ptr; 
 
@@ -565,8 +627,11 @@ int svr_Rproxy_rcvpay(server_t *svr_ptr)
         if (received >= pl_size) return(OK);
        	p_ptr += n;
    	}
-    
-    if(n < 0) ERROR_RETURN(-errno);
+  	if( n == 0) ERROR_RETURN(EDVSNOCONN); 
+    if(n < 0) {
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
  	return(OK);
 }
 
@@ -648,8 +713,11 @@ int svr_Rproxy_cltmq(server_t *svr_ptr, client_t *clt_ptr, sess_entry_t *sess_pt
 		if (ret != 0) ERROR_EXIT(ret);
 		USRDEBUG("SERVER_RPROXY(%s): Payload address=%p\n", clt_ptr->clt_name, spx_ptr->lbp_payload);
 	}
-
-	if( rcode < 0) ERROR_RETURN(-errno);
+	if (rcode < 0){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
+	
 	return(rcode);
 
 }
@@ -681,8 +749,12 @@ void  svr_Sproxy_init(	server_t *svr_ptr)
 {
     int rcode = 0;
 	int optval;
-
 	lbpx_desc_t *spx_ptr; 
+    struct timeval timeout;      
+
+    timeout.tv_sec = LB_SEND_TIMEOUT;
+    timeout.tv_usec = 0;
+	
 	spx_ptr = &svr_ptr->svr_spx;
 
 	USRDEBUG("SERVER_SPROXY(%s): Initializing proxy sender\n", svr_ptr->svr_name);
@@ -695,17 +767,32 @@ void  svr_Sproxy_init(	server_t *svr_ptr)
 
     // Create server socket.
     if ( (spx_ptr->lbp_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-       	ERROR_EXIT(-errno);
+		rcode = -errno;
+       	ERROR_EXIT(rcode);
     }
 
 	// set SO_REUSEADDR on a socket to true (1):
 	optval = 1;
 	rcode = setsockopt(spx_ptr->lbp_sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-	if (rcode < 0) ERROR_EXIT(-errno);
-
+	if (rcode < 0){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	// bind a socket to a device name (might not work on all systems):
 	rcode = setsockopt(spx_ptr->lbp_sd, SOL_SOCKET, SO_BINDTODEVICE, lb.lb_svrdev, strlen(lb.lb_svrdev));
-	if (rcode < 0) ERROR_EXIT(-errno);	
+	if (rcode < 0){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}	
+		
+#ifdef ANULADO	
+	rcode = setsockopt (spx_ptr->lbp_lsd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+	if (rcode < 0){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
+#endif //  ANULADO	
+	
 }
 
 void  svr_Sproxy_loop(server_t *svr_ptr)  
@@ -724,6 +811,20 @@ void  svr_Sproxy_loop(server_t *svr_ptr)
 			if(rcode != 0) ERROR_PRINT(rcode);
 		} while (rcode != 0);
 		
+		MTX_LOCK(svr_ptr->svr_conn_mtx);
+		SET_BIT(lb_ptr->lb_bm_sconn, svr_ptr->svr_nodeid);
+		COND_SIGNAL(svr_ptr->svr_conn_rcond);
+		COND_WAIT(svr_ptr->svr_conn_scond, svr_ptr->svr_conn_mtx);
+		MTX_UNLOCK(svr_ptr->svr_conn_mtx);
+
+		if( TEST_BIT(lb_ptr->lb_bm_rconn, svr_ptr->svr_nodeid) == 0){
+			USRDEBUG("SERVER_SPROXY(%s): lb_bm_sconn==%0lX lb_bm_rconn==%0lX\n",
+           		svr_ptr->svr_name, lb_ptr->lb_bm_sconn, lb_ptr->lb_bm_rconn);
+			close(spx_ptr->lbp_sd);
+			sleep(1);
+			continue;
+		}
+				
 		rcode = svr_Sproxy_serving(svr_ptr);
 		ERROR_PRINT(rcode);
 		close(spx_ptr->lbp_sd);
@@ -761,15 +862,20 @@ int  svr_Sproxy_connect(server_t *svr_ptr)
 //     	ERROR_RETURN(-errno);
 
     if((inet_pton(AF_INET,inet_ntoa( *( struct in_addr*)(spx_ptr->lbp_rmthost->h_addr)), 
-		(struct sockaddr*) &spx_ptr->lbp_rmtsvr_addr.sin_addr)) <= 0)
-    	ERROR_RETURN(-errno);
+		(struct sockaddr*) &spx_ptr->lbp_rmtsvr_addr.sin_addr)) <= 0){
+		rcode = -errno;
+    	ERROR_RETURN(rcode);
+	}
 		
     inet_ntop(AF_INET, (struct sockaddr*) &spx_ptr->lbp_rmtsvr_addr.sin_addr, rmt_ipaddr, INET_ADDRSTRLEN);
 	USRDEBUG("SERVER_SPROXY(%s): running at IP=%s\n", svr_ptr->svr_name, rmt_ipaddr);    
 
 	rcode = connect(spx_ptr->lbp_sd, (struct sockaddr *) &spx_ptr->lbp_rmtsvr_addr, 
 				sizeof(spx_ptr->lbp_rmtsvr_addr));
-    if (rcode != 0) ERROR_RETURN(-errno);
+    if (rcode != 0){
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
 	USRDEBUG("SERVER_SPROXY(%s): connected to IP=%s on socket=%d\n", 
 		svr_ptr->svr_name, rmt_ipaddr, spx_ptr->lbp_sd);    
     return(OK);
@@ -791,10 +897,6 @@ int  svr_Sproxy_serving(server_t *svr_ptr)
 	}
 	if(rcode < 0) ERROR_RETURN(rcode);
 	
-	//// ONLY FOR TEST 
-	rcode = send_rmtbind(svr_ptr, 0, 1, 0, "FS");
-	if(rcode < 0) ERROR_RETURN(rcode);
-
 	spx_ptr = &svr_ptr->svr_spx;
 	
     while(1) {
@@ -803,6 +905,10 @@ int  svr_Sproxy_serving(server_t *svr_ptr)
 		// Get message from message queue  
 		rcode = svr_Sproxy_mqrcv(svr_ptr);
 		if( rcode < 0) continue;
+		///////////////////////////////////////////////////////////////////////////
+		// AQUI HAY QUE CONTROLAR SI LAS COMUNICACIONES CON EL SERVER 
+		// PERMANECEN ACTIVAS 
+		///////////////////////////////////////////////////////////////////////////
 		assert(spx_ptr->lbp_header != NULL);
 		USRDEBUG("SERVER_SPROXY(%s): " CMD_FORMAT ,svr_ptr->svr_name, 
 			CMD_FIELDS(spx_ptr->lbp_header)); 
@@ -819,6 +925,7 @@ int  svr_Sproxy_serving(server_t *svr_ptr)
 #endif // PROXY_TIMESTAMP	
 
 		rcode =  svr_Sproxy_send(svr_ptr);
+		if(rcode < 0) ERROR_RETURN(rcode);
 	}
 }
 
@@ -835,7 +942,10 @@ void  svr_Sproxy_send(server_t *svr_ptr)
 	/* send the header */
     p_ptr = (char *)spx_ptr->lbp_header->c_pl_ptr; // Get the pointer from header 
 	rcode =  svr_Sproxy_sndhdr(svr_ptr);
+	USRDEBUG("SERVER_SPROXY(%s): rcode=%d\n", svr_ptr->svr_name, rcode);
+
 	if ( rcode < 0) {
+		ERROR_PRINT(rcode);		
 		if( spx_ptr->lbp_header->c_len > 0)
 			FREE(p_ptr);		
 		ERROR_RETURN(rcode);
@@ -880,15 +990,18 @@ void  svr_Sproxy_sndhdr(server_t *svr_ptr)
 		CMD_XFIELDS(spx_ptr->lbp_header));
 
     while(sent < total) {
-        n = send(spx_ptr->lbp_sd, p_ptr, bytesleft, 0);
+        n = send(spx_ptr->lbp_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
         if (n < 0) {
+			rcode = -errno;
 			ERROR_PRINT(n);
-			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+			if(rcode == EALREADY) {
+				ERROR_PRINT(rcode);
 				sleep(1);
 				continue;
 			}else{
-				ERROR_RETURN(-errno);
+				ERROR_PRINT(rcode);
+//				ERROR_RETURN(rcode);
+				return(rcode);
 			}
 		}
         sent += n;
@@ -925,15 +1038,16 @@ int  svr_Sproxy_sndpay(server_t *svr_ptr)
 	
     p_ptr = (char *)spx_ptr->lbp_header->c_pl_ptr; // Get the pointer from header 
     while(sent < total) {
-        n = send(spx_ptr->lbp_sd, p_ptr, bytesleft, 0);
+        n = send(spx_ptr->lbp_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
 		USRDEBUG("SERVER_SPROXY(%s): payload sent=%d \n",svr_ptr->svr_name, n);
         if (n < 0) {
+			rcode = -errno;
 			if(errno == EALREADY) {
-				ERROR_PRINT(-errno);
+				ERROR_PRINT(rcode);
 				sleep(1);
 				continue;
 			}else{
-				ERROR_RETURN(-errno);
+				ERROR_RETURN(rcode);
 			}
 		}
         sent += n;
@@ -953,7 +1067,10 @@ int svr_Sproxy_mqrcv(server_t *svr_ptr)
 	USRDEBUG("SERVER_SPROXY(%s): reading from mqid=%d\n", 
 		svr_ptr->svr_name, spx_ptr->lbp_mqid);
 	rcode = msgrcv(spx_ptr->lbp_mqid, spx_ptr->lbp_mqbuf, sizeof(proxy_hdr_t), 0, 0 );
-	if( rcode < 0) ERROR_RETURN(-errno);
+	if( rcode < 0) {
+		rcode = -errno;
+		ERROR_RETURN(rcode);
+	}
 	USRDEBUG("SERVER_SPROXY(%s): %d bytes received\n", 
 			svr_ptr->svr_name, rcode);
 	return(rcode);

@@ -5726,135 +5726,280 @@ NODE1 CONECTADO
 =================================================================================
 20220308:
 
-
-1646755623 	desconecte
-1646755709	conecte 
+1646850522 desconexion
+1646850610 conexion 
 
 root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
-NODE1 CONECTADO 
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755590
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755620
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755621
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755622
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755623
+ARRANCA CON NODE1 CONECTADO 
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850369
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850399
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850400
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646850401
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850402
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850429
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850430
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850459
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850460
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850489
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850520
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850521
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850522
  NODE1 DESCONECTADO 
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755650
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755656
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646755660
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1646755666
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1646755672
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755678 <<<< DETECTA DESCONEXION (28)
- 
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755709 CICLO DE 31 SEG !! PERFECTO 
- 
-NODE1 CONECTADO 
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755715 EMPIEZA A TESTEAR FRECUENTE!!
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755721
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755727
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755731
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755737
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755738
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755744
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755746
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755752
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755758
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755762
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755768
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755774
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755781
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755787
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755793
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755795
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755801
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755807
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755814
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755820
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755826
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755832
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755838
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755844
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755850
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755856
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755862
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755866
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755867 
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755897 <<<< DETECTA CONEXION (185)!!
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646755898
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755899
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646755927
- 2066:lb_fd.c:lb_echo_reply:339:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646755928
- 
-PORQUE CADA VEZ QUE SE DESCONECTA SE TESTEA TAN SEGUIDO Y TARDA TANTO EN DETECTAR CONEXION ???
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850550
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850551
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646850552
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1646850553
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1646850554
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850555 <<< DETECTA DESCONEXION (6)
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850580
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850610
+ NODE1 CONECTADO 
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850640 <<< DETECTA CONEXION (30)
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850670
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850671
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646850672
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850673
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850700
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850701
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850730
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850731
+ 1174:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850732
 
- 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-TODO: CUANDO EL SENDER VA A ENVIAR UN PAQUETE, BORRAR EL BUFFER ACTUAL DEL RECEPTOR !!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
-
-TODO: CREO QUE NO HACE FALTA suspected2, simplemente contando los retries ya estaria.
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# grep "OUTPUT" lb_dvs.out 
+ARRANCA CON NODE1 DESCONECTADO 
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850817
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850847
+ NODE1 CONECTADO 
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850878 << DETECTA CONEXION (31)
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850908
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850909
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850938
+ NODE1 DESCONECTADO 
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1646850968
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1646850969
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1646850970
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1646850971
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1646850972
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850973 << DETECTA DESCONEXION (35)
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646850998
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646851028
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646851058
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646851088
+ NODE1 CONECTADO 
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646851119
+ 1201:lb_fd.c:lb_echo_reply:346:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1646851149 << DETECTA CONEXION (30)
 
 
-PROBLEMA CON LOS TIEMPOS 
-	CADA VEZ QUE SE LLAMA A 
-		rcode = lb_echo_request(n);
-	HAY UN sleep(1) implicito que retrasa el testeo.
+LISTO: ATENCION, CUANDO LLEGA UN MENSAJE CORRECTO AL PROXY RECEIVER INDICA QUE EL NODE ESTA CORRECTO 
+		POR LO QUE SE PUEDE EVITAR QUE SE TESTEE NUEVAMENTE POR EL FAILURE DETECTOR 
+	NO PROBADO !!!!
+
 	
-	Esto se puede hacer varias veces:
-		a) multiples servers son monitoreados en el mismo periodo => multiples sleep
-		b) servers sospechosos son monitoreados en el mismo periodo 
-	
-	SOLUCION:
-		Contar cuantos SEND se hicieron y pasarselos al receiver en una variable del LB.
-		Luego del sleep(1)
-		recien alli se hace el WAKEUP del receiver.
-		El receiver hara un loop recibiendo todos los mensajes que le envio el sender 
-		
+==========================================================================================
+20220311:
+	TODO: IMPLEMENTAR LA SINCRONIZACION DE CONEXION Y DESCONEXION DE LOS PROXIES RECEIVER Y SENDER 
+			AL IGUAL QUE SE HIZO EN MULTI_PROXY
 
-TODO: SI EL NODO ESTA ACTIVO PERO ESTA SOSPECHOSO, VOLVER A TESTEAR EN UN SEGUNDO 
+		MTX_LOCK(svr_ptr->svr_conn_mtx);
+		SET_BIT(lb_ptr->lb_bm_rconn, svr_ptr->svr_nodeid);
+		COND_SIGNAL(svr_ptr->svr_conn_scond);
+		COND_WAIT(svr_ptr->svr_conn_rcond, svr_ptr->svr_conn_mtx);
+		MTX_UNLOCK(svr_ptr->svr_conn_mtx);
 
-		for(i = 0; i < dvs_ptr->d_nr_nodes;  i++){
-			if(TEST_BIT(lb_ptr->lb_bm_svrpxy, i) == 0)	continue;
-			if( i == lb_ptr->lb_nodeid) 				continue;
-			if( i == lb_ptr->lb_node_test) 				continue;
-			if(TEST_BIT(lb_ptr->lb_bm_suspect, i) == 0)	continue;
-			rcode = lb_test_node(svr_ptr);
+		if( TEST_BIT(lb_ptr->lb_bm_sconn, svr_ptr->svr_nodeid) == 0){
+			USRDEBUG("SERVER_RPROXY(%s): lb_bm_sconn==%0lX lb_bm_rconn==%0lX\n",
+           		svr_ptr->svr_name, lb_ptr->lb_bm_sconn, lb_ptr->lb_bm_rconn);
+			close(spx_ptr->lbp_csd);
+			sleep(1);
+			continue;
 		}
-		
-TODO: PONERLE TIME PARA SABER CUANTO TARDA EN DETECTAR CAIA 
-    struct timeval *tval;
-    gettimeofday(tval, NULL); 
 
+Active Internet connections (servers and established)  <<<<<<<<<<<<<<<<<<<<<<<<< ESTA FALTANDO PROXY SENDER 
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.137.100:3011    0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:3001      192.168.0.101:48300     ESTABLISHED <<< PROXY RECEIVER OK 
+tcp        0      1 192.168.137.100:39408   192.168.137.111:3000    SYN_SENT   
 
-TODO: EN LUGAR DE QUE EL SENDER LE PASE 
-		i = lb_ptr->lb_node_test;
-	AL RECEIVER, LO MARCA EN UN BITMAP ENTRE ELLOS 
-	DE TAL FORMA QUE SI EL RECEIVER NO PUDO TESTEAR EN LA VUELTA CORRESPONDIENTE
-	AL NODO DADO, LO HARA EN LA PROXIMA .
+root@node1:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State         
+tcp        0      0 192.168.0.101:3000      0.0.0.0:*               LISTEN  <<<<<<<<<<< PROXY RECEIVER LISTEN    
+tcp        0      0 192.168.0.101:48300     192.168.0.100:3001      ESTABLISHED <<<<<<< PROXY SENDER OK 
+  
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
+TODO: A los recv habria que ponerle TIMEOUT asi vuelven a probar 
+LISTO, tanto en multiproxy como en el LB 
+NO COMPILADO
+NO PROBADO 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
+MSG_DONTWAIT | MSG_NOSIGNAL 
+
+PROBAR CON KEEP_ALIVE 
+	
+How can I set a custom timeout value for a TCP or UDP socket?
+It depends on your system. You might search the net for SO_RCVTIMEO and SO_SNDTIMEO (for use with setsockopt())
+to see if your system supports such functionality.	
+The Linux man page suggests using alarm() or setitimer() as a substitute.
+	
+	TODO: MEJORAR LOS PROXIES PARA QUE CUANDO SE CAE LA CONEXION VUELVA A LEVANTAR !!!
+		CLOSE-WAIT 
+		https://support.hpe.com/hpesc/public/docDisplay?docId=ns10.0.7791273.2540675en_us&docLocale=en_US
+
+EN LB 
+ERROR: lb_svrpxy.c:svr_Rproxy_rcvhdr:573: rcode=-11
+ 661:lb_svrpxy.c:svr_Rproxy_getcmd:466:MTX_LOCK lb_ptr->lb_mtx 
+ 661:lb_svrpxy.c:svr_Rproxy_getcmd:471:MTX_UNLOCK lb_ptr->lb_mtx 
+ERROR: lb_svrpxy.c:svr_Rproxy_getcmd:474: rcode=-11
+ 661:lb_svrpxy.c:svr_Rproxy_loop:183:SERVER_RPROXY(node1): Message processing failure [-11]
+ 661:lb_svrpxy.c:svr_Rproxy_getcmd:458:SERVER_RPROXY(node1): 
+ 661:lb_svrpxy.c:svr_Rproxy_getcmd:463:SERVER_RPROXY(node1): About to receive header
+	
+https://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/#codeneeding
+		
+==========================================================================================
+20220315:
+		se implemento el KEEP_ALIVE en los servers y se detecta la caida de los enlaces
+		
+		NO CONECTA!!!! 
+
+https://superuser.com/questions/240456/how-to-interpret-the-output-of-netstat-o-netstat-timers
+ 
+==========================================================================================
+20220320:
+		Se implementó el incremento de retries dinámico en función de la cantidad de intentos fallidos
+		de un nodo conectado.
+		Si el nodo es sospechoso, y en la ultima oportunidad se lo ve conectado, se incrementan 
+		la cantidad maxima de retries para no correr el resto de informar un falso_desconectado.
+		para ello se agregó el campo svr_max_retries en los servers ya que este campo es individual 
+
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1647816793
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=4 tv_sec=1647816844
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=3 tv_sec=1647816845
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=2 tv_sec=1647816846
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=1 tv_sec=1647816847
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=2 lb_bm_suspect=2 svr_icmp_retry=0 tv_sec=1647816848
+ 663:lb_fd.c:lb_echo_reply:382:Server node1(1): OUTPUT lb_bm_active=0 lb_bm_suspect=0 svr_icmp_retry=5 tv_sec=1647816849
+
+
+NO ENTIENDO POR QUE
+NODE0 
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        1      0 192.168.0.100:34382     192.168.0.101:3000      CLOSE_WAIT 
+NODE1
+tcp        0      0 192.168.0.101:3000      0.0.0.0:*               LISTEN     
+tcp        1      0 192.168.0.101:48866     192.168.0.100:3001      CLOSE_WAIT 
+
+HUSTON WE HAVE A PROBLEM
+El SPROXY queda colgado esperando un mensaje en la MSGQ 
+ 659:lb_svrpxy.c:svr_Sproxy_serving:866:SERVER_SPROXY(node1): Reading message queue..
+ 659:lb_svrpxy.c:svr_Sproxy_mqrcv:1020:SERVER_SPROXY(node1): reading from mqid=0   QUEDA BLOQUEADO AQUI 
+SOLUCION 
+ Enviar un mensaje a la cola que diga que se desconecto o un HELLO 
+ pero que antes de enviarlo se fija la condicion de la conexion 
+ DEBERIA ENVIAR PERIODICAMENTE  send_load_threadholds
+  
+
+==========================================================================================
+20220321:
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State    
+tcp      240      0 192.168.0.100:3001      192.168.0.101:46830     ESTABLISHED
+tcp        0      0 192.168.0.100:47678     192.168.0.101:3000      ESTABLISHED
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State   
+tcp      240      0 192.168.0.100:3001      192.168.0.101:46830     ESTABLISHED
+tcp        1      0 192.168.0.100:47678     192.168.0.101:3000      CLOSE_WAIT 
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp      240      0 192.168.0.100:3001      192.168.0.101:46830     ESTABLISHED
+
+root@node0:/usr/src/dvs/dvs-apps/dvs_lb# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp      240      0 192.168.0.100:3001      192.168.0.101:46830     ESTABLISHED
+
+
+ 675:lb_svrpxy.c:svr_Sproxy_mqrcv:1073:SERVER_SPROXY(node1): 120 bytes received
+ 675:lb_svrpxy.c:svr_Sproxy_serving:914:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=672
+ 675:lb_svrpxy.c:svr_Sproxy_serving:916:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1647893140
+ 675:lb_svrpxy.c:svr_Sproxy_send:940:SERVER_SPROXY(node1): 
+ 675:lb_svrpxy.c:svr_Sproxy_sndhdr:984:SERVER_SPROXY(node1): send header=120 
+ 675:lb_svrpxy.c:svr_Sproxy_sndhdr:988:SERVER_SPROXY(node1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=672
+ 675:lb_svrpxy.c:svr_Sproxy_sndhdr:990:SERVER_SPROXY(node1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1647893140
+ERROR: lb_svrpxy.c:svr_Sproxy_sndhdr:996: rcode=-1
+ERROR: lb_svrpxy.c:svr_Sproxy_sndhdr:1002: rcode=-32   RETORNO -32 
+ 675:lb_svrpxy.c:svr_Sproxy_send:945:SERVER_SPROXY(node1): rcode=0  PERO VE 0 !!! 
+ 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ reemplace el ERROR_RETURN por 
+ 			}else{
+				ERROR_PRINT(rcode);
+//				ERROR_RETURN(rcode);
+				return(rcode);
+			}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+No utilizar ERROR_XXXXXX(-errno) ya que dentro de la macro se utilizan llamadas al sistema que modifican errno 
+Hacer:
+		rcode = -errno;
+		ERROR_XXXXX(rcode)
+		
+		
+			
+ 
+=========================================================================================
+ULTIMO_LOG 
+
+==========================================================================================
+==========================================================================================
+		
+TODO: Se podría enviar una SIGNAL al LB para que fuerce el envio de HELLO a TODOS los proxies 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ATENCION: no se si cuando le pase info desde el LB a un NODO no tendré que incluir entre el listado
+de nodos activos al mismo LB. De todos modos, en general, dentro del LB se evita considerase a si mismo un nodo.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+MULTI_PROXY
+	Deberia tener un mpa_px_mtx y un mpa_scond y un mpa_rcond
+	Esto permite sincronizar al SPROXY y RPROXY para saber que ambos 
+	estan en modo CONNECTED 
+	
+	Que hacer cuando uno de los proxies SALE de estado de CONNECTED ?
+	El otro proxy deberia salir de estado CONNECTED haciendo un close
+		SOLUCION: Se deberia hacer con un SIGNAL 
+				En el SPROXY antes del GET2RMT 
+				En el RPROXY antes de leer del socket - IMPLEMENTAR TIMEOUT !! COMO EN ICMP 
+				
+	Esto permite detectar el estado del nodo remoto, que para el nodo local seria NOT_CONNECTED 
+	Luego, el ping periodico setea el estado de los nodos 
+	
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+TODO: HABRIA Q OPTIMIZAR EL FAILURE DETECTOR 
+ https://github.com/dgibson/iputils/blob/master/ping.c
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 TODO:
 CUANDO SE CAE EL NODE1, EL SERVER PROXY (RECEIVER) NO ES NOTICADO DE ESTO!!
 sigue en el recv() sin salir por error 
 
-==========================================================================================
-==========================================================================================
-==========================================================================================
-ULTIMO_LOG 
-
-==========================================================================================
-==========================================================================================
-
 TODO: MODIFICAR EL FD PARA QUE SE ESTABLEZCA EL PERIODO DE MONITOREO DE UN NODO 
 		Y QUE EL NODO SE MONITOREE SI:
 
-				
-TODO: CLOSE-WAIT 
-https://support.hpe.com/hpesc/public/docDisplay?docId=ns10.0.7791273.2540675en_us&docLocale=en_US
-	
-	
-	
 NIVELES DE DETECCION DE FALLO:
 		ping:		NODO 			lb_bm_nodes
 		proxy:		AGENTE 			lb_bm_init	
@@ -5918,22 +6063,10 @@ listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
 
 Pablo Pessolani, Marcelo Taborda, Franco Perino
 		
-TODO: MULTI_PROXY
-	Deberia tener un mpa_px_mtx y un mpa_scond y un mpa_rcond
-	Esto permite sincronizar al SPROXY y RPROXY para saber que ambos 
-	estan en modo CONNECTED 
-	
-	Que hacer cuando uno de los proxies SALE de estado de CONNECTED ?
-	El otro proxy deberia salir de estado CONNECTED haciendo un close
-		SOLUCION: Se deberia hacer con un SIGNAL 
-				En el SPROXY antes del GET2RMT 
-				En el RPROXY antes de leer del socket 
-				
-	Esto permite detectar el estado del nodo remoto, que para el nodo local seria NOT_CONNECTED 
-	Luego, el ping periodico setea el estado de los nodos 
+
 
 		
-TODO: MULTI_PROXY
+TODO: LB 
 		Cambiar la forma de operar.
 		Solo deben exitir los receiver proxies
 		El main thread abre los sockets emisor con los distintos nodos 

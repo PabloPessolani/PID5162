@@ -71,6 +71,30 @@ int timespec2str(char *buf, uint len, struct timespec *ts) {
 }
 #endif // PX_ADD_TIMESTAMP
 
+int enable_keepalive(int sock) 
+{
+    int yes = 1;
+    if(setsockopt(
+        sock, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(int)) != -1)
+		ERROR_RETURN(-errno);
+
+    int idle = 1;
+    if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(int)) != -1)
+		ERROR_RETURN(-errno);
+
+    int interval = 1;
+	if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(int)) != -1)
+		ERROR_RETURN(-errno);
+
+    int maxpkt = 10;
+    if(setsockopt(
+        sock, IPPROTO_TCP, TCP_KEEPCNT, &maxpkt, sizeof(int)) != -1)
+				ERROR_RETURN(-errno);
+	return(OK);
+}
+
 static void sig_alrm(int sig)
 {
 	PXYDEBUG("sig=%d\n",sig);
@@ -144,6 +168,7 @@ void stop_decompression( proxy_t *px_ptr)
 	}
 }
 		
+
 		
 /* pr_setup_connection: bind and setup a listening socket 
    This socket is not accepting connections yet after
@@ -156,6 +181,10 @@ int pr_setup_connection(proxy_t *px_ptr)
     struct sockaddr_in servaddr;
 	struct hostent *h_ptr;
     int optval = 1;
+    struct timeval timeout;      
+
+    timeout.tv_sec = MP_RECV_TIMEOUT;
+    timeout.tv_usec = 0;
 
     port_no = px_ptr->px_rport;
 	PXYDEBUG("RPROXY(%d): for node %s running at port=%d\n", 
@@ -167,6 +196,11 @@ int pr_setup_connection(proxy_t *px_ptr)
 
     if( (ret = setsockopt(px_ptr->px_rlisten_sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) < 0)
        	ERROR_EXIT(errno);
+
+    if( (ret = setsockopt(px_ptr->px_rlisten_sd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))) < 0)
+       	ERROR_EXIT(errno);
+
+//	enable_keepalive(px_ptr->px_rlisten_sd);
 
     // Bind (attach) this process to the server socket.
     servaddr.sin_family = AF_INET;
@@ -215,7 +249,7 @@ int pr_receive_payload(proxy_t *px_ptr, proxy_payload_t *pl_ptr, int pl_size)
         if (received >= pl_size) return(OK);
        	p_ptr += n;
    	}
-    
+   	if( n == 0) ERROR_RETURN(EDVSNOCONN);
     if(n < 0) ERROR_RETURN(-errno);
  	return(OK);
 }
@@ -245,6 +279,7 @@ int pr_receive_header(proxy_t *px_ptr)
         	p_ptr += n;
         }
    	}
+	if( n == 0) ERROR_RETURN(EDVSNOCONN);	
     if( n < 0)  ERROR_RETURN(-errno);
 	return(OK);
 }
@@ -583,7 +618,8 @@ void pr_start_serving(proxy_t *px_ptr)
 		} else {
 			PXYDEBUG("RPROXY(%d): Message processing failure [%d]\n",px_ptr->px_proxyid, rcode);
 					px_ptr->px_rdesc.td_msg_fail++;
-			if( rcode == EDVSNOTCONN) break;
+//			if( rcode == EDVSNOTCONN) 
+				break;
 		}	
 	}while(1);
 	
@@ -696,41 +732,38 @@ void *pr_thread(void *arg)
 	px_ptr->px_rdesc.td_tid = px_ptr->px_rdesc.td_tid;
 	if( px_ptr->px_compress == YES )
 		init_decompression(px_ptr);
+	rcode = pr_setup_connection(px_ptr);
+	if(rcode != OK) ERROR_EXIT(rcode);
 	while(TRUE) {
-		if( pr_setup_connection(px_ptr) == OK) {
-			do {
-				sender_addrlen = sizeof(sa);
-				PXYDEBUG("RPROXY(%d): Waiting for connection.\n",px_ptr->px_proxyid);
-				px_ptr->px_rconn_sd = accept(px_ptr->px_rlisten_sd, (struct sockaddr *) &sa, &sender_addrlen);
-				if(px_ptr->px_rconn_sd < 0) ERROR_PRINT(errno);
-			}while(px_ptr->px_rconn_sd < 0);
+		do {
+			sender_addrlen = sizeof(sa);
+			PXYDEBUG("RPROXY(%d): Waiting for connection.\n",px_ptr->px_proxyid);
+			px_ptr->px_rconn_sd = accept(px_ptr->px_rlisten_sd, (struct sockaddr *) &sa, &sender_addrlen);
+			if(px_ptr->px_rconn_sd < 0) ERROR_PRINT(errno);
+		}while(px_ptr->px_rconn_sd < 0);
 
-			PXYDEBUG("RPROXY(%d): Remote sender [%s] connected on sd [%d]. Getting remote command.\n",
-						px_ptr->px_proxyid, inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN),
-						px_ptr->px_rconn_sd);
-			
-			MTX_LOCK(px_ptr->px_conn_mtx);
-			// EJECUTAR UN JOIN !!!!!! 
-			rcode = dvk_proxy_conn(px_ptr->px_proxyid, CONNECT_RPROXY);
-			SET_BIT(px_ptr->px_status, PX_BIT_RCONNECTED);
-			COND_SIGNAL(px_ptr->px_conn_scond);
-			COND_WAIT(px_ptr->px_conn_rcond, px_ptr->px_conn_mtx);
-			MTX_UNLOCK(px_ptr->px_conn_mtx);
-			
-			pr_start_serving(px_ptr);
-			
-			MTX_LOCK(px_ptr->px_conn_mtx);
-			// EJECUTAR UN LEAVE DE APLICACION !!!!!! 
-			// SIGNAL AL SPROXY PARA QUE DESCONNECTE 
-			CLR_BIT(px_ptr->px_status, PX_BIT_RCONNECTED);
-			rcode = dvk_proxy_conn(px_ptr->px_proxyid, DISCONNECT_RPROXY);
-			MTX_UNLOCK(px_ptr->px_conn_mtx);
-			
-			close(px_ptr->px_rconn_sd);
-
-		} else {
-			ERROR_EXIT(errno);
-		}
+		PXYDEBUG("RPROXY(%d): Remote sender [%s] connected on sd [%d]. Getting remote command.\n",
+					px_ptr->px_proxyid, inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN),
+					px_ptr->px_rconn_sd);
+		
+		MTX_LOCK(px_ptr->px_conn_mtx);
+		// EJECUTAR UN JOIN SI ES LA PRIMERA VEZ QUE SE CONECTA - ESTO SE SABE CON EL NRO DE SECUENCIA !!!!!! 
+		rcode = dvk_proxy_conn(px_ptr->px_proxyid, CONNECT_RPROXY);
+		SET_BIT(px_ptr->px_status, PX_BIT_RCONNECTED);
+		COND_SIGNAL(px_ptr->px_conn_scond);
+		COND_WAIT(px_ptr->px_conn_rcond, px_ptr->px_conn_mtx);
+		MTX_UNLOCK(px_ptr->px_conn_mtx);
+		
+		pr_start_serving(px_ptr);
+		
+		MTX_LOCK(px_ptr->px_conn_mtx);
+		// EJECUTAR UN LEAVE DE APLICACION !!!!!! 
+		// SIGNAL AL SPROXY PARA QUE DESCONNECTE 
+		CLR_BIT(px_ptr->px_status, PX_BIT_RCONNECTED);
+		rcode = dvk_proxy_conn(px_ptr->px_proxyid, DISCONNECT_RPROXY);
+		MTX_UNLOCK(px_ptr->px_conn_mtx);
+		
+		close(px_ptr->px_rconn_sd);
 	}
 	if( px_ptr->px_compress == YES )
 		stop_decompression(px_ptr);
@@ -809,11 +842,11 @@ int  ps_send_header(proxy_t *px_ptr, proxy_hdr_t *hd_ptr )
 	hd_ptr->c_snd_seq = px_ptr->px_snd_seq;
 	hd_ptr->c_ack_seq = px_ptr->px_ack_seq;
     while(sent < total) {
-        n = send(px_ptr->px_sproxy_sd, p_ptr, bytesleft, 0);
+        n = send(px_ptr->px_sproxy_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
         if (n < 0) {
 			ERROR_PRINT(n);
 			if(errno == EALREADY) {
-				ERROR_PRINT(errno);
+				ERROR_PRINT(-errno);
 				sleep(1);
 				continue;
 			}else{
@@ -845,7 +878,7 @@ int  ps_send_payload(proxy_t *px_ptr, proxy_hdr_t *hd_ptr, proxy_payload_t *pl_p
 
     p_ptr = (char *) pl_ptr;
     while(sent < total) {
-        n = send(px_ptr->px_sproxy_sd, p_ptr, bytesleft, 0);
+        n = send(px_ptr->px_sproxy_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
 		PXYDEBUG("SPROXY(%d): sent=%d \n", px_ptr->px_proxyid, n);
         if (n < 0) {
 			if(errno == EALREADY) {
@@ -1189,6 +1222,10 @@ void *ps_thread(void *arg)
     int rcode = 0, ret = 0;
 	proxy_t *px_ptr;
     struct sigaction sa;
+	struct timeval timeout;      
+
+    timeout.tv_sec = MP_SEND_TIMEOUT;
+    timeout.tv_usec = 0;
 	
 	sa.sa_handler 	= sig_alrm;
 	sa.sa_flags 	= SA_RESTART;
@@ -1292,6 +1329,11 @@ void *ps_thread(void *arg)
     if ( (px_ptr->px_sproxy_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
        	ERROR_EXIT(errno)
     }
+
+#ifdef ANULADO	
+	rcode = setsockopt (px_ptr->px_sproxy_sd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+	if (rcode < 0) ERROR_EXIT(-errno);
+#endif // ANULADO	
 	
 #if PWS_ENABLED 	
 	px_ptr->px_pws_port = (BASE_PWS_SPORT + px_ptr->px_proxyid);

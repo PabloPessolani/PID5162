@@ -94,7 +94,10 @@ int main (int argc, char *argv[] )
 			sess_ptr->se_dcid = i;
 			init_session(sess_ptr);
 			sess_ptr->se_rmtcmd    = malloc(sizeof(MAXCMDLEN));
-			if(sess_ptr->se_rmtcmd == NULL) ERROR_EXIT(-errno);
+			if(sess_ptr->se_rmtcmd == NULL) {
+				rcode = -errno;
+				ERROR_EXIT(rcode);
+			}
 			sess_ptr++;
 		}
     }
@@ -122,8 +125,10 @@ int main (int argc, char *argv[] )
 
 	// Allocate memory for the Proxy Sender message queue buffer
 	lb_ptr->lb_mqbuf = malloc(sizeof(msgq_buf_t));
-	if(lb_ptr->lb_mqbuf == NULL) ERROR_EXIT(-errno);
-		
+	if(lb_ptr->lb_mqbuf == NULL){
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	pthread_mutex_init(&lb_ptr->lb_mtx, NULL);
 
 	if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
@@ -150,6 +155,11 @@ int main (int argc, char *argv[] )
 		pthread_cond_init(&svr_ptr->svr_node_cond, NULL);
 
 		pthread_mutex_init(&svr_ptr->svr_tail_mtx, NULL);
+	
+		// used to synchronize proxy receiver and proxy server connections (both must be connected or none)
+		pthread_mutex_init(&svr_ptr->svr_conn_mtx, NULL);  	/* init mutex */
+		pthread_cond_init(&svr_ptr->svr_conn_scond, NULL);  /* init condition */
+		pthread_cond_init(&svr_ptr->svr_conn_rcond, NULL);  /* init condition */
 
 		svr_ptr->svr_level  = LVL_NOTINIT;
 		svr_ptr->svr_load   = LVL_NOTINIT;
@@ -162,7 +172,8 @@ int main (int argc, char *argv[] )
 		spx_ptr->lbp_mqid   = msgget(spx_ptr->lbp_mqkey, IPC_CREAT | 0x660);
 		if ( spx_ptr->lbp_mqid < 0) {
 			if ( errno != EEXIST) {
-				ERROR_EXIT(-errno);
+				rcode = -errno;
+				ERROR_EXIT(rcode);
 			}
 			printf( "The queue with key=%d already exists\n",spx_ptr->lbp_mqkey);
 			spx_ptr->lbp_mqid = msgget(spx_ptr->lbp_mqkey, 0);
@@ -177,18 +188,26 @@ int main (int argc, char *argv[] )
 
 		// Allocate memory for the Proxy Sender message queue buffer
 		spx_ptr->lbp_mqbuf = malloc(sizeof(msgq_buf_t));
-		if( spx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(-errno);
-		
+		if( spx_ptr->lbp_mqbuf == NULL){
+				rcode = -errno;
+				ERROR_EXIT(rcode);
+		}
 		// initialize de FAILURE DETECTOR 
 		rcode = init_node_FD(svr_ptr);
 
 		// SERVER PROXY Sender Thread 
 		rcode = pthread_create( &svr_ptr->svr_spx.lbp_thread, NULL, svr_Sproxy, i);
-		if( rcode) ERROR_EXIT(rcode);
+		if( rcode){
+			rcode = -errno;
+			ERROR_EXIT(rcode);
+		}
 	
 		// SERVER PROXY Receiver Thread 
 		rcode = pthread_create( &svr_ptr->svr_rpx.lbp_thread, NULL, svr_Rproxy, i);
-		if( rcode) ERROR_EXIT(rcode);
+		if( rcode) {
+			rcode = -errno;
+			ERROR_EXIT(rcode);
+		}
 	}
 
 	msgctl (CLT_QUEUEBASE, IPC_RMID, 0);
@@ -210,7 +229,8 @@ int main (int argc, char *argv[] )
 		cpx_ptr->lbp_mqid   = msgget(cpx_ptr->lbp_mqkey, IPC_CREAT | 0x660);
 		if ( cpx_ptr->lbp_mqid  < 0) {
 			if ( errno != EEXIST) {
-				ERROR_EXIT(-errno);
+				rcode = -errno;
+				ERROR_EXIT(rcode);
 			}
 			printf( "The queue with key=%d already exists\n",cpx_ptr->lbp_mqkey);
 			cpx_ptr->lbp_mqid = msgget( cpx_ptr->lbp_mqkey, 0);
@@ -225,15 +245,23 @@ int main (int argc, char *argv[] )
 		
 		// Allocate memory for the Proxy Sender message queue buffer
 		cpx_ptr->lbp_mqbuf = malloc(sizeof(msgq_buf_t));
-		if( cpx_ptr->lbp_mqbuf == NULL) ERROR_EXIT(-errno);
-
+		if( cpx_ptr->lbp_mqbuf == NULL) {
+			rcode = -errno;
+			ERROR_EXIT(rcode);
+		}
 		// CLIENT PROXY Sender Thread 
 		rcode = pthread_create( &clt_ptr->clt_spx.lbp_thread, NULL, clt_Sproxy, (void * restrict) i);
-		if( rcode) ERROR_EXIT(rcode);
+		if( rcode){
+			rcode = -errno;
+			ERROR_EXIT(rcode);
+		}
 	
 		// CLIENT PROXY Receiver Thread 
 		rcode = pthread_create( &clt_ptr->clt_rpx.lbp_thread, NULL, clt_Rproxy, (void * restrict) i);
-		if( rcode) ERROR_EXIT(rcode);
+		if( rcode) {
+			rcode = -errno;
+			ERROR_EXIT(rcode);
+		}
 	}
 
 #ifdef SPREAD_MONITOR 
@@ -252,8 +280,9 @@ int main (int argc, char *argv[] )
 	sa.sa_handler 	= sig_usr1;
 	sa.sa_flags 	= SA_RESTART;
 	if(sigaction(SIGUSR1, &sa, NULL) < 0){
-		ERROR_EXIT(-errno);
-	}	
+		rcode = -errno;
+		ERROR_EXIT(rcode);
+	}
 	
 	//--------------------------------------------------------------------------------------------
 	//					MAIN LOOP 
@@ -264,7 +293,7 @@ int main (int argc, char *argv[] )
 	USRDEBUG("LB Control loop: start\n"); 
 	while( lb_retry == 1){
 		
-//		sleep(lb_ptr->lb_hellotime);
+		sleep(lb_ptr->lb_hellotime);
 		MTX_LOCK(lb_ptr->lb_mtx);
 		LB_bm_init = lb_ptr->lb_bm_init;
 		LB_min_servers = lb_ptr->lb_min_servers;
@@ -274,13 +303,13 @@ int main (int argc, char *argv[] )
 
 		for( i = 0; i < dvs_ptr->d_nr_nodes ; i++){
 
-			// check if are server nodes initialized 
+			// check if are server nodes configured  
 			MTX_LOCK(lb_ptr->lb_mtx);
-			if( (TEST_BIT(lb_ptr->lb_bm_init, i) == 0)	
-			|| ( i == lb_ptr->lb_nodeid)) {	
+			if( ( i == lb_ptr->lb_nodeid) 
+			|| (TEST_BIT(lb_ptr->lb_bm_svrpxy, i) == 0)	) {	
 				MTX_UNLOCK(lb_ptr->lb_mtx);
 				//  Divide the period in seconds an nodes with
-				sleep(1);
+				// sleep(1);
 				continue; 
 			} 
 
@@ -294,11 +323,9 @@ int main (int argc, char *argv[] )
 			if( (int) diff > lb_ptr->lb_hellotime){
 				svr_ptr->svr_last_cmd = ts;
 				rcode = send_load_threadholds(svr_ptr);
-				// update timestamp 
 			}
 #endif // SPREAD_MONITOR 
-			
-			
+					
 			// it must be an automatic starting server (they have VM images)
 			if(svr_ptr->svr_image != NULL) {
 				//................................................................................................
@@ -357,7 +384,6 @@ int main (int argc, char *argv[] )
 			start_new_node(rmt_cmd); 
 		}
 		MTX_UNLOCK(lb_ptr->lb_mtx);
-
 	}
 	
     // JOIN FAILURE DETECTOR Threads 
@@ -615,6 +641,7 @@ void init_server(server_t *svr_ptr)
 
 	svr_ptr->svr_bm_params 		= 0;
 	svr_ptr->svr_icmp_retry 	= FD_MAXRETRIES;
+	svr_ptr->svr_max_retries	= FD_MAXRETRIES;
 
 	TAILQ_INIT(&svr_ptr->svr_clt_head);                      /* Initialize the queue. */
 	TAILQ_INIT(&svr_ptr->svr_svr_head);                      /* Initialize the queue. */
@@ -665,9 +692,15 @@ void init_lb(void )
 	lb.lb_pid = getpid();
 	lb.lb_nr_active = 0;
 	lb.lb_bm_active = 0;
+	lb.lb_nr_proxy  = 0;
+	lb.lb_bm_proxy  = 0;
 	lb.lb_nr_init   = 0;
 	lb.lb_bm_init   = 0;
-		
+	lb.lb_bm_tested = 0;
+
+	lb.lb_bm_sconn  = 0;
+	lb.lb_bm_rconn  = 0;
+	
 	lb.lb_cltname   = NULL;		
 	lb.lb_svrname   = NULL;		
 	lb.lb_cltdev    = NULL;		

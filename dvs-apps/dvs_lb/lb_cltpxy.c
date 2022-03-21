@@ -69,7 +69,10 @@ int clt_Rproxy_setup(client_t *clt_ptr)
     int optval = 1;
 	lbpx_desc_t *cpx_ptr; 
 	struct hostent *h_ptr;
-
+    struct timeval timeout;     
+    timeout.tv_sec = LB_RECV_TIMEOUT;
+    timeout.tv_usec = 0;
+	
 	cpx_ptr = &clt_ptr->clt_rpx;
 	
     cpx_ptr->lbp_port = (LBP_BASE_PORT+clt_ptr->clt_nodeid);
@@ -82,8 +85,14 @@ int clt_Rproxy_setup(client_t *clt_ptr)
 
     if( (rcode = setsockopt(cpx_ptr->lbp_lsd, SOL_SOCKET, SO_REUSEADDR, 
 							&optval, sizeof(optval))) < 0)
-        	ERROR_EXIT(-errno);
+        ERROR_EXIT(-errno);
 
+    if( (rcode = setsockopt(cpx_ptr->lbp_lsd, SOL_SOCKET, SO_RCVTIMEO, 
+							&timeout, sizeof (timeout))) < 0)
+        ERROR_EXIT(-errno);
+		
+	enable_keepalive(cpx_ptr->lbp_lsd);
+		
     // Bind (attach) this process to the server socket.
     cpx_ptr->lbp_rmtclt_addr.sin_family = AF_INET;
 	
@@ -215,7 +224,8 @@ void clt_Rproxy_loop(client_t *clt_ptr)
 				USRDEBUG("CLIENT_RPROXY(%s): Message processing failure [%d]\n",
 					clt_ptr->clt_name,rcode);
             	cpx_ptr->lbp_msg_err++;
-				if( rcode == EDVSNOTCONN) break;
+//				if( rcode == EDVSNOTCONN) 
+					break;
 			}	
 		}while(1);
 		close(cpx_ptr->lbp_csd);
@@ -899,8 +909,12 @@ void  clt_Sproxy_init(	client_t *clt_ptr)
 {
     int rcode = 0;
 	int optval;
-
 	lbpx_desc_t *cpx_ptr; 
+    struct timeval timeout;      
+
+    timeout.tv_sec = LB_SEND_TIMEOUT;
+    timeout.tv_usec = 0;
+	
 	cpx_ptr = &clt_ptr->clt_spx;
 
 	USRDEBUG("CLIENT_SPROXY(%s): Initializing proxy sender\n", clt_ptr->clt_name);
@@ -927,6 +941,11 @@ void  clt_Sproxy_init(	client_t *clt_ptr)
 	// bind a socket to a device name (might not work on all systems):
 	rcode = setsockopt(cpx_ptr->lbp_sd, SOL_SOCKET, SO_BINDTODEVICE, lb.lb_cltdev, strlen(lb.lb_cltdev));
 	if (rcode < 0) ERROR_EXIT(-errno);
+
+#ifdef ANULADO	
+	rcode = setsockopt(cpx_ptr->lbp_sd, SOL_SOCKET,  SO_SNDTIMEO, &timeout, sizeof(timeout));
+	if (rcode < 0) ERROR_EXIT(-errno);
+#endif // ANULADO	
 
 }
 
@@ -1087,7 +1106,7 @@ void  clt_Sproxy_sndhdr(client_t *clt_ptr)
 		CMD_XFIELDS(cpx_ptr->lbp_header));
 
     while(sent < total) {
-        n = send(cpx_ptr->lbp_sd, p_ptr, bytesleft, 0);
+        n = send(cpx_ptr->lbp_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
         if (n < 0) {
 			ERROR_PRINT(n);
 			if(errno == EALREADY) {
@@ -1137,7 +1156,7 @@ void  clt_Sproxy_sndpay(client_t *clt_ptr)
 		clt_ptr->clt_name, VCOPY_FIELDS(cpx_ptr->lbp_header));
 		
     while(sent < total) {
-        n = send(cpx_ptr->lbp_sd, p_ptr, bytesleft, 0);
+        n = send(cpx_ptr->lbp_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
 		USRDEBUG("CLIENT_SPROXY(%s): payload sent=%d \n",clt_ptr->clt_name, n);
         if (n < 0) {
 			if(errno == EALREADY) {
