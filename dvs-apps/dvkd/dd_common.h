@@ -73,6 +73,8 @@
 
 #define DD_NOTINIT		(-1) 
 
+#define DD_DELIMITER 	","
+
 #include <sp.h>
 
 #define SPREAD_PORT "4803"
@@ -92,16 +94,18 @@
 #define SOURCE_PROXY		2
 #define SOURCE_AGENT 		3
 
+#define MAX_MSG_STRING		128
+#define MT_ACKNOWLEDGE 		1000
 #define MT_HELLO_AGENTS		100		// From MONITOR to AGENTS
-#define MT_HELLO_MONITOR	(MT_HELLO_AGENTS | MASK_ACKNOWLEDGE) 
+#define MT_HELLO_MONITOR	(MT_HELLO_AGENTS + MT_ACKNOWLEDGE) 
 #define MT_CMD2AGENT		101		// From MONITOR to AGENTS
-#define MT_OUT2MONITOR		(MT_CMD2AGENT | MASK_ACKNOWLEDGE)
+#define MT_OUT2MONITOR		(MT_CMD2AGENT + MT_ACKNOWLEDGE)
 
 
 #define MONITOR_OUTCMD_FIFO 	"/tmp/OUTCMD_%s"
 #define MONITOR_INCMD_FIFO  	"/tmp/INCMD_%s"
 
-
+#define USRDBG 1
 
 #include "../debug.h"
 #include "../macros.h"

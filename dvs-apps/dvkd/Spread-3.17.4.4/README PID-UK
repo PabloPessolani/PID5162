@@ -1,0 +1,407 @@
+USO DE SPREAD TOOLKIT DESDE PERL
+================================
+
+Para utilizar la libreria spread desde perl hay que bajar 
+https://metacpan.org/dist/Spread
+Existen otras 
+	https://metacpan.org/pod/Spread::Message
+	https://metacpan.org/pod/Spread::Messaging
+
+luego realizar los pasos para instalar:
+	Unpack it into a writable directory.
+	Run the Perl configure command: "perl Makefile.pl".
+	Run the "make" command.
+	Run the "make test" command.
+	Do not proceed until this command completes successfully.
+	Run the "make install" command.
+
+Con esto se prueban todas las APIs
+	root@node0:~/perl_spread/Spread-3.17.4.4#  ./test.pl -m -r -j -p -l -d  -rt 10 -c 
+	Spread client library version 5.0.1
+	Trying to connect to spread...
+	Mailbox is: 3 and private_group is #perltest#node0
+	Attempting to join: flooder.
+	Successfully joined: 1 of 1 group(s) [flooder].
+	Attempting to multicast 15 bytes to [flooder].
+	Successfully multicasted 15 bytes to [flooder]
+	Attempting to multicast 21 bytes to [flooder].
+	Successfully multicasted 21 bytes to [flooder].
+	Polling mailbox for messages.
+	Mailbox contains 332 bytes.
+	Entering receive loop. (Timeout = 10s)
+	Receive error: 
+	Received 4 messages.
+	Attempting to leave: [flooder].
+	Successfully left: [flooder].
+	Successful disconnect
+	Tests 8, passed 8/8 = 100.00%
+
+TEST ENTRE NODE0 Y NODE1 
+EN NODE0
+	Se hizo una pequeña modificación para que imprima el contenido de los mensajes en test2.pl 
+	root@node0:~/perl_spread/Spread-3.17.4.4#  ./test2.pl -m -r -j -p -l -d  -c 
+	Spread client library version 5.0.1
+	Spread spreaddaemon  
+	Trying to connect to spread...
+	Mailbox is: 3 and private_group is #perltest2#node0
+	Attempting to join: flooder.
+	Successfully joined: 1 of 1 group(s) [flooder].
+	Attempting to multicast 15 bytes to [flooder].
+	Successfully multicasted 15 bytes to [flooder]
+	Attempting to multicast 21 bytes to [flooder].
+	Successfully multicasted 21 bytes to [flooder].
+	Polling mailbox for messages.
+	Mailbox contains 364 bytes.
+	Entering receive loop. 
+	Received 1 messages. [e¿¹ b#perltest2#node0]
+	Received 2 messages. [This is a test.]
+	Received 3 messages. [This is another test.]
+
+EN NODE1 
+	 cd /usr/src/dvs/spread-src-5.0.1/examples
+	 ./spuser 
+	 ==========
+	User Menu:
+	----------
+			j <group> -- join a group
+			l <group> -- leave a group
+
+			s <group> -- send a message
+			m <group> -- send a multiline message to group. Terminate with empty line
+			b <group> -- send a burst of messages
+
+			r -- receive a message (stuck) 
+			p -- poll for a message 
+			e -- enable asynchonous read (default)
+			d -- disable asynchronous read 
+
+			q -- quit
+
+	User> j flooder
+
+	User> s flooder
+	enter message: HOLA QUE TAL
+	User> 
+	============================
+	received SAFE message from #user#node1, of type 1, (endian 0) to 1 groups 
+	(13 bytes): HOLA QUE TAL
+
+EN NODE0 SE VE LO SIGUIENTE
+Received 4 messages. [HOLA QUE TAL]
+
+	CUANDO SE ARRANCA EL PROGRAMA PRIMERO EN NODE1 Y LUEGO EN NODE0, NODE1 REGISTRA
+	User> 
+	============================
+	received SAFE message from #perltest2#node0, of type 0, (endian 0) to 1 groups 
+	(15 bytes): This is a test.
+
+	User> 
+	============================
+	received SAFE message from #perltest2#node0, of type 0, (endian 0) to 1 groups 
+	(21 bytes): This is another test.
+
+========================================================================================
+Se desarrollo un monitor.pl básico para ver la conectividad con el dd_agent de NODE1
+
+EN NODE1 arrancar el dd_agent
+cd /usr/src/dvs/dvs-apps/dvkd/
+./dd_agent > dd_agent.out 2> dd_agent.err &
+
+EN NODE0
+root@node0:~/perl_spread/Spread-3.17.4.4# ./monitor.pl 
+Spread client library version 5.0.1
+Trying to connect to spread...
+Mailbox is: 3 and private_group is #DDM.00#node0
+Attempting to join: DDGROUP.
+Successfully joined: 1 of 1 group(s) [DDGROUP].
+Attempting to multicast 3 bytes to [DDGROUP].
+message: 102 .
+Successfully multicasted 3 bytes to [DDGROUP]
+Attempting to leave: [DDGROUP].
+Successfully left: [DDGROUP].
+
+EN NODE1 
+	955:dd_agent.c:main:31:DVKD MONITOR: Initializing...
+	 955:dd_agent.c:clear_agent_vars:138:
+	 955:dd_agent.c:main:43:local_nodeid=1
+	 955:dd_agent.c:main:48:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+	 955:dd_agent.c:init_spread:89:Spread library version is 5.0.1
+	SE CONECTA A SPREAD 
+	 955:dd_agent.c:connect_to_spread:106:spread_group=DDGROUP
+	 955:dd_agent.c:connect_to_spread:110:dda_mbr_name=DDA.01
+	 955:dd_agent.c:connect_to_spread:122:dda_mbr_name DDA.01: connected to 4803 with private group #DDA.01#node1
+	 955:dd_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=0 dda_bm_init=0
+	SE RECIBE EL MENSAJE DE MEMBRESIA (JOIN)
+	 955:dd_agent.c:dda_SP_receive:160:DDA.01
+	 955:dd_agent.c:dda_SP_receive:168:ret=56
+	 955:dd_agent.c:dda_SP_receive:190:DDA.01: sender=DDGROUP Private_group=#DDA.01#node1 service_type=4352
+	 955:dd_agent.c:dda_SP_receive:213:DDA.01: Received REGULAR membership for group DDGROUP with 1 members, where I am member 0:
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDA.01#node1
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDA.01#node1 nid=1
+	 955:dd_agent.c:dda_udt_members:638:	#DDA.01#node1 nodeid=1
+	 955:dd_agent.c:dda_udt_members:641:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=1 dda_nr_init=0 dda_bm_nodes=2 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:223:DDA.01: Due to the JOIN of #DDA.01#node1 service_type=4352
+	 955:dd_agent.c:dda_join:463:member=#DDA.01#node1
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDA.01#node1
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDA.01#node1 nid=1
+	 955:dd_agent.c:main:57:rcode=0
+	 955:dd_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=1 dda_nr_init=0 dda_bm_nodes=2 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:160:DDA.01
+	 955:dd_agent.c:dda_SP_receive:168:ret=56
+	 955:dd_agent.c:dda_SP_receive:190:DDA.01: sender=DDGROUP Private_group=#DDA.01#node1 service_type=4352
+	 955:dd_agent.c:dda_SP_receive:213:DDA.01: Received REGULAR membership for group DDGROUP with 2 members, where I am member 1:
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDM.00#node0
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDM.00#node0 nid=0
+	 955:dd_agent.c:dda_udt_members:638:	#DDM.00#node0 nodeid=0
+	 955:dd_agent.c:dda_udt_members:641:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=1 dda_nr_init=0 dda_bm_nodes=1 dda_bm_init=0
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDA.01#node1
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDA.01#node1 nid=1
+	 955:dd_agent.c:dda_udt_members:638:	#DDA.01#node1 nodeid=1
+	 955:dd_agent.c:dda_udt_members:641:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	SE RECIBE EL JOIN DEL MONITOR 
+	 955:dd_agent.c:dda_SP_receive:223:DDA.01: Due to the JOIN of #DDM.00#node0 service_type=4352
+	 955:dd_agent.c:dda_join:463:member=#DDM.00#node0
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDM.00#node0
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDM.00#node0 nid=0
+	 955:dd_agent.c:dda_join:478:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	 955:dd_agent.c:main:57:rcode=0
+	RECIBE UN MENSAJE DEL MONITOR (POR AHORA INCOMPRESIBLE POR INCOMPATIBILIDAD DE TIPOS DE DATOS)
+	 955:dd_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:160:DDA.01
+	 955:dd_agent.c:dda_SP_receive:168:ret=3
+	 955:dd_agent.c:dda_SP_receive:190:DDA.01: sender=#DDM.00#node0 Private_group=#DDA.01#node1 service_type=32
+	 955:dd_agent.c:dda_SP_receive:199:received non SAFE/FIFO message <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	 955:dd_agent.c:main:57:rcode=0
+	RECIBE EL MENSAJE DE MEMBRESIA LEAVE 
+	 955:dd_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:160:DDA.01
+	 955:dd_agent.c:dda_SP_receive:168:ret=56
+	 955:dd_agent.c:dda_SP_receive:190:DDA.01: sender=DDGROUP Private_group=#DDA.01#node1 service_type=4608
+	 955:dd_agent.c:dda_SP_receive:213:DDA.01: Received REGULAR membership for group DDGROUP with 1 members, where I am member 0:
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDA.01#node1
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDA.01#node1 nid=1
+	 955:dd_agent.c:dda_udt_members:638:	#DDA.01#node1 nodeid=1
+	 955:dd_agent.c:dda_udt_members:641:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=1 dda_nr_init=0 dda_bm_nodes=2 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:234:DDA.01: Due to the LEAVE or DISCONNECT of #DDM.00#node0
+	 955:dd_agent.c:dda_leave:490:member=#DDM.00#node0
+	 955:dd_agent.c:get_nodeid:275:mbr_string=#DDM.00#node0
+	 955:dd_agent.c:get_nodeid:287:mbr_string=#DDM.00#node0 nid=0
+	 955:dd_agent.c:clear_agent_vars:138:
+	 955:dd_agent.c:dda_leave:498:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=0 dda_bm_init=0
+	 955:dd_agent.c:main:57:rcode=0
+	 955:dd_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=0 dda_bm_init=0
+	 955:dd_agent.c:dda_SP_receive:160:DDA.01
+
+===========================================================================================
+
+A los efectos de intercambiar datos entre MONITOR.PL y PL_AGENT.C 
+todo será transferido a través de strings separados por COMAS ","
+
+# Multicast to group(s)
+Spread::multicast($mbox, AGREED_MESS, 'GroupB', 0, "Hey you!");
+
+	
+int SP_multicast (mailbox mbox, service service_type, 
+                  const char *group, int16 mess_type,
+                  int mess_len, const char *mess); 
+				  
+
+int SP_receive (mailbox mbox, service *service_type, char sender[MAX_GROUP_NAME], 
+                int max_groups, int *num_groups, char groups[][MAX_GROUP_NAME], 
+                int16 *mess_type, int *endian_mismatch, int max_mess_len, char *mess);
+				
+				
+my($service_type, $sender, $groups, $mess_type, $endian, $message) =
+      Spread::receive($mbox, 1.789);  # 1.789 second timeout on receive
+
+MONITOR.PL
+==========
+HACE EL JOIN COMO DDM node0 en el DDGROUP 
+	Mailbox is: 3 and private_group is #DDM.00#node0
+	Attempting to join: DDGROUP.
+	Successfully joined: 1 of 1 group(s) [DDGROUP].
+	Attempting to multicast 17 bytes to [DDGROUP].
+HACE UN MULTICAST DE
+	message: 0,100,0,0,0,0,0,0 ===> Source 100:HELLO_AGENTS nr_nodes=0 nr_init=0
+	Successfully multicasted 17 bytes to [DDGROUP]
+	Entering receive loop. (Timeout = 10s)
+RECIBE MENSAJE DE SU PROPIO JOIN 	
+	st=[4352] s=[DDGROUP] g=[ARRAY(0x1f244f4)] mt=[0] mess=[e;¢b#DDM.00#node0]
+RECIBE MENSAJE DE SU PROPIO MULTICAS HELLO_AGENTS	
+	st=[4] s=[#DDM.00#node0] g=[ARRAY(0x204ea24)] mt=[100] mess=[0,100,0,0,0,0,0,0]
+RECIBE LA RESPUESTA DE NODO1 HELLO_MONITOR (1000 + 100)
+	st=[4] s=[#DDA.01#node1] g=[ARRAY(0x204eb14)] mt=[1100] mess=[1,1100,0,0,0,0,0,0]
+	Receive error: 
+	Received 4 messages.
+	Attempting to leave: [DDGROUP].
+	Successfully left: [DDGROUP].
+
+PL_AGENT
+=======
+RECIBE MENSAJE DEL JOIN DEL MONITOR EN DDM.00
+	 1428:pl_agent.c:dda_SP_receive:228:DDA.01: Due to the JOIN of #DDM.00#node0 service_type=4352
+	 1428:pl_agent.c:dda_join:491:member=#DDM.00#node0
+	 1428:pl_agent.c:get_nodeid:280:mbr_string=#DDM.00#node0
+	 1428:pl_agent.c:get_nodeid:292:mbr_string=#DDM.00#node0 nid=0
+	 1428:pl_agent.c:dda_join:506:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	 1428:pl_agent.c:main:57:rcode=0
+	 1428:pl_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=2 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=0
+	 1428:pl_agent.c:dda_SP_receive:160:DDA.01
+	 1428:pl_agent.c:dda_SP_receive:168:ret=17
+RECIBE MULTICAST DE NODE0 CON MENSAJE HELLO_AGENTS	 
+	 1428:pl_agent.c:dda_SP_receive:190:DDA.01: sender=#DDM.00#node0 Private_group=#DDA.01#node1 service_type=4
+	 1428:pl_agent.c:dda_SP_receive:196:DDA.01: len=17 dda_mess_in=[0,100,0,0,0,0,0,0] <======= HELLO_AGENTS
+	 1428:pl_agent.c:dda_SP_receive:200:DDA.01: FIFO message from #DDM.00#node0, of type 100, (endian 0) to 1 groups (17 bytes)
+	 1428:pl_agent.c:get_nodeid:280:mbr_string=#DDM.00#node0
+	 1428:pl_agent.c:get_nodeid:292:mbr_string=#DDM.00#node0 nid=0
+	 1428:pl_agent.c:dda_reg_msg:312:sender_ptr=#DDM.00#node0 nodeid=0
+DESCOMPONE EL MENSAJE EN SUS COMPONENTES
+	 1428:pl_agent.c:dda_reg_msg:325:dda_mess_in=0,100,0,0,0,0,0,0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=100
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:332:token=0
+	 1428:pl_agent.c:dda_reg_msg:374:source=0 type=100 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+	 1428:pl_agent.c:dda_reg_msg:377:MT_HELLO_AGENTS received from 0
+ENVIA EL MENSAJE HELLO_MONITOR	 
+	 1428:pl_agent.c:mcast_hello_monitor:647:source=1 type=1100 m1i1=0 m1i2=0 m1i3=0 m1p1=(nil) m1p2=(nil) m1p3=(nil) 
+	 1428:pl_agent.c:mcast_hello_monitor:650:s_msg=[1,1100,0,0,0,0,0,0]
+	 1428:pl_agent.c:main:57:rcode=0
+	 1428:pl_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=3
+	 1428:pl_agent.c:dda_SP_receive:160:DDA.01
+	 1428:pl_agent.c:dda_SP_receive:168:ret=19
+	 1428:pl_agent.c:dda_SP_receive:190:DDA.01: sender=#DDA.01#node1 Private_group=#DDA.01#node1 service_type=4
+	 1428:pl_agent.c:dda_SP_receive:196:DDA.01: len=19 dda_mess_in=[1,1100,0,0,0,0,0,0]
+	 1428:pl_agent.c:dda_SP_receive:200:DDA.01: FIFO message from #DDA.01#node1, of type 1100, (endian 0) to 1 groups (19 bytes)
+	 1428:pl_agent.c:get_nodeid:280:mbr_string=#DDA.01#node1
+	 1428:pl_agent.c:get_nodeid:292:mbr_string=#DDA.01#node1 nid=1
+	 1428:pl_agent.c:dda_reg_msg:312:sender_ptr=#DDA.01#node1 nodeid=1
+	 1428:pl_agent.c:main:57:rcode=0	 
+	 1428:pl_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=3 dda_bm_init=3
+RECIBE EL MENSAJE DE SPREAD DE DISCONNECT O LEAVE DE NODE1 
+	 1428:pl_agent.c:dda_SP_receive:160:DDA.01
+	 1428:pl_agent.c:dda_SP_receive:168:ret=56
+	 1428:pl_agent.c:dda_SP_receive:190:DDA.01: sender=DDGROUP Private_group=#DDA.01#node1 service_type=4608
+	 1428:pl_agent.c:dda_SP_receive:218:DDA.01: Received REGULAR membership for group DDGROUP with 1 members, where I am member 0:
+	 1428:pl_agent.c:get_nodeid:280:mbr_string=#DDA.01#node1
+	 1428:pl_agent.c:get_nodeid:292:mbr_string=#DDA.01#node1 nid=1
+	 1428:pl_agent.c:dda_udt_members:669:   #DDA.01#node1 nodeid=1
+	 1428:pl_agent.c:dda_udt_members:672:dda_mbr_name=DDA.01 dda_monitor=0 dda_nr_nodes=1 dda_nr_init=0 dda_bm_nodes=2 dda_bm_init=3
+	 1428:pl_agent.c:dda_SP_receive:239:DDA.01: Due to the LEAVE or DISCONNECT of #DDM.00#node0
+	 1428:pl_agent.c:dda_leave:518:member=#DDM.00#node0
+	 1428:pl_agent.c:get_nodeid:280:mbr_string=#DDM.00#node0
+	 1428:pl_agent.c:get_nodeid:292:mbr_string=#DDM.00#node0 nid=0
+	 1428:pl_agent.c:clear_agent_vars:138:
+	 1428:pl_agent.c:dda_leave:526:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=0 dda_bm_init=0
+	 1428:pl_agent.c:main:57:rcode=0
+	 1428:pl_agent.c:main:54:dda_mbr_name=DDA.01 dda_monitor=-1 dda_nr_nodes=0 dda_nr_init=0 dda_bm_nodes=0 dda_bm_init=0
+	 1428:pl_agent.c:dda_SP_receive:160:DDA.01
+
+====================================================================================================
+20220610:  Modifique el MONITOR.PL
+
+En este caso se arranca el MONITOR.PL y rapidamente se arranca el AGENT y rapidamente se mata el AGENT 
+	root@node0:/usr/src/dvs/dvs-apps/dvkd/Spread-3.17.4.4# ./monitor.pl 
+	Spread client library version 5.0.1
+	Trying to connect to spread...
+	Mailbox is: 3 and private_group is #DDM.00#node0
+	Attempting to join: DDGROUP.
+	Successfully joined: 1 of 1 group(s) [DDGROUP].
+	Attempting to multicast 17 bytes to [DDGROUP].
+	message: 0,100,0,0,0,0,0,0 .
+	Successfully multicasted 17 bytes to [DDGROUP]
+	Entering receive loop. (Timeout = 10s)
+
+JOIN DEL MONITOR 
+	st=[4352] s=[DDGROUP] g=[ARRAY(0x13984f4)] mt=[0] mess=[eÇI£b#DDM.00#node0]
+	JOIN
+			SOURCE: DDGROUP
+			a_pos=-1 m_pos=24
+			MONITOR JOIN
+
+RECIBI MENSAJE PROPIO MULTICAST HELLO_AGENT
+	st=[4] s=[#DDM.00#node0] g=[ARRAY(0x1398544)] mt=[100] mess=[0,100,0,0,0,0,0,0]
+	REGULAR
+			type_nr: DDM.00
+			node_name: node0
+			src_type: DDM
+			src_nodeid: 00
+			SELF MESSAGE - SOURCE: #DDM.00#node0
+			HELLO_AGENT RECEIVED: 100 FROM DDM WITH NODEID 00
+			nr_nodes: 1
+			bm_nodes: 00000001
+
+RECIBI JOIN DEL AGENT 
+	st=[4352] s=[DDGROUP] g=[ARRAY(0x13984f4)] mt=[0] mess=[eÇI£b#DDA.01#node1]
+	JOIN
+			SOURCE: DDGROUP
+			a_pos=24 m_pos=-1
+			AGENT JOIN: id 01
+
+RECIBI LEAVE DEL AGENT 
+	st=[5120] s=[DDGROUP] g=[ARRAY(0x1460814)] mt=[0] mess=[eÇI£b#DDA.01#node1]
+	LEAVE
+			SOURCE: DDGROUP
+			a_pos=24
+			AGENT LEAVE: id 01
+
+	Receive error: 
+	Received 5 messages.
+	Attempting to leave: [DDGROUP].
+	Successfully left: [DDGROUP].
+	EXITING.....
+
+En este caso se arranca el pl_agent y luego el MONITOR 
+
+	root@node0:/usr/src/dvs/dvs-apps/dvkd/Spread-3.17.4.4# ./monitor.pl 
+	Spread client library version 5.0.1
+	Trying to connect to spread...
+	Mailbox is: 3 and private_group is #DDM.00#node0
+	Attempting to join: DDGROUP.
+	Successfully joined: 1 of 1 group(s) [DDGROUP].
+	Attempting to multicast 17 bytes to [DDGROUP].
+	message: 0,100,0,0,0,0,0,0 .
+	Successfully multicasted 17 bytes to [DDGROUP]
+	Entering receive loop. (Timeout = 10s)
+
+JOINT DE MONITOR 
+	st=[4352] s=[DDGROUP] g=[ARRAY(0x22394f4)] mt=[0] mess=[eÇI£b#DDM.00#node0]
+	JOIN
+			SOURCE: DDGROUP
+			a_pos=-1 m_pos=24
+			MONITOR JOIN
+
+RECIBI PROPIO MULTICAST HELLO_AGENT
+	st=[4] s=[#DDM.00#node0] g=[ARRAY(0x2239558)] mt=[100] mess=[0,100,0,0,0,0,0,0]
+	REGULAR
+			type_nr: DDM.00
+			node_name: node0
+			src_type: DDM
+			src_nodeid: 00
+			SELF MESSAGE - SOURCE: #DDM.00#node0
+			HELLO_AGENT RECEIVED: 100 FROM DDM WITH NODEID 00
+			nr_nodes: 1
+			bm_nodes: 00000001
+
+RECIBI MULTICAST DESDE EL AGENT HELLO_MONITOR
+	st=[4] s=[#DDA.01#node1] g=[ARRAY(0x22394f4)] mt=[1100] mess=[1,1100,0,0,0,0,0,0]
+	REGULAR
+			type_nr: DDA.01
+			node_name: node1
+			src_type: DDA
+			src_nodeid: 01
+			SELF MESSAGE - SOURCE: #DDA.01#node1
+			HELLO_MONITOR RECEIVED: 1100 FROM DDA WITH NODEID 01
+			nr_nodes: 2
+			bm_nodes: 00000003
+			
+	Receive error: 
+	Received 4 messages.
+	Attempting to leave: [DDGROUP].
+	Successfully left: [DDGROUP].
+	EXITING.....
+	root@node0:/usr/src/dvs/dvs-apps/dvkd/Spread-3.17.4.4# 

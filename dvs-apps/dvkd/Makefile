@@ -1,4 +1,4 @@
-all: dd_monitor dd_agent dd_proxy
+all: dd_monitor dd_agent dd_proxy pl_agent
 # Which compiler
 CC = gcc
 
@@ -11,6 +11,7 @@ INCLUDE = ..
 DDMOBJ =  dd_monitor.o 
 DDAOBJ =  dd_agent.o
 DDPOBJ =  dd_proxy.o
+DPLOBJ =  pl_agent.o
  
 #LIBS = ../../lib/syslib/libsyslib.so ../../lib/timers/libtimers.so
 
@@ -27,9 +28,12 @@ dd_agent: $(DDAOBJ)   dd_common.h dd_agent.h glo_agent.h
 
 dd_proxy: $(DDPOBJ)   dd_common.h dd_proxy.h glo_proxy.h
 	$(CC)  $(CFLAGS) -MMD -MP -ldl -lm -lrt -lnsl  -pthread -rdynamic -o dd_proxy $(DDPOBJ) $(LIBS) -I$(INCLUDE)
+
+pl_agent: $(DPLOBJ)   dd_common.h dd_agent.h glo_agent.h
+	$(CC)  $(CFLAGS) -MMD -MP -ldl -lm -lrt -lnsl  -pthread -rdynamic -o pl_agent $(DPLOBJ) $(LIBS) -I$(INCLUDE)
 	
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(INCLUDE) -Wall
 
 clean:
-	rm dd_monitor dd_agent dd_proxy *.o
+	rm dd_monitor dd_agent dd_proxy pl_agent *.o

@@ -28,7 +28,7 @@ int main (int argc, char *argv[] )
     }
 
 	dda_ptr = &dda;
-	USRDEBUG("DVKD AGENT: Initializing...\n");
+	USRDEBUG("DVKD AGENT FOR PERL: Initializing...\n");
 
 	local_nodeid = DD_INVALID;
 	clear_agent_vars(dda_ptr);
@@ -190,6 +190,11 @@ int dda_SP_receive(dda_t	*dda_ptr)
              service_type);
      
     if( Is_regular_mess( service_type ) )	{
+		dda_ptr->dda_mess_in[ret] = 0;			// fill last byte with 0
+		USRDEBUG("%s: len=%d dda_mess_in=[%s]\n", 
+             dda_ptr->dda_mbr_name, ret,
+             dda_ptr->dda_mess_in);
+			 
         if( Is_fifo_mess(service_type) ) {
             USRDEBUG("%s: FIFO message from %s, of type %d, (endian %d) to %d groups (%d bytes)\n",
                      dda_ptr->dda_mbr_name, sender, mess_type, endian_mismatch, num_groups, ret);
@@ -296,10 +301,12 @@ int get_nodeid(char *mbr_string)
 *===========================================================================*/
 int dda_reg_msg(char *sender_ptr, dda_t *dda_ptr, int16 msg_type)
 {
-	int nodeid, len, max;
+	int nodeid, len, i, max;
 	int rcode;
 	FILE *pfp;
 	char *ptr;
+	char *token;
+	message msg, *m_ptr;
 
 	nodeid = get_nodeid(sender_ptr);
     USRDEBUG("sender_ptr=%s nodeid=%d\n", sender_ptr,  nodeid );
@@ -315,20 +322,39 @@ int dda_reg_msg(char *sender_ptr, dda_t *dda_ptr, int16 msg_type)
 					 sender_ptr);
 				ERROR_RETURN(OK);					
 			}
-			// check message len 
-			if( dda_ptr->dda_len < sizeof(message)){
-				fprintf( stderr,"dda_reg_msg: bad message size=%d (must be %d)\n",
-					 dda_ptr->dda_len, sizeof(message));
-				ERROR_RETURN(OK);		
+		    USRDEBUG("dda_mess_in=%s\n", dda_ptr->dda_mess_in);
+			m_ptr 	= &msg;
+		
+			// Extract the first token
+			token = strtok(dda_ptr->dda_mess_in, DD_DELIMITER);
+			// loop through the string to extract all other tokens
+			for( i=0; token != NULL; i++) {
+				USRDEBUG("token=%s\n", token ); //printing each token
+				if( i == 0){
+					m_ptr->m_source = atoi(token);
+				}else if (i == 1){
+					m_ptr->m_type 	= atoi(token);
+				}else if (i == 2){
+					m_ptr->m1_i1 	= atoi(token); // nr_nodes
+				}else if (i == 3){
+					m_ptr->m1_i2	= atoi(token); // nr_init 
+				}
+				token = strtok(NULL, DD_DELIMITER);
 			}
-			m_ptr = dda_ptr->dda_mess_in;
-			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
 			// check message source 
 			if( m_ptr->m_source != nodeid){
 				fprintf( stderr,"dda_reg_msg: m_source(%d) != sender nodeid(%d)\n",
 					 m_ptr->m_source, nodeid);
 				ERROR_RETURN(OK);		
 			}
+
+			// check correct message type 
+			if( m_ptr->m_type != msg_type){
+				fprintf( stderr,"dda_reg_msg: m_type(%d) != msg_type(%d)\n",
+					 m_ptr->m_type, msg_type);
+				ERROR_RETURN(OK);		
+			}
+
 			// check if current monitor has changed 
 			if(dda_ptr->dda_monitor != DD_INVALID){
 				if( dda_ptr->dda_monitor != nodeid){
@@ -337,14 +363,16 @@ int dda_reg_msg(char *sender_ptr, dda_t *dda_ptr, int16 msg_type)
 				ERROR_RETURN(OK);		
 				}
 			}
-			// check correct message type 
-			if( m_ptr->m_type != msg_type){
-				fprintf( stderr,"dda_reg_msg: m_type(%d) != msg_type(%d)\n",
-					 m_ptr->m_type, msg_type);
-				ERROR_RETURN(OK);		
-			}
+			
+			dda_ptr->dda_nr_nodes = m_ptr->m1_i1;
+			dda_ptr->dda_nr_init = m_ptr->m1_i2;
+			m_ptr->m1_i3	= 0;
+			m_ptr->m1_p1	= NULL;
+			m_ptr->m1_p2	= NULL;
+			m_ptr->m1_p3	= NULL;
+			
+			USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr) );	
 			dda_ptr->dda_bm_init = dda_ptr->dda_bm_nodes;
-			dda_ptr->dda_nr_init = dda_ptr->dda_nr_nodes;
 			dda_ptr->dda_monitor = nodeid;
 			USRDEBUG("MT_HELLO_AGENTS received from %d\n",nodeid);			
 			mcast_hello_monitor(dda_ptr);
@@ -426,7 +454,7 @@ int dda_reg_msg(char *sender_ptr, dda_t *dda_ptr, int16 msg_type)
 
 			m_ptr = &m_out;
 			m_ptr->m_source = SOURCE_AGENT;
-			m_ptr->m_type 	= (DVK_BIND| MASK_ACKNOWLEDGE);
+			m_ptr->m_type 	= (DVK_BIND + MT_ACKNOWLEDGE);
 			m_ptr->mC_i1	= rcode;
 			m_ptr->mC_i2	= 0;
 			m_ptr->mC_i3	= 0;
@@ -436,9 +464,9 @@ int dda_reg_msg(char *sender_ptr, dda_t *dda_ptr, int16 msg_type)
 			
 			// multicast REPLY  
 			SP_multicast(dda_ptr->dda_mbox, FIFO_MESS, SPREAD_GROUP,
-					(DVK_BIND| MASK_ACKNOWLEDGE) , sizeof(message), m_ptr);
+					(DVK_BIND + MT_ACKNOWLEDGE) , sizeof(message), m_ptr);
 			break;	
-		case (DVK_BIND| MASK_ACKNOWLEDGE):
+		case (DVK_BIND + MT_ACKNOWLEDGE):
 			break;
 		case MT_HELLO_MONITOR:
 			// ignore other agents messages 
@@ -605,6 +633,7 @@ int dda_network(dda_t* dda_ptr)
 *===========================================================================*/
 void mcast_hello_monitor(dda_t *dda_ptr)
 {
+	char s_msg[MAX_MSG_STRING];
 	m_ptr = &m_out;
 	m_ptr->m_source = local_nodeid;
 	m_ptr->m_type   = MT_HELLO_MONITOR;
@@ -616,9 +645,11 @@ void mcast_hello_monitor(dda_t *dda_ptr)
 	m_ptr->m1_p3	= NULL;
 
     USRDEBUG(MSG1_FORMAT, MSG1_FIELDS(m_ptr));	
-				  
+	sprintf(s_msg,"%d,%d,%d,%d,0,0,0,0",
+		local_nodeid, MT_HELLO_MONITOR, dda_ptr->dda_nr_nodes, dda_ptr->dda_nr_init);			  
+    USRDEBUG("s_msg=[%s]\n", s_msg);
 	SP_multicast(dda_ptr->dda_mbox, FIFO_MESS, SPREAD_GROUP,
-					MT_HELLO_MONITOR , sizeof(message), (char *) m_ptr);
+					MT_HELLO_MONITOR , strlen(s_msg)+1, (char *) s_msg);
 }
 
 /*===========================================================================*

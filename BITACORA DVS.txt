@@ -4838,6 +4838,77 @@ ULTIMO_LOG
 ==============================================================================================================
 ==============================================================================================================
 
+OPCIONES PARA VER INFO DE LA VM
+   nproc => numero de procesadores 
+   lscpu => info sobre la CPU
+   free  => utilizacion de la memoria
+   
+   
+
+
+DEFINIR LAS NUEVAS PRIMITIVAS QUE TRANSPORTEN MENSAJES Y DATOS 
+PARA USO DE RPC Y DE CONVERSION DE PROTOCOLOS COMO HTML->M3IPC
+
+len = dvk_rqst_data(dest,msg,ptr, buflen, timeout);
+	Envia un mensaje al destino que puede o no contener datos 
+	luego se bloquea
+	Recibe la respuesta en un mensaje que puede o no contener datos 
+	retorna
+		len < 0 => ERROR
+		len = 0 => mensajes OK pero sin datos 
+		len > 0 => mensajes OK y la longitud de los datos 
+len = dvk_rcv_data(src, msg, ptr, buflen, timeout);
+	Recibe un mensaje desde un origen que puede o no contener datos 
+		len < 0 => ERROR
+		len = 0 => mensajes OK pero sin datos 
+		len > 0 => mensajes OK y la longitud de los datos	
+rcode = dvk_reply_data(dest,msg, ptr, buflen, timeout);
+	Responde a un destino bloqueado con un mensaje que puede o no contener datos 
+	
+El area de datos trasportada es unica pero puede contener datos de diferentes formatos, ejemplo.
+
+struct {
+	int header;
+	char pay[10];
+} struct1;
+
+struct {
+	long IPaddr;
+	char name[20];
+} struct2;
+
+struct {
+	struct1 s1;
+	struct2 s2;
+} dualstruct;
+typedef dualstruct dualstruct_t;
+
+dualstruct_t ds;
+
+en el rqst_data iria un mensaje, por ejemplo:
+ m_ptr->m_type = TEST_STRUCTS
+ m_ptr->m_m1i1 = sizeof(s1);
+ m_ptr->m_m1i2 = sizeof(s2);
+ m_ptr->m_m1p1 = &ds - &ds.s1; << es un offset respecto a la ubicacion del buffer ds.
+ m_ptr->m_m1p2 = &ds - &ds.s2; << es un offset respecto a la ubicacion del buffer ds.
+ 
+Cuando el receptor recibe el mensaje, tambien recibe los datos en el la direccion ptr.
+y puede acceder a ellos porque tiene el offset respecto a ptr y
+la longitud de cada uno 
+
+HAY QUE MODIFICAR LOS PROXIES TAMBIEN Y get2rmt , put2lcl
+
+
+
+
+	
+
+
+
+
+
+
+
 NO SE ESTA ACTUALIZANDO LAS TRANSFERENCIA REMOTA DE DATOS rcopy
 	root@client11:/usr/src/dvs/dvs-apps/m3ftp# cat /proc/dvs/DC0/stats
 	DC pnr -endp -lpid/vpid- nd --lsnt-- --rsnt-- -lcopy-- -rcopy-- name

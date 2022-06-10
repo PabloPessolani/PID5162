@@ -5963,7 +5963,11 @@ ULTIMO_LOG
 
 ==========================================================================================
 ==========================================================================================
-		
+	
+
+TODO: LOAD BALANCER DISTRIBUIDO 
+https://github.com/envoyproxy/envoy
+	
 TODO: Se podría enviar una SIGNAL al LB para que fuerce el envio de HELLO a TODOS los proxies 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
