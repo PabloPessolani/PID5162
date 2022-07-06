@@ -1,18 +1,19 @@
-/********************************************************/
-/* 	MULTI-NODE MULTI-PROTOCOL PROXY 			*/
+/***********************************************************/
+/* 	MULTI-NODE MULTI-PROTOCOL  				*/
+/* 	DISTRIBUTED SERVICE PROXY 		  			*/
 /*   BATCHING MESSAGES							*/
 /*   DATA BLOCKS COMPRESSION 					*/
 /*   AUTOMATIC CLIENT BINDING  					*/
 /*  Kernel with support of Timestamp and sender PID insertion	*/
-/********************************************************/
+/***********************************************************/
 
 #define _TABLE
 
-#include "proxy.h"
-#include "debug.h"
-#include "macros.h"
-#include "multi_proxy.h"
-#include "multi_glo.h"
+#include "../proxy.h"
+#include "../debug.h"
+#include "../macros.h"
+#include "dsp_proxy.h"
+#include "dsp_glo.h"
 
 extern int errno;
 
@@ -43,8 +44,6 @@ jiff  cuse[2],  cice[2], csys[2],  cide[2], ciow[2],  cxxx[2],   cyyy[2],   czzz
 int		idx = 0;
 clockid_t clk_id;
 struct timespec ts;
-
-
 
 void main_pws(void *arg_port);
 void wdmp_px_stats(proxy_t *px_ptr);
@@ -317,15 +316,17 @@ int pr_process_message(proxy_t *px_ptr)
 					PXYDEBUG("RPROXY(%d): MT_LOAD_THRESHOLDS\n", px_ptr->px_proxyid);
 					PXYDEBUG("RPROXY(%d):\n" MSG1_FORMAT, px_ptr->px_proxyid, MSG1_FIELDS(m_ptr));
 					
-					MTX_LOCK(mpa_ptr->mpa_mutex);
-					assert( mpa_ptr->mpa_period	> 0);
-					mpa_ptr->mpa_lowwater	= m_ptr->m1_i1;
-					mpa_ptr->mpa_highwater	= m_ptr->m1_i2;
-					mpa_ptr->mpa_period		= m_ptr->m1_i3;
-					MTX_UNLOCK(mpa_ptr->mpa_mutex);
+					MTX_LOCK(lb_ptr->lb_mtx);
+					assert( lb_ptr->lb_period	> 0);
+					lb_ptr->lb_lowwater	= m_ptr->m1_i1;
+					lb_ptr->lb_highwater	= m_ptr->m1_i2;
+					lb_ptr->lb_period		= m_ptr->m1_i3;
+					MTX_UNLOCK(lb_ptr->lb_mtx);
 					
 					MTX_LOCK(px_ptr->px_send_mtx);
+#ifdef GET_METRICS
 					build_load_level(px_ptr, MT_LOAD_THRESHOLDS | MT_ACKNOWLEDGE);
+#endif //  GET_METRICS
 					rcode = send_hello_msg(px_ptr);
 					if( rcode < 0 ) {
 						ERROR_PRINT(rcode);
@@ -478,9 +479,9 @@ int pr_process_message(proxy_t *px_ptr)
 			px_ptr->px_rdesc.td_pseudo->c_cmd 	            = CMD_SNDREC_MSG;
 			px_ptr->px_rdesc.td_pseudo->c_dcid	            = px_ptr->px_rdesc.td_header->c_dcid;
 			px_ptr->px_rdesc.td_pseudo->c_src	 	        = PM_PROC_NR;
-			px_ptr->px_rdesc.td_pseudo->c_dst 	            = SYSTASK(mpa_ptr->mpa_nodeid);
+			px_ptr->px_rdesc.td_pseudo->c_dst 	            = SYSTASK(lb_ptr->lb_nodeid);
 			px_ptr->px_rdesc.td_pseudo->c_snode 	        = px_ptr->px_rdesc.td_header->c_snode;
-			px_ptr->px_rdesc.td_pseudo->c_dnode 	        = mpa_ptr->mpa_nodeid;
+			px_ptr->px_rdesc.td_pseudo->c_dnode 	        = lb_ptr->lb_nodeid;
 			px_ptr->px_rdesc.td_pseudo->c_rcode	            = 0;
 			px_ptr->px_rdesc.td_pseudo->c_len		        = 0;
 			px_ptr->px_rdesc.td_pseudo->c_flags	            = 0;
@@ -917,7 +918,7 @@ void update_stats(proxy_t *px_ptr, proxy_hdr_t *hd_ptr, proxy_payload_t *pl_ptr,
 		pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
 		pxs_ptr->pst_snode	=  hd_ptr->c_snode;		
 	}else{
-		pxs_ptr->pst_snode	=  mpa_ptr->mpa_nodeid;
+		pxs_ptr->pst_snode	=  lb_ptr->lb_nodeid;
 		pxs_ptr->pst_dnode	=  hd_ptr->c_dnode;
 	}
 	
@@ -1046,7 +1047,9 @@ int  ps_start_serving(proxy_t *px_ptr)
 //			case EDVSINTR:
 				if( TEST_BIT(px_ptr->px_status, PX_BIT_SCONNECTED) !=  0) {
 					PXYDEBUG("SPROXY(%d): Sending HELLO\n", px_ptr->px_proxyid);
+#ifdef GET_METRICS
 					build_load_level(px_ptr, MT_LOAD_LEVEL);
+#endif // GET_METRICS
 					rcode = send_hello_msg(px_ptr);
 					if (rcode == 0) {
 						px_ptr->px_sdesc.td_msg_ok++;
@@ -1191,7 +1194,7 @@ int ps_connect_to_remote(proxy_t *px_ptr)
     int port_no, rcode, i;
     char rmt_ipaddr[INET_ADDRSTRLEN+1];
 
-    port_no = (BASE_PORT+mpa_ptr->mpa_nodeid);
+    port_no = (BASE_PORT+lb_ptr->lb_nodeid);
 	PXYDEBUG("SPROXY(%d): for node %s running at port=%d\n", 
 		px_ptr->px_proxyid, px_ptr->px_name, port_no);    
 
@@ -1394,7 +1397,7 @@ void *ps_thread(void *arg)
 
 void usage(void)
 {
-   	fprintf(stderr,"Usage: multi_proxy <config_file>\n");
+   	fprintf(stderr,"Usage: lb_proxy <config_file>\n");
 	exit(1);
 }
 
@@ -1405,8 +1408,10 @@ void  main ( int argc, char *argv[] )
 {
     int pid, status;
     int ret, c, i;
-    dvs_usr_t *d_ptr;
 	proxy_t *px_ptr;
+	client_t *clt_ptr;
+	server_t *svr_ptr;
+	service_t *svc_ptr;
 
 	if( argc != 2) 	{
 		usage();
@@ -1416,20 +1421,39 @@ void  main ( int argc, char *argv[] )
 	ret = dvk_open();
 	if (ret < 0)  ERROR_EXIT(ret);
 
-	mpa_ptr = &mpa; 
-    mpa_ptr->mpa_nodeid = dvk_getdvsinfo(&dvs);
-	if(mpa_ptr->mpa_nodeid < 0) ERROR_EXIT(mpa_ptr->mpa_nodeid);
-    d_ptr=&dvs;
-	PXYDEBUG(DVS_USR_FORMAT,DVS_USR_FIELDS(d_ptr));
-	local_nodeid =  mpa_ptr->mpa_nodeid; 
+	lb_ptr = &lb; 
+    lb_ptr->lb_nodeid = dvk_getdvsinfo(&dvs);
+	if(lb_ptr->lb_nodeid < 0) ERROR_EXIT(lb_ptr->lb_nodeid);
+    dvs_ptr=&dvs;
+	PXYDEBUG(DVS_USR_FORMAT,DVS_USR_FIELDS(dvs_ptr));
+	local_nodeid =  lb_ptr->lb_nodeid; 
 	
-    mpa_ptr->mpa_pid = syscall (SYS_gettid);
-	PXYDEBUG("MAIN: mpa_pid=%d mpa_nodeid=%d\n", 
-		mpa_ptr->mpa_pid , mpa_ptr->mpa_nodeid);
+    lb_ptr->lb_pid = syscall (SYS_gettid);
+	PXYDEBUG("MAIN: lb_pid=%d lb_nodeid=%d\n", 
+		lb_ptr->lb_pid , lb_ptr->lb_nodeid);
 	 
-    multi_config(argv[1]);  //Reads Config File
+	// Clear server and client tables 
+    PXYDEBUG("Clear server and client tables \n");
+	for( i = 0;  i < dvs_ptr->d_nr_nodes; i++ ){
+		svr_ptr = &server_tab[i];
+		svr_ptr->svr_index = i;
+		init_server(svr_ptr);
+		clt_ptr = &client_tab[i];
+		clt_ptr->clt_index = i;
+		init_client(clt_ptr);
+	}
+
+	// Clear service table  
+    PXYDEBUG("Clear service table\n");	
+	for( i = 0;  i < MAX_SVC_NR; i++ ){
+		svc_ptr = &service_tab[i];
+		svc_ptr->svc_index = i;
+		init_service(svc_ptr);
+	}
+ 
+    lb_config(argv[1]);  //Reads Config File
 	
-    if( mpa_ptr->mpa_compress_opt == YES){
+    if( lb_ptr->lb_compress_opt == YES){
 		if( (BLOCK_16K << lz4_preferences.frameInfo.blockSizeID) < MAXCOPYBUF)  {
 			fprintf(stderr, "MAXCOPYBUF(%d) must be greater than (BLOCK_16K <<"
 				"lz4_preferences.frameInfo.blockSizeID)(%d)\n",MAXCOPYBUF,
@@ -1438,13 +1462,14 @@ void  main ( int argc, char *argv[] )
 		}
 	}
 
-	PXYDEBUG("MAIN: mpa_ptr->mpa_nr_proxies=%d\n", mpa_ptr->mpa_nr_proxies);
+	PXYDEBUG("MAIN: lb_ptr->lb_nr_proxies=%d\n", lb_ptr->lb_nr_proxies);
 
-	pthread_mutex_init(&mpa_ptr->mpa_mutex, NULL);
+	pthread_mutex_init(&lb_ptr->lb_mtx, NULL);
 
-	for( i = 0; i < mpa_ptr->mpa_nr_proxies; i++){
+	for( i = 0; i < lb_ptr->lb_nr_proxies; i++){
         PXYDEBUG("MAIN: i=%d \n", i);
 		px_ptr = &proxy_tab[i];
+		if( px_ptr->px_proxyid == local_nodeid) continue;
 		if( px_ptr->px_proxyid == PX_INVALID) {
 			fprintf(stderr, "px_proxyid(%d) must not be PX_INVALID\n",i);
 			ERROR_EXIT(EDVSINVAL);
@@ -1497,12 +1522,14 @@ void  main ( int argc, char *argv[] )
 	}
 	
 	while(TRUE){
-		PXYDEBUG("MAIN: mpa_period=%d\n", mpa_ptr->mpa_period);		
-		sleep(mpa_ptr->mpa_period);
+		PXYDEBUG("MAIN: lb_period=%d\n", lb_ptr->lb_period);		
+		sleep(lb_ptr->lb_period);
+#ifdef GET_METRICS
 		get_metrics();
+#endif // GET_METRICS
 	}
 	
-	for( i = 0; i < mpa_ptr->mpa_nr_proxies; i++){
+	for( i = 0; i < lb_ptr->lb_nr_proxies; i++){
 		px_ptr = &proxy_tab[i];
 		if( px_ptr->px_proxyid == PX_INVALID) continue;
         PXYDEBUG(PROXY_FORMAT, PROXY_FIELDS(px_ptr));	
@@ -1731,7 +1758,7 @@ void wdmp_px_stats(proxy_t *px_ptr)
 
 #endif //  PWS_ENABLED
 
-#define GET_METRICS 1
+// #define GET_METRICS 1
 #ifdef GET_METRICS
 
 /*===========================================================================*
@@ -1743,39 +1770,39 @@ void get_metrics(void)
 	int cpu_usage;
 	int load_lvl;
 	
-	PXYDEBUG(MPA1_FORMAT, MPA1_FIELDS(mpa_ptr));
+	PXYDEBUG(DSP1_FORMAT, DSP1_FIELDS(lb_ptr));
 		
 	// wait until be initiliazed 
 	PXYDEBUG("Check initialization... \n");
-	MTX_LOCK(mpa_ptr->mpa_mutex);
-	if(mpa_ptr->mpa_lowwater == PX_INVALID){
-		MTX_UNLOCK(mpa_ptr->mpa_mutex);
+	MTX_LOCK(lb_ptr->lb_mtx);
+	if(lb_ptr->lb_lowwater == PX_INVALID){
+		MTX_UNLOCK(lb_ptr->lb_mtx);
 		return;
 	}
 	
-	if(mpa_ptr->mpa_lowwater == PX_INVALID){
-		MTX_UNLOCK(mpa_ptr->mpa_mutex);
+	if(lb_ptr->lb_lowwater == PX_INVALID){
+		MTX_UNLOCK(lb_ptr->lb_mtx);
 		return;
 	}
-	MTX_UNLOCK(mpa_ptr->mpa_mutex);
+	MTX_UNLOCK(lb_ptr->lb_mtx);
 
 	cpu_usage = get_CPU_usage();
 	if( cpu_usage == PX_INVALID) return;
 	assert( cpu_usage >= 0 && cpu_usage <= 100);
 	
-	MTX_LOCK(mpa_ptr->mpa_mutex);
-	if( cpu_usage < mpa_ptr->mpa_lowwater){
-		mpa_ptr->mpa_load_lvl = LVL_IDLE;
-	} else	if( cpu_usage >= mpa_ptr->mpa_highwater){
-		mpa_ptr->mpa_load_lvl = LVL_SATURATED;
+	MTX_LOCK(lb_ptr->lb_mtx);
+	if( cpu_usage < lb_ptr->lb_lowwater){
+		lb_ptr->lb_load_lvl = LVL_IDLE;
+	} else	if( cpu_usage >= lb_ptr->lb_highwater){
+		lb_ptr->lb_load_lvl = LVL_SATURATED;
 	} else {
-		mpa_ptr->mpa_load_lvl = LVL_BUSY;
+		lb_ptr->lb_load_lvl = LVL_BUSY;
 	}
 	// update agent values 
-	mpa_ptr->mpa_cpu_usage = cpu_usage;
-	PXYDEBUG(MPA3_FORMAT, MPA3_FIELDS(mpa_ptr));
+	lb_ptr->lb_cpu_usage = cpu_usage;
+	PXYDEBUG(DSP3_FORMAT, DSP3_FIELDS(lb_ptr));
 
-	MTX_UNLOCK(mpa_ptr->mpa_mutex);
+	MTX_UNLOCK(lb_ptr->lb_mtx);
 }
 
 int get_CPU_usage(void)
@@ -1850,6 +1877,28 @@ to_popen:
 	
 	return(cpu_usage);
 }
+
+int build_load_level(proxy_t *px_ptr, int mtype)
+{
+	int rcode; 
+	message *m_ptr; 
+	proxy_hdr_t *hdr_ptr;
+
+	PXYDEBUG("SPROXY(%d): mtype=%X\n", px_ptr->px_proxyid, mtype);
+
+	hdr_ptr = &px_ptr->px_sdesc.td_header;
+	m_ptr =  &hdr_ptr->c_msg;
+
+	m_ptr->m_type	=  mtype;
+	m_ptr->m_source	=  lb_ptr->lb_nodeid;
+	m_ptr->m1_i1	=  lb_ptr->lb_cpu_usage;
+	m_ptr->m1_i2	=  lb_ptr->lb_load_lvl; 
+	m_ptr->m1_i3	=  lb_ptr->lb_period;
+	
+	PXYDEBUG("SPROXY(%d): " MSG1_FORMAT, px_ptr->px_proxyid , MSG1_FIELDS(m_ptr));
+	return(OK);
+}
+
 #endif // GET_METRICS
 
 int build_reply_msg(proxy_t *px_ptr, int mtype, int ret)
@@ -1864,33 +1913,14 @@ int build_reply_msg(proxy_t *px_ptr, int mtype, int ret)
 	m_ptr =  &hdr_ptr->c_msg;
 
 	m_ptr->m_type	=  mtype;
-	m_ptr->m_source	=  mpa_ptr->mpa_nodeid;
+	m_ptr->m_source	=  lb_ptr->lb_nodeid;
 	m_ptr->m1_i1	=  ret;
 	
 	PXYDEBUG("SPROXY(%d): " MSG1_FORMAT, px_ptr->px_proxyid , MSG1_FIELDS(m_ptr));
 	return(OK);
 }
 
-int build_load_level(proxy_t *px_ptr, int mtype)
-{
-	int rcode; 
-	message *m_ptr; 
-	proxy_hdr_t *hdr_ptr;
 
-	PXYDEBUG("SPROXY(%d): mtype=%X\n", px_ptr->px_proxyid, mtype);
-
-	hdr_ptr = &px_ptr->px_sdesc.td_header;
-	m_ptr =  &hdr_ptr->c_msg;
-
-	m_ptr->m_type	=  mtype;
-	m_ptr->m_source	=  mpa_ptr->mpa_nodeid;
-	m_ptr->m1_i1	=  mpa_ptr->mpa_cpu_usage;
-	m_ptr->m1_i2	=  mpa_ptr->mpa_load_lvl; 
-	m_ptr->m1_i3	=  mpa_ptr->mpa_period;
-	
-	PXYDEBUG("SPROXY(%d): " MSG1_FORMAT, px_ptr->px_proxyid , MSG1_FIELDS(m_ptr));
-	return(OK);
-}
 
 int send_hello_msg(proxy_t *px_ptr)
 {
@@ -1921,7 +1951,7 @@ int send_hello_msg(proxy_t *px_ptr)
 	hdr_ptr->c_dcid 	= PX_INVALID;
 	hdr_ptr->c_src 		= NONE;
 	hdr_ptr->c_dst 		= NONE;
-	hdr_ptr->c_snode	= mpa_ptr->mpa_nodeid;
+	hdr_ptr->c_snode	= lb_ptr->lb_nodeid;
 	hdr_ptr->c_dnode	= px_ptr->px_proxyid;
 	hdr_ptr->c_len		= 0;
 	hdr_ptr->c_pid		= px_ptr->px_sdesc.td_tid;
@@ -1940,5 +1970,117 @@ int send_hello_msg(proxy_t *px_ptr)
 	
 	return(rcode);
 }	
+
+void init_session( sess_entry_t *sess_ptr)
+{
+	sess_ptr->se_clt_nodeid	= LB_INVALID;
+	sess_ptr->se_clt_ep		= LB_INVALID;
+	sess_ptr->se_clt_PID	= LB_INVALID;
+	sess_ptr->se_lbclt_ep	= LB_INVALID;
+	sess_ptr->se_lbsvr_ep	= LB_INVALID; 
+	sess_ptr->se_svr_nodeid	= LB_INVALID;
+	sess_ptr->se_svr_ep		= LB_INVALID;
+	sess_ptr->se_svr_PID	= LB_INVALID;
+	sess_ptr->se_service	= NULL; 
+}
+	
+void init_server(server_t *svr_ptr)
+{
+	PXYDEBUG("svr_index=%d\n", svr_ptr->svr_index);
+
+	// Initialize Server Service Endpoints in use bitmap 
+	svr_ptr->svr_bm_svc = 0;
+	svr_ptr->svr_idle_ts.tv_sec = 0;
+	clock_gettime(clk_id, &svr_ptr->svr_last_cmd);
+		
+	svr_ptr->svr_nodeid 	= LB_INVALID;
+	svr_ptr->svr_compress 	= LB_INVALID;
+	svr_ptr->svr_batch 		= LB_INVALID;
+	
+	svr_ptr->svr_idle_count = 0;
+	svr_ptr->svr_px_sts		= 0;
+	svr_ptr->svr_bm_sts		= 0;
+	svr_ptr->svr_bm_svc 	= 0;
+	svr_ptr->svr_image 		= NULL;
+
+	svr_ptr->svr_bm_params 		= 0;
+	svr_ptr->svr_icmp_retry 	= FD_MAXRETRIES;
+	svr_ptr->svr_max_retries	= FD_MAXRETRIES;
+
+	TAILQ_INIT(&svr_ptr->svr_clt_head);                      /* Initialize the queue. */
+	TAILQ_INIT(&svr_ptr->svr_svr_head);                      /* Initialize the queue. */
+}
+
+void init_client(client_t *clt_ptr)
+{
+	PXYDEBUG("clt_index=%d\n", clt_ptr->clt_index);
+
+	clock_gettime(clk_id, &clt_ptr->clt_last_cmd);
+	clt_ptr->clt_nodeid 	= LB_INVALID;
+	clt_ptr->clt_compress 	= LB_INVALID;
+	clt_ptr->clt_batch	 	= LB_INVALID;
+	clt_ptr->clt_px_sts		= 0;
+	clt_ptr->clt_bm_params	= 0;
+	
+}
+
+void init_service(service_t *svc_ptr)
+{
+	PXYDEBUG("svc_index=%d\n", svc_ptr->svc_index);
+
+	svc_ptr->svc_extep 	= HARDWARE;
+	svc_ptr->svc_minep 	= HARDWARE;
+	svc_ptr->svc_maxep 	= HARDWARE;
+	svc_ptr->svc_bind 	= LB_INVALID;
+	svc_ptr->svc_dcid 	= LB_INVALID;
+	svc_ptr->svc_bm_params 	= 0;
+
+}
+
+void init_lb(void )
+{
+	PXYDEBUG("\n");
+	lb.lb_nodeid 	= LOCALNODE;		
+	lb.lb_nr_cltpxy	= 0;	
+	lb.lb_nr_svrpxy	= 0;	
+	lb.lb_bm_svrpxy	= 0;	
+	lb.lb_nr_services 	= 0;
+	lb.lb_lowwater 	= LB_INVALID;	
+	lb.lb_highwater	= LB_INVALID;
+	lb.lb_min_servers = 0;	
+	lb.lb_max_servers = dvs_ptr->d_nr_nodes;
+	lb.lb_period   	= LB_PERIOD_DEFAULT;	
+	lb.lb_start   	= LB_START_DEFAULT;	
+	lb.lb_stop 		= LB_SHUTDOWN_DEFAULT;
+	lb.lb_hellotime = LB_PERIOD_DEFAULT;	
+		
+	lb.lb_pid = getpid();
+	lb.lb_nr_active = 0;
+	lb.lb_bm_active = 0;
+	lb.lb_nr_proxy  = 0;
+	lb.lb_bm_proxy  = 0;
+	lb.lb_nr_init   = 0;
+	lb.lb_bm_init   = 0;
+	lb.lb_bm_tested = 0;
+
+	lb.lb_bm_sconn  = 0;
+	lb.lb_bm_rconn  = 0;
+	
+	lb.lb_cltname   = NULL;		
+	lb.lb_svrname   = NULL;		
+	lb.lb_cltdev    = NULL;		
+	lb.lb_svrdev    = NULL;		
+	lb.lb_ssh_host  = NULL;	
+	lb.lb_ssh_user  = NULL;	
+	lb.lb_ssh_pass  = NULL;		
+	lb.lb_vm_start  = NULL;	
+	lb.lb_vm_stop   = NULL;		
+	lb.lb_vm_status = NULL;		
+		
+	lb.lb_bm_params	= 0;	
+
+	lb.lb_bm_suspect= 0;	
+	
+}
 
 

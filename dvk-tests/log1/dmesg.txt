@@ -1,0 +1,46 @@
+[    7.053807] dvk: loading out-of-tree module taints kernel.
+[    7.055518] Hello, DVS! dbglvl=FFFFFFFF dvs.d_dbglvl=FFFFFFFF
+[    7.055521] DEBUG 504:dvk_init_module:408: Hello, DVS! tasklist_ptr=C38231C0
+[    7.059509] DEBUG 504:dvk_init_module:411: Hello, DVS! dvk_dvs_init=0
+[    7.059511] DEBUG 504:dvk_init_module:415: Hello, DVS! NO DVK IPC INTERFACE installed
+[    7.059557] DEBUG 504:dvk_init_module:421: Hello, DVS! setaffinity_ptr=C3092180
+[    7.059602] DEBUG 504:dvk_init_module:425: Hello, DVS! free_nsproxy_ptr=C3086240
+[    7.059648] DEBUG 504:dvk_init_module:429: Hello, DVS! sys_wait4_ptr=C306C5D0
+[    7.063536] DEBUG 504:dvk_init_module:433: Hello, DVS! dvk_unbind_ptr=C3995BB0
+[    7.063538] DEBUG 504:dvk_init_module:435: usage: insmod dvk.ko dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=[0-0xFFFFFFFF]
+[    7.063539] DEBUG 504:dvk_init_module:437: parms:  dvk_major=33 dvk_minor=0 dvk_nr_devs=1 dbglvl=FFFFFFFF
+[    7.064730] DEBUG 504:dvk_init_module:454: Registeration is a success The major device number is 33.
+[    7.064747] DEBUG 504:dvk_init_module:455: We suggest you use:
+[    7.064748] DEBUG 504:dvk_init_module:456: mknod /dev/dvk c 33 0
+[    7.064749] DEBUG 504:dvk_init_module:457: OLD local_nodeid=-1
+[    7.064750] DEBUG 504:dvk_replace_init:280: 
+[    7.064751] DEBUG 504:reljmp_init_once:103: reljmp: initialize
+[    7.067514] reljmp: text_mutex @ 0xc383c530
+[    7.067560] reljmp: text_poke @ 0xc3029500
+[    7.067605] reljmp: jump_label_lock @ 0xc315f930
+[    7.067651] reljmp: jump_label_unlock @ 0xc315f950
+[    7.067652] DEBUG 504:reljmp_init:117: reljmp: initialize old_exit_unbind
+[    7.067698] DEBUG 504:reljmp_init:129: reljmp: original old_exit_unbind:c306a060
+[    7.071507] DEBUG 504:reljmp_init:139: reljmp: replacement new_exit_unbind:f880fc06
+[    7.071509] DEBUG 504:reljmp_init:146: reljmp: jump code f884c199
+[    7.071510] DEBUG 504:exit_unbind_init_handler:47: 
+[    7.071511] DEBUG 504:reljmp_register:88: register old_exit_unbind
+[    7.071512] DEBUG 504:reljmp_lock:49: 
+[    7.072483] DEBUG 504:reljmp_unlock:61: 
+[    7.072484] DEBUG 504:reljmp_register:96: reljmp: patched old_exit_unbind:c306a060
+[    7.072485] DEBUG 504:dvk_init_module:462: DVS new flags=1
+[    7.087749] DEBUG 511:dvk_open:315: 
+[    7.087784] DEBUG 511:dvk_ioctl:349: cmd=4004E318 arg=BF9AD6F4
+[    7.087785] DEBUG 511:dvk_ioctl:369: DVK_CALL=24 (io_dvs_init) 
+[    7.087786] DEBUG 511:io_dvs_init:261: 
+[    7.087788] DEBUG 511:new_dvs_init:72: d_name=DVS_IPC d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[    7.087789] DEBUG 511:new_dvs_init:73: d_max_copybuf=65536 d_max_copylen=1048576
+[    7.087790] DEBUG 511:new_dvs_init:74: d_dbglvl=FFFFFFFF version=202202 flags=1 sizeof(proc)=0
+[    7.087792] DEBUG 511:new_dvs_init:83: d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+[    7.087793] DEBUG 511:new_dvs_init:84: d_max_copybuf=65536 d_max_copylen=1048576
+[    7.087794] DEBUG 511:new_dvs_init:85: d_dbglvl=0 version=0 flags=0 sizeof(proc)=0
+[    7.087822] do_exit: local_nodeid:1
+[    7.093156] do_exit: local_nodeid:1
+[    7.094969] do_exit: local_nodeid:1
+[    7.095369] do_exit: local_nodeid:1
+[    7.096478] do_exit: local_nodeid:1

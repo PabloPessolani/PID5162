@@ -192,4 +192,13 @@ DEBUG 930:dvk_add_node:524: ioctl ret=-325
 ERROR: 930:dvk_add_node:526: rcode=-325
 ERROR: test_add_node.c:main:30: rcode=-325
 
+==============================================================================
+UTILIZAR AL MULTIPROXY COMO FAILURE DETECTOR Y PARA INTERCAMBIAR MENSAJES ENTRE NODOS
+
+- HACER PING PARA VER SI ESTAN VIVOS, PERO INCLUIR EN EL MENSAJE CUALES SON LOS NODOS IDENTIFICADOS Y LOS MENSAJES ENVIADOS
+EN UN VECTOR CLOCK 
+
+
+
+
 

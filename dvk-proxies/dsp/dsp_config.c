@@ -1,9 +1,9 @@
 /***********************************************
-DVS LOAD BALANCER CONFIGURATION FILE
+DISTRIBUTED SERVICE PROXY CONFIGURATION FILE
 # this is a comment 
 
 # default period: 30 seconds
-lb LB_NAME {
+dsp DSP_NAME {
 	nodeid 	0;
 	lowwater	30;
 	highwater	70;
@@ -64,7 +64,7 @@ service m3ftp2 {
 #define _GNU_SOURCE     
 #define _MULTI_THREADED
 
-#include "lb_dvs.h"
+#include "dsp_proxy.h"
 #include "../../include/generic/configfile.h"
 extern char *ctl_socket;	
 
@@ -76,16 +76,16 @@ extern char *ctl_socket;
 #define MAXTOKENSIZE	20
 
 #define	TKN_SVR_NODEID	0
-#define	TKN_SVR_LBRPORT	1
-#define	TKN_SVR_SVRRPORT 2
+#define	TKN_SVR_RPORT	1
+#define	TKN_SVR_SPORT 	2
 #define TKN_SVR_COMPRESS 3
 #define TKN_SVR_BATCH	4
 #define TKN_SVR_IMAGE	5
 #define TKN_SVR_MAX 	6 // MUST be the last
 
 #define TKN_CLT_NODEID	0
-#define TKN_CLT_LBRPORT	1
-#define TKN_CLT_CLTRPORT 2
+#define TKN_CLT_RPORT	1
+#define TKN_CLT_SPORT 	2
 #define TKN_CLT_COMPRESS 3
 #define TKN_CLT_BATCH	4
 #define TKN_CLT_MAX 	5	// MUST be the last
@@ -129,8 +129,8 @@ int nodeid;
 
 char *cfg_svr_ident[] = {
     "nodeid",
-	"lbRport",
-	"svrRport",
+	"rport",
+	"sport",
 	"compress",
 	"batch",
 	"node_image",	
@@ -138,8 +138,8 @@ char *cfg_svr_ident[] = {
 
 char *cfg_clt_ident[] = {
     "nodeid",
-	"lbRport",
-	"cltRport",
+	"rport",
+	"sport",
 	"compress",
 	"batch",
 };
@@ -190,7 +190,7 @@ int valid_ipaddr(char *ipaddr)
 
 static void print_words(int indent, config_t *cfg)
 {
-	USRDEBUG("\n");
+	PXYDEBUG("\n");
 
     while (cfg != nil) {
 	if (config_isatom(cfg)) {
@@ -210,7 +210,7 @@ static void print_words(int indent, config_t *cfg)
 
 static void print_list(int indent, config_t *cfg)
 {
-	USRDEBUG("\n");
+	PXYDEBUG("\n");
 
     while (cfg != nil) {
 	if (!config_issub(cfg)) {
@@ -231,10 +231,10 @@ int search_svc_ident(config_t *cfg)
 	svc_ptr = &service_tab[lb.lb_nr_services];				
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
-            USRDEBUG("search_svc_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
+            PXYDEBUG("search_svc_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
             for( j = 0; j < TKN_SVC_MAX; j++) {
                 if( !strcmp(cfg->word, cfg_svc_ident[j])) {
-                    USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
+                    PXYDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;	
@@ -244,9 +244,9 @@ int search_svc_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("prog=%s\n", cfg->word);
+							PXYDEBUG("prog=%s\n", cfg->word);
 							svc_ptr->svc_prog=(cfg->word);
-							USRDEBUG("svc_prog=%s\n", svc_ptr->svc_prog);
+							PXYDEBUG("svc_prog=%s\n", svc_ptr->svc_prog);
 							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_PROG);
 							break;
                         case TKN_SVC_DCID:
@@ -261,7 +261,7 @@ int search_svc_ident(config_t *cfg)
 									svc_ptr->svc_dcid,dvs_ptr->d_nr_dcs);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("svr_dcid=%d\n", svc_ptr->svc_dcid);
+							PXYDEBUG("svr_dcid=%d\n", svc_ptr->svc_dcid);
 							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_DCID);
 							break;
                         case TKN_SVC_EXTEP:
@@ -270,7 +270,7 @@ int search_svc_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							svc_ptr->svc_extep = atoi(cfg->word);
-							USRDEBUG("svc_extep=%d\n", svc_ptr->svc_extep);
+							PXYDEBUG("svc_extep=%d\n", svc_ptr->svc_extep);
 							if ((svc_ptr->svc_extep < 0) || (svc_ptr->svc_extep >= MAX_SVC_NR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "ext_ep:%d, must be > 0 and < MAX_SVC_NR(%d)\n", 
@@ -285,7 +285,7 @@ int search_svc_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							svc_ptr->svc_minep = atoi(cfg->word);
-							USRDEBUG("svc_minep=%d\n", svc_ptr->svc_minep);
+							PXYDEBUG("svc_minep=%d\n", svc_ptr->svc_minep);
 							if ((svc_ptr->svc_minep < 0) || (svc_ptr->svc_minep >= MAX_SVC_NR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "svc_minep:%d, must be > 0 and < MAX_SVC_NR(%d)\n", 
@@ -300,7 +300,7 @@ int search_svc_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							svc_ptr->svc_maxep = atoi(cfg->word);
-							USRDEBUG("svc_maxep=%d\n", svc_ptr->svc_maxep);
+							PXYDEBUG("svc_maxep=%d\n", svc_ptr->svc_maxep);
 							if ((svc_ptr->svc_maxep < 0) || (svc_ptr->svc_maxep >= MAX_SVC_NR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "svc_maxep:%d, must be > 0 and < MAX_SVC_NR(%d)\n", 
@@ -326,7 +326,7 @@ int search_svc_ident(config_t *cfg)
 								fprintf(stderr, "Configuration Error\n");
 								exit(1);
 							}		
-							USRDEBUG("svc_bind=%X\n", svc_ptr->svc_bind);
+							PXYDEBUG("svc_bind=%X\n", svc_ptr->svc_bind);
 							SET_BIT(svc_ptr->svc_bm_params, TKN_SVC_BIND);
 							break;
                         default:
@@ -349,15 +349,15 @@ int search_svr_ident(config_t *cfg)
     int i, j, rcode, dcid;
     server_t *svr_ptr;
 	
-    USRDEBUG("nodeid=%d\n", nodeid);
+    PXYDEBUG("nodeid=%d\n", nodeid);
 	if(nodeid != LB_INVALID)
 		svr_ptr = &server_tab[nodeid];
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
-            USRDEBUG("search_svr_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
+            PXYDEBUG("search_svr_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
             for( j = 0; j < TKN_SVR_MAX; j++) {
                 if( !strcmp(cfg->word, cfg_svr_ident[j])) {
-                    USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
+                    PXYDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;	
@@ -377,7 +377,7 @@ int search_svr_ident(config_t *cfg)
 								fprintf(stderr, "nodeid previously defined %d: line %d\n", nodeid, cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("nodeid=%d\n", atoi(cfg->word));
+							PXYDEBUG("nodeid=%d\n", atoi(cfg->word));
 							nodeid = atoi(cfg->word);							
 							if ((nodeid < 0) || (nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
@@ -391,59 +391,59 @@ int search_svr_ident(config_t *cfg)
 								return(EXIT_CODE);							
 							}
 							svr_ptr->svr_name = server_name;
-							USRDEBUG("svr_nodeid=%d\n", svr_ptr->svr_nodeid);
+							PXYDEBUG("svr_nodeid=%d\n", svr_ptr->svr_nodeid);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_NODEID);
 							break;
-                        case TKN_SVR_LBRPORT:						
+                        case TKN_SVR_RPORT:						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							svr_ptr->svr_lbRport = atoi(cfg->word);
-							USRDEBUG("svr_lbRport=%d\n", svr_ptr->svr_lbRport);
+							svr_ptr->svr_rport = atoi(cfg->word);
+							PXYDEBUG("svr_rport=%d\n", svr_ptr->svr_rport);
 
-							if ((svr_ptr->svr_lbRport < LBP_BASE_PORT) || (svr_ptr->svr_lbRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((svr_ptr->svr_rport < LBP_BASE_PORT) || (svr_ptr->svr_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "svr_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "svr_rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										svr_ptr->svr_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
-							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_LBRPORT);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_RPORT);
 							break;
-                        case TKN_SVR_SVRRPORT:		
+                        case TKN_SVR_SPORT:		
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							svr_ptr->svr_svrRport = atoi(cfg->word);
-							USRDEBUG("svr_svrRport=%d\n", svr_ptr->svr_svrRport);
+							svr_ptr->svr_sport = atoi(cfg->word);
+							PXYDEBUG("svr_sport=%d\n", svr_ptr->svr_sport);
 
-							if ((svr_ptr->svr_svrRport < LBP_BASE_PORT) || (svr_ptr->svr_svrRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((svr_ptr->svr_sport < LBP_BASE_PORT) || (svr_ptr->svr_sport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "svr_svrRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_svrRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "svr_sport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										svr_ptr->svr_sport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
-							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_SVRRPORT);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_SPORT);
 							break;
                         case TKN_SVR_COMPRESS:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("compress=%s\n", cfg->word);
+							PXYDEBUG("compress=%s\n", cfg->word);
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
 								svr_ptr->svr_compress = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
-								USRDEBUG("svr_ptr->svr_nodeid=%d\n", svr_ptr->svr_nodeid);
+								PXYDEBUG("svr_ptr->svr_nodeid=%d\n", svr_ptr->svr_nodeid);
 								svr_ptr->svr_compress = NO;								
 							} else {
-								USRDEBUG("\n");
+								PXYDEBUG("\n");
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "compress: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							USRDEBUG("svr_compress=%d\n", svr_ptr->svr_compress);
+							PXYDEBUG("svr_compress=%d\n", svr_ptr->svr_compress);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_COMPRESS);							
 							break;
                         case TKN_SVR_BATCH:
@@ -451,7 +451,7 @@ int search_svr_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("batch=%s\n", cfg->word);					
+							PXYDEBUG("batch=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
 								svr_ptr->svr_batch = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
@@ -461,7 +461,7 @@ int search_svr_ident(config_t *cfg)
 								fprintf(stderr, "batch: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							USRDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
+							PXYDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_BATCH);							
 							break;							
                         case TKN_SVR_IMAGE:
@@ -470,7 +470,7 @@ int search_svr_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							svr_ptr->svr_image = cfg->word;		
-							USRDEBUG("svr_image=%s\n", svr_ptr->svr_image);
+							PXYDEBUG("svr_image=%s\n", svr_ptr->svr_image);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_IMAGE);							
 							break;
 						default:
@@ -492,13 +492,13 @@ int search_lb_ident(config_t *cfg)
 {
     int i, j, rcode;
     
-    USRDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
+    PXYDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
-            USRDEBUG("search_lb_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
+            PXYDEBUG("search_lb_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
             for( j = 0; j < TKN_LB_MAX; j++) {
                 if( !strcmp(cfg->word, cfg_lb_ident[j])) {
-                    USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
+                    PXYDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;
@@ -520,7 +520,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_nodeid = atoi(cfg->word);
-							USRDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
+							PXYDEBUG("lb.lb_nodeid=%d\n", lb.lb_nodeid);
 							if ((lb.lb_nodeid < 0) || (lb.lb_nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", lb.lb_nodeid,dvs_ptr->d_nr_nodes);
@@ -534,7 +534,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_lowwater = atoi(cfg->word);
-							USRDEBUG("lb.lb_lowwater=%d\n", lb.lb_lowwater);
+							PXYDEBUG("lb.lb_lowwater=%d\n", lb.lb_lowwater);
 							if ((lb.lb_lowwater < 0) || (lb.lb_lowwater > 100)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "lowwater:%d, must be (0-100)\n", lb.lb_lowwater);
@@ -548,7 +548,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_highwater = atoi(cfg->word);
-							USRDEBUG("lb.lb_highwater=%d\n", lb.lb_highwater);
+							PXYDEBUG("lb.lb_highwater=%d\n", lb.lb_highwater);
 							if ((lb.lb_highwater < 0) || (lb.lb_highwater > 100)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "highwater:%d, must be (0-100)\n", lb.lb_highwater);
@@ -562,7 +562,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_period = atoi(cfg->word);
-							USRDEBUG("lb_period=%d\n", lb.lb_period);
+							PXYDEBUG("lb_period=%d\n", lb.lb_period);
 							if ((lb.lb_period < 1) || (lb.lb_period > SECS_BY_HOUR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_period);
@@ -576,7 +576,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_start = atoi(cfg->word);
-							USRDEBUG("lb_start=%d\n", lb.lb_start);
+							PXYDEBUG("lb_start=%d\n", lb.lb_start);
 							if ((lb.lb_start < 1) || (lb.lb_start > SECS_BY_HOUR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_start);
@@ -590,7 +590,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_stop = atoi(cfg->word);
-							USRDEBUG("lb_stop=%d\n", lb.lb_stop);
+							PXYDEBUG("lb_stop=%d\n", lb.lb_stop);
 							if ((lb.lb_stop < 1) || (lb.lb_stop > SECS_BY_HOUR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "period:%d, must be (1-3600)\n", lb.lb_stop);
@@ -604,7 +604,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_vm_start = cfg->word;
-							USRDEBUG("lb_vm_start=%s\n", lb.lb_vm_start);
+							PXYDEBUG("lb_vm_start=%s\n", lb.lb_vm_start);
 							SET_BIT(lb.lb_bm_params, TKN_LB_VM_START);							
 							break;
                         case TKN_LB_VM_STOP:
@@ -613,7 +613,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_vm_stop = cfg->word;
-							USRDEBUG("lb_vm_stop=%s\n", lb.lb_vm_stop);
+							PXYDEBUG("lb_vm_stop=%s\n", lb.lb_vm_stop);
 							SET_BIT(lb.lb_bm_params, TKN_LB_VM_STOP);							
 							break;							
                         case TKN_LB_VM_STATUS:
@@ -622,7 +622,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_vm_status = cfg->word;
-							USRDEBUG("lb_vm_status=%s\n", lb.lb_vm_status);
+							PXYDEBUG("lb_vm_status=%s\n", lb.lb_vm_status);
 							SET_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS);							
 							break;							
                         case TKN_LB_CLTNAME:
@@ -631,7 +631,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_cltname = cfg->word;
-							USRDEBUG("lb_cltname=%s\n", lb.lb_cltname);
+							PXYDEBUG("lb_cltname=%s\n", lb.lb_cltname);
 							if( !strncmp(lb.lb_cltname,"ANY",3)) {
 								if( !valid_ipaddr(lb.lb_cltname)){
 									fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
@@ -648,7 +648,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_svrname = cfg->word;
-							USRDEBUG("lb_svrname=%s\n", lb.lb_svrname);
+							PXYDEBUG("lb_svrname=%s\n", lb.lb_svrname);
 							if( !strncmp(lb.lb_svrname,"ANY",3)) {
 								if( !valid_ipaddr(lb.lb_svrname)){
 									fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
@@ -665,7 +665,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_cltdev = cfg->word;
-							USRDEBUG("lb_cltdev=%s\n", lb.lb_cltdev);
+							PXYDEBUG("lb_cltdev=%s\n", lb.lb_cltdev);
 							SET_BIT(lb.lb_bm_params, TKN_LB_CLTDEV);							
 							break;
                         case TKN_LB_SVRDEV:
@@ -674,7 +674,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_svrdev = cfg->word;
-							USRDEBUG("lb_svrdev=%s\n", lb.lb_svrdev);
+							PXYDEBUG("lb_svrdev=%s\n", lb.lb_svrdev);
 							SET_BIT(lb.lb_bm_params, TKN_LB_SVRDEV);							
 							break;
                         case TKN_LB_SSH_HOST:
@@ -683,7 +683,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_host = cfg->word;
-							USRDEBUG("lb_ssh_host=%s\n", lb.lb_ssh_host);
+							PXYDEBUG("lb_ssh_host=%s\n", lb.lb_ssh_host);
 							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_HOST);							
 							break;
 						case TKN_LB_SSH_USER:
@@ -692,7 +692,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_user = cfg->word;
-							USRDEBUG("lb_ssh_user=%s\n", lb.lb_ssh_user);
+							PXYDEBUG("lb_ssh_user=%s\n", lb.lb_ssh_user);
 							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_USER);							
 							break;
                         case TKN_LB_SSH_PASS:
@@ -701,7 +701,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_ssh_pass = cfg->word;
-							USRDEBUG("lb_ssh_pass=%s\n", lb.lb_ssh_pass);
+							PXYDEBUG("lb_ssh_pass=%s\n", lb.lb_ssh_pass);
 							SET_BIT(lb.lb_bm_params, TKN_LB_SSH_PASS);							
 							break;
                         case TKN_LB_MINSERVERS:
@@ -710,7 +710,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_min_servers = atoi(cfg->word);
-							USRDEBUG("lb.lb_min_servers=%d\n", lb.lb_min_servers);
+							PXYDEBUG("lb.lb_min_servers=%d\n", lb.lb_min_servers);
 							if ((lb.lb_min_servers < 0) || (lb.lb_min_servers > dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "lb_min_servers:%d, must be (0-%d)\n", lb.lb_min_servers, dvs_ptr->d_nr_nodes);
@@ -724,7 +724,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_max_servers = atoi(cfg->word);
-							USRDEBUG("lb.lb_max_servers=%d\n", lb.lb_max_servers);
+							PXYDEBUG("lb.lb_max_servers=%d\n", lb.lb_max_servers);
 							if ((lb.lb_max_servers < 1) || (lb.lb_max_servers > dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "max_servers:%d, must be (1-%d)\n", lb.lb_max_servers, dvs_ptr->d_nr_nodes);
@@ -738,7 +738,7 @@ int search_lb_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							lb.lb_hellotime = atoi(cfg->word);
-							USRDEBUG("lb_hellotime=%d\n", lb.lb_hellotime);
+							PXYDEBUG("lb_hellotime=%d\n", lb.lb_hellotime);
 							if ((lb.lb_hellotime < 1) || (lb.lb_hellotime > SECS_BY_HOUR)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "hello_time:%d, must be (1-3600)\n", lb.lb_hellotime);
@@ -767,15 +767,15 @@ int search_clt_ident(config_t *cfg)
     int i, j, rcode;
     client_t *clt_ptr;
 
-    USRDEBUG("nodeid=%d\n", nodeid);
+    PXYDEBUG("nodeid=%d\n", nodeid);
 	if(nodeid != LB_INVALID)
 		clt_ptr = &client_tab[nodeid];
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
-            USRDEBUG("search_clt_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
+            PXYDEBUG("search_clt_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
             for( j = 0; j < TKN_CLT_MAX; j++) {
                 if( !strcmp(cfg->word, cfg_clt_ident[j])) {
-                    USRDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
+                    PXYDEBUG("line[%d] MATCH identifier %s\n", cfg->line, cfg->word); 
                     if( cfg->next == nil)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;
@@ -796,7 +796,7 @@ int search_clt_ident(config_t *cfg)
 								return(EXIT_CODE);
 							}
 							nodeid = atoi(cfg->word);
-							USRDEBUG("nodeid=%d\n", nodeid);
+							PXYDEBUG("nodeid=%d\n", nodeid);
 							if ((nodeid < 0) || (nodeid >= dvs_ptr->d_nr_nodes)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", nodeid,dvs_ptr->d_nr_nodes);
@@ -809,47 +809,47 @@ int search_clt_ident(config_t *cfg)
 								return(EXIT_CODE);							
 							}
 							clt_ptr->clt_name = client_name;
-							USRDEBUG("clt_nodeid=%d\n", clt_ptr->clt_nodeid);
+							PXYDEBUG("clt_nodeid=%d\n", clt_ptr->clt_nodeid);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_NODEID);
 							break;
-                        case TKN_CLT_LBRPORT:
+                        case TKN_CLT_RPORT:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							clt_ptr->clt_lbRport = atoi(cfg->word);
-							USRDEBUG("clt_lbRport=%d\n", clt_ptr->clt_lbRport);
+							clt_ptr->clt_rport = atoi(cfg->word);
+							PXYDEBUG("clt_rport=%d\n", clt_ptr->clt_rport);
 
-							if ((clt_ptr->clt_lbRport < LBP_BASE_PORT) || (clt_ptr->clt_lbRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((clt_ptr->clt_rport < LBP_BASE_PORT) || (clt_ptr->clt_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_lbRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_lbRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "clt_rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										clt_ptr->clt_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
 							break;
-							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_LBRPORT);
-                        case TKN_CLT_CLTRPORT:
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_RPORT);
+                        case TKN_CLT_SPORT:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							clt_ptr->clt_cltRport = atoi(cfg->word);
-							USRDEBUG("clt_cltRport=%d\n", clt_ptr->clt_cltRport);
+							clt_ptr->clt_sport = atoi(cfg->word);
+							PXYDEBUG("clt_sport=%d\n", clt_ptr->clt_sport);
 
-							if ((clt_ptr->clt_cltRport < LBP_BASE_PORT) || (clt_ptr->clt_cltRport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((clt_ptr->clt_sport < LBP_BASE_PORT) || (clt_ptr->clt_sport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_cltRport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_cltRport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "clt_sport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										clt_ptr->clt_sport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
-							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_CLTRPORT);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_SPORT);
 							break;
                         case TKN_CLT_COMPRESS:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("compress=%s\n", cfg->word);					
+							PXYDEBUG("compress=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
 								clt_ptr->clt_compress = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
@@ -859,7 +859,7 @@ int search_clt_ident(config_t *cfg)
 								fprintf(stderr, "compress: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							USRDEBUG("clt_compress=%d\n", clt_ptr->clt_compress);
+							PXYDEBUG("clt_compress=%d\n", clt_ptr->clt_compress);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_COMPRESS);							
 							break;							
                         case TKN_CLT_BATCH:
@@ -867,7 +867,7 @@ int search_clt_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							USRDEBUG("batch=%s\n", cfg->word);					
+							PXYDEBUG("batch=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
 								clt_ptr->clt_batch = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
@@ -877,7 +877,7 @@ int search_clt_ident(config_t *cfg)
 								fprintf(stderr, "batch: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							USRDEBUG("clt_batch=%d\n", clt_ptr->clt_batch);
+							PXYDEBUG("clt_batch=%d\n", clt_ptr->clt_batch);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_BATCH);							
 							break;							
 						default:
@@ -900,9 +900,9 @@ int read_svr_lines( config_t *cfg)
     int i;
     int rcode;
 	
-    USRDEBUG("\n");
+    PXYDEBUG("\n");
     for ( i = 0; cfg != nil; i++) {
-        USRDEBUG("read_svr_lines type=%X\n",cfg->flags); 
+        PXYDEBUG("read_svr_lines type=%X\n",cfg->flags); 
         rcode = search_svr_ident(cfg->list);
         if( rcode) ERROR_RETURN(rcode);
         if( cfg == nil)return(OK);
@@ -916,9 +916,9 @@ int read_svc_lines( config_t *cfg)
     int i;
     int rcode;
 	
-    USRDEBUG("\n");
+    PXYDEBUG("\n");
     for ( i = 0; cfg != nil; i++) {
-        USRDEBUG("read_svc_lines type=%X\n",cfg->flags); 
+        PXYDEBUG("read_svc_lines type=%X\n",cfg->flags); 
         rcode = search_svc_ident(cfg->list);
         if( rcode) ERROR_RETURN(rcode);
         if( cfg == nil)return(OK);
@@ -930,11 +930,11 @@ int read_svc_lines( config_t *cfg)
 int read_lb_lines( config_t *cfg)
 {
     int rcode;
-    USRDEBUG("\n");
+    PXYDEBUG("\n");
     while ( cfg != nil) {
-        USRDEBUG("read_lb_lines type=%X\n",cfg->flags); 
+        PXYDEBUG("read_lb_lines type=%X\n",cfg->flags); 
         rcode = search_lb_ident(cfg->list);
-		USRDEBUG("\n");
+		PXYDEBUG("\n");
         if( rcode) ERROR_RETURN(rcode);
         if( cfg == nil) return(OK);
         cfg = cfg->next;
@@ -945,11 +945,11 @@ int read_lb_lines( config_t *cfg)
 int read_clt_lines( config_t *cfg)
 {
     int rcode;
-    USRDEBUG("\n");
+    PXYDEBUG("\n");
     while ( cfg != nil) {
-        USRDEBUG("read_clt_lines type=%X\n",cfg->flags); 
+        PXYDEBUG("read_clt_lines type=%X\n",cfg->flags); 
         rcode = search_clt_ident(cfg->list);
-		USRDEBUG("\n");
+		PXYDEBUG("\n");
         if( rcode) ERROR_RETURN(rcode);
         if( cfg == nil) return(OK);
         cfg = cfg->next;
@@ -970,16 +970,16 @@ int search_main_token(config_t *cfg)
 	client_name = NULL;
 	nodeid = (-1);
 	
-    USRDEBUG("line=%d\n", cfg->line);
+    PXYDEBUG("line=%d\n", cfg->line);
     if (cfg != nil) {
         if (config_isatom(cfg)) {
-            USRDEBUG("word=%s\n", cfg->word);
+            PXYDEBUG("word=%s\n", cfg->word);
             if( !strcmp(cfg->word, "server")) {
                 cfg = cfg->next;
-                USRDEBUG("server: \n");
+                PXYDEBUG("server: \n");
                 if (cfg != nil) {
 					server_name = cfg->word; 
-					USRDEBUG("%s\n", server_name);
+					PXYDEBUG("%s\n", server_name);
 					name_cfg = cfg;
 					cfg = cfg->next;
 					if (!config_issub(cfg)) {
@@ -989,8 +989,8 @@ int search_main_token(config_t *cfg)
 					rcode = read_svr_lines(cfg->list);
 					if(rcode) return(EXIT_CODE);
 					svr_ptr = &server_tab[nodeid];	
-			        USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
-			        USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
+			        PXYDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
+			        PXYDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
 					lb.lb_nr_svrpxy++;
 					SET_BIT(lb.lb_bm_svrpxy, nodeid);
 					for( i = 0; i < TKN_SVR_MAX; i++){
@@ -998,17 +998,17 @@ int search_main_token(config_t *cfg)
 							fprintf( stderr,"CONFIGURATION WARNING: server %s parameter %s not configured\n", 
 								server_name, cfg_svr_ident[i]);
 						}else{
-							USRDEBUG("server %s: %s configured \n", server_name, cfg_svr_ident[i]);
+							PXYDEBUG("server %s: %s configured \n", server_name, cfg_svr_ident[i]);
 						}
 					}
 					return(OK);
                 }
 			} else if( !strcmp(cfg->word, "service")) {
                 cfg = cfg->next;
-                USRDEBUG("service: \n");
+                PXYDEBUG("service: \n");
                 if (cfg != nil) {
 					service_name = cfg->word; 
-					USRDEBUG("%s\n", service_name);
+					PXYDEBUG("%s\n", service_name);
 					name_cfg = cfg;
 					cfg = cfg->next;
 					if (!config_issub(cfg)) {
@@ -1019,24 +1019,24 @@ int search_main_token(config_t *cfg)
 					if(rcode) return(EXIT_CODE);
 					svc_ptr = &service_tab[lb.lb_nr_services];
 					svc_ptr->svc_name = service_name; 
-			        USRDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc_ptr));
+			        PXYDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc_ptr));
 					lb.lb_nr_services++;
 					for( i = 0; i < TKN_SVC_MAX; i++){
 						if( !TEST_BIT(svc_ptr->svc_bm_params, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: service %s parameter %s not configured\n", 
 								service_name, cfg_svc_ident[i]);
 						}else{
-							USRDEBUG("service %s: %s configured \n", service_name, cfg_svc_ident[i]);
+							PXYDEBUG("service %s: %s configured \n", service_name, cfg_svc_ident[i]);
 						}				
 					}						
 					return(OK);
                 }					
             } else if( !strcmp(cfg->word, "client")) {
                 cfg = cfg->next;
-                USRDEBUG("client: \n");
+                PXYDEBUG("client: \n");
                 if (cfg != nil) {
 					client_name = cfg->word; 
-					USRDEBUG("%s\n", client_name);
+					PXYDEBUG("%s\n", client_name);
 					name_cfg = cfg;
 					cfg = cfg->next;
 					if (!config_issub(cfg)) {
@@ -1047,24 +1047,24 @@ int search_main_token(config_t *cfg)
 					if(rcode) return(EXIT_CODE);
 					clt_ptr = &client_tab[nodeid];
 					clt_ptr->clt_name = client_name;
-			        USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
+			        PXYDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
 					lb.lb_nr_cltpxy++;
 					for( i = 0; i < TKN_CLT_MAX; i++){
 						if( !TEST_BIT(clt_ptr->clt_bm_params, i)){
 							fprintf( stderr,"CONFIGURATION WARNING: client %s parameter %s not configured\n", 
 								client_name, cfg_clt_ident[i]);
 						}else{
-							USRDEBUG("client %s: %s configured \n", client_name, cfg_clt_ident[i]);
+							PXYDEBUG("client %s: %s configured \n", client_name, cfg_clt_ident[i]);
 						}					
 					}					
 					return(OK);
                 }		
             } else if( !strcmp(cfg->word, "lb")) {
                 cfg = cfg->next;
-                USRDEBUG("lb: \n");
+                PXYDEBUG("lb: \n");
                 if (cfg != nil) {
 					loadb_name = cfg->word; 
-					USRDEBUG("%s\n", loadb_name);
+					PXYDEBUG("%s\n", loadb_name);
 					cfg = cfg->next;
 					if (!config_issub(cfg)) {
 						fprintf(stderr, "Cell at \"%s\", line %u is not a sublist\n",cfg->word, cfg->line);
@@ -1090,13 +1090,13 @@ int scan_config(config_t *cfg)
 {
     int rcode;	
     
-    USRDEBUG("\n");
+    PXYDEBUG("\n");
     for(int i=0; cfg != nil; i++) {
         if (!config_issub(cfg)) {
             fprintf(stderr, "Cell at \"%s\", line %u is not a sublist\n", cfg->word, cfg->line);
             return(EXIT_CODE);
         }
-        USRDEBUG("scan_config[%d] line=%d\n",i,cfg->line);
+        PXYDEBUG("scan_config[%d] line=%d\n",i,cfg->line);
         rcode = search_main_token(cfg->list);
         //@ERROR: Out of bounds read
         if( rcode == EXIT_CODE)
@@ -1126,7 +1126,9 @@ void lb_config(char *f_conf)	/* config file name. */
     cfg = nil;
     rcode  = OK;
 
+    PXYDEBUG("BEFORE init_lb\n");
 	init_lb();
+    PXYDEBUG("AFTER init_lb\n");
 	
 //////////////////////////////////////////////////////////////////////////////////
 	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
@@ -1134,35 +1136,35 @@ void lb_config(char *f_conf)	/* config file name. */
 		clt1_ptr = &client_tab[i];
 		clt1_ptr->clt_compress = LB_INVALID;	
 		clt1_ptr->clt_batch    = LB_INVALID;
-		svr1_ptr->svr_lbRport  = (LBP_BASE_PORT+i);
-		svr1_ptr->svr_svrRport = (LBP_BASE_PORT+i);
-		clt1_ptr->clt_lbRport  = (LBP_BASE_PORT+i);
-		clt1_ptr->clt_cltRport = (LBP_BASE_PORT+i);
+		svr1_ptr->svr_rport  = (LBP_BASE_PORT+i);
+		svr1_ptr->svr_sport = (LBP_BASE_PORT+i);
+		clt1_ptr->clt_rport  = (LBP_BASE_PORT+i);
+		clt1_ptr->clt_sport = (LBP_BASE_PORT+i);
 	}
 //////////////////////////////////////////////////////////////////////////////////
 	
-    USRDEBUG("BEFORE config_read\n");
+    PXYDEBUG("BEFORE config_read\n");
     cfg = config_read(f_conf, CFG_ESCAPED, cfg);
-    USRDEBUG("AFTER config_read\n");  
+    PXYDEBUG("AFTER config_read\n");  
     rcode = scan_config(cfg);
 	
-    USRDEBUG("lb.lb_nodeid=%d\n",lb.lb_nodeid);  
-    USRDEBUG("lb.lb_nr_svrpxy=%d\n",lb.lb_nr_svrpxy);  
-    USRDEBUG("lb.lb_nr_cltpxy=%d\n",lb.lb_nr_cltpxy);  
-    USRDEBUG("lb.lb_nr_services=%d\n",lb.lb_nr_services);  
-    USRDEBUG("lb.lb_lowwater=%d\n",lb.lb_lowwater);  
-    USRDEBUG("lb.lb_highwater=%d\n",lb.lb_highwater);  
-    USRDEBUG("lb.lb_min_servers=%d\n",lb.lb_min_servers);  
-    USRDEBUG("lb.lb_max_servers=%d\n",lb.lb_max_servers);  
-
+    PXYDEBUG("lb.lb_nodeid=%d\n",lb.lb_nodeid);  
+    PXYDEBUG("lb.lb_nr_svrpxy=%d\n",lb.lb_nr_svrpxy);  
+    PXYDEBUG("lb.lb_nr_cltpxy=%d\n",lb.lb_nr_cltpxy);  
+    PXYDEBUG("lb.lb_nr_services=%d\n",lb.lb_nr_services);  
+    PXYDEBUG("lb.lb_lowwater=%d\n",lb.lb_lowwater);  
+    PXYDEBUG("lb.lb_highwater=%d\n",lb.lb_highwater);  
+    PXYDEBUG("lb.lb_min_servers=%d\n",lb.lb_min_servers);  
+    PXYDEBUG("lb.lb_max_servers=%d\n",lb.lb_max_servers);  
+	
 	// check for mandatory parameters
-    USRDEBUG("Check for mandatory parameters=%d\n", TKN_LB_MAX);  
+    PXYDEBUG("Check for mandatory parameters=%d\n", TKN_LB_MAX);  
 	for( i = 0; i < TKN_LB_MAX; i++){
 		if( !TEST_BIT(lb.lb_bm_params, i)){
 			fprintf( stderr,"CONFIGURATION WARNING: lb parameter %s not configured\n", 
 				cfg_lb_ident[i]);
 		}else{
-			USRDEBUG("lb: %s configured \n", cfg_lb_ident[i]);
+			PXYDEBUG("lb: %s configured \n", cfg_lb_ident[i]);
 		}	
 	}
 
@@ -1294,8 +1296,8 @@ void lb_config(char *f_conf)	/* config file name. */
 		if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
 		lb.lb_nr_svrpxy++;
 		SET_BIT(lb.lb_bm_svrpxy,i);
-        USRDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
-        USRDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
+        PXYDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
+        PXYDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
 		if( i == dvs_ptr->d_nr_nodes-1) break;
 							
 		if( svr1_ptr->svr_nodeid == lb.lb_nodeid){
@@ -1337,7 +1339,7 @@ void lb_config(char *f_conf)	/* config file name. */
 	for( i = 0; i < dvs_ptr->d_nr_nodes-1; i++){
 		clt1_ptr = &client_tab[i];
 		if( clt1_ptr->clt_nodeid == LB_INVALID) continue;
-        USRDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt1_ptr));
+        PXYDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt1_ptr));
 		if( i == dvs_ptr->d_nr_nodes-1) break;
 
 		if( clt1_ptr->clt_nodeid == lb.lb_nodeid){
@@ -1424,25 +1426,26 @@ void lb_config(char *f_conf)	/* config file name. */
 			svc1_ptr->svc_minep = svc1_ptr->svc_extep;
 		if(svc1_ptr->svc_maxep == HARDWARE) 
 			svc1_ptr->svc_maxep = svc1_ptr->svc_extep;
-        USRDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc1_ptr));
+        PXYDEBUG(SERVICE_FORMAT, SERVICE_FIELDS(svc1_ptr));
 	}
 
-//    USRDEBUG("lb.lb_cltname=%s\n",lb.lb_cltname);
-//    USRDEBUG("lb.lb_svrname=%s\n",lb.lb_svrname);
-//    USRDEBUG("lb.lb_cltdev=%s\n",lb.lb_cltdev);
-//    USRDEBUG("lb.lb_svrdev=%s\n",lb.lb_svrdev);
+//    PXYDEBUG("lb.lb_cltname=%s\n",lb.lb_cltname);
+//    PXYDEBUG("lb.lb_svrname=%s\n",lb.lb_svrname);
+//    PXYDEBUG("lb.lb_cltdev=%s\n",lb.lb_cltdev);
+//    PXYDEBUG("lb.lb_svrdev=%s\n",lb.lb_svrdev);
 
 	lb_ptr = &lb;
-    USRDEBUG(LB1_FORMAT, LB1_FIELDS(lb_ptr));
-    USRDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
-    USRDEBUG(LB3_FORMAT, LB3_FIELDS(lb_ptr));
+	lb.lb_nr_proxies = lb.lb_nr_cltpxy + lb.lb_nr_svrpxy;
+    PXYDEBUG(LB1_FORMAT, LB1_FIELDS(lb_ptr));
+    PXYDEBUG(LB2_FORMAT, LB2_FIELDS(lb_ptr));
+    PXYDEBUG(LB3_FORMAT, LB3_FIELDS(lb_ptr));
 	if( lb.lb_ssh_pass != NULL && lb.lb_ssh_user != NULL && lb.lb_ssh_host != NULL ) {
-		USRDEBUG(LB4_FORMAT, LB4_FIELDS(lb_ptr));
+		PXYDEBUG(LB4_FORMAT, LB4_FIELDS(lb_ptr));
 	}
 	if( lb.lb_vm_start != NULL && lb.lb_vm_stop != NULL) {
-		USRDEBUG(LB5_FORMAT, LB5_FIELDS(lb_ptr));
-		USRDEBUG(LB6_FORMAT, LB6_FIELDS(lb_ptr));
+		PXYDEBUG(LB5_FORMAT, LB5_FIELDS(lb_ptr));
+		PXYDEBUG(LB6_FORMAT, LB6_FIELDS(lb_ptr));
 	}
-	USRDEBUG(LB7_FORMAT, LB7_FIELDS(lb_ptr));		
+	PXYDEBUG(LB7_FORMAT, LB7_FIELDS(lb_ptr));		
 }
 

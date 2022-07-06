@@ -1,0 +1,109 @@
+d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+local_nodeid=1
+ configfile.c:config_read:459:file=/dev/shm/DC0.cfg flags=400
+ configfile.c:read_file:412:file=/dev/shm/DC0.cfg
+ configfile.c:allocate:65:size=25
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=32
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=27
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=85
+ configfile.c:allocate:65:size=56
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=48
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=32
+PARENT Sysname:  Linux
+PARENT Nodename: node1
+PARENT Release:  4.9.88-DVK
+PARENT Version:  #159 SMP Wed Oct 21 18:38:03 -03 2020
+PARENT Machine:  i686
+PARENT link_name:/proc/513/ns/pid root_dir=pid:[4026531836]
+CHILD link_name:/proc/570/ns/pid root_dir=pid:[4026532530]
+PARENT link_name:/proc/513/ns/uts root_dir=uts:[4026531838]
+CHILD link_name:/proc/570/ns/uts root_dir=uts:[4026532528]
+PARENT exiting - child_pid=570
+DC0 has been initialized on node 1
+CHILD Sysname:  Linux
+CHILD Nodename: DC0
+CHILD Release:  4.9.88-DVK
+CHILD Version:  #159 SMP Wed Oct 21 18:38:03 -03 2020
+CHILD Machine:  i686
+CHILD chroot to:  /usr/src/dvs/vos/rootfs/DC0

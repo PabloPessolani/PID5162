@@ -1,0 +1,260 @@
+DISTRIBUTED SERVICE PROXY
+===================================================================================================
+20220704:
+	Se desarrolló el script dvs/dvk-tests/test_dsp.sh
+	Este script se arranca automáticamente al iniciar Linux con el script
+	/etc/init.d/dvs
+	Luego se hizo 
+	chmod 755 /etc/init.d/dvs 
+	update-rc.d dvs defaults
+
+	Actualmente esta solo para NODE0.
+
+root@node0:/dev/shm# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN  
+tcp        0      1 192.168.0.100:56740     192.168.0.101:3000      SYN_SENT   
+root@node0:/dev/shm# ps -ef | grep dsp
+root       613     1  0 14:42 ?        00:00:00 /usr/src/dvs/dvk-proxies/dsp/dsp_proxy /dev/shm/dsp_proxy.cfg
+
+
+Generalizar el test_dsp.h 
+
+root@node0:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:3002      0.0.0.0:*               LISTEN   
+tcp        0      1 192.168.0.100:41822     192.168.0.102:3000      SYN_SENT   
+tcp        0      1 192.168.0.100:57502     192.168.0.101:3000      SYN_SENT   
+
+===================================================================================================
+20220705:
+		ESTA FALLANDO LA CONEXION
+		
+root@node0:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:3001      192.168.0.101:34222     ESTABLISHED
+tcp        1      0 192.168.0.100:33682     192.168.0.101:3000      CLOSE_WAIT <<<<< ?????????
+
+
+root@node1:~# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State          
+tcp        0      0 192.168.0.101:3000      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.101:34222     192.168.0.100:3001      ESTABLISHED
+  
+
+NODE0 - PROXY RECEIVER 
+ dsp_proxy.c:pr_thread:648:MTX_UNLOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:pr_thread:689:RPROXY(1): px_rdesc.td_header=B6301000
+ dsp_proxy.c:pr_thread:696:RPROXY(1): px_rdesc.td_payload=B6302000
+ dsp_proxy.c:pr_thread:703:RPROXY(1): px_rdesc.td_pseudo=B6313000
+ dsp_proxy.c:pr_thread:712:RPROXY(1): px_rdesc.td_batch=0
+ dsp_proxy.c:pr_thread:716:RPROXY(1): px_ptr->px_rdesc.td_header=0xb6301000 px_ptr->px_rdesc.td_payload=0xb6302000 diff=4096
+ dsp_proxy.c:pr_setup_connection:190:RPROXY(1): for node node1 running at port=3001
+ dsp_proxy.c:pr_setup_connection:214:RPROXY(1): 192.168.0.100 
+ dsp_proxy.c:pr_setup_connection:218:RPROXY(1): px_rname=node0 listening on IP address=192.168.0.100
+ dsp_proxy.c:pr_setup_connection:226:RPROXY(1): is bound to port=3001 socket=4
+ dsp_proxy.c:pr_thread:739:RPROXY(1): Waiting for connection.
+ 
+ dsp_proxy.c:ps_thread:1365:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_thread:1369:COND_SIGNAL px_ptr->px_conn_rcond <<<<<<<<<< DESBLOQUEA A RECEIVER NO BLOQUEADO 
+ dsp_proxy.c:ps_thread:1370:COND_WAIT px_ptr->px_conn_scond px_ptr->px_conn_mtx
+ 
+ dsp_proxy.c:pr_thread:746:RPROXY(1): Remote sender [192.168.0.101] connected on sd [5]. Getting remote command.
+ dsp_proxy.c:pr_thread:748:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:752:COND_SIGNAL px_ptr->px_conn_scond
+ dsp_proxy.c:pr_thread:753:COND_WAIT px_ptr->px_conn_rcond px_ptr->px_conn_mtx <<<<< RECEIVER BLOQUEADO 
+ 
+ 
+ 
+NODE1 - PROXY 
+RECEIVER
+ dsp_proxy.c:pr_thread:746:RPROXY(0): Remote sender [192.168.0.100] connected on sd [5]. Getting remote command.
+ dsp_proxy.c:pr_thread:748:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:752:COND_SIGNAL px_ptr->px_conn_scond <<<<<<<<<<<< DESBLOQUEA A SENDER QUE NO ESTA BLOQUEADO
+ dsp_proxy.c:pr_thread:753:COND_WAIT px_ptr->px_conn_rcond px_ptr->px_conn_mtx <<<<<<<  SE BLOQUEA EN CONDICION
+ 
+SENDER 
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(0): for node node0 running at port=3001
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(0): remote host address 0: 192.168.0.100
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(0): for node node0 running at  IP=192.168.0.100
+ dsp_proxy.c:ps_thread:1365:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_thread:1369:COND_SIGNAL px_ptr->px_conn_rcond <<<<<<<<<<<<<<<<<<<<<<<<DESBLOQUEA A RECEIVER 
+ dsp_proxy.c:ps_thread:1370:COND_WAIT px_ptr->px_conn_scond px_ptr->px_conn_mtx <<<<< SENDER BLOQUEADO 
+ 
+RECEIVER SIGUE 
+ dsp_proxy.c:pr_thread:754:MTX_UNLOCK px_ptr->px_conn_mtx 
+ 
+SOLUCION PARA SINCRONIZACION!!  
+	SENDER 
+			MTX_LOCK(px_ptr->px_conn_mtx);
+			// EJECUTAR UN JOIN DE APLICACION !!!!!! 
+			rcode = dvk_proxy_conn(px_ptr->px_proxyid, CONNECT_SPROXY);
+			SET_BIT(px_ptr->px_status, PX_BIT_SCONNECTED);
+			if( !TEST_BIT(px_ptr->px_status, PX_BIT_RCONNECTED)){
+				COND_SIGNAL(px_ptr->px_conn_rcond);
+				COND_WAIT(px_ptr->px_conn_scond, px_ptr->px_conn_mtx);
+			}
+			MTX_UNLOCK(px_ptr->px_conn_mtx);
+			
+	RECEIVER 
+			MTX_LOCK(px_ptr->px_conn_mtx);
+			// EJECUTAR UN JOIN SI ES LA PRIMERA VEZ QUE SE CONECTA - ESTO SE SABE CON EL NRO DE SECUENCIA !!!!!! 
+			rcode = dvk_proxy_conn(px_ptr->px_proxyid, CONNECT_RPROXY);
+			SET_BIT(px_ptr->px_status, PX_BIT_RCONNECTED);
+			if( !TEST_BIT(px_ptr->px_status, PX_BIT_SCONNECTED)){
+				COND_SIGNAL(px_ptr->px_conn_scond);
+				COND_WAIT(px_ptr->px_conn_rcond, px_ptr->px_conn_mtx);
+			}
+			MTX_UNLOCK(px_ptr->px_conn_mtx);
+
+LISTO- CONECTADOS !!!!!
+root@node1:/usr/src/dvs/dvk-proxies# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.101:3000      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.101:3000      192.168.0.100:35652     ESTABLISHED
+tcp        0      0 192.168.0.101:49902     192.168.0.100:3001      ESTABLISHED
+
+root@node0:/usr/src/dvs/dvk-proxies# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 192.168.0.100:3001      0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.0.100:35652     192.168.0.101:3000      ESTABLISHED
+tcp        0      0 192.168.0.100:3001      192.168.0.101:49902     ESTABLISHED
+
+===================================================================================================
+
+# this is a comment 
+
+# THIS IS THE VIRTUAL LOAD BALANCER - ALL CLIENT NODES BIND REMOTE ENDPOINTS TO THIS NODE
+# Therefore, any REAL node must use the same NODEID than the LB VIRTUAL NODE.
+lb node0 {
+	nodeid 		0;
+	lowwater	30;
+	highwater	70;
+	period		30;
+	start 		60;
+	stop  		60;
+	min_servers	1;
+	max_servers	2;	
+	cltname		client0;
+	svrname     node0;	
+	cltdev		eth1;
+	svrdev   	eth0;
+	ssh_host	192.168.0.196;
+	ssh_user	Admin;
+	ssh_pass	mendieta;	
+	vm_start 	"start_vm.bat";
+	vm_stop   	"stop_vm.bat";
+	vm_status  	"list_vm.bat";
+};
+
+################################################################################
+# HERE are definded the SERVER NODES - the only client they have is the LB NODE.
+################################################################################
+server node1 {
+	proxyid		1;
+	proto		tcp; 
+	rport		3001;
+	sport		3000; 
+	compress	NO; 
+	batch		NO;
+	autobind	NO;
+	rname		node1;
+	node_image  "E:\\NODE1\\node1.vmx";
+};
+
+server node2 {
+	proxyid		1;
+	proto		tcp; 
+	rport		3002;
+	sport		3000; 
+	compress	NO; 
+	batch		NO;
+	autobind	NO;
+	rname		node2;
+	node_image  "E:\\NODE2\\node2.vmx";
+};
+
+################################################################################
+# HERE are defined the CLIENT NODES - the only server they have is the LB NODE.
+################################################################################
+client client11 {
+	nodeid 		11;
+	proto		tcp; 
+	rport		3011;
+	sport		3000; 
+	compress	NO; 
+	batch		NO;
+	autobind	NO;
+	rname		node11;	
+};
+
+client client12 {
+	nodeid 		12;
+	proto		tcp; 
+	rport		3012;
+	sport		3000; 
+	compress	NO; 
+	batch		NO;
+	autobind	NO;
+	rname		node12;	
+};
+
+client client13 {
+	nodeid 		12;
+	proto		tcp; 
+	rport		3013;
+	sport		3000; 
+	compress	NO; 
+	batch		NO;
+	autobind	NO;
+	rname		node13;	
+};
+
+################################################################################
+# HERE are definded the SERVICES 
+# dcid: could be 0-(NR_DCS-1)
+# 	if dcid is not defined, ANY will be the default
+# ext_ep: is the endpoint known by the clients
+# min_ep to max_ep: is the endpoint range where a service could be started
+# bind: type coud be:
+#     - replica: when the service is started at server it will be bound as REPLICA
+#     - external:  the service has been bound externally to the DSP.
+# prog: is the path of the script that will be invoked to start a service 
+#	if prog is not specified, the service should be started externally to the DSP
+################################################################################  
+# service started automatically 
+service latency {
+	dcid	0;
+	ext_ep	10;
+	min_ep	10;
+	max_ep	19;	
+	bind	replica;
+	prog	"/usr/src/dvs/dvs-apps/dvs_lb/run_latency.sh" 
+};
+
+# service started by hand !!
+service m3ftp {
+	dcid	0;
+	ext_ep	20;
+	min_ep	20;
+	max_ep	29;	
+	bind	external;
+};
+
+===================================================================================================
+
+TODO: UNIFICAR en una estructura de datos proxy los datos comunes entre servers y clients 
+
+
+===================================================================================================
+ULTIMO_LOG 
+
+

@@ -1,0 +1,527 @@
+ dsp_proxy.c:main:1418:d_name=TEST_CLUSTER d_nr_dcs=32 d_nr_nodes=32 d_nr_procs=221 d_nr_tasks=35 d_nr_sysprocs=64 
+ dsp_proxy.c:main:1423:MAIN: dsp_pid=602 dsp_nodeid=0
+ dsp_config.c:dsp_config:394:BEFORE config_read
+ configfile.c:config_read:459:file=/dev/shm/dsp_proxy.cfg flags=400
+ configfile.c:read_file:412:file=/dev/shm/dsp_proxy.cfg
+ configfile.c:allocate:65:size=31
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_list:357:
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=28
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=22
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=24
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=29
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=23
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=26
+ configfile.c:read_word:179:
+ configfile.c:allocate:65:size=53
+ configfile.c:allocate:65:size=25
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=20
+ configfile.c:read_line:315:
+ configfile.c:allocate:65:size=30
+ dsp_config.c:dsp_config:415:AFTER config_read
+ dsp_config.c:scan_config:364:
+ dsp_config.c:scan_config:370:scan_config[0] line=2
+ dsp_config.c:search_main_token:321:line=2 dsp_ptr->dsp_nr_proxies=0
+ dsp_config.c:search_main_token:325:word=proxy
+ dsp_config.c:search_main_token:328:proxy: 
+ dsp_config.c:search_main_token:331:node1
+ dsp_config.c:read_proxy_lines:303:
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=3 word=proxyid
+ dsp_config.c:search_proxy_ident:124:line[3] MATCH identifier proxyid
+ dsp_config.c:search_proxy_ident:135:px_proxyid=1
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=4 word=proto
+ dsp_config.c:search_proxy_ident:124:line[4] MATCH identifier proto
+ dsp_config.c:search_proxy_ident:143:proto=tcp
+ dsp_config.c:search_proxy_ident:154:px_proto=1
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=5 word=compress
+ dsp_config.c:search_proxy_ident:124:line[5] MATCH identifier compress
+ dsp_config.c:search_proxy_ident:209:compress=NO
+ dsp_config.c:search_proxy_ident:219:px_compress=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=6 word=batch
+ dsp_config.c:search_proxy_ident:124:line[6] MATCH identifier batch
+ dsp_config.c:search_proxy_ident:227:batch=NO
+ dsp_config.c:search_proxy_ident:237:px_batch=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=7 word=autobind
+ dsp_config.c:search_proxy_ident:124:line[7] MATCH identifier autobind
+ dsp_config.c:search_proxy_ident:254:px_autobind=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=8 word=rname
+ dsp_config.c:search_proxy_ident:124:line[8] MATCH identifier rname
+ dsp_config.c:search_proxy_ident:271:px_rname=node0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=9 word=rport
+ dsp_config.c:search_proxy_ident:124:line[9] MATCH identifier rport
+ dsp_config.c:search_proxy_ident:171:px_rport=3001
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=10 word=sport
+ dsp_config.c:search_proxy_ident:124:line[10] MATCH identifier sport
+ dsp_config.c:search_proxy_ident:195:px_sport=3000
+ dsp_config.c:search_main_token:346:px_name=node1 px_proxyid=1 px_proto=1 px_rport=3001 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_config.c:scan_config:370:scan_config[1] line=13
+ dsp_config.c:search_main_token:321:line=13 dsp_ptr->dsp_nr_proxies=1
+ dsp_config.c:search_main_token:325:word=proxy
+ dsp_config.c:search_main_token:328:proxy: 
+ dsp_config.c:search_main_token:331:node2
+ dsp_config.c:read_proxy_lines:303:
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=14 word=proxyid
+ dsp_config.c:search_proxy_ident:124:line[14] MATCH identifier proxyid
+ dsp_config.c:search_proxy_ident:135:px_proxyid=2
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=15 word=proto
+ dsp_config.c:search_proxy_ident:124:line[15] MATCH identifier proto
+ dsp_config.c:search_proxy_ident:143:proto=tcp
+ dsp_config.c:search_proxy_ident:154:px_proto=1
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=16 word=compress
+ dsp_config.c:search_proxy_ident:124:line[16] MATCH identifier compress
+ dsp_config.c:search_proxy_ident:209:compress=NO
+ dsp_config.c:search_proxy_ident:219:px_compress=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=17 word=batch
+ dsp_config.c:search_proxy_ident:124:line[17] MATCH identifier batch
+ dsp_config.c:search_proxy_ident:227:batch=NO
+ dsp_config.c:search_proxy_ident:237:px_batch=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=18 word=autobind
+ dsp_config.c:search_proxy_ident:124:line[18] MATCH identifier autobind
+ dsp_config.c:search_proxy_ident:254:px_autobind=0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=19 word=rname
+ dsp_config.c:search_proxy_ident:124:line[19] MATCH identifier rname
+ dsp_config.c:search_proxy_ident:271:px_rname=node0
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=20 word=rport
+ dsp_config.c:search_proxy_ident:124:line[20] MATCH identifier rport
+ dsp_config.c:search_proxy_ident:171:px_rport=3002
+ dsp_config.c:read_proxy_lines:305:read_proxy_lines type=200
+ dsp_config.c:search_proxy_ident:121:search_proxy_ident[0] line=21 word=sport
+ dsp_config.c:search_proxy_ident:124:line[21] MATCH identifier sport
+ dsp_config.c:search_proxy_ident:195:px_sport=3000
+ dsp_config.c:search_main_token:346:px_name=node2 px_proxyid=2 px_proto=1 px_rport=3002 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_config.c:dsp_config:422:px_name=node1 px_proxyid=1 px_proto=1 px_rport=3001 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_config.c:dsp_config:422:px_name=node2 px_proxyid=2 px_proto=1 px_rport=3002 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_config.c:dsp_config:499:dsp_nodeid=0 dsp_pid=602 dsp_nr_proxies=2 dsp_param_bm=000000FF dsp_compress_opt=0
+ dsp_config.c:dsp_config:500:dsp_lowwater=-1 dsp_highwater=-1 dsp_period=30
+ dsp_config.c:dsp_config:501:dsp_lowwater=0 dsp_highwater=0 dsp_period=0
+ dsp_config.c:dsp_config:502:dsp_nr_nodes=0 dsp_nr_init=0 dsp_bm_nodes=0 dsp_bm_init=00000000
+ dsp_proxy.c:main:1436:MAIN: dsp_ptr->dsp_nr_proxies=2
+ dsp_proxy.c:main:1441:MAIN: i=0 
+ dsp_proxy.c:main:1448:px_name=node1 px_proxyid=1 px_proto=1 px_rport=3001 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_proxy.c:main:1451:MAIN(1): pthread_create RPROXY
+ dsp_proxy.c:main:1460:MTX_LOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:main:1464:COND_WAIT px_ptr->px_rdesc.td_cond px_ptr->px_rdesc.td_mtx
+ dsp_proxy.c:pr_thread:637:RPROXY(1): Initializing...
+ dsp_proxy.c:pr_thread:640:MTX_LOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:pr_thread:644:COND_SIGNAL px_ptr->px_rdesc.td_cond
+ dsp_proxy.c:pr_thread:646:COND_WAIT px_ptr->px_rdesc.td_tcond px_ptr->px_rdesc.td_mtx
+ dsp_proxy.c:main:1465:MAIN(1): RPROXY td_tid=604
+ dsp_proxy.c:main:1467:MAIN(1):: pthread_create SPROXY
+ dsp_proxy.c:main:1472:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:main:1476:COND_WAIT px_ptr->px_sdesc.td_cond px_ptr->px_sdesc.td_mtx
+ dsp_proxy.c:ps_thread:1236:SPROXY(1): Initializing...
+ dsp_proxy.c:ps_thread:1239:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:ps_thread:1243:COND_SIGNAL px_ptr->px_sdesc.td_cond
+ dsp_proxy.c:ps_thread:1245:COND_WAIT px_ptr->px_sdesc.td_tcond px_ptr->px_sdesc.td_mtx
+ dsp_proxy.c:main:1477:MAIN(1): SPROXY td_tid=605
+ dsp_proxy.c:main:1488:COND_SIGNAL px_ptr->px_rdesc.td_tcond
+ dsp_proxy.c:main:1489:COND_SIGNAL px_ptr->px_sdesc.td_tcond
+ dsp_proxy.c:main:1490:MTX_UNLOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:main:1491:MTX_UNLOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:main:1441:MAIN: i=1 
+ dsp_proxy.c:main:1448:px_name=node2 px_proxyid=2 px_proto=1 px_rport=3002 px_sport=3000 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+ dsp_proxy.c:main:1451:MAIN(2): pthread_create RPROXY
+ dsp_proxy.c:main:1460:MTX_LOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:main:1464:COND_WAIT px_ptr->px_rdesc.td_cond px_ptr->px_rdesc.td_mtx
+ dsp_proxy.c:pr_thread:648:MTX_UNLOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:pr_thread:689:RPROXY(1): px_rdesc.td_header=B5C01000
+ dsp_proxy.c:pr_thread:696:RPROXY(1): px_rdesc.td_payload=B5C02000
+ dsp_proxy.c:pr_thread:703:RPROXY(1): px_rdesc.td_pseudo=B5C13000
+ dsp_proxy.c:pr_thread:712:RPROXY(1): px_rdesc.td_batch=0
+ dsp_proxy.c:pr_thread:716:RPROXY(1): px_ptr->px_rdesc.td_header=0xb5c01000 px_ptr->px_rdesc.td_payload=0xb5c02000 diff=4096
+ dsp_proxy.c:pr_setup_connection:190:RPROXY(1): for node node1 running at port=3001
+ dsp_proxy.c:pr_setup_connection:214:RPROXY(1): 192.168.0.100 
+ dsp_proxy.c:pr_setup_connection:218:RPROXY(1): px_rname=node0 listening on IP address=192.168.0.100
+ dsp_proxy.c:pr_setup_connection:226:RPROXY(1): is bound to port=3001 socket=4
+ dsp_proxy.c:pr_thread:739:RPROXY(1): Waiting for connection.
+ dsp_proxy.c:ps_thread:1247:MTX_UNLOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:ps_thread:1287:SPROXY(1): px_sdesc.td_header=B5A01000
+ dsp_proxy.c:ps_thread:1294:SPROXY(1): px_sdesc.td_header2=B5A02000
+ dsp_proxy.c:ps_thread:1301:SPROXY(1): px_sdesc.td_header3=B5A03000
+ dsp_proxy.c:ps_thread:1308:SPROXY(1): px_sdesc.td_payload=B5A04000
+ dsp_proxy.c:ps_thread:1315:SPROXY(1): px_sdesc.td_payload2=B5A15000
+ dsp_proxy.c:ps_thread:1324:SPROXY(1): px_sdesc.td_batch=0
+ dsp_proxy.c:pr_thread:637:RPROXY(2): Initializing...
+ dsp_proxy.c:pr_thread:640:MTX_LOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:pr_thread:644:COND_SIGNAL px_ptr->px_rdesc.td_cond
+ dsp_proxy.c:pr_thread:646:COND_WAIT px_ptr->px_rdesc.td_tcond px_ptr->px_rdesc.td_mtx
+ dsp_proxy.c:main:1465:MAIN(2): RPROXY td_tid=606
+ dsp_proxy.c:main:1467:MAIN(2):: pthread_create SPROXY
+ dsp_proxy.c:main:1472:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:main:1476:COND_WAIT px_ptr->px_sdesc.td_cond px_ptr->px_sdesc.td_mtx
+ dsp_proxy.c:ps_thread:1236:SPROXY(2): Initializing...
+ dsp_proxy.c:ps_thread:1239:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:ps_thread:1243:COND_SIGNAL px_ptr->px_sdesc.td_cond
+ dsp_proxy.c:ps_thread:1245:COND_WAIT px_ptr->px_sdesc.td_tcond px_ptr->px_sdesc.td_mtx
+ dsp_proxy.c:main:1477:MAIN(2): SPROXY td_tid=607
+ dsp_proxy.c:main:1488:COND_SIGNAL px_ptr->px_rdesc.td_tcond
+ dsp_proxy.c:main:1489:COND_SIGNAL px_ptr->px_sdesc.td_tcond
+ dsp_proxy.c:main:1490:MTX_UNLOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:main:1491:MTX_UNLOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:main:1495:MAIN: dsp_period=30
+ dsp_proxy.c:pr_thread:648:MTX_UNLOCK px_ptr->px_rdesc.td_mtx 
+ dsp_proxy.c:pr_thread:689:RPROXY(2): px_rdesc.td_header=16DE000
+ dsp_proxy.c:pr_thread:696:RPROXY(2): px_rdesc.td_payload=16DF000
+ dsp_proxy.c:pr_thread:703:RPROXY(2): px_rdesc.td_pseudo=16F0000
+ dsp_proxy.c:pr_thread:712:RPROXY(2): px_rdesc.td_batch=0
+ dsp_proxy.c:pr_thread:716:RPROXY(2): px_ptr->px_rdesc.td_header=0x16de000 px_ptr->px_rdesc.td_payload=0x16df000 diff=4096
+ dsp_proxy.c:pr_setup_connection:190:RPROXY(2): for node node2 running at port=3002
+ dsp_proxy.c:pr_setup_connection:214:RPROXY(2): 192.168.0.100 
+ dsp_proxy.c:pr_setup_connection:218:RPROXY(2): px_rname=node0 listening on IP address=192.168.0.100
+ dsp_proxy.c:pr_setup_connection:226:RPROXY(2): is bound to port=3002 socket=7
+ dsp_proxy.c:pr_thread:739:RPROXY(2): Waiting for connection.
+ dsp_proxy.c:ps_thread:1247:MTX_UNLOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:ps_thread:1287:SPROXY(2): px_sdesc.td_header=B5A26000
+ dsp_proxy.c:ps_thread:1294:SPROXY(2): px_sdesc.td_header2=B5A27000
+ dsp_proxy.c:ps_thread:1301:SPROXY(2): px_sdesc.td_header3=B5A28000
+ dsp_proxy.c:ps_thread:1308:SPROXY(2): px_sdesc.td_payload=B5A29000
+ dsp_proxy.c:ps_thread:1315:SPROXY(2): px_sdesc.td_payload2=B5A3A000
+ dsp_proxy.c:ps_thread:1324:SPROXY(2): px_sdesc.td_batch=0
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:get_metrics:1741:dsp_lowwater=-1 dsp_highwater=-1 dsp_period=30
+ dsp_proxy.c:get_metrics:1744:Check initialization... 
+ dsp_proxy.c:get_metrics:1745:MTX_LOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:get_metrics:1747:MTX_UNLOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:main:1495:MAIN: dsp_period=30
+ dsp_proxy.c:pr_thread:739:RPROXY(2): Waiting for connection.
+ dsp_proxy.c:pr_thread:739:RPROXY(1): Waiting for connection.
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1365:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_thread:1369:COND_SIGNAL px_ptr->px_conn_rcond
+ dsp_proxy.c:ps_thread:1370:COND_WAIT px_ptr->px_conn_scond px_ptr->px_conn_mtx
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:pr_thread:746:RPROXY(1): Remote sender [192.168.0.101] connected on sd [5]. Getting remote command.
+ dsp_proxy.c:pr_thread:748:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:752:COND_SIGNAL px_ptr->px_conn_scond
+ dsp_proxy.c:pr_thread:753:COND_WAIT px_ptr->px_conn_rcond px_ptr->px_conn_mtx
+ dsp_proxy.c:ps_thread:1371:MTX_UNLOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_start_serving:1026:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+ dsp_proxy.c:ps_start_serving:1031:SPROXY(1): Waiting a message
+ dsp_proxy.c:ps_start_serving:1032:MTX_UNLOCK px_ptr->px_send_mtx 
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:get_metrics:1741:dsp_lowwater=-1 dsp_highwater=-1 dsp_period=30
+ dsp_proxy.c:get_metrics:1744:Check initialization... 
+ dsp_proxy.c:get_metrics:1745:MTX_LOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:get_metrics:1747:MTX_UNLOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:main:1495:MAIN: dsp_period=30
+ dsp_proxy.c:pr_thread:739:RPROXY(2): Waiting for connection.
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_start_serving:1034:MTX_LOCK px_ptr->px_send_mtx 
+ dsp_proxy.c:ps_start_serving:1045:SPROXY(1): Sending HELLO
+ dsp_proxy.c:build_load_level:1875:SPROXY(1): mtype=5
+ dsp_proxy.c:build_load_level:1886:SPROXY(1): source=0 type=5 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+ dsp_proxy.c:send_hello_msg:1902:SPROXY(1): send a HELLO message. m_type=5
+ dsp_proxy.c:send_hello_msg:1905:SPROXY(1):source=0 type=5 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+ dsp_proxy.c:send_hello_msg:1929:SPROXY(1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:send_hello_msg:1930:SPROXY(1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981905
+ dsp_proxy.c:ps_send_remote:959:SPROXY(1):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:ps_send_remote:960:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981905
+ dsp_proxy.c:ps_send_header:835:SPROXY(1): send bytesleft=120 px_sproxy_sd=6
+ dsp_proxy.c:ps_send_header:838:SPROXY(1):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:ps_send_header:839:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981905
+ dsp_proxy.c:ps_send_header:860:SPROXY(1): socket=6 sent header=120 
+ dsp_proxy.c:ps_start_serving:1031:SPROXY(1): Waiting a message
+ dsp_proxy.c:ps_start_serving:1032:MTX_UNLOCK px_ptr->px_send_mtx 
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:get_metrics:1741:dsp_lowwater=-1 dsp_highwater=-1 dsp_period=30
+ dsp_proxy.c:get_metrics:1744:Check initialization... 
+ dsp_proxy.c:get_metrics:1745:MTX_LOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:get_metrics:1747:MTX_UNLOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:main:1495:MAIN: dsp_period=30
+ dsp_proxy.c:pr_thread:739:RPROXY(2): Waiting for connection.
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_start_serving:1034:MTX_LOCK px_ptr->px_send_mtx 
+ dsp_proxy.c:ps_start_serving:1045:SPROXY(1): Sending HELLO
+ dsp_proxy.c:build_load_level:1875:SPROXY(1): mtype=5
+ dsp_proxy.c:build_load_level:1886:SPROXY(1): source=0 type=5 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+ dsp_proxy.c:send_hello_msg:1902:SPROXY(1): send a HELLO message. m_type=5
+ dsp_proxy.c:send_hello_msg:1905:SPROXY(1):source=0 type=5 m1i1=0 m1i2=0 m1i3=30 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+ dsp_proxy.c:send_hello_msg:1929:SPROXY(1): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:send_hello_msg:1930:SPROXY(1): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981936
+ dsp_proxy.c:ps_send_remote:959:SPROXY(1):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:ps_send_remote:960:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981936
+ dsp_proxy.c:ps_send_header:835:SPROXY(1): send bytesleft=120 px_sproxy_sd=6
+ dsp_proxy.c:ps_send_header:838:SPROXY(1):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=0 dnode=1 rcode=0 len=0 PID=605
+ dsp_proxy.c:ps_send_header:839:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0 c_timestamp.tv_sec=1656981936
+ dsp_proxy.c:ps_thread:1375:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_thread:1380:MTX_UNLOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:get_metrics:1741:dsp_lowwater=-1 dsp_highwater=-1 dsp_period=30
+ dsp_proxy.c:get_metrics:1744:Check initialization... 
+ dsp_proxy.c:get_metrics:1745:MTX_LOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:get_metrics:1747:MTX_UNLOCK dsp_ptr->dsp_mutex 
+ dsp_proxy.c:main:1495:MAIN: dsp_period=30
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:pr_thread:739:RPROXY(2): Waiting for connection.
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(2): for node node2 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(2): remote host address 0: 192.168.0.102
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(2): for node node2 running at  IP=192.168.0.102
+ dsp_proxy.c:ps_thread:1359:SPROXY(2): Could not connect to 2 Sleeping for a while...
+ dsp_proxy.c:ps_connect_to_remote:1193:SPROXY(1): for node node1 running at port=3000
+ dsp_proxy.c:ps_connect_to_remote:1203:SPROXY(1): remote host address 0: 192.168.0.101
+ dsp_proxy.c:ps_connect_to_remote:1212:SPROXY(1): for node node1 running at  IP=192.168.0.101
+ dsp_proxy.c:ps_thread:1359:SPROXY(1): Could not connect to 1 Sleeping for a while...
