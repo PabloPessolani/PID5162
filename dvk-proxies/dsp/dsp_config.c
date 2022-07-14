@@ -76,19 +76,23 @@ extern char *ctl_socket;
 #define MAXTOKENSIZE	20
 
 #define	TKN_SVR_NODEID	0
-#define	TKN_SVR_RPORT	1
-#define	TKN_SVR_SPORT 	2
-#define TKN_SVR_COMPRESS 3
-#define TKN_SVR_BATCH	4
-#define TKN_SVR_IMAGE	5
-#define TKN_SVR_MAX 	6 // MUST be the last
+#define	TKN_SVR_PROTO	1
+#define	TKN_SVR_RPORT	2
+#define	TKN_SVR_SPORT 	3
+#define TKN_SVR_COMPRESS 4
+#define TKN_SVR_BATCH	5
+#define TKN_SVR_AUTOBIND	6
+#define TKN_SVR_IMAGE	7
+#define TKN_SVR_MAX 	8 // MUST be the last
 
 #define TKN_CLT_NODEID	0
-#define TKN_CLT_RPORT	1
-#define TKN_CLT_SPORT 	2
-#define TKN_CLT_COMPRESS 3
-#define TKN_CLT_BATCH	4
-#define TKN_CLT_MAX 	5	// MUST be the last
+#define	TKN_CLT_PROTO	1
+#define TKN_CLT_RPORT	2
+#define TKN_CLT_SPORT 	3
+#define TKN_CLT_COMPRESS 4
+#define TKN_CLT_BATCH	5
+#define TKN_CLT_AUTOBIND	6
+#define TKN_CLT_MAX 	7	// MUST be the last
 
 #define TKN_SVC_DCID	0
 #define TKN_SVC_EXTEP	1
@@ -129,19 +133,23 @@ int nodeid;
 
 char *cfg_svr_ident[] = {
     "nodeid",
+	"proto",
 	"rport",
 	"sport",
 	"compress",
 	"batch",
+	"autobind",
 	"node_image",	
 };
 
 char *cfg_clt_ident[] = {
     "nodeid",
+	"proto",
 	"rport",
 	"sport",
 	"compress",
 	"batch",
+	"autobind",
 };
 
 char *cfg_svc_ident[] = {
@@ -151,7 +159,6 @@ char *cfg_svc_ident[] = {
     "max_ep",
 	"bind",
     "prog",
-
 };
 
 char *cfg_lb_ident[] = {
@@ -348,10 +355,13 @@ int search_svr_ident(config_t *cfg)
 {
     int i, j, rcode, dcid;
     server_t *svr_ptr;
+    proxy_t *px_ptr;
 	
     PXYDEBUG("nodeid=%d\n", nodeid);
-	if(nodeid != LB_INVALID)
-		svr_ptr = &server_tab[nodeid];
+	if(nodeid != LB_INVALID) {
+		px_ptr = &proxy_tab[nodeid];
+		svr_ptr = &px_ptr->px_u.px_server;
+	}
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
             PXYDEBUG("search_svr_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
@@ -362,8 +372,8 @@ int search_svr_ident(config_t *cfg)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;	
 					if( j != TKN_SVR_NODEID){
-						if( svr_ptr->svr_nodeid == LB_INVALID){
-							fprintf(stderr, "Server nodeid must be defined first: line %d\n", cfg->line);
+						if( px_ptr->px_type == LB_INVALID){
+							fprintf(stderr, "The nodeid must be defined first: line %d\n", cfg->line);
 							return(EXIT_CODE);
 						}						
 					}
@@ -384,28 +394,45 @@ int search_svr_ident(config_t *cfg)
 								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", nodeid,dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}
-							svr_ptr = &server_tab[nodeid];
-							svr_ptr->svr_nodeid = nodeid;
+							px_ptr = &proxy_tab[nodeid];
+							px_ptr->px_type = PX_SERVER;
+							svr_ptr = &px_ptr->px_u.px_server;
+							px_ptr->px_nodeid = nodeid;
 							if( server_name == NULL) {
 								fprintf(stderr, "server name not defined at line %d\n", cfg->line);
 								return(EXIT_CODE);							
 							}
-							svr_ptr->svr_name = server_name;
-							PXYDEBUG("svr_nodeid=%d\n", svr_ptr->svr_nodeid);
+							px_ptr->px_name = server_name;
+							PXYDEBUG("px_nodeid=%d\n", px_ptr->px_nodeid);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_NODEID);
+							break;
+                        case TKN_SVR_PROTO:	
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("proto=%s\n", cfg->word);							
+							if( strncasecmp(cfg->word, "tcp",3) == 0) 
+								px_ptr->px_proto = PX_PROTO_TCP;
+							else if ( strncasecmp(cfg->word, "udp", 3) == 0)
+								px_ptr->px_proto = PX_PROTO_UDP;
+							else if ( strncasecmp(cfg->word, "tipc", 4) == 0)
+								px_ptr->px_proto = PX_PROTO_TIPC;
+							PXYDEBUG("px_proto=%X\n", px_ptr->px_proto);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_PROTO);
 							break;
                         case TKN_SVR_RPORT:						
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							svr_ptr->svr_rport = atoi(cfg->word);
-							PXYDEBUG("svr_rport=%d\n", svr_ptr->svr_rport);
+							px_ptr->px_rport = atoi(cfg->word);
+							PXYDEBUG("rport=%d\n", px_ptr->px_rport);
 
-							if ((svr_ptr->svr_rport < LBP_BASE_PORT) || (svr_ptr->svr_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((px_ptr->px_rport < LBP_BASE_PORT) || (px_ptr->px_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "svr_rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										px_ptr->px_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_RPORT);
@@ -415,13 +442,13 @@ int search_svr_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							svr_ptr->svr_sport = atoi(cfg->word);
-							PXYDEBUG("svr_sport=%d\n", svr_ptr->svr_sport);
+							px_ptr->px_sport = atoi(cfg->word);
+							PXYDEBUG("sport=%d\n", px_ptr->px_sport);
 
-							if ((svr_ptr->svr_sport < LBP_BASE_PORT) || (svr_ptr->svr_sport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((px_ptr->px_sport < LBP_BASE_PORT) || (px_ptr->px_sport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "svr_sport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										svr_ptr->svr_sport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+										px_ptr->px_sport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_SPORT);
@@ -433,17 +460,16 @@ int search_svr_ident(config_t *cfg)
 							}
 							PXYDEBUG("compress=%s\n", cfg->word);
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
-								svr_ptr->svr_compress = YES;
+								px_ptr->px_compress = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
-								PXYDEBUG("svr_ptr->svr_nodeid=%d\n", svr_ptr->svr_nodeid);
-								svr_ptr->svr_compress = NO;								
+								px_ptr->px_compress  = NO;								
 							} else {
 								PXYDEBUG("\n");
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "compress: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							PXYDEBUG("svr_compress=%d\n", svr_ptr->svr_compress);
+							PXYDEBUG("compress=%d\n", px_ptr->px_compress);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_COMPRESS);							
 							break;
                         case TKN_SVR_BATCH:
@@ -453,16 +479,34 @@ int search_svr_ident(config_t *cfg)
 							}
 							PXYDEBUG("batch=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
-								svr_ptr->svr_batch = YES;
+								px_ptr->px_batch = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
-								svr_ptr->svr_batch = NO;								
+								px_ptr->px_batch = NO;								
 							} else {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "batch: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							PXYDEBUG("svr_batch=%d\n", svr_ptr->svr_batch);
+							PXYDEBUG("batch=%d\n", px_ptr->px_batch);
 							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_BATCH);							
+							break;							
+                        case TKN_SVR_AUTOBIND:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("autobind=%s\n", cfg->word);					
+							if ( strncasecmp(cfg->word,"YES", 3) == 0){
+								px_ptr->px_autobind = YES;
+							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
+								px_ptr->px_autobind = NO;								
+							} else {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "autobind: must be YES or NO\n");
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("autobind=%d\n", px_ptr->px_autobind);
+							SET_BIT(svr_ptr->svr_bm_params, TKN_SVR_AUTOBIND);							
 							break;							
                         case TKN_SVR_IMAGE:
 							if (!config_isatom(cfg)) {
@@ -766,10 +810,13 @@ int search_clt_ident(config_t *cfg)
 {
     int i, j, rcode;
     client_t *clt_ptr;
+    proxy_t *px_ptr;
 
     PXYDEBUG("nodeid=%d\n", nodeid);
-	if(nodeid != LB_INVALID)
-		clt_ptr = &client_tab[nodeid];
+	if(nodeid != LB_INVALID){
+		px_ptr = &proxy_tab[nodeid];
+		clt_ptr = &px_ptr->px_u.px_client;
+	}
     for( i = 0; cfg!=nil; i++) {
         if (config_isatom(cfg)) {
             PXYDEBUG("search_clt_ident[%d] line=%d word=%s\n",i,cfg->line, cfg->word); 
@@ -780,7 +827,7 @@ int search_clt_ident(config_t *cfg)
                         fprintf(stderr, "Void value found at line %d\n", cfg->line);
                     cfg = cfg->next;
 					if( j != TKN_CLT_NODEID){
-						if( clt_ptr->clt_nodeid == LB_INVALID){
+						if( px_ptr->px_type == LB_INVALID){
 							fprintf(stderr, "Client nodeid must be defined first: line %d\n", cfg->line);
 							return(EXIT_CODE);
 						}						
@@ -802,28 +849,45 @@ int search_clt_ident(config_t *cfg)
 								fprintf(stderr, "nodeid:%d, must be > 0 and < %d\n", nodeid,dvs_ptr->d_nr_nodes);
 								return(EXIT_CODE);
 							}
-							clt_ptr = &client_tab[nodeid];
-							clt_ptr->clt_nodeid = nodeid;
+							px_ptr = &proxy_tab[nodeid];
+							px_ptr->px_type = PX_CLIENT;
+							clt_ptr = &px_ptr->px_u.px_client;
+							px_ptr->px_nodeid = nodeid;
 							if( client_name == NULL) {
 								fprintf(stderr, "client name not defined at line %d\n", cfg->line);
 								return(EXIT_CODE);							
 							}
-							clt_ptr->clt_name = client_name;
-							PXYDEBUG("clt_nodeid=%d\n", clt_ptr->clt_nodeid);
+							px_ptr->px_name = client_name;
+							PXYDEBUG("clt_nodeid=%d\n", px_ptr->px_nodeid);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_NODEID);
 							break;
+                        case TKN_CLT_PROTO:	
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("proto=%s\n", cfg->word);							
+							if( strncasecmp(cfg->word, "tcp",3) == 0) 
+								px_ptr->px_proto = PX_PROTO_TCP;
+							else if ( strncasecmp(cfg->word, "udp", 3) == 0)
+								px_ptr->px_proto = PX_PROTO_UDP;
+							else if ( strncasecmp(cfg->word, "tipc", 4) == 0)
+								px_ptr->px_proto = PX_PROTO_TIPC;
+							PXYDEBUG("px_proto=%X\n", px_ptr->px_proto);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_PROTO);
+							break;							
                         case TKN_CLT_RPORT:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							clt_ptr->clt_rport = atoi(cfg->word);
-							PXYDEBUG("clt_rport=%d\n", clt_ptr->clt_rport);
+							px_ptr->px_rport = atoi(cfg->word);
+							PXYDEBUG("px_rport=%d\n", px_ptr->px_rport);
 
-							if ((clt_ptr->clt_rport < LBP_BASE_PORT) || (clt_ptr->clt_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((px_ptr->px_rport < LBP_BASE_PORT) || (px_ptr->px_rport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "rport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										px_ptr->px_rport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
 							break;
@@ -833,13 +897,13 @@ int search_clt_ident(config_t *cfg)
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								return(EXIT_CODE);
 							}
-							clt_ptr->clt_sport = atoi(cfg->word);
-							PXYDEBUG("clt_sport=%d\n", clt_ptr->clt_sport);
+							px_ptr->px_sport = atoi(cfg->word);
+							PXYDEBUG("sport=%d\n", px_ptr->px_sport );
 
-							if ((clt_ptr->clt_sport < LBP_BASE_PORT) || (clt_ptr->clt_sport >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
+							if ((px_ptr->px_sport  < LBP_BASE_PORT) || (px_ptr->px_sport  >= (LBP_BASE_PORT+dvs_ptr->d_nr_nodes))) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
-								fprintf(stderr, "clt_sport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
-										clt_ptr->clt_sport,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
+								fprintf(stderr, "sport:%d, must be >= LBP_BASE_PORT(%d) and < (LBP_BASE_PORT+dvs_ptr->d_nr_nodes)(%d)\n", 
+										px_ptr->px_sport ,LBP_BASE_PORT,(LBP_BASE_PORT+dvs_ptr->d_nr_nodes));
 								return(EXIT_CODE);
 							}
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_SPORT);
@@ -851,17 +915,17 @@ int search_clt_ident(config_t *cfg)
 							}
 							PXYDEBUG("compress=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
-								clt_ptr->clt_compress = YES;
+								px_ptr->px_compress = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
-								clt_ptr->clt_compress = NO;								
+								px_ptr->px_compress = NO;								
 							} else {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "compress: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							PXYDEBUG("clt_compress=%d\n", clt_ptr->clt_compress);
+							PXYDEBUG("compress=%d\n", px_ptr->px_compress);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_COMPRESS);							
-							break;							
+							break;	
                         case TKN_CLT_BATCH:
 							if (!config_isatom(cfg)) {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
@@ -869,16 +933,34 @@ int search_clt_ident(config_t *cfg)
 							}
 							PXYDEBUG("batch=%s\n", cfg->word);					
 							if ( strncasecmp(cfg->word,"YES", 3) == 0){
-								clt_ptr->clt_batch = YES;
+								px_ptr->px_batch = YES;
 							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
-								clt_ptr->clt_batch = NO;								
+								px_ptr->px_batch= NO;								
 							} else {
 								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
 								fprintf(stderr, "batch: must be YES or NO\n");
 								return(EXIT_CODE);
 							}
-							PXYDEBUG("clt_batch=%d\n", clt_ptr->clt_batch);
+							PXYDEBUG("batch=%d\n", px_ptr->px_batch);
 							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_BATCH);							
+							break;							
+                        case TKN_CLT_AUTOBIND:
+							if (!config_isatom(cfg)) {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("autobind=%s\n", cfg->word);					
+							if ( strncasecmp(cfg->word,"YES", 3) == 0){
+								px_ptr->px_autobind = YES;
+							} else if ( strncasecmp(cfg->word,"NO", 2) == 0) {
+								px_ptr->px_autobind= NO;								
+							} else {
+								fprintf(stderr, "Invalid value found at line %d\n", cfg->line);
+								fprintf(stderr, "px_autobind: must be YES or NO\n");
+								return(EXIT_CODE);
+							}
+							PXYDEBUG("px_autobind=%d\n", px_ptr->px_autobind);
+							SET_BIT(clt_ptr->clt_bm_params, TKN_CLT_AUTOBIND);							
 							break;							
 						default:
 							fprintf(stderr, "Programming Error\n");
@@ -964,6 +1046,7 @@ int search_main_token(config_t *cfg)
 	server_t *svr_ptr;
     client_t *clt_ptr;
 	service_t *svc_ptr;
+	proxy_t *px_ptr;
 	
 	loadb_name = NULL;
 	server_name = NULL;
@@ -988,9 +1071,10 @@ int search_main_token(config_t *cfg)
 					}
 					rcode = read_svr_lines(cfg->list);
 					if(rcode) return(EXIT_CODE);
-					svr_ptr = &server_tab[nodeid];	
+					px_ptr = &proxy_tab[nodeid];
+					svr_ptr= &px_ptr->px_u.px_server;
+			        PXYDEBUG(PROXY_FORMAT, PROXY_FIELDS(px_ptr));
 			        PXYDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr_ptr));
-			        PXYDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr_ptr));
 					lb.lb_nr_svrpxy++;
 					SET_BIT(lb.lb_bm_svrpxy, nodeid);
 					for( i = 0; i < TKN_SVR_MAX; i++){
@@ -1045,8 +1129,10 @@ int search_main_token(config_t *cfg)
 					}
 					rcode = read_clt_lines(cfg->list);
 					if(rcode) return(EXIT_CODE);
-					clt_ptr = &client_tab[nodeid];
-					clt_ptr->clt_name = client_name;
+					px_ptr = &proxy_tab[nodeid];
+					clt_ptr = &px_ptr->px_u.px_client;
+					px_ptr->px_name = client_name;
+			        PXYDEBUG(PROXY_FORMAT, PROXY_FIELDS(px_ptr));
 			        PXYDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt_ptr));
 					lb.lb_nr_cltpxy++;
 					for( i = 0; i < TKN_CLT_MAX; i++){
@@ -1121,31 +1207,17 @@ void lb_config(char *f_conf)	/* config file name. */
     client_t *clt2_ptr;
 	service_t *svc1_ptr;
 	service_t *svc2_ptr;
+	proxy_t *px1_ptr;
+	proxy_t *px2_ptr;
+	
 	lb_t *lb_ptr;
 
     cfg = nil;
     rcode  = OK;
 
-    PXYDEBUG("BEFORE init_lb\n");
 	init_lb();
-    PXYDEBUG("AFTER init_lb\n");
 	
-//////////////////////////////////////////////////////////////////////////////////
-	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
-		svr1_ptr = &server_tab[i];
-		clt1_ptr = &client_tab[i];
-		clt1_ptr->clt_compress = LB_INVALID;	
-		clt1_ptr->clt_batch    = LB_INVALID;
-		svr1_ptr->svr_rport  = (LBP_BASE_PORT+i);
-		svr1_ptr->svr_sport = (LBP_BASE_PORT+i);
-		clt1_ptr->clt_rport  = (LBP_BASE_PORT+i);
-		clt1_ptr->clt_sport = (LBP_BASE_PORT+i);
-	}
-//////////////////////////////////////////////////////////////////////////////////
-	
-    PXYDEBUG("BEFORE config_read\n");
     cfg = config_read(f_conf, CFG_ESCAPED, cfg);
-    PXYDEBUG("AFTER config_read\n");  
     rcode = scan_config(cfg);
 	
     PXYDEBUG("lb.lb_nodeid=%d\n",lb.lb_nodeid);  
@@ -1288,83 +1360,53 @@ void lb_config(char *f_conf)	/* config file name. */
         exit(1);
     }
 
-	// check SERVER same NODEID
+	// check PROXY same NODEID
 	lb.lb_nr_svrpxy = 0;
 	lb.lb_bm_svrpxy = 0;
 	for( i = 0; i < dvs_ptr->d_nr_nodes; i++){
-		svr1_ptr = &server_tab[i];
-		if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
-		lb.lb_nr_svrpxy++;
-		SET_BIT(lb.lb_bm_svrpxy,i);
-        PXYDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
-        PXYDEBUG(SERVER1_FORMAT, SERVER1_FIELDS(svr1_ptr));
+		px1_ptr = &proxy_tab[i];
+		if(px1_ptr->px_type == LB_INVALID ) continue;
+		if(px1_ptr->px_type == PX_SERVER) {	
+			lb.lb_nr_svrpxy++;
+			SET_BIT(lb.lb_bm_svrpxy,i);
+			svr1_ptr = &px1_ptr->px_u.px_server;
+			PXYDEBUG(SERVER_FORMAT, SERVER_FIELDS(svr1_ptr));
+		} else if (px1_ptr->px_type == PX_CLIENT) {	
+			lb.lb_nr_cltpxy++;
+			SET_BIT(lb.lb_bm_cltpxy,i);
+			clt1_ptr = &px1_ptr->px_u.px_client;
+			PXYDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt1_ptr));
+		}
+        PXYDEBUG(PROXY_FORMAT, PROXY_FIELDS(px1_ptr));
+
 		if( i == dvs_ptr->d_nr_nodes-1) break;
 							
-		if( svr1_ptr->svr_nodeid == lb.lb_nodeid){
+		if( px1_ptr->px_nodeid == lb.lb_nodeid){
 			fprintf( stderr,"CONFIGURATION ERROR:Server %s have the same nodeid as load balancer\n",
-				svr1_ptr->svr_name);
+				px1_ptr->px_name);
 			exit(1);
 		}
 		for( j = i+1; j < dvs_ptr->d_nr_nodes; j++){
-			svr2_ptr = &server_tab[j];
-			if( svr2_ptr->svr_nodeid == LB_INVALID) continue;
-			if( svr1_ptr->svr_nodeid == svr2_ptr->svr_nodeid ){
-				fprintf( stderr,"CONFIGURATION ERROR:Servers %s and %s have the same nodeid\n",
-					svr1_ptr->svr_name, svr2_ptr->svr_name);
-				exit(1);
-			}
-		}
-		for( j = 0; j < dvs_ptr->d_nr_nodes; j++){
-			clt1_ptr = &client_tab[j];
-			if( clt1_ptr->clt_nodeid == LB_INVALID) continue;
-			if( svr1_ptr->svr_nodeid == clt1_ptr->clt_nodeid ){
-				fprintf( stderr,"CONFIGURATION ERROR:Server %s and Client %s have the same nodeid\n",
-					svr1_ptr->svr_name, clt1_ptr->clt_name);
+			px2_ptr = &proxy_tab[j];
+			if( px2_ptr->px_type == LB_INVALID) continue;
+			if( px1_ptr->px_nodeid == px2_ptr->px_nodeid ){
+				fprintf( stderr,"CONFIGURATION ERROR: Nodes %s and %s have the same nodeid\n",
+					px1_ptr->px_name, px2_ptr->px_name);
 				exit(1);
 			}
 		}
 		// check for a dynamic server node 
-		if( svr1_ptr->svr_image != NULL){
-			if( (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_START) == 0) 	
-			||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STOP) == 0)
-			||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS) == 0) ) {
-				fprintf( stderr,"CONFIGURATION ERROR: server %s can't be started dynamically.", svr1_ptr->svr_name);
-				fprintf( stderr,"Configure lb parameters: vm_start/vm_stop/vm_status \n");
-				exit(1);
-			}
-		}		
-	}
-
-	// check CLIENT same NODEID
-	for( i = 0; i < dvs_ptr->d_nr_nodes-1; i++){
-		clt1_ptr = &client_tab[i];
-		if( clt1_ptr->clt_nodeid == LB_INVALID) continue;
-        PXYDEBUG(CLIENT_FORMAT, CLIENT_FIELDS(clt1_ptr));
-		if( i == dvs_ptr->d_nr_nodes-1) break;
-
-		if( clt1_ptr->clt_nodeid == lb.lb_nodeid){
-			fprintf( stderr,"CONFIGURATION ERROR:Client %s have the same nodeid as load balancer\n",
-				clt1_ptr->clt_name);
-			exit(1);
-		}
-		for( j = i+1; j < dvs_ptr->d_nr_nodes; j++){
-			clt2_ptr = &client_tab[j];
-			if( clt2_ptr->clt_nodeid == (-1)) continue;
-			if( clt1_ptr->clt_nodeid == clt2_ptr->clt_nodeid ){
-				fprintf( stderr,"CONFIGURATION ERROR:Clients %s and %s have the same nodeid\n",
-					clt1_ptr->clt_name, clt2_ptr->clt_name);
-				exit(1);
+		if(px1_ptr->px_type == PX_SERVER) {	
+			if( svr1_ptr->svr_image != NULL){
+				if( (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_START) == 0) 	
+				||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STOP) == 0)
+				||  (TEST_BIT(lb.lb_bm_params, TKN_LB_VM_STATUS) == 0) ) {
+					fprintf( stderr,"CONFIGURATION ERROR: server %s can't be started dynamically.", px1_ptr->px_name);
+					fprintf( stderr,"Configure lb parameters: vm_start/vm_stop/vm_status \n");
+					exit(1);
+				}
 			}
 		}
-		for( j = 0; j < dvs_ptr->d_nr_nodes; j++){
-			svr1_ptr = &server_tab[j];
-			if( svr1_ptr->svr_nodeid == LB_INVALID) continue;
-			if( clt1_ptr->clt_nodeid == svr1_ptr->svr_nodeid ){
-				fprintf( stderr,"CONFIGURATION ERROR:Client %s and Server %s have the same nodeid\n",
-					clt1_ptr->clt_name, svr1_ptr->svr_name);
-				exit(1);
-			}
-		}		
 	}
 
 	// check SERVICE same NAME and external Endpoint

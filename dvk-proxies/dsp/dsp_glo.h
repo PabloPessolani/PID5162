@@ -15,11 +15,9 @@
 EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN proxy_t 	proxy_tab[NR_NODES];
 
+
 extern  local_nodeid;
 extern char nonprog[];
-
-EXTERN  server_t 	server_tab[NR_NODES];
-EXTERN  client_t 	client_tab[NR_NODES];
 EXTERN  service_t 	service_tab[MAX_SVC_NR];
 
 EXTERN lb_t  lb;

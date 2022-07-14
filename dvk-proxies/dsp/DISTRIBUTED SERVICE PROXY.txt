@@ -250,11 +250,198 @@ service m3ftp {
 };
 
 ===================================================================================================
+20220706:
 
-TODO: UNIFICAR en una estructura de datos proxy los datos comunes entre servers y clients 
+LISTO: UNIFICAR en una estructura de datos proxy los datos comunes entre servers y clients 
 
+LISTO: Funciona bien la lectura y control de los parametros de configuracion del .cfg 
+
+===================================================================================================
+20220707:
+
+root@node1:/usr/src/dvs/dvk-proxies/dsp# netstat -nat
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3011            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3012            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3013            0.0.0.0:*               LISTEN     
+tcp        0      1 192.168.0.101:52466     192.168.0.112:3000      SYN_SENT   
+tcp        0      1 192.168.0.101:32956     192.168.0.102:3000      SYN_SENT   
+tcp        0      1 192.168.0.101:45358     192.168.0.111:3000      SYN_SENT   
+tcp        0      1 192.168.0.101:55542     192.168.0.113:3000      SYN_SENT   
+
+root       642   642   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   643   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   644   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   645   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   646   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   647   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   648   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   649   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+root       642   650   636  0 14:55 pts/0    00:00:00 ./dsp_proxy dsp_node1.cfg
+
+DISEÑO
+	Un thread para ps_get2rmt que hace el get2rmt y utiliza los FD de los sockets abiertos por cada uno de los threads
+	que solo conectan contra el remoto .
+	O sea, 
+
+El mutex px_ptr->px_conn_mtx correspondiente al local node, protege a si mismo y tambien 
+a las estructuras del lb, tal como los bitmaps lb_bm_sconn y lb_bm_rconn
+
+
+
+TODO: SOLO INICIALIZAR LOS PROXIES DISTINTOS AL LOCAL NODEID
+	Dado que todos los endpoints remotos tanto de SERVERS como de CLIENTS van a estar apuntados 
+	al VIRTUAL LB, sucede lo siguiente:
+		- PROXY SENDER: Solo habrá un dvk_get2rmt() pero un thread de TCP por cada nodo remoto 
+			IF( nodeid == local_ndodeid)
+				thread que hace el get2rmt (ES BLOQUEANTE EN get2rmt) 
+			ELS
+				thread SENDER que conecta con el nodo nodeid 
+			Entre el thread get2rmt y los threads de TCP se sincronizan via MUTEX/COND 
+				
+		- PROXY RECEIVER:  De forma similar se puede usar un thread para hacer el dvk_put2lcl 
+			IF( nodeid == local_ndodeid)
+				thread que hace el put2lcl (NO ES BLOQUEANTE) se bloquea en una COND  
+			ELS
+				thread RECEIVER que conecta con el nodo nodeid (SE BLOQUEA EN TCP) 
+			Entre el thread put2lcl y los threads de TCP se sincronizan via MUTEX/COND
+			
+
+===================================================================================================
+20220713:
+
+
+root@node1:/usr/src/dvs/dvk-proxies/dsp# netstat -ant
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3011            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3012            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:3013            0.0.0.0:*               LISTEN     
+tcp        0      1 192.168.0.101:59274     192.168.0.112:3000      SYN_SENT    <<<<< MAL 3000, SI SOY NODE1 VA AL 3001 
+tcp        0      1 192.168.0.101:50376     192.168.0.113:3000      SYN_SENT   
+tcp        0      1 192.168.0.101:38938     192.168.0.102:3000      SYN_SENT   
+tcp        0      1 192.168.0.101:35972     192.168.0.111:3000      SYN_SENT   
+
+CUANDO SE CONECTO NODE2 CON NODE1 
+
+tcp        0      0 192.168.0.102:52570     192.168.0.101:3002      FIN_WAIT2  
+tcp        1      0 192.168.0.102:3001      192.168.0.101:51450     CLOSE_WAIT 
+
+tcp        1      0 192.168.0.101:3002      192.168.0.102:52570     CLOSE_WAIT 
+tcp        0      0 192.168.0.101:51450     192.168.0.102:3001      FIN_WAIT2  
+
+root@node1:/usr/src/dvs/dvk-proxies/dsp# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     E       0        0        0 -------------------------------- node0           
+ 1     6      -1        0        0 -------------------------------X node1           
+ 2     A       2        0        0 -------------------------------- node2           
+11     2      11        0        0 -------------------------------- node11          
+12     2      12        0        0 -------------------------------- node12          
+13     2      13        0        0 -------------------------------- node13  
+
+root@node1:/usr/src/dvs/dvk-proxies/dsp# cat /proc/dvs/proxies/info 
+Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+      0     7    607      606           node0 -------------------------------X
+      2     5    609      608           node2 -----------------------------X--
+     11     1    611      610          node11 --------------------X-----------
+     12     1    613      612          node12 -------------------X------------
+     13     1    615      614          node13 ------------------X-------------
+
+===================================================================================================
+
+SESIONES OK!
+	NODE2
+	root@node2:/usr/src/dvs/dvk-proxies/dsp# netstat -nat | grep ":300"
+	tcp        0      0 0.0.0.0:3001            0.0.0.0:*               LISTEN     
+	tcp        0      0 192.168.0.102:3001      192.168.0.101:36986     ESTABLISHED
+	tcp        0      0 192.168.0.102:54088     192.168.0.101:3002      ESTABLISHED
+
+	NODE1
+	root@node1:/usr/src/dvs/dvk-proxies/dsp# netstat -nat | grep ":300"
+	tcp        0      0 0.0.0.0:3002            0.0.0.0:*               LISTEN     
+	tcp        0      0 192.168.0.101:3002      192.168.0.102:54088     ESTABLISHED
+	tcp        0      0 192.168.0.101:36986     192.168.0.102:3001      ESTABLISHED
+
+VEAMOS QUE PASA CON EL HELLO 
+ NODE1 _: 1er HELLO ENVIADO 
+	dsp_proxy.c:ps_start_serving:1063:MTX_LOCK px_ptr->px_send_mtx 
+	dsp_proxy.c:ps_start_serving:1075:SPROXY(2): Sending HELLO
+	dsp_proxy.c:ps_send_remote:986:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
+	dsp_proxy.c:ps_send_remote:987:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	dsp_proxy.c:ps_send_header:862:SPROXY(2): send bytesleft=120 px_sproxy_sd=7
+	dsp_proxy.c:ps_send_header:865:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
+	dsp_proxy.c:ps_send_header:866:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	dsp_proxy.c:ps_send_header:887:SPROXY(2): socket=7 sent header=120 
+	dsp_proxy.c:ps_start_serving:1060:SPROXY(2): Waiting a message
+	dsp_proxy.c:ps_start_serving:1061:MTX_UNLOCK px_ptr->px_send_mtx 
+
+	2DO HELLO CON ERROR  
+	 dsp_proxy.c:ps_start_serving:1063:MTX_LOCK px_ptr->px_send_mtx 
+	 dsp_proxy.c:ps_start_serving:1075:SPROXY(2): Sending HELLO
+	 dsp_proxy.c:send_hello_msg:1997:SPROXY(2): send a HELLO message. m_type=0
+	 dsp_proxy.c:send_hello_msg:2006:SPROXY(2):source=660 type=0 m1i1=1 m1i2=0 m1i3=0 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
+	 dsp_proxy.c:send_hello_msg:2024:SPROXY(2): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
+	 dsp_proxy.c:send_hello_msg:2025:SPROXY(2): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_remote:986:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
+	 dsp_proxy.c:ps_send_remote:987:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_header:862:SPROXY(2): send bytesleft=120 px_sproxy_sd=7
+	 dsp_proxy.c:ps_send_header:865:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
+	 dsp_proxy.c:ps_send_header:866:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	ERROR: dsp_proxy.c:ps_send_header:879: rcode=-32 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< EDVSPIPE         (_SIGN 32)  /* broken pipe */
+	ERROR: dsp_proxy.c:ps_send_remote:1017: rcode=-32
+	ERROR: dsp_proxy.c:send_hello_msg:2029: rcode=-32
+	 dsp_proxy.c:ps_start_serving:1060:SPROXY(2): Waiting a message
+    dsp_proxy.c:ps_start_serving:1061:MTX_UNLOCK px_ptr->px_send_mtx 
+
+Broken Pipe occurs when one end of the connection tries sending data while the other end has already closed the connection.
+
+ dsp_proxy.c:pr_thread:767:RPROXY(1): Remote sender [192.168.0.101] connected on sd [5]. Getting remote command.
+ dsp_proxy.c:pr_thread:769:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:775:COND_SIGNAL px_ptr->px_conn_scond
+ dsp_proxy.c:pr_thread:780:MTX_UNLOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_process_message:299:RPROXY(1): About to receive header
+ dsp_proxy.c:pr_receive_header:264:RPROXY(1): socket=5
+ 
+ ERROR: dsp_proxy.c:pr_receive_header:284: rcode=-11
+ERROR: dsp_proxy.c:pr_process_message:301: rcode=-11
+ dsp_proxy.c:pr_start_serving:621:RPROXY(1): Message processing failure [-11]
+ dsp_proxy.c:pr_thread:784:MTX_LOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:790:MTX_UNLOCK px_ptr->px_conn_mtx 
+ dsp_proxy.c:pr_thread:760:RPROXY(1): Waiting for connection.
+ 
+
+		PXYDEBUG("RPROXY(%d):" CMD_FORMAT,px_ptr->px_nodeid,
+			CMD_FIELDS(px_ptr->px_rdesc.td_header));
+		PXYDEBUG("RPROXY(%d):" CMD_XFORMAT,px_ptr->px_nodeid,
+			CMD_XFIELDS(px_ptr->px_rdesc.td_header));
+		PXYDEBUG("RPROXY(%d):" CMD_TSFORMAT,px_ptr->px_nodeid, 
+			px_ptr->px_rdesc.td_tid, CMD_TSFIELDS(px_ptr->px_rdesc.td_header)); 
+		PXYDEBUG("RPROXY(%d):" CMD_PIDFORMAT,px_ptr->px_nodeid, 
+				px_ptr->px_rdesc.td_tid, CMD_PIDFIELDS(px_ptr->px_rdesc.td_header));
+				
+				
+TODO: Solucionar el problema de comunicaciones 
 
 ===================================================================================================
 ULTIMO_LOG 
+TODO, se podrian utilizar listas enlazadas de los nodos activos en lugar de bitmaps para 
+no tener que recorrer la lista completa.
 
+TODO:  ORGANIZAR LOS ARCHIVOS FUENTES
+		dsp_main 
+		dsp_rproxy
+		dsp_sproxy 
+		dsp_config
+		dsp_group 
+		dsp_misc 
+		
+		
+TODO: Eliminar parametros innecesarios
+	cltdev		eth1;
+	svrdev   	eth0;
+		
+TODO: Documentar cada uno de los parametros
 

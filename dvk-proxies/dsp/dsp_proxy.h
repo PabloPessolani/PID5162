@@ -111,10 +111,12 @@ typedef unsigned long long jiff;
 #define	LBP_LB2SVR				5555
 #define	PROG_BIND 				MAX_BIND_TYPE
 
-#define PX_INVALID		(-1) 
-
 #define HEADER_SIZE sizeof(proxy_hdr_t)
-#define BASE_PORT     		3000
+#define BASE_PORT     		LBP_BASE_PORT
+
+#define PX_LOADBAL	    	0
+#define PX_SERVER	     	1
+#define PX_CLIENT 	    	2
 
 #define PWS_ENABLED			0 			// Proxy Web Server (statistics) ENABLED 
 #define BASE_PWS_SPORT 		4000		// SENDER proxy web server base port
@@ -217,33 +219,18 @@ typedef struct lbpx_desc_s lbpx_desc_t;
 #define CMD_PIDFIELDS(p) 	p->c_flags, p->c_pid
 
 struct client_s {
-	char *clt_name;
-	int	clt_index;				// client  array index
-	int	clt_nodeid;
-	int	clt_rport;				// Client Receiver port 
-	int clt_sport;				// Client Receiver port 
-	int	clt_compress;			// Enable LZ4 Compression 0:NO 1:YES
-	int	clt_batch;				// Enable message batching 0:NO 1:YES
+	int	clt_index;			// client  array index
 	
-	unsigned long int clt_px_sts; 	
     unsigned int	  clt_bm_params;	// bitmap of Config Client Parameters
 	struct timespec   clt_last_cmd; 	// timestamp of the last cmd received from the client
 
-	LZ4F_errorCode_t clt_lz4err;
-	size_t			clt_offset;
-	size_t			clt_maxCsize;		/* Maximum Compressed size */
-	size_t			clt_maxRsize;		/* Maximum Raw size		 */
-	__attribute__((packed, aligned(4)))
-	LZ4F_compressionContext_t 	clt_lz4Cctx __attribute__((aligned(8))); /* Compression context */
-	LZ4F_decompressionContext_t clt_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
-	
 	lbpx_desc_t clt_spx;
 	lbpx_desc_t clt_rpx;
 
-	pthread_mutex_t clt_agent_mtx; // controls when a server process is started or killed  
+	pthread_mutex_t clt_agent_mtx; 		// controls when a server process is started or killed  
 	pthread_cond_t  clt_agent_cond;  
 
-	pthread_mutex_t clt_node_mtx;  // controls when a complete server node VM is started or stopped 
+	pthread_mutex_t clt_node_mtx;  		// controls when a complete server node VM is started or stopped 
 	pthread_cond_t  clt_node_cond;  
 
     TAILQ_ENTRY(client_s) clt_tail_entry;         /* Tail queue. */
@@ -251,19 +238,13 @@ struct client_s {
 } ;
 typedef struct client_s client_t;
 
-#define CLIENT_FORMAT 	"clt_name=%s clt_nodeid=%d clt_rport=%d clt_sport=%d clt_compress=%d clt_batch=%d\n"
-#define CLIENT_FIELDS(p)  p->clt_name, p->clt_nodeid, p->clt_rport, p->clt_sport,  p->clt_compress, p->clt_batch 
+#define CLIENT_FORMAT 	"clt_index=%d\n"
+#define CLIENT_FIELDS(p)  p->clt_index 
 
 struct server_s{
-	char *svr_name;			// server name from configuration file 
 	int	svr_index;			// server  array index
-	int	svr_nodeid;			// server nodeid
-	int svr_rport;			// server Receiver port 
-	int svr_sport;			// Server Sender port 
 	int	svr_level;			// Load LEVEL 		
     int	svr_load;			// CPU Load (0-100) . Value (-1) implies INVALID
-	int	svr_compress;		// Enable LZ4 Compression 0:NO 1:YES
-	int	svr_batch;			// Enable message batching 0:NO 1:YES
 	
 	int svr_icmp_fd;		// used by FD
 	int svr_icmp_sent;		// used by FD
@@ -285,7 +266,6 @@ struct server_s{
 
 	char *svr_image;		// string to command which START the server NODE 
 	
-	unsigned long int svr_px_sts;	// server proxy status  	
 	unsigned long int svr_bm_sts; 	
 	unsigned long int svr_bm_svc; 	// bitmap of service endpoint used
 
@@ -294,14 +274,6 @@ struct server_s{
 
 	lbpx_desc_t svr_spx;		// Server sender proxy 
 	lbpx_desc_t svr_rpx;		// Server receiver proxy	
-
-	LZ4F_errorCode_t svr_lz4err;
-	size_t			svr_offset;
-	size_t			svr_maxCsize;		/* Maximum Compressed size */
-	size_t			svr_maxRsize;		/* Maximum Raw size		 */
-	__attribute__((packed, aligned(4)))
-	LZ4F_compressionContext_t 	svr_lz4Cctx __attribute__((aligned(8))); /* Compression context */
-	LZ4F_decompressionContext_t svr_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
 		
 	pthread_mutex_t svr_mutex; // protect on change of status and load level.
 
@@ -326,11 +298,9 @@ struct server_s{
 	
 };
 typedef struct server_s server_t;
+#define SERVER_FORMAT 	"svr_index=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
+#define SERVER_FIELDS(p) p->svr_index, p->svr_level, p->svr_load,  p->svr_bm_svc 
 
-#define SERVER_FORMAT 	"svr_name=%s svr_nodeid=%d svr_rport=%d svr_sport=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
-#define SERVER_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_rport, p->svr_sport, p->svr_level, p->svr_load,  p->svr_bm_svc 
-#define SERVER1_FORMAT 	"svr_name=%s svr_nodeid=%d svr_compress=%d svr_batch=%d\n"
-#define SERVER1_FIELDS(p) p->svr_name, p->svr_nodeid, p->svr_compress, p->svr_batch 
 
 #define	MAX_MEMBER_NAME		64
 
@@ -365,8 +335,8 @@ typedef struct {
 
 
     unsigned int	lb_bm_params;	// bitmap of Config Load Balancer Parameters
-    unsigned int	lb_bm_nodes;	// NOT USED bitmap of Configured nodes
-	int				lb_nr_nodes;	// NOT USED number of configured nodes 
+    unsigned int	lb_bm_nodes;	// bitmap of Configured nodes
+	int				lb_nr_nodes;	// number of configured nodes 
 
 // START MULTIPLE ACCESS FIELDS 
     unsigned int	lb_bm_active;	// bitmap of Connected nodes (reacheable by ping)
@@ -389,6 +359,7 @@ typedef struct {
 	int				lb_nr_proxies;   //  # of defined  PROXIES (lb_nr_cltpxy + lb_nr_svrpxy -1)
 	int				lb_nr_services;	// # of defined Services (from configuration file)
     unsigned int	lb_bm_svrpxy;	// bitmap of defined Server Proxies
+    unsigned int	lb_bm_cltpxy;	// bitmap of defined Client Proxies
 
 #ifdef SPREAD_MONITOR 
     pthread_t 		lb_thread;
@@ -450,8 +421,8 @@ struct thread_desc_s {
 	int 			td_msg_fail;	
 	pthread_mutex_t td_mtx;    /* mutex & condition to allow main thread to
 								wait for the new thread to  set its TID */
-	pthread_cond_t  td_cond;   /* '' */
-	pthread_cond_t  td_tcond;   /* '' */
+	pthread_cond_t  td_cond;   /* MAIN wait on this condition */
+	pthread_cond_t  td_tcond;   /* A thread waits on this contidion  */
 	pthread_cond_t  td_pws_cond;
 	pid_t           td_tid;     /* to hold new thread's TID */
 
@@ -481,23 +452,30 @@ typedef struct px_stats_s px_stats_t;
 
 typedef struct {
 	char *px_name;				// proxy name from configuration file 
-	int	px_proxyid;				// proxy proxyid
+	int px_type;				//  TYPE_CLIENT or TYPE_SERVER
+	int	px_nodeid;				// proxy proxyid
 	int px_proto;				// proxy protocol 
 	int px_rport;				// proxy receiver port (TCP , UDP)  
 	int px_sport;				// proxy sender  port (TCP , UDP)  
 	int px_batch;				// batch flag 
 	int px_compress;			// compress flag
 	int px_autobind;			// autobind flag
+
 	char *px_rname;				// string pointer to receiver name address or "ANY" 
 	thread_desc_t px_rdesc;
 	thread_desc_t px_sdesc;
   	unsigned long px_snd_seq;		/* send sequence #  - filled and controled by proxies not by M3-IPC 			*/
   	unsigned long px_ack_seq;		/* acknowledge sequence #  - filled and controled by proxies not by M3-IPC 	*/
-	pthread_mutex_t px_send_mtx;
+								
+	pthread_mutex_t px_send_mtx;	/* mutex to protect socket send */	
+	pthread_cond_t  px_send_cond;	/* condition to wait before sending a message thought socket */
 	
-	pthread_mutex_t px_conn_mtx;  
-	pthread_cond_t  px_conn_scond;
-	pthread_cond_t  px_conn_rcond;
+	pthread_mutex_t px_recv_mtx;	/* mutex to protect socket recv */
+	pthread_cond_t  px_recv_cond;   /* condition to wait before receiving message  */
+	
+	pthread_mutex_t px_conn_mtx;  	/* mutex to protect sockets connetion */
+	pthread_cond_t  px_conn_scond;	/* condition to wait the sender proxy to connect */
+	pthread_cond_t  px_conn_rcond;	/* condition to wait the receiver  proxy to connect */
 	
 	struct sockaddr_in px_rmtclient_addr;
 	struct sockaddr_in px_rmtserver_addr;
@@ -515,10 +493,14 @@ typedef struct {
 	size_t			px_maxRsize;		/* Maximum Raw size		 */
 	LZ4F_compressionContext_t 	px_lz4Cctx __attribute__((aligned(8))); /* Compression context */
 	LZ4F_decompressionContext_t px_lz4Dctx __attribute__((aligned(8))); /* Decompression context */
+	union{
+		server_t	px_server;
+		client_t	px_client;
+	}px_u;
 
 }proxy_t;
-#define PROXY_FORMAT 	   "px_name=%s px_proxyid=%d px_proto=%d px_rport=%d px_sport=%d px_batch=%d px_compress=%d px_autobind=%d px_rname=%s\n"
-#define PROXY_FIELDS(p)  	p->px_name, p->px_proxyid, p->px_proto, p->px_rport, p->px_sport, p->px_batch, p->px_compress, p->px_autobind, p->px_rname
+#define PROXY_FORMAT 	   "px_name=%s px_nodeid=%d px_type=%d px_proto=%d px_rport=%d px_sport=%d px_batch=%d px_compress=%d px_autobind=%d px_rname=%s\n"
+#define PROXY_FIELDS(p)  	p->px_name, p->px_nodeid, p->px_type, p->px_proto, p->px_rport, p->px_sport, p->px_batch, p->px_compress, p->px_autobind, p->px_rname
 
 #include "dsp_glo.h"
 #include "../debug.h"
