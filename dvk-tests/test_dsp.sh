@@ -12,8 +12,8 @@ cd /usr/src/dvs/dvk-tests/
 ########## CONSTANTS ###############
 base_port=3000
 dcid=0
-dbg=0
-#dbglvl=16777215
+#dbg=0
+dbg=16777215
 #################################
 name=`hostname | awk '{print $1;}'`
 lcl=`echo $name | sed 's/node//g'`

@@ -909,7 +909,7 @@ int  ps_send_payload(proxy_t *px_ptr, proxy_hdr_t *hd_ptr, proxy_payload_t *pl_p
         n = send(px_ptr->px_sproxy_sd, p_ptr, bytesleft, MSG_DONTWAIT | MSG_NOSIGNAL );
 		PXYDEBUG("SPROXY(%d): sent=%d \n", px_ptr->px_nodeid, n);
         if (n < 0) {
-			if(errno == EALREADY) {
+			if(errno == EALREADY || errno == EAGAIN) {
 				ERROR_PRINT(errno);
 				sleep(1);
 				continue;
@@ -1103,7 +1103,7 @@ int  ps_start_serving(proxy_t *px_ptr)
 			, px_ptr->px_sdesc.td_tid, CMD_TSFIELDS(px_ptr->px_sdesc.td_header)); 
 		PXYDEBUG("SPROXY(%d): %d "CMD_PIDFORMAT,px_ptr->px_nodeid
 			, px_ptr->px_sdesc.td_tid, CMD_PIDFIELDS(px_ptr->px_sdesc.td_header)); 
-						
+			
 		//------------------------ BATCHEABLE COMMAND -------------------------------
 		if (px_ptr->px_batch == YES) {
 			if(  (px_ptr->px_sdesc.td_header->c_cmd != CMD_COPYIN_DATA )     // is a batcheable command ??
@@ -1951,7 +1951,7 @@ int build_load_level(proxy_t *px_ptr, int mtype)
 
 	PXYDEBUG("SPROXY(%d): mtype=%X\n", px_ptr->px_nodeid, mtype);
 
-	hdr_ptr = &px_ptr->px_sdesc.td_header;
+	hdr_ptr = px_ptr->px_sdesc.td_header;
 	m_ptr =  &hdr_ptr->c_msg;
 
 	m_ptr->m_type	=  mtype;
@@ -1974,7 +1974,7 @@ int build_reply_msg(proxy_t *px_ptr, int mtype, int ret)
 
 	PXYDEBUG("SPROXY(%d): mtype=%X\n", px_ptr->px_nodeid, mtype);
 
-	hdr_ptr = &px_ptr->px_sdesc.td_header;
+	hdr_ptr = px_ptr->px_sdesc.td_header;
 	m_ptr =  &hdr_ptr->c_msg;
 
 	m_ptr->m_type	=  mtype;
@@ -1992,8 +1992,8 @@ int send_hello_msg(proxy_t *px_ptr)
 	proxy_payload_t *pl_ptr;
 	message *m_ptr;
 
-	hdr_ptr = &px_ptr->px_sdesc.td_header;
-	pl_ptr  = &px_ptr->px_sdesc.td_payload;
+	hdr_ptr = px_ptr->px_sdesc.td_header;
+	pl_ptr  = px_ptr->px_sdesc.td_payload;
 	m_ptr   = &hdr_ptr->c_msg;
 	clock_gettime(clk_id, &ts);
 

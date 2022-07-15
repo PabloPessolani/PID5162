@@ -351,6 +351,7 @@ Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210
      13     1    615      614          node13 ------------------X-------------
 
 ===================================================================================================
+20220714:
 
 SESIONES OK!
 	NODE2
@@ -365,66 +366,22 @@ SESIONES OK!
 	tcp        0      0 192.168.0.101:3002      192.168.0.102:54088     ESTABLISHED
 	tcp        0      0 192.168.0.101:36986     192.168.0.102:3001      ESTABLISHED
 
-VEAMOS QUE PASA CON EL HELLO 
- NODE1 _: 1er HELLO ENVIADO 
-	dsp_proxy.c:ps_start_serving:1063:MTX_LOCK px_ptr->px_send_mtx 
-	dsp_proxy.c:ps_start_serving:1075:SPROXY(2): Sending HELLO
-	dsp_proxy.c:ps_send_remote:986:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
-	dsp_proxy.c:ps_send_remote:987:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	dsp_proxy.c:ps_send_header:862:SPROXY(2): send bytesleft=120 px_sproxy_sd=7
-	dsp_proxy.c:ps_send_header:865:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
-	dsp_proxy.c:ps_send_header:866:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	dsp_proxy.c:ps_send_header:887:SPROXY(2): socket=7 sent header=120 
-	dsp_proxy.c:ps_start_serving:1060:SPROXY(2): Waiting a message
-	dsp_proxy.c:ps_start_serving:1061:MTX_UNLOCK px_ptr->px_send_mtx 
-
-	2DO HELLO CON ERROR  
-	 dsp_proxy.c:ps_start_serving:1063:MTX_LOCK px_ptr->px_send_mtx 
-	 dsp_proxy.c:ps_start_serving:1075:SPROXY(2): Sending HELLO
-	 dsp_proxy.c:send_hello_msg:1997:SPROXY(2): send a HELLO message. m_type=0
-	 dsp_proxy.c:send_hello_msg:2006:SPROXY(2):source=660 type=0 m1i1=1 m1i2=0 m1i3=0 m1p1=0x2 m1p2=0x1 m1p3=(nil) 
-	 dsp_proxy.c:send_hello_msg:2024:SPROXY(2): cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
-	 dsp_proxy.c:send_hello_msg:2025:SPROXY(2): c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 dsp_proxy.c:ps_send_remote:986:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
-	 dsp_proxy.c:ps_send_remote:987:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	 dsp_proxy.c:ps_send_header:862:SPROXY(2): send bytesleft=120 px_sproxy_sd=7
-	 dsp_proxy.c:ps_send_header:865:SPROXY(2):cmd=0x0 dcid=-1 src=27342 dst=27342 snode=1 dnode=2 rcode=0 len=0 PID=660
-	 dsp_proxy.c:ps_send_header:866:SPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
-	ERROR: dsp_proxy.c:ps_send_header:879: rcode=-32 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< EDVSPIPE         (_SIGN 32)  /* broken pipe */
-	ERROR: dsp_proxy.c:ps_send_remote:1017: rcode=-32
-	ERROR: dsp_proxy.c:send_hello_msg:2029: rcode=-32
-	 dsp_proxy.c:ps_start_serving:1060:SPROXY(2): Waiting a message
-    dsp_proxy.c:ps_start_serving:1061:MTX_UNLOCK px_ptr->px_send_mtx 
-
-Broken Pipe occurs when one end of the connection tries sending data while the other end has already closed the connection.
-
- dsp_proxy.c:pr_thread:767:RPROXY(1): Remote sender [192.168.0.101] connected on sd [5]. Getting remote command.
- dsp_proxy.c:pr_thread:769:MTX_LOCK px_ptr->px_conn_mtx 
- dsp_proxy.c:pr_thread:775:COND_SIGNAL px_ptr->px_conn_scond
- dsp_proxy.c:pr_thread:780:MTX_UNLOCK px_ptr->px_conn_mtx 
- dsp_proxy.c:pr_process_message:299:RPROXY(1): About to receive header
- dsp_proxy.c:pr_receive_header:264:RPROXY(1): socket=5
- 
- ERROR: dsp_proxy.c:pr_receive_header:284: rcode=-11
-ERROR: dsp_proxy.c:pr_process_message:301: rcode=-11
- dsp_proxy.c:pr_start_serving:621:RPROXY(1): Message processing failure [-11]
- dsp_proxy.c:pr_thread:784:MTX_LOCK px_ptr->px_conn_mtx 
- dsp_proxy.c:pr_thread:790:MTX_UNLOCK px_ptr->px_conn_mtx 
- dsp_proxy.c:pr_thread:760:RPROXY(1): Waiting for connection.
- 
-
-		PXYDEBUG("RPROXY(%d):" CMD_FORMAT,px_ptr->px_nodeid,
-			CMD_FIELDS(px_ptr->px_rdesc.td_header));
-		PXYDEBUG("RPROXY(%d):" CMD_XFORMAT,px_ptr->px_nodeid,
-			CMD_XFIELDS(px_ptr->px_rdesc.td_header));
-		PXYDEBUG("RPROXY(%d):" CMD_TSFORMAT,px_ptr->px_nodeid, 
-			px_ptr->px_rdesc.td_tid, CMD_TSFIELDS(px_ptr->px_rdesc.td_header)); 
-		PXYDEBUG("RPROXY(%d):" CMD_PIDFORMAT,px_ptr->px_nodeid, 
-				px_ptr->px_rdesc.td_tid, CMD_PIDFIELDS(px_ptr->px_rdesc.td_header));
+	YA INTERCAMBIAN HELLO BIEN ENTRE 2 NODOS 
 				
-				
-TODO: Solucionar el problema de comunicaciones 
-
+===================================================================================================
+TODO:
+	PROBAR COMUNICACIONES ENTRE 2 NODOS 
+		LATENCIA OK!
+		FILE TRANSFER OK! 
+		
+	TODO:	HABILITAR DEBUG EN TODOS
+		dvk 
+		lib
+		proxies
+		test 
+		apps 
+		
+		
 ===================================================================================================
 ULTIMO_LOG 
 TODO, se podrian utilizar listas enlazadas de los nodos activos en lugar de bitmaps para 
