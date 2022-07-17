@@ -369,18 +369,207 @@ SESIONES OK!
 	YA INTERCAMBIAN HELLO BIEN ENTRE 2 NODOS 
 				
 ===================================================================================================
-TODO:
+20220715:
 	PROBAR COMUNICACIONES ENTRE 2 NODOS 
 		LATENCIA OK!
 		FILE TRANSFER OK! 
 		
-	TODO:	HABILITAR DEBUG EN TODOS
+	LISTO:	HABILITAR DEBUG EN TODOS
 		dvk 
 		lib
 		proxies
 		test 
 		apps 
 		
+===================================================================================================
+20220716:
+
+	HACER QUE CUANDO SE ENVIA UN CMD PROXIADO, ES DECIR CON ALGUNA ALTERACION DEL HEADER REAL
+	ENTONCES INCLUIR UN NUEVO FLAG EN c_flags 
+	#define FLAG_BALANCER	2	// This flags signal that the true header was modified by a Load Balancer o Proxy an must be analyzed by the RPROXY 
+
+EN NODE1: Se intenta enviar un mensaje a un latency_server en FALSO NODE0 
+	 dsp_proxy.c:main:1546:MAIN: lb_nodeid=0
+	 dsp_proxy.c:main:1554:MAIN: i=0 
+	 dsp_proxy.c:main:1560:px_name=node0 px_nodeid=0 px_type=0 px_proto=1 px_rport=3000 px_sport=3001 px_batch=0 px_compress=0 px_autobind=0 px_rname=node0
+
+	 dsp_proxy.c:ps_start_serving:1077:SPROXY(0): Waiting a message
+	 dsp_proxy.c:ps_start_serving:1082:MTX_LOCK px_ptr->px_sdesc.td_mtx 
+	 dsp_proxy.c:ps_start_serving:1087:SPROXY(0): Waiting a message
+
+EN NODE2 
+	 Cambia el DNODE de NODE0 A NODE2	snode=1 dnode=2
+	 dsp_proxy.c:pr_receive_header:270:RPROXY(1): n:120 | received:120 | HEADER_SIZE:120
+	 dsp_proxy.c:pr_receive_header:273:RPROXY(1): cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=649
+	 dsp_proxy.c:pr_receive_header:275:RPROXY(1):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:pr_process_message:304:RPROXY(1):cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=649
+	 dsp_proxy.c:pr_process_message:306:RPROXY(1):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:pr_process_message:308:RPROXY(1):c_timestamp=7121095367776535170.000000000
+	 dsp_proxy.c:pr_process_message:310:RPROXY(1):c_flags=0x282 c_pid=4
+	 dsp_proxy.c:pr_process_message:384:RPROXY(1): source=50 type=10 m1i1=0 m1i2=0 m1i3=3 m1p1=0x4 m1p2=(nil) m1p3=(nil) 
+	 dsp_proxy.c:pr_process_message:441:RPROXY(1): put2lcl
+	DEBUG 639:dvk_put2lcl:480: 
+	DEBUG 639:dvk_put2lcl:492: ioctl ret=36 errno=0
+	DEBUG 639:dvk_put2lcl:497: ioctl ret=36
+	 dsp_proxy.c:pr_process_message:550:RPROXY(1):cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=649
+	 dsp_proxy.c:pr_process_message:552:RPROXY(1):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:pr_start_serving:617:RPROXY(1): Message succesfully processed.
+	 dsp_proxy.c:pr_process_message:299:RPROXY(1): About to receive header
+	 dsp_proxy.c:pr_receive_header:264:RPROXY(1): socket=6
+
+
+	 ES ENVIADO POR EL SPROXY(1) !!!!!! PROBLEMA !!!! NO ESTA MARCADO EL FLAG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 dsp_proxy.c:ps_start_serving:1131:SPROXY(1): 643 cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:ps_start_serving:1133:SPROXY(1): 643 c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_start_serving:1135:SPROXY(1): 643 c_timestamp=1658009218.210193881
+	 dsp_proxy.c:ps_start_serving:1137:SPROXY(1): 643 c_flags=0x0 c_pid=655
+	 dsp_proxy.c:ps_start_serving:1216:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:ps_start_serving:1218:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_remote:1013:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:ps_send_remote:1014:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_header:865:SPROXY(1): send bytesleft=120 px_sproxy_sd=7
+	 dsp_proxy.c:ps_send_header:868:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:ps_send_header:869:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_header:870:SPROXY(1):c_timestamp=1658009218.210193881
+	 dsp_proxy.c:ps_send_header:871:SPROXY(1):c_flags=0x0 c_pid=655
+	 dsp_proxy.c:ps_send_header:882:MTX_LOCK tmp_ptr->px_send_mtx 
+	 dsp_proxy.c:ps_send_header:900:MTX_UNLOCK tmp_ptr->px_send_mtx 
+	 dsp_proxy.c:ps_send_header:903:SPROXY(1): socket=7 sent header=120 
+	 dsp_proxy.c:ps_start_serving:1087:SPROXY(1): Waiting a message
+
+EN NODE1: SE RECIBE EL MENSAJE PERO ES DESCONOCIDO POR EL PROXY EDVSNODCNODE
+	 dsp_proxy.c:pr_receive_header:270:RPROXY(2): n:120 | received:120 | HEADER_SIZE:120
+	 dsp_proxy.c:pr_receive_header:273:RPROXY(2): cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:pr_receive_header:275:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+	 dsp_proxy.c:pr_process_message:304:RPROXY(2):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=655
+	 dsp_proxy.c:pr_process_message:306:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+	 dsp_proxy.c:pr_process_message:308:RPROXY(2):c_timestamp=7121095367776535165.000000000
+	 dsp_proxy.c:pr_process_message:310:RPROXY(2):c_flags=0x27D c_pid=0
+	 dsp_proxy.c:pr_process_message:384:RPROXY(2): source=10 type=11 m1i1=0 m1i2=0 m1i3=3 m1p1=0x4 m1p2=(nil) m1p3=(nil) 
+	 dsp_proxy.c:pr_process_message:441:RPROXY(2): put2lcl
+	DEBUG 634:dvk_put2lcl:480: 
+	DEBUG 634:dvk_put2lcl:492: ioctl ret=-1 errno=319
+	DEBUG 634:dvk_put2lcl:497: ioctl ret=-319
+	ERROR: dsp_proxy.c:pr_process_message:547: rcode=-319
+	 dsp_proxy.c:pr_start_serving:621:RPROXY(2): Message processing failure [-319]
+
+
+
+ dsp_proxy.c:ps_start_serving:1131:SPROXY(0): 636 cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=684
+ dsp_proxy.c:ps_start_serving:1133:SPROXY(0): 636 c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+ dsp_proxy.c:ps_start_serving:1135:SPROXY(0): 636 c_timestamp=1658010087.357180090
+ dsp_proxy.c:ps_start_serving:1137:SPROXY(0): 636 c_flags=0x4 c_pid=684
+ dsp_proxy.c:ps_start_serving:1216:SPROXY(0):cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=684
+ dsp_proxy.c:ps_start_serving:1218:SPROXY(0):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+ dsp_proxy.c:ps_send_remote:1013:SPROXY(0):cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=684
+ dsp_proxy.c:ps_send_remote:1014:SPROXY(0):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+ dsp_proxy.c:ps_send_header:865:SPROXY(0): send bytesleft=120 px_sproxy_sd=4
+ dsp_proxy.c:ps_send_header:868:SPROXY(0):cmd=0x3 dcid=0 src=50 dst=10 snode=1 dnode=2 rcode=0 len=0 PID=684
+ dsp_proxy.c:ps_send_header:869:SPROXY(0):c_batch_nr=0 c_flags=0x4 c_snd_seq=0 c_ack_seq=0
+ dsp_proxy.c:ps_send_header:870:SPROXY(0):c_timestamp=1658010087.357180090
+ dsp_proxy.c:ps_send_header:871:SPROXY(0):c_flags=0x4 c_pid=684
+ dsp_proxy.c:ps_send_header:874:SPROXY(0): ps_send_header FLAG_CHECK_HDR
+ dsp_proxy.c:ps_send_header:882:MTX_LOCK tmp_ptr->px_send_mtx 
+ dsp_proxy.c:ps_send_header:900:MTX_UNLOCK tmp_ptr->px_send_mtx 
+ dsp_proxy.c:ps_send_header:903:SPROXY(2): socket=7 sent header=120 
+ dsp_proxy.c:ps_start_serving:1087:SPROXY(0): Waiting a message
+DEBUG 634:dvk_get2rmt_T:1091: timeout=30000
+ dsp_proxy.c:pr_receive_header:270:RPROXY(2): n:120 | received:120 | HEADER_SIZE:120
+ dsp_proxy.c:pr_receive_header:273:RPROXY(2): cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+ dsp_proxy.c:pr_receive_header:275:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+ dsp_proxy.c:pr_process_message:304:RPROXY(2):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+ dsp_proxy.c:pr_process_message:306:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+ dsp_proxy.c:pr_process_message:308:RPROXY(2):c_timestamp=7121099100103115389.000000000
+ dsp_proxy.c:pr_process_message:310:RPROXY(2):c_flags=0x27D c_pid=0
+ dsp_proxy.c:pr_process_message:384:RPROXY(2): source=10 type=11 m1i1=0 m1i2=0 m1i3=3 m1p1=0x4 m1p2=(nil) m1p3=(nil) 
+ dsp_proxy.c:pr_process_message:441:RPROXY(2): put2lcl
+DEBUG 634:dvk_put2lcl:480: 
+DEBUG 634:dvk_put2lcl:492: ioctl ret=-1 errno=316
+DEBUG 634:dvk_put2lcl:497: ioctl ret=-316
+ERROR: dsp_proxy.c:pr_process_message:547: rcode=-316
+ dsp_proxy.c:pr_start_serving:621:RPROXY(2): Message processing failure [-316] <<<<<<<<<<<< EDVSNONODE  NODE does not exists or is not in list */
+
+ATENCION: !!!!!!!!!!!!!!!!!!!! PORQUE DIFIEREN EN EL c_timestamp ??? 
+												EN c_flags=0x27D ??? 
+												EN c_ack_seq ??? 
+NODE2 
+	DEBUG 648:dvk_get2rmt_T:1113: ioctl ret=0
+	 dsp_proxy.c:ps_start_serving:1131:SPROXY(1): 652 cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:ps_start_serving:1133:SPROXY(1): 652 c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_start_serving:1135:SPROXY(1): 652 c_timestamp=1658010087.365340146
+	 dsp_proxy.c:ps_start_serving:1137:SPROXY(1): 652 c_flags=0x0 c_pid=662
+	 dsp_proxy.c:ps_start_serving:1216:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:ps_start_serving:1218:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_remote:1013:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:ps_send_remote:1014:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_header:865:SPROXY(1): send bytesleft=120 px_sproxy_sd=7
+	 dsp_proxy.c:ps_send_header:868:SPROXY(1):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:ps_send_header:869:SPROXY(1):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=0
+	 dsp_proxy.c:ps_send_header:870:SPROXY(1):c_timestamp=1658010087.365340146
+	 dsp_proxy.c:ps_send_header:871:SPROXY(1):c_flags=0x0 c_pid=662
+
+NODE1:
+	 dsp_proxy.c:pr_receive_header:270:RPROXY(2): n:120 | received:120 | HEADER_SIZE:120
+	 dsp_proxy.c:pr_receive_header:273:RPROXY(2): cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:pr_receive_header:275:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+	 dsp_proxy.c:pr_process_message:304:RPROXY(2):cmd=0x1 dcid=0 src=10 dst=50 snode=2 dnode=1 rcode=0 len=0 PID=662
+	 dsp_proxy.c:pr_process_message:306:RPROXY(2):c_batch_nr=0 c_flags=0x0 c_snd_seq=0 c_ack_seq=1
+	 dsp_proxy.c:pr_process_message:308:RPROXY(2):c_timestamp=7121099100103115389.000000000
+	 dsp_proxy.c:pr_process_message:310:RPROXY(2):c_flags=0x27D c_pid=0
+	 dsp_proxy.c:pr_process_message:384:RPROXY(2): source=10 type=11 m1i1=0 m1i2=0 m1i3=3 m1p1=0x4 m1p2=(nil) m1p3=(nil) 
+	 dsp_proxy.c:pr_process_message:441:RPROXY(2): put2lcl
+	DEBUG 634:dvk_put2lcl:480: 
+	DEBUG 634:dvk_put2lcl:492: ioctl ret=-1 errno=316
+	DEBUG 634:dvk_put2lcl:497: ioctl ret=-316
+ 
+
+root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/nodes 
+ID Flags Proxies -pxsent- -pxrcvd- 10987654321098765432109876543210 Name
+ 0     6       0        5        0 -------------------------------X node0      <<<< 5 MENSAJES GET2RMT      
+ 1     6      -1        0        0 -------------------------------X node1           
+ 2     E       2        0        0 -------------------------------- node2           
+11     2      11        0        0 -------------------------------- node11          
+12     2      12        0        0 -------------------------------- node12          
+13     2      13        0        0 -------------------------------- node13          
+root@node1:/usr/src/dvs/dvk-tests# cat /proc/dvs/proxies/info 
+Proxies Flags Sender Receiver --Proxies_Name- 10987654321098765432109876543210 
+      0     3    636      635           node0 -------------------------------X
+      2     7    638      637           node2 -----------------------------X--
+     11     1    640      639          node11 --------------------X-----------
+     12     1    642      641          node12 -------------------X------------
+     13     1    644      643          node13 ------------------X-------------
+
+
+===================================================================================================
+TODO:	Cuando se recibe un mensaje, debe contrastarse si la sesion le pertenece a NODE0 
+		DE SER ASI 
+			Se debe copiar el header y el payload
+			y despertarlo para que haga el PUT2LCL 
+			
+			
+		UNA POSIBILIDAD ES UTILIZAR COLAS DE MENSAJES PARA QUE EL RPROXY REAL INSERTE EN LA COLA 
+		DEL NODO VIRTUAL 
+		
+				MTX_UNLOCK(sess_table[dcid].st_mutex);
+				lcl_ptr = proxy_tab[local_nodeid];
+				px_ptr = proxy_tab[lb_ptr->lb_nodeid];
+				MTX_LOCK(px_ptr->px_recv_mtx);
+				if( TEST_BIT(px_ptr->px_status, PX_BIT_WAIT2PUT)){
+					memcpy(px_ptr->px_rdesc.td_header, hdr_ptr, sizeof(proxy_hdr_t));
+					if( hdr_ptr->c_len > 0)
+						memcpy(px_ptr->px_rdesc.td_payload, pl_ptr, hdr_ptr->c_len);	
+					CLR_BIT(px_ptr->px_status, PX_BIT_WAIT2PUT);
+					COND_SIGNAL(px_ptr->px_recv_cond);
+				} else{
+					SET_BIT(lcl_ptr->px_status, PX_BIT_WAIT2PUT);
+					COND_WAIT(px_ptr->px_rdesc.td_tcond, px_ptr->px_rdesc.td_mtx);
+					// el RPROXY del LB deberia copiar los datos antes de despertarlo !!! pero como??
+				}
+				MTX_UNLOCK(px_ptr->px_recv_mtx);
+				
+			
+	TODO probar LATENCIA Y FILE TRANSFER pero a traves de NODE0 
+	
 		
 ===================================================================================================
 ULTIMO_LOG 

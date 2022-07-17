@@ -21,7 +21,7 @@ EXTERN dvs_usr_t dvs, *dvs_ptr;
 EXTERN dc_usr_t  dcu[NR_DCS], *dc_ptr[NR_DCS];
 
 EXTERN sess_tab_t sess_table[NR_DCS]; // Session Table  
-EXTERN int nr_sess_entries;					// Constant !! Number of session entries per table .
+EXTERN int nr_sess_entries;				// Constant !! Number of session entries per table .
 
 EXTERN lbpx_desc_t *lb_cltpxy[NR_NODES*2];	// Client proxy pairs 
 EXTERN lbpx_desc_t *lb_svrpxy[NR_NODES*2];	// Server proxy pairs

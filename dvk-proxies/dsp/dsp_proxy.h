@@ -63,6 +63,10 @@
 #include "../../include/com/stub_dvkcall.h"
 #include "../../include/generic/hello.h"
 
+//!!!!!!!!!!!!!!!!!!!!!!! ATENCION DEPENDE DE include/com/proxy_sts.h 
+#define PX_BIT_WAIT2PUT	(PX_BIT_RCONNECTED+1)
+
+
 typedef unsigned long long jiff;
 #define BUFF_SIZE		MAXCOPYBUF
 #define MAX_MESSLEN     (BUFF_SIZE+1024)
@@ -101,6 +105,10 @@ typedef unsigned long long jiff;
 
 #define	NO		0
 #define	YES		1
+
+#define NODE0		0
+#define NODE1 		1
+#define NODE2 		2
 
 #define	MAX_SVC_NR	(sizeof(unsigned long int) * 8)
 #define LBP_BASE_PORT     		3000
@@ -167,6 +175,7 @@ typedef struct {
 #define SERVICE_FORMAT 	   "svc_name=%s svc_dcid=%d svc_extep=%d svc_minep=%d svc_maxep=%d svc_bind=%X svc_prog=%s\n"
 #define SERVICE_FIELDS(p)  p->svc_name, p->svc_dcid, p->svc_extep, p->svc_minep, p->svc_maxep, p->svc_bind, p->svc_prog
 
+
 typedef struct {
     int 			se_dcid;
     int				se_clt_nodeid;
@@ -192,6 +201,13 @@ typedef struct {
 
 #define SESE_SVR_FORMAT 	"se_dcid=%d se_svr_nodeid=%d se_svr_ep=%d se_svr_PID=%d\n"
 #define SESE_SVR_FIELDS(p) p->se_dcid, p->se_svr_nodeid, p->se_svr_ep, p->se_svr_PID
+
+typedef struct {
+	int				st_nr_sess; 	// # of active sessions
+	pthread_mutex_t st_mutex; 		// per Table Mutex
+	sess_entry_t 	*st_tab_ptr;	// pointer to the first table element 
+} sess_tab_t;
+
 
 // Load Balancer Proxy Descriptor
 struct lbpx_desc_s {

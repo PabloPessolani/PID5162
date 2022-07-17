@@ -31,6 +31,7 @@
 
 #define FLAG_BATCH_BIT		0
 #define FLAG_LZ4_BIT		1
+#define FLAG_CHECK_HDR		2		// This flags signal that the true header was modified by a Load Balancer o Proxy an must be analyzed by the Proxy Receiver.
 
 #define HELLO_PERIOD		(30*1000)	/* 30 Seconds */
 
