@@ -61,6 +61,8 @@ service m3ftp2 {
 };
 
 **************************************************/
+#define _GNU_SOURCE     
+#define _MULTI_THREADED
 
 #include "dsp_proxy.h"
 #include "../../include/generic/configfile.h"

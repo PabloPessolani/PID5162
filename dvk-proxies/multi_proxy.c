@@ -303,9 +303,9 @@ int pr_process_message(proxy_t *px_ptr)
 			CMD_FIELDS(px_ptr->px_rdesc.td_header));
 		PXYDEBUG("RPROXY(%d):" CMD_XFORMAT,px_ptr->px_proxyid,
 			CMD_XFIELDS(px_ptr->px_rdesc.td_header));
-		PXYDEBUG("RPROXY(%d):" CMD_TSFORMAT,px_ptr->px_proxyid, 
+		PXYDEBUG("RPROXY(%d): %d " CMD_TSFORMAT,px_ptr->px_proxyid, 
 			px_ptr->px_rdesc.td_tid, CMD_TSFIELDS(px_ptr->px_rdesc.td_header)); 
-		PXYDEBUG("RPROXY(%d):" CMD_PIDFORMAT,px_ptr->px_proxyid, 
+		PXYDEBUG("RPROXY(%d): %d " CMD_PIDFORMAT,px_ptr->px_proxyid, 
 				px_ptr->px_rdesc.td_tid, CMD_PIDFIELDS(px_ptr->px_rdesc.td_header)); 
 				
 		if( px_ptr->px_rdesc.td_header->c_cmd == CMD_NONE) {

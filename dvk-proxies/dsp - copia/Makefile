@@ -8,8 +8,8 @@ INCLUDE = ..
 # Options for develofsent
 # CFLAGS = -v -O3 -Wall -ansi
 
-DSPOBJ =  dsp_main.o dsp_config.o dsp_sproxy.o dsp_rproxy.o dsp_misc.o dsp_group.o dsp_pws.o
-
+DSPOBJ =  dsp_proxy.o dsp_config.o 
+ 
 #LIBS = ../../lib/syslib/libsyslib.so ../../lib/timers/libtimers.so
 
 LIBS = 	/usr/src/dvs/dvk-lib/stub_dvkcall.o \

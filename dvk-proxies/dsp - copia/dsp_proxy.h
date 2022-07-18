@@ -1,12 +1,5 @@
-
-
-#define PXYDBG 			1	
-#define DVS_USERSPACE	1
-#define _GNU_SOURCE
-//#define  __USE_GNU
-#define _MULTI_THREADED
-
 #include <assert.h>
+
 #include <asm/ptrace.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -36,11 +29,15 @@
 #include <net/if.h>
 #include <net/if_arp.h>   
 #include <arpa/inet.h>
-#include <time.h>
 
 #include <lz4frame.h>
 
 #include "dsp_spread.h"
+#define PXYDBG 			1	
+
+#define DVS_USERSPACE	1
+#define _GNU_SOURCE
+//#define  __USE_GNU
 #include <sched.h>
 #define cpumask_t cpu_set_t
 
@@ -162,12 +159,6 @@ typedef unsigned long long jiff;
 #define TRUE 1
 #define NO     		0
 #define YES    		1
-
-#define LZ4_HEADER_SIZE 19
-#define LZ4_FOOTER_SIZE 4
-#define BLOCK_16K	(16 * 1024)
-
-__attribute__((packed, aligned(4)))
 
 typedef struct {
 	char *svc_name;				// server name from configuration file 
@@ -325,6 +316,7 @@ struct server_s{
 typedef struct server_s server_t;
 #define SERVER_FORMAT 	"svr_index=%d svr_level=%d svr_load=%d svr_bm_svc=%lX\n"
 #define SERVER_FIELDS(p) p->svr_index, p->svr_level, p->svr_load,  p->svr_bm_svc 
+
 
 #define	MAX_MEMBER_NAME		64
 
@@ -526,11 +518,9 @@ typedef struct {
 #define PROXY_FORMAT 	   "px_name=%s px_nodeid=%d px_type=%d px_proto=%d px_rport=%d px_sport=%d px_batch=%d px_compress=%d px_autobind=%d px_rname=%s\n"
 #define PROXY_FIELDS(p)  	p->px_name, p->px_nodeid, p->px_type, p->px_proto, p->px_rport, p->px_sport, p->px_batch, p->px_compress, p->px_autobind, p->px_rname
 
-#include "../proxy.h"
+#include "dsp_glo.h"
 #include "../debug.h"
 #include "../macros.h"
-#include "dsp_glo.h"
-#include "dsp_proto.h"
 
 void lb_config(char *f_conf);	/* config file name. */
 void init_spread(void);
